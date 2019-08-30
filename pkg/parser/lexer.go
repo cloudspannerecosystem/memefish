@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"unicode"
 	"unicode/utf8"
 )
@@ -12,6 +13,22 @@ type Lexer struct {
 	FilePath             string
 	Offset, Line, Column int
 	Token                Token
+
+	// ZetaSQL's lexer comment:
+	//
+	// > After "." we allow more things, including all keywords and all
+	// > integers, to be returned as identifiers. This state is initiated when we
+	// > recognize an identifier followed by a ".". It is also initiated after a
+	// > closing parenthesis, square bracket, or "?" (positional parameter) followed
+	// > by a ".", to handle cases like foo[3].array. See the "." rule and the
+	// > <DOT_IDENTIFIER>{generalized_identifier}.
+	// > https://github.com/google/zetasql/blob/e269a26107e9b6c5a43a72d3a323faa19dd4599b/zetasql/parser/flex_tokenizer.l#L28-L33
+	//
+	// For implementing this, it should keep the lastTokenKind on lexing and have dotIdent flag.
+	// But they are internal state, so let them private.
+
+	lastTokenKind TokenKind
+	dotIdent      bool
 }
 
 type Token struct {
@@ -49,8 +66,20 @@ func isOctalDigit(c byte) bool {
 	return '0' <= c && c <= '7'
 }
 
+func isIdentStart(c byte) bool {
+	return 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_'
+}
+
 func isIdentPart(c byte) bool {
 	return '0' <= c && c <= '9' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_'
+}
+
+func isNextDotIdent(t TokenKind) bool {
+	switch t {
+	case TokenIdent, TokenParam, ")", "]":
+		return true
+	}
+	return false
 }
 
 func toUpper(c byte) byte {
@@ -61,8 +90,10 @@ func toUpper(c byte) byte {
 }
 
 func (l *Lexer) NextToken() {
-	// Skips spaces.
+	l.lastTokenKind = l.Token.Kind
 	l.Token = Token{}
+
+	// Skips spaces.
 	i := l.Offset
 	l.skipSpaces()
 	l.Token.Space = l.Buffer[i:l.Offset]
@@ -70,7 +101,12 @@ func (l *Lexer) NextToken() {
 	// Reads the next token.
 	l.Token.Loc = l.loc()
 	i = l.Offset
-	l.nextToken()
+	if l.dotIdent {
+		l.nextFieldToken()
+		l.dotIdent = false
+	} else {
+		l.nextToken()
+	}
 	l.Token.Raw = l.Buffer[i:l.Offset]
 	l.Token.EndLoc = l.loc()
 }
@@ -82,7 +118,7 @@ func (l *Lexer) nextToken() {
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ':', ',', '[', ']', '~', '*', '/', '&', '^', '|', '=':
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '|', '=':
 		l.Token.Kind = TokenKind([]byte{l.next()})
 		return
 	case '+', '-':
@@ -93,10 +129,13 @@ func (l *Lexer) nextToken() {
 		}
 		return
 	case '.':
-		if l.peekOk(1) && isDigit(l.peek(1)) {
+		nextDotIdent := isNextDotIdent(l.lastTokenKind)
+		if !nextDotIdent && l.peekOk(1) && isDigit(l.peek(1)) {
 			l.nextNumber()
 		} else {
+			l.next()
 			l.Token.Kind = "."
+			l.dotIdent = nextDotIdent
 		}
 		return
 	case '<':
@@ -135,18 +174,19 @@ func (l *Lexer) nextToken() {
 			return
 		}
 	case '@':
-		i := 1
-		for l.peekOk(i) {
-			if !isIdentPart(l.peek(i)) {
-				break
+		if l.peekOk(1) && isIdentStart(l.peek(1)) {
+			i := 1
+			for l.peekOk(i) && isIdentPart(l.peek(i)) {
+				i++
 			}
-			i++
-		}
-		if i > 1 {
 			l.Token.Kind = TokenParam
 			l.Token.AsString = l.Buffer[l.Offset+1 : l.Offset+i]
+			l.nextN(i)
 			return
 		}
+		l.next()
+		l.Token.Kind = "@"
+		return
 	case '`':
 		l.Token.Kind = TokenIdent
 		l.Token.AsString = l.nextQuotedContent("`", false, true, "identifier")
@@ -155,8 +195,8 @@ func (l *Lexer) nextToken() {
 		l.nextNumber()
 		return
 	case 'B', 'b', 'R', 'r', '"', '\'':
-		i, bytes, raw := 0, false, false
-		for {
+		bytes, raw := false, false
+		for i := 0; i < 3 && l.peekOk(i); i++ {
 			switch {
 			case !bytes && (l.peekIs(i, 'B') || l.peekIs(i, 'b')):
 				i++
@@ -182,6 +222,40 @@ func (l *Lexer) nextToken() {
 			}
 		}
 	}
+
+	if isIdentStart(l.peek(0)) {
+		i := 0
+		for l.peekOk(i) && isIdentPart(l.peek(i)) {
+			i++
+		}
+		s := l.slice(0, i)
+		l.nextN(i)
+		k := TokenKind(strings.ToUpper(s))
+		if _, ok := keywordsMap[k]; ok {
+			l.Token.Kind = k
+		} else {
+			l.Token.Kind = TokenIdent
+			l.Token.AsString = []byte(s)
+		}
+		return
+	}
+
+	panic(l.errorf("illegal input character: %q", l.peek(0)))
+}
+
+func (l *Lexer) nextFieldToken() {
+	if l.peekOk(0) && isIdentPart(l.peek(0)) {
+		i := 0
+		for l.peekOk(i) && isIdentPart(l.peek(i)) {
+			i++
+		}
+		l.Token.Kind = TokenIdent
+		l.Token.AsString = l.Buffer[l.Offset : l.Offset+i]
+		l.nextN(i)
+		return
+	}
+
+	l.nextToken()
 }
 
 func (l *Lexer) nextNumber() {
@@ -206,29 +280,31 @@ func (l *Lexer) nextNumber() {
 
 	offset, int := i, true
 
-peek:
 	for l.peekOk(i) {
 		c := l.peek(i)
 		switch {
 		case base == 10 && isDigit(c):
 			i++
+			continue
 		case base == 16 && isHexDigit(c):
 			i++
+			continue
 		case base == 10 && c == '.':
 			i++
 			int = false
+			continue
 		case base == 10 && (c == 'E' || c == 'e'):
 			i++
 			if l.peekIs(i, '+') || l.peekIs(i, '-') {
 				i++
 			}
 			if !(l.peekOk(i) && isDigit(l.peek(i))) {
-				l.errorf("invalid number literal")
+				l.panicf("invalid number literal")
 			}
 			int = false
-		default:
-			break peek
+			continue
 		}
+		break
 	}
 
 	var err error
@@ -240,10 +316,11 @@ peek:
 		l.Token.AsFloat, err = strconv.ParseFloat(sign+l.slice(offset, i), 64)
 	}
 	if err != nil {
-		l.errorf("invalid number literal: %v", err)
+		l.panicf("invalid number literal: %v", err)
 	}
 
 	l.nextN(i)
+	return
 }
 
 func (l *Lexer) nextRawBytes() {
@@ -270,7 +347,7 @@ func (l *Lexer) peekDelimiter() string {
 	i := 0
 	c := l.peek(i)
 	if c != '"' && c != '\'' {
-		l.errorf("invalid delimiter: %v", c)
+		l.panicf("invalid delimiter: %v", c)
 	}
 	i++
 
@@ -283,17 +360,13 @@ func (l *Lexer) peekDelimiter() string {
 	}
 
 	switch {
-	case !triple && c == '"':
-		return `"`
-	case !triple && c == '\'':
-		return `'`
 	case triple && c == '"':
 		return `"""`
 	case triple && c == '\'':
 		return `'''`
+	default:
+		return string([]byte{c})
 	}
-
-	panic("unreachable")
 }
 
 func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []byte {
@@ -316,7 +389,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 		if c == '\\' {
 			i++
 			if !l.peekOk(i) {
-				l.errorf("invalid escape sequence: \\<EOF>")
+				l.panicf("invalid escape sequence: \\<EOF>")
 			}
 
 			c := l.peek(i)
@@ -346,17 +419,17 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 				content = append(content, c)
 			case 'x', 'X':
 				if !(l.peekOk(i+1) && isHexDigit(l.peek(i)) && isHexDigit(l.peek(i+1))) {
-					l.errorf("invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
+					l.panicf("invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+2), 16, 8)
 				if err != nil {
-					l.errorf("invalid escape sequence: %v", err)
+					l.panicf("invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			case 'u', 'U':
 				if !unicode {
-					l.errorf("invalid escape sequence: \\%c is not allowed in %s", c, name)
+					l.panicf("invalid escape sequence: \\%c is not allowed in %s", c, name)
 				}
 				size := 4
 				if c == 'U' {
@@ -364,15 +437,15 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 				}
 				for j := 0; j < size; j++ {
 					if !(l.peekOk(i+j) && isHexDigit(l.peek(i+j))) {
-						l.errorf("invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
+						l.panicf("invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+size), 16, 32)
 				if err != nil {
-					l.errorf("invalid escape sequence: %v", err)
+					l.panicf("invalid escape sequence: %v", err)
 				}
 				if 0xD800 <= u && u <= 0xDFFF || 0x10FFFF < u {
-					l.errorf("invalid escape sequence: invalid code point: %04x", u)
+					l.panicf("invalid escape sequence: invalid code point: %04x", u)
 				}
 				var buf [utf8.MaxRune]byte
 				n := utf8.EncodeRune(buf[:], rune(u))
@@ -380,16 +453,16 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 				i += size
 			case '0', '1', '2', '3':
 				if l.peekOk(i+2) && isOctalDigit(l.peek(i+1)) && isOctalDigit(l.peek(i+2)) {
-					l.errorf("invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
+					l.panicf("invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
 				}
 				u, err := strconv.ParseUint(l.slice(i-1, i+2), 8, 8)
 				if err != nil {
-					l.errorf("invalid escape sequence: %v", err)
+					l.panicf("invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			default:
-				l.errorf("invalid escape sequence: \\%c", c)
+				l.panicf("invalid escape sequence: \\%c", c)
 			}
 
 			continue
@@ -399,8 +472,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 		i++
 	}
 
-	l.errorf("unclosed %s", name)
-	panic("unreachable")
+	panic(l.errorf("unclosed %s", name))
 }
 
 func (l *Lexer) skipSpaces() {
@@ -480,12 +552,15 @@ func (l *Lexer) eof() bool {
 	return l.Offset >= len(l.Buffer)
 }
 
-func (l *Lexer) errorf(msg string, param ...interface{}) {
-	err := &Error{
+func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
+	return &Error{
 		Message: fmt.Sprintf(msg, param...),
 		Loc:     l.loc(),
 	}
-	panic(err)
+}
+
+func (l *Lexer) panicf(msg string, param ...interface{}) {
+	panic(l.errorf(msg, param...))
 }
 
 func (l *Lexer) loc() *Location {

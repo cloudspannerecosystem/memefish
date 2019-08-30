@@ -7,7 +7,7 @@ import (
 
 func main() {
 	l := &parser.Lexer{
-		Buffer:   []byte(`"\077\xFF"`),
+		Buffer:   []byte(`BY`),
 		FilePath: "<input>",
 	}
 

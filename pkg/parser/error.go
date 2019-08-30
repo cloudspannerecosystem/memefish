@@ -14,5 +14,5 @@ func (e *Error) String() string {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("parse error: %s: %s", e.Loc, e.Message)
+	return fmt.Sprintf("syntax error: %s: %s", e.Loc, e.Message)
 }
