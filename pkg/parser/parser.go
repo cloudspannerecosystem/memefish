@@ -637,18 +637,46 @@ func (p *Parser) parseComparison() Expr {
 	case "LIKE":
 		op = OpLike
 	case "IN":
-		panic("TODO: IN")
+		p.NextToken()
+		cond := p.parseInCondition()
+		return &InExpr{
+			Left:  expr,
+			Right: cond,
+		}
 	case "BETWEEN":
-		panic("TODO: BETWEEN")
+		p.NextToken()
+		rightStart := p.parseBitOr()
+		p.expect("AND")
+		rightEnd := p.parseBitOr()
+		return &BetweenExpr{
+			Left:       expr,
+			RightStart: rightStart,
+			RightEnd:   rightEnd,
+		}
 	case "NOT":
 		p.NextToken()
 		switch p.Token.Kind {
 		case "LIKE":
 			op = OpNotLike
 		case "IN":
-			panic("TODO: NOT IN")
+			p.NextToken()
+			cond := p.parseInCondition()
+			return &InExpr{
+				Not:   true,
+				Left:  expr,
+				Right: cond,
+			}
 		case "BETWEEN":
-			panic("TODO: NOT BETWEEN")
+			p.NextToken()
+			rightStart := p.parseExpr()
+			p.expect("AND")
+			rightEnd := p.parseExpr()
+			return &BetweenExpr{
+				Not:        true,
+				Left:       expr,
+				RightStart: rightStart,
+				RightEnd:   rightEnd,
+			}
 		default:
 			p.panicfAtToken(&p.Token, "expected token: LIKE, IN, but: %s", p.Token.Kind)
 		}
@@ -678,6 +706,48 @@ func (p *Parser) parseComparison() Expr {
 		Op:    op,
 		Right: p.parseBitOr(),
 	}
+}
+
+func (p *Parser) parseInCondition() *InCondition {
+	if q := p.tryParseSubQuery(); q != nil {
+		return &InCondition{
+			pos:      q.Pos(),
+			end:      q.End(),
+			SubQuery: q,
+		}
+	}
+	if p.Token.Kind == "(" {
+		pos := p.Token.Pos
+		p.NextToken()
+		values := ExprList{p.parseExpr()}
+		for p.Token.Kind != TokenEOF {
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+			values = append(values, p.parseExpr())
+		}
+		end := p.expect(")").End
+		return &InCondition{
+			pos:    pos,
+			end:    end,
+			Values: values,
+		}
+	}
+	if p.Token.Kind == "UNNEST" {
+		pos := p.Token.Pos
+		p.NextToken()
+		p.expect("(")
+		e := p.parseExpr()
+		end := p.expect(")").End
+		return &InCondition{
+			pos:    pos,
+			end:    end,
+			Unnest: e,
+		}
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token (, UNNEST, but: %s", p.Token.Kind))
 }
 
 func (p *Parser) parseBitOr() Expr {

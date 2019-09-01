@@ -21,7 +21,7 @@ func main() {
 							`),
 			*/
 			heredoc.Doc(`
-				select ((select 1) LIMIT 1) + 1
+				select ((select 1) LIMIT 1) + 1  IN UNNEST(ARRAY(select 2 union all select 3)), 1 BETWEEN 0 AND 10
 			`),
 		),
 		// `((select (((select 1) union distinct select 1 union distinct select 1) + 1)))`),
