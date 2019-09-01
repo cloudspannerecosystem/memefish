@@ -9,10 +9,10 @@ import (
 )
 
 type Lexer struct {
-	Buffer               []byte
-	FilePath             string
-	Offset, Line, Column int
-	Token                Token
+	*File
+	Token Token
+
+	pos int
 
 	// ZetaSQL's lexer comment:
 	//
@@ -33,25 +33,22 @@ type Lexer struct {
 
 type Token struct {
 	Kind     TokenKind
-	Space    []byte
-	Raw      []byte
-	AsString []byte  // available for TokenIdent, TokenString and TokenBytes
-	AsInt    int64   // available for TokenInt
-	AsFloat  float64 // available for TokenFloat
-	Loc      *Location
-	EndLoc   *Location
+	Space    string // TODO: better comment support
+	Raw      string
+	AsString string // available for TokenIdent, TokenString and TokenBytes
+	Pos, End Pos
 }
 
 type TokenKind string
 
 const (
-	TokenEOF    TokenKind = "eof"
-	TokenIdent  TokenKind = "ident"
-	TokenParam  TokenKind = "param"
-	TokenInt    TokenKind = "int"
-	TokenFloat  TokenKind = "float"
-	TokenString TokenKind = "string"
-	TokenBytes  TokenKind = "bytes"
+	TokenEOF    TokenKind = "<eof>"
+	TokenIdent  TokenKind = "<ident>"
+	TokenParam  TokenKind = "<param>"
+	TokenInt    TokenKind = "<int>"
+	TokenFloat  TokenKind = "<float>"
+	TokenString TokenKind = "<string>"
+	TokenBytes  TokenKind = "<bytes>"
 )
 
 func isDigit(c byte) bool {
@@ -94,21 +91,21 @@ func (l *Lexer) NextToken() {
 	l.Token = Token{}
 
 	// Skips spaces.
-	i := l.Offset
+	i := l.pos
 	l.skipSpaces()
-	l.Token.Space = l.Buffer[i:l.Offset]
+	l.Token.Space = l.Buffer[i:l.pos]
 
 	// Reads the next token.
-	l.Token.Loc = l.loc()
-	i = l.Offset
+	l.Token.Pos = Pos(l.pos)
+	i = l.pos
 	if l.dotIdent {
 		l.nextFieldToken()
 		l.dotIdent = false
 	} else {
 		l.nextToken()
 	}
-	l.Token.Raw = l.Buffer[i:l.Offset]
-	l.Token.EndLoc = l.loc()
+	l.Token.Raw = l.Buffer[i:l.pos]
+	l.Token.End = Pos(l.pos) + 1
 }
 
 func (l *Lexer) nextToken() {
@@ -122,11 +119,7 @@ func (l *Lexer) nextToken() {
 		l.Token.Kind = TokenKind([]byte{l.next()})
 		return
 	case '+', '-':
-		if l.peekOk(1) && (isDigit(l.peek(1)) || l.peekIs(1, '.')) {
-			l.nextNumber()
-		} else {
-			l.Token.Kind = TokenKind([]byte{l.next()})
-		}
+		l.Token.Kind = TokenKind([]byte{l.next()})
 		return
 	case '.':
 		nextDotIdent := isNextDotIdent(l.lastTokenKind)
@@ -180,7 +173,7 @@ func (l *Lexer) nextToken() {
 				i++
 			}
 			l.Token.Kind = TokenParam
-			l.Token.AsString = l.Buffer[l.Offset+1 : l.Offset+i]
+			l.Token.AsString = l.Buffer[l.pos+1 : l.pos+i]
 			l.nextN(i)
 			return
 		}
@@ -235,7 +228,7 @@ func (l *Lexer) nextToken() {
 			l.Token.Kind = k
 		} else {
 			l.Token.Kind = TokenIdent
-			l.Token.AsString = []byte(s)
+			l.Token.AsString = s
 		}
 		return
 	}
@@ -250,7 +243,7 @@ func (l *Lexer) nextFieldToken() {
 			i++
 		}
 		l.Token.Kind = TokenIdent
-		l.Token.AsString = l.Buffer[l.Offset : l.Offset+i]
+		l.Token.AsString = l.Buffer[l.pos : l.pos+i]
 		l.nextN(i)
 		return
 	}
@@ -263,14 +256,13 @@ func (l *Lexer) nextNumber() {
 	// https://cloud.google.com/spanner/docs/lexical#floating-point-literals
 
 	i := 0
-	sign, base := "", 10
+	base := 10
 
 	switch {
 	case l.peekIs(i, '+'):
 		i++
 	case l.peekIs(i, '-'):
 		i++
-		sign = "-"
 	}
 
 	if l.peekIs(i, '0') && (l.peekIs(i+1, 'x') || l.peekIs(i+1, 'X')) {
@@ -278,7 +270,7 @@ func (l *Lexer) nextNumber() {
 		base = 16
 	}
 
-	offset, int := i, true
+	int, exp := true, false
 
 	for l.peekOk(i) {
 		c := l.peek(i)
@@ -289,11 +281,11 @@ func (l *Lexer) nextNumber() {
 		case base == 16 && isHexDigit(c):
 			i++
 			continue
-		case base == 10 && c == '.':
+		case !exp && int && base == 10 && c == '.':
 			i++
 			int = false
 			continue
-		case base == 10 && (c == 'E' || c == 'e'):
+		case !exp && base == 10 && (c == 'E' || c == 'e'):
 			i++
 			if l.peekIs(i, '+') || l.peekIs(i, '-') {
 				i++
@@ -301,26 +293,19 @@ func (l *Lexer) nextNumber() {
 			if !(l.peekOk(i) && isDigit(l.peek(i))) {
 				l.panicf("invalid number literal")
 			}
+			exp = true
 			int = false
 			continue
 		}
 		break
 	}
 
-	var err error
+	l.nextN(i)
 	if int {
 		l.Token.Kind = TokenInt
-		l.Token.AsInt, err = strconv.ParseInt(sign+l.slice(offset, i), base, 64)
 	} else {
 		l.Token.Kind = TokenFloat
-		l.Token.AsFloat, err = strconv.ParseFloat(sign+l.slice(offset, i), 64)
 	}
-	if err != nil {
-		l.panicf("invalid number literal: %v", err)
-	}
-
-	l.nextN(i)
-	return
 }
 
 func (l *Lexer) nextRawBytes() {
@@ -369,7 +354,7 @@ func (l *Lexer) peekDelimiter() string {
 	}
 }
 
-func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []byte {
+func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) string {
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
 	if len(q) == 3 {
@@ -382,7 +367,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 	for l.peekOk(i) {
 		if l.slice(i, i+len(q)) == q {
 			l.nextN(i + len(q))
-			return content
+			return string(content)
 		}
 
 		c := l.peek(i)
@@ -477,7 +462,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) []by
 
 func (l *Lexer) skipSpaces() {
 	for !l.eof() {
-		r, size := utf8.DecodeRune(l.Buffer[l.Offset:])
+		r, size := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 		switch {
 		case unicode.IsSpace(r):
 			l.nextN(size)
@@ -501,33 +486,25 @@ func (l *Lexer) skipComment(end string) {
 }
 
 func (l *Lexer) peek(i int) byte {
-	return l.Buffer[l.Offset+i]
+	return l.Buffer[l.pos+i]
 }
 
 func (l *Lexer) peekOk(i int) bool {
-	return l.Offset+i < len(l.Buffer)
+	return l.pos+i < len(l.Buffer)
 }
 
 func (l *Lexer) peekIs(i int, c byte) bool {
-	return l.Offset+i < len(l.Buffer) && l.Buffer[l.Offset+i] == c
+	return l.pos+i < len(l.Buffer) && l.Buffer[l.pos+i] == c
 }
 
 func (l *Lexer) next() byte {
-	c := l.Buffer[l.Offset]
-	l.Offset++
-	if c == '\n' {
-		l.Line += 1
-		l.Column = 0
-	} else {
-		l.Column += 1
-	}
+	c := l.Buffer[l.pos]
+	l.pos++
 	return c
 }
 
 func (l *Lexer) nextN(n int) {
-	for i := 0; i < n; i++ {
-		l.next()
-	}
+	l.pos += n
 }
 
 func (l *Lexer) consume(s string) bool {
@@ -545,29 +522,20 @@ func (l *Lexer) consume(s string) bool {
 }
 
 func (l *Lexer) slice(start, end int) string {
-	return string(l.Buffer[l.Offset+start : l.Offset+end])
+	return string(l.Buffer[l.pos+start : l.pos+end])
 }
 
 func (l *Lexer) eof() bool {
-	return l.Offset >= len(l.Buffer)
+	return l.pos >= len(l.Buffer)
 }
 
 func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
 	return &Error{
-		Message: fmt.Sprintf(msg, param...),
-		Loc:     l.loc(),
+		Message:  fmt.Sprintf(msg, param...),
+		Position: l.Position(Pos(l.pos), InvalidPos),
 	}
 }
 
 func (l *Lexer) panicf(msg string, param ...interface{}) {
 	panic(l.errorf(msg, param...))
-}
-
-func (l *Lexer) loc() *Location {
-	return &Location{
-		FilePath: l.FilePath,
-		Offset:   l.Offset,
-		Line:     l.Line + 1,
-		Column:   l.Column + 1,
-	}
 }

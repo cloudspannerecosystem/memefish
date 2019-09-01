@@ -5,8 +5,8 @@ import (
 )
 
 type Error struct {
-	Message string
-	Loc     *Location
+	Message  string
+	Position *Position
 }
 
 func (e *Error) String() string {
@@ -14,5 +14,6 @@ func (e *Error) String() string {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("syntax error: %s: %s", e.Loc, e.Message)
+	// TODO: improve error message when valid e.Position.End is available.
+	return fmt.Sprintf("syntax error: %s: %s", e.Position, e.Message)
 }

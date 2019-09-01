@@ -1,108 +1,14 @@
 package parser
 
-type TableHintKey string
-
-const (
-	ForceIndexTableHint     TableHintKey = "FORCE_INDEX"
-	GroupScanByOptimization TableHintKey = "GROUPBY_SCAN_OPTIMIZATION"
-)
-
-type JoinHintKey string
-
-const (
-	ForceJoinOrderJoinHint JoinHintKey = "FORCE_JOIN_ORDER"
-	JoinTypeJoinHint       JoinHintKey = "JOIN_TYPE"
-)
-
-type JoinMethod string
-
-const (
-	HashJoinMethod  JoinMethod = "HASH_JOIN"
-	ApplyJoinMethod JoinMethod = "APPLY_JOIN"
-	LoopJoinMethod  JoinMethod = "LOOP_JOIN" // Undocumented, but the Spanner accept this value at least.
-)
-
-type SetOp string
-
-const (
-	SetOpUnion     SetOp = "UNION"
-	SetOpIntersect SetOp = "INTERSECT"
-	SetOpExcept    SetOp = "EXCEPT"
-)
-
-type Direction string
-
-const (
-	DirectionAsc  Direction = "ASC"
-	DirectionDesc Direction = "DESC"
-)
-
-type TableSampleMethod string
-
-const (
-	BernoulliSampleMethod TableSampleMethod = "bernoulli"
-	ReservoirSampleMethod TableSampleMethod = "reservoir"
-)
-
-type JoinOp string
-
-const (
-	InnerJoin      JoinOp = "INNER"
-	CrossJoin      JoinOp = "CROSS"
-	FullOuterJoin  JoinOp = "FULL OUTER"
-	LeftOuterJoin  JoinOp = "LEFT OUTER"
-	RightOuterJoin JoinOp = "RIGHT OUTER"
-)
-
-type BinaryOp string
-
-const (
-	OpOr            BinaryOp = "OR"
-	OpAnd           BinaryOp = "AND"
-	OpEqual         BinaryOp = "="
-	OpLessThan      BinaryOp = "<"
-	OpGreaterThan   BinaryOp = ">"
-	OpLessEqual     BinaryOp = "<="
-	OpGreaterEqual  BinaryOp = ">="
-	OpNotEqual      BinaryOp = "!="
-	OpLike          BinaryOp = "LIKE"
-	OpNotLike       BinaryOp = "NOT LIKE"
-	OpBitOr         BinaryOp = "|"
-	OpBitXor        BinaryOp = "^"
-	OpBitAnd        BinaryOp = "&"
-	OpBitLeftShift  BinaryOp = "<<"
-	OpBitRightShift BinaryOp = ">>"
-	OpAdd           BinaryOp = "+"
-	OpSub           BinaryOp = "-"
-	OpMul           BinaryOp = "*"
-	OpDiv           BinaryOp = "/"
-)
-
-type UnaryOp string
-
-const (
-	OpNot    UnaryOp = "NOT"
-	OpPlus   UnaryOp = "+"
-	OpMinus  UnaryOp = "-"
-	OpBitNot UnaryOp = "~"
-)
-
-type TypeName string
-
-const (
-	BoolType      TypeName = "BOOL"
-	Int64Type     TypeName = "INT64"
-	Float64Type   TypeName = "FLOAT64"
-	StringType    TypeName = "STRING"
-	BytesType     TypeName = "BYTES"
-	DateType      TypeName = "DATE"
-	TimestampType TypeName = "TIMESTAMP"
-	ArrayType     TypeName = "ARRAY"
-	StructType    TypeName = "STRUCT"
-)
+type Node interface {
+	Pos() Pos
+	End() Pos
+	SQL() string
+}
 
 // Expr repersents an expression in SQL.
 type Expr interface {
+	Node
 	isExpr()
 }
 
@@ -114,11 +20,16 @@ func (UnaryExpr) isExpr()    {}
 func (InExpr) isExpr()       {}
 func (IsNullExpr) isExpr()   {}
 func (IsBoolExpr) isExpr()   {}
-func (PathExpr) isExpr()     {}
+func (BetweenExpr) isExpr()  {}
+func (SelectorExpr) isExpr() {}
 func (IndexExpr) isExpr()    {}
 func (CallExpr) isExpr()     {}
+func (CastExpr) isExpr()     {}
 func (CaseExpr) isExpr()     {}
 func (SubQuery) isExpr()     {}
+func (ParenExpr) isExpr()    {}
+func (ArrayExpr) isExpr()    {}
+func (ExistsExpr) isExpr()   {}
 func (Param) isExpr()        {}
 func (Ident) isExpr()        {}
 func (ArrayLit) isExpr()     {}
@@ -132,25 +43,43 @@ func (BytesLit) isExpr()     {}
 func (DateLit) isExpr()      {}
 func (TimestampLit) isExpr() {}
 
-// {{if .TableHint}}{{.TableHint | sql}}{{end}}
-// {{if .JoinHint}}{{.JoinHint | sql}}{{end}}
-// {{.QueryExpr | sql}}
-type QueryStatement struct {
-	TableHint TableHint
-	JoinHint  JoinHint
-	QueryExpr QueryExpr
-}
-
-type TableHint map[TableHintKey]interface{}
-
-type JoinHint map[JoinHintKey]interface{}
-
 type QueryExpr interface {
+	Node
 	isQueryExpr()
 }
 
 func (Select) isQueryExpr()        {}
 func (CompoundQuery) isQueryExpr() {}
+
+type JoinExpr interface {
+	Node
+	isJoinExpr()
+}
+
+func (TableName) isJoinExpr()        {}
+func (Unnest) isJoinExpr()           {}
+func (SubQueryJoinExpr) isJoinExpr() {}
+func (Join) isJoinExpr()             {}
+
+type IntValue interface {
+	Node
+	isIntValue()
+}
+
+func (IntLit) isIntValue() {}
+func (Param) isIntValue()  {}
+
+// {{if .Hint}}{{.Hint | sql}}{{end}}
+// {{.Expr | sql}}
+type QueryStatement struct {
+	Hint *Hint
+	Expr QueryExpr
+}
+
+type Hint struct {
+	pos, end Pos
+	Map      map[string]Expr
+}
 
 // SELECT
 //   {{if .Distinct}}DISTINCT{{end}}
@@ -159,9 +88,11 @@ func (CompoundQuery) isQueryExpr() {}
 //   {{if .From}}FROM {{.From | sql}}{{end}}
 //   {{if .Where}}WHERE {{.Where | sql}}{{end}}
 //   {{if .GroupBy}}GROUP BY {{.GroupBy | sql}}{{end}}
-//   {{if .OrderBy}}ORDER BY {{.OrderBt | sql}}{{end}}
+//   {{if .Having}}HAVING {{.Having | sql}}{{end}}
+//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
 //   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
 type Select struct {
+	pos, end Pos
 	Distinct bool
 	AsStruct bool // On top-level, it must be false.
 	List     SelectExprList
@@ -183,36 +114,31 @@ type CompoundQuery struct {
 // {{if .Expr}}{{.Expr | sql}}{{end}}{{if .Star}}{{if .Expr}}.{{end}}*{{end}}
 //   {{if .As}}AS {{.As | sql}}{{end}}
 type SelectExpr struct {
+	end  Pos
 	Expr Expr
 	Star bool
-	As   Ident // It must be nil when Star is true
+	As   *Ident // It must be nil when Star is true
 }
 
-type SelectExprList []*SelectExprList
+type SelectExprList []*SelectExpr
 
+// {{.Expr | sql}} {{if .TableSample}}TABLESAMPLE {{.TableSanple}}{{end}}
 type FromItem struct {
-	Expr              JoinExpr
-	TableSampleMethod TableSampleMethod
+	end         Pos
+	Expr        JoinExpr
+	TableSample TableSampleMethod
 }
 
 type FromItemList []*FromItem
-
-type JoinExpr interface {
-	isJoinExpr()
-}
-
-func (TableName) isJoinExpr()        {}
-func (Unnest) isJoinExpr()           {}
-func (SubQueryJoinExpr) isJoinExpr() {}
-func (Join) isJoinExpr()             {}
 
 // {{.Name}}
 //   {{if .Hint}}{{.Hint | sql}}{{end}}
 //   {{if .As}} AS {{.As | sql}}{{end}}
 type TableName struct {
-	Name string
-	Hint TableHint
-	As   Ident
+	pos, end Pos
+	Name     string
+	Hint     *Hint
+	As       *Ident
 }
 
 // UNNEST({{.Expr | sql}})
@@ -220,29 +146,31 @@ type TableName struct {
 //   {{if .As}}AS {{.As | sql}}{{end}}
 //   {{if .WithOffset}}WITH OFFSET {{.WithOffset | sql}}{{end}}
 type Unnest struct {
+	pos, end   Pos
 	Expr       Expr
-	Hint       TableHint
-	As         Ident
-	WithOffset Ident
+	Hint       *Hint
+	As         *Ident
+	WithOffset *Ident
 }
 
 // {{.Expr | sql}}
 //   {{if .Hint}}{{.Hint | sql}}{{end}}
 //   {{if .As}}AS {{.As | sql}}{{end}}
 type SubQueryJoinExpr struct {
+	end  Pos
 	Expr *SubQuery
-	Hint TableHint
-	As   Ident
+	Hint *Hint
+	As   *Ident
 }
 
 //   {{.Left | sql}}
 // {{.Op}} JOIN
 //    {{if .Hint}}{{.Hint | sql}}{{end}}
 //    {{.Right | sql}}
-// {{.Cond | sql}}
+// {{if .Cond}}{{.Cond | sql}}{{end}}
 type Join struct {
 	Op          JoinOp
-	Hint        JoinHint // If this is HASH JOIN, its JOIN_METHOD value is set as HASH_JOIN.
+	Hint        *Hint // If this is HASH JOIN, its JOIN_METHOD value is set as HASH_JOIN.
 	Left, Right JoinExpr
 	Cond        *JoinCondition
 }
@@ -250,6 +178,7 @@ type Join struct {
 // {{if .On}}ON {{.On | sql}}{{end}}
 // {{if .Using}}USING ({{.Using | sql}}){{end}}
 type JoinCondition struct {
+	pos, end Pos
 	// Either On or Using must be non-empty.
 	On    Expr
 	Using IdentList
@@ -257,24 +186,18 @@ type JoinCondition struct {
 
 // {{.Expr | sql}} {{.Direction}}
 type OrderExpr struct {
+	end       Pos
 	Expr      Expr
 	Direction Direction
 }
 
 type OrderExprList []*OrderExpr
 
-// {{.Count | sql}} {{if .Offset}}{{.Offset | sql}}{{end}}
+// {{.Count | sql}} {{if .Offset}}OFFSET {{.Offset | sql}}{{end}}
 type Limit struct {
 	Count  IntValue
 	Offset IntValue
 }
-
-type IntValue interface {
-	isIntValue()
-}
-
-func (IntLit) isIntValue() {}
-func (Param) isIntValue()  {}
 
 // {{.Left | sql}} {{.Op}} {{.Right | sql}}
 type BinaryExpr struct {
@@ -284,6 +207,7 @@ type BinaryExpr struct {
 
 // {{.Op}} {{.Expr | sql}}
 type UnaryExpr struct {
+	pos  Pos
 	Op   UnaryOp
 	Expr Expr
 }
@@ -296,51 +220,71 @@ type InExpr struct {
 }
 
 // {{if .Unnest}}UNNEST({{.Unnest | sql}}){{end}}
-// {{if .Subqyery}}({{.Subquery | sql}}){{end}}
+// {{if .Subqyery}}{{.Subquery | sql}}{{end}}
 // {{if .Values}}({{.Values | sql}}){{end}}
 type InCondition struct {
+	pos, end Pos
 	Unnest   Expr
-	SubQuery SubQuery
+	SubQuery *SubQuery
 	Values   ExprList
 }
 
 // {{.Left | sql}} IS{{if .Not}} NOT{{end}} NULL
 type IsNullExpr struct {
+	end  Pos
 	Not  bool
 	Left Expr
 }
 
 // {{.Left | sql}} IS{{if .Not}} NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
+	end   Pos
 	Not   bool
 	Left  Expr
 	Right bool
 }
 
+// {{.Left | sql}} {{if .Not}}NOT }}BETWEEN {{.RightStart | sql}} AND {{.RightEnd | sql}}
+type BetweenExpr struct {
+	Not                        bool
+	Left, RightStart, RightEnd Expr
+}
+
 // {{.Left | sql}} . {{.Right | sql}}
-type PathExpr struct {
+type SelectorExpr struct {
 	Left  Expr
-	Right Ident
+	Right *Ident
 }
 
 // {{.Left | sql}}[{{.Right | sql}}]
 type IndexExpr struct {
+	end         Pos
 	Left, Right Expr
 }
 
 // {{.Func | sql}}({{.Args | sql}})
 type CallExpr struct {
-	Func Ident
+	end  Pos
+	Func *Ident
 	Args ExprList
 }
 
-// CASE {{.Expr | sql}}
+// CAST({{.Expr | sql}} AS {{.Type | sql}})
+type CastExpr struct {
+	pos, end Pos
+	Expr     Expr
+	Type     *Type
+}
+
+// CASE {{if .Expr}}{{.Expr | sql}}{{end}}
 //   {{range .When}}WHEN {{. | sql}}{{end}}
 //   {{if .Else}}ELSE {{.Else | sql}}{{end}
+// END
 type CaseExpr struct {
-	Expr Expr
-	When []*When
-	Else Expr
+	pos, end Pos
+	Expr     Expr
+	When     []*When
+	Else     Expr
 }
 
 // {{.Cond | sql}} THEN {{.Then | sql}}
@@ -350,65 +294,116 @@ type When struct {
 
 // ({{. | sql}})
 type SubQuery struct {
-	Expr QueryExpr
+	pos, end Pos
+	Expr     QueryExpr
+}
+
+// ({{. | sql}})
+type ParenExpr struct {
+	pos, end Pos
+	Expr     Expr
+}
+
+// ARRAY{{.Expr | sql}}
+type ArrayExpr struct {
+	pos  Pos
+	Expr *SubQuery
+}
+
+// EXISTS {{if .Hint}}{{.Hint | sql}}{{end}} {{.Expr | sql}}
+type ExistsExpr struct {
+	pos  Pos
+	Hint *Hint
+	Expr *SubQuery
 }
 
 // @{{.Name}}
 type Param struct {
+	pos  Pos
 	Name string
 }
 
-// `{{.Ident}}`
-type Ident string
+// {{.Name}}
+type Ident struct {
+	pos, end Pos
+	Name     string
+}
 
-type IdentList string
+type IdentList []Ident
 
 // ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sql}}]
 type ArrayLit struct {
-	Type   Type
-	Values ExprList
+	pos, end Pos
+	Type     *Type
+	Values   ExprList
 }
 
-// STRUCT{{if .Type}}<{{.Type | sql}}>{{end}}({{.Values | sql}})
+// STRUCT{{if .Type}}<{{.Fields | sql}}>{{end}}({{.Values | sql}})
 type StructLit struct {
-	Type   Type
-	Values ExprList
+	pos, end Pos
+	Fields   []*FieldSchema
+	Values   ExprList
 }
 
 // NULL
-type NullLit struct{}
-
-// {{if .}}TRUE{{else}}FALSE{{end}}
-type BoolLit bool
-
-// {{.}}
-type IntLit int64
-
-// {{.}}
-//
-// NOTE: when the value is NaN, this text representation is CAST('NaN' AS FLOAT64), and +/-infinity are respectively.
-type FloatLit float64
-
-// {{. | sqlQuote}}
-type StringLit string
-
-// B{{. | sqlQuote}}
-type BytesLit []byte
-
-// DATE{{. | sqlQuote}}
-type DateLit string
-
-// TIMESTAMP{{. | sqlQuote}}
-type TimestampLit string
-
-type Type struct {
-	Name      TypeName
-	Length    IntValue // for STRING(n) and BYTES(n)
-	Fields    []*Field // for STRUCT<...>
-	ValueType *Type    // for ARRAY<...>
+type NullLit struct {
+	pos Pos
 }
 
-type Field struct {
-	Name Ident
+// {{if .Value}}TRUE{{else}}FALSE{{end}}
+type BoolLit struct {
+	pos   Pos
+	Value bool
+}
+
+// {{.Value}}
+type IntLit struct {
+	pos, end Pos
+	Value    string
+}
+
+// {{.Value}}
+type FloatLit struct {
+	pos, end Pos
+	Value    string
+}
+
+// {{.Value | sqlQuote}}
+type StringLit struct {
+	pos, end Pos
+	Value    string
+}
+
+// B{{. | sqlQuote}}
+type BytesLit struct {
+	pos, end Pos
+	Value    []byte
+}
+
+// DATE{{. | sqlQuote}}
+type DateLit struct {
+	pos, end Pos
+	Value    string
+}
+
+// TIMESTAMP{{. | sqlQuote}}
+type TimestampLit struct {
+	pos, end Pos
+	Value    string
+}
+
+// TODO: separate more accurate types like SimpleType, ArrayType, etc.
+
+type Type struct {
+	pos, end  Pos
+	Name      TypeName
+	MaxLength bool
+	Length    IntValue       // for STRING(n) and BYTES(n)
+	Fields    []*FieldSchema // for STRUCT<...>
+	Value     *Type          // for ARRAY<...>
+}
+
+type FieldSchema struct {
+	Name *Ident
 	Type *Type
 }

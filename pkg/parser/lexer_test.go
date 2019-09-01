@@ -1,33 +1,32 @@
 package parser
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 	"testing"
 )
 
 var symbols = []string{
-	".", 
-	",", 
-	";", 
-	"(", 
-	")", 
-	"{", 
-	"}", 
-	"[", 
-	"]", 
-	"@", 
-	"~", 
-	"+", 
-	"-", 
-	"*", 
-	"/", 
-	"&", 
-	"^", 
-	"|", 
-	"=", 
-	"<", 
+	".",
+	",",
+	";",
+	"(",
+	")",
+	"{",
+	"}",
+	"[",
+	"]",
+	"@",
+	"~",
+	"+",
+	"-",
+	"*",
+	"/",
+	"&",
+	"^",
+	"|",
+	"=",
+	"<",
 	"<<",
 	"<=",
 	"<>",
@@ -42,27 +41,27 @@ var lexerTestCases = []struct {
 	tokens []*Token
 }{
 	// TokenInt
-	{"0", []*Token{{Kind: TokenInt, Raw: []byte("0"), AsInt: 0}}},
-	{"1", []*Token{{Kind: TokenInt, Raw: []byte("1"), AsInt: 1}}},
-	{"123", []*Token{{Kind: TokenInt, Raw: []byte("123"), AsInt: 123}}},
-	{"+123", []*Token{{Kind: TokenInt, Raw: []byte("+123"), AsInt: +123}}},
-	{"-123", []*Token{{Kind: TokenInt, Raw: []byte("-123"), AsInt: -123}}},
-	{"9223372036854775807", []*Token{{Kind: TokenInt, Raw: []byte("9223372036854775807"), AsInt: 9223372036854775807}}},
-	{"-9223372036854775808", []*Token{{Kind: TokenInt, Raw: []byte("-9223372036854775808"), AsInt: -9223372036854775808}}},
-	{"0123", []*Token{{Kind: TokenInt, Raw: []byte("0123"), AsInt: 123}}},
-	{"0xbeaf", []*Token{{Kind: TokenInt, Raw: []byte("0xbeaf"), AsInt: 0xbeaf}}},
-	{"0XBEAF", []*Token{{Kind: TokenInt, Raw: []byte("0XBEAF"), AsInt: 0xBEAF}}},
+	{"0", []*Token{{Kind: TokenInt, Raw: "0"}}},
+	{"1", []*Token{{Kind: TokenInt, Raw: "1"}}},
+	{"123", []*Token{{Kind: TokenInt, Raw: "123"}}},
+	{"+123", []*Token{{Kind: TokenInt, Raw: "+123"}}},
+	{"-123", []*Token{{Kind: TokenInt, Raw: "-123"}}},
+	{"9223372036854775807", []*Token{{Kind: TokenInt, Raw: "9223372036854775807"}}},
+	{"-9223372036854775808", []*Token{{Kind: TokenInt, Raw: "-9223372036854775808"}}},
+	{"0123", []*Token{{Kind: TokenInt, Raw: "0123"}}},
+	{"0xbeaf", []*Token{{Kind: TokenInt, Raw: "0xbeaf"}}},
+	{"0XBEAF", []*Token{{Kind: TokenInt, Raw: "0XBEAF"}}},
 	// TokenFloat
-	{"1.2", []*Token{{Kind: TokenFloat, Raw: []byte("1.2"), AsFloat: 1.2}}},
-	{"+1.2", []*Token{{Kind: TokenFloat, Raw: []byte("+1.2"), AsFloat: +1.2}}},
-	{"-1.2", []*Token{{Kind: TokenFloat, Raw: []byte("-1.2"), AsFloat: -1.2}}},
-	{".1", []*Token{{Kind: TokenFloat, Raw: []byte(".1"), AsFloat: 0.1}}},
-	{"00.1", []*Token{{Kind: TokenFloat, Raw: []byte("00.1"), AsFloat: 0.1}}},
-	{"1.", []*Token{{Kind: TokenFloat, Raw: []byte("1."), AsFloat: 1.0}}},
-	{"1e1", []*Token{{Kind: TokenFloat, Raw: []byte("1e1"), AsFloat: 1e1}}},
-	{"1E1", []*Token{{Kind: TokenFloat, Raw: []byte("1E1"), AsFloat: 1e1}}},
-	{"1e+1", []*Token{{Kind: TokenFloat, Raw: []byte("1e+1"), AsFloat: 1e+1}}},
-	{"1e-1", []*Token{{Kind: TokenFloat, Raw: []byte("1e-1"), AsFloat: 1e-1}}},
+	{"1.2", []*Token{{Kind: TokenFloat, Raw: "1.2"}}},
+	{"+1.2", []*Token{{Kind: TokenFloat, Raw: "+1.2"}}},
+	{"-1.2", []*Token{{Kind: TokenFloat, Raw: "-1.2"}}},
+	{".1", []*Token{{Kind: TokenFloat, Raw: ".1"}}},
+	{"00.1", []*Token{{Kind: TokenFloat, Raw: "00.1"}}},
+	{"1.", []*Token{{Kind: TokenFloat, Raw: "1."}}},
+	{"1e1", []*Token{{Kind: TokenFloat, Raw: "1e1"}}},
+	{"1E1", []*Token{{Kind: TokenFloat, Raw: "1E1"}}},
+	{"1e+1", []*Token{{Kind: TokenFloat, Raw: "1e+1"}}},
+	{"1e-1", []*Token{{Kind: TokenFloat, Raw: "1e-1"}}},
 }
 
 func nextToken(l *Lexer) (tok *Token, err error) {
@@ -79,20 +78,13 @@ func nextToken(l *Lexer) (tok *Token, err error) {
 }
 
 func tokenEqual(t1, t2 *Token) bool {
-	if t1.Kind != t2.Kind {
-		return false
-	}
-	if !bytes.Equal(t1.Raw, t2.Raw) {
+	if t1.Kind != t2.Kind || t1.Raw != t2.Raw {
 		return false
 	}
 
 	switch t1.Kind {
-	case TokenInt:
-		return t1.AsInt == t2.AsInt
-	case TokenFloat:
-		return t1.AsFloat == t2.AsFloat
 	case TokenParam, TokenIdent, TokenString, TokenBytes:
-		return bytes.Equal(t1.AsString, t2.AsString)
+		return t1.AsString == t2.AsString
 	}
 
 	return true
@@ -101,8 +93,7 @@ func tokenEqual(t1, t2 *Token) bool {
 func testLexer(t *testing.T, source string, tokens []*Token) {
 	t.Helper()
 	l := &Lexer{
-		Buffer:   []byte(source),
-		FilePath: "<test>",
+		File: NewFile("[test]", source),
 	}
 	for _, t2 := range tokens {
 		t1, err := nextToken(l)
@@ -128,18 +119,18 @@ func testLexer(t *testing.T, source string, tokens []*Token) {
 
 func TestLexer(t *testing.T) {
 	for _, s := range keywords {
-		t.Run(fmt.Sprintf("keyword/%q", string(s)), func (t *testing.T) {
-			testLexer(t, string(s), []*Token{{Kind: s, Raw: []byte(s)}})
+		t.Run(fmt.Sprintf("keyword/%q", string(s)), func(t *testing.T) {
+			testLexer(t, string(s), []*Token{{Kind: s, Raw: string(s)}})
 		})
 		l := strings.ToLower(string(s))
-		t.Run(fmt.Sprintf("keyword/%q", l), func (t *testing.T) {
-			testLexer(t, l, []*Token{{Kind: s, Raw: []byte(l)}})
+		t.Run(fmt.Sprintf("keyword/%q", l), func(t *testing.T) {
+			testLexer(t, l, []*Token{{Kind: s, Raw: l}})
 		})
 	}
 
 	for _, s := range symbols {
-		t.Run(fmt.Sprintf("symbol/%q", s), func (t *testing.T) {
-			testLexer(t, s, []*Token{{Kind: TokenKind(s), Raw: []byte(s)}})
+		t.Run(fmt.Sprintf("symbol/%q", s), func(t *testing.T) {
+			testLexer(t, s, []*Token{{Kind: TokenKind(s), Raw: s}})
 		})
 	}
 
