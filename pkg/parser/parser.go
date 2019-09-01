@@ -15,6 +15,12 @@ func (p *Parser) ParseQuery() *QueryStatement {
 	return p.parseQueryStatement()
 }
 
+func (p *Parser) ParseExpr() Expr {
+	// TODO: recover
+	p.NextToken()
+	return p.parseExpr()
+}
+
 func (p *Parser) parseQueryStatement() *QueryStatement {
 	hint := p.parseHint()
 	expr := p.parseQueryExpr()
@@ -59,13 +65,436 @@ func (p *Parser) parseHint() *Hint {
 }
 
 func (p *Parser) parseQueryExpr() QueryExpr {
-	panic("TODO: implement parseQueryExpr")
+	q := p.parseSimpleQueryExpr()
+
+	var prevOp SetOp
+	var prevDistinct bool
+	hasPrev := false
+setOp:
+	for {
+		var op SetOp
+		switch p.Token.Kind {
+		case "UNION":
+			op = SetOpUnion
+		case "INTERSECT":
+			op = SetOpIntersect
+		case "EXCEPT":
+			op = SetOpExcept
+		default:
+			break setOp
+		}
+		p.NextToken()
+		opTok := p.Token
+		var distinct bool
+		switch p.Token.Kind {
+		case "ALL":
+			distinct = false
+		case "DISTINCT":
+			distinct = true
+		default:
+			p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
+		}
+		p.NextToken()
+		if hasPrev {
+			if !(prevOp == op && prevDistinct == distinct) {
+				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
+			}
+		} else {
+			hasPrev = true
+			prevOp = op
+			prevDistinct = distinct
+		}
+		e := p.parseSimpleQueryExpr()
+		q = &CompoundQuery{
+			Op:       op,
+			Distinct: distinct,
+			Left:     q,
+			Right:    e,
+		}
+	}
+
+	// TODO: parse ORDER BY and LIMIT
+
+	return q
 }
 
-func (p *Parser) ParseExpr() Expr {
-	// TODO: recover
+func (p *Parser) parseSimpleQueryExpr() QueryExpr {
+	if q := p.tryParseSubQuery(); q != nil {
+		return q
+	}
+	// When p.Token.Kind is "(" even if p.tryParseSubQuery() returns nil,
+	// but it should be parsed as SubQuery like (e.g. ((select 1)).)
+	if p.Token.Kind == "(" {
+		pos := p.Token.Pos
+		p.NextToken()
+		q := p.parseQueryExpr()
+		end := p.expect(")").End
+		return &SubQuery{
+			pos:  pos,
+			end:  end,
+			Expr: q,
+		}
+	}
+	return p.parseSelect()
+}
+
+func (p *Parser) parseSelect() *Select {
+	pos := p.expect("SELECT").Pos
+	var distinct bool
+	if p.Token.Kind == "DISTINCT" {
+		p.NextToken()
+		distinct = true
+	}
+	var asStruct bool
+	if p.Token.Kind == "AS" {
+		p.NextToken()
+		p.expect("STRUCT")
+		asStruct = true
+	}
+
+	es := p.parseSelectExprList()
+	end := es.End()
+
+	var from FromItemList
+	if p.Token.Kind == "FROM" {
+		p.NextToken()
+		from = p.parseFromItemList()
+		end = from.End()
+	}
+
+	// TODO: parse WHERE, GROUP BY, HAVING, ORDER BY and LIMIT
+
+	return &Select{
+		pos:      pos,
+		end:      end,
+		Distinct: distinct,
+		AsStruct: asStruct,
+		List:     es,
+		From:     from,
+	}
+}
+
+func (p *Parser) parseSelectExprList() SelectExprList {
+	es := SelectExprList{p.parseSelectExpr()}
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+		es = append(es, p.parseSelectExpr())
+	}
+	return es
+}
+
+func (p *Parser) parseSelectExpr() *SelectExpr {
+	if p.Token.Kind == "*" {
+		e := &SelectExpr{
+			pos:  p.Token.Pos,
+			end:  p.Token.End,
+			Star: true,
+		}
+		p.NextToken()
+		return e
+	}
+
+	pos := p.Token.Pos
+	e := p.parseExpr()
+	switch p.Token.Kind {
+	case TokenIdent:
+		se := &SelectExpr{
+			pos:  pos,
+			end:  p.Token.End,
+			Expr: e,
+			As: &Ident{
+				pos:  p.Token.Pos,
+				end:  p.Token.End,
+				Name: p.Token.AsString,
+			},
+		}
+		p.NextToken()
+		return se
+	case "AS":
+		p.NextToken()
+		id := p.expect(TokenIdent)
+		return &SelectExpr{
+			pos:  pos,
+			end:  id.End,
+			Expr: e,
+			As: &Ident{
+				pos:  id.Pos,
+				end:  id.End,
+				Name: id.AsString,
+			},
+		}
+	case ".":
+		p.NextToken()
+		end := p.expect("*").End
+		return &SelectExpr{
+			pos:  pos,
+			end:  end,
+			Star: true,
+			Expr: e,
+		}
+	}
+
+	return &SelectExpr{
+		pos:  pos,
+		end:  e.End(),
+		Expr: e,
+	}
+}
+
+func (p *Parser) parseFromItemList() FromItemList {
+	from := FromItemList{p.parseFromItem()}
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+		from = append(from, p.parseFromItem())
+	}
+	return from
+}
+
+func (p *Parser) parseFromItem() *FromItem {
+	e := p.parseJoinExpr(false)
+	end := e.End()
+	var tableSample TableSampleMethod
+	if p.Token.Kind == "TABLESAMPLE" {
+		p.NextToken()
+		id := p.expect(TokenIdent)
+		end = id.End
+		switch {
+		case strings.EqualFold(id.AsString, "BERNOULLI"):
+			tableSample = BernoulliSampleMethod
+		case strings.EqualFold(id.AsString, "RESERVOIR"):
+			tableSample = ReservoirSampleMethod
+		default:
+			p.panicfAtToken(&p.Token, "expected identifier: BERNOULLI, RESERVOIR, but: %s", p.Token.Raw)
+		}
+	}
+	return &FromItem{
+		end:         end,
+		Expr:        e,
+		TableSample: tableSample,
+	}
+}
+
+func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
+	j := p.parseSimpleJoinExpr()
+	for {
+		if _, ok := j.(*SubQueryJoinExpr); ok {
+			needOp = false
+		}
+
+		op := InnerJoin
+		switch p.Token.Kind {
+		case "INNER":
+			p.NextToken()
+			needOp = true
+		case "CROSS":
+			p.NextToken()
+			op = CrossJoin
+			needOp = true
+		case "FULL":
+			p.NextToken()
+			if p.Token.Kind == "OUTER" {
+				p.NextToken()
+			}
+			op = FullOuterJoin
+			needOp = true
+		case "LEFT":
+			p.NextToken()
+			if p.Token.Kind == "OUTER" {
+				p.NextToken()
+			}
+			op = LeftOuterJoin
+			needOp = true
+		case "RIGHT":
+			p.NextToken()
+			if p.Token.Kind == "OUTER" {
+				p.NextToken()
+			}
+			op = RightOuterJoin
+			needOp = true
+		}
+
+		var method JoinMethod
+		if p.Token.Kind == "HASH" {
+			p.NextToken()
+			method = HashJoinMethod
+			needOp = true
+		} else if p.Token.Kind == TokenIdent {
+			if strings.EqualFold(p.Token.Raw, "APPLY") {
+				p.NextToken()
+				method = ApplyJoinMethod
+				needOp = true
+			} else if strings.EqualFold(p.Token.Raw, "LOOP") {
+				p.NextToken()
+				method = LoopJoinMethod
+				needOp = true
+			}
+		}
+		if needOp {
+			p.expect("JOIN")
+			needOp = false
+		} else if p.Token.Kind == "JOIN" {
+			p.NextToken()
+		} else {
+			return j
+		}
+
+		hint := p.parseHint()
+		right := p.parseSimpleJoinExpr()
+
+		if op == CrossJoin {
+			j = &Join{
+				Op:     op,
+				Method: method,
+				Hint:   hint,
+				Left:   j,
+				Right:  right,
+			}
+			continue
+		}
+
+		var using IdentList
+		var on Expr
+		pos := p.Token.Pos
+		var end Pos
+		switch p.Token.Kind {
+		case "USING":
+			p.NextToken()
+			using = make(IdentList, 0)
+			p.expect("(")
+			if p.Token.Kind != ")" {
+				for p.Token.Kind != TokenEOF {
+					id := p.expect(TokenIdent)
+					using = append(using, &Ident{
+						pos:  id.Pos,
+						end:  id.End,
+						Name: id.AsString,
+					})
+					if p.Token.Kind != "," {
+						break
+					}
+					p.NextToken()
+				}
+			}
+			end = p.expect(")").End
+		case "ON":
+			p.NextToken()
+			on = p.parseExpr()
+			end = on.End()
+		}
+		j = &Join{
+			Op:     op,
+			Method: method,
+			Hint:   hint,
+			Left:   j,
+			Right:  right,
+			Cond: &JoinCondition{
+				pos:   pos,
+				end:   end,
+				On:    on,
+				Using: using,
+			},
+		}
+	}
+}
+
+func (p *Parser) parseSimpleJoinExpr() JoinExpr {
+	if q := p.tryParseSubQuery(); q != nil {
+		return p.parseSubQueryJoinExprSuffix(q)
+	}
+
+	if p.Token.Kind == "(" {
+		pos := p.Token.Pos
+		p.NextToken()
+		j := p.parseJoinExpr(true)
+		end := p.expect(")").End
+		return &ParenJoinExpr{
+			pos:  pos,
+			end:  end,
+			Expr: j,
+		}
+	}
+
+	if p.Token.Kind == "UNNEST" {
+		pos := p.Token.Pos
+		p.NextToken()
+		p.expect("(")
+		e := p.parseExpr()
+		end := p.expect(")").End
+		return p.parseUnnestSuffix(e, pos, end)
+	}
+
+	e := p.parseExpr()
+	if id, ok := e.(*Ident); ok {
+		hint := p.parseHint()
+		as := p.parseAs()
+		end := id.End()
+		if as != nil {
+			end = as.End()
+		} else if hint != nil {
+			end = hint.End()
+		}
+		return &TableName{
+			end:   end,
+			Ident: id,
+			Hint:  hint,
+			As:    as,
+		}
+	}
+
+	return p.parseUnnestSuffix(e, e.Pos(), e.End())
+}
+
+func (p *Parser) parseSubQueryJoinExprSuffix(q *SubQuery) *SubQueryJoinExpr {
+	hint := p.parseHint()
+	as := p.parseAs()
+	end := q.End()
+	if as != nil {
+		end = as.End()
+	} else if hint != nil {
+		end = hint.End()
+	}
+	return &SubQueryJoinExpr{
+		end:  end,
+		Expr: q,
+		Hint: hint,
+		As:   as,
+	}
+}
+
+func (p *Parser) parseUnnestSuffix(e Expr, pos Pos, end Pos) *Unnest {
+	hint := p.parseHint()
+	as := p.parseAs()
+	if as != nil {
+		end = as.End()
+	} else if hint != nil {
+		end = hint.End()
+	}
+	return &Unnest{
+		pos:  pos,
+		end:  end,
+		Expr: e,
+		Hint: hint,
+		As:   as,
+	}
+}
+
+func (p *Parser) parseAs() *Ident {
+	if p.Token.Kind != "AS" {
+		return nil
+	}
 	p.NextToken()
-	return p.parseExpr()
+	id := p.expect(TokenIdent)
+	return &Ident{
+		pos:  id.Pos,
+		end:  id.End,
+		Name: id.AsString,
+	}
 }
 
 func (p *Parser) parseExpr() Expr {
@@ -311,7 +740,12 @@ func (p *Parser) parseSelector() Expr {
 	for {
 		switch p.Token.Kind {
 		case ".":
+			l := *p.Lexer
 			p.NextToken()
+			if p.Token.Kind == "*" { // expr.* case
+				*p.Lexer = l
+				return expr
+			}
 			id := p.expect(TokenIdent)
 			expr = &SelectorExpr{
 				Left: expr,
@@ -572,10 +1006,11 @@ func (p *Parser) parseLit() Expr {
 
 func (p *Parser) parseExprList(end TokenKind) (ExprList, Pos) {
 	var es ExprList
+	if p.Token.Kind == end {
+		return es, p.expect(end).End
+	}
+
 	for p.Token.Kind != TokenEOF {
-		if p.Token.Kind == end {
-			break
-		}
 		es = append(es, p.parseExpr())
 		if p.Token.Kind != "," {
 			break
@@ -592,7 +1027,29 @@ func (p *Parser) tryParseSubQuery() *SubQuery {
 		return nil
 	}
 	p.NextToken()
-	if p.Token.Kind != "SELECT" {
+	if p.Token.Kind == "(" {
+		p.NextToken()
+		nest := 1
+		for p.Token.Kind != TokenEOF {
+			if p.Token.Kind == "(" {
+				nest += 1
+			}
+			if p.Token.Kind == ")" {
+				nest -= 1
+			}
+			p.NextToken()
+			if nest == 0 {
+				break
+			}
+		}
+		if p.Token.Kind == "UNION" || p.Token.Kind == "INTERSECT" || p.Token.Kind == "EXCEPT" {
+			*p.Lexer = l
+			p.NextToken()
+		} else {
+			*p.Lexer = l
+			return nil
+		}
+	} else if p.Token.Kind != "SELECT" {
 		*p.Lexer = l
 		return nil
 	}
@@ -767,10 +1224,10 @@ func (p *Parser) parseType() *Type {
 
 func (p *Parser) parseFieldSchemas() ([]*FieldSchema, Pos) {
 	fs := make([]*FieldSchema, 0)
+	if p.Token.Kind == ">" {
+		return fs, p.expect(">").End
+	}
 	for p.Token.Kind != TokenEOF {
-		if p.Token.Kind == ">" {
-			break
-		}
 		named := false
 		l := *p.Lexer
 		if p.Token.Kind == TokenIdent {

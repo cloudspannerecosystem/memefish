@@ -130,10 +130,7 @@ func (s *Select) SQL() string {
 
 func (c *CompoundQuery) SQL() string {
 	sql := c.Left.SQL()
-	if _, ok := c.Left.(*CompoundQuery); ok {
-		sql = "(" + sql + ")"
-	}
-	sql += " " + string(c.Op) + " "
+	sql += " " + string(c.Op)
 	if c.Distinct {
 		sql += " DISTINCT "
 	} else {
@@ -188,7 +185,7 @@ func (f FromItemList) SQL() string {
 }
 
 func (t *TableName) SQL() string {
-	sql := t.Name
+	sql := t.Ident.SQL()
 	if t.Hint != nil {
 		sql += " " + t.Hint.SQL()
 	}
@@ -223,8 +220,11 @@ func (s *SubQueryJoinExpr) SQL() string {
 	return sql
 }
 
+func (p *ParenJoinExpr) SQL() string {
+	return "(" + p.Expr.SQL() + ")"
+}
+
 func (j *Join) SQL() string {
-	// TODO: wrap exprs by paren.
 	sql := j.Left.SQL()
 	sql += " " + string(j.Op) + " JOIN "
 	if j.Hint != nil {
@@ -242,7 +242,7 @@ func (j *JoinCondition) SQL() string {
 		return "ON " + j.On.SQL()
 	}
 
-	return "USING " + j.Using.SQL()
+	return "USING (" + j.Using.SQL() + ")"
 }
 
 func (o *OrderExpr) SQL() string {

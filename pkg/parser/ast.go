@@ -50,6 +50,7 @@ type QueryExpr interface {
 
 func (Select) isQueryExpr()        {}
 func (CompoundQuery) isQueryExpr() {}
+func (SubQuery) isQueryExpr()      {}
 
 type JoinExpr interface {
 	Node
@@ -59,6 +60,7 @@ type JoinExpr interface {
 func (TableName) isJoinExpr()        {}
 func (Unnest) isJoinExpr()           {}
 func (SubQueryJoinExpr) isJoinExpr() {}
+func (ParenJoinExpr) isJoinExpr()    {}
 func (Join) isJoinExpr()             {}
 
 type IntValue interface {
@@ -114,10 +116,10 @@ type CompoundQuery struct {
 // {{if .Expr}}{{.Expr | sql}}{{end}}{{if .Star}}{{if .Expr}}.{{end}}*{{end}}
 //   {{if .As}}AS {{.As | sql}}{{end}}
 type SelectExpr struct {
-	end  Pos
-	Expr Expr
-	Star bool
-	As   *Ident // It must be nil when Star is true
+	pos, end Pos
+	Expr     Expr
+	Star     bool
+	As       *Ident // It must be nil when Star is true
 }
 
 type SelectExprList []*SelectExpr
@@ -131,14 +133,14 @@ type FromItem struct {
 
 type FromItemList []*FromItem
 
-// {{.Name}}
+// {{.Name | sql}}
 //   {{if .Hint}}{{.Hint | sql}}{{end}}
 //   {{if .As}} AS {{.As | sql}}{{end}}
 type TableName struct {
-	pos, end Pos
-	Name     string
-	Hint     *Hint
-	As       *Ident
+	end   Pos
+	Ident *Ident
+	Hint  *Hint
+	As    *Ident
 }
 
 // UNNEST({{.Expr | sql}})
@@ -163,14 +165,21 @@ type SubQueryJoinExpr struct {
 	As   *Ident
 }
 
+// ({{.Expr | sql}})
+type ParenJoinExpr struct {
+	pos, end Pos
+	Expr     JoinExpr // SubQuery or Join
+}
+
 //   {{.Left | sql}}
-// {{.Op}} JOIN
+// {{.Op}} {{if .Method}}{{.Method}}{{end}} JOIN
 //    {{if .Hint}}{{.Hint | sql}}{{end}}
 //    {{.Right | sql}}
 // {{if .Cond}}{{.Cond | sql}}{{end}}
 type Join struct {
 	Op          JoinOp
-	Hint        *Hint // If this is HASH JOIN, its JOIN_METHOD value is set as HASH_JOIN.
+	Method      JoinMethod
+	Hint        *Hint
 	Left, Right JoinExpr
 	Cond        *JoinCondition
 }
@@ -329,7 +338,7 @@ type Ident struct {
 	Name     string
 }
 
-type IdentList []Ident
+type IdentList []*Ident
 
 // ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sql}}]
 type ArrayLit struct {

@@ -89,10 +89,7 @@ func (c *CompoundQuery) End() Pos {
 	return c.Right.End()
 }
 
-func (s *SelectExpr) Pos() Pos {
-	return s.Expr.Pos()
-}
-
+func (s *SelectExpr) Pos() Pos { return s.pos }
 func (s *SelectExpr) End() Pos { return s.end }
 
 func (s SelectExprList) Pos() Pos {
@@ -108,7 +105,18 @@ func (f *FromItem) Pos() Pos {
 }
 func (f *FromItem) End() Pos { return f.end }
 
-func (t *TableName) Pos() Pos { return t.pos }
+func (f FromItemList) Pos() Pos {
+	return f[0].Pos()
+}
+
+func (f FromItemList) End() Pos {
+	return f[len(f)-1].End()
+}
+
+func (t *TableName) Pos() Pos {
+	return t.Ident.Pos()
+}
+
 func (t *TableName) End() Pos { return t.end }
 
 func (u *Unnest) Pos() Pos { return u.pos }
@@ -120,12 +128,18 @@ func (s *SubQueryJoinExpr) Pos() Pos {
 
 func (s *SubQueryJoinExpr) End() Pos { return s.end }
 
+func (p *ParenJoinExpr) Pos() Pos { return p.pos }
+func (p *ParenJoinExpr) End() Pos { return p.end }
+
 func (j *Join) Pos() Pos {
 	return j.Left.Pos()
 }
 
 func (j *Join) End() Pos {
-	return j.Cond.End()
+	if j.Cond != nil {
+		return j.Cond.End()
+	}
+	return j.Right.End()
 }
 
 func (j *JoinCondition) Pos() Pos { return j.pos }
