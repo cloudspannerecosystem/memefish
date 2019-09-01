@@ -45,12 +45,39 @@ func (TimestampLit) isExpr() {}
 
 type QueryExpr interface {
 	Node
-	isQueryExpr()
+	setOrderBy(orderBy OrderExprList)
+	setLimit(limit *Limit)
 }
 
-func (Select) isQueryExpr()        {}
-func (CompoundQuery) isQueryExpr() {}
-func (SubQuery) isQueryExpr()      {}
+func (s *Select) setOrderBy(orderBy OrderExprList) {
+	s.OrderBy = orderBy
+	s.end = orderBy.End()
+}
+
+func (s *Select) setLimit(limit *Limit) {
+	s.Limit = limit
+	s.end = limit.End()
+}
+
+func (c *CompoundQuery) setOrderBy(orderBy OrderExprList) {
+	c.OrderBy = orderBy
+	c.end = orderBy.End()
+}
+
+func (c *CompoundQuery) setLimit(limit *Limit) {
+	c.Limit = limit
+	c.end = limit.End()
+}
+
+func (s *SubQueryExpr) setOrderBy(orderBy OrderExprList) {
+	s.OrderBy = orderBy
+	s.end = orderBy.End()
+}
+
+func (s *SubQueryExpr) setLimit(limit *Limit) {
+	s.Limit = limit
+	s.end = limit.End()
+}
 
 type JoinExpr interface {
 	Node
@@ -68,8 +95,9 @@ type IntValue interface {
 	isIntValue()
 }
 
-func (IntLit) isIntValue() {}
-func (Param) isIntValue()  {}
+func (IntLit) isIntValue()       {}
+func (Param) isIntValue()        {}
+func (CastIntValue) isIntValue() {}
 
 // {{if .Hint}}{{.Hint | sql}}{{end}}
 // {{.Expr | sql}}
@@ -100,17 +128,35 @@ type Select struct {
 	List     SelectExprList
 	From     FromItemList
 	Where    Expr
-	GroupBy  ExprList
+	GroupBy  ExprList // Integer literal on GROUP BY expression has special meaning.
 	Having   Expr
 	OrderBy  OrderExprList
 	Limit    *Limit
 }
 
-// {{.Left | sql}} {{.Op}} {{if .Distinct}}DISTINCT{{else}}ALL{{end}} {{.Right | sql}}
+// {{range $i, $e := .List}}
+//   {{if ne($i, 0)}}{{.Op}} {{if .Distinct}}DISTINCT{{else}}ALL{{end}} {{.Right | sql}}{{end}}
+//   {{$e | sql}}
+// {{end}}
+//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
+//   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
 type CompoundQuery struct {
-	Op          SetOp
-	Distinct    bool
-	Left, Right QueryExpr
+	end      Pos
+	Op       SetOp
+	Distinct bool
+	List     []QueryExpr
+	OrderBy  OrderExprList
+	Limit    *Limit
+}
+
+// {{.Expr | sql}}
+//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
+//   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
+type SubQueryExpr struct {
+	end     Pos
+	Expr    *SubQuery
+	OrderBy OrderExprList
+	Limit   *Limit
 }
 
 // {{if .Expr}}{{.Expr | sql}}{{end}}{{if .Star}}{{if .Expr}}.{{end}}*{{end}}
@@ -195,9 +241,9 @@ type JoinCondition struct {
 
 // {{.Expr | sql}} {{.Direction}}
 type OrderExpr struct {
-	end       Pos
-	Expr      Expr
-	Direction Direction
+	end  Pos
+	Expr Expr
+	Dir  Direction
 }
 
 type OrderExprList []*OrderExpr
@@ -404,15 +450,19 @@ type TimestampLit struct {
 // TODO: separate more accurate types like SimpleType, ArrayType, etc.
 
 type Type struct {
-	pos, end  Pos
-	Name      TypeName
-	MaxLength bool
-	Length    IntValue       // for STRING(n) and BYTES(n)
-	Fields    []*FieldSchema // for STRUCT<...>
-	Value     *Type          // for ARRAY<...>
+	pos, end Pos
+	Name     TypeName
+	Fields   []*FieldSchema // for STRUCT<...>
+	Value    *Type          // for ARRAY<...>
 }
 
 type FieldSchema struct {
 	Name *Ident
 	Type *Type
+}
+
+// CAST({{.Expr | sql}} AS INT64)
+type CastIntValue struct {
+	pos, end Pos
+	Expr     IntValue // IntLit or Param
 }

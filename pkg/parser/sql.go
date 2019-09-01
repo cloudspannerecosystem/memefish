@@ -129,14 +129,42 @@ func (s *Select) SQL() string {
 }
 
 func (c *CompoundQuery) SQL() string {
-	sql := c.Left.SQL()
-	sql += " " + string(c.Op)
+	op := string(c.Op)
 	if c.Distinct {
-		sql += " DISTINCT "
+		op += " DISTINCT"
 	} else {
-		sql += " ALL "
+		op += " ALL"
 	}
-	sql += c.Right.SQL()
+	sql := ""
+	for i, e := range c.List {
+		if i != 0 {
+			sql += " " + op + " "
+		}
+		if s, ok := e.(*SubQueryExpr); ok && s.OrderBy == nil && s.Limit == nil {
+			sql += s.SQL()
+		} else if s, ok := e.(*Select); ok && s.OrderBy == nil && s.Limit == nil {
+			sql += s.SQL()
+		} else {
+			sql += "(" + e.SQL() + ")"
+		}
+	}
+	if c.OrderBy != nil {
+		sql += " ORDER BY " + c.OrderBy.SQL()
+	}
+	if c.Limit != nil {
+		sql += " LIMIT " + c.Limit.SQL()
+	}
+	return sql
+}
+
+func (s *SubQueryExpr) SQL() string {
+	sql := s.Expr.SQL()
+	if s.OrderBy != nil {
+		sql += " ORDER BY " + s.OrderBy.SQL()
+	}
+	if s.Limit != nil {
+		sql += " LIMIT " + s.Limit.SQL()
+	}
 	return sql
 }
 
@@ -247,7 +275,7 @@ func (j *JoinCondition) SQL() string {
 
 func (o *OrderExpr) SQL() string {
 	sql := o.Expr.SQL()
-	sql += " " + string(o.Direction)
+	sql += " " + string(o.Dir)
 	return sql
 }
 
@@ -483,11 +511,6 @@ func (t *TimestampLit) SQL() string {
 
 func (t *Type) SQL() string {
 	sql := string(t.Name)
-	if t.Length != nil {
-		sql += "(" + t.Length.SQL() + ")"
-	} else if t.MaxLength {
-		sql += "(MAX)"
-	}
 	if t.Fields != nil {
 		sql += "<"
 		for i, f := range t.Fields {
@@ -511,4 +534,8 @@ func (t *FieldSchema) SQL() string {
 	}
 	sql += t.Type.SQL()
 	return sql
+}
+
+func (c *CastIntValue) SQL() string {
+	return "CAST(" + c.Expr.SQL() + " AS INT64)"
 }

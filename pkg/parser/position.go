@@ -71,6 +71,20 @@ func (q *QueryStatement) Pos() Pos {
 	return q.Expr.Pos()
 }
 
+func (e ExprList) Pos() Pos {
+	if len(e) == 0 {
+		return InvalidPos
+	}
+	return e[0].Pos()
+}
+
+func (e ExprList) End() Pos {
+	if len(e) == 0 {
+		return InvalidPos
+	}
+	return e[len(e)-1].End()
+}
+
 func (q *QueryStatement) End() Pos {
 	return q.Expr.End()
 }
@@ -82,12 +96,16 @@ func (s *Select) Pos() Pos { return s.pos }
 func (s *Select) End() Pos { return s.end }
 
 func (c *CompoundQuery) Pos() Pos {
-	return c.Left.Pos()
+	return c.List[0].Pos()
 }
 
-func (c *CompoundQuery) End() Pos {
-	return c.Right.End()
+func (c *CompoundQuery) End() Pos { return c.end }
+
+func (s *SubQueryExpr) Pos() Pos {
+	return s.Expr.Pos()
 }
+
+func (s *SubQueryExpr) End() Pos { return s.end }
 
 func (s *SelectExpr) Pos() Pos { return s.pos }
 func (s *SelectExpr) End() Pos { return s.end }
@@ -327,3 +345,6 @@ func (t *TimestampLit) End() Pos { return t.end }
 
 func (t *Type) Pos() Pos { return t.pos }
 func (t *Type) End() Pos { return t.end }
+
+func (c *CastIntValue) Pos() Pos { return c.pos }
+func (c *CastIntValue) End() Pos { return c.end }

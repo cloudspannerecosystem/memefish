@@ -67,9 +67,6 @@ func (p *Parser) parseHint() *Hint {
 func (p *Parser) parseQueryExpr() QueryExpr {
 	q := p.parseSimpleQueryExpr()
 
-	var prevOp SetOp
-	var prevDistinct bool
-	hasPrev := false
 setOp:
 	for {
 		var op SetOp
@@ -83,8 +80,9 @@ setOp:
 		default:
 			break setOp
 		}
-		p.NextToken()
 		opTok := p.Token
+		p.NextToken()
+
 		var distinct bool
 		switch p.Token.Kind {
 		case "ALL":
@@ -95,32 +93,33 @@ setOp:
 			p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
 		}
 		p.NextToken()
-		if hasPrev {
-			if !(prevOp == op && prevDistinct == distinct) {
+
+		e := p.parseSimpleQueryExpr()
+		if c, ok := q.(*CompoundQuery); ok {
+			if !(c.Op == op && c.Distinct == distinct) {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
+			c.List = append(c.List, e)
+			c.end = e.End()
 		} else {
-			hasPrev = true
-			prevOp = op
-			prevDistinct = distinct
-		}
-		e := p.parseSimpleQueryExpr()
-		q = &CompoundQuery{
-			Op:       op,
-			Distinct: distinct,
-			Left:     q,
-			Right:    e,
+			q = &CompoundQuery{
+				end:      e.End(),
+				Op:       op,
+				Distinct: distinct,
+				List:     []QueryExpr{q, e},
+			}
 		}
 	}
 
-	// TODO: parse ORDER BY and LIMIT
-
-	return q
+	return p.parseQueryExprSuffix(q)
 }
 
 func (p *Parser) parseSimpleQueryExpr() QueryExpr {
 	if q := p.tryParseSubQuery(); q != nil {
-		return q
+		return &SubQueryExpr{
+			end:  q.End(),
+			Expr: q,
+		}
 	}
 	// When p.Token.Kind is "(" even if p.tryParseSubQuery() returns nil,
 	// but it should be parsed as SubQuery like (e.g. ((select 1)).)
@@ -129,10 +128,13 @@ func (p *Parser) parseSimpleQueryExpr() QueryExpr {
 		p.NextToken()
 		q := p.parseQueryExpr()
 		end := p.expect(")").End
-		return &SubQuery{
-			pos:  pos,
-			end:  end,
-			Expr: q,
+		return &SubQueryExpr{
+			end: end,
+			Expr: &SubQuery{
+				pos:  pos,
+				end:  end,
+				Expr: q,
+			},
 		}
 	}
 	return p.parseSelect()
@@ -162,7 +164,34 @@ func (p *Parser) parseSelect() *Select {
 		end = from.End()
 	}
 
-	// TODO: parse WHERE, GROUP BY, HAVING, ORDER BY and LIMIT
+	var where Expr
+	if p.Token.Kind == "WHERE" {
+		p.NextToken()
+		where = p.parseExpr()
+		end = where.End()
+	}
+
+	var groupBy ExprList
+	if p.Token.Kind == "GROUP" {
+		p.NextToken()
+		p.expect("BY")
+		groupBy = ExprList{p.parseExpr()}
+		for p.Token.Kind != TokenEOF {
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+			groupBy = append(groupBy, p.parseExpr())
+		}
+		end = groupBy.End()
+	}
+
+	var having Expr
+	if p.Token.Kind == "HAVING" {
+		p.NextToken()
+		having = p.parseExpr()
+		end = having.End()
+	}
 
 	return &Select{
 		pos:      pos,
@@ -171,6 +200,9 @@ func (p *Parser) parseSelect() *Select {
 		AsStruct: asStruct,
 		List:     es,
 		From:     from,
+		Where:    where,
+		GroupBy:  groupBy,
+		Having:   having,
 	}
 }
 
@@ -494,6 +526,58 @@ func (p *Parser) parseAs() *Ident {
 		pos:  id.Pos,
 		end:  id.End,
 		Name: id.AsString,
+	}
+}
+
+func (p *Parser) parseQueryExprSuffix(e QueryExpr) QueryExpr {
+	if p.Token.Kind == "ORDER" {
+		p.NextToken()
+		p.expect("BY")
+		orderBy := OrderExprList{p.parseOrderExpr()}
+		for p.Token.Kind != TokenEOF {
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+			orderBy = append(orderBy)
+		}
+		e.setOrderBy(orderBy)
+	}
+
+	if p.Token.Kind == "LIMIT" {
+		p.NextToken()
+		count := p.parseIntValue()
+		var offset IntValue
+		if p.Token.Kind == "OFFSET" {
+			p.NextToken()
+			offset = p.parseIntValue()
+		}
+		limit := &Limit{
+			Count:  count,
+			Offset: offset,
+		}
+		e.setLimit(limit)
+	}
+
+	return e
+}
+
+func (p *Parser) parseOrderExpr() *OrderExpr {
+	e := p.parseExpr()
+	end := e.End()
+	dir := DirectionAsc
+	if p.Token.Kind == "ASC" {
+		end = p.Token.End
+		p.NextToken()
+	} else if p.Token.Kind == "DESC" {
+		end = p.Token.End
+		p.NextToken()
+		dir = DirectionDesc
+	}
+	return &OrderExpr{
+		end:  end,
+		Expr: e,
+		Dir:  dir,
 	}
 }
 
@@ -1042,7 +1126,7 @@ func (p *Parser) tryParseSubQuery() *SubQuery {
 				break
 			}
 		}
-		if p.Token.Kind == "UNION" || p.Token.Kind == "INTERSECT" || p.Token.Kind == "EXCEPT" {
+		if p.Token.Kind == "UNION" || p.Token.Kind == "INTERSECT" || p.Token.Kind == "EXCEPT" || p.Token.Kind == "ORDER" || p.Token.Kind == "LIMIT" {
 			*p.Lexer = l
 			p.NextToken()
 		} else {
@@ -1117,33 +1201,6 @@ func (p *Parser) parseType() *Type {
 				Name: StringType,
 			}
 			p.NextToken()
-			if p.Token.Kind == "(" {
-				p.NextToken()
-				var max bool
-				var length IntValue
-				switch p.Token.Kind {
-				case TokenParam:
-					length = &Param{
-						pos:  p.Token.Pos,
-						Name: p.Token.AsString,
-					}
-				case TokenInt:
-					length = &IntLit{
-						pos:   p.Token.Pos,
-						end:   p.Token.End,
-						Value: p.Token.Raw,
-					}
-				case TokenIdent:
-					if !strings.EqualFold(p.Token.AsString, "MAX") { // TODO: is `Max` allowed?
-						p.panicfAtToken(&p.Token, "expected identifier: MAX, but: %s", p.Token.Raw)
-					}
-					max = true
-				}
-				p.NextToken()
-				t.MaxLength = max
-				t.Length = length
-				t.end = p.expect(")").End
-			}
 			return t
 		}
 		if strings.EqualFold(p.Token.AsString, "BYTES") {
@@ -1153,33 +1210,6 @@ func (p *Parser) parseType() *Type {
 				Name: BytesType,
 			}
 			p.NextToken()
-			if p.Token.Kind == "(" {
-				p.NextToken()
-				var max bool
-				var length IntValue
-				switch p.Token.Kind {
-				case TokenParam:
-					length = &Param{
-						pos:  p.Token.Pos,
-						Name: p.Token.AsString,
-					}
-				case TokenInt:
-					length = &IntLit{
-						pos:   p.Token.Pos,
-						end:   p.Token.End,
-						Value: p.Token.Raw,
-					}
-				case TokenIdent:
-					if !strings.EqualFold(p.Token.AsString, "MAX") { // TODO: is `Max` allowed?
-						p.panicfAtToken(&p.Token, "expected identifier: MAX, but: %s", p.Token.Raw)
-					}
-					max = true
-				}
-				p.NextToken()
-				t.MaxLength = max
-				t.Length = length
-				t.end = p.expect(")").End
-			}
 			return t
 		}
 
@@ -1260,6 +1290,61 @@ func (p *Parser) parseFieldSchemas() ([]*FieldSchema, Pos) {
 		p.NextToken()
 	}
 	return fs, p.expect(">").End
+}
+
+func (p *Parser) parseIntValue() IntValue {
+	switch p.Token.Kind {
+	case TokenParam:
+		v := &Param{
+			pos:  p.Token.Pos,
+			Name: p.Token.AsString,
+		}
+		p.NextToken()
+		return v
+	case TokenInt:
+		v := &IntLit{
+			pos:   p.Token.Pos,
+			end:   p.Token.End,
+			Value: p.Token.Raw,
+		}
+		p.NextToken()
+		return v
+	case "CAST":
+		pos := p.Token.Pos
+		p.NextToken()
+		p.expect("(")
+		var v IntValue
+		switch p.Token.Kind {
+		case TokenParam:
+			v = &Param{
+				pos:  p.Token.Pos,
+				Name: p.Token.AsString,
+			}
+			p.NextToken()
+		case TokenInt:
+			v = &IntLit{
+				pos:   p.Token.Pos,
+				end:   p.Token.End,
+				Value: p.Token.Raw,
+			}
+			p.NextToken()
+		default:
+			p.panicfAtToken(&p.Token, "expected token: <param>, <int>, but: %s", p.Token.Kind)
+		}
+		p.expect("AS")
+		id := p.expect(TokenIdent)
+		if !strings.EqualFold(id.AsString, "INT64") {
+			p.panicfAtToken(id, "expected identifier: INT64, but: %s", id.Raw)
+		}
+		end := p.expect(")").End
+		return &CastIntValue{
+			pos:  pos,
+			end:  end,
+			Expr: v,
+		}
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <int>, CAST, but: %s", p.Token.Kind))
 }
 
 func (p *Parser) expect(kind TokenKind) *Token {
