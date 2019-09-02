@@ -93,7 +93,7 @@ func TestParser(t *testing.T) {
 			s1 := stmt.SQL()
 			p1 := &Parser{
 				Lexer: &Lexer{
-					File: NewFile(in.Name() + "(SQL)", s1),
+					File: NewFile(in.Name()+"(SQL)", s1),
 				},
 			}
 
