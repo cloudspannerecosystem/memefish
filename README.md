@@ -5,4 +5,4 @@
 /|||\
 ```
 
-> `memefish` is the Spanner SQL dialect parser and analyser.
+> `memefish` is the Spanner SQL dialect parser and analyzer.
