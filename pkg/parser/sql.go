@@ -237,6 +237,20 @@ func (u *Unnest) SQL() string {
 	return sql
 }
 
+func (p *PathExpr) SQL() string {
+	sql := p.Ident.SQL()
+	for _, path := range p.Paths {
+		sql += "." + path.SQL()
+	}
+	if p.Hint != nil {
+		sql += " " + p.Hint.SQL()
+	}
+	if p.As != nil {
+		sql += " AS " + p.As.SQL()
+	}
+	return sql
+}
+
 func (s *SubQueryJoinExpr) SQL() string {
 	sql := s.Expr.SQL()
 	if s.Hint != nil {

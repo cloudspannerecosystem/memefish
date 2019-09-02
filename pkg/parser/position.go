@@ -140,6 +140,12 @@ func (t *TableName) End() Pos { return t.end }
 func (u *Unnest) Pos() Pos { return u.pos }
 func (u *Unnest) End() Pos { return u.end }
 
+func (p *PathExpr) Pos() Pos {
+	return p.Ident.Pos()
+}
+
+func (p *PathExpr) End() Pos { return p.end }
+
 func (s *SubQueryJoinExpr) Pos() Pos {
 	return s.Expr.Pos()
 }

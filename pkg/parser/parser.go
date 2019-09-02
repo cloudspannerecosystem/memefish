@@ -23,6 +23,9 @@ func (p *Parser) ParseQuery() (stmt *QueryStatement, err error) {
 
 	p.NextToken()
 	stmt = p.parseQueryStatement()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
 	return
 }
 
@@ -40,6 +43,9 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 
 	p.NextToken()
 	expr = p.parseExpr()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
 	return
 }
 
@@ -479,26 +485,64 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 		return p.parseUnnestSuffix(e, pos, end)
 	}
 
-	// TODO: add parsePath and use it.
-	e := p.parseExpr()
-	if id, ok := e.(*Ident); ok {
+	if p.Token.Kind == TokenIdent {
+		e := p.parsePath()
 		hint := p.parseHint()
 		as := p.parseAs()
-		end := id.End()
+		end := e.End()
 		if as != nil {
 			end = as.End()
 		} else if hint != nil {
 			end = hint.End()
 		}
-		return &TableName{
-			end:   end,
-			Ident: id,
-			Hint:  hint,
-			As:    as,
+		switch e := e.(type) {
+		case *TableName:
+			e.Hint = hint
+			e.As = as
+			e.end = end
+		case *PathExpr:
+			e.Hint = hint
+			e.As = as
+			e.end = end
 		}
+		return e
 	}
 
-	return p.parseUnnestSuffix(e, e.Pos(), e.End())
+	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parsePath() JoinExpr {
+	id := p.expect(TokenIdent)
+	ident := &Ident{
+		pos:  id.Pos,
+		end:  id.End,
+		Name: id.AsString,
+	}
+
+	var paths []*Ident
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind != "." {
+			break
+		}
+		p.NextToken()
+		path := p.expect(TokenIdent)
+		paths = append(paths, &Ident{
+			pos:  path.Pos,
+			end:  path.End,
+			Name: path.AsString,
+		})
+	}
+	if len(paths) == 0 {
+		return &TableName{
+			end:   id.End,
+			Ident: ident,
+		}
+	}
+	return &PathExpr{
+		end:   id.End,
+		Ident: ident,
+		Paths: paths,
+	}
 }
 
 func (p *Parser) parseSubQueryJoinExprSuffix(q *SubQuery) *SubQueryJoinExpr {
@@ -526,6 +570,7 @@ func (p *Parser) parseUnnestSuffix(e Expr, pos Pos, end Pos) *Unnest {
 	} else if hint != nil {
 		end = hint.End()
 	}
+	// TODO: parse WITH OFFSET
 	return &Unnest{
 		pos:  pos,
 		end:  end,

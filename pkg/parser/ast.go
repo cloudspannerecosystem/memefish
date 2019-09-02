@@ -88,6 +88,7 @@ type JoinExpr interface {
 
 func (TableName) isJoinExpr()        {}
 func (Unnest) isJoinExpr()           {}
+func (PathExpr) isJoinExpr()         {}
 func (SubQueryJoinExpr) isJoinExpr() {}
 func (ParenJoinExpr) isJoinExpr()    {}
 func (Join) isJoinExpr()             {}
@@ -126,7 +127,7 @@ type Hint struct {
 type Select struct {
 	pos, end Pos
 	Distinct bool
-	AsStruct bool // On top-level, it must be false.
+	AsStruct bool
 	List     SelectExprList
 	From     FromItemList
 	Where    Expr
@@ -181,12 +182,23 @@ type FromItem struct {
 
 type FromItemList []*FromItem
 
-// {{.Name | sql}}
+// {{.Ident | sql}}
 //   {{if .Hint}}{{.Hint | sql}}{{end}}
 //   {{if .As}} AS {{.As | sql}}{{end}}
 type TableName struct {
 	end   Pos
 	Ident *Ident
+	Hint  *Hint
+	As    *Ident
+}
+
+// {{.Ident | sql}}{{range _, $path := .Paths}}.{{$path | sql}}{{end}}
+//   {{if .Hint}}{{.Hint | sql}}{{end}}
+//   {{if .As}} AS {{.As | sql}}{{end}}
+type PathExpr struct {
+	end   Pos
+	Ident *Ident
+	Paths []*Ident // not IdentList because it is not comma separated.
 	Hint  *Hint
 	As    *Ident
 }
