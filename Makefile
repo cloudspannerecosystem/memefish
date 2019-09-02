@@ -9,3 +9,6 @@ lint:
 
 update-result:
 	go run ./tools/update-result ./pkg/parser/testdata/input/query ./pkg/parser/testdata/result/query
+
+update-mod:
+	go mod tidy
