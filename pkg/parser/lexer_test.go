@@ -68,7 +68,11 @@ func nextToken(l *Lexer) (tok *Token, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			tok = nil
-			err = r.(error)
+			if e, ok := r.(error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
 		}
 	}()
 

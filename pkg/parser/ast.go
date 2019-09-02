@@ -15,33 +15,35 @@ type Expr interface {
 // ExprList is expressions separated by comma.
 type ExprList []Expr
 
-func (BinaryExpr) isExpr()   {}
-func (UnaryExpr) isExpr()    {}
-func (InExpr) isExpr()       {}
-func (IsNullExpr) isExpr()   {}
-func (IsBoolExpr) isExpr()   {}
-func (BetweenExpr) isExpr()  {}
-func (SelectorExpr) isExpr() {}
-func (IndexExpr) isExpr()    {}
-func (CallExpr) isExpr()     {}
-func (CastExpr) isExpr()     {}
-func (CaseExpr) isExpr()     {}
-func (SubQuery) isExpr()     {}
-func (ParenExpr) isExpr()    {}
-func (ArrayExpr) isExpr()    {}
-func (ExistsExpr) isExpr()   {}
-func (Param) isExpr()        {}
-func (Ident) isExpr()        {}
-func (ArrayLit) isExpr()     {}
-func (StructLit) isExpr()    {}
-func (NullLit) isExpr()      {}
-func (BoolLit) isExpr()      {}
-func (IntLit) isExpr()       {}
-func (FloatLit) isExpr()     {}
-func (StringLit) isExpr()    {}
-func (BytesLit) isExpr()     {}
-func (DateLit) isExpr()      {}
-func (TimestampLit) isExpr() {}
+func (BinaryExpr) isExpr()    {}
+func (UnaryExpr) isExpr()     {}
+func (InExpr) isExpr()        {}
+func (IsNullExpr) isExpr()    {}
+func (IsBoolExpr) isExpr()    {}
+func (BetweenExpr) isExpr()   {}
+func (SelectorExpr) isExpr()  {}
+func (IndexExpr) isExpr()     {}
+func (CallExpr) isExpr()      {}
+func (CountStarExpr) isExpr() {}
+func (CastExpr) isExpr()      {}
+func (ExtractExpr) isExpr()   {}
+func (CaseExpr) isExpr()      {}
+func (SubQuery) isExpr()      {}
+func (ParenExpr) isExpr()     {}
+func (ArrayExpr) isExpr()     {}
+func (ExistsExpr) isExpr()    {}
+func (Param) isExpr()         {}
+func (Ident) isExpr()         {}
+func (ArrayLit) isExpr()      {}
+func (StructLit) isExpr()     {}
+func (NullLit) isExpr()       {}
+func (BoolLit) isExpr()       {}
+func (IntLit) isExpr()        {}
+func (FloatLit) isExpr()      {}
+func (StringLit) isExpr()     {}
+func (BytesLit) isExpr()      {}
+func (DateLit) isExpr()       {}
+func (TimestampLit) isExpr()  {}
 
 type QueryExpr interface {
 	Node
@@ -311,17 +313,41 @@ type SelectorExpr struct {
 	Right *Ident
 }
 
-// {{.Left | sql}}[{{.Right | sql}}]
+// {{.Left | sql}}{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}([{{.Right | sql}})]
 type IndexExpr struct {
 	end         Pos
+	Ordinal     bool
 	Left, Right Expr
 }
 
-// {{.Func | sql}}({{.Args | sql}})
+// {{.Func | sql}}({{if .Distinct}}DISTINCT {{end}}{{.Args | sql}})
 type CallExpr struct {
-	end  Pos
-	Func *Ident
-	Args ExprList
+	end      Pos
+	Func     *Ident
+	Distinct bool
+	Args     ArgList
+}
+
+// {{if .IntervalUnit}}INTERVAL {{.Expr | sql}} {{.IntervalUnit}}{{else}}{{.Expr | sql}}{{end}}
+type Arg struct {
+	pos, end     Pos
+	IntervalUnit ExtractPart
+	Expr         Expr
+}
+
+type ArgList []*Arg
+
+// COUNT(*)
+type CountStarExpr struct {
+	pos, end Pos
+}
+
+// EXTRACT({{.Part}} FROM {{.Expr | sql}}{{if .TimeZone}} AT TIME ZONE {{.TimeZone | sql}}{{end}})
+type ExtractExpr struct {
+	pos, end Pos
+	Part     ExtractPart
+	Expr     Expr
+	TimeZone Expr
 }
 
 // CAST({{.Expr | sql}} AS {{.Type | sql}})

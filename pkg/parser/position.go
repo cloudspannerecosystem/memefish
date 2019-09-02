@@ -253,8 +253,17 @@ func (c *CallExpr) Pos() Pos {
 
 func (c *CallExpr) End() Pos { return c.end }
 
+func (a *Arg) Pos() Pos { return a.pos }
+func (a *Arg) End() Pos { return a.end }
+
+func (c *CountStarExpr) Pos() Pos { return c.pos }
+func (c *CountStarExpr) End() Pos { return c.end }
+
 func (c *CastExpr) Pos() Pos { return c.pos }
 func (c *CastExpr) End() Pos { return c.end }
+
+func (e *ExtractExpr) Pos() Pos { return e.pos }
+func (e *ExtractExpr) End() Pos { return e.end }
 
 func (c *CaseExpr) Pos() Pos { return c.pos }
 func (c *CaseExpr) End() Pos { return c.end }

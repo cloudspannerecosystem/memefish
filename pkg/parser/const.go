@@ -87,6 +87,27 @@ const (
 	OpBitNot UnaryOp = "~"
 )
 
+type ExtractPart string
+
+const (
+	NanoSecondPart  ExtractPart = "NANOSECOND"
+	MicroSecondPart ExtractPart = "MICROSECOND"
+	MillSecondPart  ExtractPart = "MICROSECOND"
+	SecondPart      ExtractPart = "SECOND"
+	MinutePart      ExtractPart = "MINUTE"
+	HourPart        ExtractPart = "HOUR"
+	DayOfWeekPart   ExtractPart = "DAYOFWEEK"
+	DayPart         ExtractPart = "DAY"
+	DayOfYearPart   ExtractPart = "DAYOFYEAR"
+	WeekPart        ExtractPart = "WEEK"
+	ISOWeekPart     ExtractPart = "ISOWEEK"
+	MonthPart       ExtractPart = "MONTH"
+	QuaterPart      ExtractPart = "QUARTER"
+	YearPart        ExtractPart = "YEAR"
+	ISOYearPart     ExtractPart = "ISOYEAR"
+	DatePart        ExtractPart = "DATE"
+)
+
 type TypeName string
 
 const (

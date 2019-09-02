@@ -380,17 +380,49 @@ func (s *SelectorExpr) SQL() string {
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Left)
-	sql += "[" + i.Right.SQL() + "]"
+	sql := paren(p, i.Left) + "["
+	if i.Ordinal {
+		sql += "ORDINAL"
+	} else {
+		sql += "OFFSET"
+	}
+	sql += "(" + i.Right.SQL() + ")]"
 	return sql
 }
 
 func (c *CallExpr) SQL() string {
-	return fmt.Sprintf("%s(%s)", c.Func.SQL(), c.Args.SQL())
+	distinct := ""
+	if c.Distinct {
+		distinct = "DISTINCT "
+	}
+	return fmt.Sprintf("%s(%s%s)", c.Func.SQL(), distinct, c.Args.SQL())
+}
+
+func (a *Arg) SQL() string {
+	if a.IntervalUnit != "" {
+		return "INTERVAL " + a.Expr.SQL() + " " + string(a.IntervalUnit)
+	}
+	return a.Expr.SQL()
+}
+
+func (as ArgList) SQL() string {
+	var ss []string
+	for _, a := range as {
+		ss = append(ss, a.SQL())
+	}
+	return strings.Join(ss, ", ")
+}
+
+func (*CountStarExpr) SQL() string {
+	return "COUNT(*)"
 }
 
 func (c *CastExpr) SQL() string {
 	return fmt.Sprintf("CAST(%s AS %s)", paren(precLit, c.Expr), c.Type.SQL())
+}
+
+func (e *ExtractExpr) SQL() string {
+	return fmt.Sprintf("EXTRACT(%s FROM %s)", e.Part, e.Expr.SQL())
 }
 
 func (c *CaseExpr) SQL() string {
@@ -404,6 +436,7 @@ func (c *CaseExpr) SQL() string {
 	if c.Else != nil {
 		sql += " ELSE " + c.Else.SQL()
 	}
+	sql += "END"
 	return sql
 }
 

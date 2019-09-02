@@ -9,16 +9,38 @@ type Parser struct {
 	*Lexer
 }
 
-func (p *Parser) ParseQuery() *QueryStatement {
-	// TODO: recover
+func (p *Parser) ParseQuery() (stmt *QueryStatement, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = nil
+			if e, ok := r.(error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
 	p.NextToken()
-	return p.parseQueryStatement()
+	stmt = p.parseQueryStatement()
+	return
 }
 
-func (p *Parser) ParseExpr() Expr {
-	// TODO: recover
+func (p *Parser) ParseExpr() (expr Expr, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			expr = nil
+			if e, ok := r.(error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
 	p.NextToken()
-	return p.parseExpr()
+	expr = p.parseExpr()
+	return
 }
 
 func (p *Parser) parseQueryStatement() *QueryStatement {
@@ -45,10 +67,6 @@ func (p *Parser) parseHint() *Hint {
 	p.expect("{")
 
 	for p.Token.Kind != TokenEOF {
-		if p.Token.Kind == "}" {
-			break
-		}
-
 		id := p.expect(TokenIdent)
 		p.expect("=")
 		val := p.parseExpr()
@@ -461,6 +479,7 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 		return p.parseUnnestSuffix(e, pos, end)
 	}
 
+	// TODO: add parsePath and use it.
 	e := p.parseExpr()
 	if id, ok := e.(*Ident); ok {
 		hint := p.parseHint()
@@ -517,11 +536,16 @@ func (p *Parser) parseUnnestSuffix(e Expr, pos Pos, end Pos) *Unnest {
 }
 
 func (p *Parser) parseAs() *Ident {
-	if p.Token.Kind != "AS" {
+	var id Token
+	if p.Token.Kind == "AS" {
+		p.NextToken()
+		id = *p.expect(TokenIdent)
+	} else if p.Token.Kind == TokenIdent {
+		id = p.Token
+		p.NextToken()
+	} else {
 		return nil
 	}
-	p.NextToken()
-	id := p.expect(TokenIdent)
 	return &Ident{
 		pos:  id.Pos,
 		end:  id.End,
@@ -548,7 +572,7 @@ func (p *Parser) parseQueryExprSuffix(e QueryExpr) QueryExpr {
 		p.NextToken()
 		count := p.parseIntValue()
 		var offset IntValue
-		if p.Token.Kind == "OFFSET" {
+		if strings.EqualFold(p.Token.Raw, "OFFSET") {
 			p.NextToken()
 			offset = p.parseIntValue()
 		}
@@ -911,10 +935,22 @@ func (p *Parser) parseSelector() Expr {
 			}
 		case "[":
 			p.NextToken()
-			expr = &IndexExpr{
-				Left:  expr,
-				Right: p.parseExpr(),
+			id := p.expect(TokenIdent)
+			ordinal := false
+			if strings.EqualFold(id.AsString, "ORDINAL") {
+				ordinal = true
+			} else if strings.EqualFold(id.AsString, "OFFSET") {
+				ordinal = false
+			} else {
+				p.panicfAtToken(id, "expected identifier: ORDINAL, OFFSET, but: %s", id.Raw)
 			}
+			p.expect("(")
+			expr = &IndexExpr{
+				Ordinal: ordinal,
+				Left:    expr,
+				Right:   p.parseExpr(),
+			}
+			p.expect(")")
 			expr.(*IndexExpr).end = p.expect("]").End
 		default:
 			return expr
@@ -984,16 +1020,7 @@ func (p *Parser) parseLit() Expr {
 		switch p.Token.Kind {
 		case "(":
 			p.NextToken()
-			es, end := p.parseExprList(")")
-			return &CallExpr{
-				end: end,
-				Func: &Ident{
-					pos:  id.Pos,
-					end:  id.End,
-					Name: id.AsString,
-				},
-				Args: es,
-			}
+			return p.parseCall(id)
 		case TokenString:
 			// DATE "..."
 			if strings.EqualFold(id.Raw, "DATE") {
@@ -1118,6 +1145,119 @@ func (p *Parser) parseLit() Expr {
 		}
 	}
 
+	if p.Token.Kind == "CASE" {
+		pos := p.Token.Pos
+		p.NextToken()
+		var expr Expr
+		if p.Token.Kind != "WHEN" {
+			expr = p.parseExpr()
+		}
+		whens := []*When{p.parseWhen()}
+		for p.Token.Kind != TokenEOF {
+			if p.Token.Kind != "WHEN" {
+				break
+			}
+			whens = append(whens, p.parseWhen())
+		}
+		var els Expr
+		if p.Token.Kind == "ELSE" {
+			p.NextToken()
+			els = p.parseExpr()
+		}
+		end := p.expect("END").End
+		return &CaseExpr{
+			pos:  pos,
+			end:  end,
+			Expr: expr,
+			When: whens,
+			Else: els,
+		}
+	}
+
+	if p.Token.Kind == "EXISTS" {
+		pos := p.Token.Pos
+		p.NextToken()
+		hint := p.parseHint()
+		parenPos := p.expect("(").Pos
+		q := &SubQuery{
+			pos:  parenPos,
+			Expr: p.parseQueryExpr(),
+		}
+		q.end = p.expect(")").End
+		return &ExistsExpr{
+			pos:  pos,
+			Hint: hint,
+			Expr: q,
+		}
+	}
+
+	if p.Token.Kind == "EXTRACT" {
+		pos := p.Token.Pos
+		p.NextToken()
+		p.expect("(")
+		id := p.expect(TokenIdent)
+		var part ExtractPart
+		switch {
+		case strings.EqualFold(id.AsString, "NANOSECOND"):
+			part = NanoSecondPart
+		case strings.EqualFold(id.AsString, "MICROSECOND"):
+			part = MicroSecondPart
+		case strings.EqualFold(id.AsString, "MILLSECOND"):
+			part = MillSecondPart
+		case strings.EqualFold(id.AsString, "SECOND"):
+			part = SecondPart
+		case strings.EqualFold(id.AsString, "MINUTE"):
+			part = MinutePart
+		case strings.EqualFold(id.AsString, "HOUR"):
+			part = HourPart
+		case strings.EqualFold(id.AsString, "DAYOFWEEK"):
+			part = DayOfWeekPart
+		case strings.EqualFold(id.AsString, "DAY"):
+			part = DayPart
+		case strings.EqualFold(id.AsString, "DAYOFYEAR"):
+			part = DayOfYearPart
+		case strings.EqualFold(id.AsString, "WEEK"):
+			part = WeekPart
+		case strings.EqualFold(id.AsString, "ISOWEEK"):
+			part = ISOWeekPart
+		case strings.EqualFold(id.AsString, "MONTH"):
+			part = MonthPart
+		case strings.EqualFold(id.AsString, "MONTH"):
+			part = MonthPart
+		case strings.EqualFold(id.AsString, "QUARTER"):
+			part = QuaterPart
+		case strings.EqualFold(id.AsString, "YEAR"):
+			part = YearPart
+		case strings.EqualFold(id.AsString, "ISOYEAR"):
+			part = ISOYearPart
+		case strings.EqualFold(id.AsString, "DATE"):
+			part = DatePart
+		default:
+			p.panicfAtToken(id, "unknown extract part: %s", id.Raw)
+		}
+		p.expect("FROM")
+		e := p.parseExpr()
+		var timeZone Expr
+		if p.Token.Kind == "AT" {
+			p.NextToken()
+			if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "TIME") {
+				p.panicfAtToken(id, "expected identifier: TIME, but: %s", id.Raw)
+			}
+			if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "ZONE") {
+				p.panicfAtToken(id, "expected identifier: ZONE, but: %s", id.Raw)
+			}
+			timeZone = p.parseExpr()
+		}
+		end := p.expect(")").End
+		return &ExtractExpr{
+			pos:      pos,
+			end:      end,
+			Part:     part,
+			Expr:     e,
+			TimeZone: timeZone,
+		}
+	}
+
 	if p.Token.Kind == "(" {
 		paren := p.Token
 		if subQuery := p.tryParseSubQuery(); subQuery != nil {
@@ -1214,6 +1354,112 @@ func (p *Parser) tryParseSubQuery() *SubQuery {
 		end:  end,
 		Expr: q,
 	}
+}
+
+func (p *Parser) parseCall(id Token) Expr {
+	fn := &Ident{
+		pos:  id.Pos,
+		end:  id.End,
+		Name: id.AsString,
+	}
+
+	if strings.EqualFold(fn.Name, "COUNT") {
+		if p.Token.Kind == "*" {
+			p.NextToken()
+			end := p.expect(")").End
+			return &CountStarExpr{
+				pos: id.Pos,
+				end: end,
+			}
+		}
+	}
+
+	distinct := false
+	if p.Token.Kind == "DISTINCT" {
+		p.NextToken()
+		distinct = true
+	}
+
+	as, end := p.parseArgList()
+	return &CallExpr{
+		end:      end,
+		Func:     fn,
+		Distinct: distinct,
+		Args:     as,
+	}
+}
+
+func (p *Parser) parseArgList() (ArgList, Pos) {
+	var as ArgList
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			as = append(as, p.parseArg())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	return as, p.expect(")").End
+}
+
+func (p *Parser) parseArg() *Arg {
+	if p.Token.Kind != "INTERVAL" {
+		e := p.parseExpr()
+		return &Arg{
+			pos:  e.Pos(),
+			end:  e.End(),
+			Expr: e,
+		}
+	}
+
+	pos := p.Token.Pos
+	p.NextToken()
+	e := p.parseExpr()
+	id := p.expect(TokenIdent)
+	var part ExtractPart
+	switch {
+	case strings.EqualFold(id.AsString, "NANOSECOND"):
+		part = NanoSecondPart
+	case strings.EqualFold(id.AsString, "MICROSECOND"):
+		part = MicroSecondPart
+	case strings.EqualFold(id.AsString, "MILLSECOND"):
+		part = MillSecondPart
+	case strings.EqualFold(id.AsString, "SECOND"):
+		part = SecondPart
+	case strings.EqualFold(id.AsString, "MINUTE"):
+		part = MinutePart
+	case strings.EqualFold(id.AsString, "HOUR"):
+		part = HourPart
+	case strings.EqualFold(id.AsString, "DAY"):
+		part = DayPart
+	case strings.EqualFold(id.AsString, "WEEK"):
+		part = WeekPart
+	case strings.EqualFold(id.AsString, "MONTH"):
+		part = MonthPart
+	case strings.EqualFold(id.AsString, "MONTH"):
+		part = MonthPart
+	case strings.EqualFold(id.AsString, "QUARTER"):
+		part = QuaterPart
+	case strings.EqualFold(id.AsString, "YEAR"):
+		part = YearPart
+	default:
+		p.panicfAtToken(id, "unknown extract part: %s", id.Raw)
+	}
+	return &Arg{
+		pos:          pos,
+		end:          id.End,
+		Expr:         e,
+		IntervalUnit: part,
+	}
+}
+
+func (p *Parser) parseWhen() *When {
+	p.expect("WHEN")
+	cond := p.parseExpr()
+	p.expect("THEN")
+	then := p.parseExpr()
+	return &When{Cond: cond, Then: then}
 }
 
 func (p *Parser) parseType() *Type {
