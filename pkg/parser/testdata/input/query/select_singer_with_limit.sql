@@ -1,0 +1,5 @@
+SELECT
+  *
+FROM
+  Singers
+LIMIT 100

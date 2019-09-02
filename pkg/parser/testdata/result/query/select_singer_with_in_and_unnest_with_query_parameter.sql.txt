@@ -1,0 +1,70 @@
+--- select_singer_with_in_and_unnest_with_query_parameter.sql
+SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerId IN UNNEST(@singerIDs)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      64,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  25,
+        Expr: &parser.TableName{
+          end:   25,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where: &parser.InExpr{
+      Not:  false,
+      Left: &parser.Ident{
+        pos:  34,
+        end:  42,
+        Name: "SingerId",
+      },
+      Right: &parser.InCondition{
+        pos:    46,
+        end:    64,
+        Unnest: &parser.Param{
+          pos:  53,
+          Name: "singerIDs",
+        },
+        SubQuery: (*parser.SubQuery)(nil),
+        Values:   parser.ExprList{},
+      },
+    },
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers WHERE SingerId IN UNNEST(@singerIDs)

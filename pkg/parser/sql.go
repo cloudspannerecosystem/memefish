@@ -198,8 +198,12 @@ func (s SelectExprList) SQL() string {
 
 func (f *FromItem) SQL() string {
 	sql := f.Expr.SQL()
-	if f.TableSample != "" {
-		sql += " TABLESAMPLE " + string(f.TableSample)
+	if f.Method != "" {
+		unit := "PERCENT"
+		if f.Rows {
+			unit = "ROWS"
+		}
+		sql += " TABLESAMPLE " + string(f.Method) + "(" + f.Num.SQL() + " " + unit + ")"
 	}
 	return sql
 }
@@ -231,8 +235,11 @@ func (u *Unnest) SQL() string {
 	if u.As != nil {
 		sql += " AS " + u.As.SQL()
 	}
-	if u.WithOffset != nil {
-		sql += " WITH OFFSET " + u.WithOffset.SQL()
+	if u.WithOffset {
+		sql += " WITH OFFSET"
+		if u.WithOffsetAs != nil {
+			sql += " " + u.WithOffsetAs.SQL()
+		}
 	}
 	return sql
 }
@@ -585,4 +592,8 @@ func (t *FieldSchema) SQL() string {
 
 func (c *CastIntValue) SQL() string {
 	return "CAST(" + c.Expr.SQL() + " AS INT64)"
+}
+
+func (c *CastNumValue) SQL() string {
+	return "CAST(" + c.Expr.SQL() + " AS " + string(c.Type) + ")"
 }

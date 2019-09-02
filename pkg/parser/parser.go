@@ -316,10 +316,11 @@ func (p *Parser) parseFromItem() *FromItem {
 	e := p.parseJoinExpr(false)
 	end := e.End()
 	var tableSample TableSampleMethod
+	var num NumValue
+	var rows bool
 	if p.Token.Kind == "TABLESAMPLE" {
 		p.NextToken()
 		id := p.expect(TokenIdent)
-		end = id.End
 		switch {
 		case strings.EqualFold(id.AsString, "BERNOULLI"):
 			tableSample = BernoulliSampleMethod
@@ -328,11 +329,22 @@ func (p *Parser) parseFromItem() *FromItem {
 		default:
 			p.panicfAtToken(&p.Token, "expected identifier: BERNOULLI, RESERVOIR, but: %s", p.Token.Raw)
 		}
+		p.expect("(")
+		num = p.parseNumValue()
+		if p.Token.Kind == "ROWS" {
+			rows = true
+			p.NextToken()
+		} else if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "PERCENT") {
+			p.panicfAtToken(id, "expected identifier: PERCENT, ROWS, but: %s", id.Raw)
+		}
+		end = p.expect(")").End
 	}
 	return &FromItem{
-		end:         end,
-		Expr:        e,
-		TableSample: tableSample,
+		end:    end,
+		Expr:   e,
+		Method: tableSample,
+		Num:    num,
+		Rows:   rows,
 	}
 }
 
@@ -570,13 +582,29 @@ func (p *Parser) parseUnnestSuffix(e Expr, pos Pos, end Pos) *Unnest {
 	} else if hint != nil {
 		end = hint.End()
 	}
-	// TODO: parse WITH OFFSET
+	var withOffset bool
+	var withOffsetAs *Ident
+	if p.Token.Kind == "WITH" {
+		p.NextToken()
+		offset := p.expect(TokenIdent)
+		if !strings.EqualFold(offset.Raw, "OFFSET") {
+			p.panicfAtToken(offset, "expected identifier: OFFSET, buf: %s", offset.Raw)
+		}
+		withOffset = true
+		end = offset.End
+		withOffsetAs = p.parseAs()
+		if withOffsetAs != nil {
+			end = withOffsetAs.End()
+		}
+	}
 	return &Unnest{
-		pos:  pos,
-		end:  end,
-		Expr: e,
-		Hint: hint,
-		As:   as,
+		pos:          pos,
+		end:          end,
+		Expr:         e,
+		Hint:         hint,
+		As:           as,
+		WithOffset:   withOffset,
+		WithOffsetAs: withOffsetAs,
 	}
 }
 
@@ -608,7 +636,7 @@ func (p *Parser) parseQueryExprSuffix(e QueryExpr) QueryExpr {
 				break
 			}
 			p.NextToken()
-			orderBy = append(orderBy)
+			orderBy = append(orderBy, p.parseOrderExpr())
 		}
 		e.setOrderBy(orderBy)
 	}
@@ -1303,6 +1331,27 @@ func (p *Parser) parseLit() Expr {
 		}
 	}
 
+	if p.Token.Kind == "[" {
+		pos := p.Token.Pos
+		p.NextToken()
+		var es ExprList
+		if p.Token.Kind != "]" {
+			for p.Token.Kind != TokenEOF {
+				es = append(es, p.parseExpr())
+				if p.Token.Kind != "," {
+					break
+				}
+				p.NextToken()
+			}
+		}
+		end := p.expect("]").End
+		return &ArrayLit{
+			pos:    pos,
+			end:    end,
+			Values: es,
+		}
+	}
+
 	if p.Token.Kind == "(" {
 		paren := p.Token
 		if subQuery := p.tryParseSubQuery(); subQuery != nil {
@@ -1580,7 +1629,15 @@ func (p *Parser) parseType() *Type {
 		p.NextToken()
 		p.expect("<")
 		t := p.parseType()
-		end := p.expect(">").End
+		var end Pos
+		if p.Token.Kind == ">>" {
+			p.Token.Kind = ">"
+			p.Token.Raw = ">"
+			p.Token.Pos += 1
+			end = p.Token.Pos
+		} else {
+			end = p.expect(">").End
+		}
 		return &Type{
 			pos:   pos,
 			end:   end,
@@ -1615,41 +1672,48 @@ func (p *Parser) parseType() *Type {
 
 func (p *Parser) parseFieldSchemas() ([]*FieldSchema, Pos) {
 	fs := make([]*FieldSchema, 0)
-	if p.Token.Kind == ">" {
-		return fs, p.expect(">").End
-	}
-	for p.Token.Kind != TokenEOF {
-		named := false
-		l := *p.Lexer
-		if p.Token.Kind == TokenIdent {
-			id := p.Token
-			p.NextToken()
-			if p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT" {
+	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
+		for p.Token.Kind != TokenEOF {
+			named := false
+			l := *p.Lexer
+			if p.Token.Kind == TokenIdent {
+				id := p.Token
+				p.NextToken()
+				if p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT" {
+					t := p.parseType()
+					fs = append(fs, &FieldSchema{
+						Name: &Ident{
+							pos:  id.Pos,
+							end:  id.End,
+							Name: id.AsString,
+						},
+						Type: t,
+					})
+					named = true
+				} else {
+					*p.Lexer = l
+				}
+			}
+			if !named {
 				t := p.parseType()
 				fs = append(fs, &FieldSchema{
-					Name: &Ident{
-						pos:  id.Pos,
-						end:  id.End,
-						Name: id.AsString,
-					},
 					Type: t,
 				})
-				named = true
-			} else {
-				*p.Lexer = l
 			}
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
 		}
-		if !named {
-			t := p.parseType()
-			fs = append(fs, &FieldSchema{
-				Type: t,
-			})
-		}
-		if p.Token.Kind != "," {
-			break
-		}
-		p.NextToken()
 	}
+
+	if p.Token.Kind == ">>" {
+		p.Token.Kind = ">"
+		p.Token.Raw = ">"
+		p.Token.Pos += 1
+		return fs, p.Token.Pos
+	}
+
 	return fs, p.expect(">").End
 }
 
@@ -1706,6 +1770,82 @@ func (p *Parser) parseIntValue() IntValue {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <int>, CAST, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseNumValue() NumValue {
+	switch p.Token.Kind {
+	case TokenParam:
+		v := &Param{
+			pos:  p.Token.Pos,
+			Name: p.Token.AsString,
+		}
+		p.NextToken()
+		return v
+	case TokenInt:
+		v := &IntLit{
+			pos:   p.Token.Pos,
+			end:   p.Token.End,
+			Value: p.Token.Raw,
+		}
+		p.NextToken()
+		return v
+	case TokenFloat:
+		v := &FloatLit{
+			pos:   p.Token.Pos,
+			end:   p.Token.End,
+			Value: p.Token.Raw,
+		}
+		p.NextToken()
+		return v
+	case "CAST":
+		pos := p.Token.Pos
+		p.NextToken()
+		p.expect("(")
+		var v NumValue
+		switch p.Token.Kind {
+		case TokenParam:
+			v = &Param{
+				pos:  p.Token.Pos,
+				Name: p.Token.AsString,
+			}
+			p.NextToken()
+		case TokenInt:
+			v = &IntLit{
+				pos:   p.Token.Pos,
+				end:   p.Token.End,
+				Value: p.Token.Raw,
+			}
+			p.NextToken()
+		case TokenFloat:
+			v = &FloatLit{
+				pos:   p.Token.Pos,
+				end:   p.Token.End,
+				Value: p.Token.Raw,
+			}
+			p.NextToken()
+		default:
+			p.panicfAtToken(&p.Token, "expected token: <param>, <int>, <float>, but: %s", p.Token.Kind)
+		}
+		p.expect("AS")
+		id := p.expect(TokenIdent)
+		var t TypeName
+		if strings.EqualFold(id.AsString, "INT64") {
+			t = Int64Type
+		} else if strings.EqualFold(id.AsString, "FLOAT64") {
+			t = Float64Type
+		} else {
+			p.panicfAtToken(id, "expected identifier: INT64, FLOAT64, but: %s", id.Raw)
+		}
+		end := p.expect(")").End
+		return &CastNumValue{
+			pos:  pos,
+			end:  end,
+			Expr: v,
+			Type: t,
+		}
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <int>, <float>, CAST, but: %s", p.Token.Kind))
 }
 
 func (p *Parser) expect(kind TokenKind) *Token {

@@ -1,0 +1,78 @@
+--- select_complex_with_unnest_array_path.sql
+SELECT
+  *
+FROM
+  ComplexTable,
+  UNNEST(ComplexTable.IntArray)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      63,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  30,
+        Expr: &parser.TableName{
+          end:   30,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  30,
+            Name: "ComplexTable",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+      &parser.FromItem{
+        end:  63,
+        Expr: &parser.Unnest{
+          pos:  34,
+          end:  63,
+          Expr: &parser.SelectorExpr{
+            Left: &parser.Ident{
+              pos:  41,
+              end:  53,
+              Name: "ComplexTable",
+            },
+            Right: &parser.Ident{
+              pos:  54,
+              end:  62,
+              Name: "IntArray",
+            },
+          },
+          Hint:         (*parser.Hint)(nil),
+          As:           (*parser.Ident)(nil),
+          WithOffset:   false,
+          WithOffsetAs: (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM ComplexTable, UNNEST(ComplexTable.IntArray)

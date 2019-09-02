@@ -102,6 +102,16 @@ func (IntLit) isIntValue()       {}
 func (Param) isIntValue()        {}
 func (CastIntValue) isIntValue() {}
 
+type NumValue interface {
+	Node
+	isNumValue()
+}
+
+func (IntLit) isNumValue()       {}
+func (FloatLit) isNumValue()     {}
+func (Param) isNumValue()        {}
+func (CastNumValue) isNumValue() {}
+
 // {{if .Hint}}{{.Hint | sql}}{{end}}
 // {{.Expr | sql}}
 type QueryStatement struct {
@@ -173,11 +183,14 @@ type SelectExpr struct {
 
 type SelectExprList []*SelectExpr
 
-// {{.Expr | sql}} {{if .TableSample}}TABLESAMPLE {{.TableSanple}}{{end}}
+// {{.Expr | sql}}
+// {{if .TableSample}}TABLESAMPLE {{.Method}} ({{.Num | sql}} {{if .Rows}}ROWS{{else}}PERCENT{{end}}){{end}}
 type FromItem struct {
-	end         Pos
-	Expr        JoinExpr
-	TableSample TableSampleMethod
+	end    Pos
+	Expr   JoinExpr
+	Method TableSampleMethod
+	Num    NumValue
+	Rows   bool
 }
 
 type FromItemList []*FromItem
@@ -206,13 +219,15 @@ type PathExpr struct {
 // UNNEST({{.Expr | sql}})
 //   {{if .Hint}}{{.Hint | sql}}{{end}}
 //   {{if .As}}AS {{.As | sql}}{{end}}
-//   {{if .WithOffset}}WITH OFFSET {{.WithOffset | sql}}{{end}}
+//   {{if .WithOffset}}WITH OFFSET {{.WithOffset | sql}}
+//     {{if .WithOffsetAs}}{{.WithOffsetAs | sql}}{{end}}{{end}}
 type Unnest struct {
-	pos, end   Pos
-	Expr       Expr
-	Hint       *Hint
-	As         *Ident
-	WithOffset *Ident
+	pos, end     Pos
+	Expr         Expr
+	Hint         *Hint
+	As           *Ident
+	WithOffset   bool
+	WithOffsetAs *Ident
 }
 
 // {{.Expr | sql}}
@@ -503,4 +518,11 @@ type FieldSchema struct {
 type CastIntValue struct {
 	pos, end Pos
 	Expr     IntValue // IntLit or Param
+}
+
+// CAST({{.Expr | sql}} AS {{.Type}})
+type CastNumValue struct {
+	pos, end Pos
+	Expr     NumValue // IntLit, FloatLit or Param
+	Type     TypeName // Int64Type or Float64Type
 }

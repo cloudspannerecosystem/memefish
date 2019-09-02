@@ -1,0 +1,163 @@
+--- select_singer_with_join_twice.sql
+SELECT
+  *
+FROM
+  Singers A
+  JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+  INNER JOIN
+  Singers C
+  ON A.SingerID = C.SingerID
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      129,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  129,
+        Expr: &parser.Join{
+          Op:     "INNER",
+          Method: "",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.Join{
+            Op:     "INNER",
+            Method: "",
+            Hint:   (*parser.Hint)(nil),
+            Left:   &parser.TableName{
+              end:   27,
+              Ident: &parser.Ident{
+                pos:  18,
+                end:  25,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.Ident{
+                pos:  26,
+                end:  27,
+                Name: "A",
+              },
+            },
+            Right: &parser.TableName{
+              end:   46,
+              Ident: &parser.Ident{
+                pos:  37,
+                end:  44,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.Ident{
+                pos:  45,
+                end:  46,
+                Name: "B",
+              },
+            },
+            Cond: &parser.JoinCondition{
+              pos: 49,
+              end: 75,
+              On:  &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.SelectorExpr{
+                  Left: &parser.Ident{
+                    pos:  52,
+                    end:  53,
+                    Name: "A",
+                  },
+                  Right: &parser.Ident{
+                    pos:  54,
+                    end:  62,
+                    Name: "SingerID",
+                  },
+                },
+                Right: &parser.SelectorExpr{
+                  Left: &parser.Ident{
+                    pos:  65,
+                    end:  66,
+                    Name: "B",
+                  },
+                  Right: &parser.Ident{
+                    pos:  67,
+                    end:  75,
+                    Name: "SingerID",
+                  },
+                },
+              },
+              Using: parser.IdentList{},
+            },
+          },
+          Right: &parser.TableName{
+            end:   100,
+            Ident: &parser.Ident{
+              pos:  91,
+              end:  98,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.Ident{
+              pos:  99,
+              end:  100,
+              Name: "C",
+            },
+          },
+          Cond: &parser.JoinCondition{
+            pos: 103,
+            end: 129,
+            On:  &parser.BinaryExpr{
+              Op:   "=",
+              Left: &parser.SelectorExpr{
+                Left: &parser.Ident{
+                  pos:  106,
+                  end:  107,
+                  Name: "A",
+                },
+                Right: &parser.Ident{
+                  pos:  108,
+                  end:  116,
+                  Name: "SingerID",
+                },
+              },
+              Right: &parser.SelectorExpr{
+                Left: &parser.Ident{
+                  pos:  119,
+                  end:  120,
+                  Name: "C",
+                },
+                Right: &parser.Ident{
+                  pos:  121,
+                  end:  129,
+                  Name: "SingerID",
+                },
+              },
+            },
+            Using: parser.IdentList{},
+          },
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID

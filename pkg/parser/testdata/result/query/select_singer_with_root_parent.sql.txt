@@ -1,0 +1,57 @@
+--- select_singer_with_root_parent.sql
+( SELECT * FROM Singers )
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.SubQueryExpr{
+    end:  25,
+    Expr: &parser.SubQuery{
+      pos:  0,
+      end:  25,
+      Expr: &parser.Select{
+        pos:      2,
+        end:      23,
+        Distinct: false,
+        AsStruct: false,
+        List:     parser.SelectExprList{
+          &parser.SelectExpr{
+            pos:  9,
+            end:  10,
+            Expr: nil,
+            Star: true,
+            As:   (*parser.Ident)(nil),
+          },
+        },
+        From: parser.FromItemList{
+          &parser.FromItem{
+            end:  23,
+            Expr: &parser.TableName{
+              end:   23,
+              Ident: &parser.Ident{
+                pos:  16,
+                end:  23,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   (*parser.Ident)(nil),
+            },
+            Method: "",
+            Num:    nil,
+            Rows:   false,
+          },
+        },
+        Where:   nil,
+        GroupBy: parser.ExprList{},
+        Having:  nil,
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+    },
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+(SELECT * FROM Singers)

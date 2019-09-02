@@ -1,0 +1,36 @@
+--- select_with_comment.sql
+-- foobar
+select 1
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      10,
+    end:      18,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  17,
+        end:  18,
+        Expr: &parser.IntLit{
+          pos:   17,
+          end:   18,
+          Value: "1",
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT 1

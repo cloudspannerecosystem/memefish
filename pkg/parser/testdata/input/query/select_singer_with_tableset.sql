@@ -1,0 +1,3 @@
+SELECT * FROM Singers
+UNION ALL
+SELECT * FROM Singers

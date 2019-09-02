@@ -1,0 +1,98 @@
+--- select_singer_with_as_struct_subquery.sql
+SELECT
+  ARRAY(
+    (
+      SELECT AS STRUCT
+        *
+      FROM Singers LIMIT 100
+    )
+  )
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      93,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  93,
+        Expr: &parser.ArrayExpr{
+          pos:  9,
+          Expr: &parser.SubQuery{
+            pos:  14,
+            end:  93,
+            Expr: &parser.SubQueryExpr{
+              end:  89,
+              Expr: &parser.SubQuery{
+                pos:  20,
+                end:  89,
+                Expr: &parser.Select{
+                  pos:      28,
+                  end:      83,
+                  Distinct: false,
+                  AsStruct: true,
+                  List:     parser.SelectExprList{
+                    &parser.SelectExpr{
+                      pos:  53,
+                      end:  54,
+                      Expr: nil,
+                      Star: true,
+                      As:   (*parser.Ident)(nil),
+                    },
+                  },
+                  From: parser.FromItemList{
+                    &parser.FromItem{
+                      end:  73,
+                      Expr: &parser.TableName{
+                        end:   73,
+                        Ident: &parser.Ident{
+                          pos:  66,
+                          end:  73,
+                          Name: "Singers",
+                        },
+                        Hint: (*parser.Hint)(nil),
+                        As:   (*parser.Ident)(nil),
+                      },
+                      Method: "",
+                      Num:    nil,
+                      Rows:   false,
+                    },
+                  },
+                  Where:   nil,
+                  GroupBy: parser.ExprList{},
+                  Having:  nil,
+                  OrderBy: parser.OrderExprList{},
+                  Limit:   &parser.Limit{
+                    Count: &parser.IntLit{
+                      pos:   80,
+                      end:   83,
+                      Value: "100",
+                    },
+                    Offset: nil,
+                  },
+                },
+              },
+              OrderBy: parser.OrderExprList{},
+              Limit:   (*parser.Limit)(nil),
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT ARRAY((SELECT AS STRUCT * FROM Singers LIMIT 100))

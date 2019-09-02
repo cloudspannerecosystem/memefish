@@ -1,0 +1,39 @@
+--- select_alias_without_as.sql
+select 1 A
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      10,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  7,
+        end:  10,
+        Expr: &parser.IntLit{
+          pos:   7,
+          end:   8,
+          Value: "1",
+        },
+        Star: false,
+        As:   &parser.Ident{
+          pos:  9,
+          end:  10,
+          Name: "A",
+        },
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT 1 AS A

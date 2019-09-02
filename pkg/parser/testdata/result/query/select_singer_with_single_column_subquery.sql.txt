@@ -1,0 +1,86 @@
+--- select_singer_with_single_column_subquery.sql
+SELECT (
+  SELECT FirstName
+  FROM Singers LIMIT 100
+)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      54,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  7,
+        end:  54,
+        Expr: &parser.SubQuery{
+          pos:  7,
+          end:  54,
+          Expr: &parser.Select{
+            pos:      11,
+            end:      52,
+            Distinct: false,
+            AsStruct: false,
+            List:     parser.SelectExprList{
+              &parser.SelectExpr{
+                pos:  18,
+                end:  27,
+                Expr: &parser.Ident{
+                  pos:  18,
+                  end:  27,
+                  Name: "FirstName",
+                },
+                Star: false,
+                As:   (*parser.Ident)(nil),
+              },
+            },
+            From: parser.FromItemList{
+              &parser.FromItem{
+                end:  42,
+                Expr: &parser.TableName{
+                  end:   42,
+                  Ident: &parser.Ident{
+                    pos:  35,
+                    end:  42,
+                    Name: "Singers",
+                  },
+                  Hint: (*parser.Hint)(nil),
+                  As:   (*parser.Ident)(nil),
+                },
+                Method: "",
+                Num:    nil,
+                Rows:   false,
+              },
+            },
+            Where:   nil,
+            GroupBy: parser.ExprList{},
+            Having:  nil,
+            OrderBy: parser.OrderExprList{},
+            Limit:   &parser.Limit{
+              Count: &parser.IntLit{
+                pos:   49,
+                end:   52,
+                Value: "100",
+              },
+              Offset: nil,
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT (SELECT FirstName FROM Singers LIMIT 100)

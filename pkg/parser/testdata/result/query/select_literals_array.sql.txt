@@ -1,0 +1,165 @@
+--- select_literals_array.sql
+SELECT
+  [1, 2, 3],
+  ['x', 'y', 'xy'],
+  ARRAY[1, 2, 3],
+  ARRAY<string>['x', 'y', 'xy'],
+  ARRAY<int64>[]
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      107,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  18,
+        Expr: &parser.ArrayLit{
+          pos:    9,
+          end:    18,
+          Type:   (*parser.Type)(nil),
+          Values: parser.ExprList{
+            &parser.IntLit{
+              pos:   10,
+              end:   11,
+              Value: "1",
+            },
+            &parser.IntLit{
+              pos:   13,
+              end:   14,
+              Value: "2",
+            },
+            &parser.IntLit{
+              pos:   16,
+              end:   17,
+              Value: "3",
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  22,
+        end:  38,
+        Expr: &parser.ArrayLit{
+          pos:    22,
+          end:    38,
+          Type:   (*parser.Type)(nil),
+          Values: parser.ExprList{
+            &parser.StringLit{
+              pos:   23,
+              end:   26,
+              Value: "x",
+            },
+            &parser.StringLit{
+              pos:   28,
+              end:   31,
+              Value: "y",
+            },
+            &parser.StringLit{
+              pos:   33,
+              end:   37,
+              Value: "xy",
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  42,
+        end:  56,
+        Expr: &parser.ArrayLit{
+          pos:    42,
+          end:    56,
+          Type:   (*parser.Type)(nil),
+          Values: parser.ExprList{
+            &parser.IntLit{
+              pos:   48,
+              end:   49,
+              Value: "1",
+            },
+            &parser.IntLit{
+              pos:   51,
+              end:   52,
+              Value: "2",
+            },
+            &parser.IntLit{
+              pos:   54,
+              end:   55,
+              Value: "3",
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  60,
+        end:  89,
+        Expr: &parser.ArrayLit{
+          pos:  60,
+          end:  89,
+          Type: &parser.Type{
+            pos:    66,
+            end:    72,
+            Name:   "STRING",
+            Fields: []*parser.FieldSchema{},
+            Value:  (*parser.Type)(nil),
+          },
+          Values: parser.ExprList{
+            &parser.StringLit{
+              pos:   74,
+              end:   77,
+              Value: "x",
+            },
+            &parser.StringLit{
+              pos:   79,
+              end:   82,
+              Value: "y",
+            },
+            &parser.StringLit{
+              pos:   84,
+              end:   88,
+              Value: "xy",
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  93,
+        end:  107,
+        Expr: &parser.ArrayLit{
+          pos:  93,
+          end:  107,
+          Type: &parser.Type{
+            pos:    99,
+            end:    104,
+            Name:   "INT64",
+            Fields: []*parser.FieldSchema{},
+            Value:  (*parser.Type)(nil),
+          },
+          Values: parser.ExprList{},
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT ARRAY[1, 2, 3], ARRAY["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[]

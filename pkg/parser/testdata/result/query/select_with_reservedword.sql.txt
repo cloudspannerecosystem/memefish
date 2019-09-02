@@ -1,0 +1,51 @@
+--- select_with_reservedword.sql
+SELECT
+  *
+FROM
+  `UNNEST`
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      26,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  26,
+        Expr: &parser.TableName{
+          end:   26,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  26,
+            Name: "UNNEST",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM UNNEST

@@ -1,0 +1,100 @@
+--- select_singer_with_table_alias.sql
+SELECT
+  S.*,
+  S.SingerId as ID,
+  S.FirstName
+FROM Singers S
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      62,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  12,
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  10,
+          Name: "S",
+        },
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  16,
+        end:  32,
+        Expr: &parser.SelectorExpr{
+          Left: &parser.Ident{
+            pos:  16,
+            end:  17,
+            Name: "S",
+          },
+          Right: &parser.Ident{
+            pos:  18,
+            end:  26,
+            Name: "SingerId",
+          },
+        },
+        Star: false,
+        As:   &parser.Ident{
+          pos:  30,
+          end:  32,
+          Name: "ID",
+        },
+      },
+      &parser.SelectExpr{
+        pos:  36,
+        end:  47,
+        Expr: &parser.SelectorExpr{
+          Left: &parser.Ident{
+            pos:  36,
+            end:  37,
+            Name: "S",
+          },
+          Right: &parser.Ident{
+            pos:  38,
+            end:  47,
+            Name: "FirstName",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  62,
+        Expr: &parser.TableName{
+          end:   62,
+          Ident: &parser.Ident{
+            pos:  53,
+            end:  60,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.Ident{
+            pos:  61,
+            end:  62,
+            Name: "S",
+          },
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT S.*, S.SingerId AS ID, S.FirstName FROM Singers AS S

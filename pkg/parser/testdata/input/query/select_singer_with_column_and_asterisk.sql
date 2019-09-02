@@ -1,0 +1,5 @@
+SELECT
+  SingerId,
+  *
+FROM
+  Singers

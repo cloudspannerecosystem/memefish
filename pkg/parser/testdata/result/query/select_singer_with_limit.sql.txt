@@ -1,0 +1,59 @@
+--- select_singer_with_limit.sql
+SELECT
+  *
+FROM
+  Singers
+LIMIT 100
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      35,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  25,
+        Expr: &parser.TableName{
+          end:   25,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   &parser.Limit{
+      Count: &parser.IntLit{
+        pos:   32,
+        end:   35,
+        Value: "100",
+      },
+      Offset: nil,
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM Singers LIMIT 100

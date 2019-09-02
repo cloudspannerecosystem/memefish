@@ -1,0 +1,23 @@
+SELECT
+  "abc!",
+  "a\nb!",
+  "\075!",
+  "\x3d!",
+  "\x3D!",
+  "\X3d!",
+  "\X3D!",
+  "\u203C!",
+  "\U0001F408!",
+  "it's",
+  'it\'s',
+  'Title: "Boy"',
+  """abc""",
+  '''it's''',
+  '''Title:"Boy"''',
+  '''two
+lines''',
+  '''why\?''',
+  R"abc+",
+  r'''abc+''',
+  R"""abc+""",
+  r'f\(abc,(.*),def\)'

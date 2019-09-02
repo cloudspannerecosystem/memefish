@@ -1,0 +1,110 @@
+--- select_singer_with_select_in_from_and_as.sql
+SELECT
+  *
+FROM (
+  SELECT
+    *
+  FROM
+    Singers
+  WHERE
+    SingerID = 1
+) as S
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      83,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  83,
+        Expr: &parser.SubQueryJoinExpr{
+          end:  83,
+          Expr: &parser.SubQuery{
+            pos:  16,
+            end:  78,
+            Expr: &parser.Select{
+              pos:      20,
+              end:      76,
+              Distinct: false,
+              AsStruct: false,
+              List:     parser.SelectExprList{
+                &parser.SelectExpr{
+                  pos:  31,
+                  end:  32,
+                  Expr: nil,
+                  Star: true,
+                  As:   (*parser.Ident)(nil),
+                },
+              },
+              From: parser.FromItemList{
+                &parser.FromItem{
+                  end:  51,
+                  Expr: &parser.TableName{
+                    end:   51,
+                    Ident: &parser.Ident{
+                      pos:  44,
+                      end:  51,
+                      Name: "Singers",
+                    },
+                    Hint: (*parser.Hint)(nil),
+                    As:   (*parser.Ident)(nil),
+                  },
+                  Method: "",
+                  Num:    nil,
+                  Rows:   false,
+                },
+              },
+              Where: &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.Ident{
+                  pos:  64,
+                  end:  72,
+                  Name: "SingerID",
+                },
+                Right: &parser.IntLit{
+                  pos:   75,
+                  end:   76,
+                  Value: "1",
+                },
+              },
+              GroupBy: parser.ExprList{},
+              Having:  nil,
+              OrderBy: parser.OrderExprList{},
+              Limit:   (*parser.Limit)(nil),
+            },
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.Ident{
+            pos:  82,
+            end:  83,
+            Name: "S",
+          },
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers WHERE SingerID = 1) AS S

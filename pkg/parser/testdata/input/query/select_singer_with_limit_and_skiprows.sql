@@ -1,0 +1,6 @@
+SELECT
+  *
+FROM
+  Singers
+LIMIT 100
+OFFSET 10

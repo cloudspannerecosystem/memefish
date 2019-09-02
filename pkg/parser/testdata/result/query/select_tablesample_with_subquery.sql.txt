@@ -1,0 +1,92 @@
+--- select_tablesample_with_subquery.sql
+SELECT
+  *
+FROM
+  (SELECT * FROM Singers) TABLESAMPLE BERNOULLI (90 PERCENT)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      76,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  76,
+        Expr: &parser.SubQueryJoinExpr{
+          end:  41,
+          Expr: &parser.SubQuery{
+            pos:  18,
+            end:  41,
+            Expr: &parser.Select{
+              pos:      19,
+              end:      40,
+              Distinct: false,
+              AsStruct: false,
+              List:     parser.SelectExprList{
+                &parser.SelectExpr{
+                  pos:  26,
+                  end:  27,
+                  Expr: nil,
+                  Star: true,
+                  As:   (*parser.Ident)(nil),
+                },
+              },
+              From: parser.FromItemList{
+                &parser.FromItem{
+                  end:  40,
+                  Expr: &parser.TableName{
+                    end:   40,
+                    Ident: &parser.Ident{
+                      pos:  33,
+                      end:  40,
+                      Name: "Singers",
+                    },
+                    Hint: (*parser.Hint)(nil),
+                    As:   (*parser.Ident)(nil),
+                  },
+                  Method: "",
+                  Num:    nil,
+                  Rows:   false,
+                },
+              },
+              Where:   nil,
+              GroupBy: parser.ExprList{},
+              Having:  nil,
+              OrderBy: parser.OrderExprList{},
+              Limit:   (*parser.Limit)(nil),
+            },
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "BERNOULLI",
+        Num:    &parser.IntLit{
+          pos:   65,
+          end:   67,
+          Value: "90",
+        },
+        Rows: false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers) TABLESAMPLE BERNOULLI(90 PERCENT)

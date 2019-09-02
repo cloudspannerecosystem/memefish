@@ -1,0 +1,79 @@
+--- select_unnest_with_offset_and_alias_min.sql
+SELECT
+  *
+FROM
+  UNNEST([1,2,3]) value WITH OFFSET num
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      55,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  55,
+        Expr: &parser.Unnest{
+          pos:  18,
+          end:  55,
+          Expr: &parser.ArrayLit{
+            pos:    25,
+            end:    32,
+            Type:   (*parser.Type)(nil),
+            Values: parser.ExprList{
+              &parser.IntLit{
+                pos:   26,
+                end:   27,
+                Value: "1",
+              },
+              &parser.IntLit{
+                pos:   28,
+                end:   29,
+                Value: "2",
+              },
+              &parser.IntLit{
+                pos:   30,
+                end:   31,
+                Value: "3",
+              },
+            },
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.Ident{
+            pos:  34,
+            end:  39,
+            Name: "value",
+          },
+          WithOffset:   true,
+          WithOffsetAs: &parser.Ident{
+            pos:  52,
+            end:  55,
+            Name: "num",
+          },
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM UNNEST(ARRAY[1, 2, 3]) AS value WITH OFFSET num

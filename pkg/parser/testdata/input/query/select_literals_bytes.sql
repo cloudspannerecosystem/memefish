@@ -1,0 +1,11 @@
+SELECT
+  B"abc",
+  B'''abc''',
+  b"""abc""",
+  b"""abc\n""",
+  br'abc+',
+  RB"abc+",
+  RB'''abc''',
+  RB'''abc\n''',
+  B"\000",
+  B"\077\077\077"

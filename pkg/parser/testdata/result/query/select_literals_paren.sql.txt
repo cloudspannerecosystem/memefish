@@ -1,0 +1,39 @@
+--- select_literals_paren.sql
+SELECT (1)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      10,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  7,
+        end:  10,
+        Expr: &parser.ParenExpr{
+          pos:  7,
+          end:  10,
+          Expr: &parser.IntLit{
+            pos:   8,
+            end:   9,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT (1)

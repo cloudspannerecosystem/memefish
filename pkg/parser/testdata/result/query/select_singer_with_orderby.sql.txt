@@ -1,0 +1,83 @@
+--- select_singer_with_orderby.sql
+SELECT
+  *
+FROM
+  Singers
+ORDER BY
+  FirstName,
+  LastName ASC,
+  BirthDate DESC
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      80,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  25,
+        Expr: &parser.TableName{
+          end:   25,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{
+      &parser.OrderExpr{
+        end:  46,
+        Expr: &parser.Ident{
+          pos:  37,
+          end:  46,
+          Name: "FirstName",
+        },
+        Dir: "ASC",
+      },
+      &parser.OrderExpr{
+        end:  62,
+        Expr: &parser.Ident{
+          pos:  50,
+          end:  58,
+          Name: "LastName",
+        },
+        Dir: "ASC",
+      },
+      &parser.OrderExpr{
+        end:  80,
+        Expr: &parser.Ident{
+          pos:  66,
+          end:  75,
+          Name: "BirthDate",
+        },
+        Dir: "DESC",
+      },
+    },
+    Limit: (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers ORDER BY FirstName ASC, LastName ASC, BirthDate DESC

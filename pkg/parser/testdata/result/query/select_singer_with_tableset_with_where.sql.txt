@@ -1,0 +1,123 @@
+--- select_singer_with_tableset_with_where.sql
+SELECT * FROM Singers
+UNION ALL
+SELECT * FROM Singers
+WHERE
+  SingerId = 1
+ORDER BY
+  FirstName
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.CompoundQuery{
+    end:      95,
+    Op:       "UNION",
+    Distinct: false,
+    List:     []parser.QueryExpr{
+      &parser.Select{
+        pos:      0,
+        end:      21,
+        Distinct: false,
+        AsStruct: false,
+        List:     parser.SelectExprList{
+          &parser.SelectExpr{
+            pos:  7,
+            end:  8,
+            Expr: nil,
+            Star: true,
+            As:   (*parser.Ident)(nil),
+          },
+        },
+        From: parser.FromItemList{
+          &parser.FromItem{
+            end:  21,
+            Expr: &parser.TableName{
+              end:   21,
+              Ident: &parser.Ident{
+                pos:  14,
+                end:  21,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   (*parser.Ident)(nil),
+            },
+            Method: "",
+            Num:    nil,
+            Rows:   false,
+          },
+        },
+        Where:   nil,
+        GroupBy: parser.ExprList{},
+        Having:  nil,
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.Select{
+        pos:      32,
+        end:      74,
+        Distinct: false,
+        AsStruct: false,
+        List:     parser.SelectExprList{
+          &parser.SelectExpr{
+            pos:  39,
+            end:  40,
+            Expr: nil,
+            Star: true,
+            As:   (*parser.Ident)(nil),
+          },
+        },
+        From: parser.FromItemList{
+          &parser.FromItem{
+            end:  53,
+            Expr: &parser.TableName{
+              end:   53,
+              Ident: &parser.Ident{
+                pos:  46,
+                end:  53,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   (*parser.Ident)(nil),
+            },
+            Method: "",
+            Num:    nil,
+            Rows:   false,
+          },
+        },
+        Where: &parser.BinaryExpr{
+          Op:   "=",
+          Left: &parser.Ident{
+            pos:  62,
+            end:  70,
+            Name: "SingerId",
+          },
+          Right: &parser.IntLit{
+            pos:   73,
+            end:   74,
+            Value: "1",
+          },
+        },
+        GroupBy: parser.ExprList{},
+        Having:  nil,
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+    },
+    OrderBy: parser.OrderExprList{
+      &parser.OrderExpr{
+        end:  95,
+        Expr: &parser.Ident{
+          pos:  86,
+          end:  95,
+          Name: "FirstName",
+        },
+        Dir: "ASC",
+      },
+    },
+    Limit: (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers UNION ALL SELECT * FROM Singers WHERE SingerId = 1 ORDER BY FirstName ASC

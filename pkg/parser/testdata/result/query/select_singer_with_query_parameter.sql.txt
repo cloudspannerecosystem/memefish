@@ -1,0 +1,80 @@
+--- select_singer_with_query_parameter.sql
+SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = @singerID
+  AND @singerID = SingerID
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      81,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  25,
+        Expr: &parser.TableName{
+          end:   25,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where: &parser.BinaryExpr{
+      Op:   "AND",
+      Left: &parser.BinaryExpr{
+        Op:   "=",
+        Left: &parser.Ident{
+          pos:  34,
+          end:  42,
+          Name: "SingerID",
+        },
+        Right: &parser.Param{
+          pos:  45,
+          Name: "singerID",
+        },
+      },
+      Right: &parser.BinaryExpr{
+        Op:   "=",
+        Left: &parser.Param{
+          pos:  61,
+          Name: "singerID",
+        },
+        Right: &parser.Ident{
+          pos:  73,
+          end:  81,
+          Name: "SingerID",
+        },
+      },
+    },
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers WHERE SingerID = @singerID AND @singerID = SingerID

@@ -1,0 +1,59 @@
+--- select_tablesample_with_table_alias.sql
+SELECT
+  *
+FROM
+  Singers AS S TABLESAMPLE BERNOULLI (90 PERCENT)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      65,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  65,
+        Expr: &parser.TableName{
+          end:   30,
+          Ident: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.Ident{
+            pos:  29,
+            end:  30,
+            Name: "S",
+          },
+        },
+        Method: "BERNOULLI",
+        Num:    &parser.IntLit{
+          pos:   54,
+          end:   56,
+          Value: "90",
+        },
+        Rows: false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers AS S TABLESAMPLE BERNOULLI(90 PERCENT)

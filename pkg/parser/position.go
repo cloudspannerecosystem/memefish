@@ -363,3 +363,6 @@ func (t *Type) End() Pos { return t.end }
 
 func (c *CastIntValue) Pos() Pos { return c.pos }
 func (c *CastIntValue) End() Pos { return c.end }
+
+func (c *CastNumValue) Pos() Pos { return c.pos }
+func (c *CastNumValue) End() Pos { return c.end }

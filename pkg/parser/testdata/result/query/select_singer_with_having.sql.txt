@@ -1,0 +1,77 @@
+--- select_singer_with_having.sql
+SELECT
+  SingerID
+FROM
+  Singers
+GROUP BY
+  SingerID
+HAVING
+  SingerID = 1
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      74,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  17,
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  17,
+          Name: "SingerID",
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  32,
+        Expr: &parser.TableName{
+          end:   32,
+          Ident: &parser.Ident{
+            pos:  25,
+            end:  32,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   (*parser.Ident)(nil),
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{
+      &parser.Ident{
+        pos:  44,
+        end:  52,
+        Name: "SingerID",
+      },
+    },
+    Having: &parser.BinaryExpr{
+      Op:   "=",
+      Left: &parser.Ident{
+        pos:  62,
+        end:  70,
+        Name: "SingerID",
+      },
+      Right: &parser.IntLit{
+        pos:   73,
+        end:   74,
+        Value: "1",
+      },
+    },
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT SingerID FROM Singers GROUP BY SingerID HAVING SingerID = 1

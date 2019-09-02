@@ -1,0 +1,94 @@
+--- select_singer_with_join_using.sql
+SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN
+  Singers B
+  USING (SingerID, FirstName)
+
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      87,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  9,
+        end:  10,
+        Expr: nil,
+        Star: true,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From: parser.FromItemList{
+      &parser.FromItem{
+        end:  87,
+        Expr: &parser.Join{
+          Op:     "LEFT OUTER",
+          Method: "",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.TableName{
+            end:   27,
+            Ident: &parser.Ident{
+              pos:  18,
+              end:  25,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.Ident{
+              pos:  26,
+              end:  27,
+              Name: "A",
+            },
+          },
+          Right: &parser.TableName{
+            end:   57,
+            Ident: &parser.Ident{
+              pos:  48,
+              end:  55,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.Ident{
+              pos:  56,
+              end:  57,
+              Name: "B",
+            },
+          },
+          Cond: &parser.JoinCondition{
+            pos:   60,
+            end:   87,
+            On:    nil,
+            Using: parser.IdentList{
+              &parser.Ident{
+                pos:  67,
+                end:  75,
+                Name: "SingerID",
+              },
+              &parser.Ident{
+                pos:  77,
+                end:  86,
+                Name: "FirstName",
+              },
+            },
+          },
+        },
+        Method: "",
+        Num:    nil,
+        Rows:   false,
+      },
+    },
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B USING (SingerID, FirstName)

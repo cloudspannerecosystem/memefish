@@ -113,9 +113,9 @@ var lexerTestCases = []struct {
 	{`BR"foo"`, []*Token{{Kind: TokenBytes, Raw: `BR"foo"`, AsString: "foo"}}},
 }
 
-var lexerWrongTestCase = []struct{
-	source string
-	pos Pos
+var lexerWrongTestCase = []struct {
+	source  string
+	pos     Pos
 	message string
 }{
 	{"?", 0, "illegal input character: '?'"},
