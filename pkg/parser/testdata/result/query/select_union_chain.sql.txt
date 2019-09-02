@@ -1,0 +1,120 @@
+--- select_union_chain.sql
+(select 1) union all (select 2) union all (select 3)
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.CompoundQuery{
+    end:      52,
+    Op:       "UNION",
+    Distinct: false,
+    List:     []parser.QueryExpr{
+      &parser.SubQueryExpr{
+        end:  10,
+        Expr: &parser.SubQuery{
+          pos:  0,
+          end:  10,
+          Expr: &parser.Select{
+            pos:      1,
+            end:      9,
+            Distinct: false,
+            AsStruct: false,
+            List:     parser.SelectExprList{
+              &parser.SelectExpr{
+                pos:  8,
+                end:  9,
+                Expr: &parser.IntLit{
+                  pos:   8,
+                  end:   9,
+                  Value: "1",
+                },
+                Star: false,
+                As:   (*parser.Ident)(nil),
+              },
+            },
+            From:    parser.FromItemList{},
+            Where:   nil,
+            GroupBy: parser.ExprList{},
+            Having:  nil,
+            OrderBy: parser.OrderExprList{},
+            Limit:   (*parser.Limit)(nil),
+          },
+        },
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.SubQueryExpr{
+        end:  31,
+        Expr: &parser.SubQuery{
+          pos:  21,
+          end:  31,
+          Expr: &parser.Select{
+            pos:      22,
+            end:      30,
+            Distinct: false,
+            AsStruct: false,
+            List:     parser.SelectExprList{
+              &parser.SelectExpr{
+                pos:  29,
+                end:  30,
+                Expr: &parser.IntLit{
+                  pos:   29,
+                  end:   30,
+                  Value: "2",
+                },
+                Star: false,
+                As:   (*parser.Ident)(nil),
+              },
+            },
+            From:    parser.FromItemList{},
+            Where:   nil,
+            GroupBy: parser.ExprList{},
+            Having:  nil,
+            OrderBy: parser.OrderExprList{},
+            Limit:   (*parser.Limit)(nil),
+          },
+        },
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.SubQueryExpr{
+        end:  52,
+        Expr: &parser.SubQuery{
+          pos:  42,
+          end:  52,
+          Expr: &parser.Select{
+            pos:      43,
+            end:      51,
+            Distinct: false,
+            AsStruct: false,
+            List:     parser.SelectExprList{
+              &parser.SelectExpr{
+                pos:  50,
+                end:  51,
+                Expr: &parser.IntLit{
+                  pos:   50,
+                  end:   51,
+                  Value: "3",
+                },
+                Star: false,
+                As:   (*parser.Ident)(nil),
+              },
+            },
+            From:    parser.FromItemList{},
+            Where:   nil,
+            GroupBy: parser.ExprList{},
+            Having:  nil,
+            OrderBy: parser.OrderExprList{},
+            Limit:   (*parser.Limit)(nil),
+          },
+        },
+        OrderBy: parser.OrderExprList{},
+        Limit:   (*parser.Limit)(nil),
+      },
+    },
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+(SELECT 1) UNION ALL (SELECT 2) UNION ALL (SELECT 3)

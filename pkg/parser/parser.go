@@ -765,9 +765,9 @@ func (p *Parser) parseComparison() Expr {
 			}
 		case "BETWEEN":
 			p.NextToken()
-			rightStart := p.parseExpr()
+			rightStart := p.parseBitOr()
 			p.expect("AND")
-			rightEnd := p.parseExpr()
+			rightEnd := p.parseBitOr()
 			return &BetweenExpr{
 				Not:        true,
 				Left:       expr,
@@ -786,10 +786,13 @@ func (p *Parser) parseComparison() Expr {
 		}
 		switch p.Token.Kind {
 		case "NULL":
+			p.NextToken()
 			return &IsNullExpr{Left: expr, Not: not}
 		case "TRUE":
+			p.NextToken()
 			return &IsBoolExpr{Left: expr, Not: not, Right: true}
 		case "FALSE":
+			p.NextToken()
 			return &IsBoolExpr{Left: expr, Not: not, Right: false}
 		default:
 			p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, but: %s", p.Token.Kind)
@@ -1275,8 +1278,8 @@ func (p *Parser) parseLit() Expr {
 			part = NanoSecondPart
 		case strings.EqualFold(id.AsString, "MICROSECOND"):
 			part = MicroSecondPart
-		case strings.EqualFold(id.AsString, "MILLSECOND"):
-			part = MillSecondPart
+		case strings.EqualFold(id.AsString, "MILLISECOND"):
+			part = MilliSecondPart
 		case strings.EqualFold(id.AsString, "SECOND"):
 			part = SecondPart
 		case strings.EqualFold(id.AsString, "MINUTE"):
@@ -1295,10 +1298,8 @@ func (p *Parser) parseLit() Expr {
 			part = ISOWeekPart
 		case strings.EqualFold(id.AsString, "MONTH"):
 			part = MonthPart
-		case strings.EqualFold(id.AsString, "MONTH"):
-			part = MonthPart
 		case strings.EqualFold(id.AsString, "QUARTER"):
-			part = QuaterPart
+			part = QuarterPart
 		case strings.EqualFold(id.AsString, "YEAR"):
 			part = YearPart
 		case strings.EqualFold(id.AsString, "ISOYEAR"):
@@ -1517,8 +1518,8 @@ func (p *Parser) parseArg() *Arg {
 		part = NanoSecondPart
 	case strings.EqualFold(id.AsString, "MICROSECOND"):
 		part = MicroSecondPart
-	case strings.EqualFold(id.AsString, "MILLSECOND"):
-		part = MillSecondPart
+	case strings.EqualFold(id.AsString, "MILLISECOND"):
+		part = MilliSecondPart
 	case strings.EqualFold(id.AsString, "SECOND"):
 		part = SecondPart
 	case strings.EqualFold(id.AsString, "MINUTE"):
@@ -1531,10 +1532,8 @@ func (p *Parser) parseArg() *Arg {
 		part = WeekPart
 	case strings.EqualFold(id.AsString, "MONTH"):
 		part = MonthPart
-	case strings.EqualFold(id.AsString, "MONTH"):
-		part = MonthPart
 	case strings.EqualFold(id.AsString, "QUARTER"):
-		part = QuaterPart
+		part = QuarterPart
 	case strings.EqualFold(id.AsString, "YEAR"):
 		part = YearPart
 	default:
@@ -1649,6 +1648,7 @@ func (p *Parser) parseType() *Type {
 		p.NextToken()
 		switch p.Token.Kind {
 		case "<>":
+			p.NextToken()
 			return &Type{
 				pos:    pos,
 				end:    p.Token.End,

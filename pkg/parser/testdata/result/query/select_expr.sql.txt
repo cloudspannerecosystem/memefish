@@ -1,0 +1,547 @@
+--- select_expr.sql
+select 1 + 2, 1 - 2,
+       1 * 2, 2 / 2,
+       +1++1, -1+-1,
+       1 ^ 2, 2 & 1, 2 | 1,
+       1 << 2, 2 >> 1,
+       foo.bar,
+       (select 1 `1`).1,
+       [1, 2, 3][offset(1)],
+       [1, 2, 3][`offset`(1)],
+       [1, 2, 3][ordinal(1)],
+       case
+       when 1 = 1 then "1 = 1"
+       else            "else"
+       end,
+       case 1
+       when 1 then "1"
+       when 2 then "2"
+       else        "other"
+       end,
+       date_add(date "2019-09-01", interval 5 day)
+--- AST
+&parser.QueryStatement{
+  Hint: (*parser.Hint)(nil),
+  Expr: &parser.Select{
+    pos:      0,
+    end:      479,
+    Distinct: false,
+    AsStruct: false,
+    List:     parser.SelectExprList{
+      &parser.SelectExpr{
+        pos:  7,
+        end:  12,
+        Expr: &parser.BinaryExpr{
+          Op:   "+",
+          Left: &parser.IntLit{
+            pos:   7,
+            end:   8,
+            Value: "1",
+          },
+          Right: &parser.IntLit{
+            pos:   11,
+            end:   12,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  14,
+        end:  19,
+        Expr: &parser.BinaryExpr{
+          Op:   "-",
+          Left: &parser.IntLit{
+            pos:   14,
+            end:   15,
+            Value: "1",
+          },
+          Right: &parser.IntLit{
+            pos:   18,
+            end:   19,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  28,
+        end:  33,
+        Expr: &parser.BinaryExpr{
+          Op:   "*",
+          Left: &parser.IntLit{
+            pos:   28,
+            end:   29,
+            Value: "1",
+          },
+          Right: &parser.IntLit{
+            pos:   32,
+            end:   33,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  35,
+        end:  40,
+        Expr: &parser.BinaryExpr{
+          Op:   "/",
+          Left: &parser.IntLit{
+            pos:   35,
+            end:   36,
+            Value: "2",
+          },
+          Right: &parser.IntLit{
+            pos:   39,
+            end:   40,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  49,
+        end:  54,
+        Expr: &parser.BinaryExpr{
+          Op:   "+",
+          Left: &parser.IntLit{
+            pos:   49,
+            end:   51,
+            Value: "+1",
+          },
+          Right: &parser.IntLit{
+            pos:   52,
+            end:   54,
+            Value: "+1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  56,
+        end:  61,
+        Expr: &parser.BinaryExpr{
+          Op:   "+",
+          Left: &parser.IntLit{
+            pos:   56,
+            end:   58,
+            Value: "-1",
+          },
+          Right: &parser.IntLit{
+            pos:   59,
+            end:   61,
+            Value: "-1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  70,
+        end:  75,
+        Expr: &parser.BinaryExpr{
+          Op:   "^",
+          Left: &parser.IntLit{
+            pos:   70,
+            end:   71,
+            Value: "1",
+          },
+          Right: &parser.IntLit{
+            pos:   74,
+            end:   75,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  77,
+        end:  82,
+        Expr: &parser.BinaryExpr{
+          Op:   "&",
+          Left: &parser.IntLit{
+            pos:   77,
+            end:   78,
+            Value: "2",
+          },
+          Right: &parser.IntLit{
+            pos:   81,
+            end:   82,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  84,
+        end:  89,
+        Expr: &parser.BinaryExpr{
+          Op:   "|",
+          Left: &parser.IntLit{
+            pos:   84,
+            end:   85,
+            Value: "2",
+          },
+          Right: &parser.IntLit{
+            pos:   88,
+            end:   89,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  98,
+        end:  104,
+        Expr: &parser.BinaryExpr{
+          Op:   "<<",
+          Left: &parser.IntLit{
+            pos:   98,
+            end:   99,
+            Value: "1",
+          },
+          Right: &parser.IntLit{
+            pos:   103,
+            end:   104,
+            Value: "2",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  106,
+        end:  112,
+        Expr: &parser.BinaryExpr{
+          Op:   ">>",
+          Left: &parser.IntLit{
+            pos:   106,
+            end:   107,
+            Value: "2",
+          },
+          Right: &parser.IntLit{
+            pos:   111,
+            end:   112,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  121,
+        end:  128,
+        Expr: &parser.SelectorExpr{
+          Left: &parser.Ident{
+            pos:  121,
+            end:  124,
+            Name: "foo",
+          },
+          Right: &parser.Ident{
+            pos:  125,
+            end:  128,
+            Name: "bar",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  137,
+        end:  153,
+        Expr: &parser.SelectorExpr{
+          Left: &parser.SubQuery{
+            pos:  137,
+            end:  151,
+            Expr: &parser.Select{
+              pos:      138,
+              end:      150,
+              Distinct: false,
+              AsStruct: false,
+              List:     parser.SelectExprList{
+                &parser.SelectExpr{
+                  pos:  145,
+                  end:  150,
+                  Expr: &parser.IntLit{
+                    pos:   145,
+                    end:   146,
+                    Value: "1",
+                  },
+                  Star: false,
+                  As:   &parser.Ident{
+                    pos:  147,
+                    end:  150,
+                    Name: "1",
+                  },
+                },
+              },
+              From:    parser.FromItemList{},
+              Where:   nil,
+              GroupBy: parser.ExprList{},
+              Having:  nil,
+              OrderBy: parser.OrderExprList{},
+              Limit:   (*parser.Limit)(nil),
+            },
+          },
+          Right: &parser.Ident{
+            pos:  152,
+            end:  153,
+            Name: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  162,
+        end:  182,
+        Expr: &parser.IndexExpr{
+          end:     182,
+          Ordinal: false,
+          Left:    &parser.ArrayLit{
+            pos:    162,
+            end:    171,
+            Type:   (*parser.Type)(nil),
+            Values: parser.ExprList{
+              &parser.IntLit{
+                pos:   163,
+                end:   164,
+                Value: "1",
+              },
+              &parser.IntLit{
+                pos:   166,
+                end:   167,
+                Value: "2",
+              },
+              &parser.IntLit{
+                pos:   169,
+                end:   170,
+                Value: "3",
+              },
+            },
+          },
+          Right: &parser.IntLit{
+            pos:   179,
+            end:   180,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  191,
+        end:  213,
+        Expr: &parser.IndexExpr{
+          end:     213,
+          Ordinal: false,
+          Left:    &parser.ArrayLit{
+            pos:    191,
+            end:    200,
+            Type:   (*parser.Type)(nil),
+            Values: parser.ExprList{
+              &parser.IntLit{
+                pos:   192,
+                end:   193,
+                Value: "1",
+              },
+              &parser.IntLit{
+                pos:   195,
+                end:   196,
+                Value: "2",
+              },
+              &parser.IntLit{
+                pos:   198,
+                end:   199,
+                Value: "3",
+              },
+            },
+          },
+          Right: &parser.IntLit{
+            pos:   210,
+            end:   211,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  222,
+        end:  243,
+        Expr: &parser.IndexExpr{
+          end:     243,
+          Ordinal: true,
+          Left:    &parser.ArrayLit{
+            pos:    222,
+            end:    231,
+            Type:   (*parser.Type)(nil),
+            Values: parser.ExprList{
+              &parser.IntLit{
+                pos:   223,
+                end:   224,
+                Value: "1",
+              },
+              &parser.IntLit{
+                pos:   226,
+                end:   227,
+                Value: "2",
+              },
+              &parser.IntLit{
+                pos:   229,
+                end:   230,
+                Value: "3",
+              },
+            },
+          },
+          Right: &parser.IntLit{
+            pos:   240,
+            end:   241,
+            Value: "1",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  252,
+        end:  328,
+        Expr: &parser.CaseExpr{
+          pos:  252,
+          end:  328,
+          Expr: nil,
+          When: []*parser.When{
+            &parser.When{
+              Cond: &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.IntLit{
+                  pos:   269,
+                  end:   270,
+                  Value: "1",
+                },
+                Right: &parser.IntLit{
+                  pos:   273,
+                  end:   274,
+                  Value: "1",
+                },
+              },
+              Then: &parser.StringLit{
+                pos:   280,
+                end:   287,
+                Value: "1 = 1",
+              },
+            },
+          },
+          Else: &parser.StringLit{
+            pos:   311,
+            end:   317,
+            Value: "else",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  337,
+        end:  427,
+        Expr: &parser.CaseExpr{
+          pos:  337,
+          end:  427,
+          Expr: &parser.IntLit{
+            pos:   342,
+            end:   343,
+            Value: "1",
+          },
+          When: []*parser.When{
+            &parser.When{
+              Cond: &parser.IntLit{
+                pos:   356,
+                end:   357,
+                Value: "1",
+              },
+              Then: &parser.StringLit{
+                pos:   363,
+                end:   366,
+                Value: "1",
+              },
+            },
+            &parser.When{
+              Cond: &parser.IntLit{
+                pos:   379,
+                end:   380,
+                Value: "2",
+              },
+              Then: &parser.StringLit{
+                pos:   386,
+                end:   389,
+                Value: "2",
+              },
+            },
+          },
+          Else: &parser.StringLit{
+            pos:   409,
+            end:   416,
+            Value: "other",
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+      &parser.SelectExpr{
+        pos:  436,
+        end:  479,
+        Expr: &parser.CallExpr{
+          end:  479,
+          Func: &parser.Ident{
+            pos:  436,
+            end:  444,
+            Name: "date_add",
+          },
+          Distinct: false,
+          Args:     parser.ArgList{
+            &parser.Arg{
+              pos:          445,
+              end:          462,
+              IntervalUnit: "",
+              Expr:         &parser.DateLit{
+                pos:   445,
+                end:   462,
+                Value: "2019-09-01",
+              },
+            },
+            &parser.Arg{
+              pos:          464,
+              end:          478,
+              IntervalUnit: "DAY",
+              Expr:         &parser.IntLit{
+                pos:   473,
+                end:   474,
+                Value: "5",
+              },
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
+    },
+    From:    parser.FromItemList{},
+    Where:   nil,
+    GroupBy: parser.ExprList{},
+    Having:  nil,
+    OrderBy: parser.OrderExprList{},
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar, (SELECT 1 AS `1`).`1`, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else"END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other"END, date_add(DATE "2019-09-01", INTERVAL 5 DAY)

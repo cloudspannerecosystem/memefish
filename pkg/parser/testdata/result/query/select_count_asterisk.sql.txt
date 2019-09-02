@@ -1,46 +1,41 @@
---- select_tablesample_with_table.sql
-SELECT
-  *
-FROM
-  Singers TABLESAMPLE BERNOULLI (90 PERCENT)
-
+--- select_count_asterisk.sql
+select count(*) from singers
 --- AST
 &parser.QueryStatement{
   Hint: (*parser.Hint)(nil),
   Expr: &parser.Select{
     pos:      0,
-    end:      60,
+    end:      28,
     Distinct: false,
     AsStruct: false,
     List:     parser.SelectExprList{
       &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
+        pos:  7,
+        end:  15,
+        Expr: &parser.CountStarExpr{
+          pos: 7,
+          end: 15,
+        },
+        Star: false,
         As:   (*parser.Ident)(nil),
       },
     },
     From: parser.FromItemList{
       &parser.FromItem{
-        end:  60,
+        end:  28,
         Expr: &parser.TableName{
-          end:   25,
+          end:   28,
           Ident: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+            pos:  21,
+            end:  28,
+            Name: "singers",
           },
           Hint: (*parser.Hint)(nil),
           As:   (*parser.Ident)(nil),
         },
-        Method: "BERNOULLI",
-        Num:    &parser.IntLit{
-          pos:   49,
-          end:   51,
-          Value: "90",
-        },
-        Rows: false,
+        Method: "",
+        Num:    nil,
+        Rows:   false,
       },
     },
     Where:   nil,
@@ -52,4 +47,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers TABLESAMPLE BERNOULLI (90 PERCENT)
+SELECT COUNT(*) FROM singers

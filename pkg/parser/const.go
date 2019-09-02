@@ -92,7 +92,7 @@ type ExtractPart string
 const (
 	NanoSecondPart  ExtractPart = "NANOSECOND"
 	MicroSecondPart ExtractPart = "MICROSECOND"
-	MillSecondPart  ExtractPart = "MICROSECOND"
+	MilliSecondPart ExtractPart = "MILLISECOND"
 	SecondPart      ExtractPart = "SECOND"
 	MinutePart      ExtractPart = "MINUTE"
 	HourPart        ExtractPart = "HOUR"
@@ -102,7 +102,7 @@ const (
 	WeekPart        ExtractPart = "WEEK"
 	ISOWeekPart     ExtractPart = "ISOWEEK"
 	MonthPart       ExtractPart = "MONTH"
-	QuaterPart      ExtractPart = "QUARTER"
+	QuarterPart     ExtractPart = "QUARTER"
 	YearPart        ExtractPart = "YEAR"
 	ISOYearPart     ExtractPart = "ISOYEAR"
 	DatePart        ExtractPart = "DATE"

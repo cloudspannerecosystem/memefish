@@ -6,13 +6,19 @@ FROM
   HASH JOIN
   Singers B
   ON A.SingerID = B.SingerID
+  APPLY JOIN
+  Singer C
+  ON B.SingerID = C.SingerID
+  LOOP JOIN
+  Singer D
+  ON C.SingerID = D.SingerID
 
 --- AST
 &parser.QueryStatement{
   Hint: (*parser.Hint)(nil),
   Expr: &parser.Select{
     pos:      0,
-    end:      80,
+    end:      185,
     Distinct: false,
     AsStruct: false,
     List:     parser.SelectExprList{
@@ -26,65 +32,167 @@ FROM
     },
     From: parser.FromItemList{
       &parser.FromItem{
-        end:  80,
+        end:  185,
         Expr: &parser.Join{
           Op:     "INNER",
-          Method: "HASH_JOIN",
+          Method: "LOOP_JOIN",
           Hint:   (*parser.Hint)(nil),
-          Left:   &parser.TableName{
-            end:   27,
-            Ident: &parser.Ident{
-              pos:  18,
-              end:  25,
-              Name: "Singers",
+          Left:   &parser.Join{
+            Op:     "INNER",
+            Method: "APPLY_JOIN",
+            Hint:   (*parser.Hint)(nil),
+            Left:   &parser.Join{
+              Op:     "INNER",
+              Method: "HASH_JOIN",
+              Hint:   (*parser.Hint)(nil),
+              Left:   &parser.TableName{
+                end:   27,
+                Ident: &parser.Ident{
+                  pos:  18,
+                  end:  25,
+                  Name: "Singers",
+                },
+                Hint: (*parser.Hint)(nil),
+                As:   &parser.Ident{
+                  pos:  26,
+                  end:  27,
+                  Name: "A",
+                },
+              },
+              Right: &parser.TableName{
+                end:   51,
+                Ident: &parser.Ident{
+                  pos:  42,
+                  end:  49,
+                  Name: "Singers",
+                },
+                Hint: (*parser.Hint)(nil),
+                As:   &parser.Ident{
+                  pos:  50,
+                  end:  51,
+                  Name: "B",
+                },
+              },
+              Cond: &parser.JoinCondition{
+                pos: 54,
+                end: 80,
+                On:  &parser.BinaryExpr{
+                  Op:   "=",
+                  Left: &parser.SelectorExpr{
+                    Left: &parser.Ident{
+                      pos:  57,
+                      end:  58,
+                      Name: "A",
+                    },
+                    Right: &parser.Ident{
+                      pos:  59,
+                      end:  67,
+                      Name: "SingerID",
+                    },
+                  },
+                  Right: &parser.SelectorExpr{
+                    Left: &parser.Ident{
+                      pos:  70,
+                      end:  71,
+                      Name: "B",
+                    },
+                    Right: &parser.Ident{
+                      pos:  72,
+                      end:  80,
+                      Name: "SingerID",
+                    },
+                  },
+                },
+                Using: parser.IdentList{},
+              },
             },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.Ident{
-              pos:  26,
-              end:  27,
-              Name: "A",
+            Right: &parser.TableName{
+              end:   104,
+              Ident: &parser.Ident{
+                pos:  96,
+                end:  102,
+                Name: "Singer",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.Ident{
+                pos:  103,
+                end:  104,
+                Name: "C",
+              },
+            },
+            Cond: &parser.JoinCondition{
+              pos: 107,
+              end: 133,
+              On:  &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.SelectorExpr{
+                  Left: &parser.Ident{
+                    pos:  110,
+                    end:  111,
+                    Name: "B",
+                  },
+                  Right: &parser.Ident{
+                    pos:  112,
+                    end:  120,
+                    Name: "SingerID",
+                  },
+                },
+                Right: &parser.SelectorExpr{
+                  Left: &parser.Ident{
+                    pos:  123,
+                    end:  124,
+                    Name: "C",
+                  },
+                  Right: &parser.Ident{
+                    pos:  125,
+                    end:  133,
+                    Name: "SingerID",
+                  },
+                },
+              },
+              Using: parser.IdentList{},
             },
           },
           Right: &parser.TableName{
-            end:   51,
+            end:   156,
             Ident: &parser.Ident{
-              pos:  42,
-              end:  49,
-              Name: "Singers",
+              pos:  148,
+              end:  154,
+              Name: "Singer",
             },
             Hint: (*parser.Hint)(nil),
             As:   &parser.Ident{
-              pos:  50,
-              end:  51,
-              Name: "B",
+              pos:  155,
+              end:  156,
+              Name: "D",
             },
           },
           Cond: &parser.JoinCondition{
-            pos: 54,
-            end: 80,
+            pos: 159,
+            end: 185,
             On:  &parser.BinaryExpr{
               Op:   "=",
               Left: &parser.SelectorExpr{
                 Left: &parser.Ident{
-                  pos:  57,
-                  end:  58,
-                  Name: "A",
+                  pos:  162,
+                  end:  163,
+                  Name: "C",
                 },
                 Right: &parser.Ident{
-                  pos:  59,
-                  end:  67,
+                  pos:  164,
+                  end:  172,
                   Name: "SingerID",
                 },
               },
               Right: &parser.SelectorExpr{
                 Left: &parser.Ident{
-                  pos:  70,
-                  end:  71,
-                  Name: "B",
+                  pos:  175,
+                  end:  176,
+                  Name: "D",
                 },
                 Right: &parser.Ident{
-                  pos:  72,
-                  end:  80,
+                  pos:  177,
+                  end:  185,
                   Name: "SingerID",
                 },
               },
@@ -106,4 +214,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID
+SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singer AS C ON B.SingerID = C.SingerID INNER JOIN Singer AS D ON C.SingerID = D.SingerID

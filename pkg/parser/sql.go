@@ -202,7 +202,7 @@ func (f *FromItem) SQL() string {
 		if f.Rows {
 			unit = "ROWS"
 		}
-		sql += " TABLESAMPLE " + string(f.Method) + "(" + f.Num.SQL() + " " + unit + ")"
+		sql += " TABLESAMPLE " + string(f.Method) + " (" + f.Num.SQL() + " " + unit + ")"
 	}
 	return sql
 }
@@ -451,7 +451,7 @@ func (c *CaseExpr) SQL() string {
 		sql += " " + c.Expr.SQL()
 	}
 	for _, w := range c.When {
-		sql += " WHEN" + w.SQL()
+		sql += " WHEN " + w.SQL()
 	}
 	if c.Else != nil {
 		sql += " ELSE " + c.Else.SQL()
@@ -498,6 +498,9 @@ func (i *Ident) SQL() string {
 
 func needIdentQuote(s string) bool {
 	if _, ok := keywordsMap[TokenKind(strings.ToUpper(s))]; ok {
+		return true
+	}
+	if !isIdentStart(s[0]) {
 		return true
 	}
 	for _, r := range s {
