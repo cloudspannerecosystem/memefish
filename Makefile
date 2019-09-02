@@ -12,7 +12,7 @@ lint:
 
 .PHONY: update-result
 update-result:
-	go run ./tools/update-result ./pkg/parser/testdata/input/query ./pkg/parser/testdata/result/query
+	richgo test -v ./pkg/parser/parser_test.go -update
 
 .PHONY: update-mod
 update-mod:

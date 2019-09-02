@@ -1,16 +1,21 @@
-package parser
+package parser_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/k0kubun/pp"
+	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/pmezard/go-difflib/difflib"
 )
+
+var update = flag.Bool("update", false, "update result files")
 
 func TestParser(t *testing.T) {
 	// Disable color output.
@@ -34,6 +39,20 @@ func TestParser(t *testing.T) {
 	inputPath := "./testdata/input/query"
 	resultPath := "./testdata/result/query"
 
+	if *update {
+		_, err := os.Stat(resultPath)
+		if err == nil {
+			err = os.RemoveAll(resultPath)
+			if err != nil {
+				log.Fatalf("error on remove result path: %v", err)
+			}
+		}
+		err = os.MkdirAll(resultPath, 0777)
+		if err != nil {
+			log.Fatalf("error on create result path: %v", err)
+		}
+	}
+
 	inputs, err := ioutil.ReadDir(inputPath)
 	if err != nil {
 		t.Fatalf("error on reading input path: %v", err)
@@ -45,14 +64,10 @@ func TestParser(t *testing.T) {
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
 			}
-			expected, err := ioutil.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
-			if err != nil {
-				t.Fatalf("error on reading result file: %v", err)
-			}
 
-			p := &Parser{
-				Lexer: &Lexer{
-					File: NewFile(in.Name(), string(b)),
+			p := &parser.Parser{
+				Lexer: &parser.Lexer{
+					File: parser.NewFile(in.Name(), string(b)),
 				},
 			}
 
@@ -76,6 +91,20 @@ func TestParser(t *testing.T) {
 
 			actual := buf.Bytes()
 
+			if *update {
+				t.Log("update " + in.Name() + ".txt")
+				err = ioutil.WriteFile(filepath.Join(resultPath, in.Name()+".txt"), buf.Bytes(), 0666)
+				if err != nil {
+					log.Fatalf("error on writing result file: %v", err)
+				}
+				return
+			}
+
+			expected, err := ioutil.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
+			if err != nil {
+				t.Fatalf("error on reading result file: %v", err)
+			}
+
 			if !bytes.Equal(actual, expected) {
 				diff := difflib.UnifiedDiff{
 					A:       difflib.SplitLines(string(expected)),
@@ -91,9 +120,9 @@ func TestParser(t *testing.T) {
 			}
 
 			s1 := stmt.SQL()
-			p1 := &Parser{
-				Lexer: &Lexer{
-					File: NewFile(in.Name()+"(SQL)", s1),
+			p1 := &parser.Parser{
+				Lexer: &parser.Lexer{
+					File: parser.NewFile(in.Name()+"(SQL)", s1),
 				},
 			}
 

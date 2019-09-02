@@ -18,13 +18,14 @@ select 1 + 2, 1 - 2,
        when 2 then "2"
        else        "other"
        end,
-       date_add(date "2019-09-01", interval 5 day)
+       date_add(date "2019-09-01", interval 5 day),
+       timestamp_add(timestamp "2019-09-01 08:11:22", interval 5 hour)
 --- AST
 &parser.QueryStatement{
   Hint: (*parser.Hint)(nil),
   Expr: &parser.Select{
     pos:      0,
-    end:      479,
+    end:      551,
     Distinct: false,
     AsStruct: false,
     List:     parser.SelectExprList{
@@ -533,6 +534,43 @@ select 1 + 2, 1 - 2,
         Star: false,
         As:   (*parser.Ident)(nil),
       },
+      &parser.SelectExpr{
+        pos:  488,
+        end:  551,
+        Expr: &parser.CallExpr{
+          end:  551,
+          Func: &parser.Ident{
+            pos:  488,
+            end:  501,
+            Name: "timestamp_add",
+          },
+          Distinct: false,
+          Args:     parser.ArgList{
+            &parser.Arg{
+              pos:          502,
+              end:          533,
+              IntervalUnit: "",
+              Expr:         &parser.TimestampLit{
+                pos:   502,
+                end:   533,
+                Value: "2019-09-01 08:11:22",
+              },
+            },
+            &parser.Arg{
+              pos:          535,
+              end:          550,
+              IntervalUnit: "HOUR",
+              Expr:         &parser.IntLit{
+                pos:   544,
+                end:   545,
+                Value: "5",
+              },
+            },
+          },
+        },
+        Star: false,
+        As:   (*parser.Ident)(nil),
+      },
     },
     From:    parser.FromItemList{},
     Where:   nil,
@@ -544,4 +582,4 @@ select 1 + 2, 1 - 2,
 }
 
 --- SQL
-SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar, (SELECT 1 AS `1`).`1`, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else"END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other"END, date_add(DATE "2019-09-01", INTERVAL 5 DAY)
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar, (SELECT 1 AS `1`).`1`, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else"END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other"END, date_add(DATE "2019-09-01", INTERVAL 5 DAY), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 HOUR)

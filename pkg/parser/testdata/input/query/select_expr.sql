@@ -17,4 +17,5 @@ select 1 + 2, 1 - 2,
        when 2 then "2"
        else        "other"
        end,
-       date_add(date "2019-09-01", interval 5 day)
+       date_add(date "2019-09-01", interval 5 day),
+       timestamp_add(timestamp "2019-09-01 08:11:22", interval 5 hour)
