@@ -76,20 +76,36 @@ func TestParser(t *testing.T) {
 
 			actual := buf.Bytes()
 
-			if bytes.Equal(actual, expected) {
+			if !bytes.Equal(actual, expected) {
+				diff := difflib.UnifiedDiff{
+					A:       difflib.SplitLines(string(expected)),
+					B:       difflib.SplitLines(string(actual)),
+					Context: 5,
+				}
+				d, err := difflib.GetUnifiedDiffString(diff)
+				if err != nil {
+					t.Fatalf("error on diff: %v", err)
+				}
+				t.Error(d)
 				return
 			}
 
-			diff := difflib.UnifiedDiff{
-				A:       difflib.SplitLines(string(expected)),
-				B:       difflib.SplitLines(string(actual)),
-				Context: 5,
+			s1 := stmt.SQL()
+			p1 := &Parser{
+				Lexer: &Lexer{
+					File: NewFile(in.Name() + "(SQL)", s1),
+				},
 			}
-			d, err := difflib.GetUnifiedDiffString(diff)
+
+			stmt1, err := p1.ParseQuery()
 			if err != nil {
-				t.Fatalf("error on diff: %v", err)
+				log.Fatalf("error on parsing unparsed SQL: %v", err)
 			}
-			t.Error(d)
+
+			s2 := stmt1.SQL()
+			if s1 != s2 {
+				t.Errorf("%q != %q", s1, s2)
+			}
 		})
 	}
 }

@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -491,7 +490,22 @@ func (p *Param) SQL() string {
 }
 
 func (i *Ident) SQL() string {
-	return i.Name // TODO: correct escape
+	if needIdentQuote(i.Name) {
+		return "`" + QuoteSQLString(i.Name) + "`"
+	}
+	return i.Name
+}
+
+func needIdentQuote(s string) bool {
+	if _, ok := keywordsMap[TokenKind(strings.ToUpper(s))]; ok {
+		return true
+	}
+	for _, r := range s {
+		if r > 0xff || !isIdentPart(byte(r)) {
+			return true
+		}
+	}
+	return false
 }
 
 func (i IdentList) SQL() string {
@@ -548,19 +562,19 @@ func (f *FloatLit) SQL() string {
 }
 
 func (s *StringLit) SQL() string {
-	return strconv.Quote(s.Value) // TODO: correct escape
+	return `"` + QuoteSQLString(s.Value) + `"`
 }
 
 func (b *BytesLit) SQL() string {
-	return "B" + strconv.Quote(string(b.Value)) // TODO: correct escape
+	return `B"` + QuoteSQLBytes(b.Value) + `"`
 }
 
 func (d *DateLit) SQL() string {
-	return "DATE" + strconv.Quote(d.Value) // TODO: correct escape
+	return `DATE "` + QuoteSQLString(d.Value) + `"`
 }
 
 func (t *TimestampLit) SQL() string {
-	return "TIMESTAMP" + strconv.Quote(t.Value) // TODO: correct escape
+	return `TIMESTAMP "` + QuoteSQLString(t.Value) + `"`
 }
 
 func (t *Type) SQL() string {
