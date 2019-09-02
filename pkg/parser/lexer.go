@@ -79,13 +79,6 @@ func isNextDotIdent(t TokenKind) bool {
 	return false
 }
 
-func toUpper(c byte) byte {
-	if 'a' <= c && c <= 'z' {
-		return c - 'a' + 'A'
-	}
-	return c
-}
-
 func (l *Lexer) NextToken() {
 	l.lastTokenKind = l.Token.Kind
 	l.Token = Token{}
@@ -105,7 +98,7 @@ func (l *Lexer) NextToken() {
 		l.nextToken()
 	}
 	l.Token.Raw = l.Buffer[i:l.pos]
-	l.Token.End = Pos(l.pos) + 1
+	l.Token.End = Pos(l.pos)
 }
 
 func (l *Lexer) nextToken() {
@@ -189,13 +182,12 @@ func (l *Lexer) nextToken() {
 		return
 	case 'B', 'b', 'R', 'r', '"', '\'':
 		bytes, raw := false, false
+	loop:
 		for i := 0; i < 3 && l.peekOk(i); i++ {
 			switch {
 			case !bytes && (l.peekIs(i, 'B') || l.peekIs(i, 'b')):
-				i++
 				bytes = true
 			case !raw && (l.peekIs(i, 'R') || l.peekIs(i, 'r')):
-				i++
 				raw = true
 			case l.peekIs(i, '"') || l.peekIs(i, '\''):
 				l.nextN(i)
@@ -211,7 +203,7 @@ func (l *Lexer) nextToken() {
 				}
 				return
 			default:
-				break
+				break loop
 			}
 		}
 	}
@@ -258,13 +250,6 @@ func (l *Lexer) nextNumber() {
 	i := 0
 	base := 10
 
-	switch {
-	case l.peekIs(i, '+'):
-		i++
-	case l.peekIs(i, '-'):
-		i++
-	}
-
 	if l.peekIs(i, '0') && (l.peekIs(i+1, 'x') || l.peekIs(i+1, 'X')) {
 		i += 2
 		base = 16
@@ -286,12 +271,14 @@ func (l *Lexer) nextNumber() {
 			int = false
 			continue
 		case !exp && base == 10 && (c == 'E' || c == 'e'):
+			rollback := i
 			i++
 			if l.peekIs(i, '+') || l.peekIs(i, '-') {
 				i++
 			}
 			if !(l.peekOk(i) && isDigit(l.peek(i))) {
-				l.panicf("invalid number literal")
+				i = rollback
+				break
 			}
 			exp = true
 			int = false
@@ -325,7 +312,7 @@ func (l *Lexer) nextRawString() {
 
 func (l *Lexer) nextString() {
 	l.Token.Kind = TokenString
-	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), false, true, "raw string literal")
+	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), false, true, "string literal")
 }
 
 func (l *Lexer) peekDelimiter() string {
@@ -342,6 +329,7 @@ func (l *Lexer) peekDelimiter() string {
 			triple = false
 			break
 		}
+		i++
 	}
 
 	switch {
@@ -374,7 +362,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) stri
 		if c == '\\' {
 			i++
 			if !l.peekOk(i) {
-				l.panicf("invalid escape sequence: \\<EOF>")
+				l.panicf("invalid escape sequence: \\<eof>")
 			}
 
 			c := l.peek(i)
@@ -430,14 +418,14 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) stri
 					l.panicf("invalid escape sequence: %v", err)
 				}
 				if 0xD800 <= u && u <= 0xDFFF || 0x10FFFF < u {
-					l.panicf("invalid escape sequence: invalid code point: %04x", u)
+					l.panicf("invalid escape sequence: invalid code point: U+%04X", u)
 				}
 				var buf [utf8.MaxRune]byte
 				n := utf8.EncodeRune(buf[:], rune(u))
 				content = append(content, buf[:n]...)
 				i += size
 			case '0', '1', '2', '3':
-				if l.peekOk(i+2) && isOctalDigit(l.peek(i+1)) && isOctalDigit(l.peek(i+2)) {
+				if !(l.peekOk(i+1) && isOctalDigit(l.peek(i)) && isOctalDigit(l.peek(i+1))) {
 					l.panicf("invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
 				}
 				u, err := strconv.ParseUint(l.slice(i-1, i+2), 8, 8)
@@ -451,6 +439,10 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) stri
 			}
 
 			continue
+		}
+
+		if c == '\n' && len(q) != 3 {
+			l.panicf("unclosed %s: newline appears in non triple-quoted", name)
 		}
 
 		content = append(content, c)
@@ -478,7 +470,8 @@ func (l *Lexer) skipSpaces() {
 
 func (l *Lexer) skipComment(end string) {
 	for !l.eof() {
-		if l.consume(end) {
+		if l.slice(0, len(end)) == end {
+			l.nextN(len(end))
 			return
 		}
 		l.next()
@@ -505,20 +498,6 @@ func (l *Lexer) next() byte {
 
 func (l *Lexer) nextN(n int) {
 	l.pos += n
-}
-
-func (l *Lexer) consume(s string) bool {
-	n := 0
-	for i, c := range []byte(s) {
-		if !l.peekIs(i, c) && !l.peekIs(i, toUpper(c)) {
-			return false
-		}
-		n++
-	}
-	for i := 0; i < n; i++ {
-		l.next()
-	}
-	return true
 }
 
 func (l *Lexer) slice(start, end int) string {

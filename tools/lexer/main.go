@@ -7,7 +7,7 @@ import (
 
 func main() {
 	l := &parser.Lexer{
-		File: parser.NewFile("[input]", "+12"),
+		File: parser.NewFile("[input]", `"\xff"`),
 	}
 
 	for {
@@ -15,6 +15,6 @@ func main() {
 		if l.Token.Kind == parser.TokenEOF {
 			return
 		}
-		_, _ = pp.Println(l.Token)
+		_, _ = pp.Println(l.Token, []byte(l.Token.AsString))
 	}
 }
