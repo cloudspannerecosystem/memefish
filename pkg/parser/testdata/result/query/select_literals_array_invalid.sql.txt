@@ -4,81 +4,78 @@ SELECT
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      42,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  42,
-        Expr: &parser.ArrayLit{
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:    9,
           end:    42,
-          Type:   (*parser.Type)(nil),
-          Values: parser.ExprList{
-            &parser.ArrayLit{
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.ArrayLiteral{
               pos:    10,
               end:    19,
-              Type:   (*parser.Type)(nil),
-              Values: parser.ExprList{
-                &parser.IntLit{
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
                   pos:   11,
                   end:   12,
                   Value: "1",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   14,
                   end:   15,
                   Value: "2",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   17,
                   end:   18,
                   Value: "3",
                 },
               },
             },
-            &parser.ArrayLit{
+            &parser.ArrayLiteral{
               pos:    21,
               end:    30,
-              Type:   (*parser.Type)(nil),
-              Values: parser.ExprList{
-                &parser.IntLit{
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
                   pos:   22,
                   end:   23,
                   Value: "2",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   25,
                   end:   26,
                   Value: "4",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   28,
                   end:   29,
                   Value: "6",
                 },
               },
             },
-            &parser.ArrayLit{
+            &parser.ArrayLiteral{
               pos:    32,
               end:    41,
-              Type:   (*parser.Type)(nil),
-              Values: parser.ExprList{
-                &parser.IntLit{
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
                   pos:   33,
                   end:   34,
                   Value: "3",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   36,
                   end:   37,
                   Value: "6",
                 },
-                &parser.IntLit{
+                &parser.IntLiteral{
                   pos:   39,
                   end:   40,
                   Value: "9",
@@ -87,15 +84,13 @@ SELECT
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

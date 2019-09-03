@@ -50,46 +50,51 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 }
 
 func (p *Parser) parseQueryStatement() *QueryStatement {
-	hint := p.parseHint()
-	expr := p.parseQueryExpr()
+	hint := p.tryParseHint()
+	query := p.parseQueryExpr()
 
 	return &QueryStatement{
-		Hint: hint,
-		Expr: expr,
+		Hint:  hint,
+		Query: query,
 	}
 }
 
-func (p *Parser) parseHint() *Hint {
+func (p *Parser) tryParseHint() *Hint {
 	if p.Token.Kind != "@" {
 		return nil
 	}
 
-	hint := &Hint{
-		pos: p.Token.Pos,
-		Map: make(map[string]Expr),
-	}
-
+	pos := p.Token.Pos
 	p.NextToken()
 	p.expect("{")
-
+	records := []*HintRecord{p.parseHintRecord()}
 	for p.Token.Kind != TokenEOF {
-		id := p.expect(TokenIdent)
-		p.expect("=")
-		val := p.parseExpr()
-		hint.Map[id.AsString] = val
-
 		if p.Token.Kind != "," {
 			break
 		}
 		p.NextToken()
+		records = append(records, p.parseHintRecord())
 	}
-	hint.end = p.expect("}").End
+	end := p.expect("}").End
+	return &Hint{
+		pos:     pos,
+		end:     end,
+		Records: records,
+	}
+}
 
-	return hint
+func (p *Parser) parseHintRecord() *HintRecord {
+	key := p.parseIdent()
+	p.expect("=")
+	value := p.parseExpr()
+	return &HintRecord{
+		Key:   key,
+		Value: value,
+	}
 }
 
 func (p *Parser) parseQueryExpr() QueryExpr {
-	q := p.parseSimpleQueryExpr()
+	query := p.parseSimpleQueryExpr()
 
 setOp:
 	for {
@@ -118,49 +123,36 @@ setOp:
 		}
 		p.NextToken()
 
-		e := p.parseSimpleQueryExpr()
-		if c, ok := q.(*CompoundQuery); ok {
+		right := p.parseSimpleQueryExpr()
+		if c, ok := query.(*CompoundQuery); ok {
 			if !(c.Op == op && c.Distinct == distinct) {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
-			c.List = append(c.List, e)
-			c.end = e.End()
+			c.Queries = append(c.Queries, right)
 		} else {
-			q = &CompoundQuery{
-				end:      e.End(),
+			query = &CompoundQuery{
 				Op:       op,
 				Distinct: distinct,
-				List:     []QueryExpr{q, e},
+				Queries:  []QueryExpr{query, right},
 			}
 		}
 	}
 
-	return p.parseQueryExprSuffix(q)
+	return p.parseQueryExprSuffix(query)
 }
 
 func (p *Parser) parseSimpleQueryExpr() QueryExpr {
-	if q := p.tryParseSubQuery(); q != nil {
-		return &SubQueryExpr{
-			end:  q.End(),
-			Expr: q,
-		}
-	}
-	// When p.Token.Kind is "(" even if p.tryParseSubQuery() returns nil,
-	// but it should be parsed as SubQuery like (e.g. ((select 1)).)
 	if p.Token.Kind == "(" {
-		pos := p.Token.Pos
-		p.NextToken()
-		q := p.parseQueryExpr()
+		pos := p.expect("(").Pos
+		query := p.parseQueryExpr()
 		end := p.expect(")").End
-		return &SubQueryExpr{
-			end: end,
-			Expr: &SubQuery{
-				pos:  pos,
-				end:  end,
-				Expr: q,
-			},
+		return &SubQuery{
+			pos:   pos,
+			end:   end,
+			Query: query,
 		}
 	}
+
 	return p.parseSelect()
 }
 
@@ -178,51 +170,17 @@ func (p *Parser) parseSelect() *Select {
 		asStruct = true
 	}
 
-	es := p.parseSelectExprList()
-	end := es.End()
-
-	var from FromItemList
-	if p.Token.Kind == "FROM" {
-		p.NextToken()
-		from = p.parseFromItemList()
-		end = from.End()
-	}
-
-	var where Expr
-	if p.Token.Kind == "WHERE" {
-		p.NextToken()
-		where = p.parseExpr()
-		end = where.End()
-	}
-
-	var groupBy ExprList
-	if p.Token.Kind == "GROUP" {
-		p.NextToken()
-		p.expect("BY")
-		groupBy = ExprList{p.parseExpr()}
-		for p.Token.Kind != TokenEOF {
-			if p.Token.Kind != "," {
-				break
-			}
-			p.NextToken()
-			groupBy = append(groupBy, p.parseExpr())
-		}
-		end = groupBy.End()
-	}
-
-	var having Expr
-	if p.Token.Kind == "HAVING" {
-		p.NextToken()
-		having = p.parseExpr()
-		end = having.End()
-	}
+	results := p.parseSelectResults()
+	from := p.tryParseFrom()
+	where := p.tryParseWhere()
+	groupBy := p.tryParseGroupBy()
+	having := p.tryParseHaving()
 
 	return &Select{
 		pos:      pos,
-		end:      end,
 		Distinct: distinct,
 		AsStruct: asStruct,
-		List:     es,
+		Results:  results,
 		From:     from,
 		Where:    where,
 		GroupBy:  groupBy,
@@ -230,130 +188,294 @@ func (p *Parser) parseSelect() *Select {
 	}
 }
 
-func (p *Parser) parseSelectExprList() SelectExprList {
-	es := SelectExprList{p.parseSelectExpr()}
+func (p *Parser) parseSelectResults() []SelectItem {
+	results := []SelectItem{p.parseSelectItem()}
 	for p.Token.Kind != TokenEOF {
 		if p.Token.Kind != "," {
 			break
 		}
 		p.NextToken()
-		es = append(es, p.parseSelectExpr())
+		results = append(results, p.parseSelectItem())
 	}
-	return es
+	return results
 }
 
-func (p *Parser) parseSelectExpr() *SelectExpr {
+func (p *Parser) parseSelectItem() SelectItem {
 	if p.Token.Kind == "*" {
-		e := &SelectExpr{
-			pos:  p.Token.Pos,
-			end:  p.Token.End,
-			Star: true,
+		star := p.expect("*")
+		return &Star{
+			pos: star.Pos,
 		}
-		p.NextToken()
-		return e
 	}
 
-	pos := p.Token.Pos
-	e := p.parseExpr()
-	switch p.Token.Kind {
-	case TokenIdent:
-		se := &SelectExpr{
-			pos:  pos,
-			end:  p.Token.End,
-			Expr: e,
-			As: &Ident{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: p.Token.AsString,
-			},
+	expr := p.parseExpr()
+	if as := p.tryParseAsAlias(); as != nil {
+		return &Alias{
+			Expr: expr,
+			As:   as,
 		}
-		p.NextToken()
-		return se
-	case "AS":
-		p.NextToken()
-		id := p.expect(TokenIdent)
-		return &SelectExpr{
-			pos:  pos,
-			end:  id.End,
-			Expr: e,
-			As: &Ident{
-				pos:  id.Pos,
-				end:  id.End,
-				Name: id.AsString,
-			},
-		}
-	case ".":
+	}
+
+	if p.Token.Kind == "." {
 		p.NextToken()
 		end := p.expect("*").End
-		return &SelectExpr{
-			pos:  pos,
+		return &StarPath{
 			end:  end,
-			Star: true,
-			Expr: e,
+			Expr: expr,
 		}
 	}
 
-	return &SelectExpr{
-		pos:  pos,
-		end:  e.End(),
-		Expr: e,
+	return &ExprSelectItem{
+		Expr: expr,
 	}
 }
 
-func (p *Parser) parseFromItemList() FromItemList {
-	from := FromItemList{p.parseFromItem()}
-	for p.Token.Kind != TokenEOF {
-		if p.Token.Kind != "," {
-			break
-		}
+func (p *Parser) tryParseAsAlias() *AsAlias {
+	pos := p.Token.Pos
+
+	if p.Token.Kind == "AS" {
 		p.NextToken()
-		from = append(from, p.parseFromItem())
+		id := p.parseIdent()
+		return &AsAlias{
+			pos:   pos,
+			Alias: id,
+		}
 	}
-	return from
+
+	if p.Token.Kind == TokenIdent {
+		id := p.parseIdent()
+		return &AsAlias{
+			pos:   pos,
+			Alias: id,
+		}
+	}
+
+	return nil
+}
+
+func (p *Parser) tryParseFrom() *From {
+	if p.Token.Kind != "FROM" {
+		return nil
+	}
+	pos := p.expect("FROM").Pos
+
+	items := []*FromItem{p.parseFromItem()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		items = append(items, p.parseFromItem())
+	}
+
+	return &From{
+		pos:   pos,
+		Items: items,
+	}
 }
 
 func (p *Parser) parseFromItem() *FromItem {
-	e := p.parseJoinExpr(false)
-	end := e.End()
-	var tableSample TableSampleMethod
-	var num NumValue
-	var rows bool
-	if p.Token.Kind == "TABLESAMPLE" {
-		p.NextToken()
-		id := p.expect(TokenIdent)
-		switch {
-		case strings.EqualFold(id.AsString, "BERNOULLI"):
-			tableSample = BernoulliSampleMethod
-		case strings.EqualFold(id.AsString, "RESERVOIR"):
-			tableSample = ReservoirSampleMethod
-		default:
-			p.panicfAtToken(&p.Token, "expected identifier: BERNOULLI, RESERVOIR, but: %s", p.Token.Raw)
-		}
-		p.expect("(")
-		num = p.parseNumValue()
-		if p.Token.Kind == "ROWS" {
-			rows = true
-			p.NextToken()
-		} else if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "PERCENT") {
-			p.panicfAtToken(id, "expected identifier: PERCENT, ROWS, but: %s", id.Raw)
-		}
-		end = p.expect(")").End
-	}
+	expr := p.parseJoinExpr(false)
+	tableSample := p.tryParseTableSample()
 	return &FromItem{
-		end:    end,
-		Expr:   e,
-		Method: tableSample,
-		Num:    num,
-		Rows:   rows,
+		Source:      expr,
+		TableSample: tableSample,
 	}
 }
+
+func (p *Parser) tryParseTableSample() *TableSample {
+	if p.Token.Kind != "TABLESAMPLE" {
+		return nil
+	}
+	pos := p.expect("TABLESAMPLE").Pos
+
+	id := p.expect(TokenIdent)
+	var method TableSampleMethod
+	switch {
+	case id.IsIdent("BERNOULLI"):
+		method = BernoulliSampleMethod
+	case id.IsIdent("RESERVOIR"):
+		method = ReservoirSampleMethod
+	default:
+		p.panicfAtToken(id, "expected identifier: BERNOULLI, RESERVOIR, but: %s", id.Raw)
+	}
+
+	size := p.parseTableSampleSize()
+
+	return &TableSample{
+		pos:    pos,
+		Method: method,
+		Size:   size,
+	}
+}
+
+func (p *Parser) parseTableSampleSize() *TableSampleSize {
+	pos := p.expect("(").Pos
+
+	value := p.parseNumValue()
+	var unit TableSampleUnit
+	switch {
+	case p.Token.Kind == "ROWS":
+		unit = RowsTableSampleUnit
+	case p.Token.IsKeywordLike("PERCENT"):
+		unit = PercentTableSampleUnit
+	default:
+		p.panicfAtToken(&p.Token, "expected token: ROWS, PERCENT, but: %s", p.Token.Kind)
+	}
+	p.NextToken()
+
+	end := p.expect(")").End
+	return &TableSampleSize{
+		pos:   pos,
+		end:   end,
+		Value: value,
+		Unit:  unit,
+	}
+}
+
+func (p *Parser) tryParseWhere() *Where {
+	if p.Token.Kind != "WHERE" {
+		return nil
+	}
+	pos := p.expect("WHERE").Pos
+	expr := p.parseExpr()
+	return &Where{
+		pos:  pos,
+		Expr: expr,
+	}
+}
+
+func (p *Parser) tryParseGroupBy() *GroupBy {
+	if p.Token.Kind != "GROUP" {
+		return nil
+	}
+	pos := p.expect("GROUP").Pos
+	p.expect("BY")
+	exprs := []Expr{p.parseExpr()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		exprs = append(exprs, p.parseExpr())
+	}
+
+	return &GroupBy{
+		pos:   pos,
+		Exprs: exprs,
+	}
+}
+
+func (p *Parser) tryParseHaving() *Having {
+	if p.Token.Kind != "HAVING" {
+		return nil
+	}
+	pos := p.expect("HAVING").Pos
+	expr := p.parseExpr()
+	return &Having{
+		pos:  pos,
+		Expr: expr,
+	}
+}
+
+func (p *Parser) parseQueryExprSuffix(e QueryExpr) QueryExpr {
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	e.setQueryExprSuffix(orderBy, limit)
+	return e
+}
+
+func (p *Parser) tryParseOrderBy() *OrderBy {
+	if p.Token.Kind != "ORDER" {
+		return nil
+	}
+
+	pos := p.expect("ORDER").Pos
+	p.expect("BY")
+
+	items := []*OrderByItem{p.parseOrderByItem()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		items = append(items, p.parseOrderByItem())
+	}
+
+	return &OrderBy{
+		pos:   pos,
+		Items: items,
+	}
+}
+
+func (p *Parser) parseOrderByItem() *OrderByItem {
+	expr := p.parseExpr()
+
+	var end Pos
+	collate := p.tryParseCollate()
+	if collate != nil {
+		end = collate.End()
+	}
+
+	var dir Direction
+	switch p.Token.Kind {
+	case "ASC":
+		end = p.expect("ASC").End
+		dir = DirectionAsc
+	case "DESC":
+		end = p.expect("DESC").End
+		dir = DirectionDesc
+	}
+
+	return &OrderByItem{
+		end:     end,
+		Expr:    expr,
+		Collate: collate,
+		Dir:     dir,
+	}
+}
+
+func (p *Parser) tryParseCollate() *Collate {
+	if p.Token.Kind != "COLLATE" {
+		return nil
+	}
+	pos := p.expect("COLLATE").Pos
+	value := p.parseStringValue()
+	return &Collate{
+		pos:   pos,
+		Value: value,
+	}
+}
+
+func (p *Parser) tryParseLimit() *Limit {
+	if p.Token.Kind != "LIMIT" {
+		return nil
+	}
+
+	pos := p.expect("LIMIT").Pos
+	count := p.parseIntValue()
+	offset := p.tryParseOffset()
+
+	return &Limit{
+		pos:    pos,
+		Count:  count,
+		Offset: offset,
+	}
+}
+
+func (p *Parser) tryParseOffset() *Offset {
+	if !p.Token.IsKeywordLike("OFFSET") {
+		return nil
+	}
+	pos := p.expectKeywordLike("OFFSET").Pos
+	value := p.parseIntValue()
+	return &Offset{
+		pos:   pos,
+		Value: value,
+	}
+}
+
+// ================================================================================
+//
+// JOIN
+//
+// ================================================================================
 
 func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 	j := p.parseSimpleJoinExpr()
 	for {
-		if _, ok := j.(*SubQueryJoinExpr); ok {
-			needOp = false
-		}
+		needOp = needOp && j.isSimpleJoinExpr()
 
 		op := InnerJoin
 		switch p.Token.Kind {
@@ -388,31 +510,32 @@ func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 		}
 
 		var method JoinMethod
-		if p.Token.Kind == "HASH" {
+		switch {
+		case p.Token.Kind == "HASH":
 			p.NextToken()
 			method = HashJoinMethod
 			needOp = true
-		} else if p.Token.Kind == TokenIdent {
-			if strings.EqualFold(p.Token.Raw, "APPLY") {
-				p.NextToken()
-				method = ApplyJoinMethod
-				needOp = true
-			} else if strings.EqualFold(p.Token.Raw, "LOOP") {
-				p.NextToken()
-				method = LoopJoinMethod
-				needOp = true
-			}
+		case p.Token.IsKeywordLike("APPLY"):
+			p.NextToken()
+			method = ApplyJoinMethod
+			needOp = true
+		case p.Token.IsKeywordLike("LOOP"):
+			p.NextToken()
+			method = LoopJoinMethod
+			needOp = true
 		}
-		if needOp {
+
+		switch {
+		case needOp:
 			p.expect("JOIN")
 			needOp = false
-		} else if p.Token.Kind == "JOIN" {
+		case p.Token.Kind == "JOIN":
 			p.NextToken()
-		} else {
+		default:
 			return j
 		}
 
-		hint := p.parseHint()
+		hint := p.tryParseHint()
 		right := p.parseSimpleJoinExpr()
 
 		if op == CrossJoin {
@@ -426,255 +549,200 @@ func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 			continue
 		}
 
-		var using IdentList
-		var on Expr
-		pos := p.Token.Pos
-		var end Pos
-		switch p.Token.Kind {
-		case "USING":
-			p.NextToken()
-			using = make(IdentList, 0)
-			p.expect("(")
-			if p.Token.Kind != ")" {
-				for p.Token.Kind != TokenEOF {
-					id := p.expect(TokenIdent)
-					using = append(using, &Ident{
-						pos:  id.Pos,
-						end:  id.End,
-						Name: id.AsString,
-					})
-					if p.Token.Kind != "," {
-						break
-					}
-					p.NextToken()
-				}
-			}
-			end = p.expect(")").End
-		case "ON":
-			p.NextToken()
-			on = p.parseExpr()
-			end = on.End()
-		}
+		cond := p.parseJoinCondition()
 		j = &Join{
 			Op:     op,
 			Method: method,
 			Hint:   hint,
 			Left:   j,
 			Right:  right,
-			Cond: &JoinCondition{
-				pos:   pos,
-				end:   end,
-				On:    on,
-				Using: using,
-			},
+			Cond:   cond,
 		}
 	}
+
+	/*
+			var using IdentList
+			var on Expr
+			pos := p.Token.Pos
+			var end Pos
+			switch p.Token.Kind {
+			case "USING":
+				p.NextToken()
+				using = make(IdentList, 0)
+				p.expect("(")
+				if p.Token.Kind != ")" {
+					for p.Token.Kind != TokenEOF {
+						id := p.expect(TokenIdent)
+						using = append(using, &Ident{
+							pos:  id.Pos,
+							end:  id.End,
+							Name: id.AsString,
+						})
+						if p.Token.Kind != "," {
+							break
+						}
+						p.NextToken()
+					}
+				}
+				end = p.expect(")").End
+			case "ON":
+				p.NextToken()
+				on = p.parseExpr()
+				end = on.End()
+			}
+			j = &Join{
+				Op:     op,
+				Method: method,
+				Hint:   hint,
+				Left:   j,
+				Right:  right,
+				Cond: &JoinCondition{
+					pos:   pos,
+					end:   end,
+					On:    on,
+					Using: using,
+				},
+			}
+		}
+	*/
 }
 
 func (p *Parser) parseSimpleJoinExpr() JoinExpr {
-	if q := p.tryParseSubQuery(); q != nil {
-		return p.parseSubQueryJoinExprSuffix(q)
+	if p.lookaheadSubQuery() {
+		pos := p.expect("(").Pos
+		query := p.parseQueryExpr()
+		end := p.expect(")").End
+		as := p.tryParseAsAlias()
+		if as != nil {
+			end = as.End()
+		}
+		return &SubQueryJoinExpr{
+			pos:   pos,
+			end:   end,
+			Query: query,
+			As:    as,
+		}
 	}
 
 	if p.Token.Kind == "(" {
-		pos := p.Token.Pos
-		p.NextToken()
+		pos := p.expect("(").Pos
 		j := p.parseJoinExpr(true)
 		end := p.expect(")").End
 		return &ParenJoinExpr{
-			pos:  pos,
-			end:  end,
-			Expr: j,
+			pos:    pos,
+			end:    end,
+			Source: j,
 		}
 	}
 
 	if p.Token.Kind == "UNNEST" {
-		pos := p.Token.Pos
-		p.NextToken()
+		pos := p.expect("UNNEST").Pos
 		p.expect("(")
-		e := p.parseExpr()
+		expr := p.parseExpr()
 		end := p.expect(")").End
-		return p.parseUnnestSuffix(e, pos, end)
+		return p.parseUnnestSuffix(false, expr, pos, end)
 	}
 
 	if p.Token.Kind == TokenIdent {
-		e := p.parsePath()
-		hint := p.parseHint()
-		as := p.parseAs()
-		end := e.End()
-		if as != nil {
-			end = as.End()
-		} else if hint != nil {
-			end = hint.End()
-		}
-		switch e := e.(type) {
-		case *TableName:
-			e.Hint = hint
-			e.As = as
-			e.end = end
-		case *PathExpr:
-			e.Hint = hint
-			e.As = as
-			e.end = end
-		}
-		return e
+		expr := p.parseIdentOrPath()
+		return p.parseUnnestSuffix(true, expr, expr.Pos(), expr.End())
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
 }
 
-func (p *Parser) parsePath() JoinExpr {
-	id := p.expect(TokenIdent)
-	ident := &Ident{
-		pos:  id.Pos,
-		end:  id.End,
-		Name: id.AsString,
-	}
-
-	var paths []*Ident
-	for p.Token.Kind != TokenEOF {
-		if p.Token.Kind != "." {
-			break
-		}
+func (p *Parser) parseIdentOrPath() Expr {
+	idents := []*Ident{p.parseIdent()}
+	for p.Token.Kind == "." {
 		p.NextToken()
-		path := p.expect(TokenIdent)
-		paths = append(paths, &Ident{
-			pos:  path.Pos,
-			end:  path.End,
-			Name: path.AsString,
-		})
+		idents = append(idents, p.parseIdent())
 	}
-	if len(paths) == 0 {
-		return &TableName{
-			end:   id.End,
-			Ident: ident,
-		}
+	if len(idents) == 1 {
+		return idents[0]
 	}
-	return &PathExpr{
-		end:   id.End,
-		Ident: ident,
-		Paths: paths,
+	return &Path{
+		Idents: idents,
 	}
 }
 
-func (p *Parser) parseSubQueryJoinExprSuffix(q *SubQuery) *SubQueryJoinExpr {
-	hint := p.parseHint()
-	as := p.parseAs()
-	end := q.End()
-	if as != nil {
-		end = as.End()
-	} else if hint != nil {
-		end = hint.End()
-	}
-	return &SubQueryJoinExpr{
-		end:  end,
-		Expr: q,
-		Hint: hint,
-		As:   as,
-	}
-}
+func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) *Unnest {
+	hint := p.tryParseHint()
+	as := p.tryParseAsAlias()
+	withOffset := p.tryParseWithOffset()
 
-func (p *Parser) parseUnnestSuffix(e Expr, pos Pos, end Pos) *Unnest {
-	hint := p.parseHint()
-	as := p.parseAs()
+	if withOffset != nil {
+		end = withOffset.End()
+	}
 	if as != nil {
 		end = as.End()
-	} else if hint != nil {
+	}
+	if hint != nil {
 		end = hint.End()
 	}
-	var withOffset bool
-	var withOffsetAs *Ident
-	if p.Token.Kind == "WITH" {
-		p.NextToken()
-		offset := p.expect(TokenIdent)
-		if !strings.EqualFold(offset.Raw, "OFFSET") {
-			p.panicfAtToken(offset, "expected identifier: OFFSET, buf: %s", offset.Raw)
-		}
-		withOffset = true
-		end = offset.End
-		withOffsetAs = p.parseAs()
-		if withOffsetAs != nil {
-			end = withOffsetAs.End()
-		}
-	}
+
 	return &Unnest{
-		pos:          pos,
-		end:          end,
-		Expr:         e,
-		Hint:         hint,
-		As:           as,
-		WithOffset:   withOffset,
-		WithOffsetAs: withOffsetAs,
+		pos:        pos,
+		end:        end,
+		Implicit:   implicit,
+		Expr:       expr,
+		Hint:       hint,
+		As:         as,
+		WithOffset: withOffset,
 	}
 }
 
-func (p *Parser) parseAs() *Ident {
-	var id Token
-	if p.Token.Kind == "AS" {
-		p.NextToken()
-		id = *p.expect(TokenIdent)
-	} else if p.Token.Kind == TokenIdent {
-		id = p.Token
-		p.NextToken()
-	} else {
+func (p *Parser) tryParseWithOffset() *WithOffset {
+	if p.Token.Kind != "WITH" {
 		return nil
 	}
-	return &Ident{
-		pos:  id.Pos,
-		end:  id.End,
-		Name: id.AsString,
+	pos := p.expect("WITH").Pos
+	end := p.expectKeywordLike("OFFSET").End
+
+	as := p.tryParseAsAlias()
+	if as != nil {
+		end = as.End()
+	}
+
+	return &WithOffset{
+		pos: pos,
+		end: end,
+		As:  as,
 	}
 }
 
-func (p *Parser) parseQueryExprSuffix(e QueryExpr) QueryExpr {
-	if p.Token.Kind == "ORDER" {
-		p.NextToken()
-		p.expect("BY")
-		orderBy := OrderExprList{p.parseOrderExpr()}
-		for p.Token.Kind != TokenEOF {
-			if p.Token.Kind != "," {
-				break
-			}
-			p.NextToken()
-			orderBy = append(orderBy, p.parseOrderExpr())
-		}
-		e.setOrderBy(orderBy)
+func (p *Parser) parseJoinCondition() JoinCondition {
+	switch p.Token.Kind {
+	case "ON":
+		return p.parseOn()
+	case "USING":
+		return p.parseUsing()
 	}
 
-	if p.Token.Kind == "LIMIT" {
-		p.NextToken()
-		count := p.parseIntValue()
-		var offset IntValue
-		if strings.EqualFold(p.Token.Raw, "OFFSET") {
-			p.NextToken()
-			offset = p.parseIntValue()
-		}
-		limit := &Limit{
-			Count:  count,
-			Offset: offset,
-		}
-		e.setLimit(limit)
-	}
-
-	return e
+	panic(p.errorfAtToken(&p.Token, "expected token: ON, USING, but: %s", p.Token.Kind))
 }
 
-func (p *Parser) parseOrderExpr() *OrderExpr {
-	e := p.parseExpr()
-	end := e.End()
-	dir := DirectionAsc
-	if p.Token.Kind == "ASC" {
-		end = p.Token.End
-		p.NextToken()
-	} else if p.Token.Kind == "DESC" {
-		end = p.Token.End
-		p.NextToken()
-		dir = DirectionDesc
+func (p *Parser) parseOn() *On {
+	pos := p.expect("ON").Pos
+	expr := p.parseExpr()
+	return &On{
+		pos:  pos,
+		Expr: expr,
 	}
-	return &OrderExpr{
-		end:  end,
-		Expr: e,
-		Dir:  dir,
+}
+
+func (p *Parser) parseUsing() *Using {
+	pos := p.expect("USING").Pos
+	p.expect("(")
+	idents := []*Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		idents = append(idents, p.parseIdent())
+	}
+	end := p.expect(")").End
+	return &Using{
+		pos:    pos,
+		end:    end,
+		Idents: idents,
 	}
 }
 
@@ -808,42 +876,47 @@ func (p *Parser) parseComparison() Expr {
 	}
 }
 
-func (p *Parser) parseInCondition() *InCondition {
-	if q := p.tryParseSubQuery(); q != nil {
-		return &InCondition{
-			pos:      q.Pos(),
-			end:      q.End(),
-			SubQuery: q,
+func (p *Parser) parseInCondition() InCondition {
+	if p.lookaheadSubQuery() {
+		pos := p.expect("(").Pos
+		query := p.parseQueryExpr()
+		end := p.expect(")").End
+		return &SubQueryInCondition{
+			pos:   pos,
+			end:   end,
+			Query: query,
 		}
 	}
+
 	if p.Token.Kind == "(" {
 		pos := p.Token.Pos
 		p.NextToken()
-		values := ExprList{p.parseExpr()}
+		exprs := []Expr{p.parseExpr()}
 		for p.Token.Kind != TokenEOF {
 			if p.Token.Kind != "," {
 				break
 			}
 			p.NextToken()
-			values = append(values, p.parseExpr())
+			exprs = append(exprs, p.parseExpr())
 		}
 		end := p.expect(")").End
-		return &InCondition{
-			pos:    pos,
-			end:    end,
-			Values: values,
+		return &ValuesInCondition{
+			pos:   pos,
+			end:   end,
+			Exprs: exprs,
 		}
 	}
+
 	if p.Token.Kind == "UNNEST" {
 		pos := p.Token.Pos
 		p.NextToken()
 		p.expect("(")
 		e := p.parseExpr()
 		end := p.expect(")").End
-		return &InCondition{
-			pos:    pos,
-			end:    end,
-			Unnest: e,
+		return &UnnestInCondition{
+			pos:  pos,
+			end:  end,
+			Expr: e,
 		}
 	}
 
@@ -966,15 +1039,16 @@ func (p *Parser) parseUnary() Expr {
 	}
 	pos := p.Token.Pos
 	p.NextToken()
+
 	e := p.parseUnary()
 	switch e := e.(type) {
-	case *IntLit:
+	case *IntLiteral:
 		if e.Value[0] != '+' && e.Value[0] != '-' {
 			e.pos = pos
 			e.Value = string(op) + e.Value
 			return e
 		}
-	case *FloatLit:
+	case *FloatLiteral:
 		if e.Value[0] != '+' && e.Value[0] != '-' {
 			e.pos = pos
 			e.Value = string(op) + e.Value
@@ -994,20 +1068,26 @@ func (p *Parser) parseSelector() Expr {
 	for {
 		switch p.Token.Kind {
 		case ".":
-			l := *p.Lexer
+			lexer := p.Lexer.Clone()
 			p.NextToken()
 			if p.Token.Kind == "*" { // expr.* case
-				*p.Lexer = l
+				p.Lexer = lexer
 				return expr
 			}
-			id := p.expect(TokenIdent)
-			expr = &SelectorExpr{
-				Left: expr,
-				Right: &Ident{
-					pos:  id.Pos,
-					end:  id.End,
-					Name: id.AsString,
-				},
+
+			member := p.parseIdent()
+			switch e := expr.(type) {
+			case *Ident:
+				expr = &Path{
+					Idents: []*Ident{e, member},
+				}
+			case *Path:
+				e.Idents = append(e.Idents, member)
+			default:
+				expr = &SelectorExpr{
+					Expr:   expr,
+					Member: member,
+				}
 			}
 		case "[":
 			p.NextToken()
@@ -1021,13 +1101,15 @@ func (p *Parser) parseSelector() Expr {
 				p.panicfAtToken(id, "expected identifier: ORDINAL, OFFSET, but: %s", id.Raw)
 			}
 			p.expect("(")
-			expr = &IndexExpr{
-				Ordinal: ordinal,
-				Left:    expr,
-				Right:   p.parseExpr(),
-			}
+			index := p.parseExpr()
 			p.expect(")")
-			expr.(*IndexExpr).end = p.expect("]").End
+			end := p.expect("]").End
+			expr = &IndexExpr{
+				end:     end,
+				Ordinal: ordinal,
+				Expr:    expr,
+				Index:   index,
+			}
 		default:
 			return expr
 		}
@@ -1037,86 +1119,47 @@ func (p *Parser) parseSelector() Expr {
 func (p *Parser) parseLit() Expr {
 	switch p.Token.Kind {
 	case "NULL":
-		lit := &NullLit{
-			pos: p.Token.Pos,
-		}
-		p.NextToken()
-		return lit
+		return p.parseNullLiteral()
 	case "TRUE", "FALSE":
-		lit := &BoolLit{
-			pos:   p.Token.Pos,
-			Value: p.Token.Kind == "TRUE",
-		}
-		p.NextToken()
-		return lit
+		return p.parseBoolLiteral()
 	case TokenInt:
-		lit := &IntLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.Raw,
-		}
-		p.NextToken()
-		return lit
+		return p.parseIntLiteral()
 	case TokenFloat:
-		lit := &FloatLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.Raw,
-		}
-		p.NextToken()
-		return lit
+		return p.parseFloatLiteral()
 	case TokenString:
-		lit := &StringLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.AsString,
-		}
-		p.NextToken()
-		return lit
+		return p.parseStringLiteral()
 	case TokenBytes:
-		lit := &BytesLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: []byte(p.Token.AsString),
-		}
-		p.NextToken()
-		return lit
+		return p.parseBytesLiteral()
 	case TokenParam:
-		param := &Param{
-			pos:  p.Token.Pos,
-			Name: p.Token.AsString,
-		}
-		p.NextToken()
-		return param
-	}
-
-	if p.Token.Kind == TokenIdent {
+		return p.parseParam()
+	case "CASE":
+		return p.parseCaseExpr()
+	case "CAST":
+		return p.parseCastExpr()
+	case "EXISTS":
+		return p.parseExistsSubQuery()
+	case "EXTRACT":
+		return p.parseExtractExpr()
+	case "ARRAY":
+		return p.parseArrayLiteralOrSubQuery()
+	case "STRUCT":
+		return p.parseStructLiteral()
+	case "[":
+		return p.parseSimpleArrayLiteral()
+	case "(":
+		return p.parseParenExpr()
+	case TokenIdent:
 		id := p.Token
 		p.NextToken()
 		switch p.Token.Kind {
 		case "(":
-			p.NextToken()
 			return p.parseCall(id)
 		case TokenString:
-			// DATE "..."
-			if strings.EqualFold(id.Raw, "DATE") {
-				lit := &DateLit{
-					pos:   id.Pos,
-					end:   p.Token.End,
-					Value: p.Token.AsString,
-				}
-				p.NextToken()
-				return lit
+			if id.IsKeywordLike("DATE") {
+				return p.parseDateLiteral(id)
 			}
-			// TIMESTAMP "..."
-			if strings.EqualFold(id.Raw, "TIMESTAMP") {
-				lit := &TimestampLit{
-					pos:   id.Pos,
-					end:   p.Token.End,
-					Value: p.Token.AsString,
-				}
-				p.NextToken()
-				return lit
+			if id.IsKeywordLike("TIMESTAMP") {
+				return p.parseTimestampLiteral(id)
 			}
 		}
 		return &Ident{
@@ -1126,347 +1169,24 @@ func (p *Parser) parseLit() Expr {
 		}
 	}
 
-	if p.Token.Kind == "ARRAY" {
-		pos := p.Token.Pos
-		p.NextToken()
-		switch p.Token.Kind {
-		case "(":
-			parenPos := p.Token.Pos
-			p.NextToken()
-			q := &SubQuery{
-				pos:  parenPos,
-				Expr: p.parseQueryExpr(),
-			}
-			q.end = p.expect(")").End
-			return &ArrayExpr{
-				pos:  pos,
-				Expr: q,
-			}
-		case "<":
-			p.NextToken()
-			t := p.parseType()
-			p.expect(">")
-			p.expect("[")
-			es, end := p.parseExprList("]")
-			return &ArrayLit{
-				pos:    pos,
-				end:    end,
-				Type:   t,
-				Values: es,
-			}
-		case "[":
-			p.NextToken()
-			es, end := p.parseExprList("]")
-			return &ArrayLit{
-				pos:    pos,
-				end:    end,
-				Values: es,
-			}
-		}
-
-		p.panicfAtToken(&p.Token, "expected token: (, <, [, but: %s", p.Token.Kind)
-	}
-
-	if p.Token.Kind == "STRUCT" {
-		pos := p.Token.Pos
-		p.NextToken()
-		switch p.Token.Kind {
-		case "(":
-			p.NextToken()
-			es, end := p.parseExprList(")")
-			return &StructLit{
-				pos:    pos,
-				end:    end,
-				Values: es,
-			}
-		case "<>":
-			p.NextToken()
-			p.expect("(")
-			es, end := p.parseExprList(")")
-			return &StructLit{
-				pos:    pos,
-				end:    end,
-				Fields: make([]*FieldSchema, 0),
-				Values: es,
-			}
-		case "<":
-			p.NextToken()
-			fs, _ := p.parseFieldSchemas()
-			p.expect("(")
-			es, end := p.parseExprList(")")
-			return &StructLit{
-				pos:    pos,
-				end:    end,
-				Fields: fs,
-				Values: es,
-			}
-		}
-
-		p.panicfAtToken(&p.Token, "expected token: (, <, <>, but: %s", p.Token.Kind)
-	}
-
-	if p.Token.Kind == "CAST" {
-		pos := p.Token.Pos
-		p.NextToken()
-		p.expect("(")
-		e := p.parseExpr()
-		p.expect("AS")
-		t := p.parseType()
-		end := p.expect(")").End
-		return &CastExpr{
-			pos:  pos,
-			end:  end,
-			Expr: e,
-			Type: t,
-		}
-	}
-
-	if p.Token.Kind == "CASE" {
-		pos := p.Token.Pos
-		p.NextToken()
-		var expr Expr
-		if p.Token.Kind != "WHEN" {
-			expr = p.parseExpr()
-		}
-		whens := []*When{p.parseWhen()}
-		for p.Token.Kind != TokenEOF {
-			if p.Token.Kind != "WHEN" {
-				break
-			}
-			whens = append(whens, p.parseWhen())
-		}
-		var els Expr
-		if p.Token.Kind == "ELSE" {
-			p.NextToken()
-			els = p.parseExpr()
-		}
-		end := p.expect("END").End
-		return &CaseExpr{
-			pos:  pos,
-			end:  end,
-			Expr: expr,
-			When: whens,
-			Else: els,
-		}
-	}
-
-	if p.Token.Kind == "EXISTS" {
-		pos := p.Token.Pos
-		p.NextToken()
-		hint := p.parseHint()
-		parenPos := p.expect("(").Pos
-		q := &SubQuery{
-			pos:  parenPos,
-			Expr: p.parseQueryExpr(),
-		}
-		q.end = p.expect(")").End
-		return &ExistsExpr{
-			pos:  pos,
-			Hint: hint,
-			Expr: q,
-		}
-	}
-
-	if p.Token.Kind == "EXTRACT" {
-		pos := p.Token.Pos
-		p.NextToken()
-		p.expect("(")
-		id := p.expect(TokenIdent)
-		var part ExtractPart
-		switch {
-		case strings.EqualFold(id.AsString, "NANOSECOND"):
-			part = NanoSecondPart
-		case strings.EqualFold(id.AsString, "MICROSECOND"):
-			part = MicroSecondPart
-		case strings.EqualFold(id.AsString, "MILLISECOND"):
-			part = MilliSecondPart
-		case strings.EqualFold(id.AsString, "SECOND"):
-			part = SecondPart
-		case strings.EqualFold(id.AsString, "MINUTE"):
-			part = MinutePart
-		case strings.EqualFold(id.AsString, "HOUR"):
-			part = HourPart
-		case strings.EqualFold(id.AsString, "DAYOFWEEK"):
-			part = DayOfWeekPart
-		case strings.EqualFold(id.AsString, "DAY"):
-			part = DayPart
-		case strings.EqualFold(id.AsString, "DAYOFYEAR"):
-			part = DayOfYearPart
-		case strings.EqualFold(id.AsString, "WEEK"):
-			part = WeekPart
-		case strings.EqualFold(id.AsString, "ISOWEEK"):
-			part = ISOWeekPart
-		case strings.EqualFold(id.AsString, "MONTH"):
-			part = MonthPart
-		case strings.EqualFold(id.AsString, "QUARTER"):
-			part = QuarterPart
-		case strings.EqualFold(id.AsString, "YEAR"):
-			part = YearPart
-		case strings.EqualFold(id.AsString, "ISOYEAR"):
-			part = ISOYearPart
-		case strings.EqualFold(id.AsString, "DATE"):
-			part = DatePart
-		default:
-			p.panicfAtToken(id, "unknown extract part: %s", id.Raw)
-		}
-		p.expect("FROM")
-		e := p.parseExpr()
-		var timeZone Expr
-		if p.Token.Kind == "AT" {
-			p.NextToken()
-			if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "TIME") {
-				p.panicfAtToken(id, "expected identifier: TIME, but: %s", id.Raw)
-			}
-			if id := p.expect(TokenIdent); !strings.EqualFold(id.AsString, "ZONE") {
-				p.panicfAtToken(id, "expected identifier: ZONE, but: %s", id.Raw)
-			}
-			timeZone = p.parseExpr()
-		}
-		end := p.expect(")").End
-		return &ExtractExpr{
-			pos:      pos,
-			end:      end,
-			Part:     part,
-			Expr:     e,
-			TimeZone: timeZone,
-		}
-	}
-
-	if p.Token.Kind == "[" {
-		pos := p.Token.Pos
-		p.NextToken()
-		var es ExprList
-		if p.Token.Kind != "]" {
-			for p.Token.Kind != TokenEOF {
-				es = append(es, p.parseExpr())
-				if p.Token.Kind != "," {
-					break
-				}
-				p.NextToken()
-			}
-		}
-		end := p.expect("]").End
-		return &ArrayLit{
-			pos:    pos,
-			end:    end,
-			Values: es,
-		}
-	}
-
-	if p.Token.Kind == "(" {
-		paren := p.Token
-		if subQuery := p.tryParseSubQuery(); subQuery != nil {
-			return subQuery
-		}
-		pos := p.Token.Pos
-		p.NextToken()
-		e := p.parseExpr()
-		if p.Token.Kind == ")" {
-			end := p.Token.End
-			p.NextToken()
-			return &ParenExpr{
-				pos:  pos,
-				end:  end,
-				Expr: e,
-			}
-		}
-		if p.Token.Kind != "," {
-			p.panicfAtToken(&paren, "cannot parse (...) as expression, struct literal or subquery")
-		}
-
-		es := ExprList{e}
-		for p.Token.Kind != TokenEOF {
-			if p.Token.Kind != "," {
-				break
-			}
-			p.NextToken()
-			es = append(es, p.parseExpr())
-		}
-		end := p.expect(")").End
-		return &StructLit{
-			pos:    paren.Pos,
-			end:    end,
-			Values: es,
-		}
-	}
-
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
 
-func (p *Parser) parseExprList(end TokenKind) (ExprList, Pos) {
-	var es ExprList
-	if p.Token.Kind == end {
-		return es, p.expect(end).End
-	}
-
-	for p.Token.Kind != TokenEOF {
-		es = append(es, p.parseExpr())
-		if p.Token.Kind != "," {
-			break
-		}
-		p.NextToken()
-	}
-	return es, p.expect(end).End
-}
-
-func (p *Parser) tryParseSubQuery() *SubQuery {
-	l := *p.Lexer
-	pos := p.Token.Pos
-	if p.Token.Kind != "(" {
-		return nil
-	}
-	p.NextToken()
-	if p.Token.Kind == "(" {
-		p.NextToken()
-		nest := 1
-		for p.Token.Kind != TokenEOF {
-			if p.Token.Kind == "(" {
-				nest += 1
-			}
-			if p.Token.Kind == ")" {
-				nest -= 1
-			}
-			p.NextToken()
-			if nest == 0 {
-				break
-			}
-		}
-		if p.Token.Kind == "UNION" || p.Token.Kind == "INTERSECT" || p.Token.Kind == "EXCEPT" || p.Token.Kind == "ORDER" || p.Token.Kind == "LIMIT" {
-			*p.Lexer = l
-			p.NextToken()
-		} else {
-			*p.Lexer = l
-			return nil
-		}
-	} else if p.Token.Kind != "SELECT" {
-		*p.Lexer = l
-		return nil
-	}
-	q := p.parseQueryExpr()
-	end := p.expect(")").End
-	return &SubQuery{
-		pos:  pos,
-		end:  end,
-		Expr: q,
-	}
-}
-
 func (p *Parser) parseCall(id Token) Expr {
+	p.expect("(")
+	if id.IsIdent("COUNT") && p.Token.Kind == "*" {
+		p.NextToken()
+		end := p.expect(")").End
+		return &CountStarExpr{
+			pos: id.Pos,
+			end: end,
+		}
+	}
+
 	fn := &Ident{
 		pos:  id.Pos,
 		end:  id.End,
 		Name: id.AsString,
-	}
-
-	if strings.EqualFold(fn.Name, "COUNT") {
-		if p.Token.Kind == "*" {
-			p.NextToken()
-			end := p.expect(")").End
-			return &CountStarExpr{
-				pos: id.Pos,
-				end: end,
-			}
-		}
 	}
 
 	distinct := false
@@ -1475,27 +1195,23 @@ func (p *Parser) parseCall(id Token) Expr {
 		distinct = true
 	}
 
-	as, end := p.parseArgList()
-	return &CallExpr{
-		end:      end,
-		Func:     fn,
-		Distinct: distinct,
-		Args:     as,
-	}
-}
-
-func (p *Parser) parseArgList() (ArgList, Pos) {
-	var as ArgList
+	var args []*Arg
 	if p.Token.Kind != ")" {
 		for p.Token.Kind != TokenEOF {
-			as = append(as, p.parseArg())
+			args = append(args, p.parseArg())
 			if p.Token.Kind != "," {
 				break
 			}
 			p.NextToken()
 		}
 	}
-	return as, p.expect(")").End
+	end := p.expect(")").End
+	return &CallExpr{
+		end:      end,
+		Func:     fn,
+		Distinct: distinct,
+		Args:     args,
+	}
 }
 
 func (p *Parser) parseArg() *Arg {
@@ -1503,7 +1219,6 @@ func (p *Parser) parseArg() *Arg {
 		e := p.parseExpr()
 		return &Arg{
 			pos:  e.Pos(),
-			end:  e.End(),
 			Expr: e,
 		}
 	}
@@ -1511,195 +1226,399 @@ func (p *Parser) parseArg() *Arg {
 	pos := p.Token.Pos
 	p.NextToken()
 	e := p.parseExpr()
-	id := p.expect(TokenIdent)
-	var part ExtractPart
-	switch {
-	case strings.EqualFold(id.AsString, "NANOSECOND"):
-		part = NanoSecondPart
-	case strings.EqualFold(id.AsString, "MICROSECOND"):
-		part = MicroSecondPart
-	case strings.EqualFold(id.AsString, "MILLISECOND"):
-		part = MilliSecondPart
-	case strings.EqualFold(id.AsString, "SECOND"):
-		part = SecondPart
-	case strings.EqualFold(id.AsString, "MINUTE"):
-		part = MinutePart
-	case strings.EqualFold(id.AsString, "HOUR"):
-		part = HourPart
-	case strings.EqualFold(id.AsString, "DAY"):
-		part = DayPart
-	case strings.EqualFold(id.AsString, "WEEK"):
-		part = WeekPart
-	case strings.EqualFold(id.AsString, "MONTH"):
-		part = MonthPart
-	case strings.EqualFold(id.AsString, "QUARTER"):
-		part = QuarterPart
-	case strings.EqualFold(id.AsString, "YEAR"):
-		part = YearPart
-	default:
-		p.panicfAtToken(id, "unknown extract part: %s", id.Raw)
-	}
+	unit := p.parseIdent()
 	return &Arg{
 		pos:          pos,
-		end:          id.End,
 		Expr:         e,
-		IntervalUnit: part,
+		IntervalUnit: unit,
 	}
 }
 
-func (p *Parser) parseWhen() *When {
-	p.expect("WHEN")
+func (p *Parser) parseCaseExpr() *CaseExpr {
+	pos := p.expect("CASE").Pos
+	var expr Expr
+	if p.Token.Kind != "WHEN" {
+		expr = p.parseExpr()
+	}
+	whens := []*CaseWhen{p.parseCaseWhen()}
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind != "WHEN" {
+			break
+		}
+		whens = append(whens, p.parseCaseWhen())
+	}
+	var els *CaseElse
+	if p.Token.Kind == "ELSE" {
+		els = p.parseCaseElse()
+	}
+	end := p.expect("END").End
+	return &CaseExpr{
+		pos:   pos,
+		end:   end,
+		Expr:  expr,
+		Whens: whens,
+		Else:  els,
+	}
+}
+
+func (p *Parser) parseCaseWhen() *CaseWhen {
+	pos := p.expect("WHEN").Pos
 	cond := p.parseExpr()
 	p.expect("THEN")
 	then := p.parseExpr()
-	return &When{Cond: cond, Then: then}
+	return &CaseWhen{
+		pos:  pos,
+		Cond: cond,
+		Then: then,
+	}
 }
 
-func (p *Parser) parseType() *Type {
-	switch p.Token.Kind {
-	case TokenIdent:
-		if strings.EqualFold(p.Token.AsString, "BOOL") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: BoolType,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "INT64") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: Int64Type,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "FLOAT64") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: Float64Type,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "DATE") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: DateType,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "TIMESTAMP") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: TimestampType,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "STRING") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: StringType,
-			}
-			p.NextToken()
-			return t
-		}
-		if strings.EqualFold(p.Token.AsString, "BYTES") {
-			t := &Type{
-				pos:  p.Token.Pos,
-				end:  p.Token.End,
-				Name: BytesType,
-			}
-			p.NextToken()
-			return t
-		}
+func (p *Parser) parseCaseElse() *CaseElse {
+	pos := p.expect("ELSE").Pos
+	expr := p.parseExpr()
+	return &CaseElse{
+		pos:  pos,
+		Expr: expr,
+	}
+}
 
-		p.panicfAtToken(&p.Token, "expected identifier: BOOL, INT64, FLOAT64, DATE, TIMESTAMP, STRING, BYTES, but: %s", p.Token.Raw)
-	case "ARRAY":
-		pos := p.Token.Pos
+func (p *Parser) parseCastExpr() *CastExpr {
+	pos := p.expect("CAST").Pos
+	p.expect("(")
+	e := p.parseExpr()
+	p.expect("AS")
+	t := p.parseType()
+	end := p.expect(")").End
+	return &CastExpr{
+		pos:  pos,
+		end:  end,
+		Expr: e,
+		Type: t,
+	}
+}
+
+func (p *Parser) parseExistsSubQuery() *ExistsSubQuery {
+	pos := p.expect("EXISTS").Pos
+	p.expect("(")
+	query := p.parseQueryExpr()
+	end := p.expect(")").End
+	return &ExistsSubQuery{
+		pos:   pos,
+		end:   end,
+		Query: query,
+	}
+}
+
+func (p *Parser) parseExtractExpr() *ExtractExpr {
+	pos := p.expect("EXTRACT").Pos
+	p.expect("(")
+	part := p.parseIdent()
+	p.expect("FROM")
+	e := p.parseExpr()
+	var atTimeZone *AtTimeZone
+	if p.Token.Kind == "AT" {
+		atTimeZone = p.parseAtTimeZone()
+	}
+	end := p.expect(")").End
+	return &ExtractExpr{
+		pos:        pos,
+		end:        end,
+		Part:       part,
+		Expr:       e,
+		AtTimeZone: atTimeZone,
+	}
+}
+
+func (p *Parser) parseAtTimeZone() *AtTimeZone {
+	pos := p.expect("AT").Pos
+	p.expectKeywordLike("TIME")
+	p.expectKeywordLike("ZONE")
+	e := p.parseExpr()
+	return &AtTimeZone{
+		pos:  pos,
+		Expr: e,
+	}
+}
+
+func (p *Parser) parseParenExpr() Expr {
+	paren := p.Token
+
+	if p.lookaheadSubQuery() {
 		p.NextToken()
-		p.expect("<")
-		t := p.parseType()
-		var end Pos
-		if p.Token.Kind == ">>" {
-			p.Token.Kind = ">"
-			p.Token.Raw = ">"
-			p.Token.Pos += 1
-			end = p.Token.Pos
-		} else {
-			end = p.expect(">").End
+		query := p.parseQueryExpr()
+		end := p.expect(")").End
+		return &ScalarSubQuery{
+			pos:   paren.Pos,
+			end:   end,
+			Query: query,
 		}
-		return &Type{
+	}
+
+	p.NextToken()
+	expr := p.parseExpr()
+
+	if p.Token.Kind == ")" {
+		end := p.Token.End
+		p.NextToken()
+		return &ParenExpr{
+			pos:  paren.Pos,
+			end:  end,
+			Expr: expr,
+		}
+	}
+
+	if p.Token.Kind != "," {
+		p.panicfAtToken(&paren, "cannot parse (...) as expression, struct literal or subquery")
+	}
+
+	values := []Expr{expr}
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+		values = append(values, p.parseExpr())
+	}
+	end := p.expect(")").End
+	return &StructLiteral{
+		pos:    paren.Pos,
+		end:    end,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseArrayLiteralOrSubQuery() Expr {
+	pos := p.expect("ARRAY").Pos
+
+	if p.Token.Kind == "(" {
+		p.NextToken()
+		query := p.parseQueryExpr()
+		end := p.expect(")").End
+		return &ArraySubQuery{
 			pos:   pos,
 			end:   end,
-			Name:  ArrayType,
-			Value: t,
+			Query: query,
 		}
-	case "STRUCT":
-		pos := p.Token.Pos
+	}
+
+	var t Type
+	if p.Token.Kind == "<" {
 		p.NextToken()
-		switch p.Token.Kind {
-		case "<>":
-			p.NextToken()
-			return &Type{
-				pos:    pos,
-				end:    p.Token.End,
-				Name:   StructType,
-				Fields: make([]*FieldSchema, 0),
+		t = p.parseType()
+		p.expect(">")
+	}
+
+	values, _, end := p.parseArrayLiteralBody()
+	return &ArrayLiteral{
+		pos:    pos,
+		end:    end,
+		Type:   t,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseSimpleArrayLiteral() *ArrayLiteral {
+	values, pos, end := p.parseArrayLiteralBody()
+	return &ArrayLiteral{
+		pos:    pos,
+		end:    end,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseArrayLiteralBody() (values []Expr, pos, end Pos) {
+	pos = p.expect("[").Pos
+	if p.Token.Kind != "]" {
+		for p.Token.Kind != TokenEOF {
+			values = append(values, p.parseExpr())
+			if p.Token.Kind != "," {
+				break
 			}
-		case "<":
 			p.NextToken()
-			fs, end := p.parseFieldSchemas()
-			return &Type{
-				pos:    pos,
-				end:    end,
-				Name:   StructType,
-				Fields: fs,
-			}
 		}
+	}
+	end = p.expect("]").End
+	return
+}
+
+func (p *Parser) parseStructLiteral() *StructLiteral {
+	pos := p.expect("STRUCT").Pos
+	fields, _ := p.parseStructTypeFields(false)
+	p.expect("(")
+	var values []Expr
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			values = append(values, p.parseExpr())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	end := p.expect(")").End
+	return &StructLiteral{
+		pos:    pos,
+		end:    end,
+		Fields: fields,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseDateLiteral(id Token) *DateLiteral {
+	s := p.expect(TokenString)
+	return &DateLiteral{
+		pos:   id.Pos,
+		end:   s.End,
+		Value: s.AsString,
+	}
+}
+
+func (p *Parser) parseTimestampLiteral(id Token) *TimestampLiteral {
+	s := p.expect(TokenString)
+	return &TimestampLiteral{
+		pos:   id.Pos,
+		end:   s.End,
+		Value: s.AsString,
+	}
+}
+
+func (p *Parser) lookaheadSubQuery() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "(" {
+		return false
+	}
+
+	p.NextToken()
+	// (SELECT ... indicates subquery.
+	if p.Token.Kind == "SELECT" {
+		return true
+	}
+
+	// ((...(SELECT maybe indicate subquery.
+	nest := 0
+	for p.Token.Kind == "(" {
+		nest++
+		p.NextToken()
+	}
+	if nest == 0 || p.Token.Kind != "SELECT" {
+		return false
+	}
+
+	// ((...(SELECT ...)...) UNION indicates subquery.
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind == "(" {
+			nest++
+		}
+		if p.Token.Kind == ")" {
+			nest--
+		}
+
+		if nest == 0 {
+			break
+		}
+		p.NextToken()
+	}
+	if nest != 0 {
+		return false
+	}
+	p.NextToken()
+	switch p.Token.Kind {
+	case "UNION", "INTERSECT", "EXCEPT", "ORDER", "LIMIT":
+		return true
+	}
+	return false
+}
+
+func (p *Parser) parseType() Type {
+	switch p.Token.Kind {
+	case TokenIdent:
+		return p.parseSimpleType()
+	case "ARRAY":
+		return p.parseArrayType()
+	case "STRUCT":
+		return p.parseStructType()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <ident>, ARRAY, STRUCT, but: %s", p.Token.Kind))
 }
 
-func (p *Parser) parseFieldSchemas() ([]*FieldSchema, Pos) {
-	fs := make([]*FieldSchema, 0)
+var simpleTypes = []string{
+	"BOOL",
+	"INT64",
+	"FLOAT64",
+	"DATE",
+	"TIMESTAMP",
+	"STRING",
+	"BYTES",
+}
+
+func (p *Parser) parseSimpleType() *SimpleType {
+	id := p.expect(TokenIdent)
+	for _, typeName := range simpleTypes {
+		if id.IsIdent(typeName) {
+			return &SimpleType{
+				pos:  id.Pos,
+				Name: TypeName(typeName),
+			}
+		}
+	}
+
+	panic(p.errorfAtToken(id, "expected identifier: %s, but: %s", strings.Join(simpleTypes, ", "), id.Raw))
+}
+
+func (p *Parser) parseArrayType() *ArrayType {
+	pos := p.expect("ARRAY").Pos
+	p.expect("<")
+	t := p.parseType()
+
+	var end Pos
+	if p.Token.Kind == ">>" {
+		p.Token.Kind = ">"
+		p.Token.Raw = ">"
+		p.Token.Pos += 1
+		end = p.Token.Pos
+	} else {
+		end = p.expect(">").End
+	}
+	return &ArrayType{
+		pos:  pos,
+		end:  end,
+		Item: t,
+	}
+}
+
+func (p *Parser) parseStructType() *StructType {
+	pos := p.expect("STRUCT").Pos
+	fields, end := p.parseStructTypeFields(true)
+	return &StructType{
+		pos:    pos,
+		end:    end,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseStructTypeFields(inType bool) (fields []*FieldType, end Pos) {
+	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
+		if inType {
+			p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
+		}
+		return
+	}
+
+	fields = make([]*FieldType, 0)
+	if p.Token.Kind == "<>" {
+		end = p.expect("<>").End
+		return
+	}
+
+	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
 		for p.Token.Kind != TokenEOF {
-			named := false
-			l := *p.Lexer
-			if p.Token.Kind == TokenIdent {
-				id := p.Token
-				p.NextToken()
-				if p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT" {
-					t := p.parseType()
-					fs = append(fs, &FieldSchema{
-						Name: &Ident{
-							pos:  id.Pos,
-							end:  id.End,
-							Name: id.AsString,
-						},
-						Type: t,
-					})
-					named = true
-				} else {
-					*p.Lexer = l
-				}
-			}
-			if !named {
-				t := p.parseType()
-				fs = append(fs, &FieldSchema{
-					Type: t,
-				})
-			}
+			fields = append(fields, p.parseFieldType())
 			if p.Token.Kind != "," {
 				break
 			}
@@ -1711,150 +1630,236 @@ func (p *Parser) parseFieldSchemas() ([]*FieldSchema, Pos) {
 		p.Token.Kind = ">"
 		p.Token.Raw = ">"
 		p.Token.Pos += 1
-		return fs, p.Token.Pos
+		end = p.Token.Pos
+	} else {
+		end = p.expect(">").End
 	}
+	return
+}
 
-	return fs, p.expect(">").End
+func (p *Parser) parseFieldType() *FieldType {
+	lexer := p.Lexer.Clone()
+	// Try to parse as "x INT64" case.
+	if p.Token.Kind == TokenIdent {
+		member := p.parseIdent()
+		if p.lookaheadType() {
+			t := p.parseType()
+			return &FieldType{
+				Member: member,
+				Type:   t,
+			}
+		}
+	}
+	p.Lexer = lexer
+	return &FieldType{
+		Type: p.parseType(),
+	}
+}
+
+func (p *Parser) lookaheadType() bool {
+	return p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
+}
+
+func (p *Parser) parseIdent() *Ident {
+	id := p.expect(TokenIdent)
+	return &Ident{
+		pos:  id.Pos,
+		end:  id.End,
+		Name: id.AsString,
+	}
+}
+
+func (p *Parser) parseParam() *Param {
+	param := p.expect(TokenParam)
+	return &Param{
+		pos:  param.Pos,
+		Name: param.AsString,
+	}
+}
+
+func (p *Parser) parseNullLiteral() *NullLiteral {
+	tok := p.expect("NULL")
+	return &NullLiteral{
+		pos: tok.Pos,
+	}
+}
+
+func (p *Parser) parseBoolLiteral() *BoolLiteral {
+	var value bool
+	pos := p.Token.Pos
+	switch p.Token.Kind {
+	case "TRUE":
+		value = true
+	case "FALSE":
+		value = false
+	default:
+		p.panicfAtToken(&p.Token, "expected token: TRUE, FALSE, but: %s", p.Token.Kind)
+	}
+	p.NextToken()
+	return &BoolLiteral{
+		pos:   pos,
+		Value: value,
+	}
+}
+
+func (p *Parser) parseIntLiteral() *IntLiteral {
+	i := p.expect(TokenInt)
+	return &IntLiteral{
+		pos:   i.Pos,
+		end:   i.End,
+		Value: i.Raw,
+	}
+}
+
+func (p *Parser) parseFloatLiteral() *FloatLiteral {
+	f := p.expect(TokenFloat)
+	return &FloatLiteral{
+		pos:   f.Pos,
+		end:   f.End,
+		Value: f.Raw,
+	}
+}
+
+func (p *Parser) parseStringLiteral() *StringLiteral {
+	s := p.expect(TokenString)
+	return &StringLiteral{
+		pos:   s.Pos,
+		end:   s.End,
+		Value: s.AsString,
+	}
+}
+
+func (p *Parser) parseBytesLiteral() *BytesLiteral {
+	b := p.expect(TokenBytes)
+	return &BytesLiteral{
+		pos:   b.Pos,
+		end:   b.End,
+		Value: []byte(b.AsString),
+	}
 }
 
 func (p *Parser) parseIntValue() IntValue {
 	switch p.Token.Kind {
 	case TokenParam:
-		v := &Param{
-			pos:  p.Token.Pos,
-			Name: p.Token.AsString,
-		}
-		p.NextToken()
-		return v
+		return p.parseParam()
 	case TokenInt:
-		v := &IntLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.Raw,
-		}
-		p.NextToken()
-		return v
+		return p.parseIntLiteral()
 	case "CAST":
-		pos := p.Token.Pos
-		p.NextToken()
-		p.expect("(")
-		var v IntValue
-		switch p.Token.Kind {
-		case TokenParam:
-			v = &Param{
-				pos:  p.Token.Pos,
-				Name: p.Token.AsString,
-			}
-			p.NextToken()
-		case TokenInt:
-			v = &IntLit{
-				pos:   p.Token.Pos,
-				end:   p.Token.End,
-				Value: p.Token.Raw,
-			}
-			p.NextToken()
-		default:
-			p.panicfAtToken(&p.Token, "expected token: <param>, <int>, but: %s", p.Token.Kind)
-		}
-		p.expect("AS")
-		id := p.expect(TokenIdent)
-		if !strings.EqualFold(id.AsString, "INT64") {
-			p.panicfAtToken(id, "expected identifier: INT64, but: %s", id.Raw)
-		}
-		end := p.expect(")").End
-		return &CastIntValue{
-			pos:  pos,
-			end:  end,
-			Expr: v,
-		}
+		return p.parseCastIntValue()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <int>, CAST, but: %s", p.Token.Kind))
 }
 
+func (p *Parser) parseCastIntValue() *CastIntValue {
+	pos := p.expect("CAST").Pos
+	p.expect("(")
+	var v IntValue
+	switch p.Token.Kind {
+	case TokenParam:
+		v = p.parseParam()
+	case TokenInt:
+		v = p.parseIntLiteral()
+	default:
+		p.panicfAtToken(&p.Token, "expected token: <param>, <int>, but: %s", p.Token.Kind)
+	}
+	p.expect("AS")
+	p.expectIdent("INT64")
+	end := p.expect(")").End
+	return &CastIntValue{
+		pos:  pos,
+		end:  end,
+		Expr: v,
+	}
+}
+
 func (p *Parser) parseNumValue() NumValue {
 	switch p.Token.Kind {
 	case TokenParam:
-		v := &Param{
-			pos:  p.Token.Pos,
-			Name: p.Token.AsString,
-		}
-		p.NextToken()
-		return v
+		return p.parseParam()
 	case TokenInt:
-		v := &IntLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.Raw,
-		}
-		p.NextToken()
-		return v
+		return p.parseIntLiteral()
 	case TokenFloat:
-		v := &FloatLit{
-			pos:   p.Token.Pos,
-			end:   p.Token.End,
-			Value: p.Token.Raw,
-		}
-		p.NextToken()
-		return v
+		return p.parseFloatLiteral()
 	case "CAST":
-		pos := p.Token.Pos
-		p.NextToken()
-		p.expect("(")
-		var v NumValue
-		switch p.Token.Kind {
-		case TokenParam:
-			v = &Param{
-				pos:  p.Token.Pos,
-				Name: p.Token.AsString,
-			}
-			p.NextToken()
-		case TokenInt:
-			v = &IntLit{
-				pos:   p.Token.Pos,
-				end:   p.Token.End,
-				Value: p.Token.Raw,
-			}
-			p.NextToken()
-		case TokenFloat:
-			v = &FloatLit{
-				pos:   p.Token.Pos,
-				end:   p.Token.End,
-				Value: p.Token.Raw,
-			}
-			p.NextToken()
-		default:
-			p.panicfAtToken(&p.Token, "expected token: <param>, <int>, <float>, but: %s", p.Token.Kind)
-		}
-		p.expect("AS")
-		id := p.expect(TokenIdent)
-		var t TypeName
-		if strings.EqualFold(id.AsString, "INT64") {
-			t = Int64Type
-		} else if strings.EqualFold(id.AsString, "FLOAT64") {
-			t = Float64Type
-		} else {
-			p.panicfAtToken(id, "expected identifier: INT64, FLOAT64, but: %s", id.Raw)
-		}
-		end := p.expect(")").End
-		return &CastNumValue{
-			pos:  pos,
-			end:  end,
-			Expr: v,
-			Type: t,
-		}
+		return p.parseCastNumValue()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <int>, <float>, CAST, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseCastNumValue() *CastNumValue {
+	pos := p.expect("CAST").Pos
+	p.expect("(")
+	var v NumValue
+	switch p.Token.Kind {
+	case TokenParam:
+		v = p.parseParam()
+	case TokenInt:
+		v = p.parseIntLiteral()
+	case TokenFloat:
+		v = p.parseFloatLiteral()
+	default:
+		p.panicfAtToken(&p.Token, "expected token: <param>, <int>, <float>, but: %s", p.Token.Kind)
+	}
+	p.expect("AS")
+	id := p.expect(TokenIdent)
+	var t TypeName
+	switch {
+	case id.IsIdent("INT64"):
+		t = Int64TypeName
+	case id.IsIdent("FLOAT64"):
+		t = Float64TypeName
+	default:
+		p.panicfAtToken(id, "expected identifier: INT64, FLOAT64, but: %s", id.Raw)
+	}
+	end := p.expect(")").End
+	return &CastNumValue{
+		pos:  pos,
+		end:  end,
+		Expr: v,
+		Type: t,
+	}
+}
+
+func (p *Parser) parseStringValue() StringValue {
+	switch p.Token.Kind {
+	case TokenParam:
+		return p.parseParam()
+	case TokenString:
+		return p.parseStringLiteral()
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <string>, but: %s", p.Token.Kind))
 }
 
 func (p *Parser) expect(kind TokenKind) *Token {
 	if p.Token.Kind != kind {
 		p.panicfAtToken(&p.Token, "expected token: %s, but: %s", kind, p.Token.Kind)
 	}
-	tok := p.Token
+	t := p.Token.Clone()
 	p.NextToken()
-	return &tok
+	return t
+}
+
+func (p *Parser) expectIdent(s string) *Token {
+	id := p.expect(TokenIdent)
+	if !id.IsIdent(s) {
+		p.panicfAtToken(id, "expected identifier: %s, but: %s", s, QuoteSQLIdent(id.AsString))
+	}
+	return id
+}
+
+func (p *Parser) expectKeywordLike(s string) *Token {
+	id := p.expect(TokenIdent)
+	if !id.IsKeywordLike(s) {
+		if strings.EqualFold(id.AsString, s) {
+			p.panicfAtToken(id, "pseudo keyword %s cannot encloses with backquote", s)
+		} else {
+			p.panicfAtToken(id, "expected pseudo keyword: %s, but: %s", s, QuoteSQLIdent(id.AsString))
+		}
+	}
+	return id
 }
 
 func (p *Parser) errorfAtToken(tok *Token, msg string, params ...interface{}) *Error {

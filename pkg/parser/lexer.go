@@ -31,12 +31,30 @@ type Lexer struct {
 	dotIdent      bool
 }
 
+func (l *Lexer) Clone() *Lexer {
+	lex := *l
+	return &lex
+}
+
 type Token struct {
 	Kind     TokenKind
 	Space    string // TODO: better comment support
 	Raw      string
 	AsString string // available for TokenIdent, TokenString and TokenBytes
 	Pos, End Pos
+}
+
+func (t *Token) IsIdent(s string) bool {
+	return t.Kind == TokenIdent && strings.EqualFold(t.AsString, s)
+}
+
+func (t *Token) IsKeywordLike(s string) bool {
+	return t.Kind == TokenIdent && strings.EqualFold(t.Raw, s)
+}
+
+func (t *Token) Clone() *Token {
+	tok := *t
+	return &tok
 }
 
 type TokenKind string

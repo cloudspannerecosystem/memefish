@@ -6,82 +6,80 @@ SELECT (
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      60,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  7,
-        end:  60,
-        Expr: &parser.SubQuery{
-          pos:  7,
-          end:  54,
-          Expr: &parser.Select{
+    Results:  []parser.SelectItem{
+      &parser.Alias{
+        Expr: &parser.ScalarSubQuery{
+          pos:   7,
+          end:   54,
+          Query: &parser.Select{
             pos:      11,
-            end:      52,
             Distinct: false,
             AsStruct: false,
-            List:     parser.SelectExprList{
-              &parser.SelectExpr{
-                pos:  18,
-                end:  27,
+            Results:  []parser.SelectItem{
+              &parser.ExprSelectItem{
                 Expr: &parser.Ident{
                   pos:  18,
                   end:  27,
                   Name: "FirstName",
                 },
-                Star: false,
-                As:   (*parser.Ident)(nil),
               },
             },
-            From: parser.FromItemList{
-              &parser.FromItem{
-                end:  42,
-                Expr: &parser.TableName{
-                  end:   42,
-                  Ident: &parser.Ident{
-                    pos:  35,
-                    end:  42,
-                    Name: "Singers",
+            From: &parser.From{
+              pos:   30,
+              Items: []*parser.FromItem{
+                &parser.FromItem{
+                  Source: &parser.Unnest{
+                    pos:      35,
+                    end:      42,
+                    Implicit: true,
+                    Expr:     &parser.Ident{
+                      pos:  35,
+                      end:  42,
+                      Name: "Singers",
+                    },
+                    Hint:       (*parser.Hint)(nil),
+                    As:         (*parser.AsAlias)(nil),
+                    WithOffset: (*parser.WithOffset)(nil),
                   },
-                  Hint: (*parser.Hint)(nil),
-                  As:   (*parser.Ident)(nil),
+                  TableSample: (*parser.TableSample)(nil),
                 },
-                Method: "",
-                Num:    nil,
-                Rows:   false,
               },
             },
-            Where:   nil,
-            GroupBy: parser.ExprList{},
-            Having:  nil,
-            OrderBy: parser.OrderExprList{},
+            Where:   (*parser.Where)(nil),
+            GroupBy: (*parser.GroupBy)(nil),
+            Having:  (*parser.Having)(nil),
+            OrderBy: (*parser.OrderBy)(nil),
             Limit:   &parser.Limit{
-              Count: &parser.IntLit{
+              pos:   43,
+              Count: &parser.IntLiteral{
                 pos:   49,
                 end:   52,
                 Value: "100",
               },
-              Offset: nil,
+              Offset: (*parser.Offset)(nil),
             },
           },
         },
-        Star: false,
-        As:   &parser.Ident{
-          pos:  58,
-          end:  60,
-          Name: "FN",
+        As: &parser.AsAlias{
+          pos:   55,
+          Alias: &parser.Ident{
+            pos:  58,
+            end:  60,
+            Name: "FN",
+          },
         },
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

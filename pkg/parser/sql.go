@@ -1,10 +1,5 @@
 package parser
 
-import (
-	"fmt"
-	"strings"
-)
-
 type prec int
 
 const (
@@ -24,7 +19,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CastExpr, *CaseExpr, *SubQuery, *ParenExpr, *Param, *Ident, *ArrayLit, *StructLit, *NullLit, *BoolLit, *IntLit, *FloatLit, *StringLit, *BytesLit, *DateLit, *TimestampLit:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -70,29 +65,32 @@ func paren(p prec, e Expr) string {
 	}
 }
 
-func (e ExprList) SQL() string {
-	var ss []string
-	for _, i := range e {
-		ss = append(ss, i.SQL())
-	}
-	return strings.Join(ss, ", ")
-}
+// ================================================================================
+//
+// SELECT
+//
+// ================================================================================
 
 func (q *QueryStatement) SQL() string {
-	if q.Hint == nil {
-		return q.Expr.SQL()
+	var sql string
+	if q.Hint != nil {
+		sql += q.Hint.SQL() + " "
 	}
-
-	return fmt.Sprintf("%s %s", q.Hint.SQL(), q.Expr.SQL())
+	sql += q.Query.SQL()
+	return sql
 }
 
 func (h *Hint) SQL() string {
-	var ss []string
-	for name, expr := range h.Map {
-		// TODO: escape name as same as identifier
-		ss = append(ss, fmt.Sprintf("%s = %s", name, expr.SQL()))
+	sql := "@{" + h.Records[0].SQL()
+	for _, r := range h.Records[1:] {
+		sql += ", " + r.SQL()
 	}
-	return fmt.Sprintf("@{%s}", strings.Join(ss, ", "))
+	sql += "}"
+	return sql
+}
+
+func (h *HintRecord) SQL() string {
+	return h.Key.SQL() + "=" + h.Value.SQL()
 }
 
 func (s *Select) SQL() string {
@@ -103,27 +101,28 @@ func (s *Select) SQL() string {
 	if s.AsStruct {
 		sql += "AS STRUCT "
 	}
-
-	sql += s.List.SQL()
+	sql += s.Results[0].SQL()
+	for _, r := range s.Results[1:] {
+		sql += ", " + r.SQL()
+	}
 	if s.From != nil {
-		sql += " FROM " + s.From.SQL()
+		sql += " " + s.From.SQL()
 	}
 	if s.Where != nil {
-		sql += " WHERE " + s.Where.SQL()
+		sql += " " + s.Where.SQL()
 	}
 	if s.GroupBy != nil {
-		sql += " GROUP BY " + s.GroupBy.SQL()
+		sql += " " + s.GroupBy.SQL()
 	}
 	if s.Having != nil {
-		sql += " HAVING " + s.Having.SQL()
+		sql += " " + s.Having.SQL()
 	}
 	if s.OrderBy != nil {
-		sql += " ORDER BY " + s.OrderBy.SQL()
+		sql += " " + s.OrderBy.SQL()
 	}
 	if s.Limit != nil {
-		sql += " LIMIT " + s.Limit.SQL()
+		sql += " " + s.Limit.SQL()
 	}
-
 	return sql
 }
 
@@ -134,149 +133,176 @@ func (c *CompoundQuery) SQL() string {
 	} else {
 		op += " ALL"
 	}
-	sql := ""
-	for i, e := range c.List {
-		if i != 0 {
-			sql += " " + op + " "
-		}
-		if s, ok := e.(*SubQueryExpr); ok && s.OrderBy == nil && s.Limit == nil {
-			sql += s.SQL()
-		} else if s, ok := e.(*Select); ok && s.OrderBy == nil && s.Limit == nil {
-			sql += s.SQL()
-		} else {
-			sql += "(" + e.SQL() + ")"
-		}
+
+	sql := c.Queries[0].SQL()
+	for _, q := range c.Queries[1:] {
+		sql += " " + op + " " + q.SQL()
 	}
 	if c.OrderBy != nil {
-		sql += " ORDER BY " + c.OrderBy.SQL()
+		sql += " " + c.OrderBy.SQL()
 	}
 	if c.Limit != nil {
-		sql += " LIMIT " + c.Limit.SQL()
+		sql += " " + c.Limit.SQL()
 	}
 	return sql
 }
 
-func (s *SubQueryExpr) SQL() string {
-	sql := s.Expr.SQL()
+func (s *SubQuery) SQL() string {
+	sql := "(" + s.Query.SQL() + ")"
 	if s.OrderBy != nil {
-		sql += " ORDER BY " + s.OrderBy.SQL()
+		sql += " " + s.OrderBy.SQL()
 	}
 	if s.Limit != nil {
-		sql += " LIMIT " + s.Limit.SQL()
+		sql += " " + s.Limit.SQL()
 	}
 	return sql
 }
 
-func (s *SelectExpr) SQL() string {
-	if s.Expr == nil {
-		return "*"
-	}
-
-	var sql string
-	if s.Star {
-		sql = paren(precSelector, s.Expr)
-		sql += ".*"
-	} else {
-		sql = s.Expr.SQL()
-	}
-
-	if s.As != nil {
-		sql += " AS " + s.As.SQL()
-	}
-
-	return sql
+func (s *Star) SQL() string {
+	return "*"
 }
 
-func (s SelectExprList) SQL() string {
-	var ss []string
-	for _, i := range s {
-		ss = append(ss, i.SQL())
+func (s *StarPath) SQL() string {
+	return s.Expr.SQL() + ".*"
+}
+
+func (a *Alias) SQL() string {
+	return a.Expr.SQL() + " " + a.As.SQL()
+}
+
+func (a *AsAlias) SQL() string {
+	return "AS " + a.Alias.SQL()
+}
+
+func (e *ExprSelectItem) SQL() string {
+	return e.Expr.SQL()
+}
+
+func (f *From) SQL() string {
+	sql := "FROM " + f.Items[0].SQL()
+	for _, item := range f.Items[1:] {
+		sql += ", " + item.SQL()
 	}
-	return strings.Join(ss, ", ")
+	return sql
 }
 
 func (f *FromItem) SQL() string {
-	sql := f.Expr.SQL()
-	if f.Method != "" {
-		unit := "PERCENT"
-		if f.Rows {
-			unit = "ROWS"
-		}
-		sql += " TABLESAMPLE " + string(f.Method) + " (" + f.Num.SQL() + " " + unit + ")"
+	sql := f.Source.SQL()
+	if f.TableSample != nil {
+		sql += " " + f.TableSample.SQL()
 	}
 	return sql
 }
 
-func (f FromItemList) SQL() string {
-	var ss []string
-	for _, i := range f {
-		ss = append(ss, i.SQL())
-	}
-	return strings.Join(ss, ", ")
+func (t *TableSample) SQL() string {
+	return "TABLESAMPLE " + string(t.Method) + t.Size.SQL()
 }
 
-func (t *TableName) SQL() string {
-	sql := t.Ident.SQL()
-	if t.Hint != nil {
-		sql += " " + t.Hint.SQL()
-	}
-	if t.As != nil {
-		sql += " AS " + t.As.SQL()
+func (t *TableSampleSize) SQL() string {
+	return "(" + t.Value.SQL() + " " + string(t.Unit) + ")"
+}
+
+func (w *Where) SQL() string {
+	return "WHERE " + w.Expr.SQL()
+}
+
+func (g *GroupBy) SQL() string {
+	sql := "GROUP BY " + g.Exprs[0].SQL()
+	for _, e := range g.Exprs[1:] {
+		sql += ", " + e.SQL()
 	}
 	return sql
 }
+
+func (h *Having) SQL() string {
+	return "HAVING " + h.Expr.SQL()
+}
+
+func (o *OrderBy) SQL() string {
+	sql := "ORDER BY " + o.Items[0].SQL()
+	for _, item := range o.Items[1:] {
+		sql += ", " + item.SQL()
+	}
+	return sql
+}
+
+func (o *OrderByItem) SQL() string {
+	sql := o.Expr.SQL()
+	if o.Collate != nil {
+		sql += " " + o.Collate.SQL()
+	}
+	if o.Dir != "" {
+		sql += " " + string(o.Dir)
+	}
+	return sql
+}
+
+func (c *Collate) SQL() string {
+	return "COLLATE " + c.Value.SQL()
+}
+
+func (l *Limit) SQL() string {
+	sql := "LIMIT " + l.Count.SQL()
+	if l.Offset != nil {
+		sql += " " + l.Offset.SQL()
+	}
+	return sql
+}
+
+func (o *Offset) SQL() string {
+	return "OFFSET " + o.Value.SQL()
+}
+
+// ================================================================================
+//
+// JOIN
+//
+// ================================================================================
 
 func (u *Unnest) SQL() string {
-	sql := "UNNEST(" + u.Expr.SQL() + ")"
+	var sql string
+	if u.Implicit {
+		sql += u.Expr.SQL()
+	} else {
+		sql += "UNNEST(" + u.Expr.SQL() + ")"
+	}
 	if u.Hint != nil {
 		sql += " " + u.Hint.SQL()
 	}
 	if u.As != nil {
-		sql += " AS " + u.As.SQL()
+		sql += " " + u.As.SQL()
 	}
-	if u.WithOffset {
-		sql += " WITH OFFSET"
-		if u.WithOffsetAs != nil {
-			sql += " " + u.WithOffsetAs.SQL()
-		}
+	if u.WithOffset != nil {
+		sql += " " + u.WithOffset.SQL()
 	}
 	return sql
 }
 
-func (p *PathExpr) SQL() string {
-	sql := p.Ident.SQL()
-	for _, path := range p.Paths {
-		sql += "." + path.SQL()
-	}
-	if p.Hint != nil {
-		sql += " " + p.Hint.SQL()
-	}
-	if p.As != nil {
-		sql += " AS " + p.As.SQL()
+func (w *WithOffset) SQL() string {
+	sql := "WITH OFFSET"
+	if w.As != nil {
+		sql += " " + w.As.SQL()
 	}
 	return sql
 }
 
 func (s *SubQueryJoinExpr) SQL() string {
-	sql := s.Expr.SQL()
-	if s.Hint != nil {
-		sql += " " + s.Hint.SQL()
-	}
+	sql := "(" + s.Query.SQL() + ")"
 	if s.As != nil {
-		sql += " AS " + s.As.SQL()
+		sql += " " + s.As.SQL()
 	}
 	return sql
 }
 
 func (p *ParenJoinExpr) SQL() string {
-	return "(" + p.Expr.SQL() + ")"
+	return "(" + p.Source.SQL() + ")"
 }
 
 func (j *Join) SQL() string {
 	sql := j.Left.SQL()
 	sql += " " + string(j.Op) + " JOIN "
 	if j.Hint != nil {
-		sql += " " + j.Hint.SQL() + " "
+		sql += j.Hint.SQL() + " "
 	}
 	sql += j.Right.SQL()
 	if j.Cond != nil {
@@ -285,35 +311,24 @@ func (j *Join) SQL() string {
 	return sql
 }
 
-func (j *JoinCondition) SQL() string {
-	if j.On != nil {
-		return "ON " + j.On.SQL()
-	}
-
-	return "USING (" + j.Using.SQL() + ")"
+func (o *On) SQL() string {
+	return "ON " + o.Expr.SQL()
 }
 
-func (o *OrderExpr) SQL() string {
-	sql := o.Expr.SQL()
-	sql += " " + string(o.Dir)
+func (u *Using) SQL() string {
+	sql := "USING (" + u.Idents[0].SQL()
+	for _, id := range u.Idents[1:] {
+		sql += ", " + id.SQL()
+	}
+	sql += ")"
 	return sql
 }
 
-func (o OrderExprList) SQL() string {
-	var ss []string
-	for _, i := range o {
-		ss = append(ss, i.SQL())
-	}
-	return strings.Join(ss, ", ")
-}
-
-func (l *Limit) SQL() string {
-	sql := l.Count.SQL()
-	if l.Offset != nil {
-		sql += " OFFSET " + l.Offset.SQL()
-	}
-	return sql
-}
+// ================================================================================
+//
+// Expr
+//
+// ================================================================================
 
 func (b *BinaryExpr) SQL() string {
 	p := exprPrec(b)
@@ -342,14 +357,21 @@ func (i *InExpr) SQL() string {
 	return sql
 }
 
-func (i *InCondition) SQL() string {
-	if i.Unnest != nil {
-		return "UNNEST(" + i.Unnest.SQL() + ")"
+func (u *UnnestInCondition) SQL() string {
+	return "UNNEST(" + u.Expr.SQL() + ")"
+}
+
+func (s *SubQueryInCondition) SQL() string {
+	return "(" + s.Query.SQL() + ")"
+}
+
+func (v *ValuesInCondition) SQL() string {
+	sql := "(" + v.Exprs[0].SQL()
+	for _, e := range v.Exprs[1:] {
+		sql += ", " + e.SQL()
 	}
-	if i.SubQuery != nil {
-		return i.SubQuery.SQL()
-	}
-	return "(" + i.Values.SQL() + ")"
+	sql += ")"
+	return sql
 }
 
 func (i *IsNullExpr) SQL() string {
@@ -384,104 +406,110 @@ func (b *BetweenExpr) SQL() string {
 	if b.Not {
 		sql += " NOT"
 	}
-	sql += " BETWEEN "
-	sql += paren(p, b.RightStart)
-	sql += " AND "
-	sql += paren(p, b.RightEnd)
-	return sql
+	return sql + " BETWEEN " + paren(p, b.RightStart) + " AND " + paren(p, b.RightEnd)
 }
 
 func (s *SelectorExpr) SQL() string {
 	p := exprPrec(s)
-	sql := paren(p, s.Left)
-	sql += "." + s.Right.SQL()
-	return sql
+	return paren(p, s.Expr) + "." + s.Member.SQL()
 }
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Left) + "["
+	sql := paren(p, i.Expr) + "["
 	if i.Ordinal {
 		sql += "ORDINAL"
 	} else {
 		sql += "OFFSET"
 	}
-	sql += "(" + i.Right.SQL() + ")]"
+	sql += "(" + i.Index.SQL() + ")]"
 	return sql
 }
 
 func (c *CallExpr) SQL() string {
-	distinct := ""
+	sql := c.Func.SQL() + "("
 	if c.Distinct {
-		distinct = "DISTINCT "
+		sql += "DISTINCT "
 	}
-	return fmt.Sprintf("%s(%s%s)", c.Func.SQL(), distinct, c.Args.SQL())
+	for i, a := range c.Args {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += a.SQL()
+	}
+	sql += ")"
+	return sql
 }
 
 func (a *Arg) SQL() string {
-	if a.IntervalUnit != "" {
-		return "INTERVAL " + a.Expr.SQL() + " " + string(a.IntervalUnit)
+	if a.IntervalUnit != nil {
+		return "INTERVAL " + a.Expr.SQL() + " " + a.IntervalUnit.SQL()
 	}
 	return a.Expr.SQL()
-}
-
-func (as ArgList) SQL() string {
-	var ss []string
-	for _, a := range as {
-		ss = append(ss, a.SQL())
-	}
-	return strings.Join(ss, ", ")
 }
 
 func (*CountStarExpr) SQL() string {
 	return "COUNT(*)"
 }
 
-func (c *CastExpr) SQL() string {
-	return fmt.Sprintf("CAST(%s AS %s)", paren(precLit, c.Expr), c.Type.SQL())
+func (e *ExtractExpr) SQL() string {
+	sql := "EXTRACT(" + e.Part.SQL() + " FROM " + e.Expr.SQL()
+	if e.AtTimeZone != nil {
+		sql += " " + e.AtTimeZone.SQL()
+	}
+	sql += ")"
+	return sql
 }
 
-func (e *ExtractExpr) SQL() string {
-	return fmt.Sprintf("EXTRACT(%s FROM %s)", e.Part, e.Expr.SQL())
+func (a *AtTimeZone) SQL() string {
+	return "AT TIME ZONE " + a.Expr.SQL()
+}
+
+func (c *CastExpr) SQL() string {
+	return "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
 }
 
 func (c *CaseExpr) SQL() string {
-	sql := "CASE"
+	sql := "CASE "
 	if c.Expr != nil {
-		sql += " " + c.Expr.SQL()
+		sql += c.Expr.SQL() + " "
 	}
-	for _, w := range c.When {
-		sql += " WHEN " + w.SQL()
+	for _, w := range c.Whens {
+		sql += w.SQL() + " "
 	}
 	if c.Else != nil {
-		sql += " ELSE " + c.Else.SQL()
+		sql += c.Else.SQL() + " "
 	}
 	sql += "END"
 	return sql
 }
 
-func (w *When) SQL() string {
-	return w.Cond.SQL() + " THEN " + w.Then.SQL()
+func (c *CaseWhen) SQL() string {
+	return "WHEN " + c.Cond.SQL() + " THEN " + c.Then.SQL()
 }
 
-func (s *SubQuery) SQL() string {
-	return "(" + s.Expr.SQL() + ")"
+func (c *CaseElse) SQL() string {
+	return "ELSE " + c.Expr.SQL()
 }
 
 func (p *ParenExpr) SQL() string {
 	return "(" + p.Expr.SQL() + ")"
 }
 
-func (a *ArrayExpr) SQL() string {
-	return "ARRAY" + a.Expr.SQL()
+func (s *ScalarSubQuery) SQL() string {
+	return "(" + s.Query.SQL() + ")"
 }
 
-func (e *ExistsExpr) SQL() string {
+func (a *ArraySubQuery) SQL() string {
+	return "ARRAY(" + a.Query.SQL() + ")"
+}
+
+func (e *ExistsSubQuery) SQL() string {
 	sql := "EXISTS"
 	if e.Hint != nil {
 		sql += " " + e.Hint.SQL() + " "
 	}
-	sql += e.Expr.SQL()
+	sql += "(" + e.Query.SQL() + ")"
 	return sql
 }
 
@@ -490,45 +518,34 @@ func (p *Param) SQL() string {
 }
 
 func (i *Ident) SQL() string {
-	if needIdentQuote(i.Name) {
-		return "`" + QuoteSQLString(i.Name) + "`"
-	}
-	return i.Name
+	return QuoteSQLIdent(i.Name)
 }
 
-func needIdentQuote(s string) bool {
-	if _, ok := keywordsMap[TokenKind(strings.ToUpper(s))]; ok {
-		return true
+func (p *Path) SQL() string {
+	sql := p.Idents[0].SQL()
+	for _, id := range p.Idents[1:] {
+		sql += "." + id.SQL()
 	}
-	if !isIdentStart(s[0]) {
-		return true
-	}
-	for _, r := range s {
-		if r > 0xff || !isIdentPart(byte(r)) {
-			return true
-		}
-	}
-	return false
+	return sql
 }
 
-func (i IdentList) SQL() string {
-	var ss []string
-	for _, s := range i {
-		ss = append(ss, s.SQL())
-	}
-	return strings.Join(ss, ", ")
-}
-
-func (a *ArrayLit) SQL() string {
+func (a *ArrayLiteral) SQL() string {
 	sql := "ARRAY"
 	if a.Type != nil {
 		sql += "<" + a.Type.SQL() + ">"
 	}
-	sql += "[" + a.Values.SQL() + "]"
+	sql += "["
+	for i, v := range a.Values {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += v.SQL()
+	}
+	sql += "]"
 	return sql
 }
 
-func (s *StructLit) SQL() string {
+func (s *StructLiteral) SQL() string {
 	sql := "STRUCT"
 	if s.Fields != nil {
 		sql += "<"
@@ -540,15 +557,22 @@ func (s *StructLit) SQL() string {
 		}
 		sql += ">"
 	}
-	sql += "(" + s.Values.SQL() + ")"
+	sql += "("
+	for i, v := range s.Values {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += v.SQL()
+	}
+	sql += ")"
 	return sql
 }
 
-func (*NullLit) SQL() string {
+func (*NullLiteral) SQL() string {
 	return "NULL"
 }
 
-func (b *BoolLit) SQL() string {
+func (b *BoolLiteral) SQL() string {
 	if b.Value {
 		return "TRUE"
 	} else {
@@ -556,56 +580,70 @@ func (b *BoolLit) SQL() string {
 	}
 }
 
-func (i *IntLit) SQL() string {
+func (i *IntLiteral) SQL() string {
 	return i.Value
 }
 
-func (f *FloatLit) SQL() string {
+func (f *FloatLiteral) SQL() string {
 	return f.Value
 }
 
-func (s *StringLit) SQL() string {
-	return `"` + QuoteSQLString(s.Value) + `"`
+func (s *StringLiteral) SQL() string {
+	return QuoteSQLString(s.Value)
 }
 
-func (b *BytesLit) SQL() string {
-	return `B"` + QuoteSQLBytes(b.Value) + `"`
+func (b *BytesLiteral) SQL() string {
+	return QuoteSQLBytes(b.Value)
 }
 
-func (d *DateLit) SQL() string {
-	return `DATE "` + QuoteSQLString(d.Value) + `"`
+func (d *DateLiteral) SQL() string {
+	return "DATE " + QuoteSQLString(d.Value)
 }
 
-func (t *TimestampLit) SQL() string {
-	return `TIMESTAMP "` + QuoteSQLString(t.Value) + `"`
+func (t *TimestampLiteral) SQL() string {
+	return "TIMESTAMP " + QuoteSQLString(t.Value)
 }
 
-func (t *Type) SQL() string {
-	sql := string(t.Name)
-	if t.Fields != nil {
-		sql += "<"
-		for i, f := range t.Fields {
-			if i != 0 {
-				sql += ", "
-			}
-			sql += f.SQL()
+// ================================================================================
+//
+// Type
+//
+// ================================================================================
+
+func (s *SimpleType) SQL() string {
+	return string(s.Name)
+}
+
+func (a *ArrayType) SQL() string {
+	return "ARRAY<" + a.Item.SQL() + ">"
+}
+
+func (s *StructType) SQL() string {
+	sql := "STRUCT<"
+	for i, f := range s.Fields {
+		if i != 0 {
+			sql += ", "
 		}
-		sql += ">"
+		sql += f.SQL()
 	}
-	if t.Value != nil {
-		sql += "<" + t.Value.SQL() + ">"
-	}
+	sql += ">"
 	return sql
 }
 
-func (t *FieldSchema) SQL() string {
+func (f *FieldType) SQL() string {
 	var sql string
-	if t.Name != nil {
-		sql += t.Name.SQL() + " "
+	if f.Member != nil {
+		sql += f.Member.SQL() + " "
 	}
-	sql += t.Type.SQL()
+	sql += f.Type.SQL()
 	return sql
 }
+
+// ================================================================================
+//
+// Cast for Special Cases
+//
+// ================================================================================
 
 func (c *CastIntValue) SQL() string {
 	return "CAST(" + c.Expr.SQL() + " AS INT64)"

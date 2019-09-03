@@ -64,93 +64,160 @@ func (f *File) ResovlePos(pos Pos) (int, int) {
 	return -1, -1
 }
 
+// ================================================================================
+//
+// SELECT
+//
+// ================================================================================
+
 func (q *QueryStatement) Pos() Pos {
 	if q.Hint != nil {
 		return q.Hint.Pos()
 	}
-	return q.Expr.Pos()
-}
-
-func (e ExprList) Pos() Pos {
-	if len(e) == 0 {
-		return InvalidPos
-	}
-	return e[0].Pos()
-}
-
-func (e ExprList) End() Pos {
-	if len(e) == 0 {
-		return InvalidPos
-	}
-	return e[len(e)-1].End()
+	return q.Query.Pos()
 }
 
 func (q *QueryStatement) End() Pos {
-	return q.Expr.End()
+	return q.Query.End()
 }
 
 func (h *Hint) Pos() Pos { return h.pos }
 func (h *Hint) End() Pos { return h.end }
 
+func (h *HintRecord) Pos() Pos { return h.Key.Pos() }
+func (h *HintRecord) End() Pos { return h.Value.End() }
+
 func (s *Select) Pos() Pos { return s.pos }
-func (s *Select) End() Pos { return s.end }
+
+func (s *Select) End() Pos {
+	if s.Limit != nil {
+		return s.Limit.End()
+	}
+	if s.OrderBy != nil {
+		return s.OrderBy.End()
+	}
+	if s.Having != nil {
+		return s.Having.End()
+	}
+	if s.GroupBy != nil {
+		return s.GroupBy.End()
+	}
+	if s.Where != nil {
+		return s.Where.End()
+	}
+	if s.From != nil {
+		return s.From.End()
+	}
+	return s.Results[len(s.Results)-1].End()
+}
 
 func (c *CompoundQuery) Pos() Pos {
-	return c.List[0].Pos()
+	return c.Queries[0].Pos()
 }
 
-func (c *CompoundQuery) End() Pos { return c.end }
-
-func (s *SubQueryExpr) Pos() Pos {
-	return s.Expr.Pos()
+func (c *CompoundQuery) End() Pos {
+	if c.Limit != nil {
+		return c.Limit.End()
+	}
+	if c.OrderBy != nil {
+		return c.OrderBy.End()
+	}
+	return c.Queries[len(c.Queries)-1].End()
 }
 
-func (s *SubQueryExpr) End() Pos { return s.end }
+func (s *SubQuery) Pos() Pos { return s.pos }
+func (s *SubQuery) End() Pos { return s.end }
 
-func (s *SelectExpr) Pos() Pos { return s.pos }
-func (s *SelectExpr) End() Pos { return s.end }
+func (s *Star) Pos() Pos { return s.pos }
+func (s *Star) End() Pos { return s.pos + 1 }
 
-func (s SelectExprList) Pos() Pos {
-	return s[0].Pos()
-}
+func (s *StarPath) Pos() Pos { return s.Expr.Pos() }
+func (s *StarPath) End() Pos { return s.end }
 
-func (s SelectExprList) End() Pos {
-	return s[len(s)-1].End()
-}
+func (a *Alias) Pos() Pos { return a.Expr.Pos() }
+func (a *Alias) End() Pos { return a.As.End() }
+
+func (a *AsAlias) Pos() Pos { return a.pos }
+func (a *AsAlias) End() Pos { return a.Alias.End() }
+
+func (e *ExprSelectItem) Pos() Pos { return e.Expr.Pos() }
+
+func (e *ExprSelectItem) End() Pos { return e.Expr.End() }
+
+func (f *From) Pos() Pos { return f.pos }
+func (f *From) End() Pos { return f.Items[len(f.Items)-1].End() }
 
 func (f *FromItem) Pos() Pos {
-	return f.Expr.Pos()
+	return f.Source.Pos()
 }
-func (f *FromItem) End() Pos { return f.end }
-
-func (f FromItemList) Pos() Pos {
-	return f[0].Pos()
-}
-
-func (f FromItemList) End() Pos {
-	return f[len(f)-1].End()
+func (f *FromItem) End() Pos {
+	if f.TableSample != nil {
+		return f.TableSample.End()
+	}
+	return f.Source.End()
 }
 
-func (t *TableName) Pos() Pos {
-	return t.Ident.Pos()
+func (t *TableSample) Pos() Pos { return t.pos }
+func (t *TableSample) End() Pos { return t.Size.End() }
+
+func (t *TableSampleSize) Pos() Pos { return t.pos }
+func (t *TableSampleSize) End() Pos { return t.end }
+
+func (w *Where) Pos() Pos { return w.pos }
+func (w *Where) End() Pos { return w.Expr.End() }
+
+func (g *GroupBy) Pos() Pos { return g.pos }
+func (g *GroupBy) End() Pos { return g.Exprs[len(g.Exprs)-1].End() }
+
+func (h *Having) Pos() Pos { return h.pos }
+func (h *Having) End() Pos { return h.Expr.End() }
+
+func (o *OrderBy) Pos() Pos { return o.pos }
+func (o *OrderBy) End() Pos { return o.Items[len(o.Items)-1].End() }
+
+func (o *OrderByItem) Pos() Pos { return o.Expr.Pos() }
+
+func (o *OrderByItem) End() Pos { return o.end }
+
+func (c *Collate) Pos() Pos { return c.pos }
+func (c *Collate) End() Pos { return c.Value.End() }
+
+func (l *Limit) Pos() Pos {
+	return l.pos
 }
 
-func (t *TableName) End() Pos { return t.end }
+func (l *Limit) End() Pos {
+	if l.Offset != nil {
+		return l.Offset.End()
+	}
+	return l.Count.End()
+}
+
+func (o *Offset) Pos() Pos { return o.pos }
+func (o *Offset) End() Pos { return o.Value.End() }
+
+// ================================================================================
+//
+// JOIN
+//
+// ================================================================================
 
 func (u *Unnest) Pos() Pos { return u.pos }
 func (u *Unnest) End() Pos { return u.end }
 
-func (p *PathExpr) Pos() Pos {
-	return p.Ident.Pos()
-}
-
-func (p *PathExpr) End() Pos { return p.end }
+func (w *WithOffset) Pos() Pos { return w.pos }
+func (w *WithOffset) End() Pos { return w.end }
 
 func (s *SubQueryJoinExpr) Pos() Pos {
-	return s.Expr.Pos()
+	return s.Query.Pos()
 }
 
-func (s *SubQueryJoinExpr) End() Pos { return s.end }
+func (s *SubQueryJoinExpr) End() Pos {
+	if s.As != nil {
+		return s.As.End()
+	}
+	return s.Query.End()
+}
 
 func (p *ParenJoinExpr) Pos() Pos { return p.pos }
 func (p *ParenJoinExpr) End() Pos { return p.end }
@@ -166,173 +233,127 @@ func (j *Join) End() Pos {
 	return j.Right.End()
 }
 
-func (j *JoinCondition) Pos() Pos { return j.pos }
-func (j *JoinCondition) End() Pos { return j.end }
+func (o *On) Pos() Pos { return o.pos }
+func (o *On) End() Pos { return o.Expr.End() }
 
-func (o *OrderExpr) Pos() Pos {
-	return o.Expr.Pos()
-}
+func (u *Using) Pos() Pos { return u.pos }
+func (u *Using) End() Pos { return u.end }
 
-func (o *OrderExpr) End() Pos { return o.end }
+// ================================================================================
+//
+// Expr
+//
+// ================================================================================
 
-func (o OrderExprList) Pos() Pos {
-	return o[0].Pos()
-}
-
-func (o OrderExprList) End() Pos {
-	return o[len(o)-1].End()
-}
-
-func (l *Limit) Pos() Pos {
-	return l.Count.Pos()
-}
-
-func (l *Limit) End() Pos {
-	if l.Offset != nil {
-		return l.Offset.End()
-	}
-	return l.Count.End()
-}
-
-func (b *BinaryExpr) Pos() Pos {
-	return b.Left.Pos()
-}
-
-func (b *BinaryExpr) End() Pos {
-	return b.Right.End()
-}
+func (b *BinaryExpr) Pos() Pos { return b.Left.Pos() }
+func (b *BinaryExpr) End() Pos { return b.Right.End() }
 
 func (u *UnaryExpr) Pos() Pos { return u.pos }
+func (u *UnaryExpr) End() Pos { return u.Expr.End() }
 
-func (u *UnaryExpr) End() Pos {
-	return u.Expr.End()
-}
+func (i *InExpr) Pos() Pos { return i.Left.Pos() }
+func (i *InExpr) End() Pos { return i.Right.End() }
 
-func (i *InExpr) Pos() Pos {
-	return i.Left.Pos()
-}
+func (u *UnnestInCondition) Pos() Pos { return u.pos }
+func (u *UnnestInCondition) End() Pos { return u.end }
 
-func (i *InExpr) End() Pos {
-	return i.Right.End()
-}
+func (s *SubQueryInCondition) Pos() Pos { return s.pos }
+func (s *SubQueryInCondition) End() Pos { return s.end }
 
-func (i *InCondition) Pos() Pos { return i.pos }
-func (i *InCondition) End() Pos { return i.end }
+func (v *ValuesInCondition) Pos() Pos { return v.pos }
+func (v *ValuesInCondition) End() Pos { return v.end }
 
-func (i *IsNullExpr) Pos() Pos {
-	return i.Left.Pos()
-}
-
+func (i *IsNullExpr) Pos() Pos { return i.Left.Pos() }
 func (i *IsNullExpr) End() Pos { return i.end }
 
-func (i *IsBoolExpr) Pos() Pos {
-	return i.Left.Pos()
-}
-
+func (i *IsBoolExpr) Pos() Pos { return i.Left.Pos() }
 func (i *IsBoolExpr) End() Pos { return i.end }
 
-func (b *BetweenExpr) Pos() Pos {
-	return b.Left.Pos()
-}
+func (b *BetweenExpr) Pos() Pos { return b.Left.Pos() }
+func (b *BetweenExpr) End() Pos { return b.RightEnd.End() }
 
-func (b *BetweenExpr) End() Pos {
-	return b.RightEnd.End()
-}
+func (b *SelectorExpr) Pos() Pos { return b.Expr.Pos() }
+func (b *SelectorExpr) End() Pos { return b.Member.End() }
 
-func (b *SelectorExpr) Pos() Pos {
-	return b.Left.Pos()
-}
-
-func (b *SelectorExpr) End() Pos {
-	return b.Right.End()
-}
-
-func (i *IndexExpr) Pos() Pos {
-	return i.Left.Pos()
-}
-
+func (i *IndexExpr) Pos() Pos { return i.Expr.Pos() }
 func (i *IndexExpr) End() Pos { return i.end }
 
-func (c *CallExpr) Pos() Pos {
-	return c.Func.Pos()
-}
-
+func (c *CallExpr) Pos() Pos { return c.Func.Pos() }
 func (c *CallExpr) End() Pos { return c.end }
 
-func (a *Arg) Pos() Pos { return a.pos }
-func (a *Arg) End() Pos { return a.end }
+func (a *Arg) Pos() Pos {
+	return a.pos
+}
+
+func (a *Arg) End() Pos {
+	if a.IntervalUnit != nil {
+		return a.IntervalUnit.End()
+	}
+	return a.Expr.End()
+}
 
 func (c *CountStarExpr) Pos() Pos { return c.pos }
 func (c *CountStarExpr) End() Pos { return c.end }
 
-func (c *CastExpr) Pos() Pos { return c.pos }
-func (c *CastExpr) End() Pos { return c.end }
-
 func (e *ExtractExpr) Pos() Pos { return e.pos }
 func (e *ExtractExpr) End() Pos { return e.end }
+
+func (a *AtTimeZone) Pos() Pos { return a.pos }
+func (a *AtTimeZone) End() Pos { return a.Expr.End() }
+
+func (c *CastExpr) Pos() Pos { return c.pos }
+func (c *CastExpr) End() Pos { return c.end }
 
 func (c *CaseExpr) Pos() Pos { return c.pos }
 func (c *CaseExpr) End() Pos { return c.end }
 
-func (w *When) Pos() Pos {
-	return w.Cond.Pos()
-}
+func (c *CaseWhen) Pos() Pos { return c.Cond.Pos() }
+func (c *CaseWhen) End() Pos { return c.Then.End() }
 
-func (w *When) End() Pos {
-	return w.Then.End()
-}
-
-func (s *SubQuery) Pos() Pos { return s.pos }
-func (s *SubQuery) End() Pos { return s.end }
+func (c *CaseElse) Pos() Pos { return c.pos }
+func (c *CaseElse) End() Pos { return c.Expr.End() }
 
 func (p *ParenExpr) Pos() Pos { return p.pos }
 func (p *ParenExpr) End() Pos { return p.end }
 
-func (a *ArrayExpr) Pos() Pos { return a.pos }
+func (s *ScalarSubQuery) Pos() Pos { return s.pos }
+func (s *ScalarSubQuery) End() Pos { return s.end }
 
-func (a *ArrayExpr) End() Pos {
-	return a.Expr.End()
-}
+func (a *ArraySubQuery) Pos() Pos { return a.pos }
+func (a *ArraySubQuery) End() Pos { return a.end }
 
-func (e *ExistsExpr) Pos() Pos { return e.pos }
+func (e *ExistsSubQuery) Pos() Pos { return e.pos }
+func (e *ExistsSubQuery) End() Pos { return e.end }
 
-func (e *ExistsExpr) End() Pos {
-	return e.Expr.Pos()
-}
+// ================================================================================
+//
+// Literal
+//
+// ================================================================================
 
 func (p *Param) Pos() Pos { return p.pos }
-
-func (p *Param) End() Pos {
-	return p.pos + 1 + Pos(len(p.Name))
-}
+func (p *Param) End() Pos { return p.pos + 1 + Pos(len(p.Name)) }
 
 func (i *Ident) Pos() Pos { return i.pos }
-
 func (i *Ident) End() Pos { return i.end }
 
-func (i IdentList) Pos() Pos {
-	return i[0].Pos()
+func (p *Path) Pos() Pos { return p.Idents[0].Pos() }
+func (p *Path) End() Pos { return p.Idents[len(p.Idents)-1].End() }
+
+func (a *ArrayLiteral) Pos() Pos { return a.pos }
+func (a *ArrayLiteral) End() Pos { return a.end }
+
+func (s *StructLiteral) Pos() Pos { return s.pos }
+func (s *StructLiteral) End() Pos { return s.end }
+
+func (n *NullLiteral) Pos() Pos { return n.pos }
+func (n *NullLiteral) End() Pos { return n.pos + 4 }
+
+func (b *BoolLiteral) Pos() Pos {
+	return b.pos
 }
 
-func (i IdentList) End() Pos {
-	return i[len(i)-1].End()
-}
-
-func (a *ArrayLit) Pos() Pos { return a.pos }
-func (a *ArrayLit) End() Pos { return a.end }
-
-func (s *StructLit) Pos() Pos { return s.pos }
-func (s *StructLit) End() Pos { return s.end }
-
-func (n *NullLit) Pos() Pos { return n.pos }
-
-func (n *NullLit) End() Pos {
-	return n.pos + 4
-}
-
-func (b *BoolLit) Pos() Pos { return b.pos }
-
-func (b *BoolLit) End() Pos {
+func (b *BoolLiteral) End() Pos {
 	if b.Value {
 		return b.pos + 4
 	} else {
@@ -340,26 +361,54 @@ func (b *BoolLit) End() Pos {
 	}
 }
 
-func (i *IntLit) Pos() Pos { return i.pos }
-func (i *IntLit) End() Pos { return i.end }
+func (i *IntLiteral) Pos() Pos { return i.pos }
+func (i *IntLiteral) End() Pos { return i.end }
 
-func (f *FloatLit) Pos() Pos { return f.pos }
-func (f *FloatLit) End() Pos { return f.end }
+func (f *FloatLiteral) Pos() Pos { return f.pos }
+func (f *FloatLiteral) End() Pos { return f.end }
 
-func (s *StringLit) Pos() Pos { return s.pos }
-func (s *StringLit) End() Pos { return s.end }
+func (s *StringLiteral) Pos() Pos { return s.pos }
+func (s *StringLiteral) End() Pos { return s.end }
 
-func (b *BytesLit) Pos() Pos { return b.pos }
-func (b *BytesLit) End() Pos { return b.end }
+func (b *BytesLiteral) Pos() Pos { return b.pos }
+func (b *BytesLiteral) End() Pos { return b.end }
 
-func (d *DateLit) Pos() Pos { return d.pos }
-func (d *DateLit) End() Pos { return d.end }
+func (d *DateLiteral) Pos() Pos { return d.pos }
+func (d *DateLiteral) End() Pos { return d.end }
 
-func (t *TimestampLit) Pos() Pos { return t.pos }
-func (t *TimestampLit) End() Pos { return t.end }
+func (t *TimestampLiteral) Pos() Pos { return t.pos }
+func (t *TimestampLiteral) End() Pos { return t.end }
 
-func (t *Type) Pos() Pos { return t.pos }
-func (t *Type) End() Pos { return t.end }
+// ================================================================================
+//
+// Type
+//
+// ================================================================================
+
+func (s *SimpleType) Pos() Pos { return s.pos }
+func (s *SimpleType) End() Pos { return s.pos + Pos(len(s.Name)) }
+
+func (a *ArrayType) Pos() Pos { return a.pos }
+func (a *ArrayType) End() Pos { return a.end }
+
+func (s *StructType) Pos() Pos { return s.pos }
+func (s *StructType) End() Pos { return s.end }
+
+func (f *FieldType) Pos() Pos {
+	if f.Member != nil {
+		return f.Member.Pos()
+	}
+	return f.Type.Pos()
+}
+func (f *FieldType) End() Pos {
+	return f.Type.End()
+}
+
+// ================================================================================
+//
+// Cast for Special Cases
+//
+// ================================================================================
 
 func (c *CastIntValue) Pos() Pos { return c.pos }
 func (c *CastIntValue) End() Pos { return c.end }

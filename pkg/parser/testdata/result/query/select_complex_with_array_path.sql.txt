@@ -7,66 +7,66 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      46,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  30,
-        Expr: &parser.TableName{
-          end:   30,
-          Ident: &parser.Ident{
-            pos:  18,
-            end:  30,
-            Name: "ComplexTable",
-          },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
-        },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
-      },
-      &parser.FromItem{
-        end:  46,
-        Expr: &parser.PathExpr{
-          end:   46,
-          Ident: &parser.Ident{
-            pos:  34,
-            end:  46,
-            Name: "ComplexTable",
-          },
-          Paths: []*parser.Ident{
-            &parser.Ident{
-              pos:  47,
-              end:  55,
-              Name: "IntArray",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      30,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  18,
+              end:  30,
+              Name: "ComplexTable",
             },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      34,
+            end:      55,
+            Implicit: true,
+            Expr:     &parser.Path{
+              Idents: []*parser.Ident{
+                &parser.Ident{
+                  pos:  34,
+                  end:  46,
+                  Name: "ComplexTable",
+                },
+                &parser.Ident{
+                  pos:  47,
+                  end:  55,
+                  Name: "IntArray",
+                },
+              },
+            },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
+          },
+          TableSample: (*parser.TableSample)(nil),
+        },
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

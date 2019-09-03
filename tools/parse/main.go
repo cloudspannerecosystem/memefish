@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"log"
 	"fmt"
+	"log"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/k0kubun/pp"
+	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
 func init() {

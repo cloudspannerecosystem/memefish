@@ -44,582 +44,417 @@ lines''',
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      704,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  14,
-        Expr: &parser.StringLit{
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   9,
           end:   14,
           Value: "abc",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  18,
-        end:  24,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   18,
           end:   24,
           Value: "it's",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  28,
-        end:  35,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   28,
           end:   35,
           Value: "it's",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  39,
-        end:  53,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   39,
           end:   53,
           Value: "Title: \"Boy\"",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  57,
-        end:  66,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   57,
           end:   66,
           Value: "abc",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  70,
-        end:  80,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   70,
           end:   80,
           Value: "it's",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  84,
-        end:  101,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   84,
           end:   101,
           Value: "Title:\"Boy\"",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  105,
-        end:  120,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   105,
           end:   120,
           Value: "two\nlines",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  124,
-        end:  135,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   124,
           end:   135,
           Value: "why?",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  139,
-        end:  146,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   139,
           end:   146,
           Value: "abc+",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  150,
-        end:  161,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   150,
           end:   161,
           Value: "abc+",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  165,
-        end:  176,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   165,
           end:   176,
           Value: "abc+",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  180,
-        end:  200,
-        Expr: &parser.StringLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
           pos:   180,
           end:   200,
           Value: "f\\(abc,(.*),def\\)",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  204,
-        end:  210,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   204,
           end:   210,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  214,
-        end:  224,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   214,
           end:   224,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  228,
-        end:  238,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   228,
           end:   238,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  242,
-        end:  250,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   242,
           end:   250,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  254,
-        end:  262,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   254,
           end:   262,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  266,
-        end:  277,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   266,
           end:   277,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  281,
-        end:  284,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   281,
           end:   284,
           Value: "123",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  288,
-        end:  293,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   288,
           end:   293,
           Value: "0xABC",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  297,
-        end:  301,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   297,
           end:   301,
           Value: "-123",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  305,
-        end:  311,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   305,
           end:   311,
           Value: "-0xABC",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  315,
-        end:  326,
-        Expr: &parser.FloatLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.FloatLiteral{
           pos:   315,
           end:   326,
           Value: "123.456e-67",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  330,
-        end:  334,
-        Expr: &parser.FloatLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.FloatLiteral{
           pos:   330,
           end:   334,
           Value: ".1E4",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  338,
-        end:  341,
-        Expr: &parser.FloatLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.FloatLiteral{
           pos:   338,
           end:   341,
           Value: "58.",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  345,
-        end:  348,
-        Expr: &parser.FloatLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.FloatLiteral{
           pos:   345,
           end:   348,
           Value: "4e2",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  352,
-        end:  361,
-        Expr: &parser.ArrayLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:    352,
           end:    361,
-          Type:   (*parser.Type)(nil),
-          Values: parser.ExprList{
-            &parser.IntLit{
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
               pos:   353,
               end:   354,
               Value: "1",
             },
-            &parser.IntLit{
+            &parser.IntLiteral{
               pos:   356,
               end:   357,
               Value: "2",
             },
-            &parser.IntLit{
+            &parser.IntLiteral{
               pos:   359,
               end:   360,
               Value: "3",
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  365,
-        end:  381,
-        Expr: &parser.ArrayLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:    365,
           end:    381,
-          Type:   (*parser.Type)(nil),
-          Values: parser.ExprList{
-            &parser.StringLit{
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.StringLiteral{
               pos:   366,
               end:   369,
               Value: "x",
             },
-            &parser.StringLit{
+            &parser.StringLiteral{
               pos:   371,
               end:   374,
               Value: "y",
             },
-            &parser.StringLit{
+            &parser.StringLiteral{
               pos:   376,
               end:   380,
               Value: "xy",
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  385,
-        end:  399,
-        Expr: &parser.ArrayLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:    385,
           end:    399,
-          Type:   (*parser.Type)(nil),
-          Values: parser.ExprList{
-            &parser.IntLit{
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
               pos:   391,
               end:   392,
               Value: "1",
             },
-            &parser.IntLit{
+            &parser.IntLiteral{
               pos:   394,
               end:   395,
               Value: "2",
             },
-            &parser.IntLit{
+            &parser.IntLiteral{
               pos:   397,
               end:   398,
               Value: "3",
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  403,
-        end:  432,
-        Expr: &parser.ArrayLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:  403,
           end:  432,
-          Type: &parser.Type{
-            pos:    409,
-            end:    415,
-            Name:   "STRING",
-            Fields: []*parser.FieldSchema{},
-            Value:  (*parser.Type)(nil),
+          Type: &parser.SimpleType{
+            pos:  409,
+            Name: "STRING",
           },
-          Values: parser.ExprList{
-            &parser.StringLit{
+          Values: []parser.Expr{
+            &parser.StringLiteral{
               pos:   417,
               end:   420,
               Value: "x",
             },
-            &parser.StringLit{
+            &parser.StringLiteral{
               pos:   422,
               end:   425,
               Value: "y",
             },
-            &parser.StringLit{
+            &parser.StringLiteral{
               pos:   427,
               end:   431,
               Value: "xy",
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  436,
-        end:  450,
-        Expr: &parser.ArrayLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
           pos:  436,
           end:  450,
-          Type: &parser.Type{
-            pos:    442,
-            end:    447,
-            Name:   "INT64",
-            Fields: []*parser.FieldSchema{},
-            Value:  (*parser.Type)(nil),
+          Type: &parser.SimpleType{
+            pos:  442,
+            Name: "INT64",
           },
-          Values: parser.ExprList{},
+          Values: []parser.Expr{},
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  454,
-        end:  483,
-        Expr: &parser.ArrayExpr{
-          pos:  454,
-          Expr: &parser.SubQuery{
-            pos:  459,
-            end:  483,
-            Expr: &parser.Select{
-              pos:      460,
-              end:      482,
-              Distinct: false,
-              AsStruct: false,
-              List:     parser.SelectExprList{
-                &parser.SelectExpr{
-                  pos:  467,
-                  end:  482,
-                  Expr: &parser.StructLit{
-                    pos:    467,
-                    end:    482,
-                    Fields: []*parser.FieldSchema{},
-                    Values: parser.ExprList{
-                      &parser.IntLit{
-                        pos:   474,
-                        end:   475,
-                        Value: "1",
-                      },
-                      &parser.IntLit{
-                        pos:   477,
-                        end:   478,
-                        Value: "2",
-                      },
-                      &parser.IntLit{
-                        pos:   480,
-                        end:   481,
-                        Value: "3",
-                      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArraySubQuery{
+          pos:   454,
+          end:   483,
+          Query: &parser.Select{
+            pos:      460,
+            Distinct: false,
+            AsStruct: false,
+            Results:  []parser.SelectItem{
+              &parser.ExprSelectItem{
+                Expr: &parser.StructLiteral{
+                  pos:    467,
+                  end:    482,
+                  Fields: []*parser.FieldType{},
+                  Values: []parser.Expr{
+                    &parser.IntLiteral{
+                      pos:   474,
+                      end:   475,
+                      Value: "1",
+                    },
+                    &parser.IntLiteral{
+                      pos:   477,
+                      end:   478,
+                      Value: "2",
+                    },
+                    &parser.IntLiteral{
+                      pos:   480,
+                      end:   481,
+                      Value: "3",
                     },
                   },
-                  Star: false,
-                  As:   (*parser.Ident)(nil),
                 },
               },
-              From:    parser.FromItemList{},
-              Where:   nil,
-              GroupBy: parser.ExprList{},
-              Having:  nil,
-              OrderBy: parser.OrderExprList{},
-              Limit:   (*parser.Limit)(nil),
             },
+            From:    (*parser.From)(nil),
+            Where:   (*parser.Where)(nil),
+            GroupBy: (*parser.GroupBy)(nil),
+            Having:  (*parser.Having)(nil),
+            OrderBy: (*parser.OrderBy)(nil),
+            Limit:   (*parser.Limit)(nil),
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  487,
-        end:  510,
-        Expr: &parser.ArrayExpr{
-          pos:  487,
-          Expr: &parser.SubQuery{
-            pos:  492,
-            end:  510,
-            Expr: &parser.Select{
-              pos:      493,
-              end:      509,
-              Distinct: false,
-              AsStruct: false,
-              List:     parser.SelectExprList{
-                &parser.SelectExpr{
-                  pos:  500,
-                  end:  509,
-                  Expr: &parser.StructLit{
-                    pos:    500,
-                    end:    509,
-                    Fields: []*parser.FieldSchema{},
-                    Values: parser.ExprList{
-                      &parser.IntLit{
-                        pos:   501,
-                        end:   502,
-                        Value: "1",
-                      },
-                      &parser.IntLit{
-                        pos:   504,
-                        end:   505,
-                        Value: "2",
-                      },
-                      &parser.IntLit{
-                        pos:   507,
-                        end:   508,
-                        Value: "3",
-                      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArraySubQuery{
+          pos:   487,
+          end:   510,
+          Query: &parser.Select{
+            pos:      493,
+            Distinct: false,
+            AsStruct: false,
+            Results:  []parser.SelectItem{
+              &parser.ExprSelectItem{
+                Expr: &parser.StructLiteral{
+                  pos:    500,
+                  end:    509,
+                  Fields: []*parser.FieldType{},
+                  Values: []parser.Expr{
+                    &parser.IntLiteral{
+                      pos:   501,
+                      end:   502,
+                      Value: "1",
+                    },
+                    &parser.IntLiteral{
+                      pos:   504,
+                      end:   505,
+                      Value: "2",
+                    },
+                    &parser.IntLiteral{
+                      pos:   507,
+                      end:   508,
+                      Value: "3",
                     },
                   },
-                  Star: false,
-                  As:   (*parser.Ident)(nil),
                 },
               },
-              From:    parser.FromItemList{},
-              Where:   nil,
-              GroupBy: parser.ExprList{},
-              Having:  nil,
-              OrderBy: parser.OrderExprList{},
-              Limit:   (*parser.Limit)(nil),
             },
+            From:    (*parser.From)(nil),
+            Where:   (*parser.Where)(nil),
+            GroupBy: (*parser.GroupBy)(nil),
+            Having:  (*parser.Having)(nil),
+            OrderBy: (*parser.OrderBy)(nil),
+            Limit:   (*parser.Limit)(nil),
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  514,
-        end:  531,
-        Expr: &parser.DateLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.DateLiteral{
           pos:   514,
           end:   531,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  535,
-        end:  553,
+      &parser.ExprSelectItem{
         Expr: &parser.CallExpr{
           end:  553,
           Func: &parser.Ident{
@@ -628,58 +463,41 @@ lines''',
             Name: "DATE",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          540,
-              end:          552,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  540,
+              Expr: &parser.StringLiteral{
                 pos:   540,
                 end:   552,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  557,
-        end:  594,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   557,
           end:   594,
           Value: "2014-09-27 12:30:00.45-08",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  598,
-        end:  652,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   598,
           end:   652,
           Value: "2014-09-27 12:30:00.45 America/Los_Angeles",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  656,
-        end:  677,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   656,
           end:   677,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  681,
-        end:  704,
+      &parser.ExprSelectItem{
         Expr: &parser.CallExpr{
           end:  704,
           Func: &parser.Ident{
@@ -688,28 +506,25 @@ lines''',
             Name: "TIMESTAMP",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          691,
-              end:          703,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  691,
+              Expr: &parser.StringLiteral{
                 pos:   691,
                 end:   703,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

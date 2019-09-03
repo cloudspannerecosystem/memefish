@@ -6,60 +6,68 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      67,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  67,
-        Expr: &parser.TableName{
-          end:   67,
-          Ident: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
-          },
-          Hint: &parser.Hint{
-            pos: 25,
-            end: 62,
-            Map: map[string]parser.Expr{
-              "FORCE_INDEX": &parser.Ident{
-                pos:  39,
-                end:  61,
-                Name: "SingersByFirstLastName",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      62,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  18,
+              end:  25,
+              Name: "Singers",
+            },
+            Hint: &parser.Hint{
+              pos:     25,
+              end:     62,
+              Records: []*parser.HintRecord{
+                &parser.HintRecord{
+                  Key: &parser.Ident{
+                    pos:  27,
+                    end:  38,
+                    Name: "FORCE_INDEX",
+                  },
+                  Value: &parser.Ident{
+                    pos:  39,
+                    end:  61,
+                    Name: "SingersByFirstLastName",
+                  },
+                },
               },
             },
+            As: &parser.AsAlias{
+              pos:   63,
+              Alias: &parser.Ident{
+                pos:  66,
+                end:  67,
+                Name: "S",
+              },
+            },
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          As: &parser.Ident{
-            pos:  66,
-            end:  67,
-            Name: "S",
-          },
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers @{FORCE_INDEX = SingersByFirstLastName} AS S
+SELECT * FROM Singers @{FORCE_INDEX=SingersByFirstLastName} AS S

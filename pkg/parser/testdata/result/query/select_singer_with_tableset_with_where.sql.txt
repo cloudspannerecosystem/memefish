@@ -9,110 +9,112 @@ ORDER BY
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.CompoundQuery{
-    end:      95,
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
-    List:     []parser.QueryExpr{
+    Queries:  []parser.QueryExpr{
       &parser.Select{
         pos:      0,
-        end:      21,
         Distinct: false,
         AsStruct: false,
-        List:     parser.SelectExprList{
-          &parser.SelectExpr{
-            pos:  7,
-            end:  8,
-            Expr: nil,
-            Star: true,
-            As:   (*parser.Ident)(nil),
+        Results:  []parser.SelectItem{
+          &parser.Star{
+            pos: 7,
           },
         },
-        From: parser.FromItemList{
-          &parser.FromItem{
-            end:  21,
-            Expr: &parser.TableName{
-              end:   21,
-              Ident: &parser.Ident{
-                pos:  14,
-                end:  21,
-                Name: "Singers",
+        From: &parser.From{
+          pos:   9,
+          Items: []*parser.FromItem{
+            &parser.FromItem{
+              Source: &parser.Unnest{
+                pos:      14,
+                end:      21,
+                Implicit: true,
+                Expr:     &parser.Ident{
+                  pos:  14,
+                  end:  21,
+                  Name: "Singers",
+                },
+                Hint:       (*parser.Hint)(nil),
+                As:         (*parser.AsAlias)(nil),
+                WithOffset: (*parser.WithOffset)(nil),
               },
-              Hint: (*parser.Hint)(nil),
-              As:   (*parser.Ident)(nil),
+              TableSample: (*parser.TableSample)(nil),
             },
-            Method: "",
-            Num:    nil,
-            Rows:   false,
           },
         },
-        Where:   nil,
-        GroupBy: parser.ExprList{},
-        Having:  nil,
-        OrderBy: parser.OrderExprList{},
+        Where:   (*parser.Where)(nil),
+        GroupBy: (*parser.GroupBy)(nil),
+        Having:  (*parser.Having)(nil),
+        OrderBy: (*parser.OrderBy)(nil),
         Limit:   (*parser.Limit)(nil),
       },
       &parser.Select{
         pos:      32,
-        end:      74,
         Distinct: false,
         AsStruct: false,
-        List:     parser.SelectExprList{
-          &parser.SelectExpr{
-            pos:  39,
-            end:  40,
-            Expr: nil,
-            Star: true,
-            As:   (*parser.Ident)(nil),
+        Results:  []parser.SelectItem{
+          &parser.Star{
+            pos: 39,
           },
         },
-        From: parser.FromItemList{
-          &parser.FromItem{
-            end:  53,
-            Expr: &parser.TableName{
-              end:   53,
-              Ident: &parser.Ident{
-                pos:  46,
-                end:  53,
-                Name: "Singers",
+        From: &parser.From{
+          pos:   41,
+          Items: []*parser.FromItem{
+            &parser.FromItem{
+              Source: &parser.Unnest{
+                pos:      46,
+                end:      53,
+                Implicit: true,
+                Expr:     &parser.Ident{
+                  pos:  46,
+                  end:  53,
+                  Name: "Singers",
+                },
+                Hint:       (*parser.Hint)(nil),
+                As:         (*parser.AsAlias)(nil),
+                WithOffset: (*parser.WithOffset)(nil),
               },
-              Hint: (*parser.Hint)(nil),
-              As:   (*parser.Ident)(nil),
+              TableSample: (*parser.TableSample)(nil),
             },
-            Method: "",
-            Num:    nil,
-            Rows:   false,
           },
         },
-        Where: &parser.BinaryExpr{
-          Op:   "=",
-          Left: &parser.Ident{
-            pos:  62,
-            end:  70,
-            Name: "SingerId",
-          },
-          Right: &parser.IntLit{
-            pos:   73,
-            end:   74,
-            Value: "1",
+        Where: &parser.Where{
+          pos:  54,
+          Expr: &parser.BinaryExpr{
+            Op:   "=",
+            Left: &parser.Ident{
+              pos:  62,
+              end:  70,
+              Name: "SingerId",
+            },
+            Right: &parser.IntLiteral{
+              pos:   73,
+              end:   74,
+              Value: "1",
+            },
           },
         },
-        GroupBy: parser.ExprList{},
-        Having:  nil,
-        OrderBy: parser.OrderExprList{},
+        GroupBy: (*parser.GroupBy)(nil),
+        Having:  (*parser.Having)(nil),
+        OrderBy: (*parser.OrderBy)(nil),
         Limit:   (*parser.Limit)(nil),
       },
     },
-    OrderBy: parser.OrderExprList{
-      &parser.OrderExpr{
-        end:  95,
-        Expr: &parser.Ident{
-          pos:  86,
-          end:  95,
-          Name: "FirstName",
+    OrderBy: &parser.OrderBy{
+      pos:   75,
+      Items: []*parser.OrderByItem{
+        &parser.OrderByItem{
+          end:  0,
+          Expr: &parser.Ident{
+            pos:  86,
+            end:  95,
+            Name: "FirstName",
+          },
+          Collate: (*parser.Collate)(nil),
+          Dir:     "",
         },
-        Dir: "ASC",
       },
     },
     Limit: (*parser.Limit)(nil),
@@ -120,4 +122,4 @@ ORDER BY
 }
 
 --- SQL
-SELECT * FROM Singers UNION ALL SELECT * FROM Singers WHERE SingerId = 1 ORDER BY FirstName ASC
+SELECT * FROM Singers UNION ALL SELECT * FROM Singers WHERE SingerId = 1 ORDER BY FirstName

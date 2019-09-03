@@ -3,34 +3,33 @@ select 1 A
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      10,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  7,
-        end:  10,
-        Expr: &parser.IntLit{
+    Results:  []parser.SelectItem{
+      &parser.Alias{
+        Expr: &parser.IntLiteral{
           pos:   7,
           end:   8,
           Value: "1",
         },
-        Star: false,
-        As:   &parser.Ident{
-          pos:  9,
-          end:  10,
-          Name: "A",
+        As: &parser.AsAlias{
+          pos:   9,
+          Alias: &parser.Ident{
+            pos:  9,
+            end:  10,
+            Name: "A",
+          },
         },
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

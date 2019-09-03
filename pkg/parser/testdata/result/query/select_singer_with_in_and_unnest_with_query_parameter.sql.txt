@@ -8,60 +8,59 @@ WHERE
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      64,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  25,
-        Expr: &parser.TableName{
-          end:   25,
-          Ident: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      25,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  18,
+              end:  25,
+              Name: "Singers",
+            },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where: &parser.InExpr{
-      Not:  false,
-      Left: &parser.Ident{
-        pos:  34,
-        end:  42,
-        Name: "SingerId",
-      },
-      Right: &parser.InCondition{
-        pos:    46,
-        end:    64,
-        Unnest: &parser.Param{
-          pos:  53,
-          Name: "singerIDs",
+    Where: &parser.Where{
+      pos:  26,
+      Expr: &parser.InExpr{
+        Not:  false,
+        Left: &parser.Ident{
+          pos:  34,
+          end:  42,
+          Name: "SingerId",
         },
-        SubQuery: (*parser.SubQuery)(nil),
-        Values:   parser.ExprList{},
+        Right: &parser.UnnestInCondition{
+          pos:  46,
+          end:  64,
+          Expr: &parser.Param{
+            pos:  53,
+            Name: "singerIDs",
+          },
+        },
       },
     },
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

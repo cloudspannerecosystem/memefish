@@ -9,74 +9,90 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      89,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  89,
-        Expr: &parser.Join{
-          Op:     "CROSS",
-          Method: "",
-          Hint:   (*parser.Hint)(nil),
-          Left:   &parser.TableName{
-            end:   27,
-            Ident: &parser.Ident{
-              pos:  18,
-              end:  25,
-              Name: "Singers",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Join{
+            Op:     "CROSS",
+            Method: "",
+            Hint:   (*parser.Hint)(nil),
+            Left:   &parser.Unnest{
+              pos:      18,
+              end:      27,
+              Implicit: true,
+              Expr:     &parser.Ident{
+                pos:  18,
+                end:  25,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.AsAlias{
+                pos:   26,
+                Alias: &parser.Ident{
+                  pos:  26,
+                  end:  27,
+                  Name: "A",
+                },
+              },
+              WithOffset: (*parser.WithOffset)(nil),
             },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.Ident{
-              pos:  26,
-              end:  27,
-              Name: "A",
+            Right: &parser.Unnest{
+              pos:      43,
+              end:      52,
+              Implicit: true,
+              Expr:     &parser.Ident{
+                pos:  43,
+                end:  50,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.AsAlias{
+                pos:   51,
+                Alias: &parser.Ident{
+                  pos:  51,
+                  end:  52,
+                  Name: "B",
+                },
+              },
+              WithOffset: (*parser.WithOffset)(nil),
+            },
+            Cond: nil,
+          },
+          TableSample: &parser.TableSample{
+            pos:    55,
+            Method: "BERNOULLI",
+            Size:   &parser.TableSampleSize{
+              pos:   77,
+              end:   89,
+              Value: &parser.IntLiteral{
+                pos:   78,
+                end:   80,
+                Value: "90",
+              },
+              Unit: "PERCENT",
             },
           },
-          Right: &parser.TableName{
-            end:   52,
-            Ident: &parser.Ident{
-              pos:  43,
-              end:  50,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.Ident{
-              pos:  51,
-              end:  52,
-              Name: "B",
-            },
-          },
-          Cond: (*parser.JoinCondition)(nil),
         },
-        Method: "BERNOULLI",
-        Num:    &parser.IntLit{
-          pos:   78,
-          end:   80,
-          Value: "90",
-        },
-        Rows: false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A CROSS JOIN Singers AS B TABLESAMPLE BERNOULLI (90 PERCENT)
+SELECT * FROM Singers AS A CROSS JOIN Singers AS B TABLESAMPLE BERNOULLI(90 PERCENT)

@@ -8,69 +8,66 @@ GROUP BY
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      76,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  18,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  9,
           end:  18,
           Name: "FirstName",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  20,
-        end:  29,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  20,
           end:  29,
           Name: "BirthDate",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  44,
-        Expr: &parser.TableName{
-          end:   44,
-          Ident: &parser.Ident{
-            pos:  37,
-            end:  44,
-            Name: "Singers",
+    From: &parser.From{
+      pos:   30,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      37,
+            end:      44,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  37,
+              end:  44,
+              Name: "Singers",
+            },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{
-      &parser.Ident{
-        pos:  56,
-        end:  65,
-        Name: "FirstName",
-      },
-      &parser.Ident{
-        pos:  67,
-        end:  76,
-        Name: "BirthDate",
+    Where:   (*parser.Where)(nil),
+    GroupBy: &parser.GroupBy{
+      pos:   45,
+      Exprs: []parser.Expr{
+        &parser.Ident{
+          pos:  56,
+          end:  65,
+          Name: "FirstName",
+        },
+        &parser.Ident{
+          pos:  67,
+          end:  76,
+          Name: "BirthDate",
+        },
       },
     },
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

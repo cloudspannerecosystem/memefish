@@ -6,124 +6,120 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      117,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  117,
-        Expr: &parser.Unnest{
-          pos:  18,
-          end:  82,
-          Expr: &parser.ArrayLit{
-            pos:  25,
-            end:  81,
-            Type: &parser.Type{
-              pos:    31,
-              end:    56,
-              Name:   "STRUCT",
-              Fields: []*parser.FieldSchema{
-                &parser.FieldSchema{
-                  Name: &parser.Ident{
-                    pos:  38,
-                    end:  39,
-                    Name: "x",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      82,
+            Implicit: false,
+            Expr:     &parser.ArrayLiteral{
+              pos:  25,
+              end:  81,
+              Type: &parser.StructType{
+                pos:    31,
+                end:    56,
+                Fields: []*parser.FieldType{
+                  &parser.FieldType{
+                    Member: &parser.Ident{
+                      pos:  38,
+                      end:  39,
+                      Name: "x",
+                    },
+                    Type: &parser.SimpleType{
+                      pos:  40,
+                      Name: "INT64",
+                    },
                   },
-                  Type: &parser.Type{
-                    pos:    40,
-                    end:    45,
-                    Name:   "INT64",
-                    Fields: []*parser.FieldSchema{},
-                    Value:  (*parser.Type)(nil),
-                  },
-                },
-                &parser.FieldSchema{
-                  Name: &parser.Ident{
-                    pos:  47,
-                    end:  48,
-                    Name: "y",
-                  },
-                  Type: &parser.Type{
-                    pos:    49,
-                    end:    55,
-                    Name:   "STRING",
-                    Fields: []*parser.FieldSchema{},
-                    Value:  (*parser.Type)(nil),
+                  &parser.FieldType{
+                    Member: &parser.Ident{
+                      pos:  47,
+                      end:  48,
+                      Name: "y",
+                    },
+                    Type: &parser.SimpleType{
+                      pos:  49,
+                      Name: "STRING",
+                    },
                   },
                 },
               },
-              Value: (*parser.Type)(nil),
+              Values: []parser.Expr{
+                &parser.StructLiteral{
+                  pos:    58,
+                  end:    68,
+                  Fields: []*parser.FieldType{},
+                  Values: []parser.Expr{
+                    &parser.IntLiteral{
+                      pos:   59,
+                      end:   60,
+                      Value: "1",
+                    },
+                    &parser.StringLiteral{
+                      pos:   62,
+                      end:   67,
+                      Value: "foo",
+                    },
+                  },
+                },
+                &parser.StructLiteral{
+                  pos:    70,
+                  end:    80,
+                  Fields: []*parser.FieldType{},
+                  Values: []parser.Expr{
+                    &parser.IntLiteral{
+                      pos:   71,
+                      end:   72,
+                      Value: "3",
+                    },
+                    &parser.StringLiteral{
+                      pos:   74,
+                      end:   79,
+                      Value: "bar",
+                    },
+                  },
+                },
+              },
             },
-            Values: parser.ExprList{
-              &parser.StructLit{
-                pos:    58,
-                end:    68,
-                Fields: []*parser.FieldSchema{},
-                Values: parser.ExprList{
-                  &parser.IntLit{
-                    pos:   59,
-                    end:   60,
-                    Value: "1",
-                  },
-                  &parser.StringLit{
-                    pos:   62,
-                    end:   67,
-                    Value: "foo",
-                  },
-                },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
+          },
+          TableSample: &parser.TableSample{
+            pos:    83,
+            Method: "BERNOULLI",
+            Size:   &parser.TableSampleSize{
+              pos:   105,
+              end:   117,
+              Value: &parser.IntLiteral{
+                pos:   106,
+                end:   108,
+                Value: "90",
               },
-              &parser.StructLit{
-                pos:    70,
-                end:    80,
-                Fields: []*parser.FieldSchema{},
-                Values: parser.ExprList{
-                  &parser.IntLit{
-                    pos:   71,
-                    end:   72,
-                    Value: "3",
-                  },
-                  &parser.StringLit{
-                    pos:   74,
-                    end:   79,
-                    Value: "bar",
-                  },
-                },
-              },
+              Unit: "PERCENT",
             },
           },
-          Hint:         (*parser.Hint)(nil),
-          As:           (*parser.Ident)(nil),
-          WithOffset:   false,
-          WithOffsetAs: (*parser.Ident)(nil),
         },
-        Method: "BERNOULLI",
-        Num:    &parser.IntLit{
-          pos:   106,
-          end:   108,
-          Value: "90",
-        },
-        Rows: false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[STRUCT(1, "foo"), STRUCT(3, "bar")]) TABLESAMPLE BERNOULLI (90 PERCENT)
+SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[STRUCT(1, "foo"), STRUCT(3, "bar")]) TABLESAMPLE BERNOULLI(90 PERCENT)

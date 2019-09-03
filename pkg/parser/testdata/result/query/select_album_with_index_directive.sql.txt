@@ -5,108 +5,108 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      147,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  7,
-        end:  14,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  7,
           end:  14,
           Name: "AlbumId",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  16,
-        end:  26,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  16,
           end:  26,
           Name: "AlbumTitle",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  28,
-        end:  43,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  28,
           end:  43,
           Name: "MarketingBudget",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  88,
-        Expr: &parser.TableName{
-          end:   88,
-          Ident: &parser.Ident{
-            pos:  49,
-            end:  55,
-            Name: "Albums",
-          },
-          Hint: &parser.Hint{
-            pos: 55,
-            end: 88,
-            Map: map[string]parser.Expr{
-              "FORCE_INDEX": &parser.Ident{
-                pos:  69,
-                end:  87,
-                Name: "AlbumsByAlbumTitle",
+    From: &parser.From{
+      pos:   44,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      49,
+            end:      88,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  49,
+              end:  55,
+              Name: "Albums",
+            },
+            Hint: &parser.Hint{
+              pos:     55,
+              end:     88,
+              Records: []*parser.HintRecord{
+                &parser.HintRecord{
+                  Key: &parser.Ident{
+                    pos:  57,
+                    end:  68,
+                    Name: "FORCE_INDEX",
+                  },
+                  Value: &parser.Ident{
+                    pos:  69,
+                    end:  87,
+                    Name: "AlbumsByAlbumTitle",
+                  },
+                },
               },
             },
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          As: (*parser.Ident)(nil),
-        },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
-      },
-    },
-    Where: &parser.BinaryExpr{
-      Op:   "AND",
-      Left: &parser.BinaryExpr{
-        Op:   ">=",
-        Left: &parser.Ident{
-          pos:  95,
-          end:  105,
-          Name: "AlbumTitle",
-        },
-        Right: &parser.Param{
-          pos:  109,
-          Name: "startTitle",
-        },
-      },
-      Right: &parser.BinaryExpr{
-        Op:   "<",
-        Left: &parser.Ident{
-          pos:  125,
-          end:  135,
-          Name: "AlbumTitle",
-        },
-        Right: &parser.Param{
-          pos:  138,
-          Name: "endTitle",
+          TableSample: (*parser.TableSample)(nil),
         },
       },
     },
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where: &parser.Where{
+      pos:  89,
+      Expr: &parser.BinaryExpr{
+        Op:   "AND",
+        Left: &parser.BinaryExpr{
+          Op:   ">=",
+          Left: &parser.Ident{
+            pos:  95,
+            end:  105,
+            Name: "AlbumTitle",
+          },
+          Right: &parser.Param{
+            pos:  109,
+            Name: "startTitle",
+          },
+        },
+        Right: &parser.BinaryExpr{
+          Op:   "<",
+          Left: &parser.Ident{
+            pos:  125,
+            end:  135,
+            Name: "AlbumTitle",
+          },
+          Right: &parser.Param{
+            pos:  138,
+            Name: "endTitle",
+          },
+        },
+      },
+    },
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums @{FORCE_INDEX = AlbumsByAlbumTitle} WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
+SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums @{FORCE_INDEX=AlbumsByAlbumTitle} WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle

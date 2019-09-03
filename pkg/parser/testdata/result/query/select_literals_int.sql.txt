@@ -7,63 +7,46 @@ SELECT
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      39,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  12,
-        Expr: &parser.IntLit{
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   9,
           end:   12,
           Value: "123",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  16,
-        end:  21,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   16,
           end:   21,
           Value: "0xABC",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  25,
-        end:  29,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   25,
           end:   29,
           Value: "-123",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  33,
-        end:  39,
-        Expr: &parser.IntLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.IntLiteral{
           pos:   33,
           end:   39,
           Value: "-0xABC",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

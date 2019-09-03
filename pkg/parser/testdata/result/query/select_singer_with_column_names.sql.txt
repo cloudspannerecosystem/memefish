@@ -9,95 +9,81 @@ FROM Singers
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      88,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  23,
+    Results:  []parser.SelectItem{
+      &parser.Alias{
         Expr: &parser.Ident{
           pos:  9,
           end:  17,
           Name: "SingerId",
         },
-        Star: false,
-        As:   &parser.Ident{
-          pos:  21,
-          end:  23,
-          Name: "ID",
+        As: &parser.AsAlias{
+          pos:   18,
+          Alias: &parser.Ident{
+            pos:  21,
+            end:  23,
+            Name: "ID",
+          },
         },
       },
-      &parser.SelectExpr{
-        pos:  27,
-        end:  36,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  27,
           end:  36,
           Name: "FirstName",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  40,
-        end:  48,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  40,
           end:  48,
           Name: "LastName",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  52,
-        end:  62,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  52,
           end:  62,
           Name: "SingerInfo",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  66,
-        end:  75,
+      &parser.ExprSelectItem{
         Expr: &parser.Ident{
           pos:  66,
           end:  75,
           Name: "BirthDate",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  88,
-        Expr: &parser.TableName{
-          end:   88,
-          Ident: &parser.Ident{
-            pos:  81,
-            end:  88,
-            Name: "Singers",
+    From: &parser.From{
+      pos:   76,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      81,
+            end:      88,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  81,
+              end:  88,
+              Name: "Singers",
+            },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

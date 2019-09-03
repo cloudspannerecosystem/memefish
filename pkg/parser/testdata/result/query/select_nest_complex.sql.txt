@@ -1,257 +1,223 @@
 --- select_nest_complex.sql
-select * from ((((select 1 A union all (select 2)) union distinct (select 1)) limit 1) JOIN (select 1 A, 2 B) USING (A))
+select *
+from (
+    (((select 1 A union all (select 2)) union distinct (select 1)) limit 1)
+  JOIN
+    (select 1 A, 2 B) USING (A)
+)
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      120,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  7,
-        end:  8,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 7,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  120,
-        Expr: &parser.ParenJoinExpr{
-          pos:  14,
-          end:  120,
-          Expr: &parser.Join{
-            Op:     "INNER",
-            Method: "",
-            Hint:   (*parser.Hint)(nil),
-            Left:   &parser.SubQueryJoinExpr{
-              end:  86,
-              Expr: &parser.SubQuery{
-                pos:  15,
-                end:  86,
-                Expr: &parser.SubQueryExpr{
-                  end:  85,
-                  Expr: &parser.SubQuery{
-                    pos:  16,
-                    end:  77,
-                    Expr: &parser.CompoundQuery{
-                      end:      76,
-                      Op:       "UNION",
-                      Distinct: true,
-                      List:     []parser.QueryExpr{
-                        &parser.SubQueryExpr{
-                          end:  50,
-                          Expr: &parser.SubQuery{
-                            pos:  17,
-                            end:  50,
-                            Expr: &parser.CompoundQuery{
-                              end:      49,
-                              Op:       "UNION",
-                              Distinct: false,
-                              List:     []parser.QueryExpr{
-                                &parser.Select{
-                                  pos:      18,
-                                  end:      28,
-                                  Distinct: false,
-                                  AsStruct: false,
-                                  List:     parser.SelectExprList{
-                                    &parser.SelectExpr{
-                                      pos:  25,
-                                      end:  28,
-                                      Expr: &parser.IntLit{
-                                        pos:   25,
-                                        end:   26,
-                                        Value: "1",
-                                      },
-                                      Star: false,
-                                      As:   &parser.Ident{
-                                        pos:  27,
-                                        end:  28,
-                                        Name: "A",
-                                      },
-                                    },
-                                  },
-                                  From:    parser.FromItemList{},
-                                  Where:   nil,
-                                  GroupBy: parser.ExprList{},
-                                  Having:  nil,
-                                  OrderBy: parser.OrderExprList{},
-                                  Limit:   (*parser.Limit)(nil),
-                                },
-                                &parser.SubQueryExpr{
-                                  end:  49,
-                                  Expr: &parser.SubQuery{
-                                    pos:  39,
-                                    end:  49,
-                                    Expr: &parser.Select{
-                                      pos:      40,
-                                      end:      48,
-                                      Distinct: false,
-                                      AsStruct: false,
-                                      List:     parser.SelectExprList{
-                                        &parser.SelectExpr{
-                                          pos:  47,
-                                          end:  48,
-                                          Expr: &parser.IntLit{
-                                            pos:   47,
-                                            end:   48,
-                                            Value: "2",
-                                          },
-                                          Star: false,
-                                          As:   (*parser.Ident)(nil),
-                                        },
-                                      },
-                                      From:    parser.FromItemList{},
-                                      Where:   nil,
-                                      GroupBy: parser.ExprList{},
-                                      Having:  nil,
-                                      OrderBy: parser.OrderExprList{},
-                                      Limit:   (*parser.Limit)(nil),
-                                    },
-                                  },
-                                  OrderBy: parser.OrderExprList{},
-                                  Limit:   (*parser.Limit)(nil),
-                                },
-                              },
-                              OrderBy: parser.OrderExprList{},
-                              Limit:   (*parser.Limit)(nil),
-                            },
-                          },
-                          OrderBy: parser.OrderExprList{},
-                          Limit:   (*parser.Limit)(nil),
-                        },
-                        &parser.SubQueryExpr{
-                          end:  76,
-                          Expr: &parser.SubQuery{
-                            pos:  66,
-                            end:  76,
-                            Expr: &parser.Select{
-                              pos:      67,
-                              end:      75,
+    From: &parser.From{
+      pos:   9,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.ParenJoinExpr{
+            pos:    14,
+            end:    132,
+            Source: &parser.Join{
+              Op:     "INNER",
+              Method: "",
+              Hint:   (*parser.Hint)(nil),
+              Left:   &parser.SubQueryJoinExpr{
+                pos:   20,
+                end:   91,
+                Query: &parser.SubQuery{
+                  pos:   21,
+                  end:   82,
+                  Query: &parser.CompoundQuery{
+                    Op:       "UNION",
+                    Distinct: true,
+                    Queries:  []parser.QueryExpr{
+                      &parser.SubQuery{
+                        pos:   22,
+                        end:   55,
+                        Query: &parser.CompoundQuery{
+                          Op:       "UNION",
+                          Distinct: false,
+                          Queries:  []parser.QueryExpr{
+                            &parser.Select{
+                              pos:      23,
                               Distinct: false,
                               AsStruct: false,
-                              List:     parser.SelectExprList{
-                                &parser.SelectExpr{
-                                  pos:  74,
-                                  end:  75,
-                                  Expr: &parser.IntLit{
-                                    pos:   74,
-                                    end:   75,
+                              Results:  []parser.SelectItem{
+                                &parser.Alias{
+                                  Expr: &parser.IntLiteral{
+                                    pos:   30,
+                                    end:   31,
                                     Value: "1",
                                   },
-                                  Star: false,
-                                  As:   (*parser.Ident)(nil),
+                                  As: &parser.AsAlias{
+                                    pos:   32,
+                                    Alias: &parser.Ident{
+                                      pos:  32,
+                                      end:  33,
+                                      Name: "A",
+                                    },
+                                  },
                                 },
                               },
-                              From:    parser.FromItemList{},
-                              Where:   nil,
-                              GroupBy: parser.ExprList{},
-                              Having:  nil,
-                              OrderBy: parser.OrderExprList{},
+                              From:    (*parser.From)(nil),
+                              Where:   (*parser.Where)(nil),
+                              GroupBy: (*parser.GroupBy)(nil),
+                              Having:  (*parser.Having)(nil),
+                              OrderBy: (*parser.OrderBy)(nil),
+                              Limit:   (*parser.Limit)(nil),
+                            },
+                            &parser.SubQuery{
+                              pos:   44,
+                              end:   54,
+                              Query: &parser.Select{
+                                pos:      45,
+                                Distinct: false,
+                                AsStruct: false,
+                                Results:  []parser.SelectItem{
+                                  &parser.ExprSelectItem{
+                                    Expr: &parser.IntLiteral{
+                                      pos:   52,
+                                      end:   53,
+                                      Value: "2",
+                                    },
+                                  },
+                                },
+                                From:    (*parser.From)(nil),
+                                Where:   (*parser.Where)(nil),
+                                GroupBy: (*parser.GroupBy)(nil),
+                                Having:  (*parser.Having)(nil),
+                                OrderBy: (*parser.OrderBy)(nil),
+                                Limit:   (*parser.Limit)(nil),
+                              },
+                              OrderBy: (*parser.OrderBy)(nil),
                               Limit:   (*parser.Limit)(nil),
                             },
                           },
-                          OrderBy: parser.OrderExprList{},
+                          OrderBy: (*parser.OrderBy)(nil),
                           Limit:   (*parser.Limit)(nil),
                         },
+                        OrderBy: (*parser.OrderBy)(nil),
+                        Limit:   (*parser.Limit)(nil),
                       },
-                      OrderBy: parser.OrderExprList{},
-                      Limit:   (*parser.Limit)(nil),
+                      &parser.SubQuery{
+                        pos:   71,
+                        end:   81,
+                        Query: &parser.Select{
+                          pos:      72,
+                          Distinct: false,
+                          AsStruct: false,
+                          Results:  []parser.SelectItem{
+                            &parser.ExprSelectItem{
+                              Expr: &parser.IntLiteral{
+                                pos:   79,
+                                end:   80,
+                                Value: "1",
+                              },
+                            },
+                          },
+                          From:    (*parser.From)(nil),
+                          Where:   (*parser.Where)(nil),
+                          GroupBy: (*parser.GroupBy)(nil),
+                          Having:  (*parser.Having)(nil),
+                          OrderBy: (*parser.OrderBy)(nil),
+                          Limit:   (*parser.Limit)(nil),
+                        },
+                        OrderBy: (*parser.OrderBy)(nil),
+                        Limit:   (*parser.Limit)(nil),
+                      },
                     },
+                    OrderBy: (*parser.OrderBy)(nil),
+                    Limit:   (*parser.Limit)(nil),
                   },
-                  OrderBy: parser.OrderExprList{},
+                  OrderBy: (*parser.OrderBy)(nil),
                   Limit:   &parser.Limit{
-                    Count: &parser.IntLit{
-                      pos:   84,
-                      end:   85,
+                    pos:   83,
+                    Count: &parser.IntLiteral{
+                      pos:   89,
+                      end:   90,
                       Value: "1",
                     },
-                    Offset: nil,
+                    Offset: (*parser.Offset)(nil),
                   },
                 },
+                As: (*parser.AsAlias)(nil),
               },
-              Hint: (*parser.Hint)(nil),
-              As:   (*parser.Ident)(nil),
-            },
-            Right: &parser.SubQueryJoinExpr{
-              end:  109,
-              Expr: &parser.SubQuery{
-                pos:  92,
-                end:  109,
-                Expr: &parser.Select{
-                  pos:      93,
-                  end:      108,
+              Right: &parser.SubQueryJoinExpr{
+                pos:   103,
+                end:   120,
+                Query: &parser.Select{
+                  pos:      104,
                   Distinct: false,
                   AsStruct: false,
-                  List:     parser.SelectExprList{
-                    &parser.SelectExpr{
-                      pos:  100,
-                      end:  103,
-                      Expr: &parser.IntLit{
-                        pos:   100,
-                        end:   101,
+                  Results:  []parser.SelectItem{
+                    &parser.Alias{
+                      Expr: &parser.IntLiteral{
+                        pos:   111,
+                        end:   112,
                         Value: "1",
                       },
-                      Star: false,
-                      As:   &parser.Ident{
-                        pos:  102,
-                        end:  103,
-                        Name: "A",
+                      As: &parser.AsAlias{
+                        pos:   113,
+                        Alias: &parser.Ident{
+                          pos:  113,
+                          end:  114,
+                          Name: "A",
+                        },
                       },
                     },
-                    &parser.SelectExpr{
-                      pos:  105,
-                      end:  108,
-                      Expr: &parser.IntLit{
-                        pos:   105,
-                        end:   106,
+                    &parser.Alias{
+                      Expr: &parser.IntLiteral{
+                        pos:   116,
+                        end:   117,
                         Value: "2",
                       },
-                      Star: false,
-                      As:   &parser.Ident{
-                        pos:  107,
-                        end:  108,
-                        Name: "B",
+                      As: &parser.AsAlias{
+                        pos:   118,
+                        Alias: &parser.Ident{
+                          pos:  118,
+                          end:  119,
+                          Name: "B",
+                        },
                       },
                     },
                   },
-                  From:    parser.FromItemList{},
-                  Where:   nil,
-                  GroupBy: parser.ExprList{},
-                  Having:  nil,
-                  OrderBy: parser.OrderExprList{},
+                  From:    (*parser.From)(nil),
+                  Where:   (*parser.Where)(nil),
+                  GroupBy: (*parser.GroupBy)(nil),
+                  Having:  (*parser.Having)(nil),
+                  OrderBy: (*parser.OrderBy)(nil),
                   Limit:   (*parser.Limit)(nil),
                 },
+                As: (*parser.AsAlias)(nil),
               },
-              Hint: (*parser.Hint)(nil),
-              As:   (*parser.Ident)(nil),
-            },
-            Cond: &parser.JoinCondition{
-              pos:   110,
-              end:   119,
-              On:    nil,
-              Using: parser.IdentList{
-                &parser.Ident{
-                  pos:  117,
-                  end:  118,
-                  Name: "A",
+              Cond: &parser.Using{
+                pos:    121,
+                end:    130,
+                Idents: []*parser.Ident{
+                  &parser.Ident{
+                    pos:  128,
+                    end:  129,
+                    Name: "A",
+                  },
                 },
               },
             },
           },
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

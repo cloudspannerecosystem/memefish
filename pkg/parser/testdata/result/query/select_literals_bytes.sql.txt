@@ -13,149 +13,108 @@ SELECT
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      145,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  15,
-        Expr: &parser.BytesLit{
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   9,
           end:   15,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  19,
-        end:  29,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   19,
           end:   29,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  33,
-        end:  43,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   33,
           end:   43,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  47,
-        end:  59,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   47,
           end:   59,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x0a,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  63,
-        end:  71,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   63,
           end:   71,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  75,
-        end:  83,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   75,
           end:   83,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  87,
-        end:  98,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   87,
           end:   98,
           Value: []uint8{
             0x61, 0x62, 0x63,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  102,
-        end:  115,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   102,
           end:   115,
           Value: []uint8{
             0x61, 0x62, 0x63, 0x5c, 0x6e,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  119,
-        end:  126,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   119,
           end:   126,
           Value: []uint8{
             0x00,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  130,
-        end:  145,
-        Expr: &parser.BytesLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
           pos:   130,
           end:   145,
           Value: []uint8{
             0x3f, 0x3f, 0x3f,
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

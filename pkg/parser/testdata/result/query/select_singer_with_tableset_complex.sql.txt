@@ -25,370 +25,335 @@ UNION ALL
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.CompoundQuery{
-    end:      368,
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
-    List:     []parser.QueryExpr{
+    Queries:  []parser.QueryExpr{
       &parser.Select{
         pos:      0,
-        end:      21,
         Distinct: false,
         AsStruct: false,
-        List:     parser.SelectExprList{
-          &parser.SelectExpr{
-            pos:  7,
-            end:  8,
-            Expr: nil,
-            Star: true,
-            As:   (*parser.Ident)(nil),
+        Results:  []parser.SelectItem{
+          &parser.Star{
+            pos: 7,
           },
         },
-        From: parser.FromItemList{
-          &parser.FromItem{
-            end:  21,
-            Expr: &parser.TableName{
-              end:   21,
-              Ident: &parser.Ident{
-                pos:  14,
-                end:  21,
-                Name: "Singers",
+        From: &parser.From{
+          pos:   9,
+          Items: []*parser.FromItem{
+            &parser.FromItem{
+              Source: &parser.Unnest{
+                pos:      14,
+                end:      21,
+                Implicit: true,
+                Expr:     &parser.Ident{
+                  pos:  14,
+                  end:  21,
+                  Name: "Singers",
+                },
+                Hint:       (*parser.Hint)(nil),
+                As:         (*parser.AsAlias)(nil),
+                WithOffset: (*parser.WithOffset)(nil),
               },
-              Hint: (*parser.Hint)(nil),
-              As:   (*parser.Ident)(nil),
+              TableSample: (*parser.TableSample)(nil),
             },
-            Method: "",
-            Num:    nil,
-            Rows:   false,
           },
         },
-        Where:   nil,
-        GroupBy: parser.ExprList{},
-        Having:  nil,
-        OrderBy: parser.OrderExprList{},
+        Where:   (*parser.Where)(nil),
+        GroupBy: (*parser.GroupBy)(nil),
+        Having:  (*parser.Having)(nil),
+        OrderBy: (*parser.OrderBy)(nil),
         Limit:   (*parser.Limit)(nil),
       },
-      &parser.SubQueryExpr{
-        end:  368,
-        Expr: &parser.SubQuery{
-          pos:  32,
-          end:  368,
-          Expr: &parser.CompoundQuery{
-            end:      366,
-            Op:       "UNION",
-            Distinct: true,
-            List:     []parser.QueryExpr{
-              &parser.Select{
-                pos:      36,
-                end:      57,
-                Distinct: false,
-                AsStruct: false,
-                List:     parser.SelectExprList{
-                  &parser.SelectExpr{
-                    pos:  43,
-                    end:  44,
-                    Expr: nil,
-                    Star: true,
-                    As:   (*parser.Ident)(nil),
-                  },
+      &parser.SubQuery{
+        pos:   32,
+        end:   368,
+        Query: &parser.CompoundQuery{
+          Op:       "UNION",
+          Distinct: true,
+          Queries:  []parser.QueryExpr{
+            &parser.Select{
+              pos:      36,
+              Distinct: false,
+              AsStruct: false,
+              Results:  []parser.SelectItem{
+                &parser.Star{
+                  pos: 43,
                 },
-                From: parser.FromItemList{
+              },
+              From: &parser.From{
+                pos:   45,
+                Items: []*parser.FromItem{
                   &parser.FromItem{
-                    end:  57,
-                    Expr: &parser.TableName{
-                      end:   57,
-                      Ident: &parser.Ident{
+                    Source: &parser.Unnest{
+                      pos:      50,
+                      end:      57,
+                      Implicit: true,
+                      Expr:     &parser.Ident{
                         pos:  50,
                         end:  57,
                         Name: "Singers",
                       },
-                      Hint: (*parser.Hint)(nil),
-                      As:   (*parser.Ident)(nil),
+                      Hint:       (*parser.Hint)(nil),
+                      As:         (*parser.AsAlias)(nil),
+                      WithOffset: (*parser.WithOffset)(nil),
                     },
-                    Method: "",
-                    Num:    nil,
-                    Rows:   false,
+                    TableSample: (*parser.TableSample)(nil),
                   },
                 },
-                Where:   nil,
-                GroupBy: parser.ExprList{},
-                Having:  nil,
-                OrderBy: parser.OrderExprList{},
-                Limit:   (*parser.Limit)(nil),
               },
-              &parser.SubQueryExpr{
-                end:  366,
-                Expr: &parser.SubQuery{
-                  pos:  77,
-                  end:  366,
-                  Expr: &parser.CompoundQuery{
-                    end:      362,
-                    Op:       "INTERSECT",
+              Where:   (*parser.Where)(nil),
+              GroupBy: (*parser.GroupBy)(nil),
+              Having:  (*parser.Having)(nil),
+              OrderBy: (*parser.OrderBy)(nil),
+              Limit:   (*parser.Limit)(nil),
+            },
+            &parser.SubQuery{
+              pos:   77,
+              end:   366,
+              Query: &parser.CompoundQuery{
+                Op:       "INTERSECT",
+                Distinct: false,
+                Queries:  []parser.QueryExpr{
+                  &parser.Select{
+                    pos:      83,
                     Distinct: false,
-                    List:     []parser.QueryExpr{
-                      &parser.Select{
-                        pos:      83,
-                        end:      104,
-                        Distinct: false,
-                        AsStruct: false,
-                        List:     parser.SelectExprList{
-                          &parser.SelectExpr{
-                            pos:  90,
-                            end:  91,
-                            Expr: nil,
-                            Star: true,
-                            As:   (*parser.Ident)(nil),
-                          },
-                        },
-                        From: parser.FromItemList{
-                          &parser.FromItem{
-                            end:  104,
-                            Expr: &parser.TableName{
-                              end:   104,
-                              Ident: &parser.Ident{
-                                pos:  97,
-                                end:  104,
-                                Name: "Singers",
-                              },
-                              Hint: (*parser.Hint)(nil),
-                              As:   (*parser.Ident)(nil),
-                            },
-                            Method: "",
-                            Num:    nil,
-                            Rows:   false,
-                          },
-                        },
-                        Where:   nil,
-                        GroupBy: parser.ExprList{},
-                        Having:  nil,
-                        OrderBy: parser.OrderExprList{},
-                        Limit:   (*parser.Limit)(nil),
-                      },
-                      &parser.SubQueryExpr{
-                        end:  362,
-                        Expr: &parser.SubQuery{
-                          pos:  127,
-                          end:  362,
-                          Expr: &parser.CompoundQuery{
-                            end:      356,
-                            Op:       "INTERSECT",
-                            Distinct: true,
-                            List:     []parser.QueryExpr{
-                              &parser.Select{
-                                pos:      135,
-                                end:      156,
-                                Distinct: false,
-                                AsStruct: false,
-                                List:     parser.SelectExprList{
-                                  &parser.SelectExpr{
-                                    pos:  142,
-                                    end:  143,
-                                    Expr: nil,
-                                    Star: true,
-                                    As:   (*parser.Ident)(nil),
-                                  },
-                                },
-                                From: parser.FromItemList{
-                                  &parser.FromItem{
-                                    end:  156,
-                                    Expr: &parser.TableName{
-                                      end:   156,
-                                      Ident: &parser.Ident{
-                                        pos:  149,
-                                        end:  156,
-                                        Name: "Singers",
-                                      },
-                                      Hint: (*parser.Hint)(nil),
-                                      As:   (*parser.Ident)(nil),
-                                    },
-                                    Method: "",
-                                    Num:    nil,
-                                    Rows:   false,
-                                  },
-                                },
-                                Where:   nil,
-                                GroupBy: parser.ExprList{},
-                                Having:  nil,
-                                OrderBy: parser.OrderExprList{},
-                                Limit:   (*parser.Limit)(nil),
-                              },
-                              &parser.SubQueryExpr{
-                                end:  356,
-                                Expr: &parser.SubQuery{
-                                  pos:  188,
-                                  end:  356,
-                                  Expr: &parser.CompoundQuery{
-                                    end:      348,
-                                    Op:       "EXCEPT",
-                                    Distinct: false,
-                                    List:     []parser.QueryExpr{
-                                      &parser.Select{
-                                        pos:      198,
-                                        end:      219,
-                                        Distinct: false,
-                                        AsStruct: false,
-                                        List:     parser.SelectExprList{
-                                          &parser.SelectExpr{
-                                            pos:  205,
-                                            end:  206,
-                                            Expr: nil,
-                                            Star: true,
-                                            As:   (*parser.Ident)(nil),
-                                          },
-                                        },
-                                        From: parser.FromItemList{
-                                          &parser.FromItem{
-                                            end:  219,
-                                            Expr: &parser.TableName{
-                                              end:   219,
-                                              Ident: &parser.Ident{
-                                                pos:  212,
-                                                end:  219,
-                                                Name: "Singers",
-                                              },
-                                              Hint: (*parser.Hint)(nil),
-                                              As:   (*parser.Ident)(nil),
-                                            },
-                                            Method: "",
-                                            Num:    nil,
-                                            Rows:   false,
-                                          },
-                                        },
-                                        Where:   nil,
-                                        GroupBy: parser.ExprList{},
-                                        Having:  nil,
-                                        OrderBy: parser.OrderExprList{},
-                                        Limit:   (*parser.Limit)(nil),
-                                      },
-                                      &parser.SubQueryExpr{
-                                        end:  348,
-                                        Expr: &parser.SubQuery{
-                                          pos:  247,
-                                          end:  348,
-                                          Expr: &parser.CompoundQuery{
-                                            end:      338,
-                                            Op:       "EXCEPT",
-                                            Distinct: true,
-                                            List:     []parser.QueryExpr{
-                                              &parser.Select{
-                                                pos:      259,
-                                                end:      280,
-                                                Distinct: false,
-                                                AsStruct: false,
-                                                List:     parser.SelectExprList{
-                                                  &parser.SelectExpr{
-                                                    pos:  266,
-                                                    end:  267,
-                                                    Expr: nil,
-                                                    Star: true,
-                                                    As:   (*parser.Ident)(nil),
-                                                  },
-                                                },
-                                                From: parser.FromItemList{
-                                                  &parser.FromItem{
-                                                    end:  280,
-                                                    Expr: &parser.TableName{
-                                                      end:   280,
-                                                      Ident: &parser.Ident{
-                                                        pos:  273,
-                                                        end:  280,
-                                                        Name: "Singers",
-                                                      },
-                                                      Hint: (*parser.Hint)(nil),
-                                                      As:   (*parser.Ident)(nil),
-                                                    },
-                                                    Method: "",
-                                                    Num:    nil,
-                                                    Rows:   false,
-                                                  },
-                                                },
-                                                Where:   nil,
-                                                GroupBy: parser.ExprList{},
-                                                Having:  nil,
-                                                OrderBy: parser.OrderExprList{},
-                                                Limit:   (*parser.Limit)(nil),
-                                              },
-                                              &parser.Select{
-                                                pos:      317,
-                                                end:      338,
-                                                Distinct: false,
-                                                AsStruct: false,
-                                                List:     parser.SelectExprList{
-                                                  &parser.SelectExpr{
-                                                    pos:  324,
-                                                    end:  325,
-                                                    Expr: nil,
-                                                    Star: true,
-                                                    As:   (*parser.Ident)(nil),
-                                                  },
-                                                },
-                                                From: parser.FromItemList{
-                                                  &parser.FromItem{
-                                                    end:  338,
-                                                    Expr: &parser.TableName{
-                                                      end:   338,
-                                                      Ident: &parser.Ident{
-                                                        pos:  331,
-                                                        end:  338,
-                                                        Name: "Singers",
-                                                      },
-                                                      Hint: (*parser.Hint)(nil),
-                                                      As:   (*parser.Ident)(nil),
-                                                    },
-                                                    Method: "",
-                                                    Num:    nil,
-                                                    Rows:   false,
-                                                  },
-                                                },
-                                                Where:   nil,
-                                                GroupBy: parser.ExprList{},
-                                                Having:  nil,
-                                                OrderBy: parser.OrderExprList{},
-                                                Limit:   (*parser.Limit)(nil),
-                                              },
-                                            },
-                                            OrderBy: parser.OrderExprList{},
-                                            Limit:   (*parser.Limit)(nil),
-                                          },
-                                        },
-                                        OrderBy: parser.OrderExprList{},
-                                        Limit:   (*parser.Limit)(nil),
-                                      },
-                                    },
-                                    OrderBy: parser.OrderExprList{},
-                                    Limit:   (*parser.Limit)(nil),
-                                  },
-                                },
-                                OrderBy: parser.OrderExprList{},
-                                Limit:   (*parser.Limit)(nil),
-                              },
-                            },
-                            OrderBy: parser.OrderExprList{},
-                            Limit:   (*parser.Limit)(nil),
-                          },
-                        },
-                        OrderBy: parser.OrderExprList{},
-                        Limit:   (*parser.Limit)(nil),
+                    AsStruct: false,
+                    Results:  []parser.SelectItem{
+                      &parser.Star{
+                        pos: 90,
                       },
                     },
-                    OrderBy: parser.OrderExprList{},
+                    From: &parser.From{
+                      pos:   92,
+                      Items: []*parser.FromItem{
+                        &parser.FromItem{
+                          Source: &parser.Unnest{
+                            pos:      97,
+                            end:      104,
+                            Implicit: true,
+                            Expr:     &parser.Ident{
+                              pos:  97,
+                              end:  104,
+                              Name: "Singers",
+                            },
+                            Hint:       (*parser.Hint)(nil),
+                            As:         (*parser.AsAlias)(nil),
+                            WithOffset: (*parser.WithOffset)(nil),
+                          },
+                          TableSample: (*parser.TableSample)(nil),
+                        },
+                      },
+                    },
+                    Where:   (*parser.Where)(nil),
+                    GroupBy: (*parser.GroupBy)(nil),
+                    Having:  (*parser.Having)(nil),
+                    OrderBy: (*parser.OrderBy)(nil),
+                    Limit:   (*parser.Limit)(nil),
+                  },
+                  &parser.SubQuery{
+                    pos:   127,
+                    end:   362,
+                    Query: &parser.CompoundQuery{
+                      Op:       "INTERSECT",
+                      Distinct: true,
+                      Queries:  []parser.QueryExpr{
+                        &parser.Select{
+                          pos:      135,
+                          Distinct: false,
+                          AsStruct: false,
+                          Results:  []parser.SelectItem{
+                            &parser.Star{
+                              pos: 142,
+                            },
+                          },
+                          From: &parser.From{
+                            pos:   144,
+                            Items: []*parser.FromItem{
+                              &parser.FromItem{
+                                Source: &parser.Unnest{
+                                  pos:      149,
+                                  end:      156,
+                                  Implicit: true,
+                                  Expr:     &parser.Ident{
+                                    pos:  149,
+                                    end:  156,
+                                    Name: "Singers",
+                                  },
+                                  Hint:       (*parser.Hint)(nil),
+                                  As:         (*parser.AsAlias)(nil),
+                                  WithOffset: (*parser.WithOffset)(nil),
+                                },
+                                TableSample: (*parser.TableSample)(nil),
+                              },
+                            },
+                          },
+                          Where:   (*parser.Where)(nil),
+                          GroupBy: (*parser.GroupBy)(nil),
+                          Having:  (*parser.Having)(nil),
+                          OrderBy: (*parser.OrderBy)(nil),
+                          Limit:   (*parser.Limit)(nil),
+                        },
+                        &parser.SubQuery{
+                          pos:   188,
+                          end:   356,
+                          Query: &parser.CompoundQuery{
+                            Op:       "EXCEPT",
+                            Distinct: false,
+                            Queries:  []parser.QueryExpr{
+                              &parser.Select{
+                                pos:      198,
+                                Distinct: false,
+                                AsStruct: false,
+                                Results:  []parser.SelectItem{
+                                  &parser.Star{
+                                    pos: 205,
+                                  },
+                                },
+                                From: &parser.From{
+                                  pos:   207,
+                                  Items: []*parser.FromItem{
+                                    &parser.FromItem{
+                                      Source: &parser.Unnest{
+                                        pos:      212,
+                                        end:      219,
+                                        Implicit: true,
+                                        Expr:     &parser.Ident{
+                                          pos:  212,
+                                          end:  219,
+                                          Name: "Singers",
+                                        },
+                                        Hint:       (*parser.Hint)(nil),
+                                        As:         (*parser.AsAlias)(nil),
+                                        WithOffset: (*parser.WithOffset)(nil),
+                                      },
+                                      TableSample: (*parser.TableSample)(nil),
+                                    },
+                                  },
+                                },
+                                Where:   (*parser.Where)(nil),
+                                GroupBy: (*parser.GroupBy)(nil),
+                                Having:  (*parser.Having)(nil),
+                                OrderBy: (*parser.OrderBy)(nil),
+                                Limit:   (*parser.Limit)(nil),
+                              },
+                              &parser.SubQuery{
+                                pos:   247,
+                                end:   348,
+                                Query: &parser.CompoundQuery{
+                                  Op:       "EXCEPT",
+                                  Distinct: true,
+                                  Queries:  []parser.QueryExpr{
+                                    &parser.Select{
+                                      pos:      259,
+                                      Distinct: false,
+                                      AsStruct: false,
+                                      Results:  []parser.SelectItem{
+                                        &parser.Star{
+                                          pos: 266,
+                                        },
+                                      },
+                                      From: &parser.From{
+                                        pos:   268,
+                                        Items: []*parser.FromItem{
+                                          &parser.FromItem{
+                                            Source: &parser.Unnest{
+                                              pos:      273,
+                                              end:      280,
+                                              Implicit: true,
+                                              Expr:     &parser.Ident{
+                                                pos:  273,
+                                                end:  280,
+                                                Name: "Singers",
+                                              },
+                                              Hint:       (*parser.Hint)(nil),
+                                              As:         (*parser.AsAlias)(nil),
+                                              WithOffset: (*parser.WithOffset)(nil),
+                                            },
+                                            TableSample: (*parser.TableSample)(nil),
+                                          },
+                                        },
+                                      },
+                                      Where:   (*parser.Where)(nil),
+                                      GroupBy: (*parser.GroupBy)(nil),
+                                      Having:  (*parser.Having)(nil),
+                                      OrderBy: (*parser.OrderBy)(nil),
+                                      Limit:   (*parser.Limit)(nil),
+                                    },
+                                    &parser.Select{
+                                      pos:      317,
+                                      Distinct: false,
+                                      AsStruct: false,
+                                      Results:  []parser.SelectItem{
+                                        &parser.Star{
+                                          pos: 324,
+                                        },
+                                      },
+                                      From: &parser.From{
+                                        pos:   326,
+                                        Items: []*parser.FromItem{
+                                          &parser.FromItem{
+                                            Source: &parser.Unnest{
+                                              pos:      331,
+                                              end:      338,
+                                              Implicit: true,
+                                              Expr:     &parser.Ident{
+                                                pos:  331,
+                                                end:  338,
+                                                Name: "Singers",
+                                              },
+                                              Hint:       (*parser.Hint)(nil),
+                                              As:         (*parser.AsAlias)(nil),
+                                              WithOffset: (*parser.WithOffset)(nil),
+                                            },
+                                            TableSample: (*parser.TableSample)(nil),
+                                          },
+                                        },
+                                      },
+                                      Where:   (*parser.Where)(nil),
+                                      GroupBy: (*parser.GroupBy)(nil),
+                                      Having:  (*parser.Having)(nil),
+                                      OrderBy: (*parser.OrderBy)(nil),
+                                      Limit:   (*parser.Limit)(nil),
+                                    },
+                                  },
+                                  OrderBy: (*parser.OrderBy)(nil),
+                                  Limit:   (*parser.Limit)(nil),
+                                },
+                                OrderBy: (*parser.OrderBy)(nil),
+                                Limit:   (*parser.Limit)(nil),
+                              },
+                            },
+                            OrderBy: (*parser.OrderBy)(nil),
+                            Limit:   (*parser.Limit)(nil),
+                          },
+                          OrderBy: (*parser.OrderBy)(nil),
+                          Limit:   (*parser.Limit)(nil),
+                        },
+                      },
+                      OrderBy: (*parser.OrderBy)(nil),
+                      Limit:   (*parser.Limit)(nil),
+                    },
+                    OrderBy: (*parser.OrderBy)(nil),
                     Limit:   (*parser.Limit)(nil),
                   },
                 },
-                OrderBy: parser.OrderExprList{},
+                OrderBy: (*parser.OrderBy)(nil),
                 Limit:   (*parser.Limit)(nil),
               },
+              OrderBy: (*parser.OrderBy)(nil),
+              Limit:   (*parser.Limit)(nil),
             },
-            OrderBy: parser.OrderExprList{},
-            Limit:   (*parser.Limit)(nil),
           },
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
         },
-        OrderBy: parser.OrderExprList{},
+        OrderBy: (*parser.OrderBy)(nil),
         Limit:   (*parser.Limit)(nil),
       },
     },
-    OrderBy: parser.OrderExprList{},
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

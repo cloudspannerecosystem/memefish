@@ -11,109 +11,125 @@ FROM
 --- AST
 &parser.QueryStatement{
   Hint: &parser.Hint{
-    pos: 0,
-    end: 24,
-    Map: map[string]parser.Expr{
-      "FORCE_JOIN_ORDER": &parser.BoolLit{
-        pos:   19,
-        Value: true,
+    pos:     0,
+    end:     24,
+    Records: []*parser.HintRecord{
+      &parser.HintRecord{
+        Key: &parser.Ident{
+          pos:  2,
+          end:  18,
+          Name: "FORCE_JOIN_ORDER",
+        },
+        Value: &parser.BoolLiteral{
+          pos:   19,
+          Value: true,
+        },
       },
     },
   },
-  Expr: &parser.Select{
+  Query: &parser.Select{
     pos:      25,
-    end:      111,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  34,
-        end:  35,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 34,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  111,
-        Expr: &parser.Join{
-          Op:     "LEFT OUTER",
-          Method: "",
-          Hint:   (*parser.Hint)(nil),
-          Left:   &parser.TableName{
-            end:   52,
-            Ident: &parser.Ident{
-              pos:  43,
-              end:  50,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.Ident{
-              pos:  51,
-              end:  52,
-              Name: "A",
-            },
-          },
-          Right: &parser.TableName{
-            end:   82,
-            Ident: &parser.Ident{
-              pos:  73,
-              end:  80,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.Ident{
-              pos:  81,
-              end:  82,
-              Name: "B",
-            },
-          },
-          Cond: &parser.JoinCondition{
-            pos: 85,
-            end: 111,
-            On:  &parser.BinaryExpr{
-              Op:   "=",
-              Left: &parser.SelectorExpr{
-                Left: &parser.Ident{
-                  pos:  88,
-                  end:  89,
+    From: &parser.From{
+      pos:   36,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Join{
+            Op:     "LEFT OUTER",
+            Method: "",
+            Hint:   (*parser.Hint)(nil),
+            Left:   &parser.Unnest{
+              pos:      43,
+              end:      52,
+              Implicit: true,
+              Expr:     &parser.Ident{
+                pos:  43,
+                end:  50,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.AsAlias{
+                pos:   51,
+                Alias: &parser.Ident{
+                  pos:  51,
+                  end:  52,
                   Name: "A",
                 },
-                Right: &parser.Ident{
-                  pos:  90,
-                  end:  98,
-                  Name: "SingerID",
-                },
               },
-              Right: &parser.SelectorExpr{
-                Left: &parser.Ident{
-                  pos:  101,
-                  end:  102,
+              WithOffset: (*parser.WithOffset)(nil),
+            },
+            Right: &parser.Unnest{
+              pos:      73,
+              end:      82,
+              Implicit: true,
+              Expr:     &parser.Ident{
+                pos:  73,
+                end:  80,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.AsAlias{
+                pos:   81,
+                Alias: &parser.Ident{
+                  pos:  81,
+                  end:  82,
                   Name: "B",
                 },
-                Right: &parser.Ident{
-                  pos:  103,
-                  end:  111,
-                  Name: "SingerID",
+              },
+              WithOffset: (*parser.WithOffset)(nil),
+            },
+            Cond: &parser.On{
+              pos:  85,
+              Expr: &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.Path{
+                  Idents: []*parser.Ident{
+                    &parser.Ident{
+                      pos:  88,
+                      end:  89,
+                      Name: "A",
+                    },
+                    &parser.Ident{
+                      pos:  90,
+                      end:  98,
+                      Name: "SingerID",
+                    },
+                  },
+                },
+                Right: &parser.Path{
+                  Idents: []*parser.Ident{
+                    &parser.Ident{
+                      pos:  101,
+                      end:  102,
+                      Name: "B",
+                    },
+                    &parser.Ident{
+                      pos:  103,
+                      end:  111,
+                      Name: "SingerID",
+                    },
+                  },
                 },
               },
             },
-            Using: parser.IdentList{},
           },
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-@{FORCE_JOIN_ORDER = TRUE} SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID
+@{FORCE_JOIN_ORDER=TRUE} SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID

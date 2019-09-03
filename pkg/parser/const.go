@@ -17,9 +17,9 @@ const (
 type JoinMethod string
 
 const (
-	HashJoinMethod  JoinMethod = "HASH_JOIN"
-	ApplyJoinMethod JoinMethod = "APPLY_JOIN"
-	LoopJoinMethod  JoinMethod = "LOOP_JOIN" // Undocumented, but the Spanner accept this value at least.
+	HashJoinMethod  JoinMethod = "HASH"
+	ApplyJoinMethod JoinMethod = "APPLY"
+	LoopJoinMethod  JoinMethod = "LOOP" // Undocumented, but the Spanner accept this value at least.
 )
 
 type SetOp string
@@ -42,6 +42,13 @@ type TableSampleMethod string
 const (
 	BernoulliSampleMethod TableSampleMethod = "BERNOULLI"
 	ReservoirSampleMethod TableSampleMethod = "RESERVOIR"
+)
+
+type TableSampleUnit string
+
+const (
+	PercentTableSampleUnit TableSampleUnit = "PERCENT"
+	RowsTableSampleUnit    TableSampleUnit = "ROWS"
 )
 
 type JoinOp string
@@ -87,37 +94,16 @@ const (
 	OpBitNot UnaryOp = "~"
 )
 
-type ExtractPart string
-
-const (
-	NanoSecondPart  ExtractPart = "NANOSECOND"
-	MicroSecondPart ExtractPart = "MICROSECOND"
-	MilliSecondPart ExtractPart = "MILLISECOND"
-	SecondPart      ExtractPart = "SECOND"
-	MinutePart      ExtractPart = "MINUTE"
-	HourPart        ExtractPart = "HOUR"
-	DayOfWeekPart   ExtractPart = "DAYOFWEEK"
-	DayPart         ExtractPart = "DAY"
-	DayOfYearPart   ExtractPart = "DAYOFYEAR"
-	WeekPart        ExtractPart = "WEEK"
-	ISOWeekPart     ExtractPart = "ISOWEEK"
-	MonthPart       ExtractPart = "MONTH"
-	QuarterPart     ExtractPart = "QUARTER"
-	YearPart        ExtractPart = "YEAR"
-	ISOYearPart     ExtractPart = "ISOYEAR"
-	DatePart        ExtractPart = "DATE"
-)
-
 type TypeName string
 
 const (
-	BoolType      TypeName = "BOOL"
-	Int64Type     TypeName = "INT64"
-	Float64Type   TypeName = "FLOAT64"
-	StringType    TypeName = "STRING"
-	BytesType     TypeName = "BYTES"
-	DateType      TypeName = "DATE"
-	TimestampType TypeName = "TIMESTAMP"
-	ArrayType     TypeName = "ARRAY"
-	StructType    TypeName = "STRUCT"
+	BoolTypeName      TypeName = "BOOL"
+	Int64TypeName     TypeName = "INT64"
+	Float64TypeName   TypeName = "FLOAT64"
+	StringTypeName    TypeName = "STRING"
+	BytesTypeName     TypeName = "BYTES"
+	DateTypeName      TypeName = "DATE"
+	TimestampTypeName TypeName = "TIMESTAMP"
+	ArrayTypeName     TypeName = "ARRAY"
+	StructTypeName    TypeName = "STRUCT"
 )

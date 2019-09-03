@@ -10,69 +10,73 @@ ORDER BY
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      80,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  25,
-        Expr: &parser.TableName{
-          end:   25,
-          Ident: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      25,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  18,
+              end:  25,
+              Name: "Singers",
+            },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{
-      &parser.OrderExpr{
-        end:  46,
-        Expr: &parser.Ident{
-          pos:  37,
-          end:  46,
-          Name: "FirstName",
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: &parser.OrderBy{
+      pos:   26,
+      Items: []*parser.OrderByItem{
+        &parser.OrderByItem{
+          end:  0,
+          Expr: &parser.Ident{
+            pos:  37,
+            end:  46,
+            Name: "FirstName",
+          },
+          Collate: (*parser.Collate)(nil),
+          Dir:     "",
         },
-        Dir: "ASC",
-      },
-      &parser.OrderExpr{
-        end:  62,
-        Expr: &parser.Ident{
-          pos:  50,
-          end:  58,
-          Name: "LastName",
+        &parser.OrderByItem{
+          end:  62,
+          Expr: &parser.Ident{
+            pos:  50,
+            end:  58,
+            Name: "LastName",
+          },
+          Collate: (*parser.Collate)(nil),
+          Dir:     "ASC",
         },
-        Dir: "ASC",
-      },
-      &parser.OrderExpr{
-        end:  80,
-        Expr: &parser.Ident{
-          pos:  66,
-          end:  75,
-          Name: "BirthDate",
+        &parser.OrderByItem{
+          end:  80,
+          Expr: &parser.Ident{
+            pos:  66,
+            end:  75,
+            Name: "BirthDate",
+          },
+          Collate: (*parser.Collate)(nil),
+          Dir:     "DESC",
         },
-        Dir: "DESC",
       },
     },
     Limit: (*parser.Limit)(nil),
@@ -80,4 +84,4 @@ ORDER BY
 }
 
 --- SQL
-SELECT * FROM Singers ORDER BY FirstName ASC, LastName ASC, BirthDate DESC
+SELECT * FROM Singers ORDER BY FirstName, LastName ASC, BirthDate DESC

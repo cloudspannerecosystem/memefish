@@ -13,27 +13,20 @@ SELECT
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      310,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  25,
-        Expr: &parser.DateLit{
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.DateLiteral{
           pos:   9,
           end:   25,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  29,
-        end:  47,
+      &parser.ExprSelectItem{
         Expr: &parser.CallExpr{
           end:  47,
           Func: &parser.Ident{
@@ -42,69 +35,48 @@ SELECT
             Name: "DATE",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          34,
-              end:          46,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  34,
+              Expr: &parser.StringLiteral{
                 pos:   34,
                 end:   46,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  51,
-        end:  69,
-        Expr: &parser.DateLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.DateLiteral{
           pos:   51,
           end:   69,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  73,
-        end:  110,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   73,
           end:   110,
           Value: "2014-09-27 12:30:00.45-08",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  114,
-        end:  168,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   114,
           end:   168,
           Value: "2014-09-27 12:30:00.45 America/Los_Angeles",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  172,
-        end:  193,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   172,
           end:   193,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  197,
-        end:  220,
+      &parser.ExprSelectItem{
         Expr: &parser.CallExpr{
           end:  220,
           Func: &parser.Ident{
@@ -113,36 +85,27 @@ SELECT
             Name: "TIMESTAMP",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          207,
-              end:          219,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  207,
+              Expr: &parser.StringLiteral{
                 pos:   207,
                 end:   219,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  224,
-        end:  247,
-        Expr: &parser.TimestampLit{
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
           pos:   224,
           end:   247,
           Value: "2014-09-27",
         },
-        Star: false,
-        As:   (*parser.Ident)(nil),
       },
-      &parser.SelectExpr{
-        pos:  251,
-        end:  276,
+      &parser.Alias{
         Expr: &parser.CallExpr{
           end:  269,
           Func: &parser.Ident{
@@ -151,29 +114,28 @@ SELECT
             Name: "DATE",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          256,
-              end:          268,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  256,
+              Expr: &parser.StringLiteral{
                 pos:   256,
                 end:   268,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   &parser.Ident{
-          pos:  273,
-          end:  276,
-          Name: "FOO",
+        As: &parser.AsAlias{
+          pos:   270,
+          Alias: &parser.Ident{
+            pos:  273,
+            end:  276,
+            Name: "FOO",
+          },
         },
       },
-      &parser.SelectExpr{
-        pos:  280,
-        end:  310,
+      &parser.Alias{
         Expr: &parser.CallExpr{
           end:  303,
           Func: &parser.Ident{
@@ -182,32 +144,33 @@ SELECT
             Name: "TIMESTAMP",
           },
           Distinct: false,
-          Args:     parser.ArgList{
+          Args:     []*parser.Arg{
             &parser.Arg{
-              pos:          290,
-              end:          302,
-              IntervalUnit: "",
-              Expr:         &parser.StringLit{
+              pos:  290,
+              Expr: &parser.StringLiteral{
                 pos:   290,
                 end:   302,
                 Value: "2014-09-27",
               },
+              IntervalUnit: (*parser.Ident)(nil),
             },
           },
         },
-        Star: false,
-        As:   &parser.Ident{
-          pos:  307,
-          end:  310,
-          Name: "BAR",
+        As: &parser.AsAlias{
+          pos:   304,
+          Alias: &parser.Ident{
+            pos:  307,
+            end:  310,
+            Name: "BAR",
+          },
         },
       },
     },
-    From:    parser.FromItemList{},
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

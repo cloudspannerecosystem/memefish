@@ -6,63 +6,62 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      45,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  45,
-        Expr: &parser.Unnest{
-          pos:  18,
-          end:  45,
-          Expr: &parser.ArrayLit{
-            pos:    25,
-            end:    32,
-            Type:   (*parser.Type)(nil),
-            Values: parser.ExprList{
-              &parser.IntLit{
-                pos:   26,
-                end:   27,
-                Value: "1",
-              },
-              &parser.IntLit{
-                pos:   28,
-                end:   29,
-                Value: "2",
-              },
-              &parser.IntLit{
-                pos:   30,
-                end:   31,
-                Value: "3",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      45,
+            Implicit: false,
+            Expr:     &parser.ArrayLiteral{
+              pos:    25,
+              end:    32,
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   26,
+                  end:   27,
+                  Value: "1",
+                },
+                &parser.IntLiteral{
+                  pos:   28,
+                  end:   29,
+                  Value: "2",
+                },
+                &parser.IntLiteral{
+                  pos:   30,
+                  end:   31,
+                  Value: "3",
+                },
               },
             },
+            Hint:       (*parser.Hint)(nil),
+            As:         (*parser.AsAlias)(nil),
+            WithOffset: &parser.WithOffset{
+              pos: 34,
+              end: 45,
+              As:  (*parser.AsAlias)(nil),
+            },
           },
-          Hint:         (*parser.Hint)(nil),
-          As:           (*parser.Ident)(nil),
-          WithOffset:   true,
-          WithOffsetAs: (*parser.Ident)(nil),
+          TableSample: (*parser.TableSample)(nil),
         },
-        Method: "",
-        Num:    nil,
-        Rows:   false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }

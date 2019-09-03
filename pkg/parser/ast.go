@@ -6,523 +6,960 @@ type Node interface {
 	SQL() string
 }
 
+// QueryExpr represents set operator operands.
+type QueryExpr interface {
+	Node
+	setQueryExprSuffix(orderBy *OrderBy, limit *Limit)
+}
+
+var _ QueryExpr = &Select{}
+var _ QueryExpr = &SubQuery{}
+var _ QueryExpr = &CompoundQuery{}
+
+// SelectItem represents expression in SELECT clause result columns list.
+type SelectItem interface {
+	Node
+	isSelectItem()
+}
+
+func (Star) isSelectItem()           {}
+func (StarPath) isSelectItem()       {}
+func (Alias) isSelectItem()          {}
+func (ExprSelectItem) isSelectItem() {}
+
+// JoinExpr represents JOIN operands.
+type JoinExpr interface {
+	Node
+	isSimpleJoinExpr() bool
+}
+
+var _ JoinExpr = &Unnest{}
+var _ JoinExpr = &SubQueryJoinExpr{}
+var _ JoinExpr = &ParenJoinExpr{}
+var _ JoinExpr = &Join{}
+
+// JoinCondition represents condition part of JOIN expression.
+type JoinCondition interface {
+	Node
+	isJoinCondition()
+}
+
+func (On) isJoinCondition()    {}
+func (Using) isJoinCondition() {}
+
 // Expr repersents an expression in SQL.
 type Expr interface {
 	Node
 	isExpr()
 }
 
-// ExprList is expressions separated by comma.
-type ExprList []Expr
+func (BinaryExpr) isExpr()       {}
+func (UnaryExpr) isExpr()        {}
+func (InExpr) isExpr()           {}
+func (IsNullExpr) isExpr()       {}
+func (IsBoolExpr) isExpr()       {}
+func (BetweenExpr) isExpr()      {}
+func (SelectorExpr) isExpr()     {}
+func (IndexExpr) isExpr()        {}
+func (CallExpr) isExpr()         {}
+func (CountStarExpr) isExpr()    {}
+func (CastExpr) isExpr()         {}
+func (ExtractExpr) isExpr()      {}
+func (CaseExpr) isExpr()         {}
+func (ParenExpr) isExpr()        {}
+func (ScalarSubQuery) isExpr()   {}
+func (ArraySubQuery) isExpr()    {}
+func (ExistsSubQuery) isExpr()   {}
+func (Param) isExpr()            {}
+func (Ident) isExpr()            {}
+func (Path) isExpr()             {}
+func (ArrayLiteral) isExpr()     {}
+func (StructLiteral) isExpr()    {}
+func (NullLiteral) isExpr()      {}
+func (BoolLiteral) isExpr()      {}
+func (IntLiteral) isExpr()       {}
+func (FloatLiteral) isExpr()     {}
+func (StringLiteral) isExpr()    {}
+func (BytesLiteral) isExpr()     {}
+func (DateLiteral) isExpr()      {}
+func (TimestampLiteral) isExpr() {}
 
-func (BinaryExpr) isExpr()    {}
-func (UnaryExpr) isExpr()     {}
-func (InExpr) isExpr()        {}
-func (IsNullExpr) isExpr()    {}
-func (IsBoolExpr) isExpr()    {}
-func (BetweenExpr) isExpr()   {}
-func (SelectorExpr) isExpr()  {}
-func (IndexExpr) isExpr()     {}
-func (CallExpr) isExpr()      {}
-func (CountStarExpr) isExpr() {}
-func (CastExpr) isExpr()      {}
-func (ExtractExpr) isExpr()   {}
-func (CaseExpr) isExpr()      {}
-func (SubQuery) isExpr()      {}
-func (ParenExpr) isExpr()     {}
-func (ArrayExpr) isExpr()     {}
-func (ExistsExpr) isExpr()    {}
-func (Param) isExpr()         {}
-func (Ident) isExpr()         {}
-func (ArrayLit) isExpr()      {}
-func (StructLit) isExpr()     {}
-func (NullLit) isExpr()       {}
-func (BoolLit) isExpr()       {}
-func (IntLit) isExpr()        {}
-func (FloatLit) isExpr()      {}
-func (StringLit) isExpr()     {}
-func (BytesLit) isExpr()      {}
-func (DateLit) isExpr()       {}
-func (TimestampLit) isExpr()  {}
-
-type QueryExpr interface {
+// InCondition is right-side value of IN operator.
+type InCondition interface {
 	Node
-	setOrderBy(orderBy OrderExprList)
-	setLimit(limit *Limit)
+	isInCondition()
 }
 
-func (s *Select) setOrderBy(orderBy OrderExprList) {
-	s.OrderBy = orderBy
-	s.end = orderBy.End()
-}
+func (UnnestInCondition) isInCondition()   {}
+func (SubQueryInCondition) isInCondition() {}
+func (ValuesInCondition) isInCondition()   {}
 
-func (s *Select) setLimit(limit *Limit) {
-	s.Limit = limit
-	s.end = limit.End()
-}
-
-func (c *CompoundQuery) setOrderBy(orderBy OrderExprList) {
-	c.OrderBy = orderBy
-	c.end = orderBy.End()
-}
-
-func (c *CompoundQuery) setLimit(limit *Limit) {
-	c.Limit = limit
-	c.end = limit.End()
-}
-
-func (s *SubQueryExpr) setOrderBy(orderBy OrderExprList) {
-	s.OrderBy = orderBy
-	s.end = orderBy.End()
-}
-
-func (s *SubQueryExpr) setLimit(limit *Limit) {
-	s.Limit = limit
-	s.end = limit.End()
-}
-
-type JoinExpr interface {
+// Type represents type node.
+type Type interface {
 	Node
-	isJoinExpr()
+	isType()
 }
 
-func (TableName) isJoinExpr()        {}
-func (Unnest) isJoinExpr()           {}
-func (PathExpr) isJoinExpr()         {}
-func (SubQueryJoinExpr) isJoinExpr() {}
-func (ParenJoinExpr) isJoinExpr()    {}
-func (Join) isJoinExpr()             {}
+func (SimpleType) isType() {}
+func (ArrayType) isType()  {}
+func (StructType) isType() {}
 
+// IntValue is integer values in SQL.
 type IntValue interface {
 	Node
 	isIntValue()
 }
 
-func (IntLit) isIntValue()       {}
 func (Param) isIntValue()        {}
+func (IntLiteral) isIntValue()   {}
 func (CastIntValue) isIntValue() {}
 
+// NumValue is number values in SQL.
 type NumValue interface {
 	Node
 	isNumValue()
 }
 
-func (IntLit) isNumValue()       {}
-func (FloatLit) isNumValue()     {}
 func (Param) isNumValue()        {}
+func (IntLiteral) isNumValue()   {}
+func (FloatLiteral) isNumValue() {}
 func (CastNumValue) isNumValue() {}
 
-// {{if .Hint}}{{.Hint | sql}}{{end}}
-// {{.Expr | sql}}
-type QueryStatement struct {
-	Hint *Hint
-	Expr QueryExpr
+// StringValue is string value in SQL.
+type StringValue interface {
+	Node
+	isStringValue()
 }
 
+func (Param) isStringValue()         {}
+func (StringLiteral) isStringValue() {}
+
+// ================================================================================
+//
+// SELECT
+//
+// ================================================================================
+
+// QueryStatement is query statement node.
+//
+//     {{if .Hint}}{{.Hint | sql}}{{end}}
+//     {{.Expr | sql}}
+type QueryStatement struct {
+	// pos = (Hint ?? Expr).pos, end = Expr.end
+
+	Hint  *Hint // optional
+	Query QueryExpr
+}
+
+// Hint is hint node.
+//
+//     @{{"{"}}{{.Records | sqlJoin ","}}{{"}"}}
 type Hint struct {
 	pos, end Pos
-	Map      map[string]Expr
+
+	Records []*HintRecord // len(Records) > 0
 }
 
-// SELECT
-//   {{if .Distinct}}DISTINCT{{end}}
-//   {{if .AsStruct}}AS STRUCT{{end}}
-//   {{.List | sql}}
-//   {{if .From}}FROM {{.From | sql}}{{end}}
-//   {{if .Where}}WHERE {{.Where | sql}}{{end}}
-//   {{if .GroupBy}}GROUP BY {{.GroupBy | sql}}{{end}}
-//   {{if .Having}}HAVING {{.Having | sql}}{{end}}
-//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
-//   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
+// HintRecord is hint record node.
+//
+//     {{.Key | sql}}={{.Value | sql}}
+type HintRecord struct {
+	// pos = Key.pos, end = Value.end
+
+	Key   *Ident
+	Value Expr
+}
+
+// Select is SELECT statement node.
+//
+//     SELECT
+//       {{if .Distinct}}DISTINCT{{end}}
+//       {{if .AsStruct}}AS STRUCT{{end}}
+//       {{.Results | sqlJoin ","}}
+//       {{.From | sqlOpt}}
+//       {{.Where | sqlOpt}}
+//       {{.GroupBy | sqlOpt}}
+//       {{.Having | sqlOpt}}
+//       {{.OrderBy | sqlOpt}}
+//       {{.Limit | sqlOpt}}
 type Select struct {
-	pos, end Pos
+	// end = (Limit ?? OrderBy ?? Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
+	pos Pos
+
 	Distinct bool
 	AsStruct bool
-	List     SelectExprList
-	From     FromItemList
-	Where    Expr
-	GroupBy  ExprList // Integer literal on GROUP BY expression has special meaning.
-	Having   Expr
-	OrderBy  OrderExprList
-	Limit    *Limit
+	Results  []SelectItem // len(Results) > 0
+	From     *From        // optional
+	Where    *Where       // optional
+	GroupBy  *GroupBy     // optional
+	Having   *Having      // optional
+	OrderBy  *OrderBy     // optional
+	Limit    *Limit       // optional
 }
 
-// {{range $i, $e := .List}}
-//   {{if ne($i, 0)}}{{.Op}} {{if .Distinct}}DISTINCT{{else}}ALL{{end}} {{.Right | sql}}{{end}}
-//   {{$e | sql}}
-// {{end}}
-//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
-//   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
+func (s *Select) setQueryExprSuffix(orderBy *OrderBy, limit *Limit) {
+	s.OrderBy = orderBy
+	s.Limit = limit
+}
+
+// CompoundQuery is query statement node compounded by set operators.
+//
+//     {{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
+//       {{.OrderBy | sqlOpt}}
+//       {{.Limit | sqlOpt}}
 type CompoundQuery struct {
-	end      Pos
+	// pos = Queries[0].pos, end = (Limit ?? OrderBy ?? Queries[$]).end
+
 	Op       SetOp
 	Distinct bool
-	List     []QueryExpr
-	OrderBy  OrderExprList
-	Limit    *Limit
+	Queries  []QueryExpr // len(List) >= 2
+	OrderBy  *OrderBy    // optional
+	Limit    *Limit      // optional
 }
 
-// {{.Expr | sql}}
-//   {{if .OrderBy}}ORDER BY {{.OrderBy | sql}}{{end}}
-//   {{if .Limit}}LIMIT {{.Limit | sql}}{{end}}
-type SubQueryExpr struct {
-	end     Pos
-	Expr    *SubQuery
-	OrderBy OrderExprList
-	Limit   *Limit
+func (c *CompoundQuery) setQueryExprSuffix(orderBy *OrderBy, limit *Limit) {
+	c.OrderBy = orderBy
+	c.Limit = limit
 }
 
-// {{if .Expr}}{{.Expr | sql}}{{end}}{{if .Star}}{{if .Expr}}.{{end}}*{{end}}
-//   {{if .As}}AS {{.As | sql}}{{end}}
-type SelectExpr struct {
+// SubQuery is subquery statement node.
+//
+//     ({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
+type SubQuery struct {
 	pos, end Pos
-	Expr     Expr
-	Star     bool
-	As       *Ident // It must be nil when Star is true
+
+	Query   QueryExpr
+	OrderBy *OrderBy // optional
+	Limit   *Limit   // optional
 }
 
-type SelectExprList []*SelectExpr
+func (s *SubQuery) setQueryExprSuffix(orderBy *OrderBy, limit *Limit) {
+	s.OrderBy = orderBy
+	s.Limit = limit
+}
 
-// {{.Expr | sql}}
-// {{if .TableSample}}TABLESAMPLE {{.Method}} ({{.Num | sql}} {{if .Rows}}ROWS{{else}}PERCENT{{end}}){{end}}
+// Star is a single * in SELECT result columns list.
+//
+//     *
+type Star struct {
+	// end = pos + 1
+	pos Pos
+}
+
+// StarPath is expression with * in SELECT result columns list.
+//
+//     {{.Expr | sql}}.*
+type StarPath struct {
+	// pos = Expr.pos
+	end Pos
+
+	Expr Expr
+}
+
+// Alias is aliased expression by AS clause in SELECT result columns list.
+//
+//    {{.Expr | sql}} {{.As | sql}}
+type Alias struct {
+	// pos = Expr.pos, end = As.end
+
+	Expr Expr
+	As   *AsAlias
+}
+
+// AsAlias is AS clause node for general purpose.
+//
+// It is used in Alias node and some JoinExpr nodes.
+//
+// NOTE: Sometime keyword AS can be omited.
+//       In this case, it.Pos() == it.Alias.Pos(), so we can detect this.
+//
+//     AS {{.Alias | sql}}
+type AsAlias struct {
+	// end = Alias.End
+	pos Pos
+
+	Alias *Ident
+}
+
+// ExprSelectItem is Expr wrapper for SelectItem.
+//
+//     {{.Expr | sql}}
+type ExprSelectItem struct {
+	// pos = Expr.pos, end = Expr.end
+
+	Expr Expr
+}
+
+// From is FROM clause node.
+//
+//     FROM {{.Items | sqlJoin ","}}
+type From struct {
+	// end = Items[$].end
+	pos Pos
+
+	Items []*FromItem // len(Items) > 0
+}
+
+// FromItem is FROM clause expression node.
+//
+//     {{.Source | sql}} {{.TableSample | sqlOpt}}
 type FromItem struct {
-	end    Pos
-	Expr   JoinExpr
+	// pos = Expr.pos, end = (TableSample ?? Source).end
+
+	Source      JoinExpr
+	TableSample *TableSample
+}
+
+// TableSample is TABLESAMPLE clause node.
+//
+//     TABLESAMPLE {{.Method}} {{.Size | sql}}
+type TableSample struct {
+	// end = Size.end
+	pos Pos
+
 	Method TableSampleMethod
-	Num    NumValue
-	Rows   bool
+	Size   *TableSampleSize
 }
 
-type FromItemList []*FromItem
+// TableSampleSize is size part of TABLESAMPLE clause.
+//
+//     ({{.Value | sql}} {{.Unit}})
+type TableSampleSize struct {
+	pos, end Pos
 
-// {{.Ident | sql}}
-//   {{if .Hint}}{{.Hint | sql}}{{end}}
-//   {{if .As}} AS {{.As | sql}}{{end}}
-type TableName struct {
-	end   Pos
-	Ident *Ident
-	Hint  *Hint
-	As    *Ident
+	Value NumValue
+	Unit  TableSampleUnit
 }
 
-// {{.Ident | sql}}{{range _, $path := .Paths}}.{{$path | sql}}{{end}}
-//   {{if .Hint}}{{.Hint | sql}}{{end}}
-//   {{if .As}} AS {{.As | sql}}{{end}}
-type PathExpr struct {
-	end   Pos
-	Ident *Ident
-	Paths []*Ident // not IdentList because it is not comma separated.
-	Hint  *Hint
-	As    *Ident
+// Where is WHERE clause node.
+//
+//    WHERE {{.Expr | sql}}
+type Where struct {
+	// end = Expr.end
+	pos Pos
+
+	Expr Expr
 }
 
-// UNNEST({{.Expr | sql}})
-//   {{if .Hint}}{{.Hint | sql}}{{end}}
-//   {{if .As}}AS {{.As | sql}}{{end}}
-//   {{if .WithOffset}}WITH OFFSET {{.WithOffset | sql}}
-//     {{if .WithOffsetAs}}{{.WithOffsetAs | sql}}{{end}}{{end}}
+// GroupBy is GROUP BY clause node.
+//
+//    GROUP BY {{.Exprs | sqlJoin ","}}
+type GroupBy struct {
+	// end = Exprs[$].end
+	pos Pos
+
+	Exprs []Expr // len(Exprs) > 0
+}
+
+// Having is HAVING clause node.
+//
+//     HAVING {{.Expr | sql}}
+type Having struct {
+	// end = Expr.end
+	pos Pos
+
+	Expr Expr
+}
+
+// OrderBy is ORDER BY clause node.
+//
+//     ORDER BY {{.Items | sqlJoin ","}}
+type OrderBy struct {
+	// end = Items[$].end
+	pos Pos
+
+	Items []*OrderByItem // len(Items) > 0
+}
+
+// OrderByItem is expression node in ORDER BY clause list.
+//
+//     {{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
+type OrderByItem struct {
+	// pos = Expr.pos
+	end Pos
+
+	Expr    Expr
+	Collate *Collate  // optional
+	Dir     Direction // optional
+}
+
+// Collate is COLLATE clause node in ORDER BY item.
+//
+//     COLLATE {{.Value | sql}}
+type Collate struct {
+	// end = Value.end
+	pos Pos
+
+	Value StringValue
+}
+
+// Limit is LIMIT clause node.
+//
+//     LIMIT {{.Count | sql}} {{.Offset | sqlOpt}}
+type Limit struct {
+	// end = (Offset ?? Count).end
+	pos Pos
+
+	Count  IntValue
+	Offset *Offset // optional
+}
+
+// Offset is OFFSET clause node in LIMIT clause.
+//
+//     OFFSET {{.Value | sql}}
+type Offset struct {
+	// end = Value.end
+	pos Pos
+
+	Value IntValue
+}
+
+// ================================================================================
+//
+// JOIN
+//
+// ================================================================================
+
+// Unnest is UNNEST call in FROM clause.
+//
+//     {{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
+//       {{.Hint | sqlOpt}}
+//       {{.As | sqlOpt}}
+//       {{.WithOffset | sqlOpt}}
 type Unnest struct {
-	pos, end     Pos
-	Expr         Expr
-	Hint         *Hint
-	As           *Ident
-	WithOffset   bool
-	WithOffsetAs *Ident
+	pos, end Pos
+
+	Implicit   bool
+	Expr       Expr        // Path or Ident when Implicit is true
+	Hint       *Hint       // optional
+	As         *AsAlias    // optional
+	WithOffset *WithOffset // optional
 }
 
-// {{.Expr | sql}}
-//   {{if .Hint}}{{.Hint | sql}}{{end}}
-//   {{if .As}}AS {{.As | sql}}{{end}}
+func (Unnest) isSimpleJoinExpr() bool {
+	return true
+}
+
+// WithOffset is WITH OFFSET clause node after UNNEST call.
+//
+//     WITH OFFSET {{.As | sqlOpt}}
+type WithOffset struct {
+	pos, end Pos
+
+	As *AsAlias // optional
+}
+
+// SubQueryJoinExpr is subquery inside JOIN expression.
+//
+//     ({{.Query | sql}}) {{.As | sqlOpt}}
 type SubQueryJoinExpr struct {
-	end  Pos
-	Expr *SubQuery
-	Hint *Hint
-	As   *Ident
+	pos, end Pos
+
+	Query QueryExpr
+	As    *AsAlias // optional
 }
 
-// ({{.Expr | sql}})
+func (s *SubQueryJoinExpr) isSimpleJoinExpr() bool {
+	return s.As != nil
+}
+
+// ParenJoinExpr is parenthesized JOIN expression.
+//
+//     ({{.Expr | sql}})
 type ParenJoinExpr struct {
 	pos, end Pos
-	Expr     JoinExpr // SubQuery or Join
+
+	Source JoinExpr // SubQueryJoinExpr (without As) or Join
 }
 
-//   {{.Left | sql}}
-// {{.Op}} {{if .Method}}{{.Method}}{{end}} JOIN
-//    {{if .Hint}}{{.Hint | sql}}{{end}}
-//    {{.Right | sql}}
-// {{if .Cond}}{{.Cond | sql}}{{end}}
+func (ParenJoinExpr) isSimpleJoinExpr() bool {
+	return true
+}
+
+// Join is JOIN expression.
+//
+//       {{.Left | sql}}
+//     {{.Op}} {{.Method}} JOIN {{.Hint | sqlOpt}}
+//        {{.Right | sql}}
+//     {{.Cond | sqlOpt}}
 type Join struct {
+	// pos = Left.pos, end = (Cond ?? Right).pos
+
 	Op          JoinOp
 	Method      JoinMethod
-	Hint        *Hint
+	Hint        *Hint // optional
 	Left, Right JoinExpr
-	Cond        *JoinCondition
+	Cond        JoinCondition // nil when Op is CrossJoin, otherwise it must be set.
 }
 
-// {{if .On}}ON {{.On | sql}}{{end}}
-// {{if .Using}}USING ({{.Using | sql}}){{end}}
-type JoinCondition struct {
-	pos, end Pos
-	// Either On or Using must be non-empty.
-	On    Expr
-	Using IdentList
+func (Join) isSimpleJoinExpr() bool {
+	return false
 }
 
-// {{.Expr | sql}} {{.Direction}}
-type OrderExpr struct {
-	end  Pos
+// On is ON condition of JOIN expression.
+//
+//     ON {{.Expr | sql}}
+type On struct {
+	// end = Expr.end
+	pos Pos
+
 	Expr Expr
-	Dir  Direction
 }
 
-type OrderExprList []*OrderExpr
+// Using is Using condition of JOIN expression.
+//
+//     USING ({{Idents | sqlJoin ","}})
+type Using struct {
+	pos, end Pos
 
-// {{.Count | sql}} {{if .Offset}}OFFSET {{.Offset | sql}}{{end}}
-type Limit struct {
-	Count  IntValue
-	Offset IntValue
+	Idents []*Ident // len(Idents) > 0
 }
 
-// {{.Left | sql}} {{.Op}} {{.Right | sql}}
+// ================================================================================
+//
+// Expr
+//
+// ================================================================================
+
+// BinaryExpr is binary operator expression node.
+//
+//     {{.Left | sql}} {{.Op}} {{.Right | sql}}
 type BinaryExpr struct {
-	Op          BinaryOp
+	// pos = Left.pos, end = Right.pos
+	Op BinaryOp
+
 	Left, Right Expr
 }
 
-// {{.Op}} {{.Expr | sql}}
+// UnaryExpr is unary operator expression node.
+//
+//     {{.Op}} {{.Expr | sql}}
 type UnaryExpr struct {
-	pos  Pos
+	// end = Expr.end
+	pos Pos
+
 	Op   UnaryOp
 	Expr Expr
 }
 
-// {{.Left | sql}} {{if .Not}}NOT {{end}}IN {{.Right | sql}}
+// InExpr is IN expression node.
+//
+//     {{.Left | sql}} {{if .Not}}NOT{{end}} IN {{.Right | sql}}
 type InExpr struct {
 	Not   bool
 	Left  Expr
-	Right *InCondition
+	Right InCondition
 }
 
-// {{if .Unnest}}UNNEST({{.Unnest | sql}}){{end}}
-// {{if .Subqyery}}{{.Subquery | sql}}{{end}}
-// {{if .Values}}({{.Values | sql}}){{end}}
-type InCondition struct {
+// UnnestInCondition is UNNEST call at IN condition.
+//
+//     UNNEST({{.Expr | sql}})
+type UnnestInCondition struct {
 	pos, end Pos
-	Unnest   Expr
-	SubQuery *SubQuery
-	Values   ExprList
+
+	Expr Expr
 }
 
-// {{.Left | sql}} IS{{if .Not}} NOT{{end}} NULL
+// SubQueryInCondition is subquery at IN condition.
+//
+//     ({{.Query | sql}})
+type SubQueryInCondition struct {
+	pos, end Pos
+
+	Query QueryExpr
+}
+
+// ValuesInCondition is parenthesized values at IN condition.
+//
+//     ({{.Exprs | sqlJoin ","}})
+type ValuesInCondition struct {
+	pos, end Pos
+
+	Exprs []Expr // len(Exprs) > 0
+}
+
+// IsNullExpr is IS NULL expression node.
+//
+//     {{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
 type IsNullExpr struct {
-	end  Pos
+	// pos = Expr.pos
+	end Pos
+
 	Not  bool
 	Left Expr
 }
 
-// {{.Left | sql}} IS{{if .Not}} NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
+// IsBoolExpr is IS TRUE/FALSE expression node.
+//
+//     {{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
-	end   Pos
+	// pos = Expr.pos
+	end Pos
+
 	Not   bool
 	Left  Expr
 	Right bool
 }
 
-// {{.Left | sql}} {{if .Not}}NOT }}BETWEEN {{.RightStart | sql}} AND {{.RightEnd | sql}}
+// BetweenExpr is BETWEEN expression node.
+//
+//     {{.Left | sql}} {{if .Not}}NOT{{end}} BETWEEN {{.RightStart | sql}} AND {{.RightEnd | sql}}
 type BetweenExpr struct {
+	// pos = Left.pos, end = RightEnd.end
+
 	Not                        bool
 	Left, RightStart, RightEnd Expr
 }
 
-// {{.Left | sql}} . {{.Right | sql}}
+// SelectorExpr is struct field access expression node.
+//
+//     {{.Expr | sql}}.{{.Member | sql}}
 type SelectorExpr struct {
-	Left  Expr
-	Right *Ident
+	// pos = Expr.pos, end = Member.pos
+
+	Expr   Expr
+	Member *Ident
 }
 
-// {{.Left | sql}}{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}([{{.Right | sql}})]
+// IndexExpr is array item access expression node.
+//
+//     {{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
 type IndexExpr struct {
-	end         Pos
+	// pos = Expr.pos
+	end Pos
+
 	Ordinal     bool
-	Left, Right Expr
+	Expr, Index Expr
 }
 
-// {{.Func | sql}}({{if .Distinct}}DISTINCT {{end}}{{.Args | sql}})
+// CallExpr is function call expression node.
+//
+//     {{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
 type CallExpr struct {
-	end      Pos
+	// pos = Func.pos
+	end Pos
+
 	Func     *Ident
 	Distinct bool
-	Args     ArgList
+	Args     []*Arg
 }
 
-// {{if .IntervalUnit}}INTERVAL {{.Expr | sql}} {{.IntervalUnit}}{{else}}{{.Expr | sql}}{{end}}
+// Arg is function call argument.
+//
+//     {{if .IntervalUnit}}
+//       INTERVAL {{.Expr | sql}} {{.IntervalUnit | sql}}
+//     {{else}}
+//       {{.Expr | sql}}
+//     {{end}}
 type Arg struct {
-	pos, end     Pos
-	IntervalUnit ExtractPart
+	// end = (IntervalUnit ?? Expr).end
+	pos Pos
+
 	Expr         Expr
+	IntervalUnit *Ident // optional
 }
 
-type ArgList []*Arg
-
-// COUNT(*)
+// CountStarExpr is node just for COUNT(*).
+//
+//     COUNT(*)
 type CountStarExpr struct {
 	pos, end Pos
 }
 
-// EXTRACT({{.Part}} FROM {{.Expr | sql}}{{if .TimeZone}} AT TIME ZONE {{.TimeZone | sql}}{{end}})
+// ExtractExpr is EXTRACT call expression node.
+//
+//     EXTRACT({{.Part | sql}} FROM {{.Expr | sql}} {{.AtTimeZone | sqlOpt}})
 type ExtractExpr struct {
 	pos, end Pos
-	Part     ExtractPart
-	Expr     Expr
-	TimeZone Expr
+
+	Part       *Ident
+	Expr       Expr
+	AtTimeZone *AtTimeZone // optional
 }
 
-// CAST({{.Expr | sql}} AS {{.Type | sql}})
+// AtTimeZone is AT TIME ZONE clause in EXTRACT call.
+//
+//     AT TIME ZONE {{.Expr | sql}}
+type AtTimeZone struct {
+	// end = Expr.end
+	pos Pos
+
+	Expr Expr
+}
+
+// CastExpr is CAST call expression node.
+//
+//     CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	pos, end Pos
-	Expr     Expr
-	Type     *Type
+
+	Expr Expr
+	Type Type
 }
 
-// CASE {{if .Expr}}{{.Expr | sql}}{{end}}
-//   {{range .When}}WHEN {{. | sql}}{{end}}
-//   {{if .Else}}ELSE {{.Else | sql}}{{end}
-// END
+// CaseExpr is CASE expression node.
+//
+//     CASE {{.Expr | sqlOpt}}
+//       {{.Whens | sqlJoin "\n"}}
+//       {{.Else | sqlOpt}}
+//     END
 type CaseExpr struct {
 	pos, end Pos
-	Expr     Expr
-	When     []*When
-	Else     Expr
+
+	Expr  Expr        // optional
+	Whens []*CaseWhen // len(Whens) > 0
+	Else  *CaseElse   // optional
 }
 
-// {{.Cond | sql}} THEN {{.Then | sql}}
-type When struct {
+// CaseWhen is WHEN clause in CASE expression.
+//
+//     WHEN {{.Cond | sql}} THEN {{.Then | sql}}
+type CaseWhen struct {
+	// end = Then.end
+	pos Pos
+
 	Cond, Then Expr
 }
 
-// ({{. | sql}})
-type SubQuery struct {
-	pos, end Pos
-	Expr     QueryExpr
+// CaseElse is ELSE clause in CASE expression.
+//
+//     ELSE {{.Expr | sql}}
+type CaseElse struct {
+	// end = Expr.end
+	pos Pos
+
+	Expr Expr
 }
 
-// ({{. | sql}})
+// ParenExpr is parenthesized expression node.
+//
+//     ({{. | sql}})
 type ParenExpr struct {
 	pos, end Pos
-	Expr     Expr
+
+	Expr Expr
 }
 
-// ARRAY{{.Expr | sql}}
-type ArrayExpr struct {
-	pos  Pos
-	Expr *SubQuery
+// ScalarSubQuery is subquery in expression.
+//
+//     ({{.Query | sql}})
+type ScalarSubQuery struct {
+	pos, end Pos
+
+	Query QueryExpr
 }
 
-// EXISTS {{if .Hint}}{{.Hint | sql}}{{end}} {{.Expr | sql}}
-type ExistsExpr struct {
-	pos  Pos
-	Hint *Hint
-	Expr *SubQuery
+// ArraySubQuery is subquery in ARRAY call.
+//
+//     ARRAY({{.Query | sql}})
+type ArraySubQuery struct {
+	pos, end Pos
+
+	Query QueryExpr
 }
 
-// @{{.Name}}
+// ExistsSubQuery is subquery in EXISTS call.
+//
+//     EXISTS {{.Hint | sqlOpt}} ({{.Query | sql}})
+type ExistsSubQuery struct {
+	pos, end Pos
+	Hint     *Hint
+	Query    QueryExpr
+}
+
+// ================================================================================
+//
+// Literal
+//
+// ================================================================================
+
+// Param is Query parameter node.
+//
+//     @{{.Name}}
 type Param struct {
-	pos  Pos
+	// end = pos + 1 + len(Name)
+	pos Pos
+
 	Name string
 }
 
-// {{.Name}}
+// Ident is identifier node.
+//
+//     {{.Name | sqlIdentQuote}}
 type Ident struct {
 	pos, end Pos
-	Name     string
+
+	Name string
 }
 
-type IdentList []*Ident
+// Path is dot-chained identifier list.
+//
+//     {{.Idents | sqlJoin "."}}
+type Path struct {
+	// pos = Idents[0].pos, end = idents[$].end
 
-// ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sql}}]
-type ArrayLit struct {
+	Idents []*Ident // len(Idents) >= 2
+}
+
+// AraryLiteral is array literal node.
+//
+//     ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+type ArrayLiteral struct {
 	pos, end Pos
-	Type     *Type
-	Values   ExprList
+
+	Type   Type   // optional
+	Values []Expr // len(Values) > 0
 }
 
-// STRUCT{{if .Type}}<{{.Fields | sql}}>{{end}}({{.Values | sql}})
-type StructLit struct {
+// StructLiteral is struct literal node.
+//
+//     STRUCT{{if .Type}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
+type StructLiteral struct {
 	pos, end Pos
-	Fields   []*FieldSchema
-	Values   ExprList
+
+	// NOTE: Distinguish nil from len(Fields) == 0 case.
+	//       nil means type is not specified, or empty slice means this struct has 0 fields.
+	Fields []*FieldType
+	Values []Expr
 }
 
-// NULL
-type NullLit struct {
+// NullLiteral is just NULL literal.
+//
+//     NULL
+type NullLiteral struct {
+	// end = pos + 4
 	pos Pos
 }
 
-// {{if .Value}}TRUE{{else}}FALSE{{end}}
-type BoolLit struct {
-	pos   Pos
+// BoolLiteral is boolean literal node.
+//
+//     {{if .Value}}TRUE{{else}}FALSE{{end}}
+type BoolLiteral struct {
+	// end = pos + (Value ? 4 : 5)
+	pos Pos
+
 	Value bool
 }
 
-// {{.Value}}
-type IntLit struct {
+// IntLiteral is integer literal node.
+//
+//     {{.Value}}
+type IntLiteral struct {
 	pos, end Pos
-	Value    string
+
+	Value string
 }
 
-// {{.Value}}
-type FloatLit struct {
+// FloatLiteral is floating point number literal node.
+//
+//     {{.Value}}
+type FloatLiteral struct {
 	pos, end Pos
-	Value    string
+
+	Value string
 }
 
-// {{.Value | sqlQuote}}
-type StringLit struct {
+// StringLiteral is string literal node.
+//
+//     {{.Value | sqlStringQuote}}
+type StringLiteral struct {
 	pos, end Pos
-	Value    string
+
+	Value string
 }
 
-// B{{. | sqlQuote}}
-type BytesLit struct {
+// BytesLiteral is bytes literal node.
+//
+//     B{{.Value | sqlByesQuote}}
+type BytesLiteral struct {
 	pos, end Pos
-	Value    []byte
+
+	Value []byte
 }
 
-// DATE{{. | sqlQuote}}
-type DateLit struct {
+// DateLiteral is date literal node.
+//
+//     DATE {{.Value | sqlStringQuote}}
+type DateLiteral struct {
 	pos, end Pos
-	Value    string
+
+	Value string
 }
 
-// TIMESTAMP{{. | sqlQuote}}
-type TimestampLit struct {
+// TimestampLiteral is timestamp literal node.
+//
+//     TIMESTAMP {{.Value | sqlStringQuote}}
+type TimestampLiteral struct {
 	pos, end Pos
-	Value    string
+
+	Value string
 }
 
-// TODO: separate more accurate types like SimpleType, ArrayType, etc.
+// ================================================================================
+//
+// Type
+//
+// ================================================================================
 
-type Type struct {
+// SimpleType is type node having no parameter like INT64, STRING.
+//
+//    {{.Name}}
+type SimpleType struct {
+	// end = pos + len(Name)
+	pos Pos
+
+	Name TypeName // except for ArrayTypeName and StructTypeName
+}
+
+// ArrayType is array type node.
+//
+//     ARRAY<{{.Item | sql}}>
+type ArrayType struct {
 	pos, end Pos
-	Name     TypeName
-	Fields   []*FieldSchema // for STRUCT<...>
-	Value    *Type          // for ARRAY<...>
+
+	Item Type
 }
 
-type FieldSchema struct {
-	Name *Ident
-	Type *Type
+// StructType is struct type node.
+//
+//     STRUCT<{{.Fields | sql}}>
+type StructType struct {
+	pos, end Pos
+
+	Fields []*FieldType
 }
 
-// CAST({{.Expr | sql}} AS INT64)
+// FieldType is field type in struct type node.
+//
+//     {{if .Member}}{{.Member | sql}}{{}}
+type FieldType struct {
+	// pos = (Member ?? Type).pos, end = Type.end
+
+	Member *Ident
+	Type   Type
+}
+
+// ================================================================================
+//
+// Cast for Special Cases
+//
+// ================================================================================
+
+// CastIntValue is cast call in integer value context.
+//
+//     CAST({{.Expr | sql}} AS INT64)
 type CastIntValue struct {
 	pos, end Pos
-	Expr     IntValue // IntLit or Param
+
+	Expr IntValue // IntLit or Param
 }
 
-// CAST({{.Expr | sql}} AS {{.Type}})
+// CasrNumValue is cat call in number value context.
+//
+//     CAST({{.Expr | sql}} AS {{.Type}})
 type CastNumValue struct {
 	pos, end Pos
-	Expr     NumValue // IntLit, FloatLit or Param
-	Type     TypeName // Int64Type or Float64Type
+
+	Expr NumValue // IntLit, FloatLit or Param
+	Type TypeName // Int64Type or Float64Type
 }

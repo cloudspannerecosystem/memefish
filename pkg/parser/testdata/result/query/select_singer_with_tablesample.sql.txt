@@ -8,102 +8,136 @@ FROM
 
 --- AST
 &parser.QueryStatement{
-  Hint: (*parser.Hint)(nil),
-  Expr: &parser.Select{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
     pos:      0,
-    end:      167,
     Distinct: false,
     AsStruct: false,
-    List:     parser.SelectExprList{
-      &parser.SelectExpr{
-        pos:  9,
-        end:  10,
-        Expr: nil,
-        Star: true,
-        As:   (*parser.Ident)(nil),
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
       },
     },
-    From: parser.FromItemList{
-      &parser.FromItem{
-        end:  63,
-        Expr: &parser.TableName{
-          end:   30,
-          Ident: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+    From: &parser.From{
+      pos:   11,
+      Items: []*parser.FromItem{
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      18,
+            end:      30,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  18,
+              end:  25,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.AsAlias{
+              pos:   26,
+              Alias: &parser.Ident{
+                pos:  29,
+                end:  30,
+                Name: "A",
+              },
+            },
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.Ident{
-            pos:  29,
-            end:  30,
-            Name: "A",
-          },
-        },
-        Method: "RESERVOIR",
-        Num:    &parser.IntLit{
-          pos:   54,
-          end:   57,
-          Value: "100",
-        },
-        Rows: true,
-      },
-      &parser.FromItem{
-        end:  115,
-        Expr: &parser.TableName{
-          end:   79,
-          Ident: &parser.Ident{
-            pos:  67,
-            end:  74,
-            Name: "Singers",
-          },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.Ident{
-            pos:  78,
-            end:  79,
-            Name: "B",
+          TableSample: &parser.TableSample{
+            pos:    31,
+            Method: "RESERVOIR",
+            Size:   &parser.TableSampleSize{
+              pos:   53,
+              end:   63,
+              Value: &parser.IntLiteral{
+                pos:   54,
+                end:   57,
+                Value: "100",
+              },
+              Unit: "ROWS",
+            },
           },
         },
-        Method: "BERNOULLI",
-        Num:    &parser.FloatLit{
-          pos:   103,
-          end:   106,
-          Value: "0.1",
-        },
-        Rows: false,
-      },
-      &parser.FromItem{
-        end:  167,
-        Expr: &parser.TableName{
-          end:   131,
-          Ident: &parser.Ident{
-            pos:  119,
-            end:  126,
-            Name: "Singers",
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      67,
+            end:      79,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  67,
+              end:  74,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.AsAlias{
+              pos:   75,
+              Alias: &parser.Ident{
+                pos:  78,
+                end:  79,
+                Name: "B",
+              },
+            },
+            WithOffset: (*parser.WithOffset)(nil),
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.Ident{
-            pos:  130,
-            end:  131,
-            Name: "C",
+          TableSample: &parser.TableSample{
+            pos:    80,
+            Method: "BERNOULLI",
+            Size:   &parser.TableSampleSize{
+              pos:   102,
+              end:   115,
+              Value: &parser.FloatLiteral{
+                pos:   103,
+                end:   106,
+                Value: "0.1",
+              },
+              Unit: "PERCENT",
+            },
           },
         },
-        Method: "BERNOULLI",
-        Num:    &parser.FloatLit{
-          pos:   155,
-          end:   158,
-          Value: "0.1",
+        &parser.FromItem{
+          Source: &parser.Unnest{
+            pos:      119,
+            end:      131,
+            Implicit: true,
+            Expr:     &parser.Ident{
+              pos:  119,
+              end:  126,
+              Name: "Singers",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.AsAlias{
+              pos:   127,
+              Alias: &parser.Ident{
+                pos:  130,
+                end:  131,
+                Name: "C",
+              },
+            },
+            WithOffset: (*parser.WithOffset)(nil),
+          },
+          TableSample: &parser.TableSample{
+            pos:    132,
+            Method: "BERNOULLI",
+            Size:   &parser.TableSampleSize{
+              pos:   154,
+              end:   167,
+              Value: &parser.FloatLiteral{
+                pos:   155,
+                end:   158,
+                Value: "0.1",
+              },
+              Unit: "PERCENT",
+            },
+          },
         },
-        Rows: false,
       },
     },
-    Where:   nil,
-    GroupBy: parser.ExprList{},
-    Having:  nil,
-    OrderBy: parser.OrderExprList{},
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
     Limit:   (*parser.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A TABLESAMPLE RESERVOIR (100 ROWS), Singers AS B TABLESAMPLE BERNOULLI (0.1 PERCENT), Singers AS C TABLESAMPLE BERNOULLI (0.1 PERCENT)
+SELECT * FROM Singers AS A TABLESAMPLE RESERVOIR(100 ROWS), Singers AS B TABLESAMPLE BERNOULLI(0.1 PERCENT), Singers AS C TABLESAMPLE BERNOULLI(0.1 PERCENT)
