@@ -344,7 +344,7 @@ func (l *Lexer) peekDelimiter() string {
 	i++
 
 	triple := true
-	for l.peekOk(i) && i < 3 {
+	for i < 3 {
 		if !l.peekIs(i, c) {
 			triple = false
 			break

@@ -85,6 +85,8 @@ var lexerTestCases = []struct {
 	{"BR", []*Token{{Kind: TokenIdent, Raw: "BR", AsString: "BR"}}},
 	{`R "foo"`, []*Token{{Kind: TokenIdent, Raw: "R", AsString: "R"}, {Kind: TokenString, Raw: `"foo"`, AsString: "foo"}}},
 	// TokenString
+	{`""`, []*Token{{Kind: TokenString, Raw: `""`, AsString: ""}}},
+	{`''`, []*Token{{Kind: TokenString, Raw: `''`, AsString: ""}}},
 	{`"foo"`, []*Token{{Kind: TokenString, Raw: `"foo"`, AsString: "foo"}}},
 	{`'foo'`, []*Token{{Kind: TokenString, Raw: `'foo'`, AsString: "foo"}}},
 	{`"""foo\nbar"""`, []*Token{{Kind: TokenString, Raw: `"""foo\nbar"""`, AsString: "foo\nbar"}}},
