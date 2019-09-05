@@ -28,6 +28,11 @@ type TypeInfo struct {
 }
 
 func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) {
+	// TODO: error handle
+	a.analyzeQueryStatement(q)
+}
+
+func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
 	// TODO: analyze q.Hint
 	_ = a.analyzeQueryExpr(q.Query)
 }
@@ -134,15 +139,15 @@ func (a *Analyzer) analyzeStar(s *parser.Star) *NameList {
 }
 
 func (a *Analyzer) analyzeStarPath(s *parser.StarPath) *NameList {
-	t := a.AnalyzeExpr(s.Expr)
-	list := convertTypeToNameList(t)
-	if list != nil {
-		a.panicf(s, "star expansion is not supported for type %s", t.String())
+	t := a.analyzeExpr(s.Expr)
+	list := a.convertTypeToNameList(t.Type)
+	if list == nil {
+		a.panicf(s, "star expansion is not supported for type %s", TypeString(t.Type))
 	}
 	return list.appendNodeToColumns(s)
 }
 
-func convertTypeToNameList(t Type) *NameList {
+func (a *Analyzer) convertTypeToNameList(t Type) *NameList {
 	switch t := t.(type) {
 	case *StructType:
 		if len(t.Fields) == 0 {
@@ -153,7 +158,7 @@ func convertTypeToNameList(t Type) *NameList {
 		}
 		for i, f := range t.Fields {
 			list.Columns[i] = &ColumnName{
-				Path: PathName{Name: f.Name},
+				Path: a.createPathName(f.Name),
 				Type: f.Type,
 			}
 		}
@@ -164,14 +169,41 @@ func convertTypeToNameList(t Type) *NameList {
 }
 
 func (a *Analyzer) analyzeAlias(s *parser.Alias) *NameList {
-	t := a.AnalyzeExpr(s.Expr)
-	return a.aliasColumn(s, s.As.Alias.Name, t)
+	t := a.analyzeExpr(s.Expr)
+	return a.aliasColumn(s, s.As.Alias.Name, t.Type)
 }
 
 func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) *NameList {
-	t := a.AnalyzeExpr(s.Expr)
+	t := a.analyzeExpr(s.Expr)
 	name := extractNameFromExpr(s.Expr)
-	return a.aliasColumn(s, name, t)
+	return a.aliasColumn(s, name, t.Type)
+}
+
+func (a *Analyzer) aliasColumn(s parser.SelectItem, name string, t Type) *NameList {
+	pathName := a.createPathName(name)
+	return &NameList{
+		Columns: []*ColumnName{
+			&ColumnName{
+				Path:  pathName,
+				Type:  t,
+				Nodes: []parser.SelectItem{s},
+			},
+		},
+	}
+}
+
+func (a *Analyzer) createPathName(name string) PathName {
+	if name == "" {
+		a.implicitAliasId++
+		return PathName{
+			ImplicitAliasID: a.implicitAliasId,
+		}
+	} else {
+		return PathName{
+			Name: name,
+		}
+	}
+
 }
 
 func extractNameFromExpr(e parser.Expr) string {
@@ -195,9 +227,15 @@ func (a *Analyzer) analyzeLimit(l *parser.Limit) {
 	// TODO: implement
 }
 
-func (a *Analyzer) AnalyzeExpr(e parser.Expr) Type {
+func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 	var t *TypeInfo
 	switch e := e.(type) {
+	case *parser.ParenExpr:
+		t = a.analyzeParenExpr(e)
+	case *parser.ArrayLiteral:
+		t = a.analyzeArrayLiteral(e)
+	case *parser.StructLiteral:
+		t = a.analyzeStructLiteral(e)
 	case *parser.NullLiteral:
 		t = a.analyzeNullLiteral(e)
 	case *parser.BoolLiteral:
@@ -215,14 +253,126 @@ func (a *Analyzer) AnalyzeExpr(e parser.Expr) Type {
 	case *parser.TimestampLiteral:
 		t = a.analyzeTimestampLiteral(e)
 	default:
-		panic("TODO: implement")
+		panic(fmt.Sprintf("TODO: implement: %t", e))
 	}
 
 	if a.Types == nil {
 		a.Types = make(map[parser.Expr]*TypeInfo)
 	}
 	a.Types[e] = t
-	return t.Type
+	return t
+}
+
+func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
+	return a.analyzeExpr(e.Expr)
+}
+
+func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
+	if e.Type == nil {
+		return a.analyzeArrayLiteralWithoutType(e)
+	}
+
+	panic("TODO: implement")
+}
+
+func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeInfo {
+	var t Type
+
+	for _, v := range e.Values {
+		vt := a.analyzeExpr(v)
+		t = a.mergeType(e, t, vt.Type)
+	}
+
+	return &TypeInfo{
+		Type: &ArrayType{Item: t},
+	}
+}
+
+func (a *Analyzer) mergeType(n parser.Node, s, t Type) Type {
+	// TODO: refactor this
+
+	if s == nil {
+		return t
+	}
+	if t == nil {
+		return s
+	}
+	if TypeEqual(s, t) {
+		return s
+	}
+
+	s1, sok := s.(*StructType)
+	t1, tok := t.(*StructType)
+	if !sok || !tok {
+		if TypeCoerce(s, t) {
+			return t
+		}
+		if TypeCoerce(t, s) {
+			return s
+		}
+		goto panic
+	}
+
+	if len(s1.Fields) != len(t1.Fields) {
+		goto panic
+	}
+
+	{
+		fields := make([]*StructField, len(s1.Fields))
+		for i, f := range s1.Fields {
+			fields[i] = &StructField{
+				Name: f.Name,
+				Type: a.mergeType(n, f.Type, t1.Fields[i].Type),
+			}
+		}
+		return &StructType{Fields: fields}
+	}
+
+panic:
+	panic(a.errorf(n, "%s is incompatible with %s", TypeString(s), TypeString(t)))
+}
+
+func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {
+	if e.Fields == nil {
+		return a.analyzeStructLiteralWithoutType(e)
+	}
+
+	if len(e.Fields) != len(e.Values) {
+		a.panicf(e, "STRUCT type has %d fields, but literal has %d values", len(e.Fields), len(e.Values))
+	}
+
+	fields := make([]*StructField, len(e.Fields))
+	for i, f := range e.Fields {
+		fields[i] = &StructField{
+			Name: f.Member.Name,
+			Type: a.analyzeType(f.Type),
+		}
+	}
+	t := &StructType{Fields: fields}
+
+	for i, v := range e.Values {
+		vt := a.analyzeExpr(v)
+		if !TypeCoerce(vt.Type, fields[i].Type) {
+			a.panicf(v, "%s cannot coerce to %s", TypeString(vt.Type), TypeString(fields[i].Type))
+		}
+	}
+
+	return &TypeInfo{
+		Type: t,
+	}
+}
+
+func (a *Analyzer) analyzeStructLiteralWithoutType(e *parser.StructLiteral) *TypeInfo {
+	fields := make([]*StructField, len(e.Values))
+	for i, v := range e.Values {
+		t := a.analyzeExpr(v)
+		fields[i] = &StructField{
+			Type: t.Type,
+		}
+	}
+	return &TypeInfo{
+		Type: &StructType{Fields: fields},
+	}
 }
 
 func (a *Analyzer) analyzeNullLiteral(e *parser.NullLiteral) *TypeInfo {
@@ -286,27 +436,24 @@ func (a *Analyzer) analyzeTimestampLiteral(e *parser.TimestampLiteral) *TypeInfo
 	}
 }
 
-func (a *Analyzer) aliasColumn(s parser.SelectItem, name string, t Type) *NameList {
-	var pathName PathName
-	if name == "" {
-		a.implicitAliasId++
-		pathName = PathName{
-			ImplicitAliasID: a.implicitAliasId,
+func (a *Analyzer) analyzeType(t parser.Type) Type {
+	switch t := t.(type) {
+	case *parser.SimpleType:
+		return SimpleType(t.Name)
+	case *parser.ArrayType:
+		return &ArrayType{Item: a.analyzeType(t.Item)}
+	case *parser.StructType:
+		fields := make([]*StructField, len(t.Fields))
+		for i, f := range t.Fields {
+			fields[i] = &StructField{
+				Name: f.Member.Name,
+				Type: a.analyzeType(f.Type),
+			}
 		}
-	} else {
-		pathName = PathName{
-			Name: name,
-		}
+		return &StructType{Fields: fields}
 	}
-	return &NameList{
-		Columns: []*ColumnName{
-			&ColumnName{
-				Path:  pathName,
-				Type:  t,
-				Nodes: []parser.SelectItem{s},
-			},
-		},
-	}
+
+	panic("unreachable")
 }
 
 func (a *Analyzer) pushNameListScope(list *NameList) {

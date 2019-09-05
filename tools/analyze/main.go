@@ -16,7 +16,7 @@ func init() {
 
 func main() {
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./parse [SQL query]")
+		log.Fatal("usage: ./analyze [SQL query]")
 	}
 
 	query := flag.Arg(0)
@@ -61,11 +61,7 @@ func main() {
 
 	var types []string
 	for _, c := range list.Columns {
-		if c.Type == nil {
-			types = append(types, "(null)")
-		} else {
-			types = append(types, c.Type.String())
-		}
+		types = append(types, analyzer.TypeString(c.Type))
 	}
 	table.Append(types)
 	table.Render()

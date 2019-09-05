@@ -4,6 +4,7 @@ type Type interface {
 	String() string
 	EqualTo(t Type) bool
 	CastTo(t Type) bool
+	CoerceTo(t Type) bool
 }
 
 type SimpleType string
@@ -37,7 +38,7 @@ func (s SimpleType) String() string {
 }
 
 func (a *ArrayType) String() string {
-	return "ARRAY<" + a.Item.String() + ">"
+	return "ARRAY<" + TypeString(a.Item) + ">"
 }
 
 func (s *StructType) String() string {
@@ -49,7 +50,7 @@ func (s *StructType) String() string {
 		if f.Name != "" {
 			t += f.Name + " "
 		}
-		t += f.Type.String()
+		t += TypeString(f.Type)
 	}
 	t += ">"
 	return t
@@ -65,7 +66,7 @@ func (s SimpleType) EqualTo(t Type) bool {
 
 func (a *ArrayType) EqualTo(t Type) bool {
 	if t, ok := t.(*ArrayType); ok {
-		return a.Item.EqualTo(t.Item)
+		return TypeEqual(a.Item, t.Item)
 	} else {
 		return false
 	}
@@ -77,7 +78,7 @@ func (s *StructType) EqualTo(t Type) bool {
 			return false
 		}
 		for i, f := range s.Fields {
-			if !f.Type.EqualTo(t.Fields[i].Type) {
+			if !TypeEqual(f.Type, t.Fields[i].Type) {
 				return false
 			}
 		}
@@ -120,10 +121,10 @@ func (s SimpleType) CastTo(t Type) bool {
 
 func (a *ArrayType) CastTo(t Type) bool {
 	if t, ok := t.(*ArrayType); ok {
-		return a.Item.EqualTo(t.Item)
-	} else {
-		return false
+		return TypeEqual(a.Item, t.Item)
 	}
+
+	return false
 }
 
 func (s *StructType) CastTo(t Type) bool {
@@ -132,12 +133,71 @@ func (s *StructType) CastTo(t Type) bool {
 			return false
 		}
 		for i, f := range s.Fields {
-			if !f.Type.EqualTo(t.Fields[i].Type) {
+			if !TypeEqual(f.Type, t.Fields[i].Type) {
 				return false
 			}
 		}
 		return true
-	} else {
-		return false
 	}
+
+	return false
+}
+
+func (s SimpleType) CoerceTo(t Type) bool {
+	if t, ok := t.(SimpleType); ok {
+		if s == t {
+			return true
+		}
+		switch s {
+		case Int64Type:
+			return t == Float64Type
+		case StringType:
+			return t == DateType || t == TimestampType
+		}
+	}
+
+	return false
+}
+
+func (a *ArrayType) CoerceTo(t Type) bool {
+	if t, ok := t.(*ArrayType); ok {
+		return TypeEqual(a.Item, t.Item)
+	}
+	return false
+}
+
+func (s *StructType) CoerceTo(t Type) bool {
+	if t, ok := t.(*StructType); ok {
+		if len(s.Fields) != len(t.Fields) {
+			return false
+		}
+		for i, f := range s.Fields {
+			if !TypeCoerce(f.Type, t.Fields[i].Type) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
+func TypeEqual(s, t Type) bool {
+	if s == nil || t == nil {
+		return true
+	}
+	return s.EqualTo(t)
+}
+
+func TypeCoerce(s, t Type) bool {
+	if s == nil || t == nil {
+		return true
+	}
+	return s.CoerceTo(t)
+}
+
+func TypeString(t Type) string {
+	if t == nil {
+		return "(null)"
+	}
+	return t.String()
 }
