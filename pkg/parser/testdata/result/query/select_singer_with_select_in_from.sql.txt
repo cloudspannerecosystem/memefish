@@ -71,6 +71,7 @@ FROM (
                   Right: &parser.IntLiteral{
                     pos:   75,
                     end:   76,
+                    Base:  10,
                     Value: "1",
                   },
                 },

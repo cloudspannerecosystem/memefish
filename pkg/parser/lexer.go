@@ -41,6 +41,7 @@ type Token struct {
 	Space    string // TODO: better comment support
 	Raw      string
 	AsString string // available for TokenIdent, TokenString and TokenBytes
+	Base     int    // 10 or 16 on TokenInt
 	Pos, End Pos
 }
 
@@ -308,6 +309,7 @@ func (l *Lexer) nextNumber() {
 	l.nextN(i)
 	if int {
 		l.Token.Kind = TokenInt
+		l.Token.Base = base
 	} else {
 		l.Token.Kind = TokenFloat
 	}

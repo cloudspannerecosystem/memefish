@@ -92,6 +92,7 @@ ORDER BY
             Right: &parser.IntLiteral{
               pos:   73,
               end:   74,
+              Base:  10,
               Value: "1",
             },
           },

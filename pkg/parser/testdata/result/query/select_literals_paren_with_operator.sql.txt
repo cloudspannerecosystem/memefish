@@ -18,11 +18,13 @@ SELECT (1+1)
             Left: &parser.IntLiteral{
               pos:   8,
               end:   9,
+              Base:  10,
               Value: "1",
             },
             Right: &parser.IntLiteral{
               pos:   10,
               end:   11,
+              Base:  10,
               Value: "1",
             },
           },

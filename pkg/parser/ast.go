@@ -847,6 +847,7 @@ type BoolLiteral struct {
 type IntLiteral struct {
 	pos, end Pos
 
+	Base  int
 	Value string
 }
 

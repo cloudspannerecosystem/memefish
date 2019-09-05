@@ -48,6 +48,7 @@ OFFSET 10
       Count: &parser.IntLiteral{
         pos:   32,
         end:   35,
+        Base:  10,
         Value: "100",
       },
       Offset: &parser.Offset{
@@ -55,6 +56,7 @@ OFFSET 10
         Value: &parser.IntLiteral{
           pos:   43,
           end:   45,
+          Base:  10,
           Value: "10",
         },
       },

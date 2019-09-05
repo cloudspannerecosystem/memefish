@@ -26,6 +26,7 @@ select ((select 1) limit 1 offset 0) + 3
                     Expr: &parser.IntLiteral{
                       pos:   16,
                       end:   17,
+                      Base:  10,
                       Value: "1",
                     },
                   },
@@ -43,6 +44,7 @@ select ((select 1) limit 1 offset 0) + 3
                 Count: &parser.IntLiteral{
                   pos:   25,
                   end:   26,
+                  Base:  10,
                   Value: "1",
                 },
                 Offset: &parser.Offset{
@@ -50,6 +52,7 @@ select ((select 1) limit 1 offset 0) + 3
                   Value: &parser.IntLiteral{
                     pos:   34,
                     end:   35,
+                    Base:  10,
                     Value: "0",
                   },
                 },
@@ -59,6 +62,7 @@ select ((select 1) limit 1 offset 0) + 3
           Right: &parser.IntLiteral{
             pos:   39,
             end:   40,
+            Base:  10,
             Value: "3",
           },
         },

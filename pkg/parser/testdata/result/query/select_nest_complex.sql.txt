@@ -54,6 +54,7 @@ from (
                                   Expr: &parser.IntLiteral{
                                     pos:   30,
                                     end:   31,
+                                    Base:  10,
                                     Value: "1",
                                   },
                                   As: &parser.AsAlias{
@@ -85,6 +86,7 @@ from (
                                     Expr: &parser.IntLiteral{
                                       pos:   52,
                                       end:   53,
+                                      Base:  10,
                                       Value: "2",
                                     },
                                   },
@@ -118,6 +120,7 @@ from (
                               Expr: &parser.IntLiteral{
                                 pos:   79,
                                 end:   80,
+                                Base:  10,
                                 Value: "1",
                               },
                             },
@@ -142,6 +145,7 @@ from (
                     Count: &parser.IntLiteral{
                       pos:   89,
                       end:   90,
+                      Base:  10,
                       Value: "1",
                     },
                     Offset: (*parser.Offset)(nil),
@@ -161,6 +165,7 @@ from (
                       Expr: &parser.IntLiteral{
                         pos:   111,
                         end:   112,
+                        Base:  10,
                         Value: "1",
                       },
                       As: &parser.AsAlias{
@@ -176,6 +181,7 @@ from (
                       Expr: &parser.IntLiteral{
                         pos:   116,
                         end:   117,
+                        Base:  10,
                         Value: "2",
                       },
                       As: &parser.AsAlias{

@@ -51,6 +51,7 @@ WHERE
         Right: &parser.IntLiteral{
           pos:   45,
           end:   46,
+          Base:  10,
           Value: "1",
         },
       },

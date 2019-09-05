@@ -19,6 +19,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           Expr: &parser.IntLiteral{
             pos:   12,
             end:   13,
+            Base:  10,
             Value: "1",
           },
           Type: &parser.SimpleType{
@@ -45,6 +46,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               &parser.IntLiteral{
                 pos:   41,
                 end:   42,
+                Base:  10,
                 Value: "1",
               },
               &parser.ArrayLiteral{
@@ -55,11 +57,13 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                   &parser.IntLiteral{
                     pos:   45,
                     end:   46,
+                    Base:  10,
                     Value: "2",
                   },
                   &parser.IntLiteral{
                     pos:   48,
                     end:   49,
+                    Base:  10,
                     Value: "3",
                   },
                 },
@@ -204,6 +208,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Expr: &parser.IntLiteral{
                   pos:   223,
                   end:   224,
+                  Base:  10,
                   Value: "1",
                 },
                 Type: "INT64",
@@ -259,6 +264,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
         Expr: &parser.IntLiteral{
           pos:   311,
           end:   312,
+          Base:  10,
           Value: "1",
         },
       },

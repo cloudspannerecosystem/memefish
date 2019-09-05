@@ -78,6 +78,7 @@ FROM
               Value: &parser.IntLiteral{
                 pos:   78,
                 end:   80,
+                Base:  10,
                 Value: "90",
               },
               Unit: "PERCENT",

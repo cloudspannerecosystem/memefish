@@ -19,6 +19,7 @@
               Expr: &parser.IntLiteral{
                 pos:   8,
                 end:   9,
+                Base:  10,
                 Value: "1",
               },
             },
@@ -45,6 +46,7 @@
               Expr: &parser.IntLiteral{
                 pos:   29,
                 end:   30,
+                Base:  10,
                 Value: "2",
               },
             },
@@ -71,6 +73,7 @@
               Expr: &parser.IntLiteral{
                 pos:   50,
                 end:   51,
+                Base:  10,
                 Value: "3",
               },
             },

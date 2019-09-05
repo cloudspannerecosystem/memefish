@@ -35,16 +35,19 @@ SELECT
                     &parser.IntLiteral{
                       pos:   29,
                       end:   30,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   32,
                       end:   33,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.IntLiteral{
                       pos:   35,
                       end:   36,
+                      Base:  10,
                       Value: "3",
                     },
                   },
@@ -78,11 +81,13 @@ SELECT
                     &parser.IntLiteral{
                       pos:   62,
                       end:   63,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   65,
                       end:   66,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.BoolLiteral{
@@ -154,16 +159,19 @@ SELECT
                     &parser.IntLiteral{
                       pos:   125,
                       end:   126,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   128,
                       end:   129,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.IntLiteral{
                       pos:   131,
                       end:   132,
+                      Base:  10,
                       Value: "3",
                     },
                   },
@@ -219,16 +227,19 @@ SELECT
                     &parser.IntLiteral{
                       pos:   179,
                       end:   180,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   182,
                       end:   183,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.IntLiteral{
                       pos:   185,
                       end:   186,
+                      Base:  10,
                       Value: "3",
                     },
                   },
@@ -288,16 +299,19 @@ SELECT
                     &parser.IntLiteral{
                       pos:   235,
                       end:   236,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   238,
                       end:   239,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.IntLiteral{
                       pos:   241,
                       end:   242,
+                      Base:  10,
                       Value: "3",
                     },
                   },
@@ -331,16 +345,19 @@ SELECT
                     &parser.IntLiteral{
                       pos:   262,
                       end:   263,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   265,
                       end:   266,
+                      Base:  10,
                       Value: "2",
                     },
                     &parser.IntLiteral{
                       pos:   268,
                       end:   269,
+                      Base:  10,
                       Value: "3",
                     },
                   },
@@ -402,11 +419,13 @@ SELECT
                     &parser.IntLiteral{
                       pos:   318,
                       end:   319,
+                      Base:  10,
                       Value: "1",
                     },
                     &parser.IntLiteral{
                       pos:   321,
                       end:   322,
+                      Base:  10,
                       Value: "2",
                     },
                   },

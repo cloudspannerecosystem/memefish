@@ -1707,6 +1707,7 @@ func (p *Parser) parseIntLiteral() *IntLiteral {
 	return &IntLiteral{
 		pos:   i.Pos,
 		end:   i.End,
+		Base:  i.Base,
 		Value: i.Raw,
 	}
 }

@@ -32,16 +32,19 @@ FROM
                 &parser.IntLiteral{
                   pos:   26,
                   end:   27,
+                  Base:  10,
                   Value: "1",
                 },
                 &parser.IntLiteral{
                   pos:   28,
                   end:   29,
+                  Base:  10,
                   Value: "2",
                 },
                 &parser.IntLiteral{
                   pos:   30,
                   end:   31,
+                  Base:  10,
                   Value: "3",
                 },
               },

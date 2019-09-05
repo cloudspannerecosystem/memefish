@@ -13,6 +13,7 @@ select 1 A
         Expr: &parser.IntLiteral{
           pos:   7,
           end:   8,
+          Base:  10,
           Value: "1",
         },
         As: &parser.AsAlias{

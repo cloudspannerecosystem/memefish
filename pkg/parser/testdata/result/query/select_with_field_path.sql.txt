@@ -221,6 +221,7 @@ WHERE A.z.a = 2
                                 &parser.IntLiteral{
                                   pos:   207,
                                   end:   208,
+                                  Base:  10,
                                   Value: "1",
                                 },
                                 &parser.StringLiteral{
@@ -236,11 +237,13 @@ WHERE A.z.a = 2
                                     &parser.IntLiteral{
                                       pos:   218,
                                       end:   219,
+                                      Base:  10,
                                       Value: "2",
                                     },
                                     &parser.IntLiteral{
                                       pos:   221,
                                       end:   222,
+                                      Base:  10,
                                       Value: "3",
                                     },
                                   },
@@ -255,6 +258,7 @@ WHERE A.z.a = 2
                                 &parser.IntLiteral{
                                   pos:   227,
                                   end:   228,
+                                  Base:  10,
                                   Value: "3",
                                 },
                                 &parser.StringLiteral{
@@ -270,11 +274,13 @@ WHERE A.z.a = 2
                                     &parser.IntLiteral{
                                       pos:   238,
                                       end:   239,
+                                      Base:  10,
                                       Value: "4",
                                     },
                                     &parser.IntLiteral{
                                       pos:   241,
                                       end:   242,
+                                      Base:  10,
                                       Value: "5",
                                     },
                                   },
@@ -339,6 +345,7 @@ WHERE A.z.a = 2
         Right: &parser.IntLiteral{
           pos:   276,
           end:   277,
+          Base:  10,
           Value: "2",
         },
       },

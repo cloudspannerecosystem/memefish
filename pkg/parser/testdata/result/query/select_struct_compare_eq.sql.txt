@@ -83,16 +83,19 @@ SELECT ARRAY(
                               &parser.IntLiteral{
                                 pos:   82,
                                 end:   83,
+                                Base:  10,
                                 Value: "1",
                               },
                               &parser.IntLiteral{
                                 pos:   85,
                                 end:   86,
+                                Base:  10,
                                 Value: "2",
                               },
                               &parser.IntLiteral{
                                 pos:   88,
                                 end:   89,
+                                Base:  10,
                                 Value: "3",
                               },
                             },
@@ -141,16 +144,19 @@ SELECT ARRAY(
                         &parser.IntLiteral{
                           pos:   123,
                           end:   124,
+                          Base:  10,
                           Value: "1",
                         },
                         &parser.IntLiteral{
                           pos:   126,
                           end:   127,
+                          Base:  10,
                           Value: "2",
                         },
                         &parser.IntLiteral{
                           pos:   129,
                           end:   130,
+                          Base:  10,
                           Value: "3",
                         },
                       },

@@ -47,6 +47,7 @@ LIMIT 100
       Count: &parser.IntLiteral{
         pos:   32,
         end:   35,
+        Base:  10,
         Value: "100",
       },
       Offset: (*parser.Offset)(nil),

@@ -101,6 +101,7 @@ WHERE
                                           Right: &parser.IntLiteral{
                                             pos:   45,
                                             end:   46,
+                                            Base:  10,
                                             Value: "1",
                                           },
                                         },
@@ -114,6 +115,7 @@ WHERE
                                           Right: &parser.IntLiteral{
                                             pos:   63,
                                             end:   64,
+                                            Base:  10,
                                             Value: "1",
                                           },
                                         },
@@ -128,6 +130,7 @@ WHERE
                                         Right: &parser.IntLiteral{
                                           pos:   81,
                                           end:   82,
+                                          Base:  10,
                                           Value: "1",
                                         },
                                       },
@@ -142,6 +145,7 @@ WHERE
                                       Right: &parser.IntLiteral{
                                         pos:   100,
                                         end:   101,
+                                        Base:  10,
                                         Value: "1",
                                       },
                                     },
@@ -156,6 +160,7 @@ WHERE
                                     Right: &parser.IntLiteral{
                                       pos:   119,
                                       end:   120,
+                                      Base:  10,
                                       Value: "1",
                                     },
                                   },
@@ -170,6 +175,7 @@ WHERE
                                   Right: &parser.IntLiteral{
                                     pos:   138,
                                     end:   139,
+                                    Base:  10,
                                     Value: "1",
                                   },
                                 },
@@ -188,16 +194,19 @@ WHERE
                                     &parser.IntLiteral{
                                       pos:   158,
                                       end:   159,
+                                      Base:  10,
                                       Value: "1",
                                     },
                                     &parser.IntLiteral{
                                       pos:   161,
                                       end:   162,
+                                      Base:  10,
                                       Value: "2",
                                     },
                                     &parser.IntLiteral{
                                       pos:   164,
                                       end:   165,
+                                      Base:  10,
                                       Value: "3",
                                     },
                                   },
@@ -218,16 +227,19 @@ WHERE
                                   &parser.IntLiteral{
                                     pos:   189,
                                     end:   190,
+                                    Base:  10,
                                     Value: "1",
                                   },
                                   &parser.IntLiteral{
                                     pos:   192,
                                     end:   193,
+                                    Base:  10,
                                     Value: "2",
                                   },
                                   &parser.IntLiteral{
                                     pos:   195,
                                     end:   196,
+                                    Base:  10,
                                     Value: "3",
                                   },
                                 },
@@ -244,11 +256,13 @@ WHERE
                             RightStart: &parser.IntLiteral{
                               pos:   220,
                               end:   221,
+                              Base:  10,
                               Value: "1",
                             },
                             RightEnd: &parser.IntLiteral{
                               pos:   226,
                               end:   227,
+                              Base:  10,
                               Value: "3",
                             },
                           },
@@ -263,11 +277,13 @@ WHERE
                           RightStart: &parser.IntLiteral{
                             pos:   254,
                             end:   255,
+                            Base:  10,
                             Value: "1",
                           },
                           RightEnd: &parser.IntLiteral{
                             pos:   260,
                             end:   261,
+                            Base:  10,
                             Value: "3",
                           },
                         },
@@ -332,6 +348,7 @@ WHERE
                     Right: &parser.IntLiteral{
                       pos:   373,
                       end:   374,
+                      Base:  10,
                       Value: "1",
                     },
                   },
@@ -355,6 +372,7 @@ WHERE
                   Right: &parser.IntLiteral{
                     pos:   401,
                     end:   402,
+                    Base:  10,
                     Value: "1",
                   },
                 },
@@ -378,6 +396,7 @@ WHERE
                 Right: &parser.IntLiteral{
                   pos:   433,
                   end:   434,
+                  Base:  10,
                   Value: "1",
                 },
               },
@@ -401,6 +420,7 @@ WHERE
               Right: &parser.IntLiteral{
                 pos:   462,
                 end:   463,
+                Base:  10,
                 Value: "1",
               },
             },

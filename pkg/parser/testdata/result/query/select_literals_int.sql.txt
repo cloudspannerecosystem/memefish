@@ -17,6 +17,7 @@ SELECT
         Expr: &parser.IntLiteral{
           pos:   9,
           end:   12,
+          Base:  10,
           Value: "123",
         },
       },
@@ -24,6 +25,7 @@ SELECT
         Expr: &parser.IntLiteral{
           pos:   16,
           end:   21,
+          Base:  16,
           Value: "0xABC",
         },
       },
@@ -31,6 +33,7 @@ SELECT
         Expr: &parser.IntLiteral{
           pos:   25,
           end:   29,
+          Base:  10,
           Value: "-123",
         },
       },
@@ -38,6 +41,7 @@ SELECT
         Expr: &parser.IntLiteral{
           pos:   33,
           end:   39,
+          Base:  16,
           Value: "-0xABC",
         },
       },

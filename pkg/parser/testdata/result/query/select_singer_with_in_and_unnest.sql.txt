@@ -59,16 +59,19 @@ WHERE
               &parser.IntLiteral{
                 pos:   59,
                 end:   60,
+                Base:  10,
                 Value: "1",
               },
               &parser.IntLiteral{
                 pos:   62,
                 end:   63,
+                Base:  10,
                 Value: "2",
               },
               &parser.IntLiteral{
                 pos:   65,
                 end:   66,
+                Base:  10,
                 Value: "3",
               },
             },

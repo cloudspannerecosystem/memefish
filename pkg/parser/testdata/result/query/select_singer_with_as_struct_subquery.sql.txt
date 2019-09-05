@@ -62,6 +62,7 @@ SELECT
                 Count: &parser.IntLiteral{
                   pos:   80,
                   end:   83,
+                  Base:  10,
                   Value: "100",
                 },
                 Offset: (*parser.Offset)(nil),

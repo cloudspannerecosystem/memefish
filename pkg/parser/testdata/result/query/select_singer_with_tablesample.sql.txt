@@ -51,6 +51,7 @@ FROM
               Value: &parser.IntLiteral{
                 pos:   54,
                 end:   57,
+                Base:  10,
                 Value: "100",
               },
               Unit: "ROWS",

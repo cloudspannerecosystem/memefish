@@ -51,6 +51,7 @@ WHERE
         Right: &parser.IntLiteral{
           pos:   45,
           end:   48,
+          Base:  16,
           Value: "0xF",
         },
       },

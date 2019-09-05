@@ -23,16 +23,19 @@ SELECT
             &parser.IntLiteral{
               pos:   10,
               end:   11,
+              Base:  10,
               Value: "1",
             },
             &parser.IntLiteral{
               pos:   13,
               end:   14,
+              Base:  10,
               Value: "2",
             },
             &parser.IntLiteral{
               pos:   16,
               end:   17,
+              Base:  10,
               Value: "3",
             },
           },
@@ -71,16 +74,19 @@ SELECT
             &parser.IntLiteral{
               pos:   48,
               end:   49,
+              Base:  10,
               Value: "1",
             },
             &parser.IntLiteral{
               pos:   51,
               end:   52,
+              Base:  10,
               Value: "2",
             },
             &parser.IntLiteral{
               pos:   54,
               end:   55,
+              Base:  10,
               Value: "3",
             },
           },

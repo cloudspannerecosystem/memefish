@@ -14,6 +14,7 @@ select 1
         Expr: &parser.IntLiteral{
           pos:   17,
           end:   18,
+          Base:  10,
           Value: "1",
         },
       },
