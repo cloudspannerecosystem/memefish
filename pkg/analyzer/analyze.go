@@ -232,6 +232,12 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 	switch e := e.(type) {
 	case *parser.ParenExpr:
 		t = a.analyzeParenExpr(e)
+	case *parser.ScalarSubQuery:
+		t = a.analyzeScalarSubQuery(e)
+	case *parser.ArraySubQuery:
+		t = a.analyzeArraySubQuery(e)
+	case *parser.ExistsSubQuery:
+		t = a.analyzeExistsSubQuery(e)
 	case *parser.ArrayLiteral:
 		t = a.analyzeArrayLiteral(e)
 	case *parser.StructLiteral:
@@ -265,6 +271,33 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 
 func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
 	return a.analyzeExpr(e.Expr)
+}
+
+func (a *Analyzer) analyzeScalarSubQuery(e *parser.ScalarSubQuery) *TypeInfo {
+	list := a.analyzeQueryExpr(e.Query)
+	if len(list.Columns) != 1 {
+		a.panicf(e, "scalar subquery must have just one column")
+	}
+	return &TypeInfo{
+		Type: list.Columns[0].Type,
+	}
+}
+
+func (a *Analyzer) analyzeArraySubQuery(e *parser.ArraySubQuery) *TypeInfo {
+	list := a.analyzeQueryExpr(e.Query)
+	if len(list.Columns) != 1 {
+		a.panicf(e, "ARRAY subquery must have just one column")
+	}
+	return &TypeInfo{
+		Type: &ArrayType{Item: list.Columns[0].Type},
+	}
+}
+
+func (a *Analyzer) analyzeExistsSubQuery(e *parser.ExistsSubQuery) *TypeInfo {
+	a.analyzeQueryExpr(e.Query)
+	return &TypeInfo{
+		Type: BoolType,
+	}
 }
 
 func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
