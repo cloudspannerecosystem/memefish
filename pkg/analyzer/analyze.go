@@ -272,15 +272,12 @@ func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
 		return a.analyzeArrayLiteralWithoutType(e)
 	}
 
-	panic("TODO: implement")
-}
-
-func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeInfo {
-	var t Type
-
+	t := a.analyzeType(e.Type)
 	for _, v := range e.Values {
 		vt := a.analyzeExpr(v)
-		t = a.mergeType(e, t, vt.Type)
+		if !TypeCoerce(vt.Type, t) {
+			a.panicf(v, "%s cannot coerce to %s", TypeString(vt.Type), TypeString(t))
+		}
 	}
 
 	return &TypeInfo{
@@ -288,48 +285,21 @@ func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeI
 	}
 }
 
-func (a *Analyzer) mergeType(n parser.Node, s, t Type) Type {
-	// TODO: refactor this
+func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeInfo {
+	var t Type
 
-	if s == nil {
-		return t
-	}
-	if t == nil {
-		return s
-	}
-	if TypeEqual(s, t) {
-		return s
-	}
-
-	s1, sok := s.(*StructType)
-	t1, tok := t.(*StructType)
-	if !sok || !tok {
-		if TypeCoerce(s, t) {
-			return t
+	for _, v := range e.Values {
+		vt := a.analyzeExpr(v)
+		t1, ok := MergeType(t, vt.Type)
+		if !ok {
+			panic(a.errorf(e, "%s is incompatible with %s", TypeString(t), TypeString(vt.Type)))
 		}
-		if TypeCoerce(t, s) {
-			return s
-		}
-		goto panic
+		t = t1
 	}
 
-	if len(s1.Fields) != len(t1.Fields) {
-		goto panic
+	return &TypeInfo{
+		Type: &ArrayType{Item: t},
 	}
-
-	{
-		fields := make([]*StructField, len(s1.Fields))
-		for i, f := range s1.Fields {
-			fields[i] = &StructField{
-				Name: f.Name,
-				Type: a.mergeType(n, f.Type, t1.Fields[i].Type),
-			}
-		}
-		return &StructType{Fields: fields}
-	}
-
-panic:
-	panic(a.errorf(n, "%s is incompatible with %s", TypeString(s), TypeString(t)))
 }
 
 func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {

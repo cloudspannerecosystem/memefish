@@ -201,3 +201,50 @@ func TypeString(t Type) string {
 	}
 	return t.String()
 }
+
+func MergeType(s, t Type) (Type, bool) {
+	if s == nil {
+		return t, true
+	}
+	if t == nil {
+		return s, true
+	}
+
+	if TypeEqual(s, t) {
+		return s, true
+	}
+
+	s1, sok := s.(*StructType)
+	t1, tok := t.(*StructType)
+	if sok && tok {
+		return mergeStructType(s1, t1)
+	}
+
+	if TypeCoerce(t, s) {
+		return s, true
+	}
+	if TypeCoerce(s, t) {
+		return t, true
+	}
+
+	return nil, false
+}
+
+func mergeStructType(s, t *StructType) (Type, bool) {
+	if len(s.Fields) != len(t.Fields) {
+		return nil, false
+	}
+
+	fields := make([]*StructField, len(s.Fields))
+	for i, f := range s.Fields {
+		t, ok := MergeType(f.Type, t.Fields[i].Type)
+		if !ok {
+			return nil, false
+		}
+		fields[i] = &StructField{
+			Name: f.Name,
+			Type: t,
+		}
+	}
+	return &StructType{Fields: fields}, true
+}
