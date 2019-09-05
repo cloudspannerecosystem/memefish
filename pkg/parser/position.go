@@ -141,7 +141,6 @@ func (a *AsAlias) Pos() Pos { return a.pos }
 func (a *AsAlias) End() Pos { return a.Alias.End() }
 
 func (e *ExprSelectItem) Pos() Pos { return e.Expr.Pos() }
-
 func (e *ExprSelectItem) End() Pos { return e.Expr.End() }
 
 func (f *From) Pos() Pos { return f.pos }
