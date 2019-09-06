@@ -21,48 +21,73 @@ type NameList struct {
 	Columns []*ColumnName
 }
 
+func newSingletonNameList(path PathName, t Type, n parser.Node) *NameList {
+	return &NameList{
+		Columns: []*ColumnName{newColumnName(path, t, n)},
+	}
+}
+
 func (n *NameList) concat(other *NameList) {
 	n.Columns = append(n.Columns, other.Columns...)
 }
 
-func (n *NameList) appendNodeToColumns(s parser.SelectItem) *NameList {
-	list := &NameList{
-		Columns: make([]*ColumnName, len(n.Columns)),
-	}
+func (n *NameList) derive(node parser.Node) *NameList {
+	columns := make([]*ColumnName, len(n.Columns))
 	for i, c := range n.Columns {
-		list.Columns[i] = c.appendNode(s)
+		columns[i] = c.derive(node)
 	}
-	return list
+	return &NameList{Columns: columns}
 }
 
 type ColumnName struct {
 	Path    PathName
 	Invalid bool
 	Type    Type
-	Nodes   []parser.SelectItem
+
+	Origin []*ColumnName
+	Node   parser.Node
+	Schema *ColumnSchema
+}
+
+func newColumnName(path PathName, t Type, n parser.Node) *ColumnName {
+	return &ColumnName{
+		Path: path,
+		Type: t,
+
+		Node: n,
+	}
 }
 
 func (c *ColumnName) merge(d *ColumnName) bool {
-	if c.Type == nil {
-		c.Type = d.Type
-		return true
+	if c.Invalid || d.Invalid {
+		panic("BUG: merge invalid ColumnName")
 	}
-	if d.Type == nil {
-		return true
+
+	t, ok := MergeType(c.Type, d.Type)
+	if !ok {
+		return false
 	}
-	return c.Type.EqualTo(d.Type)
+
+	c.Type = t
+	c.Origin = append(c.Origin, d)
+	return true
 }
 
-func (c *ColumnName) appendNode(s parser.SelectItem) *ColumnName {
+func (c *ColumnName) derive(n parser.Node) *ColumnName {
 	return &ColumnName{
 		Path:    c.Path,
 		Invalid: c.Invalid,
 		Type:    c.Type,
-		Nodes:   append(append([]parser.SelectItem{}, c.Nodes...), s),
+
+		Origin: []*ColumnName{c},
+		Node:   n,
 	}
 }
 
 type TableName struct {
 	Name string
 	Type Type
+
+	Node   parser.Node
+	Schema *TableSchema
 }

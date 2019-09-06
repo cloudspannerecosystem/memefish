@@ -83,11 +83,16 @@ func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) *NameList {
 		list.concat(itemList)
 	}
 
+	if s.AsStruct {
+		t := a.convertNameListToType(&list)
+		return a.newSingletonNameList("", t, s)
+	}
+
 	return &list
 }
 
 func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) *NameList {
-	list := a.analyzeQueryExpr(q.Queries[0])
+	list := a.analyzeQueryExpr(q.Queries[0]).derive(q)
 
 	for _, query := range q.Queries[1:] {
 		queryList := a.analyzeQueryExpr(query)
@@ -98,8 +103,7 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) *NameList {
 
 		for i, c := range list.Columns {
 			if c.merge(queryList.Columns[i]) {
-				nodes := queryList.Columns[i].Nodes
-				a.panicf(nodes[len(nodes)-1], "column %d has incompatible type", i+1)
+				a.panicf(queryList.Columns[i].Node, "column %d has incompatible type", i+1)
 			}
 		}
 	}
@@ -135,19 +139,19 @@ func (a *Analyzer) analyzeStar(s *parser.Star) *NameList {
 	if a.scope != nil || a.scope.List != nil {
 		a.panicf(s, "SELECT * must have a FROM clause")
 	}
-	return a.scope.List.appendNodeToColumns(s)
+	return a.scope.List.derive(s)
 }
 
 func (a *Analyzer) analyzeStarPath(s *parser.StarPath) *NameList {
 	t := a.analyzeExpr(s.Expr)
-	list := a.convertTypeToNameList(t.Type)
+	list := a.convertTypeToNameList(s, t.Type)
 	if list == nil {
 		a.panicf(s, "star expansion is not supported for type %s", TypeString(t.Type))
 	}
-	return list.appendNodeToColumns(s)
+	return list.derive(s)
 }
 
-func (a *Analyzer) convertTypeToNameList(t Type) *NameList {
+func (a *Analyzer) convertTypeToNameList(n parser.Node, t Type) *NameList {
 	switch t := t.(type) {
 	case *StructType:
 		if len(t.Fields) == 0 {
@@ -157,10 +161,7 @@ func (a *Analyzer) convertTypeToNameList(t Type) *NameList {
 			Columns: make([]*ColumnName, len(t.Fields)),
 		}
 		for i, f := range t.Fields {
-			list.Columns[i] = &ColumnName{
-				Path: a.createPathName(f.Name),
-				Type: f.Type,
-			}
+			list.Columns[i] = a.newColumnName(f.Name, f.Type, n)
 		}
 		return list
 	}
@@ -168,31 +169,39 @@ func (a *Analyzer) convertTypeToNameList(t Type) *NameList {
 	return nil
 }
 
+func (a *Analyzer) convertNameListToType(list *NameList) Type {
+	fields := make([]*StructField, len(list.Columns))
+	for i, c := range list.Columns {
+		fields[i] = &StructField{
+			Name: c.Path.Name,
+			Type: c.Type,
+		}
+	}
+	return &StructType{Fields: fields}
+}
+
 func (a *Analyzer) analyzeAlias(s *parser.Alias) *NameList {
 	t := a.analyzeExpr(s.Expr)
-	return a.aliasColumn(s, s.As.Alias.Name, t.Type)
+	return a.newSingletonNameList(s.As.Alias.Name, t.Type, s)
 }
 
 func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) *NameList {
 	t := a.analyzeExpr(s.Expr)
 	name := extractNameFromExpr(s.Expr)
-	return a.aliasColumn(s, name, t.Type)
+	return a.newSingletonNameList(name, t.Type, s)
 }
 
-func (a *Analyzer) aliasColumn(s parser.SelectItem, name string, t Type) *NameList {
-	pathName := a.createPathName(name)
-	return &NameList{
-		Columns: []*ColumnName{
-			&ColumnName{
-				Path:  pathName,
-				Type:  t,
-				Nodes: []parser.SelectItem{s},
-			},
-		},
-	}
+func (a *Analyzer) newColumnName(name string, t Type, n parser.Node) *ColumnName {
+	path := a.newPathName(name)
+	return newColumnName(path, t, n)
 }
 
-func (a *Analyzer) createPathName(name string) PathName {
+func (a *Analyzer) newSingletonNameList(name string, t Type, n parser.Node) *NameList {
+	path := a.newPathName(name)
+	return newSingletonNameList(path, t, n)
+}
+
+func (a *Analyzer) newPathName(name string) PathName {
 	if name == "" {
 		a.implicitAliasId++
 		return PathName{
@@ -214,6 +223,8 @@ func extractNameFromExpr(e parser.Expr) string {
 		return e.Idents[len(e.Idents)-1].Name
 	case *parser.SelectorExpr:
 		return e.Member.Name
+	case *parser.ParenExpr:
+		return extractNameFromExpr(e.Expr)
 	}
 
 	return ""

@@ -8,6 +8,7 @@ import (
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/olekukonko/tablewriter"
+	"github.com/k0kubun/pp"
 )
 
 func init() {
@@ -47,6 +48,8 @@ func main() {
 	if list == nil {
 		log.Fatal("missing name list")
 	}
+
+	pp.Println(list)
 
 	table := tablewriter.NewWriter(os.Stdout)
 	var header []string
