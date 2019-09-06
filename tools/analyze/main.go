@@ -53,18 +53,14 @@ func main() {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	var header []string
-	for _, c := range list.Columns {
-		if c.Path.ImplicitAliasID > 0 {
-			header = append(header, "(unspecified)")
-		} else {
-			header = append(header, c.Path.Name)
-		}
+	for _, r := range list {
+		header = append(header, r.GetName())
 	}
 	table.SetHeader(header)
 
 	var types []string
-	for _, c := range list.Columns {
-		types = append(types, analyzer.TypeString(c.Type))
+	for _, r := range list {
+		types = append(types, analyzer.TypeString(r.Type))
 	}
 	table.Append(types)
 	table.Render()

@@ -10,21 +10,18 @@ import (
 type Analyzer struct {
 	File *parser.File
 
-	Types               map[parser.Expr]*TypeInfo
-	NameLists           map[parser.QueryExpr]*NameList
-	SelectItemNameLists map[parser.SelectItem]*NameList
+	Types     map[parser.Expr]*TypeInfo
+	NameLists map[parser.QueryExpr]NameList
 
-	scope           *NameScope
-	aggregateScope  *NameScope
-	implicitAliasId int
+	scope          *NameScope
+	aggregateScope *NameScope
 }
 
 type TypeInfo struct {
-	Type           Type
-	ResolvedTable  *TableName
-	ResolvedColumn *ColumnName
-	Scope          *NameScope
-	Value          interface{}
+	Type  Type
+	Ref   *Reference
+	Scope *NameScope
+	Value interface{}
 }
 
 func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) {
@@ -37,8 +34,8 @@ func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
 	_ = a.analyzeQueryExpr(q.Query)
 }
 
-func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) *NameList {
-	var list *NameList
+func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) NameList {
+	var list NameList
 	switch q := q.(type) {
 	case *parser.Select:
 		list = a.analyzeSelect(q)
@@ -48,22 +45,24 @@ func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) *NameList {
 		list = a.analyzeSubQuery(q)
 	}
 	if a.NameLists == nil {
-		a.NameLists = make(map[parser.QueryExpr]*NameList)
+		a.NameLists = make(map[parser.QueryExpr]NameList)
 	}
 	a.NameLists[q] = list
 	return list
 }
 
-func (a *Analyzer) analyzeSelect(s *parser.Select) *NameList {
+func (a *Analyzer) analyzeSelect(s *parser.Select) NameList {
 	switch {
 	case s.From == nil:
 		return a.analyzeSelectWithoutFrom(s)
+	case s.GroupBy == nil:
+		return a.analyzeSelectWithoutGroupBy(s)
 	}
 
 	panic("TODO")
 }
 
-func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) *NameList {
+func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) NameList {
 	if s.Where != nil {
 		a.panicf(s.Where, "SELECT without FROM cannot have WHERE clause")
 	}
@@ -79,35 +78,80 @@ func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) *NameList {
 
 	var list NameList
 	for _, item := range s.Results {
+		if hasAggregateFuncInSelectItem(item) {
+			a.panicf(item, "SELECT without FROM cannot have aggregate function call")
+		}
+
 		itemList := a.analyzeSelectItem(item)
-		list.concat(itemList)
+		list = append(list, itemList...)
 	}
 
+	a.analyzeLimit(s.Limit)
+
 	if s.AsStruct {
-		t := a.convertNameListToType(&list)
+		t := a.convertNameListToType(list)
 		return a.newSingletonNameList("", t, s)
 	}
 
-	return &list
+	return list
 }
 
-func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) *NameList {
-	list := a.analyzeQueryExpr(q.Queries[0]).derive(q)
+func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
+	if s.Having != nil {
+		a.panicf(s.Having, "SELECT without GROUP BY cannot have HAVING clause")
+	}
+
+	scope := a.analyzeFrom(s.From)
+
+	a.pushScope(scope)
+	a.analyzeWhere(s.Where)
+	a.popScope()
+
+	hasAgg := false
+	for _, item := range s.Results {
+		if hasAggregateFuncInSelectItem(item) {
+			hasAgg = true
+			break
+		}
+	}
+	if hasAgg {
+		return a.analyzeSelectWithoutGroupByAggregate(s, scope)
+	}
+
+	var list NameList
+	for _, item := range s.Results {
+		itemList := a.analyzeSelectItem(item)
+		list = append(list, itemList...)
+	}
+
+	a.popScope()
+
+	a.analyzeLimit(s.Limit)
+
+	return list
+}
+
+func (a *Analyzer) analyzeSelectWithoutGroupByAggregate(s *parser.Select, scope *NameScope) NameList {
+	panic("TODO: implement")
+}
+
+func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) NameList {
+	list := a.analyzeQueryExpr(q.Queries[0]).deriveSimple(q)
 
 	for _, query := range q.Queries[1:] {
 		queryList := a.analyzeQueryExpr(query)
 
-		if len(list.Columns) != len(queryList.Columns) {
+		if len(list) != len(queryList) {
 			a.panicf(query, "queries in set operation have mismatched column count")
 		}
 
-		for i, c := range list.Columns {
-			if !c.merge(queryList.Columns[i]) {
+		for i, r := range list {
+			if !r.merge(queryList[i]) {
 				a.panicf(
-					queryList.Columns[i].Node,
+					queryList[i].GetNode(q),
 					"%s is incompatible with %s (column %d)",
-					TypeString(c.Type),
-					TypeString(queryList.Columns[i].Type),
+					TypeString(r.Type),
+					TypeString(queryList[i].Type),
 					i+1,
 				)
 			}
@@ -122,11 +166,11 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) *NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) *NameList {
+func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) NameList {
 	panic("TODO: implement")
 }
 
-func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) *NameList {
+func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) NameList {
 	switch s := s.(type) {
 	case *parser.Star:
 		return a.analyzeStar(s)
@@ -141,33 +185,31 @@ func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) *NameList {
 	panic("unreachable")
 }
 
-func (a *Analyzer) analyzeStar(s *parser.Star) *NameList {
+func (a *Analyzer) analyzeStar(s *parser.Star) NameList {
 	if a.scope != nil || a.scope.List != nil {
 		a.panicf(s, "SELECT * must have a FROM clause")
 	}
-	return a.scope.List.derive(s)
+	return a.scope.List.deriveSimple(s)
 }
 
-func (a *Analyzer) analyzeStarPath(s *parser.StarPath) *NameList {
+func (a *Analyzer) analyzeStarPath(s *parser.StarPath) NameList {
 	t := a.analyzeExpr(s.Expr)
 	list := a.convertTypeToNameList(s, t.Type)
 	if list == nil {
 		a.panicf(s, "star expansion is not supported for type %s", TypeString(t.Type))
 	}
-	return list.derive(s)
+	return list.deriveSimple(s)
 }
 
-func (a *Analyzer) convertTypeToNameList(n parser.Node, t Type) *NameList {
+func (a *Analyzer) convertTypeToNameList(n parser.Node, t Type) NameList {
 	switch t := t.(type) {
 	case *StructType:
 		if len(t.Fields) == 0 {
 			return nil
 		}
-		list := &NameList{
-			Columns: make([]*ColumnName, len(t.Fields)),
-		}
+		list := make(NameList, len(t.Fields))
 		for i, f := range t.Fields {
-			list.Columns[i] = a.newColumnName(f.Name, f.Type, n)
+			list[i] = a.newColumnReference(f.Name, f.Type, n)
 		}
 		return list
 	}
@@ -175,50 +217,26 @@ func (a *Analyzer) convertTypeToNameList(n parser.Node, t Type) *NameList {
 	return nil
 }
 
-func (a *Analyzer) convertNameListToType(list *NameList) Type {
-	fields := make([]*StructField, len(list.Columns))
-	for i, c := range list.Columns {
+func (a *Analyzer) convertNameListToType(list NameList) Type {
+	fields := make([]*StructField, len(list))
+	for i, r := range list {
 		fields[i] = &StructField{
-			Name: c.Path.Name,
-			Type: c.Type,
+			Name: r.Name,
+			Type: r.Type,
 		}
 	}
 	return &StructType{Fields: fields}
 }
 
-func (a *Analyzer) analyzeAlias(s *parser.Alias) *NameList {
+func (a *Analyzer) analyzeAlias(s *parser.Alias) NameList {
 	t := a.analyzeExpr(s.Expr)
 	return a.newSingletonNameList(s.As.Alias.Name, t.Type, s)
 }
 
-func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) *NameList {
+func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
 	t := a.analyzeExpr(s.Expr)
 	name := extractNameFromExpr(s.Expr)
 	return a.newSingletonNameList(name, t.Type, s)
-}
-
-func (a *Analyzer) newColumnName(name string, t Type, n parser.Node) *ColumnName {
-	path := a.newPathName(name)
-	return newColumnName(path, t, n)
-}
-
-func (a *Analyzer) newSingletonNameList(name string, t Type, n parser.Node) *NameList {
-	path := a.newPathName(name)
-	return newSingletonNameList(path, t, n)
-}
-
-func (a *Analyzer) newPathName(name string) PathName {
-	if name == "" {
-		a.implicitAliasId++
-		return PathName{
-			ImplicitAliasID: a.implicitAliasId,
-		}
-	} else {
-		return PathName{
-			Name: name,
-		}
-	}
-
 }
 
 func extractNameFromExpr(e parser.Expr) string {
@@ -234,6 +252,14 @@ func extractNameFromExpr(e parser.Expr) string {
 	}
 
 	return ""
+}
+
+func (a *Analyzer) analyzeFrom(f *parser.From) *NameScope {
+	panic("TODO")
+}
+
+func (a *Analyzer) analyzeWhere(w *parser.Where) {
+	// TODO: implement
 }
 
 func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {
@@ -292,21 +318,21 @@ func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
 
 func (a *Analyzer) analyzeScalarSubQuery(e *parser.ScalarSubQuery) *TypeInfo {
 	list := a.analyzeQueryExpr(e.Query)
-	if len(list.Columns) != 1 {
+	if len(list) != 1 {
 		a.panicf(e, "scalar subquery must have just one column")
 	}
 	return &TypeInfo{
-		Type: list.Columns[0].Type,
+		Type: list[0].Type,
 	}
 }
 
 func (a *Analyzer) analyzeArraySubQuery(e *parser.ArraySubQuery) *TypeInfo {
 	list := a.analyzeQueryExpr(e.Query)
-	if len(list.Columns) != 1 {
+	if len(list) != 1 {
 		a.panicf(e, "ARRAY subquery must have just one column")
 	}
 	return &TypeInfo{
-		Type: &ArrayType{Item: list.Columns[0].Type},
+		Type: &ArrayType{Item: list[0].Type},
 	}
 }
 
@@ -480,12 +506,31 @@ func (a *Analyzer) analyzeType(t parser.Type) Type {
 	panic("unreachable")
 }
 
-func (a *Analyzer) pushNameListScope(list *NameList) {
+func (a *Analyzer) newSingletonNameList(name string, t Type, n parser.Node) NameList {
+	return NameList{a.newColumnReference(name, t, n)}
+}
+
+func (a *Analyzer) newColumnReference(name string, t Type, n parser.Node) *Reference {
+	return &Reference{
+		Kind: ColumnRef,
+		Name: name,
+		Type: t,
+
+		Node: n,
+	}
+}
+
+func (a *Analyzer) pushNameListScope(list NameList) {
 	// TODO: implement
 }
 
-func (a *Analyzer) popScope() {
+func (a *Analyzer) pushScope(scope *NameScope) {
 	// TODO: implement
+}
+
+func (a *Analyzer) popScope() *NameScope {
+	// TODO: implement
+	return nil
 }
 
 func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *Error {
