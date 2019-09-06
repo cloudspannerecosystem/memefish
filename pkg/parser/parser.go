@@ -645,6 +645,9 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 
 	if p.Token.Kind == TokenIdent {
 		expr := p.parseIdentOrPath()
+		if id, ok := expr.(*Ident); ok {
+			return p.parseTableNameSuffix(id)
+		}
 		return p.parseUnnestSuffix(true, expr, expr.Pos(), expr.End())
 	}
 
@@ -707,6 +710,16 @@ func (p *Parser) tryParseWithOffset() *WithOffset {
 		pos: pos,
 		end: end,
 		As:  as,
+	}
+}
+
+func (p *Parser) parseTableNameSuffix(id *Ident) *TableName {
+	hint := p.tryParseHint()
+	as := p.tryParseAsAlias()
+	return &TableName{
+		Table: id,
+		Hint:  hint,
+		As:    as,
 	}
 }
 

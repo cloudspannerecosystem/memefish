@@ -207,6 +207,20 @@ func (u *Unnest) End() Pos { return u.end }
 func (w *WithOffset) Pos() Pos { return w.pos }
 func (w *WithOffset) End() Pos { return w.end }
 
+func (t *TableName) Pos() Pos {
+	return t.Table.Pos()
+}
+
+func (t *TableName) End() Pos {
+	if t.As != nil {
+		return t.As.End()
+	}
+	if t.Hint != nil {
+		return t.Hint.End()
+	}
+	return t.Table.End()
+}
+
 func (s *SubQueryJoinExpr) Pos() Pos {
 	return s.Query.Pos()
 }

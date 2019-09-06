@@ -286,6 +286,17 @@ func (w *WithOffset) SQL() string {
 	return sql
 }
 
+func (t *TableName) SQL() string {
+	sql := t.Table.SQL()
+	if t.Hint != nil {
+		sql += " " + t.Hint.SQL()
+	}
+	if t.As != nil {
+		sql += " " + t.As.SQL()
+	}
+	return sql
+}
+
 func (s *SubQueryJoinExpr) SQL() string {
 	sql := "(" + s.Query.SQL() + ")"
 	if s.As != nil {

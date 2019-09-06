@@ -34,6 +34,7 @@ type JoinExpr interface {
 }
 
 var _ JoinExpr = &Unnest{}
+var _ JoinExpr = &TableName{}
 var _ JoinExpr = &SubQueryJoinExpr{}
 var _ JoinExpr = &ParenJoinExpr{}
 var _ JoinExpr = &Join{}
@@ -447,6 +448,21 @@ type WithOffset struct {
 	pos, end Pos
 
 	As *AsAlias // optional
+}
+
+// TableName is table name node in FROM clause.
+//
+//     {{.Table | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}}
+type TableName struct {
+	// pos = Table.pos, end = (As ?? Hint ?? Table).end
+
+	Table *Ident
+	Hint  *Hint    // optional
+	As    *AsAlias // optional
+}
+
+func (t *TableName) isSimpleJoinExpr() bool {
+	return true
 }
 
 // SubQueryJoinExpr is subquery inside JOIN expression.
