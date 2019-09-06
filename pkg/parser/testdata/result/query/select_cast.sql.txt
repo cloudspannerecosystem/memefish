@@ -149,18 +149,14 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
       pos:   127,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      132,
-            end:      133,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  132,
               end:  133,
               Name: "x",
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            Hint: (*parser.Hint)(nil),
+            As:   (*parser.AsAlias)(nil),
           },
           TableSample: &parser.TableSample{
             pos:    134,
@@ -183,18 +179,14 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           },
         },
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      193,
-            end:      194,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  193,
               end:  194,
               Name: "y",
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            Hint: (*parser.Hint)(nil),
+            As:   (*parser.AsAlias)(nil),
           },
           TableSample: &parser.TableSample{
             pos:    195,
@@ -218,18 +210,14 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           },
         },
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      247,
-            end:      248,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  247,
               end:  248,
               Name: "z",
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            Hint: (*parser.Hint)(nil),
+            As:   (*parser.AsAlias)(nil),
           },
           TableSample: &parser.TableSample{
             pos:    249,

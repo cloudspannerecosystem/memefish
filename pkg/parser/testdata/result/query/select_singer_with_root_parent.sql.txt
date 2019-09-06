@@ -20,18 +20,14 @@
         pos:   11,
         Items: []*parser.FromItem{
           &parser.FromItem{
-            Source: &parser.Unnest{
-              pos:      16,
-              end:      23,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Source: &parser.TableName{
+              Table: &parser.Ident{
                 pos:  16,
                 end:  23,
                 Name: "Singers",
               },
-              Hint:       (*parser.Hint)(nil),
-              As:         (*parser.AsAlias)(nil),
-              WithOffset: (*parser.WithOffset)(nil),
+              Hint: (*parser.Hint)(nil),
+              As:   (*parser.AsAlias)(nil),
             },
             TableSample: (*parser.TableSample)(nil),
           },

@@ -26,11 +26,8 @@ FROM
             Op:     "CROSS",
             Method: "",
             Hint:   (*parser.Hint)(nil),
-            Left:   &parser.Unnest{
-              pos:      18,
-              end:      27,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Left:   &parser.TableName{
+              Table: &parser.Ident{
                 pos:  18,
                 end:  25,
                 Name: "Singers",
@@ -44,13 +41,9 @@ FROM
                   Name: "A",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
-            Right: &parser.Unnest{
-              pos:      43,
-              end:      52,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Right: &parser.TableName{
+              Table: &parser.Ident{
                 pos:  43,
                 end:  50,
                 Name: "Singers",
@@ -64,7 +57,6 @@ FROM
                   Name: "B",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
             Cond: nil,
           },

@@ -44,11 +44,8 @@ FROM
             Op:     "LEFT OUTER",
             Method: "",
             Hint:   (*parser.Hint)(nil),
-            Left:   &parser.Unnest{
-              pos:      43,
-              end:      52,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Left:   &parser.TableName{
+              Table: &parser.Ident{
                 pos:  43,
                 end:  50,
                 Name: "Singers",
@@ -62,13 +59,9 @@ FROM
                   Name: "A",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
-            Right: &parser.Unnest{
-              pos:      73,
-              end:      82,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Right: &parser.TableName{
+              Table: &parser.Ident{
                 pos:  73,
                 end:  80,
                 Name: "Singers",
@@ -82,7 +75,6 @@ FROM
                   Name: "B",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
             Cond: &parser.On{
               pos:  85,

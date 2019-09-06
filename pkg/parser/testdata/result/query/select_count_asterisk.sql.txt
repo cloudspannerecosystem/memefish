@@ -19,18 +19,14 @@ select count(*) from singers
       pos:   16,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      21,
-            end:      28,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  21,
               end:  28,
               Name: "singers",
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            Hint: (*parser.Hint)(nil),
+            As:   (*parser.AsAlias)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },

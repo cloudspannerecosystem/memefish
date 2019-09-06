@@ -41,11 +41,8 @@ FROM
                 Op:     "INNER",
                 Method: "HASH",
                 Hint:   (*parser.Hint)(nil),
-                Left:   &parser.Unnest{
-                  pos:      18,
-                  end:      27,
-                  Implicit: true,
-                  Expr:     &parser.Ident{
+                Left:   &parser.TableName{
+                  Table: &parser.Ident{
                     pos:  18,
                     end:  25,
                     Name: "Singers",
@@ -59,13 +56,9 @@ FROM
                       Name: "A",
                     },
                   },
-                  WithOffset: (*parser.WithOffset)(nil),
                 },
-                Right: &parser.Unnest{
-                  pos:      42,
-                  end:      51,
-                  Implicit: true,
-                  Expr:     &parser.Ident{
+                Right: &parser.TableName{
+                  Table: &parser.Ident{
                     pos:  42,
                     end:  49,
                     Name: "Singers",
@@ -79,7 +72,6 @@ FROM
                       Name: "B",
                     },
                   },
-                  WithOffset: (*parser.WithOffset)(nil),
                 },
                 Cond: &parser.On{
                   pos:  54,
@@ -116,11 +108,8 @@ FROM
                   },
                 },
               },
-              Right: &parser.Unnest{
-                pos:      96,
-                end:      104,
-                Implicit: true,
-                Expr:     &parser.Ident{
+              Right: &parser.TableName{
+                Table: &parser.Ident{
                   pos:  96,
                   end:  102,
                   Name: "Singer",
@@ -134,7 +123,6 @@ FROM
                     Name: "C",
                   },
                 },
-                WithOffset: (*parser.WithOffset)(nil),
               },
               Cond: &parser.On{
                 pos:  107,
@@ -171,11 +159,8 @@ FROM
                 },
               },
             },
-            Right: &parser.Unnest{
-              pos:      148,
-              end:      156,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Right: &parser.TableName{
+              Table: &parser.Ident{
                 pos:  148,
                 end:  154,
                 Name: "Singer",
@@ -189,7 +174,6 @@ FROM
                   Name: "D",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
             Cond: &parser.On{
               pos:  159,

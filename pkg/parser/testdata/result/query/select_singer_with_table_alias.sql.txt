@@ -66,11 +66,8 @@ FROM Singers S
       pos:   48,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      53,
-            end:      62,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  53,
               end:  60,
               Name: "Singers",
@@ -84,7 +81,6 @@ FROM Singers S
                 Name: "S",
               },
             },
-            WithOffset: (*parser.WithOffset)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },

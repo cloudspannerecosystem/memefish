@@ -34,11 +34,8 @@ FROM
               Op:     "INNER",
               Method: "",
               Hint:   (*parser.Hint)(nil),
-              Left:   &parser.Unnest{
-                pos:      18,
-                end:      27,
-                Implicit: true,
-                Expr:     &parser.Ident{
+              Left:   &parser.TableName{
+                Table: &parser.Ident{
                   pos:  18,
                   end:  25,
                   Name: "Singers",
@@ -52,13 +49,9 @@ FROM
                     Name: "A",
                   },
                 },
-                WithOffset: (*parser.WithOffset)(nil),
               },
-              Right: &parser.Unnest{
-                pos:      37,
-                end:      46,
-                Implicit: true,
-                Expr:     &parser.Ident{
+              Right: &parser.TableName{
+                Table: &parser.Ident{
                   pos:  37,
                   end:  44,
                   Name: "Singers",
@@ -72,7 +65,6 @@ FROM
                     Name: "B",
                   },
                 },
-                WithOffset: (*parser.WithOffset)(nil),
               },
               Cond: &parser.On{
                 pos:  49,
@@ -109,11 +101,8 @@ FROM
                 },
               },
             },
-            Right: &parser.Unnest{
-              pos:      91,
-              end:      100,
-              Implicit: true,
-              Expr:     &parser.Ident{
+            Right: &parser.TableName{
+              Table: &parser.Ident{
                 pos:  91,
                 end:  98,
                 Name: "Singers",
@@ -127,7 +116,6 @@ FROM
                   Name: "C",
                 },
               },
-              WithOffset: (*parser.WithOffset)(nil),
             },
             Cond: &parser.On{
               pos:  103,

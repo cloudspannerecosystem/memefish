@@ -33,18 +33,14 @@ GROUP BY
       pos:   30,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      37,
-            end:      44,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  37,
               end:  44,
               Name: "Singers",
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            Hint: (*parser.Hint)(nil),
+            As:   (*parser.AsAlias)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },

@@ -37,11 +37,8 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
       pos:   44,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      49,
-            end:      88,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  49,
               end:  55,
               Name: "Albums",
@@ -64,8 +61,7 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
                 },
               },
             },
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
+            As: (*parser.AsAlias)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },

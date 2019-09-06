@@ -21,11 +21,8 @@ FROM
       pos:   11,
       Items: []*parser.FromItem{
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      18,
-            end:      30,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  18,
               end:  25,
               Name: "Singers",
@@ -39,16 +36,12 @@ FROM
                 Name: "A",
               },
             },
-            WithOffset: (*parser.WithOffset)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },
         &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      34,
-            end:      46,
-            Implicit: true,
-            Expr:     &parser.Ident{
+          Source: &parser.TableName{
+            Table: &parser.Ident{
               pos:  34,
               end:  41,
               Name: "Singers",
@@ -62,7 +55,6 @@ FROM
                 Name: "B",
               },
             },
-            WithOffset: (*parser.WithOffset)(nil),
           },
           TableSample: (*parser.TableSample)(nil),
         },
