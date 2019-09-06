@@ -102,8 +102,14 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) *NameList {
 		}
 
 		for i, c := range list.Columns {
-			if c.merge(queryList.Columns[i]) {
-				a.panicf(queryList.Columns[i].Node, "column %d has incompatible type", i+1)
+			if !c.merge(queryList.Columns[i]) {
+				a.panicf(
+					queryList.Columns[i].Node,
+					"%s is incompatible with %s (column %d)",
+					TypeString(c.Type),
+					TypeString(queryList.Columns[i].Type),
+					i+1,
+				)
 			}
 		}
 	}
@@ -357,8 +363,12 @@ func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {
 
 	fields := make([]*StructField, len(e.Fields))
 	for i, f := range e.Fields {
+		var name string
+		if f.Member != nil {
+			name = f.Member.Name
+		}
 		fields[i] = &StructField{
-			Name: f.Member.Name,
+			Name: name,
 			Type: a.analyzeType(f.Type),
 		}
 	}

@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/k0kubun/pp"
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/olekukonko/tablewriter"
-	"github.com/k0kubun/pp"
 )
 
 func init() {
