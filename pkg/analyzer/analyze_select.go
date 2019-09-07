@@ -10,6 +10,9 @@ func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
 }
 
 func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) SelectList {
+	oldAggregateScope := a.aggregateScope
+	defer func() { a.aggregateScope = oldAggregateScope }()
+
 	var list SelectList
 	switch q := q.(type) {
 	case *parser.Select:
@@ -77,9 +80,9 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) SelectList {
 		a.panicf(s.Having, "SELECT without GROUP BY cannot have HAVING clause")
 	}
 
-	t := a.analyzeFrom(s.From)
+	ts := a.analyzeFrom(s.From)
 
-	a.pushTableScope(t)
+	a.pushTableScope(ts)
 	a.analyzeWhere(s.Where)
 
 	hasAgg := false
@@ -90,7 +93,7 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) SelectList {
 		}
 	}
 	if hasAgg {
-		return a.analyzeSelectWithoutGroupByAggregate(s)
+		return a.analyzeSelectWithoutGroupByAggregate(s, ts)
 	}
 
 	var list SelectList
@@ -108,8 +111,23 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) SelectList {
 	return list
 }
 
-func (a *Analyzer) analyzeSelectWithoutGroupByAggregate(s *parser.Select) SelectList {
-	panic("TODO: implement")
+func (a *Analyzer) analyzeSelectWithoutGroupByAggregate(s *parser.Select, ts *TableScope) SelectList {
+	oldScope := a.scope
+	scope := a.scope.toAggregateKeyScope(newNameEnv())
+
+	a.scope = scope
+	a.aggregateScope = oldScope
+
+	var list SelectList
+	for _, item := range s.Results {
+		itemList := a.analyzeSelectItem(item)
+		list = append(list, itemList...)
+	}
+
+	a.popScope()
+	a.aggregateScope = nil
+
+	return list
 }
 
 func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) SelectList {

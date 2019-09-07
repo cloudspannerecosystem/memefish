@@ -1,6 +1,8 @@
 package analyzer
 
 import (
+	"strings"
+
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
@@ -164,57 +166,57 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ts *TableScope) *TableScope {
 	case *parser.Using:
 		names := make(map[string]bool)
 		for _, id := range cond.Idents {
-			names[id.Name] = false
+			names[strings.ToUpper(id.Name)] = false
 		}
 		refs := a.mergeRefs(lts.Refs, rts.Refs, names, j)
 
 		var list SelectList
 		for _, id := range cond.Idents {
-			if names[id.Name] {
+			name := strings.ToUpper(id.Name)
+			if names[name] {
 				continue
 			}
-			names[id.Name] = true
+			names[name] = true
 
-			lref := lts.List.LookupRef(id.Name)
+			lref := lts.List.LookupRef(name)
 			if lref == nil {
 				a.panicf(id, "USING condition %s is not found in left-side", id.SQL())
 			}
-			rref := rts.List.LookupRef(id.Name)
+			rref := rts.List.LookupRef(name)
 			if rref == nil {
 				a.panicf(id, "USING condition %s is not found in right-side", id.SQL())
 			}
 			if !(TypeCoerce(lref.Type, rref.Type) || TypeCoerce(rref.Type, lref.Type)) {
 				a.panicf(id, "USING condition %s is incompatible type: %s and %s", id.SQL(), TypeString(lref.Type), TypeString(rref.Type))
 			}
+			var ref *Reference
 			switch j.Op {
 			case parser.InnerJoin, parser.LeftOuterJoin:
-				ref := lref.deriveSimple(nil)
+				ref = lref.deriveSimple(nil)
 				ref.Origin = append(ref.Origin, rref)
-				refs[id.Name] = ref
 			case parser.RightOuterJoin:
 				ref := rref.deriveSimple(nil)
 				ref.Origin = append(ref.Origin, lref)
-				refs[id.Name] = ref
 			case parser.FullOuterJoin:
-				ref := lref.deriveSimple(nil)
+				ref = lref.deriveSimple(nil)
 				if !ref.merge(rref) {
 					a.panicf(id, "USING condition %s is incompatible type: %s and %s", id.SQL(), TypeString(lref.Type), TypeString(rref.Type))
 				}
-				refs[id.Name] = ref
 			default:
 				panic("BUG: unreachable")
 			}
-			list = append(list, refs[id.Name])
+			refs[name] = ref
+			list = append(list, ref)
 		}
 
 		for _, ref := range lts.List {
-			if r, ok := refs[ref.Name]; ok && r.Kind == ColumnRef {
+			if _, ok := names[strings.ToUpper(ref.Name)]; ok {
 				continue
 			}
 			list = append(list, ref)
 		}
 		for _, ref := range rts.List {
-			if r, ok := refs[ref.Name]; ok && r.Kind == ColumnRef {
+			if _, ok := names[strings.ToUpper(ref.Name)]; ok {
 				continue
 			}
 			list = append(list, ref)
@@ -242,6 +244,7 @@ func (a *Analyzer) mergeRefs(tRefs, uRefs map[string]*Reference, names map[strin
 	refs := make(map[string]*Reference)
 
 	for name, ref := range tRefs {
+		name = strings.ToUpper(name)
 		if _, ok := names[name]; ok {
 			continue
 		}
@@ -249,6 +252,7 @@ func (a *Analyzer) mergeRefs(tRefs, uRefs map[string]*Reference, names map[strin
 	}
 
 	for name, ref := range uRefs {
+		name = strings.ToUpper(name)
 		if _, ok := names[name]; ok {
 			continue
 		}

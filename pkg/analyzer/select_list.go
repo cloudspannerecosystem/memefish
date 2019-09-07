@@ -1,6 +1,8 @@
 package analyzer
 
 import (
+	"strings"
+
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
@@ -19,7 +21,7 @@ func (list SelectList) toType() Type {
 
 func (list SelectList) LookupRef(name string) *Reference {
 	for _, ref := range list {
-		if ref.Name == name {
+		if strings.EqualFold(ref.Name, name) {
 			return ref
 		}
 	}

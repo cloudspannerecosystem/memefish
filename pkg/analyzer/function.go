@@ -1,11 +1,13 @@
 package analyzer
 
 import (
+	"strings"
+
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
 func isAggregateFuncName(name string) bool {
-	switch name {
+	switch strings.ToUpper(name) {
 	case "ANY_VALUE", "ARRAY_AGG", "AVG",
 		"BIT_AND", "BIT_OR", "BIT_XOR", "COUNT",
 		"COUNTIF", "LOGICAL_AND", "LOGICAL_OR",
@@ -34,6 +36,7 @@ func hasAggregateFunc(e parser.Expr) bool {
 					return true
 				}
 			}
+			return false
 		case *parser.SubQueryInCondition:
 			// For example, `SELECT (SELECT SUM(x)) FROM table` is invalid
 			// because subqeury is evaluated by other context.
@@ -58,6 +61,7 @@ func hasAggregateFunc(e parser.Expr) bool {
 				return true
 			}
 		}
+		return false
 	case *parser.CountStarExpr:
 		return true
 	case *parser.CastExpr:
@@ -101,7 +105,7 @@ func hasAggregateFunc(e parser.Expr) bool {
 		return false
 	}
 
-	panic("unreachable")
+	panic("BUG: unreachable")
 }
 
 func hasAggregateFuncInSelectItem(s parser.SelectItem) bool {

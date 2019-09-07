@@ -1,6 +1,8 @@
 package analyzer
 
 import (
+	"strings"
+
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
@@ -85,14 +87,14 @@ func (env *NameEnv) LookupRef(p Path) (*Reference, Path) {
 		return nil, nil
 	}
 
-	if child, ok := env.Children[p[0]]; ok {
+	if child, ok := env.Children[strings.ToUpper(p[0])]; ok {
 		r, rp := child.LookupRef(p[1:])
 		if r != nil {
 			return r, rp
 		}
 	}
 
-	if r, ok := env.Refs[p[0]]; ok {
+	if r, ok := env.Refs[strings.ToUpper(p[0])]; ok {
 		return r, p[1:]
 	}
 
@@ -119,7 +121,6 @@ func (env *NameEnv) insertRef(p Path, r *Reference) {
 	}
 
 	env.forceInsertRef(p, r)
-	return
 }
 
 func (env *NameEnv) tryInsertConflictRef(p Path, oldRef, newRef *Reference) {
@@ -183,12 +184,12 @@ func (env *NameEnv) tryInsertConflictRef(p Path, oldRef, newRef *Reference) {
 		return
 	}
 
-	if oldRef.Kind == ColumnRef || newRef.Kind == TableRef {
+	if oldRef.Kind == ColumnRef && newRef.Kind == TableRef {
 		env.forceInsertRef(p, newRef)
 		return
 	}
 
-	if oldRef.Kind == TableRef || newRef.Kind == ColumnRef {
+	if oldRef.Kind == TableRef && newRef.Kind == ColumnRef {
 		// keep old
 		return
 	}
@@ -211,14 +212,15 @@ func (env *NameEnv) tryInsertConflictRef(p Path, oldRef, newRef *Reference) {
 
 func (env *NameEnv) forceInsertRef(p Path, r *Reference) {
 	if len(p) == 1 {
-		env.Refs[p[0]] = r
+		env.Refs[strings.ToUpper(p[0])] = r
 		return
 	}
 
-	child, ok := env.Children[p[0]]
+	p0 := strings.ToUpper(p[0])
+	child, ok := env.Children[p0]
 	if !ok {
 		child = newNameEnv()
-		env.Children[p[0]] = child
+		env.Children[p0] = child
 	}
 
 	child.forceInsertRef(p[1:], r)

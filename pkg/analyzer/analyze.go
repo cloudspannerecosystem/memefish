@@ -12,7 +12,8 @@ type Analyzer struct {
 	Types       map[parser.Expr]*TypeInfo
 	SelectLists map[parser.QueryExpr]SelectList
 
-	scope *NameScope
+	scope          *NameScope
+	aggregateScope *NameScope
 }
 
 func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) {

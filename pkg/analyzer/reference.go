@@ -23,6 +23,9 @@ const (
 	_ ReferenceKind = iota
 	TableRef
 	ColumnRef
+)
+
+const (
 	_ ReferenceKind = -iota
 	InvalidRefAmbiguous
 	InvalidRefAggregate

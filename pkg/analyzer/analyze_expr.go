@@ -17,6 +17,10 @@ type TypeInfo struct {
 func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 	var t *TypeInfo
 	switch e := e.(type) {
+	case *parser.CallExpr:
+		t = a.analyzeCallExpr(e)
+	case *parser.CountStarExpr:
+		t = a.analyzeCountStarExpr(e)
 	case *parser.ParenExpr:
 		t = a.analyzeParenExpr(e)
 	case *parser.ScalarSubQuery:
@@ -96,6 +100,14 @@ func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
 	if ref == nil {
 		a.panicf(e, "unknown name: %s", e.SQL())
 	}
+	if ref.Kind.Invalid() {
+		switch ref.Kind {
+		case InvalidRefAggregate:
+			a.panicf(e, "cannot use %s outside aggregate function", e.SQL())
+		case InvalidRefAmbiguous:
+			a.panicf(e, "ambiguous reference: %s", e.SQL())
+		}
+	}
 	return &TypeInfo{
 		Type: ref.Type,
 		Ref:  ref,
@@ -110,6 +122,14 @@ func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 	ref, rp := a.lookupRef(p)
 	if ref == nil {
 		a.panicf(e, "unknown name: %s", e.Idents[0].SQL())
+	}
+	if ref.Kind.Invalid() {
+		switch ref.Kind {
+		case InvalidRefAggregate:
+			a.panicf(e, "cannot use %s outside aggregate function", e.SQL())
+		case InvalidRefAmbiguous:
+			a.panicf(e, "ambiguous reference: %s", e.SQL())
+		}
 	}
 
 	t := ref.Type
