@@ -24,20 +24,16 @@ ORDER BY
           },
         },
         From: &parser.From{
-          pos:   9,
-          Items: []*parser.FromItem{
-            &parser.FromItem{
-              Source: &parser.TableName{
-                Table: &parser.Ident{
-                  pos:  14,
-                  end:  21,
-                  Name: "Singers",
-                },
-                Hint: (*parser.Hint)(nil),
-                As:   (*parser.AsAlias)(nil),
-              },
-              TableSample: (*parser.TableSample)(nil),
+          pos:    9,
+          Source: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  14,
+              end:  21,
+              Name: "Singers",
             },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: (*parser.TableSample)(nil),
           },
         },
         Where:   (*parser.Where)(nil),
@@ -56,20 +52,16 @@ ORDER BY
           },
         },
         From: &parser.From{
-          pos:   41,
-          Items: []*parser.FromItem{
-            &parser.FromItem{
-              Source: &parser.TableName{
-                Table: &parser.Ident{
-                  pos:  46,
-                  end:  53,
-                  Name: "Singers",
-                },
-                Hint: (*parser.Hint)(nil),
-                As:   (*parser.AsAlias)(nil),
-              },
-              TableSample: (*parser.TableSample)(nil),
+          pos:    41,
+          Source: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  46,
+              end:  53,
+              Name: "Singers",
             },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: (*parser.TableSample)(nil),
           },
         },
         Where: &parser.Where{

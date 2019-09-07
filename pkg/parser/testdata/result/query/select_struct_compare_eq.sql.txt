@@ -29,97 +29,93 @@ SELECT ARRAY(
               },
             },
             From: &parser.From{
-              pos:   31,
-              Items: []*parser.FromItem{
-                &parser.FromItem{
-                  Source: &parser.SubQueryJoinExpr{
-                    pos:   40,
-                    end:   96,
-                    Query: &parser.Select{
-                      pos:      41,
-                      Distinct: false,
-                      AsStruct: false,
-                      Results:  []parser.SelectItem{
-                        &parser.ExprSelectItem{
-                          Expr: &parser.StructLiteral{
-                            pos:    48,
-                            end:    90,
-                            Fields: []*parser.FieldType{
-                              &parser.FieldType{
-                                Member: &parser.Ident{
-                                  pos:  55,
-                                  end:  56,
-                                  Name: "X",
-                                },
-                                Type: &parser.SimpleType{
-                                  pos:  57,
-                                  Name: "INT64",
-                                },
-                              },
-                              &parser.FieldType{
-                                Member: &parser.Ident{
-                                  pos:  64,
-                                  end:  65,
-                                  Name: "Y",
-                                },
-                                Type: &parser.SimpleType{
-                                  pos:  66,
-                                  Name: "INT64",
-                                },
-                              },
-                              &parser.FieldType{
-                                Member: &parser.Ident{
-                                  pos:  73,
-                                  end:  74,
-                                  Name: "Y",
-                                },
-                                Type: &parser.SimpleType{
-                                  pos:  75,
-                                  Name: "INT64",
-                                },
-                              },
+              pos:    31,
+              Source: &parser.SubQueryJoinExpr{
+                pos:   40,
+                end:   96,
+                Query: &parser.Select{
+                  pos:      41,
+                  Distinct: false,
+                  AsStruct: false,
+                  Results:  []parser.SelectItem{
+                    &parser.ExprSelectItem{
+                      Expr: &parser.StructLiteral{
+                        pos:    48,
+                        end:    90,
+                        Fields: []*parser.FieldType{
+                          &parser.FieldType{
+                            Member: &parser.Ident{
+                              pos:  55,
+                              end:  56,
+                              Name: "X",
                             },
-                            Values: []parser.Expr{
-                              &parser.IntLiteral{
-                                pos:   82,
-                                end:   83,
-                                Base:  10,
-                                Value: "1",
-                              },
-                              &parser.IntLiteral{
-                                pos:   85,
-                                end:   86,
-                                Base:  10,
-                                Value: "2",
-                              },
-                              &parser.IntLiteral{
-                                pos:   88,
-                                end:   89,
-                                Base:  10,
-                                Value: "3",
-                              },
+                            Type: &parser.SimpleType{
+                              pos:  57,
+                              Name: "INT64",
+                            },
+                          },
+                          &parser.FieldType{
+                            Member: &parser.Ident{
+                              pos:  64,
+                              end:  65,
+                              Name: "Y",
+                            },
+                            Type: &parser.SimpleType{
+                              pos:  66,
+                              Name: "INT64",
+                            },
+                          },
+                          &parser.FieldType{
+                            Member: &parser.Ident{
+                              pos:  73,
+                              end:  74,
+                              Name: "Y",
+                            },
+                            Type: &parser.SimpleType{
+                              pos:  75,
+                              Name: "INT64",
                             },
                           },
                         },
-                      },
-                      From:    (*parser.From)(nil),
-                      Where:   (*parser.Where)(nil),
-                      GroupBy: (*parser.GroupBy)(nil),
-                      Having:  (*parser.Having)(nil),
-                      OrderBy: (*parser.OrderBy)(nil),
-                      Limit:   (*parser.Limit)(nil),
-                    },
-                    As: &parser.AsAlias{
-                      pos:   92,
-                      Alias: &parser.Ident{
-                        pos:  95,
-                        end:  96,
-                        Name: "S",
+                        Values: []parser.Expr{
+                          &parser.IntLiteral{
+                            pos:   82,
+                            end:   83,
+                            Base:  10,
+                            Value: "1",
+                          },
+                          &parser.IntLiteral{
+                            pos:   85,
+                            end:   86,
+                            Base:  10,
+                            Value: "2",
+                          },
+                          &parser.IntLiteral{
+                            pos:   88,
+                            end:   89,
+                            Base:  10,
+                            Value: "3",
+                          },
+                        },
                       },
                     },
                   },
-                  TableSample: (*parser.TableSample)(nil),
+                  From:    (*parser.From)(nil),
+                  Where:   (*parser.Where)(nil),
+                  GroupBy: (*parser.GroupBy)(nil),
+                  Having:  (*parser.Having)(nil),
+                  OrderBy: (*parser.OrderBy)(nil),
+                  Limit:   (*parser.Limit)(nil),
                 },
+                As: &parser.AsAlias{
+                  pos:   92,
+                  Alias: &parser.Ident{
+                    pos:  95,
+                    end:  96,
+                    Name: "S",
+                  },
+                },
+                Sample: (*parser.TableSample)(nil),
               },
             },
             Where: &parser.Where{

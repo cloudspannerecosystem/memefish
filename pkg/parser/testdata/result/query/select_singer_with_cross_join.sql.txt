@@ -19,49 +19,46 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.Join{
-            Op:     "CROSS",
-            Method: "",
-            Hint:   (*parser.Hint)(nil),
-            Left:   &parser.TableName{
-              Table: &parser.Ident{
-                pos:  18,
-                end:  25,
-                Name: "Singers",
-              },
-              Hint: (*parser.Hint)(nil),
-              As:   &parser.AsAlias{
-                pos:   26,
-                Alias: &parser.Ident{
-                  pos:  26,
-                  end:  27,
-                  Name: "A",
-                },
-              },
-            },
-            Right: &parser.TableName{
-              Table: &parser.Ident{
-                pos:  43,
-                end:  50,
-                Name: "Singers",
-              },
-              Hint: (*parser.Hint)(nil),
-              As:   &parser.AsAlias{
-                pos:   51,
-                Alias: &parser.Ident{
-                  pos:  51,
-                  end:  52,
-                  Name: "B",
-                },
-              },
-            },
-            Cond: nil,
+      pos:    11,
+      Source: &parser.Join{
+        Op:     "CROSS JOIN",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.TableName{
+          Table: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
           },
-          TableSample: (*parser.TableSample)(nil),
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   26,
+            Alias: &parser.Ident{
+              pos:  26,
+              end:  27,
+              Name: "A",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
         },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  43,
+            end:  50,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   51,
+            Alias: &parser.Ident{
+              pos:  51,
+              end:  52,
+              Name: "B",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Cond: nil,
       },
     },
     Where:   (*parser.Where)(nil),

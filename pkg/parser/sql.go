@@ -179,27 +179,7 @@ func (e *ExprSelectItem) SQL() string {
 }
 
 func (f *From) SQL() string {
-	sql := "FROM " + f.Items[0].SQL()
-	for _, item := range f.Items[1:] {
-		sql += ", " + item.SQL()
-	}
-	return sql
-}
-
-func (f *FromItem) SQL() string {
-	sql := f.Source.SQL()
-	if f.TableSample != nil {
-		sql += " " + f.TableSample.SQL()
-	}
-	return sql
-}
-
-func (t *TableSample) SQL() string {
-	return "TABLESAMPLE " + string(t.Method) + t.Size.SQL()
-}
-
-func (t *TableSampleSize) SQL() string {
-	return "(" + t.Value.SQL() + " " + string(t.Unit) + ")"
+	return "FROM " + f.Source.SQL()
 }
 
 func (w *Where) SQL() string {
@@ -275,6 +255,9 @@ func (u *Unnest) SQL() string {
 	if u.WithOffset != nil {
 		sql += " " + u.WithOffset.SQL()
 	}
+	if u.Sample != nil {
+		sql += " " + u.Sample.SQL()
+	}
 	return sql
 }
 
@@ -294,6 +277,9 @@ func (t *TableName) SQL() string {
 	if t.As != nil {
 		sql += " " + t.As.SQL()
 	}
+	if t.Sample != nil {
+		sql += " " + t.Sample.SQL()
+	}
 	return sql
 }
 
@@ -302,16 +288,26 @@ func (s *SubQueryJoinExpr) SQL() string {
 	if s.As != nil {
 		sql += " " + s.As.SQL()
 	}
+	if s.Sample != nil {
+		sql += " " + s.Sample.SQL()
+	}
 	return sql
 }
 
 func (p *ParenJoinExpr) SQL() string {
-	return "(" + p.Source.SQL() + ")"
+	sql := "(" + p.Source.SQL() + ")"
+	if p.Sample != nil {
+		sql += " " + p.Sample.SQL()
+	}
+	return sql
 }
 
 func (j *Join) SQL() string {
 	sql := j.Left.SQL()
-	sql += " " + string(j.Op) + " JOIN "
+	if j.Op != CommaJoin {
+		sql += " "
+	}
+	sql += string(j.Op) + " "
 	if j.Hint != nil {
 		sql += j.Hint.SQL() + " "
 	}
@@ -333,6 +329,14 @@ func (u *Using) SQL() string {
 	}
 	sql += ")"
 	return sql
+}
+
+func (t *TableSample) SQL() string {
+	return "TABLESAMPLE " + string(t.Method) + " " + t.Size.SQL()
+}
+
+func (t *TableSampleSize) SQL() string {
+	return "(" + t.Value.SQL() + " " + string(t.Unit) + ")"
 }
 
 // ================================================================================

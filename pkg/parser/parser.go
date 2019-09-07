@@ -259,74 +259,19 @@ func (p *Parser) tryParseFrom() *From {
 	}
 	pos := p.expect("FROM").Pos
 
-	items := []*FromItem{p.parseFromItem()}
+	j := p.parseJoinExpr(false)
 	for p.Token.Kind == "," {
 		p.NextToken()
-		items = append(items, p.parseFromItem())
+		j = &Join{
+			Left:  j,
+			Op:    CommaJoin,
+			Right: p.parseJoinExpr(false),
+		}
 	}
 
 	return &From{
-		pos:   pos,
-		Items: items,
-	}
-}
-
-func (p *Parser) parseFromItem() *FromItem {
-	expr := p.parseJoinExpr(false)
-	tableSample := p.tryParseTableSample()
-	return &FromItem{
-		Source:      expr,
-		TableSample: tableSample,
-	}
-}
-
-func (p *Parser) tryParseTableSample() *TableSample {
-	if p.Token.Kind != "TABLESAMPLE" {
-		return nil
-	}
-	pos := p.expect("TABLESAMPLE").Pos
-
-	id := p.expect(TokenIdent)
-	var method TableSampleMethod
-	switch {
-	case id.IsIdent("BERNOULLI"):
-		method = BernoulliSampleMethod
-	case id.IsIdent("RESERVOIR"):
-		method = ReservoirSampleMethod
-	default:
-		p.panicfAtToken(id, "expected identifier: BERNOULLI, RESERVOIR, but: %s", id.Raw)
-	}
-
-	size := p.parseTableSampleSize()
-
-	return &TableSample{
 		pos:    pos,
-		Method: method,
-		Size:   size,
-	}
-}
-
-func (p *Parser) parseTableSampleSize() *TableSampleSize {
-	pos := p.expect("(").Pos
-
-	value := p.parseNumValue()
-	var unit TableSampleUnit
-	switch {
-	case p.Token.Kind == "ROWS":
-		unit = RowsTableSampleUnit
-	case p.Token.IsKeywordLike("PERCENT"):
-		unit = PercentTableSampleUnit
-	default:
-		p.panicfAtToken(&p.Token, "expected token: ROWS, PERCENT, but: %s", p.Token.Kind)
-	}
-	p.NextToken()
-
-	end := p.expect(")").End
-	return &TableSampleSize{
-		pos:   pos,
-		end:   end,
-		Value: value,
-		Unit:  unit,
+		Source: j,
 	}
 }
 
@@ -559,52 +504,6 @@ func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 			Cond:   cond,
 		}
 	}
-
-	/*
-			var using IdentList
-			var on Expr
-			pos := p.Token.Pos
-			var end Pos
-			switch p.Token.Kind {
-			case "USING":
-				p.NextToken()
-				using = make(IdentList, 0)
-				p.expect("(")
-				if p.Token.Kind != ")" {
-					for p.Token.Kind != TokenEOF {
-						id := p.expect(TokenIdent)
-						using = append(using, &Ident{
-							pos:  id.Pos,
-							end:  id.End,
-							Name: id.AsString,
-						})
-						if p.Token.Kind != "," {
-							break
-						}
-						p.NextToken()
-					}
-				}
-				end = p.expect(")").End
-			case "ON":
-				p.NextToken()
-				on = p.parseExpr()
-				end = on.End()
-			}
-			j = &Join{
-				Op:     op,
-				Method: method,
-				Hint:   hint,
-				Left:   j,
-				Right:  right,
-				Cond: &JoinCondition{
-					pos:   pos,
-					end:   end,
-					On:    on,
-					Using: using,
-				},
-			}
-		}
-	*/
 }
 
 func (p *Parser) parseSimpleJoinExpr() JoinExpr {
@@ -616,23 +515,23 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 		if as != nil {
 			end = as.End()
 		}
-		return &SubQueryJoinExpr{
+		return p.parseJoinExprSuffix(&SubQueryJoinExpr{
 			pos:   pos,
 			end:   end,
 			Query: query,
 			As:    as,
-		}
+		})
 	}
 
 	if p.Token.Kind == "(" {
 		pos := p.expect("(").Pos
 		j := p.parseJoinExpr(true)
 		end := p.expect(")").End
-		return &ParenJoinExpr{
+		return p.parseJoinExprSuffix(&ParenJoinExpr{
 			pos:    pos,
 			end:    end,
 			Source: j,
-		}
+		})
 	}
 
 	if p.Token.Kind == "UNNEST" {
@@ -668,7 +567,7 @@ func (p *Parser) parseIdentOrPath() Expr {
 	}
 }
 
-func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) *Unnest {
+func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) JoinExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
 	withOffset := p.tryParseWithOffset()
@@ -683,7 +582,7 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) *
 		end = hint.End()
 	}
 
-	return &Unnest{
+	return p.parseJoinExprSuffix(&Unnest{
 		pos:        pos,
 		end:        end,
 		Implicit:   implicit,
@@ -691,7 +590,7 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) *
 		Hint:       hint,
 		As:         as,
 		WithOffset: withOffset,
-	}
+	})
 }
 
 func (p *Parser) tryParseWithOffset() *WithOffset {
@@ -713,14 +612,14 @@ func (p *Parser) tryParseWithOffset() *WithOffset {
 	}
 }
 
-func (p *Parser) parseTableNameSuffix(id *Ident) *TableName {
+func (p *Parser) parseTableNameSuffix(id *Ident) JoinExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
-	return &TableName{
+	return p.parseJoinExprSuffix(&TableName{
 		Table: id,
 		Hint:  hint,
 		As:    as,
-	}
+	})
 }
 
 func (p *Parser) parseJoinCondition() JoinCondition {
@@ -758,6 +657,70 @@ func (p *Parser) parseUsing() *Using {
 		Idents: idents,
 	}
 }
+
+func (p *Parser) parseJoinExprSuffix(j JoinExpr) JoinExpr {
+	sample := p.tryParseTableSample()
+	if sample != nil {
+		j.setSample(sample)
+	}
+	return j
+}
+
+func (p *Parser) tryParseTableSample() *TableSample {
+	if p.Token.Kind != "TABLESAMPLE" {
+		return nil
+	}
+	pos := p.expect("TABLESAMPLE").Pos
+
+	id := p.expect(TokenIdent)
+	var method TableSampleMethod
+	switch {
+	case id.IsIdent("BERNOULLI"):
+		method = BernoulliSampleMethod
+	case id.IsIdent("RESERVOIR"):
+		method = ReservoirSampleMethod
+	default:
+		p.panicfAtToken(id, "expected identifier: BERNOULLI, RESERVOIR, but: %s", id.Raw)
+	}
+
+	size := p.parseTableSampleSize()
+
+	return &TableSample{
+		pos:    pos,
+		Method: method,
+		Size:   size,
+	}
+}
+
+func (p *Parser) parseTableSampleSize() *TableSampleSize {
+	pos := p.expect("(").Pos
+
+	value := p.parseNumValue()
+	var unit TableSampleUnit
+	switch {
+	case p.Token.Kind == "ROWS":
+		unit = RowsTableSampleUnit
+	case p.Token.IsKeywordLike("PERCENT"):
+		unit = PercentTableSampleUnit
+	default:
+		p.panicfAtToken(&p.Token, "expected token: ROWS, PERCENT, but: %s", p.Token.Kind)
+	}
+	p.NextToken()
+
+	end := p.expect(")").End
+	return &TableSampleSize{
+		pos:   pos,
+		end:   end,
+		Value: value,
+		Unit:  unit,
+	}
+}
+
+// ================================================================================
+//
+// Expr
+//
+// ================================================================================
 
 func (p *Parser) parseExpr() Expr {
 	return p.parseAndOr()

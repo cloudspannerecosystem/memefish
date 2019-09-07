@@ -146,80 +146,83 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
       },
     },
     From: &parser.From{
-      pos:   127,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
+      pos:    127,
+      Source: &parser.Join{
+        Op:     ",",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.Join{
+          Op:     ",",
+          Method: "",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.TableName{
             Table: &parser.Ident{
               pos:  132,
               end:  133,
               Name: "x",
             },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: &parser.TableSample{
-            pos:    134,
-            Method: "BERNOULLI",
-            Size:   &parser.TableSampleSize{
-              pos:   156,
-              end:   186,
-              Value: &parser.CastNumValue{
-                pos:  157,
-                end:  177,
-                Expr: &parser.FloatLiteral{
-                  pos:   162,
-                  end:   165,
-                  Value: "0.1",
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: &parser.TableSample{
+              pos:    134,
+              Method: "BERNOULLI",
+              Size:   &parser.TableSampleSize{
+                pos:   156,
+                end:   186,
+                Value: &parser.CastNumValue{
+                  pos:  157,
+                  end:  177,
+                  Expr: &parser.FloatLiteral{
+                    pos:   162,
+                    end:   165,
+                    Value: "0.1",
+                  },
+                  Type: "FLOAT64",
                 },
-                Type: "FLOAT64",
+                Unit: "PERCENT",
               },
-              Unit: "PERCENT",
             },
           },
-        },
-        &parser.FromItem{
-          Source: &parser.TableName{
+          Right: &parser.TableName{
             Table: &parser.Ident{
               pos:  193,
               end:  194,
               Name: "y",
             },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: &parser.TableSample{
-            pos:    195,
-            Method: "BERNOULLI",
-            Size:   &parser.TableSampleSize{
-              pos:   217,
-              end:   240,
-              Value: &parser.CastNumValue{
-                pos:  218,
-                end:  234,
-                Expr: &parser.IntLiteral{
-                  pos:   223,
-                  end:   224,
-                  Base:  10,
-                  Value: "1",
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: &parser.TableSample{
+              pos:    195,
+              Method: "BERNOULLI",
+              Size:   &parser.TableSampleSize{
+                pos:   217,
+                end:   240,
+                Value: &parser.CastNumValue{
+                  pos:  218,
+                  end:  234,
+                  Expr: &parser.IntLiteral{
+                    pos:   223,
+                    end:   224,
+                    Base:  10,
+                    Value: "1",
+                  },
+                  Type: "INT64",
                 },
-                Type: "INT64",
+                Unit: "ROWS",
               },
-              Unit: "ROWS",
             },
           },
+          Cond: nil,
         },
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  247,
-              end:  248,
-              Name: "z",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  247,
+            end:  248,
+            Name: "z",
           },
-          TableSample: &parser.TableSample{
+          Hint:   (*parser.Hint)(nil),
+          As:     (*parser.AsAlias)(nil),
+          Sample: &parser.TableSample{
             pos:    249,
             Method: "BERNOULLI",
             Size:   &parser.TableSampleSize{
@@ -238,6 +241,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             },
           },
         },
+        Cond: nil,
       },
     },
     Where:   (*parser.Where)(nil),
@@ -272,4 +276,4 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 }
 
 --- SQL
-SELECT CAST(1 AS INT64), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI(CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI(CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI(CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)
+SELECT CAST(1 AS INT64), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)

@@ -1,8 +1,0 @@
-SELECT
-  *
-FROM
-  Singers A
-  JOIN
-  Singers B
-  ON A.SingerID = B.SingerID
-  TABLESAMPLE BERNOULLI (90 PERCENT)

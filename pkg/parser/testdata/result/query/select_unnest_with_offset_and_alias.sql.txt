@@ -17,62 +17,58 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      18,
-            end:      42,
-            Implicit: false,
-            Expr:     &parser.ArrayLiteral{
-              pos:    25,
-              end:    32,
-              Type:   nil,
-              Values: []parser.Expr{
-                &parser.IntLiteral{
-                  pos:   26,
-                  end:   27,
-                  Base:  10,
-                  Value: "1",
-                },
-                &parser.IntLiteral{
-                  pos:   28,
-                  end:   29,
-                  Base:  10,
-                  Value: "2",
-                },
-                &parser.IntLiteral{
-                  pos:   30,
-                  end:   31,
-                  Base:  10,
-                  Value: "3",
-                },
-              },
+      pos:    11,
+      Source: &parser.Unnest{
+        pos:      18,
+        end:      42,
+        Implicit: false,
+        Expr:     &parser.ArrayLiteral{
+          pos:    25,
+          end:    32,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
+              pos:   26,
+              end:   27,
+              Base:  10,
+              Value: "1",
             },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.AsAlias{
-              pos:   34,
-              Alias: &parser.Ident{
-                pos:  37,
-                end:  42,
-                Name: "value",
-              },
+            &parser.IntLiteral{
+              pos:   28,
+              end:   29,
+              Base:  10,
+              Value: "2",
             },
-            WithOffset: &parser.WithOffset{
-              pos: 43,
-              end: 61,
-              As:  &parser.AsAlias{
-                pos:   55,
-                Alias: &parser.Ident{
-                  pos:  58,
-                  end:  61,
-                  Name: "num",
-                },
-              },
+            &parser.IntLiteral{
+              pos:   30,
+              end:   31,
+              Base:  10,
+              Value: "3",
             },
           },
-          TableSample: (*parser.TableSample)(nil),
         },
+        Hint: (*parser.Hint)(nil),
+        As:   &parser.AsAlias{
+          pos:   34,
+          Alias: &parser.Ident{
+            pos:  37,
+            end:  42,
+            Name: "value",
+          },
+        },
+        WithOffset: &parser.WithOffset{
+          pos: 43,
+          end: 61,
+          As:  &parser.AsAlias{
+            pos:   55,
+            Alias: &parser.Ident{
+              pos:  58,
+              end:  61,
+              Name: "num",
+            },
+          },
+        },
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

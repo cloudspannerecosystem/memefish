@@ -54,11 +54,12 @@ const (
 type JoinOp string
 
 const (
-	InnerJoin      JoinOp = "INNER"
-	CrossJoin      JoinOp = "CROSS"
-	FullOuterJoin  JoinOp = "FULL OUTER"
-	LeftOuterJoin  JoinOp = "LEFT OUTER"
-	RightOuterJoin JoinOp = "RIGHT OUTER"
+	InnerJoin      JoinOp = "INNER JOIN"
+	CrossJoin      JoinOp = "CROSS JOIN"
+	CommaJoin      JoinOp = ","
+	FullOuterJoin  JoinOp = "FULL OUTER JOIN"
+	LeftOuterJoin  JoinOp = "LEFT OUTER JOIn"
+	RightOuterJoin JoinOp = "RIGHT OUTER JOIN"
 )
 
 type BinaryOp string

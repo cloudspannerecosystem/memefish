@@ -34,37 +34,33 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
       },
     },
     From: &parser.From{
-      pos:   44,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  49,
-              end:  55,
-              Name: "Albums",
-            },
-            Hint: &parser.Hint{
-              pos:     55,
-              end:     88,
-              Records: []*parser.HintRecord{
-                &parser.HintRecord{
-                  Key: &parser.Ident{
-                    pos:  57,
-                    end:  68,
-                    Name: "FORCE_INDEX",
-                  },
-                  Value: &parser.Ident{
-                    pos:  69,
-                    end:  87,
-                    Name: "AlbumsByAlbumTitle",
-                  },
-                },
+      pos:    44,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  49,
+          end:  55,
+          Name: "Albums",
+        },
+        Hint: &parser.Hint{
+          pos:     55,
+          end:     88,
+          Records: []*parser.HintRecord{
+            &parser.HintRecord{
+              Key: &parser.Ident{
+                pos:  57,
+                end:  68,
+                Name: "FORCE_INDEX",
+              },
+              Value: &parser.Ident{
+                pos:  69,
+                end:  87,
+                Name: "AlbumsByAlbumTitle",
               },
             },
-            As: (*parser.AsAlias)(nil),
           },
-          TableSample: (*parser.TableSample)(nil),
         },
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where: &parser.Where{

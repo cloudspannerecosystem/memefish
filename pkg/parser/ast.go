@@ -31,6 +31,7 @@ func (ExprSelectItem) isSelectItem() {}
 type JoinExpr interface {
 	Node
 	isSimpleJoinExpr() bool
+	setSample(sample *TableSample)
 }
 
 var _ JoinExpr = &Unnest{}
@@ -293,43 +294,12 @@ type ExprSelectItem struct {
 
 // From is FROM clause node.
 //
-//     FROM {{.Items | sqlJoin ","}}
+//     FROM {{.Source | sql}}
 type From struct {
-	// end = Items[$].end
+	// end = Source.end
 	pos Pos
 
-	Items []*FromItem // len(Items) > 0
-}
-
-// FromItem is FROM clause expression node.
-//
-//     {{.Source | sql}} {{.TableSample | sqlOpt}}
-type FromItem struct {
-	// pos = Expr.pos, end = (TableSample ?? Source).end
-
-	Source      JoinExpr
-	TableSample *TableSample
-}
-
-// TableSample is TABLESAMPLE clause node.
-//
-//     TABLESAMPLE {{.Method}} {{.Size | sql}}
-type TableSample struct {
-	// end = Size.end
-	pos Pos
-
-	Method TableSampleMethod
-	Size   *TableSampleSize
-}
-
-// TableSampleSize is size part of TABLESAMPLE clause.
-//
-//     ({{.Value | sql}} {{.Unit}})
-type TableSampleSize struct {
-	pos, end Pos
-
-	Value NumValue
-	Unit  TableSampleUnit
+	Source JoinExpr
 }
 
 // Where is WHERE clause node.
@@ -427,18 +397,25 @@ type Offset struct {
 //       {{.Hint | sqlOpt}}
 //       {{.As | sqlOpt}}
 //       {{.WithOffset | sqlOpt}}
+//       {{.Sample | sqlOpt}}
 type Unnest struct {
 	pos, end Pos
 
 	Implicit   bool
-	Expr       Expr        // Path or Ident when Implicit is true
-	Hint       *Hint       // optional
-	As         *AsAlias    // optional
-	WithOffset *WithOffset // optional
+	Expr       Expr         // Path or Ident when Implicit is true
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 func (Unnest) isSimpleJoinExpr() bool {
 	return true
+}
+
+func (u *Unnest) setSample(sample *TableSample) {
+	u.Sample = sample
+	u.end = sample.End()
 }
 
 // WithOffset is WITH OFFSET clause node after UNNEST call.
@@ -452,50 +429,67 @@ type WithOffset struct {
 
 // TableName is table name node in FROM clause.
 //
-//     {{.Table | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}}
+//     {{.Table | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
 type TableName struct {
-	// pos = Table.pos, end = (As ?? Hint ?? Table).end
+	// pos = Table.pos, end = (Sample ?? As ?? Hint ?? Table).end
 
-	Table *Ident
-	Hint  *Hint    // optional
-	As    *AsAlias // optional
+	Table  *Ident
+	Hint   *Hint        // optional
+	As     *AsAlias     // optional
+	Sample *TableSample // optional
 }
 
-func (t *TableName) isSimpleJoinExpr() bool {
+func (TableName) isSimpleJoinExpr() bool {
 	return true
+}
+
+func (t *TableName) setSample(sample *TableSample) {
+	t.Sample = sample
 }
 
 // SubQueryJoinExpr is subquery inside JOIN expression.
 //
-//     ({{.Query | sql}}) {{.As | sqlOpt}}
+//     ({{.Query | sql}}) {{.As | sqlOpt}} {{.Sample | sqlOpt}}
 type SubQueryJoinExpr struct {
 	pos, end Pos
 
-	Query QueryExpr
-	As    *AsAlias // optional
+	Query  QueryExpr
+	As     *AsAlias     // optional
+	Sample *TableSample // optional
 }
 
 func (s *SubQueryJoinExpr) isSimpleJoinExpr() bool {
 	return s.As != nil
 }
 
+func (s *SubQueryJoinExpr) setSample(sample *TableSample) {
+	s.Sample = sample
+	s.end = sample.End()
+}
+
 // ParenJoinExpr is parenthesized JOIN expression.
 //
-//     ({{.Expr | sql}})
+//     ({{.Expr | sql}}) {{.Sample | sqlOpt}}
 type ParenJoinExpr struct {
 	pos, end Pos
 
-	Source JoinExpr // SubQueryJoinExpr (without As) or Join
+	Source JoinExpr     // SubQueryJoinExpr (without As) or Join
+	Sample *TableSample // optional
 }
 
 func (ParenJoinExpr) isSimpleJoinExpr() bool {
 	return true
 }
 
+func (p *ParenJoinExpr) setSample(sample *TableSample) {
+	p.Sample = sample
+	p.end = sample.End()
+}
+
 // Join is JOIN expression.
 //
 //       {{.Left | sql}}
-//     {{.Op}} {{.Method}} JOIN {{.Hint | sqlOpt}}
+//     {{.Op}} {{.Method}} {{.Hint | sqlOpt}}
 //        {{.Right | sql}}
 //     {{.Cond | sqlOpt}}
 type Join struct {
@@ -510,6 +504,10 @@ type Join struct {
 
 func (Join) isSimpleJoinExpr() bool {
 	return false
+}
+
+func (j *Join) setSample(sample *TableSample) {
+	panic("BUG: cannot call Join.setSample")
 }
 
 // On is ON condition of JOIN expression.
@@ -529,6 +527,27 @@ type Using struct {
 	pos, end Pos
 
 	Idents []*Ident // len(Idents) > 0
+}
+
+// TableSample is TABLESAMPLE clause node.
+//
+//     TABLESAMPLE {{.Method}} {{.Size | sql}}
+type TableSample struct {
+	// end = Size.end
+	pos Pos
+
+	Method TableSampleMethod
+	Size   *TableSampleSize
+}
+
+// TableSampleSize is size part of TABLESAMPLE clause.
+//
+//     ({{.Value | sql}} {{.Unit}})
+type TableSampleSize struct {
+	pos, end Pos
+
+	Value NumValue
+	Unit  TableSampleUnit
 }
 
 // ================================================================================

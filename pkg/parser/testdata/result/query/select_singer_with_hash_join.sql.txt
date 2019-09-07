@@ -26,169 +26,67 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.Join{
-            Op:     "INNER",
-            Method: "LOOP",
+      pos:    11,
+      Source: &parser.Join{
+        Op:     "INNER JOIN",
+        Method: "LOOP",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.Join{
+          Op:     "INNER JOIN",
+          Method: "APPLY",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.Join{
+            Op:     "INNER JOIN",
+            Method: "HASH",
             Hint:   (*parser.Hint)(nil),
-            Left:   &parser.Join{
-              Op:     "INNER",
-              Method: "APPLY",
-              Hint:   (*parser.Hint)(nil),
-              Left:   &parser.Join{
-                Op:     "INNER",
-                Method: "HASH",
-                Hint:   (*parser.Hint)(nil),
-                Left:   &parser.TableName{
-                  Table: &parser.Ident{
-                    pos:  18,
-                    end:  25,
-                    Name: "Singers",
-                  },
-                  Hint: (*parser.Hint)(nil),
-                  As:   &parser.AsAlias{
-                    pos:   26,
-                    Alias: &parser.Ident{
-                      pos:  26,
-                      end:  27,
-                      Name: "A",
-                    },
-                  },
-                },
-                Right: &parser.TableName{
-                  Table: &parser.Ident{
-                    pos:  42,
-                    end:  49,
-                    Name: "Singers",
-                  },
-                  Hint: (*parser.Hint)(nil),
-                  As:   &parser.AsAlias{
-                    pos:   50,
-                    Alias: &parser.Ident{
-                      pos:  50,
-                      end:  51,
-                      Name: "B",
-                    },
-                  },
-                },
-                Cond: &parser.On{
-                  pos:  54,
-                  Expr: &parser.BinaryExpr{
-                    Op:   "=",
-                    Left: &parser.Path{
-                      Idents: []*parser.Ident{
-                        &parser.Ident{
-                          pos:  57,
-                          end:  58,
-                          Name: "A",
-                        },
-                        &parser.Ident{
-                          pos:  59,
-                          end:  67,
-                          Name: "SingerID",
-                        },
-                      },
-                    },
-                    Right: &parser.Path{
-                      Idents: []*parser.Ident{
-                        &parser.Ident{
-                          pos:  70,
-                          end:  71,
-                          Name: "B",
-                        },
-                        &parser.Ident{
-                          pos:  72,
-                          end:  80,
-                          Name: "SingerID",
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              Right: &parser.TableName{
-                Table: &parser.Ident{
-                  pos:  96,
-                  end:  102,
-                  Name: "Singer",
-                },
-                Hint: (*parser.Hint)(nil),
-                As:   &parser.AsAlias{
-                  pos:   103,
-                  Alias: &parser.Ident{
-                    pos:  103,
-                    end:  104,
-                    Name: "C",
-                  },
-                },
-              },
-              Cond: &parser.On{
-                pos:  107,
-                Expr: &parser.BinaryExpr{
-                  Op:   "=",
-                  Left: &parser.Path{
-                    Idents: []*parser.Ident{
-                      &parser.Ident{
-                        pos:  110,
-                        end:  111,
-                        Name: "B",
-                      },
-                      &parser.Ident{
-                        pos:  112,
-                        end:  120,
-                        Name: "SingerID",
-                      },
-                    },
-                  },
-                  Right: &parser.Path{
-                    Idents: []*parser.Ident{
-                      &parser.Ident{
-                        pos:  123,
-                        end:  124,
-                        Name: "C",
-                      },
-                      &parser.Ident{
-                        pos:  125,
-                        end:  133,
-                        Name: "SingerID",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            Right: &parser.TableName{
+            Left:   &parser.TableName{
               Table: &parser.Ident{
-                pos:  148,
-                end:  154,
-                Name: "Singer",
+                pos:  18,
+                end:  25,
+                Name: "Singers",
               },
               Hint: (*parser.Hint)(nil),
               As:   &parser.AsAlias{
-                pos:   155,
+                pos:   26,
                 Alias: &parser.Ident{
-                  pos:  155,
-                  end:  156,
-                  Name: "D",
+                  pos:  26,
+                  end:  27,
+                  Name: "A",
                 },
               },
+              Sample: (*parser.TableSample)(nil),
+            },
+            Right: &parser.TableName{
+              Table: &parser.Ident{
+                pos:  42,
+                end:  49,
+                Name: "Singers",
+              },
+              Hint: (*parser.Hint)(nil),
+              As:   &parser.AsAlias{
+                pos:   50,
+                Alias: &parser.Ident{
+                  pos:  50,
+                  end:  51,
+                  Name: "B",
+                },
+              },
+              Sample: (*parser.TableSample)(nil),
             },
             Cond: &parser.On{
-              pos:  159,
+              pos:  54,
               Expr: &parser.BinaryExpr{
                 Op:   "=",
                 Left: &parser.Path{
                   Idents: []*parser.Ident{
                     &parser.Ident{
-                      pos:  162,
-                      end:  163,
-                      Name: "C",
+                      pos:  57,
+                      end:  58,
+                      Name: "A",
                     },
                     &parser.Ident{
-                      pos:  164,
-                      end:  172,
+                      pos:  59,
+                      end:  67,
                       Name: "SingerID",
                     },
                   },
@@ -196,13 +94,13 @@ FROM
                 Right: &parser.Path{
                   Idents: []*parser.Ident{
                     &parser.Ident{
-                      pos:  175,
-                      end:  176,
-                      Name: "D",
+                      pos:  70,
+                      end:  71,
+                      Name: "B",
                     },
                     &parser.Ident{
-                      pos:  177,
-                      end:  185,
+                      pos:  72,
+                      end:  80,
                       Name: "SingerID",
                     },
                   },
@@ -210,7 +108,108 @@ FROM
               },
             },
           },
-          TableSample: (*parser.TableSample)(nil),
+          Right: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  96,
+              end:  102,
+              Name: "Singer",
+            },
+            Hint: (*parser.Hint)(nil),
+            As:   &parser.AsAlias{
+              pos:   103,
+              Alias: &parser.Ident{
+                pos:  103,
+                end:  104,
+                Name: "C",
+              },
+            },
+            Sample: (*parser.TableSample)(nil),
+          },
+          Cond: &parser.On{
+            pos:  107,
+            Expr: &parser.BinaryExpr{
+              Op:   "=",
+              Left: &parser.Path{
+                Idents: []*parser.Ident{
+                  &parser.Ident{
+                    pos:  110,
+                    end:  111,
+                    Name: "B",
+                  },
+                  &parser.Ident{
+                    pos:  112,
+                    end:  120,
+                    Name: "SingerID",
+                  },
+                },
+              },
+              Right: &parser.Path{
+                Idents: []*parser.Ident{
+                  &parser.Ident{
+                    pos:  123,
+                    end:  124,
+                    Name: "C",
+                  },
+                  &parser.Ident{
+                    pos:  125,
+                    end:  133,
+                    Name: "SingerID",
+                  },
+                },
+              },
+            },
+          },
+        },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  148,
+            end:  154,
+            Name: "Singer",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   155,
+            Alias: &parser.Ident{
+              pos:  155,
+              end:  156,
+              Name: "D",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Cond: &parser.On{
+          pos:  159,
+          Expr: &parser.BinaryExpr{
+            Op:   "=",
+            Left: &parser.Path{
+              Idents: []*parser.Ident{
+                &parser.Ident{
+                  pos:  162,
+                  end:  163,
+                  Name: "C",
+                },
+                &parser.Ident{
+                  pos:  164,
+                  end:  172,
+                  Name: "SingerID",
+                },
+              },
+            },
+            Right: &parser.Path{
+              Idents: []*parser.Ident{
+                &parser.Ident{
+                  pos:  175,
+                  end:  176,
+                  Name: "D",
+                },
+                &parser.Ident{
+                  pos:  177,
+                  end:  185,
+                  Name: "SingerID",
+                },
+              },
+            },
+          },
         },
       },
     },

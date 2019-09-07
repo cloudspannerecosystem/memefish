@@ -25,20 +25,16 @@ HAVING
       },
     },
     From: &parser.From{
-      pos:   18,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  25,
-              end:  32,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: (*parser.TableSample)(nil),
+      pos:    18,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  25,
+          end:  32,
+          Name: "Singers",
         },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

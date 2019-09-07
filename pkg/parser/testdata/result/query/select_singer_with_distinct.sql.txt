@@ -17,20 +17,16 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   22,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  29,
-              end:  36,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: (*parser.TableSample)(nil),
+      pos:    22,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  29,
+          end:  36,
+          Name: "Singers",
         },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

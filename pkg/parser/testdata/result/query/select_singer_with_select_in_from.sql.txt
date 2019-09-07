@@ -23,64 +23,56 @@ FROM (
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.SubQueryJoinExpr{
-            pos:   16,
-            end:   78,
-            Query: &parser.Select{
-              pos:      20,
-              Distinct: false,
-              AsStruct: false,
-              Results:  []parser.SelectItem{
-                &parser.Star{
-                  pos: 31,
-                },
-              },
-              From: &parser.From{
-                pos:   35,
-                Items: []*parser.FromItem{
-                  &parser.FromItem{
-                    Source: &parser.TableName{
-                      Table: &parser.Ident{
-                        pos:  44,
-                        end:  51,
-                        Name: "Singers",
-                      },
-                      Hint: (*parser.Hint)(nil),
-                      As:   (*parser.AsAlias)(nil),
-                    },
-                    TableSample: (*parser.TableSample)(nil),
-                  },
-                },
-              },
-              Where: &parser.Where{
-                pos:  54,
-                Expr: &parser.BinaryExpr{
-                  Op:   "=",
-                  Left: &parser.Ident{
-                    pos:  64,
-                    end:  72,
-                    Name: "SingerID",
-                  },
-                  Right: &parser.IntLiteral{
-                    pos:   75,
-                    end:   76,
-                    Base:  10,
-                    Value: "1",
-                  },
-                },
-              },
-              GroupBy: (*parser.GroupBy)(nil),
-              Having:  (*parser.Having)(nil),
-              OrderBy: (*parser.OrderBy)(nil),
-              Limit:   (*parser.Limit)(nil),
+      pos:    11,
+      Source: &parser.SubQueryJoinExpr{
+        pos:   16,
+        end:   78,
+        Query: &parser.Select{
+          pos:      20,
+          Distinct: false,
+          AsStruct: false,
+          Results:  []parser.SelectItem{
+            &parser.Star{
+              pos: 31,
             },
-            As: (*parser.AsAlias)(nil),
           },
-          TableSample: (*parser.TableSample)(nil),
+          From: &parser.From{
+            pos:    35,
+            Source: &parser.TableName{
+              Table: &parser.Ident{
+                pos:  44,
+                end:  51,
+                Name: "Singers",
+              },
+              Hint:   (*parser.Hint)(nil),
+              As:     (*parser.AsAlias)(nil),
+              Sample: (*parser.TableSample)(nil),
+            },
+          },
+          Where: &parser.Where{
+            pos:  54,
+            Expr: &parser.BinaryExpr{
+              Op:   "=",
+              Left: &parser.Ident{
+                pos:  64,
+                end:  72,
+                Name: "SingerID",
+              },
+              Right: &parser.IntLiteral{
+                pos:   75,
+                end:   76,
+                Base:  10,
+                Value: "1",
+              },
+            },
+          },
+          GroupBy: (*parser.GroupBy)(nil),
+          Having:  (*parser.Having)(nil),
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
         },
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

@@ -19,10 +19,16 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
+      pos:    11,
+      Source: &parser.Join{
+        Op:     ",",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.Join{
+          Op:     ",",
+          Method: "",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.TableName{
             Table: &parser.Ident{
               pos:  18,
               end:  25,
@@ -37,25 +43,23 @@ FROM
                 Name: "A",
               },
             },
-          },
-          TableSample: &parser.TableSample{
-            pos:    31,
-            Method: "RESERVOIR",
-            Size:   &parser.TableSampleSize{
-              pos:   53,
-              end:   63,
-              Value: &parser.IntLiteral{
-                pos:   54,
-                end:   57,
-                Base:  10,
-                Value: "100",
+            Sample: &parser.TableSample{
+              pos:    31,
+              Method: "RESERVOIR",
+              Size:   &parser.TableSampleSize{
+                pos:   53,
+                end:   63,
+                Value: &parser.IntLiteral{
+                  pos:   54,
+                  end:   57,
+                  Base:  10,
+                  Value: "100",
+                },
+                Unit: "ROWS",
               },
-              Unit: "ROWS",
             },
           },
-        },
-        &parser.FromItem{
-          Source: &parser.TableName{
+          Right: &parser.TableName{
             Table: &parser.Ident{
               pos:  67,
               end:  74,
@@ -70,40 +74,39 @@ FROM
                 Name: "B",
               },
             },
-          },
-          TableSample: &parser.TableSample{
-            pos:    80,
-            Method: "BERNOULLI",
-            Size:   &parser.TableSampleSize{
-              pos:   102,
-              end:   115,
-              Value: &parser.FloatLiteral{
-                pos:   103,
-                end:   106,
-                Value: "0.1",
+            Sample: &parser.TableSample{
+              pos:    80,
+              Method: "BERNOULLI",
+              Size:   &parser.TableSampleSize{
+                pos:   102,
+                end:   115,
+                Value: &parser.FloatLiteral{
+                  pos:   103,
+                  end:   106,
+                  Value: "0.1",
+                },
+                Unit: "PERCENT",
               },
-              Unit: "PERCENT",
             },
           },
+          Cond: nil,
         },
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  119,
-              end:  126,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.AsAlias{
-              pos:   127,
-              Alias: &parser.Ident{
-                pos:  130,
-                end:  131,
-                Name: "C",
-              },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  119,
+            end:  126,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   127,
+            Alias: &parser.Ident{
+              pos:  130,
+              end:  131,
+              Name: "C",
             },
           },
-          TableSample: &parser.TableSample{
+          Sample: &parser.TableSample{
             pos:    132,
             Method: "BERNOULLI",
             Size:   &parser.TableSampleSize{
@@ -118,6 +121,7 @@ FROM
             },
           },
         },
+        Cond: nil,
       },
     },
     Where:   (*parser.Where)(nil),
@@ -129,4 +133,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A TABLESAMPLE RESERVOIR(100 ROWS), Singers AS B TABLESAMPLE BERNOULLI(0.1 PERCENT), Singers AS C TABLESAMPLE BERNOULLI(0.1 PERCENT)
+SELECT * FROM Singers AS A TABLESAMPLE RESERVOIR (100 ROWS), Singers AS B TABLESAMPLE BERNOULLI (0.1 PERCENT), Singers AS C TABLESAMPLE BERNOULLI (0.1 PERCENT)

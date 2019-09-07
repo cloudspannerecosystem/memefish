@@ -17,89 +17,85 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.Unnest{
-            pos:      18,
-            end:      82,
-            Implicit: false,
-            Expr:     &parser.ArrayLiteral{
-              pos:  25,
-              end:  81,
-              Type: &parser.StructType{
-                pos:    31,
-                end:    56,
-                Fields: []*parser.FieldType{
-                  &parser.FieldType{
-                    Member: &parser.Ident{
-                      pos:  38,
-                      end:  39,
-                      Name: "x",
-                    },
-                    Type: &parser.SimpleType{
-                      pos:  40,
-                      Name: "INT64",
-                    },
-                  },
-                  &parser.FieldType{
-                    Member: &parser.Ident{
-                      pos:  47,
-                      end:  48,
-                      Name: "y",
-                    },
-                    Type: &parser.SimpleType{
-                      pos:  49,
-                      Name: "STRING",
-                    },
-                  },
+      pos:    11,
+      Source: &parser.Unnest{
+        pos:      18,
+        end:      82,
+        Implicit: false,
+        Expr:     &parser.ArrayLiteral{
+          pos:  25,
+          end:  81,
+          Type: &parser.StructType{
+            pos:    31,
+            end:    56,
+            Fields: []*parser.FieldType{
+              &parser.FieldType{
+                Member: &parser.Ident{
+                  pos:  38,
+                  end:  39,
+                  Name: "x",
+                },
+                Type: &parser.SimpleType{
+                  pos:  40,
+                  Name: "INT64",
                 },
               },
-              Values: []parser.Expr{
-                &parser.StructLiteral{
-                  pos:    58,
-                  end:    68,
-                  Fields: []*parser.FieldType{},
-                  Values: []parser.Expr{
-                    &parser.IntLiteral{
-                      pos:   59,
-                      end:   60,
-                      Base:  10,
-                      Value: "1",
-                    },
-                    &parser.StringLiteral{
-                      pos:   62,
-                      end:   67,
-                      Value: "foo",
-                    },
-                  },
+              &parser.FieldType{
+                Member: &parser.Ident{
+                  pos:  47,
+                  end:  48,
+                  Name: "y",
                 },
-                &parser.StructLiteral{
-                  pos:    70,
-                  end:    80,
-                  Fields: []*parser.FieldType{},
-                  Values: []parser.Expr{
-                    &parser.IntLiteral{
-                      pos:   71,
-                      end:   72,
-                      Base:  10,
-                      Value: "3",
-                    },
-                    &parser.StringLiteral{
-                      pos:   74,
-                      end:   79,
-                      Value: "bar",
-                    },
-                  },
+                Type: &parser.SimpleType{
+                  pos:  49,
+                  Name: "STRING",
                 },
               },
             },
-            Hint:       (*parser.Hint)(nil),
-            As:         (*parser.AsAlias)(nil),
-            WithOffset: (*parser.WithOffset)(nil),
           },
-          TableSample: (*parser.TableSample)(nil),
+          Values: []parser.Expr{
+            &parser.StructLiteral{
+              pos:    58,
+              end:    68,
+              Fields: []*parser.FieldType{},
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   59,
+                  end:   60,
+                  Base:  10,
+                  Value: "1",
+                },
+                &parser.StringLiteral{
+                  pos:   62,
+                  end:   67,
+                  Value: "foo",
+                },
+              },
+            },
+            &parser.StructLiteral{
+              pos:    70,
+              end:    80,
+              Fields: []*parser.FieldType{},
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   71,
+                  end:   72,
+                  Base:  10,
+                  Value: "3",
+                },
+                &parser.StringLiteral{
+                  pos:   74,
+                  end:   79,
+                  Value: "bar",
+                },
+              },
+            },
+          },
         },
+        Hint:       (*parser.Hint)(nil),
+        As:         (*parser.AsAlias)(nil),
+        WithOffset: (*parser.WithOffset)(nil),
+        Sample:     (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

@@ -40,20 +40,16 @@ UNION ALL
           },
         },
         From: &parser.From{
-          pos:   9,
-          Items: []*parser.FromItem{
-            &parser.FromItem{
-              Source: &parser.TableName{
-                Table: &parser.Ident{
-                  pos:  14,
-                  end:  21,
-                  Name: "Singers",
-                },
-                Hint: (*parser.Hint)(nil),
-                As:   (*parser.AsAlias)(nil),
-              },
-              TableSample: (*parser.TableSample)(nil),
+          pos:    9,
+          Source: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  14,
+              end:  21,
+              Name: "Singers",
             },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: (*parser.TableSample)(nil),
           },
         },
         Where:   (*parser.Where)(nil),
@@ -79,20 +75,16 @@ UNION ALL
                 },
               },
               From: &parser.From{
-                pos:   45,
-                Items: []*parser.FromItem{
-                  &parser.FromItem{
-                    Source: &parser.TableName{
-                      Table: &parser.Ident{
-                        pos:  50,
-                        end:  57,
-                        Name: "Singers",
-                      },
-                      Hint: (*parser.Hint)(nil),
-                      As:   (*parser.AsAlias)(nil),
-                    },
-                    TableSample: (*parser.TableSample)(nil),
+                pos:    45,
+                Source: &parser.TableName{
+                  Table: &parser.Ident{
+                    pos:  50,
+                    end:  57,
+                    Name: "Singers",
                   },
+                  Hint:   (*parser.Hint)(nil),
+                  As:     (*parser.AsAlias)(nil),
+                  Sample: (*parser.TableSample)(nil),
                 },
               },
               Where:   (*parser.Where)(nil),
@@ -118,20 +110,16 @@ UNION ALL
                       },
                     },
                     From: &parser.From{
-                      pos:   92,
-                      Items: []*parser.FromItem{
-                        &parser.FromItem{
-                          Source: &parser.TableName{
-                            Table: &parser.Ident{
-                              pos:  97,
-                              end:  104,
-                              Name: "Singers",
-                            },
-                            Hint: (*parser.Hint)(nil),
-                            As:   (*parser.AsAlias)(nil),
-                          },
-                          TableSample: (*parser.TableSample)(nil),
+                      pos:    92,
+                      Source: &parser.TableName{
+                        Table: &parser.Ident{
+                          pos:  97,
+                          end:  104,
+                          Name: "Singers",
                         },
+                        Hint:   (*parser.Hint)(nil),
+                        As:     (*parser.AsAlias)(nil),
+                        Sample: (*parser.TableSample)(nil),
                       },
                     },
                     Where:   (*parser.Where)(nil),
@@ -157,20 +145,16 @@ UNION ALL
                             },
                           },
                           From: &parser.From{
-                            pos:   144,
-                            Items: []*parser.FromItem{
-                              &parser.FromItem{
-                                Source: &parser.TableName{
-                                  Table: &parser.Ident{
-                                    pos:  149,
-                                    end:  156,
-                                    Name: "Singers",
-                                  },
-                                  Hint: (*parser.Hint)(nil),
-                                  As:   (*parser.AsAlias)(nil),
-                                },
-                                TableSample: (*parser.TableSample)(nil),
+                            pos:    144,
+                            Source: &parser.TableName{
+                              Table: &parser.Ident{
+                                pos:  149,
+                                end:  156,
+                                Name: "Singers",
                               },
+                              Hint:   (*parser.Hint)(nil),
+                              As:     (*parser.AsAlias)(nil),
+                              Sample: (*parser.TableSample)(nil),
                             },
                           },
                           Where:   (*parser.Where)(nil),
@@ -196,20 +180,16 @@ UNION ALL
                                   },
                                 },
                                 From: &parser.From{
-                                  pos:   207,
-                                  Items: []*parser.FromItem{
-                                    &parser.FromItem{
-                                      Source: &parser.TableName{
-                                        Table: &parser.Ident{
-                                          pos:  212,
-                                          end:  219,
-                                          Name: "Singers",
-                                        },
-                                        Hint: (*parser.Hint)(nil),
-                                        As:   (*parser.AsAlias)(nil),
-                                      },
-                                      TableSample: (*parser.TableSample)(nil),
+                                  pos:    207,
+                                  Source: &parser.TableName{
+                                    Table: &parser.Ident{
+                                      pos:  212,
+                                      end:  219,
+                                      Name: "Singers",
                                     },
+                                    Hint:   (*parser.Hint)(nil),
+                                    As:     (*parser.AsAlias)(nil),
+                                    Sample: (*parser.TableSample)(nil),
                                   },
                                 },
                                 Where:   (*parser.Where)(nil),
@@ -235,20 +215,16 @@ UNION ALL
                                         },
                                       },
                                       From: &parser.From{
-                                        pos:   268,
-                                        Items: []*parser.FromItem{
-                                          &parser.FromItem{
-                                            Source: &parser.TableName{
-                                              Table: &parser.Ident{
-                                                pos:  273,
-                                                end:  280,
-                                                Name: "Singers",
-                                              },
-                                              Hint: (*parser.Hint)(nil),
-                                              As:   (*parser.AsAlias)(nil),
-                                            },
-                                            TableSample: (*parser.TableSample)(nil),
+                                        pos:    268,
+                                        Source: &parser.TableName{
+                                          Table: &parser.Ident{
+                                            pos:  273,
+                                            end:  280,
+                                            Name: "Singers",
                                           },
+                                          Hint:   (*parser.Hint)(nil),
+                                          As:     (*parser.AsAlias)(nil),
+                                          Sample: (*parser.TableSample)(nil),
                                         },
                                       },
                                       Where:   (*parser.Where)(nil),
@@ -267,20 +243,16 @@ UNION ALL
                                         },
                                       },
                                       From: &parser.From{
-                                        pos:   326,
-                                        Items: []*parser.FromItem{
-                                          &parser.FromItem{
-                                            Source: &parser.TableName{
-                                              Table: &parser.Ident{
-                                                pos:  331,
-                                                end:  338,
-                                                Name: "Singers",
-                                              },
-                                              Hint: (*parser.Hint)(nil),
-                                              As:   (*parser.AsAlias)(nil),
-                                            },
-                                            TableSample: (*parser.TableSample)(nil),
+                                        pos:    326,
+                                        Source: &parser.TableName{
+                                          Table: &parser.Ident{
+                                            pos:  331,
+                                            end:  338,
+                                            Name: "Singers",
                                           },
+                                          Hint:   (*parser.Hint)(nil),
+                                          As:     (*parser.AsAlias)(nil),
+                                          Sample: (*parser.TableSample)(nil),
                                         },
                                       },
                                       Where:   (*parser.Where)(nil),

@@ -17,32 +17,28 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  18,
-              end:  25,
-              Name: "Singers",
+      pos:    11,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  18,
+          end:  25,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: &parser.TableSample{
+          pos:    26,
+          Method: "BERNOULLI",
+          Size:   &parser.TableSampleSize{
+            pos:   48,
+            end:   60,
+            Value: &parser.IntLiteral{
+              pos:   49,
+              end:   51,
+              Base:  10,
+              Value: "90",
             },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: &parser.TableSample{
-            pos:    26,
-            Method: "BERNOULLI",
-            Size:   &parser.TableSampleSize{
-              pos:   48,
-              end:   60,
-              Value: &parser.IntLiteral{
-                pos:   49,
-                end:   51,
-                Base:  10,
-                Value: "90",
-              },
-              Unit: "PERCENT",
-            },
+            Unit: "PERCENT",
           },
         },
       },
@@ -56,4 +52,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers TABLESAMPLE BERNOULLI(90 PERCENT)
+SELECT * FROM Singers TABLESAMPLE BERNOULLI (90 PERCENT)

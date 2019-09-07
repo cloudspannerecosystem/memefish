@@ -63,27 +63,23 @@ FROM Singers S
       },
     },
     From: &parser.From{
-      pos:   48,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  53,
-              end:  60,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.AsAlias{
-              pos:   61,
-              Alias: &parser.Ident{
-                pos:  61,
-                end:  62,
-                Name: "S",
-              },
-            },
-          },
-          TableSample: (*parser.TableSample)(nil),
+      pos:    48,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  53,
+          end:  60,
+          Name: "Singers",
         },
+        Hint: (*parser.Hint)(nil),
+        As:   &parser.AsAlias{
+          pos:   61,
+          Alias: &parser.Ident{
+            pos:  61,
+            end:  62,
+            Name: "S",
+          },
+        },
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

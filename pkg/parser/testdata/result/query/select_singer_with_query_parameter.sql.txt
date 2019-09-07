@@ -20,20 +20,16 @@ WHERE
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  18,
-              end:  25,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: (*parser.TableSample)(nil),
+      pos:    11,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  18,
+          end:  25,
+          Name: "Singers",
         },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where: &parser.Where{

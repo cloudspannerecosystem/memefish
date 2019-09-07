@@ -144,23 +144,7 @@ func (e *ExprSelectItem) Pos() Pos { return e.Expr.Pos() }
 func (e *ExprSelectItem) End() Pos { return e.Expr.End() }
 
 func (f *From) Pos() Pos { return f.pos }
-func (f *From) End() Pos { return f.Items[len(f.Items)-1].End() }
-
-func (f *FromItem) Pos() Pos {
-	return f.Source.Pos()
-}
-func (f *FromItem) End() Pos {
-	if f.TableSample != nil {
-		return f.TableSample.End()
-	}
-	return f.Source.End()
-}
-
-func (t *TableSample) Pos() Pos { return t.pos }
-func (t *TableSample) End() Pos { return t.Size.End() }
-
-func (t *TableSampleSize) Pos() Pos { return t.pos }
-func (t *TableSampleSize) End() Pos { return t.end }
+func (f *From) End() Pos { return f.Source.End() }
 
 func (w *Where) Pos() Pos { return w.pos }
 func (w *Where) End() Pos { return w.Expr.End() }
@@ -212,6 +196,9 @@ func (t *TableName) Pos() Pos {
 }
 
 func (t *TableName) End() Pos {
+	if t.Sample != nil {
+		return t.Sample.End()
+	}
 	if t.As != nil {
 		return t.As.End()
 	}
@@ -226,6 +213,9 @@ func (s *SubQueryJoinExpr) Pos() Pos {
 }
 
 func (s *SubQueryJoinExpr) End() Pos {
+	if s.Sample != nil {
+		return s.Sample.End()
+	}
 	if s.As != nil {
 		return s.As.End()
 	}
@@ -251,6 +241,12 @@ func (o *On) End() Pos { return o.Expr.End() }
 
 func (u *Using) Pos() Pos { return u.pos }
 func (u *Using) End() Pos { return u.end }
+
+func (t *TableSample) Pos() Pos { return t.pos }
+func (t *TableSample) End() Pos { return t.Size.End() }
+
+func (t *TableSampleSize) Pos() Pos { return t.pos }
+func (t *TableSampleSize) End() Pos { return t.end }
 
 // ================================================================================
 //

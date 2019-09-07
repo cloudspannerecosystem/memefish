@@ -16,20 +16,16 @@ select count(*) from singers
       },
     },
     From: &parser.From{
-      pos:   16,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  21,
-              end:  28,
-              Name: "singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   (*parser.AsAlias)(nil),
-          },
-          TableSample: (*parser.TableSample)(nil),
+      pos:    16,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  21,
+          end:  28,
+          Name: "singers",
         },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
       },
     },
     Where:   (*parser.Where)(nil),

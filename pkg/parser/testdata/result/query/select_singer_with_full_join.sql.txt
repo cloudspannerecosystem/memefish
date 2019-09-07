@@ -18,46 +18,46 @@ FROM
       },
     },
     From: &parser.From{
-      pos:   11,
-      Items: []*parser.FromItem{
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  18,
-              end:  25,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.AsAlias{
-              pos:   26,
-              Alias: &parser.Ident{
-                pos:  29,
-                end:  30,
-                Name: "A",
-              },
+      pos:    11,
+      Source: &parser.Join{
+        Op:     ",",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.TableName{
+          Table: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   26,
+            Alias: &parser.Ident{
+              pos:  29,
+              end:  30,
+              Name: "A",
             },
           },
-          TableSample: (*parser.TableSample)(nil),
+          Sample: (*parser.TableSample)(nil),
         },
-        &parser.FromItem{
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  34,
-              end:  41,
-              Name: "Singers",
-            },
-            Hint: (*parser.Hint)(nil),
-            As:   &parser.AsAlias{
-              pos:   42,
-              Alias: &parser.Ident{
-                pos:  45,
-                end:  46,
-                Name: "B",
-              },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  34,
+            end:  41,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   42,
+            Alias: &parser.Ident{
+              pos:  45,
+              end:  46,
+              Name: "B",
             },
           },
-          TableSample: (*parser.TableSample)(nil),
+          Sample: (*parser.TableSample)(nil),
         },
+        Cond: nil,
       },
     },
     Where:   (*parser.Where)(nil),
