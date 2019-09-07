@@ -259,15 +259,7 @@ func (p *Parser) tryParseFrom() *From {
 	}
 	pos := p.expect("FROM").Pos
 
-	j := p.parseTableExpr(false)
-	for p.Token.Kind == "," {
-		p.NextToken()
-		j = &Join{
-			Left:  j,
-			Op:    CommaJoin,
-			Right: p.parseTableExpr(false),
-		}
-	}
+	j := p.parseTableExpr(true, false)
 
 	return &From{
 		pos:    pos,
@@ -417,7 +409,7 @@ func (p *Parser) tryParseOffset() *Offset {
 //
 // ================================================================================
 
-func (p *Parser) parseTableExpr(needOp bool) TableExpr {
+func (p *Parser) parseTableExpr(toplevel, needOp bool) TableExpr {
 	j := p.parseSimpleTableExpr()
 	for {
 		needOp = needOp && j.isSimpleTableExpr()
@@ -453,28 +445,33 @@ func (p *Parser) parseTableExpr(needOp bool) TableExpr {
 			op = RightOuterJoin
 			needOp = true
 		}
+		if toplevel && p.Token.Kind == "," {
+			op = CommaJoin
+		}
 
 		var method JoinMethod
-		switch {
-		case p.Token.Kind == "HASH":
-			p.NextToken()
-			method = HashJoinMethod
-			needOp = true
-		case p.Token.IsKeywordLike("APPLY"):
-			p.NextToken()
-			method = ApplyJoinMethod
-			needOp = true
-		case p.Token.IsKeywordLike("LOOP"):
-			p.NextToken()
-			method = LoopJoinMethod
-			needOp = true
+		if op != CommaJoin {
+			switch {
+			case p.Token.Kind == "HASH":
+				p.NextToken()
+				method = HashJoinMethod
+				needOp = true
+			case p.Token.IsKeywordLike("APPLY"):
+				p.NextToken()
+				method = ApplyJoinMethod
+				needOp = true
+			case p.Token.IsKeywordLike("LOOP"):
+				p.NextToken()
+				method = LoopJoinMethod
+				needOp = true
+			}
 		}
 
 		switch {
 		case needOp:
 			p.expect("JOIN")
 			needOp = false
-		case p.Token.Kind == "JOIN":
+		case op == CommaJoin || p.Token.Kind == "JOIN":
 			p.NextToken()
 		default:
 			return j
@@ -483,7 +480,7 @@ func (p *Parser) parseTableExpr(needOp bool) TableExpr {
 		hint := p.tryParseHint()
 		right := p.parseSimpleTableExpr()
 
-		if op == CrossJoin {
+		if op == CrossJoin || op == CommaJoin {
 			j = &Join{
 				Op:     op,
 				Method: method,
@@ -525,7 +522,7 @@ func (p *Parser) parseSimpleTableExpr() TableExpr {
 
 	if p.Token.Kind == "(" {
 		pos := p.expect("(").Pos
-		j := p.parseTableExpr(true)
+		j := p.parseTableExpr(false, true)
 		end := p.expect(")").End
 		return p.parseTableExprSuffix(&ParenTableExpr{
 			pos:    pos,

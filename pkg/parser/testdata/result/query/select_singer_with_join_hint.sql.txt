@@ -94,7 +94,7 @@ FROM
               },
             },
             Left: &parser.Join{
-              Op:     "LEFT OUTER JOIn",
+              Op:     "LEFT OUTER JOIN",
               Method: "",
               Hint:   &parser.Hint{
                 pos:     45,
@@ -348,4 +348,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A LEFT OUTER JOIn @{FORCE_JOIN_ORDER=TRUE} Singers AS B ON A.SingerID = B.SingerID INNER JOIN @{JOIN_TYPE=HASH_JOIN} Singers AS C ON A.SingerID = C.SingerID INNER JOIN @{JOIN_TYPE=APPLY_JOIN} Singers AS D ON A.SingerID = D.SingerID INNER JOIN @{JOIN_TYPE=LOOP_JOIN} Singers AS E ON A.SingerID = E.SingerID
+SELECT * FROM Singers AS A LEFT OUTER JOIN @{FORCE_JOIN_ORDER=TRUE} Singers AS B ON A.SingerID = B.SingerID INNER JOIN @{JOIN_TYPE=HASH_JOIN} Singers AS C ON A.SingerID = C.SingerID INNER JOIN @{JOIN_TYPE=APPLY_JOIN} Singers AS D ON A.SingerID = D.SingerID INNER JOIN @{JOIN_TYPE=LOOP_JOIN} Singers AS E ON A.SingerID = E.SingerID

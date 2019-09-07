@@ -53,11 +53,11 @@ FROM
           Method: "",
           Hint:   (*parser.Hint)(nil),
           Left:   &parser.Join{
-            Op:     "LEFT OUTER JOIn",
+            Op:     "LEFT OUTER JOIN",
             Method: "",
             Hint:   (*parser.Hint)(nil),
             Left:   &parser.Join{
-              Op:     "LEFT OUTER JOIn",
+              Op:     "LEFT OUTER JOIN",
               Method: "",
               Hint:   (*parser.Hint)(nil),
               Left:   &parser.Join{
@@ -542,4 +542,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID CROSS JOIN Singers AS D FULL OUTER JOIN Singers AS E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers AS F ON A.SingerID = F.SingerID LEFT OUTER JOIn Singers AS G ON A.SingerID = G.SingerID LEFT OUTER JOIn Singers AS H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers AS I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers AS J ON A.SingerID = J.SingerID
+SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID CROSS JOIN Singers AS D FULL OUTER JOIN Singers AS E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers AS F ON A.SingerID = F.SingerID LEFT OUTER JOIN Singers AS G ON A.SingerID = G.SingerID LEFT OUTER JOIN Singers AS H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers AS I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers AS J ON A.SingerID = J.SingerID

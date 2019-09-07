@@ -22,7 +22,7 @@ FROM
     From: &parser.From{
       pos:    11,
       Source: &parser.Join{
-        Op:     "LEFT OUTER JOIn",
+        Op:     "LEFT OUTER JOIN",
         Method: "",
         Hint:   (*parser.Hint)(nil),
         Left:   &parser.TableName{
@@ -86,4 +86,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A LEFT OUTER JOIn Singers AS B USING (SingerID, FirstName)
+SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B USING (SingerID, FirstName)

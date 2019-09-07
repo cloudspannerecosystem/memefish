@@ -58,7 +58,7 @@ const (
 	CrossJoin      JoinOp = "CROSS JOIN"
 	InnerJoin      JoinOp = "INNER JOIN"
 	FullOuterJoin  JoinOp = "FULL OUTER JOIN"
-	LeftOuterJoin  JoinOp = "LEFT OUTER JOIn"
+	LeftOuterJoin  JoinOp = "LEFT OUTER JOIN"
 	RightOuterJoin JoinOp = "RIGHT OUTER JOIN"
 )
 

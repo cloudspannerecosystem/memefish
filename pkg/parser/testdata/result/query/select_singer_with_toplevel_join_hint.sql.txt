@@ -39,7 +39,7 @@ FROM
     From: &parser.From{
       pos:    36,
       Source: &parser.Join{
-        Op:     "LEFT OUTER JOIn",
+        Op:     "LEFT OUTER JOIN",
         Method: "",
         Hint:   (*parser.Hint)(nil),
         Left:   &parser.TableName{
@@ -121,4 +121,4 @@ FROM
 }
 
 --- SQL
-@{FORCE_JOIN_ORDER=TRUE} SELECT * FROM Singers AS A LEFT OUTER JOIn Singers AS B ON A.SingerID = B.SingerID
+@{FORCE_JOIN_ORDER=TRUE} SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID
