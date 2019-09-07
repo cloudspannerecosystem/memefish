@@ -208,11 +208,11 @@ func (t *TableName) End() Pos {
 	return t.Table.End()
 }
 
-func (s *SubQueryJoinExpr) Pos() Pos {
+func (s *SubQueryTableExpr) Pos() Pos {
 	return s.Query.Pos()
 }
 
-func (s *SubQueryJoinExpr) End() Pos {
+func (s *SubQueryTableExpr) End() Pos {
 	if s.Sample != nil {
 		return s.Sample.End()
 	}
@@ -222,8 +222,8 @@ func (s *SubQueryJoinExpr) End() Pos {
 	return s.Query.End()
 }
 
-func (p *ParenJoinExpr) Pos() Pos { return p.pos }
-func (p *ParenJoinExpr) End() Pos { return p.end }
+func (p *ParenTableExpr) Pos() Pos { return p.pos }
+func (p *ParenTableExpr) End() Pos { return p.end }
 
 func (j *Join) Pos() Pos {
 	return j.Left.Pos()

@@ -259,13 +259,13 @@ func (p *Parser) tryParseFrom() *From {
 	}
 	pos := p.expect("FROM").Pos
 
-	j := p.parseJoinExpr(false)
+	j := p.parseTableExpr(false)
 	for p.Token.Kind == "," {
 		p.NextToken()
 		j = &Join{
 			Left:  j,
 			Op:    CommaJoin,
-			Right: p.parseJoinExpr(false),
+			Right: p.parseTableExpr(false),
 		}
 	}
 
@@ -417,10 +417,10 @@ func (p *Parser) tryParseOffset() *Offset {
 //
 // ================================================================================
 
-func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
-	j := p.parseSimpleJoinExpr()
+func (p *Parser) parseTableExpr(needOp bool) TableExpr {
+	j := p.parseSimpleTableExpr()
 	for {
-		needOp = needOp && j.isSimpleJoinExpr()
+		needOp = needOp && j.isSimpleTableExpr()
 
 		op := InnerJoin
 		switch p.Token.Kind {
@@ -481,7 +481,7 @@ func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 		}
 
 		hint := p.tryParseHint()
-		right := p.parseSimpleJoinExpr()
+		right := p.parseSimpleTableExpr()
 
 		if op == CrossJoin {
 			j = &Join{
@@ -506,7 +506,7 @@ func (p *Parser) parseJoinExpr(needOp bool) JoinExpr {
 	}
 }
 
-func (p *Parser) parseSimpleJoinExpr() JoinExpr {
+func (p *Parser) parseSimpleTableExpr() TableExpr {
 	if p.lookaheadSubQuery() {
 		pos := p.expect("(").Pos
 		query := p.parseQueryExpr()
@@ -515,7 +515,7 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 		if as != nil {
 			end = as.End()
 		}
-		return p.parseJoinExprSuffix(&SubQueryJoinExpr{
+		return p.parseTableExprSuffix(&SubQueryTableExpr{
 			pos:   pos,
 			end:   end,
 			Query: query,
@@ -525,9 +525,9 @@ func (p *Parser) parseSimpleJoinExpr() JoinExpr {
 
 	if p.Token.Kind == "(" {
 		pos := p.expect("(").Pos
-		j := p.parseJoinExpr(true)
+		j := p.parseTableExpr(true)
 		end := p.expect(")").End
-		return p.parseJoinExprSuffix(&ParenJoinExpr{
+		return p.parseTableExprSuffix(&ParenTableExpr{
 			pos:    pos,
 			end:    end,
 			Source: j,
@@ -567,7 +567,7 @@ func (p *Parser) parseIdentOrPath() Expr {
 	}
 }
 
-func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) JoinExpr {
+func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
 	withOffset := p.tryParseWithOffset()
@@ -582,7 +582,7 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr Expr, pos Pos, end Pos) J
 		end = hint.End()
 	}
 
-	return p.parseJoinExprSuffix(&Unnest{
+	return p.parseTableExprSuffix(&Unnest{
 		pos:        pos,
 		end:        end,
 		Implicit:   implicit,
@@ -612,10 +612,10 @@ func (p *Parser) tryParseWithOffset() *WithOffset {
 	}
 }
 
-func (p *Parser) parseTableNameSuffix(id *Ident) JoinExpr {
+func (p *Parser) parseTableNameSuffix(id *Ident) TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
-	return p.parseJoinExprSuffix(&TableName{
+	return p.parseTableExprSuffix(&TableName{
 		Table: id,
 		Hint:  hint,
 		As:    as,
@@ -658,7 +658,7 @@ func (p *Parser) parseUsing() *Using {
 	}
 }
 
-func (p *Parser) parseJoinExprSuffix(j JoinExpr) JoinExpr {
+func (p *Parser) parseTableExprSuffix(j TableExpr) TableExpr {
 	sample := p.tryParseTableSample()
 	if sample != nil {
 		j.setSample(sample)

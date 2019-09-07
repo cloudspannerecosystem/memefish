@@ -283,7 +283,7 @@ func (t *TableName) SQL() string {
 	return sql
 }
 
-func (s *SubQueryJoinExpr) SQL() string {
+func (s *SubQueryTableExpr) SQL() string {
 	sql := "(" + s.Query.SQL() + ")"
 	if s.As != nil {
 		sql += " " + s.As.SQL()
@@ -294,7 +294,7 @@ func (s *SubQueryJoinExpr) SQL() string {
 	return sql
 }
 
-func (p *ParenJoinExpr) SQL() string {
+func (p *ParenTableExpr) SQL() string {
 	sql := "(" + p.Source.SQL() + ")"
 	if p.Sample != nil {
 		sql += " " + p.Sample.SQL()

@@ -24,7 +24,7 @@ FROM (
     },
     From: &parser.From{
       pos:    11,
-      Source: &parser.SubQueryJoinExpr{
+      Source: &parser.SubQueryTableExpr{
         pos:   16,
         end:   78,
         Query: &parser.Select{

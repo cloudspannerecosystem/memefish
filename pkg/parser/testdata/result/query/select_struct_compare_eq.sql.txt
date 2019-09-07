@@ -30,7 +30,7 @@ SELECT ARRAY(
             },
             From: &parser.From{
               pos:    31,
-              Source: &parser.SubQueryJoinExpr{
+              Source: &parser.SubQueryTableExpr{
                 pos:   40,
                 end:   96,
                 Query: &parser.Select{

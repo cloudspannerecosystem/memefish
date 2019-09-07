@@ -19,14 +19,14 @@ from (
     },
     From: &parser.From{
       pos:    9,
-      Source: &parser.ParenJoinExpr{
+      Source: &parser.ParenTableExpr{
         pos:    14,
         end:    132,
         Source: &parser.Join{
           Op:     "INNER JOIN",
           Method: "",
           Hint:   (*parser.Hint)(nil),
-          Left:   &parser.SubQueryJoinExpr{
+          Left:   &parser.SubQueryTableExpr{
             pos:   20,
             end:   91,
             Query: &parser.SubQuery{
@@ -152,7 +152,7 @@ from (
             As:     (*parser.AsAlias)(nil),
             Sample: (*parser.TableSample)(nil),
           },
-          Right: &parser.SubQueryJoinExpr{
+          Right: &parser.SubQueryTableExpr{
             pos:   103,
             end:   120,
             Query: &parser.Select{

@@ -27,18 +27,18 @@ func (StarPath) isSelectItem()       {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
-// JoinExpr represents JOIN operands.
-type JoinExpr interface {
+// TableExpr represents JOIN operands.
+type TableExpr interface {
 	Node
-	isSimpleJoinExpr() bool
+	isSimpleTableExpr() bool
 	setSample(sample *TableSample)
 }
 
-var _ JoinExpr = &Unnest{}
-var _ JoinExpr = &TableName{}
-var _ JoinExpr = &SubQueryJoinExpr{}
-var _ JoinExpr = &ParenJoinExpr{}
-var _ JoinExpr = &Join{}
+var _ TableExpr = &Unnest{}
+var _ TableExpr = &TableName{}
+var _ TableExpr = &SubQueryTableExpr{}
+var _ TableExpr = &ParenTableExpr{}
+var _ TableExpr = &Join{}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -299,7 +299,7 @@ type From struct {
 	// end = Source.end
 	pos Pos
 
-	Source JoinExpr
+	Source TableExpr
 }
 
 // Where is WHERE clause node.
@@ -409,7 +409,7 @@ type Unnest struct {
 	Sample     *TableSample // optional
 }
 
-func (Unnest) isSimpleJoinExpr() bool {
+func (Unnest) isSimpleTableExpr() bool {
 	return true
 }
 
@@ -439,7 +439,7 @@ type TableName struct {
 	Sample *TableSample // optional
 }
 
-func (TableName) isSimpleJoinExpr() bool {
+func (TableName) isSimpleTableExpr() bool {
 	return true
 }
 
@@ -447,10 +447,10 @@ func (t *TableName) setSample(sample *TableSample) {
 	t.Sample = sample
 }
 
-// SubQueryJoinExpr is subquery inside JOIN expression.
+// SubQueryTableExpr is subquery inside JOIN expression.
 //
 //     ({{.Query | sql}}) {{.As | sqlOpt}} {{.Sample | sqlOpt}}
-type SubQueryJoinExpr struct {
+type SubQueryTableExpr struct {
 	pos, end Pos
 
 	Query  QueryExpr
@@ -458,30 +458,30 @@ type SubQueryJoinExpr struct {
 	Sample *TableSample // optional
 }
 
-func (s *SubQueryJoinExpr) isSimpleJoinExpr() bool {
+func (s *SubQueryTableExpr) isSimpleTableExpr() bool {
 	return s.As != nil
 }
 
-func (s *SubQueryJoinExpr) setSample(sample *TableSample) {
+func (s *SubQueryTableExpr) setSample(sample *TableSample) {
 	s.Sample = sample
 	s.end = sample.End()
 }
 
-// ParenJoinExpr is parenthesized JOIN expression.
+// ParenTableExpr is parenthesized JOIN expression.
 //
 //     ({{.Expr | sql}}) {{.Sample | sqlOpt}}
-type ParenJoinExpr struct {
+type ParenTableExpr struct {
 	pos, end Pos
 
-	Source JoinExpr     // SubQueryJoinExpr (without As) or Join
+	Source TableExpr    // SubQueryJoinExpr (without As) or Join
 	Sample *TableSample // optional
 }
 
-func (ParenJoinExpr) isSimpleJoinExpr() bool {
+func (ParenTableExpr) isSimpleTableExpr() bool {
 	return true
 }
 
-func (p *ParenJoinExpr) setSample(sample *TableSample) {
+func (p *ParenTableExpr) setSample(sample *TableSample) {
 	p.Sample = sample
 	p.end = sample.End()
 }
@@ -498,11 +498,11 @@ type Join struct {
 	Op          JoinOp
 	Method      JoinMethod
 	Hint        *Hint // optional
-	Left, Right JoinExpr
+	Left, Right TableExpr
 	Cond        JoinCondition // nil when Op is CrossJoin, otherwise it must be set.
 }
 
-func (Join) isSimpleJoinExpr() bool {
+func (Join) isSimpleTableExpr() bool {
 	return false
 }
 
