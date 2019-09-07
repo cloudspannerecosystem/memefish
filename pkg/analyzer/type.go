@@ -1,5 +1,10 @@
 package analyzer
 
+import (
+	"github.com/MakeNowJust/memefish/pkg/parser"
+)
+
+// Type represents SQL types.
 type Type interface {
 	String() string
 	EqualTo(t Type) bool
@@ -7,6 +12,7 @@ type Type interface {
 	CoerceTo(t Type) bool
 }
 
+// SimpleType is types except for ARRAY and STRUCT.
 type SimpleType string
 
 const (
@@ -19,15 +25,18 @@ const (
 	TimestampType SimpleType = "TIMESTAMP"
 )
 
+// ArrayType is ARRAY type.
 type ArrayType struct {
 	// A nested array is not supported in Spanner, so Item never become ArrayType.
 	Item Type
 }
 
+// StructType is STRUCT type.
 type StructType struct {
 	Fields []*StructField
 }
 
+// StructField is STRUCT field.
 type StructField struct {
 	Name string
 	Type Type
@@ -181,6 +190,7 @@ func (s *StructType) CoerceTo(t Type) bool {
 	return false
 }
 
+// TypeEqual checks s equals to t in structual.
 func TypeEqual(s, t Type) bool {
 	if s == nil || t == nil {
 		return true
@@ -188,6 +198,7 @@ func TypeEqual(s, t Type) bool {
 	return s.EqualTo(t)
 }
 
+// TypeCoerce checks s convert to t implicitly.
 func TypeCoerce(s, t Type) bool {
 	if s == nil || t == nil {
 		return true
@@ -195,6 +206,7 @@ func TypeCoerce(s, t Type) bool {
 	return s.CoerceTo(t)
 }
 
+// TypeString returns string representation of t.
 func TypeString(t Type) string {
 	if t == nil {
 		return "(null)"
@@ -202,6 +214,25 @@ func TypeString(t Type) string {
 	return t.String()
 }
 
+// TypeCastArray casts t to ArrayType.
+func TypeCastArray(t Type) (*ArrayType, bool) {
+	if t == nil {
+		return nil, false
+	}
+	tt, ok := t.(*ArrayType)
+	return tt, ok
+}
+
+// TypeCastStruct casts t to StructType.
+func TypeCastStruct(t Type) (*StructType, bool) {
+	if t == nil {
+		return nil, false
+	}
+	tt, ok := t.(*StructType)
+	return tt, ok
+}
+
+// MergeType merges s and t into a type.
 func MergeType(s, t Type) (Type, bool) {
 	if s == nil {
 		return t, true
@@ -247,4 +278,22 @@ func mergeStructType(s, t *StructType) (Type, bool) {
 		}
 	}
 	return &StructType{Fields: fields}, true
+}
+
+// typeToSelectList converts t to SelectList when t is STRUCT.
+func typeToSelectList(t Type, n parser.Node) SelectList {
+	tt, ok := TypeCastStruct(t)
+	if !ok {
+		return nil
+	}
+
+	if len(tt.Fields) == 0 {
+		return nil
+	}
+
+	list := make(SelectList, len(tt.Fields))
+	for i, f := range tt.Fields {
+		list[i] = newColumnReference(f.Name, f.Type, n)
+	}
+	return list
 }

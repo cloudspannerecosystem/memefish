@@ -44,9 +44,9 @@ func main() {
 	a.AnalyzeQueryStatement(stmt)
 	log.Printf("finish analyzing")
 
-	list := a.NameLists[stmt.Query]
+	list := a.SelectLists[stmt.Query]
 	if list == nil {
-		log.Fatal("missing name list")
+		log.Fatal("missing select list")
 	}
 
 	pp.Println(list)

@@ -13,6 +13,7 @@ type Reference struct {
 	TableSchema  *TableSchema
 	ColumnSchema *ColumnSchema
 	Node         parser.Node
+	Ident        *parser.Ident
 	Origin       []*Reference
 }
 
@@ -22,9 +23,25 @@ const (
 	_ ReferenceKind = iota
 	TableRef
 	ColumnRef
+	_ ReferenceKind = -iota
 	InvalidRefAmbiguous
 	InvalidRefAggregate
 )
+
+func (k ReferenceKind) Invalid() bool {
+	return k < 0
+}
+
+func newColumnReference(name string, t Type, n parser.Node) *Reference {
+	return &Reference{
+		Kind: ColumnRef,
+
+		Name: name,
+		Type: t,
+
+		Node: n,
+	}
+}
 
 // merge merges two references.
 //
@@ -66,6 +83,21 @@ func (r *Reference) GetNode(fallback parser.Node) parser.Node {
 
 	for _, o := range r.Origin {
 		n := o.GetNode(nil)
+		if n != nil {
+			return n
+		}
+	}
+
+	return fallback
+}
+
+func (r *Reference) GetIdent(fallback parser.Node) parser.Node {
+	if r.Ident != nil {
+		return r.Ident
+	}
+
+	for _, o := range r.Origin {
+		n := o.GetIdent(nil)
 		if n != nil {
 			return n
 		}

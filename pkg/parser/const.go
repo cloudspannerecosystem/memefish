@@ -54,9 +54,9 @@ const (
 type JoinOp string
 
 const (
-	InnerJoin      JoinOp = "INNER JOIN"
-	CrossJoin      JoinOp = "CROSS JOIN"
 	CommaJoin      JoinOp = ","
+	CrossJoin      JoinOp = "CROSS JOIN"
+	InnerJoin      JoinOp = "INNER JOIN"
 	FullOuterJoin  JoinOp = "FULL OUTER JOIN"
 	LeftOuterJoin  JoinOp = "LEFT OUTER JOIn"
 	RightOuterJoin JoinOp = "RIGHT OUTER JOIN"
