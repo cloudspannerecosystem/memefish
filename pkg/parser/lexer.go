@@ -374,6 +374,9 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) stri
 
 	for l.peekOk(i) {
 		if l.slice(i, i+len(q)) == q {
+			if len(content) == 0 && name == "identifier" {
+				l.panicf("invalid empty identifier")
+			}
 			l.nextN(i + len(q))
 			return string(content)
 		}

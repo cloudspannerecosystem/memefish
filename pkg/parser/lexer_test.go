@@ -134,6 +134,7 @@ var lexerWrongTestCase = []struct {
 	{`B"\U00000031"`, 1, "invalid escape sequence: \\U is not allowed in bytes literal"},
 	{`B"\U00000031"`, 1, "invalid escape sequence: \\U is not allowed in bytes literal"},
 	{`"\UFFFFFFFF"`, 0, "invalid escape sequence: invalid code point: U+FFFFFFFF"},
+	{"``", 0, "invalid empty identifier"},
 }
 
 func nextToken(l *Lexer) (tok *Token, err error) {
