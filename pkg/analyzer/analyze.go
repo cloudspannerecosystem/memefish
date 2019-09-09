@@ -7,7 +7,8 @@ import (
 )
 
 type Analyzer struct {
-	File *parser.File
+	File    *parser.File
+	Catalog *Catalog
 
 	Types     map[parser.Expr]*TypeInfo
 	Tables    map[parser.TableExpr]*TableInfo

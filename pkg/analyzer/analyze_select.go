@@ -230,7 +230,14 @@ func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
 }
 
 func (a *Analyzer) analyzeWhere(w *parser.Where) {
-	// TODO: implement
+	if w == nil {
+		return
+	}
+
+	t := a.analyzeExpr(w.Expr)
+	if !TypeCoerce(t.Type, BoolType) {
+		a.panicf(w, "WHERE clause expression require BOOL, but: %s", TypeString(t.Type))
+	}
 }
 
 func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {

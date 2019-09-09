@@ -38,8 +38,15 @@ func (a *Analyzer) analyzeSelectWithGroupBy(s *parser.Select) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeHaving(w *parser.Having) {
-	// TODO: implement
+func (a *Analyzer) analyzeHaving(h *parser.Having) {
+	if h == nil {
+		return
+	}
+
+	t := a.analyzeExpr(h.Expr)
+	if !TypeCoerce(t.Type, BoolType) {
+		a.panicf(h, "HAVING clause expression require BOOL, but: %s", TypeString(t.Type))
+	}
 }
 
 func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy, lists []NameList) (NameList, *GroupByContext) {
