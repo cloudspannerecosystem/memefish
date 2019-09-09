@@ -147,6 +147,7 @@ func (a *Analyzer) analyzeExprAfterGroupBy(expr parser.Expr, gbc *GroupByContext
 		}
 	}
 
+	// FIXME: it works, but it is very inefficient.
 	a.analyzeExpr(expr)
 }
 
@@ -241,6 +242,8 @@ func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
 		}
 		return e1.Value == e2.Value
 	}
+
+	// TODO: handle missing ASTs
 
 	return false
 }
