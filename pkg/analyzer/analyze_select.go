@@ -152,7 +152,7 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) NameList {
 			for j, name := range names {
 				ts[j] = TypeString(name.Type)
 			}
-			a.panicf(q, "column %d of queries in set operation have incompatible type %s", i+1, strings.Join(ts, ","))
+			a.panicf(q, "column %d of queries in set operation have incompatible type %s", i+1, strings.Join(ts, ", "))
 		}
 
 		list[i] = name

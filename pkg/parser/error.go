@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 )
 
@@ -14,6 +15,11 @@ func (e *Error) String() string {
 }
 
 func (e *Error) Error() string {
-	// TODO: improve error message when valid e.Position.End is available.
-	return fmt.Sprintf("syntax error: %s: %s", e.Position, e.Message)
+	var message bytes.Buffer
+	fmt.Fprintf(&message, "syntax error:%s: %s\n", e.Position, e.Message)
+	if e.Position.Source != "" {
+		fmt.Fprintln(&message)
+		fmt.Fprint(&message, e.Position.Source)
+	}
+	return message.String()
 }

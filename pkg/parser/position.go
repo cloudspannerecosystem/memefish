@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 )
@@ -15,10 +16,12 @@ type Position struct {
 	// Line and Column are 0-origin.
 	Line, Column       int
 	EndLine, EndColumn int
+
+	Source string
 }
 
-func (loc *Position) String() string {
-	return fmt.Sprintf("%s:%d:%d", loc.FilePath, loc.Line+1, loc.Column+1)
+func (pos *Position) String() string {
+	return fmt.Sprintf("%s:%d:%d", pos.FilePath, pos.Line+1, pos.Column+1)
 }
 
 type File struct {
@@ -27,21 +30,26 @@ type File struct {
 	lines    []Pos
 }
 
-func NewFile(filePath string, buffer string) *File {
-	lines := []Pos{0}
-	for i, line := range strings.Split(buffer, "\n") {
-		lines = append(lines, Pos(int(lines[i])+len(line)+1))
-	}
-	return &File{
-		FilePath: filePath,
-		Buffer:   buffer,
-		lines:    lines,
-	}
-}
-
 func (f *File) Position(pos, end Pos) *Position {
 	line, column := f.ResovlePos(pos)
 	endLine, endColumn := f.ResovlePos(end)
+
+	var source bytes.Buffer
+	if line == endLine {
+		lineBuffer := f.Buffer[f.lines[line] : f.lines[line+1]-1]
+		count := endColumn - column - 1
+		if count < 0 {
+			count = 0
+		}
+		fmt.Fprintf(&source, "%3d:  %s\n", line+1, lineBuffer)
+		fmt.Fprintf(&source, "      %s^%s\n", strings.Repeat(" ", column), strings.Repeat("~", count))
+	} else if line < endLine {
+		for l := line; l <= endLine; l++ {
+			lineBuffer := f.Buffer[f.lines[l] : f.lines[l+1]-1]
+			fmt.Fprintf(&source, "%3d:  %s\n", l+1, lineBuffer)
+		}
+	}
+
 	return &Position{
 		FilePath:  f.FilePath,
 		Pos:       pos,
@@ -50,10 +58,13 @@ func (f *File) Position(pos, end Pos) *Position {
 		Column:    column,
 		EndLine:   endLine,
 		EndColumn: endColumn,
+		Source:    source.String(),
 	}
 }
 
 func (f *File) ResovlePos(pos Pos) (int, int) {
+	f.init()
+
 	// TODO: for performance, use binary search instead
 	for line := len(f.lines) - 1; line >= 0; line-- {
 		linePos := f.lines[line]
@@ -62,6 +73,17 @@ func (f *File) ResovlePos(pos Pos) (int, int) {
 		}
 	}
 	return -1, -1
+}
+
+func (f *File) init() {
+	if f.lines != nil {
+		return
+	}
+	lines := []Pos{0}
+	for i, line := range strings.Split(f.Buffer, "\n") {
+		lines = append(lines, Pos(int(lines[i])+len(line)+1))
+	}
+	f.lines = lines
 }
 
 // ================================================================================

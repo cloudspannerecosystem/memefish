@@ -24,7 +24,7 @@ func main() {
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: parser.NewFile("[query]", query),
+			File: &parser.File{FilePath: "", Buffer: query},
 		},
 	}
 

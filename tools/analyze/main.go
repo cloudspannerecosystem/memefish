@@ -53,7 +53,7 @@ func main() {
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: parser.NewFile("[query]", query),
+			File: &parser.File{FilePath: "", Buffer: query},
 		},
 	}
 
@@ -70,7 +70,10 @@ func main() {
 		Params:  params,
 		Catalog: &analyzer.Catalog{Tables: catalog},
 	}
-	a.AnalyzeQueryStatement(stmt)
+	err = a.AnalyzeQueryStatement(stmt)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Printf("finish analyzing")
 
 	list := a.NameLists[stmt.Query]

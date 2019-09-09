@@ -20,9 +20,19 @@ type Analyzer struct {
 	scope *NameScope
 }
 
-func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) {
-	// TODO: error handle
+func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
 	a.analyzeQueryStatement(q)
+	return
 }
 
 func (a *Analyzer) analyzeType(t parser.Type) Type {

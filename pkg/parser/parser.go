@@ -13,7 +13,7 @@ func (p *Parser) ParseQuery() (stmt *QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			stmt = nil
-			if e, ok := r.(error); ok {
+			if e, ok := r.(*Error); ok {
 				err = e
 			} else {
 				panic(r)
@@ -33,7 +33,7 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			expr = nil
-			if e, ok := r.(error); ok {
+			if e, ok := r.(*Error); ok {
 				err = e
 			} else {
 				panic(r)

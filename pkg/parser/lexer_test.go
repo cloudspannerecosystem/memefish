@@ -170,7 +170,7 @@ func tokenEqual(t1, t2 *Token) bool {
 func testLexer(t *testing.T, source string, tokens []*Token) {
 	t.Helper()
 	l := &Lexer{
-		File: NewFile("[test]", source),
+		File: &File{FilePath: "[test]", Buffer: source},
 	}
 	for _, t2 := range tokens {
 		t1, err := nextToken(l)
@@ -222,7 +222,7 @@ func TestLexerWrong(t *testing.T) {
 	for _, tc := range lexerWrongTestCase {
 		t.Run(fmt.Sprintf("testcase/%q", tc.source), func(t *testing.T) {
 			l := &Lexer{
-				File: NewFile("[test]", tc.source),
+				File: &File{FilePath: "[test]", Buffer: tc.source},
 			}
 			var err error
 			for l.Token.Kind != TokenEOF {
