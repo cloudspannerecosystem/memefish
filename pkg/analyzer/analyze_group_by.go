@@ -21,15 +21,19 @@ func (a *Analyzer) analyzeSelectWithGroupBy(s *parser.Select) NameList {
 	}
 
 	list, gbc := a.analyzeGroupBy(s.Results, s.GroupBy, lists)
+	a.scope.context = gbc
 	a.analyzeSelectResultsAfterGroupBy(s.Results, gbc)
 
 	a.pushNameList(list)
-	a.scope.context = gbc
 	a.analyzeHaving(s.Having)
 	a.analyzeOrderBy(s.OrderBy)
 	a.analyzeLimit(s.Limit)
-	a.scope.context = nil
 	a.popScope()
+	a.popScope()
+
+	if s.AsStruct {
+		return NameList{makeNameListColumnName(list, s)}
+	}
 
 	return list
 }
@@ -50,8 +54,7 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 	}
 
 	gbc := &GroupByContext{
-		Lists:      listsMap,
-		ValidNames: make(map[*Name]struct{}),
+		Lists: listsMap,
 	}
 
 	for _, expr := range g.Exprs {
@@ -77,7 +80,7 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 				a.panicf(e, "error on parsing integer literal: %v", err)
 			}
 			if 1 <= v && int(v) <= len(list) {
-				gbc.AddValidName(list[v])
+				gbc.AddValidName(list[v-1])
 				continue
 			}
 		}
@@ -137,9 +140,7 @@ func (a *Analyzer) analyzeExprAfterGroupBy(expr parser.Expr, gbc *GroupByContext
 		}
 	}
 
-	a.scope.context = gbc
 	a.analyzeExpr(expr)
-	a.scope.context = nil
 }
 
 func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {

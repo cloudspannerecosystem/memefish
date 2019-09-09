@@ -53,9 +53,9 @@ func (a *Analyzer) popScope() {
 	a.scope = a.scope.Next
 }
 
-func (a *Analyzer) lookup(target string) *Name {
+func (a *Analyzer) lookup(target string) (*Name, *GroupByContext) {
 	if a.scope == nil {
-		return nil
+		return nil, nil
 	}
 	return a.scope.Lookup(target)
 }

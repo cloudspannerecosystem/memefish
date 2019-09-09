@@ -204,18 +204,15 @@ func (a *Analyzer) analyzeExistsSubQuery(e *parser.ExistsSubQuery) *TypeInfo {
 }
 
 func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
-	name := a.lookup(e.Name)
+	name, context := a.lookup(e.Name)
 	if name == nil {
 		a.panicf(e, "unknown name: %s", e.SQL())
 	}
 	if name.Ambiguous {
 		a.panicf(e, "ambiguous name: %s", e.SQL())
 	}
-
-	if a.scope.context != nil {
-		if !a.scope.context.IsValidName(name) {
-			a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
-		}
+	if context != nil && !context.IsValidName(name) {
+		a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
 	}
 
 	return &TypeInfo{
@@ -226,7 +223,7 @@ func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
 
 func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 	id0 := e.Idents[0]
-	name := a.lookup(id0.Name)
+	name, context := a.lookup(id0.Name)
 	if name == nil {
 		a.panicf(e.Idents[0], "unknown name: %s", id0.SQL())
 	}
@@ -245,10 +242,8 @@ func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 		name = child
 	}
 
-	if a.scope.context != nil {
-		if !a.scope.context.IsValidName(name) {
-			a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
-		}
+	if context != nil && !context.IsValidName(name) {
+		a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
 	}
 
 	return &TypeInfo{

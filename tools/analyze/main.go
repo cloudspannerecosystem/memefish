@@ -59,9 +59,10 @@ func main() {
 	table.SetHeader(header)
 
 	var types []string
-	for _, r := range list {
-		types = append(types, analyzer.TypeString(r.Type))
+	for _, name := range list {
+		types = append(types, analyzer.TypeString(name.Type))
 	}
 	table.Append(types)
+
 	table.Render()
 }

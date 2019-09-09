@@ -117,6 +117,11 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
 	a.analyzeOrderBy(s.OrderBy)
 	a.analyzeLimit(s.Limit)
 	a.popScope()
+	a.popScope()
+
+	if s.AsStruct {
+		return NameList{makeNameListColumnName(list, s)}
+	}
 
 	return list
 }
