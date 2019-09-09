@@ -123,9 +123,14 @@ func makeExprColumnName(t Type, expr parser.Expr, node parser.Node, ident *parse
 
 // for parser.Alias
 func makeAliasName(name *Name, node parser.Node, ident *parser.Ident) *Name {
+	var text string
+	if ident != nil {
+		text = ident.Name
+	}
+
 	return &Name{
 		Kind:  AliasName,
-		Text:  ident.Name,
+		Text:  text,
 		Type:  name.Type,
 		Ref:   name,
 		Node:  node,

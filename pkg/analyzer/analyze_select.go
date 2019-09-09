@@ -7,7 +7,7 @@ import (
 )
 
 func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
-	// TODO: analyze q.Hint
+	// TODO: check q.Hint
 	_ = a.analyzeQueryExpr(q.Query)
 }
 
@@ -226,6 +226,9 @@ func (a *Analyzer) analyzeAlias(s *parser.Alias) NameList {
 
 func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
 	t := a.analyzeExpr(s.Expr)
+	if t.Name != nil {
+		return NameList{makeAliasName(t.Name, s, extractIdentFromExpr(s.Expr))}
+	}
 	return NameList{makeExprColumnName(t.Type, s.Expr, s, nil)}
 }
 
@@ -245,5 +248,12 @@ func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {
 }
 
 func (a *Analyzer) analyzeLimit(l *parser.Limit) {
-	// TODO: implement
+	if l == nil {
+		return
+	}
+
+	a.analyzeIntValue(l.Count)
+	if l.Offset != nil {
+		a.analyzeIntValue(l.Offset.Value)
+	}
 }

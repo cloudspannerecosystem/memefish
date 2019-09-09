@@ -2,6 +2,8 @@ package analyzer
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
@@ -43,6 +45,66 @@ func (a *Analyzer) analyzeType(t parser.Type) Type {
 	panic("BUG: unreachable")
 }
 
+func (a *Analyzer) analyzeIntValue(i parser.IntValue) int64 {
+	switch i := i.(type) {
+	case *parser.IntLiteral:
+		v, err := strconv.ParseInt(i.Value, i.Base, 64)
+		if err != nil {
+			a.panicf(i, "error on parsing integer literal: %v", err)
+		}
+		return v
+	case *parser.Param:
+		v, ok := a.lookupParam(i.Name)
+		if !ok {
+			a.panicf(i, "unknown query parameter: %s", i.SQL())
+		}
+		iv, ok := v.(int64)
+		if !ok {
+			a.panicf(i, "invalid query parameter: %s", i.SQL())
+		}
+		return iv
+	case *parser.CastIntValue:
+		return a.analyzeIntValue(i.Expr)
+	}
+
+	panic("BUG: unreachable")
+}
+
+func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | int64 */ {
+	switch n := n.(type) {
+	case *parser.IntLiteral:
+		v, err := strconv.ParseInt(n.Value, n.Base, 64)
+		if err != nil {
+			a.panicf(n, "error on parsing integer literal: %v", err)
+		}
+		return v
+	case *parser.FloatLiteral:
+		v, err := strconv.ParseFloat(n.Value, 64)
+		if err != nil {
+			a.panicf(n, "error on parsing integer literal: %v", err)
+		}
+		return v
+	case *parser.Param:
+		v, ok := a.lookupParam(n.Name)
+		if !ok {
+			a.panicf(n, "unknown query parameter: %s", n.SQL())
+		}
+		iv, iok := v.(int64)
+		fv, fok := v.(float64)
+		if iok {
+			return iv
+		}
+		if fok {
+			return fv
+		}
+		a.panicf(n, "invalid query parameter: %s", n.SQL())
+	case *parser.CastNumValue:
+		return a.analyzeNumValue(n.Expr)
+	}
+
+	panic("BUG: unreachable")
+}
+
 func (a *Analyzer) pushNameList(list NameList) {
 	a.scope = list.toNameScope(a.scope)
 }
@@ -60,6 +122,14 @@ func (a *Analyzer) lookup(target string) (*Name, *GroupByContext) {
 		return nil, nil
 	}
 	return a.scope.Lookup(target)
+}
+
+func (a *Analyzer) lookupParam(target string) (interface{}, bool) {
+	if a.Params == nil {
+		return nil, false
+	}
+	p, ok := a.Params[strings.ToUpper(target)]
+	return p, ok
 }
 
 func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *Error {

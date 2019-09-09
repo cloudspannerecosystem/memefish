@@ -90,6 +90,16 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 				gbc.AddValidName(list[v-1])
 				continue
 			}
+		case *parser.Param:
+			v, ok := a.lookupParam(e.Name)
+			if !ok {
+				a.panicf(e, "unknown query parameter: %s", e.SQL())
+			}
+			iv, ok := v.(int64)
+			if ok && 1 <= iv && int(iv) <= len(list) {
+				gbc.AddValidName(list[iv-1])
+				continue
+			}
 		}
 		t := a.analyzeExpr(expr)
 		if t.Name != nil {

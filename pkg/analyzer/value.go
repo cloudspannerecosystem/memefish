@@ -10,7 +10,7 @@ func valueType(v interface{}) (Type, error) {
 		return nil, nil
 	case bool:
 		return BoolType, nil
-	case int, int64:
+	case int64:
 		return Int64Type, nil
 	case float64:
 		return Float64Type, nil

@@ -3,7 +3,6 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
@@ -256,11 +255,7 @@ func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 }
 
 func (a *Analyzer) analyzeParam(e *parser.Param) *TypeInfo {
-	if a.Params == nil {
-		a.panicf(e, "unknown query parameter: %s", e.SQL())
-	}
-
-	v, ok := a.Params[strings.ToUpper(e.Name)]
+	v, ok := a.lookupParam(e.Name)
 	if !ok {
 		a.panicf(e, "unknown query parameter: %s", e.SQL())
 	}
