@@ -60,13 +60,9 @@ func concatAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
 }
 
 func sumAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
-	if a.aggregateScope == nil {
-		a.panicf(e, "cannot call SUM without aggregate context")
-	}
-
-	var oldScope *NameScope
-	oldScope, a.scope, a.aggregateScope = a.scope, a.aggregateScope, nil
-	defer func() { a.scope, a.aggregateScope = oldScope, a.scope }()
+	var context *GroupByContext
+	a.scope.context, context = nil, a.scope.context
+	defer func() { a.scope.context = context }()
 
 	if len(e.Args) != 1 {
 		a.panicf(e, "SUM needs just one argument")
@@ -87,9 +83,6 @@ func sumAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
 }
 
 func (a *Analyzer) analyzeCountStarExpr(e *parser.CountStarExpr) *TypeInfo {
-	if a.aggregateScope == nil {
-		a.panicf(e, "cannot call COUNT(*) without aggregate context")
-	}
 	return &TypeInfo{
 		Type: Int64Type,
 	}

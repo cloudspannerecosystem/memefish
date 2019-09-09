@@ -9,11 +9,11 @@ import (
 type Analyzer struct {
 	File *parser.File
 
-	Types       map[parser.Expr]*TypeInfo
-	SelectLists map[parser.QueryExpr]SelectList
+	Types     map[parser.Expr]*TypeInfo
+	Tables    map[parser.TableExpr]*TableInfo
+	NameLists map[parser.QueryExpr]NameList
 
-	scope          *NameScope
-	aggregateScope *NameScope
+	scope *NameScope
 }
 
 func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) {
@@ -41,29 +41,34 @@ func (a *Analyzer) analyzeType(t parser.Type) Type {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) pushSelectListScope(list SelectList) {
+func (a *Analyzer) pushNameList(list NameList) {
 	a.scope = list.toNameScope(a.scope)
 }
 
-func (a *Analyzer) pushTableScope(t *TableScope) {
-	a.scope = t.toNameScope(a.scope)
+func (a *Analyzer) pushTableInfo(ti *TableInfo) {
+	a.scope = ti.toNameScope(a.scope)
 }
 
 func (a *Analyzer) popScope() {
 	a.scope = a.scope.Next
 }
 
-func (a *Analyzer) lookupRef(p Path) (*Reference, Path) {
+func (a *Analyzer) lookup(target string) *Name {
 	if a.scope == nil {
-		return nil, nil
+		return nil
 	}
-	return a.scope.LookupRef(p)
+	return a.scope.Lookup(target)
 }
 
 func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *Error {
+	var position *parser.Position
+	if node != nil {
+		position = a.File.Position(node.Pos(), node.End())
+	}
+
 	return &Error{
 		Message:  fmt.Sprintf(msg, params...),
-		Position: a.File.Position(node.Pos(), node.End()),
+		Position: position,
 	}
 }
 

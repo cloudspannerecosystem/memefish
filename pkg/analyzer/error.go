@@ -16,6 +16,9 @@ func (e *Error) String() string {
 }
 
 func (e *Error) Error() string {
+	if e.Position == nil {
+		return fmt.Sprintf("syntax error: %s", e.Message)
+	}
 	// TODO: improve error message when valid e.Position.End is available.
 	return fmt.Sprintf("syntax error: %s: %s", e.Position, e.Message)
 }

@@ -6,27 +6,40 @@ import (
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
-func (a *Analyzer) analyzeFrom(f *parser.From) *TableScope {
-	return a.analyzeTableExpr(f.Source, newTableScope())
+type TableInfo struct {
+	List NameList
+	Env  NameEnv
 }
 
-func (a *Analyzer) analyzeTableExpr(e parser.TableExpr, ts *TableScope) *TableScope {
+func (ti *TableInfo) toNameScope(next *NameScope) *NameScope {
+	return &NameScope{
+		List: ti.List,
+		Env:  ti.Env,
+		Next: next,
+	}
+}
+
+func (a *Analyzer) analyzeFrom(f *parser.From) *TableInfo {
+	return a.analyzeTableExpr(f.Source, &TableInfo{})
+}
+
+func (a *Analyzer) analyzeTableExpr(e parser.TableExpr, ti *TableInfo) *TableInfo {
 	switch e := e.(type) {
 	case *parser.Unnest:
-		return a.analyzeUnnest(e, ts)
+		return a.analyzeUnnest(e, ti)
 	case *parser.SubQueryTableExpr:
-		return a.analyzeSubQueryJoinExpr(e, ts)
+		return a.analyzeSubQueryTableExpr(e, ti)
 	case *parser.ParenTableExpr:
-		return a.analyzeParenJoinExpr(e, ts)
+		return a.analyzeParenTableExpr(e, ti)
 	case *parser.Join:
-		return a.analyzeJoin(e, ts)
+		return a.analyzeJoin(e, ti)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ts *TableScope) *TableScope {
-	a.pushTableScope(ts)
+func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {
+	a.pushTableInfo(ti)
 	t := a.analyzeExpr(e.Expr)
 	a.popScope()
 
@@ -35,109 +48,63 @@ func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ts *TableScope) *TableScope {
 		a.panicf(e, "UNNEST value must be ARRAY, but: %s", TypeString(t.Type))
 	}
 
-	var id *parser.Ident
+	var ident *parser.Ident
 	if e.As != nil {
-		id = e.As.Alias
+		ident = e.As.Alias
 	} else if e.Implicit {
-		id = extractIdentFromExpr(e.Expr)
+		ident = extractIdentFromExpr(e.Expr)
 	}
 
-	var name string
-	if id != nil {
-		name = id.Name
-	}
-
-	refs := make(map[string]*Reference)
-	tableRef := &Reference{
-		Kind:  TableRef,
-		Name:  name,
-		Type:  tt.Item,
-		Node:  e,
-		Ident: id,
-	}
-
-	if name != "" {
-		refs[name] = tableRef
-	}
-
-	list := typeToSelectList(tt.Item, e)
-	if list == nil {
-		list = SelectList{tableRef.derive(nil, ColumnRef)}
-	}
+	list := NameList{makeTableName("", tt.Item, e, ident)}
+	result := list.toTableInfo()
 
 	// TODO: check e.Hint
 
 	// check WITH OFFSET clause
 	if e.WithOffset != nil {
-		offsetName := "offset"
-		var offsetId *parser.Ident
-		if e.WithOffset.As != nil {
-			offsetId = e.WithOffset.As.Alias
-			offsetName = offsetId.Name
-		}
-		if offsetName == name {
-			n := parser.Node(e.WithOffset)
-			if offsetId != nil {
-				n = offsetId
-			}
-			a.panicf(n, "duplicate alias %s found", parser.QuoteSQLIdent(name))
-		}
-		offsetRef := &Reference{
-			Kind:  TableRef,
-			Name:  offsetName,
-			Type:  Int64Type,
-			Node:  e.WithOffset,
-			Ident: offsetId,
-		}
-		refs[offsetName] = offsetRef
-		list = append(list, offsetRef.derive(nil, ColumnRef))
+		result = a.mergeTableInfo(ti, a.analyzeWithOffset(e.WithOffset))
 	}
 
 	// TODO: check e.Sample
 
-	return &TableScope{
-		Refs: refs,
-		List: list,
-	}
+	return result
 }
 
-func (a *Analyzer) analyzeSubQueryJoinExpr(e *parser.SubQueryTableExpr, ts *TableScope) *TableScope {
+func (a *Analyzer) analyzeWithOffset(w *parser.WithOffset) *TableInfo {
+	var ident *parser.Ident
+	if w.As != nil {
+		ident = w.As.Alias
+	}
+
+	list := NameList{makeTableName("offset", Int64Type, w, ident)}
+	return list.toTableInfo()
+}
+
+func (a *Analyzer) analyzeSubQueryTableExpr(e *parser.SubQueryTableExpr, ti *TableInfo) *TableInfo {
 	list := a.analyzeQueryExpr(e.Query)
 
-	var id *parser.Ident
+	var ident *parser.Ident
 	if e.As != nil {
-		id = e.As.Alias
+		ident = e.As.Alias
 	}
 
-	var name string
-	if id != nil {
-		name = id.Name
-	}
+	name := makeNameListTableName(list, e, ident)
 
-	refs := make(map[string]*Reference)
-	if name != "" {
-		refs[name] = &Reference{
-			Kind:  TableRef,
-			Name:  name,
-			Type:  list.toType(),
-			Node:  e,
-			Ident: id,
-		}
-	}
-
-	return &TableScope{
-		Refs: refs,
-		List: list,
+	env := list.toNameEnv()
+	env.Insert(name)
+	return &TableInfo{
+		List: name.Children(),
+		Env:  env,
 	}
 }
 
-func (a *Analyzer) analyzeParenJoinExpr(e *parser.ParenTableExpr, ts *TableScope) *TableScope {
-	return a.analyzeTableExpr(e.Source, newTableScope())
+func (a *Analyzer) analyzeParenTableExpr(e *parser.ParenTableExpr, ti *TableInfo) *TableInfo {
+	return a.analyzeTableExpr(e.Source, &TableInfo{})
 }
 
-func (a *Analyzer) analyzeJoin(j *parser.Join, ts *TableScope) *TableScope {
-	lts := a.analyzeTableExpr(j.Left, ts)
-	rts := a.analyzeTableExpr(j.Right, a.merge(ts, lts, j.Left))
+func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
+	lti := a.analyzeTableExpr(j.Left, ti)
+	rti := a.analyzeTableExpr(j.Right, a.mergeTableInfo(ti, lti))
 
 	// TODO: check j.Method and j.Hint
 
@@ -145,127 +112,146 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ts *TableScope) *TableScope {
 		if j.Cond != nil {
 			a.panicf(j.Cond, "CROSS JOIN cannot have ON or USING clause")
 		}
-		return a.merge(lts, rts, j)
+		return a.mergeTableInfo(lti, rti)
 	}
 
 	if j.Cond == nil {
 		a.panicf(j, "%s must have ON or USING clause", j.Op)
 	}
 
-	var result *TableScope
+	var result *TableInfo
 
 	switch cond := j.Cond.(type) {
 	case *parser.On:
-		result := a.merge(lts, rts, j)
-		a.pushTableScope(result)
+		result = a.mergeTableInfo(lti, rti)
+		a.pushTableInfo(result)
 		t := a.analyzeExpr(cond.Expr)
 		a.popScope()
 		if !TypeCoerce(t.Type, BoolType) {
 			a.panicf(cond.Expr, "ON clause expression must be BOOL")
 		}
+
 	case *parser.Using:
 		names := make(map[string]bool)
 		for _, id := range cond.Idents {
 			names[strings.ToUpper(id.Name)] = false
 		}
-		refs := a.mergeRefs(lts.Refs, rts.Refs, names, j)
 
-		var list SelectList
-		for _, id := range cond.Idents {
-			name := strings.ToUpper(id.Name)
-			if names[name] {
+		env := NameEnv{}
+		for text, name := range lti.Env {
+			if _, ok := names[text]; ok {
 				continue
 			}
-			names[name] = true
+			err := env.Insert(name)
+			if err != nil {
+				a.panicf(name.Ident, err.Error())
+			}
+		}
+		for text, name := range rti.Env {
+			if _, ok := names[text]; ok {
+				continue
+			}
+			err := env.Insert(name)
+			if err != nil {
+				a.panicf(name.Ident, err.Error())
+			}
+		}
 
-			lref := lts.List.LookupRef(name)
-			if lref == nil {
+		var list NameList
+		for _, id := range cond.Idents {
+			text := strings.ToUpper(id.Name)
+			if names[text] {
+				continue
+			}
+			names[text] = true
+
+			lname := lti.Env.Lookup(text)
+			if lname == nil {
 				a.panicf(id, "USING condition %s is not found in left-side", id.SQL())
 			}
-			rref := rts.List.LookupRef(name)
-			if rref == nil {
+			rname := rti.Env.Lookup(text)
+			if rname == nil {
 				a.panicf(id, "USING condition %s is not found in right-side", id.SQL())
 			}
-			if !(TypeCoerce(lref.Type, rref.Type) || TypeCoerce(rref.Type, lref.Type)) {
-				a.panicf(id, "USING condition %s is incompatible type: %s and %s", id.SQL(), TypeString(lref.Type), TypeString(rref.Type))
+
+			// TODO: check equality correctly
+			if !(TypeCoerce(lname.Type, rname.Type) || TypeCoerce(rname.Type, lname.Type)) {
+				a.panicf(
+					id,
+					"USING condition %s is incompatible type: %s and %s",
+					id.SQL(), TypeString(lname.Type), TypeString(rname.Type),
+				)
 			}
-			var ref *Reference
+
+			var name *Name
 			switch j.Op {
 			case parser.InnerJoin, parser.LeftOuterJoin:
-				ref = lref.deriveSimple(nil)
-				ref.Origin = append(ref.Origin, rref)
+				name = makeLeftJoinName(lname, rname)
 			case parser.RightOuterJoin:
-				ref := rref.deriveSimple(nil)
-				ref.Origin = append(ref.Origin, lref)
+				name = makeRightJoinName(lname, rname)
 			case parser.FullOuterJoin:
-				ref = lref.deriveSimple(nil)
-				if !ref.merge(rref) {
-					a.panicf(id, "USING condition %s is incompatible type: %s and %s", id.SQL(), TypeString(lref.Type), TypeString(rref.Type))
+				var ok bool
+				name, ok = makeFullJoinName(lname, rname)
+				if !ok {
+					a.panicf(
+						id,
+						"USING condition %s is incompatible type: %s and %s",
+						id.SQL(), TypeString(lname.Type), TypeString(rname.Type),
+					)
 				}
 			default:
 				panic("BUG: unreachable")
 			}
-			refs[name] = ref
-			list = append(list, ref)
+			env.InsertForce(name)
+			list = append(list, name)
 		}
 
-		for _, ref := range lts.List {
-			if _, ok := names[strings.ToUpper(ref.Name)]; ok {
+		for _, name := range lti.List {
+			if _, ok := names[strings.ToUpper(name.Text)]; ok {
 				continue
 			}
-			list = append(list, ref)
+			list = append(list, name)
 		}
-		for _, ref := range rts.List {
-			if _, ok := names[strings.ToUpper(ref.Name)]; ok {
+		for _, name := range rti.List {
+			if _, ok := names[strings.ToUpper(name.Text)]; ok {
 				continue
 			}
-			list = append(list, ref)
+			list = append(list, name)
 		}
 
-		result = &TableScope{
-			Refs: refs,
+		result = &TableInfo{
 			List: list,
+			Env:  env,
 		}
 	}
 
 	return result
 }
 
-func (a *Analyzer) merge(t, u *TableScope, n parser.Node) *TableScope {
-	s := &TableScope{}
-
-	s.List = append(s.List, t.List...)
-	s.List = append(s.List, u.List...)
-	s.Refs = a.mergeRefs(t.Refs, u.Refs, make(map[string]bool), n)
-	return s
+func (a *Analyzer) mergeTableInfo(ti1, ti2 *TableInfo) *TableInfo {
+	var list NameList
+	list = append(list, ti1.List...)
+	list = append(list, ti2.List...)
+	env := a.mergeNameEnv(ti1.Env, ti2.Env)
+	return &TableInfo{
+		List: list,
+		Env:  env,
+	}
 }
 
-func (a *Analyzer) mergeRefs(tRefs, uRefs map[string]*Reference, names map[string]bool, n parser.Node) map[string]*Reference {
-	refs := make(map[string]*Reference)
-
-	for name, ref := range tRefs {
-		name = strings.ToUpper(name)
-		if _, ok := names[name]; ok {
-			continue
+func (a *Analyzer) mergeNameEnv(env1, env2 NameEnv) NameEnv {
+	env := NameEnv{}
+	for _, name := range env1 {
+		err := env.Insert(name)
+		if err != nil {
+			a.panicf(name.Ident, err.Error())
 		}
-		refs[name] = ref
 	}
-
-	for name, ref := range uRefs {
-		name = strings.ToUpper(name)
-		if _, ok := names[name]; ok {
-			continue
+	for _, name := range env2 {
+		err := env.Insert(name)
+		if err != nil {
+			a.panicf(name.Ident, err.Error())
 		}
-		if tRef, ok := refs[name]; ok {
-			if tRef.Kind == TableRef && ref.Kind == TableRef {
-				a.panicf(ref.GetIdent(n), "duplicate alias %s found", parser.QuoteSQLIdent(name))
-			}
-			if tRef.Kind == TableRef && ref.Kind == ColumnRef {
-				continue
-			}
-		}
-		refs[name] = ref
 	}
-
-	return refs
+	return env
 }

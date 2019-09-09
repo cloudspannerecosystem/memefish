@@ -1,6 +1,8 @@
 package analyzer
 
 import (
+	"strings"
+
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
@@ -9,11 +11,8 @@ func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
 	_ = a.analyzeQueryExpr(q.Query)
 }
 
-func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) SelectList {
-	oldAggregateScope := a.aggregateScope
-	defer func() { a.aggregateScope = oldAggregateScope }()
-
-	var list SelectList
+func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) NameList {
+	var list NameList
 	switch q := q.(type) {
 	case *parser.Select:
 		list = a.analyzeSelect(q)
@@ -23,14 +22,14 @@ func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) SelectList {
 		list = a.analyzeSubQuery(q)
 	}
 
-	if a.SelectLists == nil {
-		a.SelectLists = make(map[parser.QueryExpr]SelectList)
+	if a.NameLists == nil {
+		a.NameLists = make(map[parser.QueryExpr]NameList)
 	}
-	a.SelectLists[q] = list
+	a.NameLists[q] = list
 	return list
 }
 
-func (a *Analyzer) analyzeSelect(s *parser.Select) SelectList {
+func (a *Analyzer) analyzeSelect(s *parser.Select) NameList {
 	switch {
 	case s.From == nil:
 		return a.analyzeSelectWithoutFrom(s)
@@ -38,10 +37,10 @@ func (a *Analyzer) analyzeSelect(s *parser.Select) SelectList {
 		return a.analyzeSelectWithoutGroupBy(s)
 	}
 
-	panic("TODO")
+	return a.analyzeSelectWithGroupBy(s)
 }
 
-func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) SelectList {
+func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) NameList {
 	if s.Where != nil {
 		a.panicf(s.Where, "SELECT without FROM cannot have WHERE clause")
 	}
@@ -55,7 +54,8 @@ func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) SelectList {
 		a.panicf(s.OrderBy, "SELECT without FROM cannot have ORDER BY clause")
 	}
 
-	var list SelectList
+	a.pushTableInfo(&TableInfo{}) // prevent working SELECT * in subquery
+	var list NameList
 	for _, item := range s.Results {
 		if hasAggregateFuncInSelectItem(item) {
 			a.panicf(item, "SELECT without FROM cannot have aggregate function call")
@@ -66,94 +66,94 @@ func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) SelectList {
 	}
 
 	a.analyzeLimit(s.Limit)
+	a.popScope()
 
 	if s.AsStruct {
-		t := list.toType()
-		return SelectList{newColumnReference("", t, s)}
+		return NameList{makeNameListColumnName(list, s)}
 	}
 
 	return list
 }
 
-func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) SelectList {
+func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
 	if s.Having != nil {
 		a.panicf(s.Having, "SELECT without GROUP BY cannot have HAVING clause")
 	}
 
-	ts := a.analyzeFrom(s.From)
-
-	a.pushTableScope(ts)
+	ti := a.analyzeFrom(s.From)
+	a.pushTableInfo(ti)
 	a.analyzeWhere(s.Where)
 
-	hasAgg := false
-	for _, item := range s.Results {
-		if hasAggregateFuncInSelectItem(item) {
-			hasAgg = true
-			break
-		}
-	}
-	if hasAgg {
-		return a.analyzeSelectWithoutGroupByAggregate(s, ts)
-	}
-
-	var list SelectList
+	var lists []NameList
 	for _, item := range s.Results {
 		itemList := a.analyzeSelectItem(item)
+		lists = append(lists, itemList)
+	}
+
+	var list NameList
+	for _, itemList := range lists {
 		list = append(list, itemList...)
 	}
 
-	a.pushSelectListScope(list)
+	listsMap := make(map[parser.SelectItem]NameList)
+	hasAggregate := false
+
+	for i, item := range s.Results {
+		listsMap[item] = lists[i]
+		if hasAggregateFuncInSelectItem(item) {
+			hasAggregate = true
+		}
+	}
+
+	gbc := &GroupByContext{
+		Lists: listsMap,
+	}
+
+	if hasAggregate {
+		a.analyzeSelectResultsAfterGroupBy(s.Results, gbc)
+	}
+
+	a.pushNameList(list)
 	a.analyzeOrderBy(s.OrderBy)
 	a.analyzeLimit(s.Limit)
 	a.popScope()
-	a.popScope()
 
 	return list
 }
 
-func (a *Analyzer) analyzeSelectWithoutGroupByAggregate(s *parser.Select, ts *TableScope) SelectList {
-	oldScope := a.scope
-	scope := a.scope.toAggregateKeyScope(newNameEnv())
+func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) NameList {
+	var lists []NameList
 
-	a.scope = scope
-	a.aggregateScope = oldScope
-
-	var list SelectList
-	for _, item := range s.Results {
-		itemList := a.analyzeSelectItem(item)
-		list = append(list, itemList...)
+	for _, query := range q.Queries {
+		lists = append(lists, a.analyzeQueryExpr(query))
 	}
 
-	a.popScope()
-	a.aggregateScope = nil
+	for i, l := range lists {
+		if len(l) != len(lists[0]) {
+			a.panicf(q.Queries[i], "queries in set operation have mismatched column count")
+		}
+	}
 
-	return list
-}
-
-func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) SelectList {
-	list := a.analyzeQueryExpr(q.Queries[0]).deriveSimple(q)
-
-	for _, query := range q.Queries[1:] {
-		queryList := a.analyzeQueryExpr(query)
-
-		if len(list) != len(queryList) {
-			a.panicf(query, "queries in set operation have mismatched column count")
+	list := make(NameList, len(lists[0]))
+	for i := 0; i < len(list); i++ {
+		names := make([]*Name, len(lists))
+		for j, l := range lists {
+			names[j] = l[i]
 		}
 
-		for i, r := range list {
-			if !r.merge(queryList[i]) {
-				a.panicf(
-					queryList[i].GetNode(q),
-					"%s is incompatible with %s (column %d)",
-					TypeString(r.Type),
-					TypeString(queryList[i].Type),
-					i+1,
-				)
+		name, ok := makeCompoundQueryResultName(names, q)
+		if !ok {
+			ts := make([]string, len(names))
+			for j, name := range names {
+				ts[j] = TypeString(name.Type)
 			}
+			a.panicf(q, "column %d of queries in set operation have incompatible type %s", i+1, strings.Join(ts, ","))
 		}
+
+		list[i] = name
 	}
 
-	a.pushSelectListScope(list)
+	a.pushNameList(list)
 	a.analyzeOrderBy(q.OrderBy)
 	a.analyzeLimit(q.Limit)
 	a.popScope()
@@ -161,11 +161,18 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) SelectList {
 	return list
 }
 
-func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) SelectList {
-	panic("TODO: implement")
+func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) NameList {
+	list := a.analyzeQueryExpr(s.Query)
+
+	a.pushNameList(list)
+	a.analyzeOrderBy(s.OrderBy)
+	a.analyzeLimit(s.Limit)
+	a.popScope()
+
+	return list
 }
 
-func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) SelectList {
+func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) NameList {
 	switch s := s.(type) {
 	case *parser.Star:
 		return a.analyzeStar(s)
@@ -180,31 +187,41 @@ func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) SelectList {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeStar(s *parser.Star) SelectList {
+func (a *Analyzer) analyzeStar(s *parser.Star) NameList {
 	if a.scope == nil || a.scope.List == nil {
 		a.panicf(s, "SELECT * must have a FROM clause")
 	}
-	return a.scope.List.deriveSimple(s)
+	return a.scope.List
 }
 
-func (a *Analyzer) analyzeStarPath(s *parser.StarPath) SelectList {
+func (a *Analyzer) analyzeStarPath(s *parser.StarPath) NameList {
 	t := a.analyzeExpr(s.Expr)
-	list := typeToSelectList(t.Type, s)
+
+	var list NameList
+	if t.Name != nil {
+		list = t.Name.Children()
+	} else {
+		list = makeNameListFromType(t.Type, s)
+	}
+
 	if list == nil {
 		a.panicf(s, "star expansion is not supported for type %s", TypeString(t.Type))
 	}
-	return list.deriveSimple(s)
+
+	return list
 }
 
-func (a *Analyzer) analyzeAlias(s *parser.Alias) SelectList {
+func (a *Analyzer) analyzeAlias(s *parser.Alias) NameList {
 	t := a.analyzeExpr(s.Expr)
-	return SelectList{newColumnReference(s.As.Alias.Name, t.Type, s)}
+	if t.Name != nil {
+		return NameList{makeAliasName(t.Name, s, s.As.Alias)}
+	}
+	return NameList{makeExprColumnName(t.Type, s.Expr, s, s.As.Alias)}
 }
 
-func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) SelectList {
+func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
 	t := a.analyzeExpr(s.Expr)
-	name := extractNameFromExpr(s.Expr)
-	return SelectList{newColumnReference(name, t.Type, s)}
+	return NameList{makeExprColumnName(t.Type, s.Expr, s, nil)}
 }
 
 func (a *Analyzer) analyzeWhere(w *parser.Where) {

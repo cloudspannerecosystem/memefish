@@ -1,9 +1,5 @@
 package analyzer
 
-import (
-	"github.com/MakeNowJust/memefish/pkg/parser"
-)
-
 // Type represents SQL types.
 type Type interface {
 	String() string
@@ -278,22 +274,4 @@ func mergeStructType(s, t *StructType) (Type, bool) {
 		}
 	}
 	return &StructType{Fields: fields}, true
-}
-
-// typeToSelectList converts t to SelectList when t is STRUCT.
-func typeToSelectList(t Type, n parser.Node) SelectList {
-	tt, ok := TypeCastStruct(t)
-	if !ok {
-		return nil
-	}
-
-	if len(tt.Fields) == 0 {
-		return nil
-	}
-
-	list := make(SelectList, len(tt.Fields))
-	for i, f := range tt.Fields {
-		list[i] = newColumnReference(f.Name, f.Type, n)
-	}
-	return list
 }

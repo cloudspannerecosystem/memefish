@@ -44,7 +44,7 @@ func main() {
 	a.AnalyzeQueryStatement(stmt)
 	log.Printf("finish analyzing")
 
-	list := a.SelectLists[stmt.Query]
+	list := a.NameLists[stmt.Query]
 	if list == nil {
 		log.Fatal("missing select list")
 	}
@@ -53,8 +53,8 @@ func main() {
 
 	table := tablewriter.NewWriter(os.Stdout)
 	var header []string
-	for _, r := range list {
-		header = append(header, r.GetName())
+	for _, name := range list {
+		header = append(header, name.Quote())
 	}
 	table.SetHeader(header)
 

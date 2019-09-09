@@ -3,14 +3,13 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
 type TypeInfo struct {
 	Type  Type
-	Ref   *Reference
+	Name  *Name
 	Value interface{}
 }
 
@@ -96,75 +95,57 @@ func (a *Analyzer) analyzeExistsSubQuery(e *parser.ExistsSubQuery) *TypeInfo {
 }
 
 func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
-	ref, _ := a.lookupRef(NewPath(e.Name))
-	if ref == nil {
+	name := a.lookup(e.Name)
+	if name == nil {
 		a.panicf(e, "unknown name: %s", e.SQL())
 	}
-	if ref.Kind.Invalid() {
-		switch ref.Kind {
-		case InvalidRefAggregate:
-			a.panicf(e, "cannot use %s outside aggregate function", e.SQL())
-		case InvalidRefAmbiguous:
-			a.panicf(e, "ambiguous reference: %s", e.SQL())
+	if name.Ambiguous {
+		a.panicf(e, "ambiguous name: %s", e.SQL())
+	}
+
+	if a.scope.context != nil {
+		if !a.scope.context.IsValidName(name) {
+			a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
 		}
 	}
+
 	return &TypeInfo{
-		Type: ref.Type,
-		Ref:  ref,
+		Type: name.Type,
+		Name: name,
 	}
 }
 
 func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
-	var p Path
-	for _, id := range e.Idents {
-		p = append(p, id.Name)
+	id0 := e.Idents[0]
+	name := a.lookup(id0.Name)
+	if name == nil {
+		a.panicf(e.Idents[0], "unknown name: %s", id0.SQL())
 	}
-	ref, rp := a.lookupRef(p)
-	if ref == nil {
-		a.panicf(e, "unknown name: %s", e.Idents[0].SQL())
-	}
-	if ref.Kind.Invalid() {
-		switch ref.Kind {
-		case InvalidRefAggregate:
-			a.panicf(e, "cannot use %s outside aggregate function", e.SQL())
-		case InvalidRefAmbiguous:
-			a.panicf(e, "ambiguous reference: %s", e.SQL())
-		}
+	if name.Ambiguous {
+		a.panicf(e, "ambiguous name: %s", id0.SQL())
 	}
 
-	t := ref.Type
-	k := len(p) - len(rp)
-	for i, name := range rp {
-		tt, ok := resolveField(t, name)
-		if !ok {
-			a.panicf(e.Idents[k+i], "cannot resolve field %s from %s", parser.QuoteSQLIdent(name), TypeString(t))
+	for _, id := range e.Idents[1:] {
+		child := name.LookupChild(id.Name)
+		if child == nil {
+			a.panicf(id, "unknown field: %s", id.SQL())
 		}
-		t = tt
+		if child.Ambiguous {
+			a.panicf(e, "ambiguous field: %s", id.SQL())
+		}
+		name = child
+	}
+
+	if a.scope.context != nil {
+		if !a.scope.context.IsValidName(name) {
+			a.panicf(e, "cannot use non-aggregate key: %s", e.SQL())
+		}
 	}
 
 	return &TypeInfo{
-		Type: t,
-		Ref:  ref,
+		Type: name.Type,
+		Name: name,
 	}
-}
-
-func resolveField(t Type, name string) (Type, bool) {
-	if t == nil {
-		return nil, true
-	}
-
-	tt, ok := TypeCastStruct(t)
-	if !ok {
-		return nil, false
-	}
-
-	for _, f := range tt.Fields {
-		if strings.EqualFold(f.Name, name) {
-			return f.Type, true
-		}
-	}
-
-	return nil, false
 }
 
 func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
