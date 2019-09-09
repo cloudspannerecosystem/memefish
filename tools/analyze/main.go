@@ -16,6 +16,7 @@ import (
 
 var param = flag.String("param", "", "param file")
 var schema = flag.String("schema", "", "schema file")
+var debug = flag.Bool("debug", false, "enable debug")
 
 func init() {
 	flag.Parse()
@@ -77,7 +78,9 @@ func main() {
 		log.Fatal("missing select list")
 	}
 
-	pp.Println(list)
+	if *debug {
+		pp.Println(list)
+	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	var header []string
