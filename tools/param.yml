@@ -1,0 +1,5 @@
+foo: {INT64: 1}
+bar:
+  STRUCT:
+    - x: {INT64: 1}
+    - y: {FLOAT64: 2}

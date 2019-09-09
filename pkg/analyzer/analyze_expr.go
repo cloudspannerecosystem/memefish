@@ -3,6 +3,7 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
@@ -36,6 +37,8 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 		t = a.analyzeIdent(e)
 	case *parser.Path:
 		t = a.analyzePath(e)
+	case *parser.Param:
+		t = a.analyzeParam(e)
 	case *parser.ArrayLiteral:
 		t = a.analyzeArrayLiteral(e)
 	case *parser.StructLiteral:
@@ -249,6 +252,25 @@ func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 	return &TypeInfo{
 		Type: name.Type,
 		Name: name,
+	}
+}
+
+func (a *Analyzer) analyzeParam(e *parser.Param) *TypeInfo {
+	if a.Params == nil {
+		a.panicf(e, "unknown query parameter: %s", e.SQL())
+	}
+
+	v, ok := a.Params[strings.ToUpper(e.Name)]
+	if !ok {
+		a.panicf(e, "unknown query parameter: %s", e.SQL())
+	}
+	t, err := valueType(v)
+	if err != nil {
+		a.panicf(e, "invalid query parameter value: %v", err)
+	}
+	return &TypeInfo{
+		Type:  t,
+		Value: v,
 	}
 }
 

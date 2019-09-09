@@ -11,4 +11,5 @@ require (
 	github.com/olekukonko/tablewriter v0.0.1
 	github.com/pmezard/go-difflib v1.0.0
 	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
+	gopkg.in/yaml.v2 v2.2.2
 )

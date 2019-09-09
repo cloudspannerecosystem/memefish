@@ -9,6 +9,7 @@ import (
 type Analyzer struct {
 	File    *parser.File
 	Catalog *Catalog
+	Params  map[string]interface{}
 
 	Types     map[parser.Expr]*TypeInfo
 	Tables    map[parser.TableExpr]*TableInfo
