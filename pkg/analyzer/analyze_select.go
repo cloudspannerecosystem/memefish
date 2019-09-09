@@ -244,7 +244,17 @@ func (a *Analyzer) analyzeWhere(w *parser.Where) {
 }
 
 func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {
-	// TODO: implement
+	if o == nil {
+		return
+	}
+
+	for _, item := range o.Items {
+		a.analyzeExpr(item.Expr)
+		if item.Collate != nil {
+			// TODO: check COLLATE value more
+			a.analyzeStringValue(item.Collate.Value)
+		}
+	}
 }
 
 func (a *Analyzer) analyzeLimit(l *parser.Limit) {

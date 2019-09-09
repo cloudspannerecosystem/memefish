@@ -105,6 +105,25 @@ func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | i
 	panic("BUG: unreachable")
 }
 
+func (a *Analyzer) analyzeStringValue(s parser.StringValue) string {
+	switch s := s.(type) {
+	case *parser.StringLiteral:
+		return s.Value
+	case *parser.Param:
+		v, ok := a.lookupParam(s.Name)
+		if !ok {
+			a.panicf(s, "unknown query parameter: %s", s.SQL())
+		}
+		sv, ok := v.(string)
+		if !ok {
+			a.panicf(s, "invalid query parameter: %s", s.SQL())
+		}
+		return sv
+	}
+
+	panic("BUG: unreachable")
+}
+
 func (a *Analyzer) pushNameList(list NameList) {
 	a.scope = list.toNameScope(a.scope)
 }
