@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
@@ -91,7 +92,10 @@ func (a *Analyzer) analyzeSubQueryTableExpr(e *parser.SubQueryTableExpr, ti *Tab
 	name := makeNameListTableName(list, e, ident)
 
 	env := list.toNameEnv()
-	env.Insert(name)
+	err := env.Insert(name)
+	if err != nil {
+		panic(fmt.Sprintf("BUG: unexpected error: %v", err))
+	}
 	return &TableInfo{
 		List: name.Children(),
 		Env:  env,
