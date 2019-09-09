@@ -1,0 +1,37 @@
+---
+- Name: Albums
+  Columns:
+    - Name: SingerId
+      Type: INT64
+    - Name: AlbumId
+      Type: INT64
+    - Name: AlbumTitle
+      Type: STRING
+    - Name: MarketingBudget
+      Type: INT64
+- Name: Singers
+  Columns:
+    - Name: SingerId
+      Type: INT64
+    - Name: FirstName
+      Type: STRING
+    - Name: LastName
+      Type: STRING
+    - Name: SingerInfo
+      Type: BYTES
+    - Name: BirthDate
+      Type: DATE
+- Name: Songs
+  Columns:
+    - Name: SingerId
+      Type: INT64
+    - Name: AlbumId
+      Type: INT64
+    - Name: TrackId
+      Type: INT64
+    - Name: SongName
+      Type: STRING
+    - Name: Duration
+      Type: INT64
+    - Name: SongGenre
+      Type: STRING

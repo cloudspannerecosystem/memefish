@@ -15,6 +15,7 @@ import (
 )
 
 var param = flag.String("param", "", "param file")
+var schema = flag.String("schema", "", "schema file")
 
 func init() {
 	flag.Parse()
@@ -37,6 +38,16 @@ func main() {
 		}
 	}
 
+	var catalog map[string]*analyzer.TableSchema
+	if *schema != "" {
+		log.Printf("load schema file: %s", *schema)
+		var err error
+		catalog, err = loadSchemaFile(*schema)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	log.Printf("query: %q", query)
 
 	p := &parser.Parser{
@@ -54,8 +65,9 @@ func main() {
 
 	log.Printf("start analyzing")
 	a := &analyzer.Analyzer{
-		File:   p.File,
-		Params: params,
+		File:    p.File,
+		Params:  params,
+		Catalog: &analyzer.Catalog{Tables: catalog},
 	}
 	a.AnalyzeQueryStatement(stmt)
 	log.Printf("finish analyzing")
@@ -140,4 +152,47 @@ func decodeParam(p *Param) interface{} {
 	}
 
 	panic("invalid param")
+}
+
+type TableSchema struct {
+	Name    string          `yaml:"Name"`
+	Columns []*ColumnSchema `yaml:"Columns"`
+}
+
+type ColumnSchema struct {
+	Name string              `yaml:"Name"`
+	Type analyzer.SimpleType `yaml:"Type"`
+}
+
+func loadSchemaFile(file string) (map[string]*analyzer.TableSchema, error) {
+	bs, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	var catalog []*TableSchema
+	err = yaml.Unmarshal(bs, &catalog)
+	if err != nil {
+		return nil, err
+	}
+
+	normalized := make(map[string]*analyzer.TableSchema)
+	for _, table := range catalog {
+		normalized[strings.ToUpper(table.Name)] = decodeTableSchema(table)
+	}
+	return normalized, nil
+}
+
+func decodeTableSchema(t *TableSchema) *analyzer.TableSchema {
+	var columns []*analyzer.ColumnSchema
+	for _, c := range t.Columns {
+		columns = append(columns, &analyzer.ColumnSchema{
+			Name: c.Name,
+			Type: c.Type,
+		})
+	}
+	return &analyzer.TableSchema{
+		Name:    t.Name,
+		Columns: columns,
+	}
 }

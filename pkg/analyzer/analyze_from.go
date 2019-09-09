@@ -26,6 +26,8 @@ func (a *Analyzer) analyzeFrom(f *parser.From) *TableInfo {
 
 func (a *Analyzer) analyzeTableExpr(e parser.TableExpr, ti *TableInfo) *TableInfo {
 	switch e := e.(type) {
+	case *parser.TableName:
+		return a.analyzeTableName(e, ti)
 	case *parser.Unnest:
 		return a.analyzeUnnest(e, ti)
 	case *parser.SubQueryTableExpr:
@@ -37,6 +39,30 @@ func (a *Analyzer) analyzeTableExpr(e parser.TableExpr, ti *TableInfo) *TableInf
 	}
 
 	panic("BUG: unreachable")
+}
+
+func (a *Analyzer) analyzeTableName(e *parser.TableName, ti *TableInfo) *TableInfo {
+	table, ok := a.lookupTable(e.Table.Name)
+	if !ok {
+		a.panicf(e, "unknown table: %s", e.Table.SQL())
+	}
+
+	var ident *parser.Ident
+	if e.As != nil {
+		ident = e.As.Alias
+	}
+
+	name := makeTableSchemaName(table, e, ident)
+	list := NameList(name.Children())
+	env := list.toNameEnv()
+	err := env.Insert(name)
+	if err != nil {
+		panic(fmt.Sprintf("BUG: unexpected error: %v", err))
+	}
+	return &TableInfo{
+		List: list,
+		Env:  env,
+	}
 }
 
 func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {

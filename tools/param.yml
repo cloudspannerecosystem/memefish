@@ -1,3 +1,4 @@
+---
 foo: {INT64: 1}
 bar:
   STRUCT:

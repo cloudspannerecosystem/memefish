@@ -151,6 +151,14 @@ func (a *Analyzer) lookupParam(target string) (interface{}, bool) {
 	return p, ok
 }
 
+func (a *Analyzer) lookupTable(target string) (*TableSchema, bool) {
+	if a.Catalog == nil {
+		return nil, false
+	}
+	table, ok := a.Catalog.Tables[strings.ToUpper(target)]
+	return table, ok
+}
+
 func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *Error {
 	var position *parser.Position
 	if node != nil {
