@@ -3,6 +3,7 @@ package analyzer
 import (
 	"bytes"
 	"strconv"
+	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
@@ -158,6 +159,18 @@ func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
 			return false
 		}
 		return e1.Op == e2.Op && isSameExprForGroupBy(e1.Expr, e2.Expr)
+	case *parser.Ident:
+		e2, ok := e2.(*parser.Ident)
+		if !ok {
+			return false
+		}
+		return strings.EqualFold(e1.Name, e2.Name)
+	case *parser.Param:
+		e2, ok := e2.(*parser.Ident)
+		if !ok {
+			return false
+		}
+		return strings.EqualFold(e1.Name, e2.Name)
 	case *parser.NullLiteral:
 		_, ok := e2.(*parser.NullLiteral)
 		return ok

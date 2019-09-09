@@ -90,11 +90,3 @@ func extractIdentFromExpr(e parser.Expr) *parser.Ident {
 
 	return nil
 }
-
-func extractNameFromExpr(e parser.Expr) string {
-	id := extractIdentFromExpr(e)
-	if id != nil {
-		return id.Name
-	}
-	return ""
-}

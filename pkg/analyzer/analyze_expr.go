@@ -16,6 +16,10 @@ type TypeInfo struct {
 func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 	var t *TypeInfo
 	switch e := e.(type) {
+	case *parser.BinaryExpr:
+		t = a.analyzeBinaryExpr(e)
+	case *parser.UnaryExpr:
+		t = a.analyzeUnaryExpr(e)
 	case *parser.CallExpr:
 		t = a.analyzeCallExpr(e)
 	case *parser.CountStarExpr:
@@ -61,6 +65,111 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 	}
 	a.Types[e] = t
 	return t
+}
+
+func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
+	lt := a.analyzeExpr(e.Left)
+	rt := a.analyzeExpr(e.Right)
+
+	switch e.Op {
+	case parser.OpAnd, parser.OpOr:
+		if TypeCoerce(lt.Type, BoolType) && TypeCoerce(rt.Type, BoolType) {
+			return &TypeInfo{
+				Type: BoolType,
+			}
+		}
+		a.panicf(e, "operator %s requires two BOOL, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	case parser.OpEqual, parser.OpNotEqual, parser.OpLess, parser.OpGreater, parser.OpLessEqual, parser.OpGreaterEqual:
+		if TypeCoerce(lt.Type, rt.Type) || TypeCoerce(rt.Type, lt.Type) {
+			return &TypeInfo{
+				Type: BoolType,
+			}
+		}
+		a.panicf(e, "operator %s requires two compatible types, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	case parser.OpLike, parser.OpNotLike:
+		if TypeCoerce(lt.Type, StringType) && TypeCoerce(rt.Type, StringType) {
+			return &TypeInfo{
+				Type: BoolType,
+			}
+		}
+		if TypeCoerce(lt.Type, BytesType) && TypeCoerce(rt.Type, BytesType) {
+			return &TypeInfo{
+				Type: BoolType,
+			}
+		}
+		a.panicf(e, "operator %s requires two STRING/BYTES, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	case parser.OpBitAnd, parser.OpBitXor, parser.OpBitOr:
+		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
+			return &TypeInfo{
+				Type: Int64Type,
+			}
+		}
+		if TypeCoerce(lt.Type, BytesType) && TypeCoerce(rt.Type, BytesType) {
+			return &TypeInfo{
+				Type: BytesType,
+			}
+		}
+		a.panicf(e, "operator %s requires two INT64/BYTES, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	case parser.OpBitLeftShift, parser.OpBitRightShift:
+		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
+			return &TypeInfo{
+				Type: Int64Type,
+			}
+		}
+		if TypeCoerce(lt.Type, BytesType) && TypeCoerce(rt.Type, Int64Type) {
+			return &TypeInfo{
+				Type: BytesType,
+			}
+		}
+		a.panicf(e, "operator %s requires (INT64, INT64) or (BYTES, INT64), but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	case parser.OpAdd, parser.OpSub, parser.OpMul, parser.OpDiv:
+		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
+			return &TypeInfo{
+				Type: Int64Type,
+			}
+		}
+		if TypeCoerce(lt.Type, Float64Type) && TypeCoerce(rt.Type, Float64Type) {
+			return &TypeInfo{
+				Type: Float64Type,
+			}
+		}
+		a.panicf(e, "operator %s requires two INT64/FLOAT64, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
+	}
+
+	panic("BUG: unreachable")
+}
+
+func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
+	t := a.analyzeExpr(e.Expr)
+
+	switch e.Op {
+	case parser.OpBitNot:
+		if TypeCoerce(t.Type, Int64Type) {
+			return &TypeInfo{
+				Type: Int64Type,
+			}
+		}
+		if TypeCoerce(t.Type, BytesType) {
+			return &TypeInfo{
+				Type: BytesType,
+			}
+		}
+		a.panicf(e, "operator %s requires INT64/BYTES, but: %s", e.Op, TypeString(t.Type))
+	case parser.OpPlus, parser.OpMinus:
+		if TypeCoerce(t.Type, Int64Type) {
+			return &TypeInfo{
+				Type: Int64Type,
+			}
+		}
+		if TypeCoerce(t.Type, Float64Type) {
+			return &TypeInfo{
+				Type: Float64Type,
+			}
+		}
+		a.panicf(e, "operator %s requires INT64/FLOAT64, but: %s", e.Op, TypeString(t.Type))
+	}
+
+	panic("BUG: unreachable")
 }
 
 func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
