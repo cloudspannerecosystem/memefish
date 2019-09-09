@@ -181,8 +181,8 @@ func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) NameList {
 	switch s := s.(type) {
 	case *parser.Star:
 		return a.analyzeStar(s)
-	case *parser.StarPath:
-		return a.analyzeStarPath(s)
+	case *parser.DotStar:
+		return a.analyzeDotStar(s)
 	case *parser.Alias:
 		return a.analyzeAlias(s)
 	case *parser.ExprSelectItem:
@@ -199,7 +199,7 @@ func (a *Analyzer) analyzeStar(s *parser.Star) NameList {
 	return a.scope.List
 }
 
-func (a *Analyzer) analyzeStarPath(s *parser.StarPath) NameList {
+func (a *Analyzer) analyzeDotStar(s *parser.DotStar) NameList {
 	t := a.analyzeExpr(s.Expr)
 
 	var list NameList

@@ -162,7 +162,7 @@ func (s *Star) SQL() string {
 	return "*"
 }
 
-func (s *StarPath) SQL() string {
+func (s *DotStar) SQL() string {
 	return s.Expr.SQL() + ".*"
 }
 

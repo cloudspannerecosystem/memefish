@@ -124,9 +124,9 @@ func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []parser.SelectItem,
 		}
 
 		_, isStar := item.(*parser.Star)
-		_, isStarPath := item.(*parser.StarPath)
+		_, isDotStar := item.(*parser.DotStar)
 
-		if hasValidName || isStar || isStarPath {
+		if hasValidName || isStar || isDotStar {
 			for _, name := range list {
 				if !gbc.IsValidName(name) {
 					a.panicf(name.Node, "star-expansion contains invalid name after GROUP BY: %s", name.Quote())

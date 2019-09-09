@@ -13,7 +13,7 @@ FROM Singers S
     Distinct: false,
     AsStruct: false,
     Results:  []parser.SelectItem{
-      &parser.StarPath{
+      &parser.DotStar{
         end:  12,
         Expr: &parser.Ident{
           pos:  9,

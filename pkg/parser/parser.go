@@ -219,7 +219,7 @@ func (p *Parser) parseSelectItem() SelectItem {
 	if p.Token.Kind == "." {
 		p.NextToken()
 		end := p.expect("*").End
-		return &StarPath{
+		return &DotStar{
 			end:  end,
 			Expr: expr,
 		}

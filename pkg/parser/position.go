@@ -131,8 +131,8 @@ func (s *SubQuery) End() Pos { return s.end }
 func (s *Star) Pos() Pos { return s.pos }
 func (s *Star) End() Pos { return s.pos + 1 }
 
-func (s *StarPath) Pos() Pos { return s.Expr.Pos() }
-func (s *StarPath) End() Pos { return s.end }
+func (s *DotStar) Pos() Pos { return s.Expr.Pos() }
+func (s *DotStar) End() Pos { return s.end }
 
 func (a *Alias) Pos() Pos { return a.Expr.Pos() }
 func (a *Alias) End() Pos { return a.As.End() }

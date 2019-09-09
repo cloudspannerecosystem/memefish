@@ -112,7 +112,7 @@ func hasAggregateFuncInSelectItem(s parser.SelectItem) bool {
 	switch s := s.(type) {
 	case *parser.Star:
 		return false
-	case *parser.StarPath:
+	case *parser.DotStar:
 		return hasAggregateFunc(s.Expr)
 	case *parser.Alias:
 		return hasAggregateFunc(s.Expr)

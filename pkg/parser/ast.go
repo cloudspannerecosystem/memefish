@@ -23,7 +23,7 @@ type SelectItem interface {
 }
 
 func (Star) isSelectItem()           {}
-func (StarPath) isSelectItem()       {}
+func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
@@ -248,10 +248,10 @@ type Star struct {
 	pos Pos
 }
 
-// StarPath is expression with * in SELECT result columns list.
+// DotStar is expression with * in SELECT result columns list.
 //
 //     {{.Expr | sql}}.*
-type StarPath struct {
+type DotStar struct {
 	// pos = Expr.pos
 	end Pos
 
