@@ -82,7 +82,10 @@ func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {
 		ident = extractIdentFromExpr(e.Expr)
 	}
 
-	list := NameList{makeTableName("", tt.Item, e, ident)}
+	list := makeNameListFromType(tt.Item, e.Expr)
+	if list == nil {
+		list = NameList{makeTableName("", tt.Item, e, ident)}
+	}
 	result := list.toTableInfo()
 
 	// TODO: check e.Hint
@@ -113,6 +116,10 @@ func (a *Analyzer) analyzeSubQueryTableExpr(e *parser.SubQueryTableExpr, ti *Tab
 	var ident *parser.Ident
 	if e.As != nil {
 		ident = e.As.Alias
+	}
+
+	if q, ok := e.Query.(*parser.Select); ok && q.AsStruct {
+		list = list[0].Children()
 	}
 
 	name := makeNameListTableName(list, e, ident)

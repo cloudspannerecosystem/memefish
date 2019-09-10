@@ -32,6 +32,10 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 		t = a.analyzeArraySubQuery(e)
 	case *parser.ExistsSubQuery:
 		t = a.analyzeExistsSubQuery(e)
+	case *parser.SelectorExpr:
+		t = a.analyzeSelectorExpr(e)
+	case *parser.IndexExpr:
+		t = a.analyzeIndexExpr(e)
 	case *parser.Ident:
 		t = a.analyzeIdent(e)
 	case *parser.Path:
@@ -220,6 +224,42 @@ func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
 	return &TypeInfo{
 		Type: name.Type,
 		Name: name,
+	}
+}
+
+func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
+	t := a.analyzeExpr(e.Expr)
+	var names NameList
+	if t.Name != nil {
+		names = t.Name.Children()
+	} else {
+		names = makeNameListFromType(t.Type, e.Expr)
+	}
+	child := names.Lookup(e.Member.Name)
+	if child == nil {
+		a.panicf(e.Member, "unknown field: %s", e.Member.SQL())
+	}
+	return &TypeInfo{
+		Type: child.Type,
+		Name: child,
+	}
+}
+
+func (a *Analyzer) analyzeIndexExpr(e *parser.IndexExpr) *TypeInfo {
+	et := a.analyzeExpr(e.Expr)
+	it := a.analyzeExpr(e.Index)
+
+	ett, ok := TypeCastArray(et.Type)
+	if !ok {
+		a.panicf(e.Expr, "element access using [] is not supported values of %s", TypeString(et.Type))
+	}
+
+	if !TypeCoerce(it.Type, Int64Type) {
+		a.panicf(e.Expr, "array position in [] must be INT64, but: %s", TypeString(it.Type))
+	}
+
+	return &TypeInfo{
+		Type: ett.Item,
 	}
 }
 

@@ -65,11 +65,11 @@ func (list NameList) toNameScope(next *NameScope) *NameScope {
 }
 
 // for parser.DotStar
-func makeNameListFromType(t Type, node parser.Node) []*Name {
+func makeNameListFromType(t Type, node parser.Node) NameList {
 	parent := &Name{
 		Kind: ColumnName,
 		Type: t,
 		Node: node,
 	}
-	return parent.Children()
+	return NameList(parent.Children())
 }
