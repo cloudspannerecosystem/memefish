@@ -149,7 +149,7 @@ func main() {
 
 ## TODO
 
-- Parse 
+- Add DDL/DML parsers
 - Support analyzing all syntax
   - Some syntax is missing
 - Add tests for analyzer
