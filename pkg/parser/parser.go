@@ -1537,7 +1537,7 @@ func (p *Parser) parseSimpleType() *SimpleType {
 		if id.IsIdent(typeName) {
 			return &SimpleType{
 				pos:  id.Pos,
-				Name: TypeName(typeName),
+				Name: ScalarTypeName(typeName),
 			}
 		}
 	}
@@ -1780,7 +1780,7 @@ func (p *Parser) parseCastNumValue() *CastNumValue {
 	}
 	p.expect("AS")
 	id := p.expect(TokenIdent)
-	var t TypeName
+	var t ScalarTypeName
 	switch {
 	case id.IsIdent("INT64"):
 		t = Int64TypeName

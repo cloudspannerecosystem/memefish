@@ -95,16 +95,21 @@ const (
 	OpBitNot UnaryOp = "~"
 )
 
-type TypeName string
+type ScalarTypeName string
 
 const (
-	BoolTypeName      TypeName = "BOOL"
-	Int64TypeName     TypeName = "INT64"
-	Float64TypeName   TypeName = "FLOAT64"
-	StringTypeName    TypeName = "STRING"
-	BytesTypeName     TypeName = "BYTES"
-	DateTypeName      TypeName = "DATE"
-	TimestampTypeName TypeName = "TIMESTAMP"
-	ArrayTypeName     TypeName = "ARRAY"
-	StructTypeName    TypeName = "STRUCT"
+	BoolTypeName      ScalarTypeName = "BOOL"
+	Int64TypeName     ScalarTypeName = "INT64"
+	Float64TypeName   ScalarTypeName = "FLOAT64"
+	StringTypeName    ScalarTypeName = "STRING"
+	BytesTypeName     ScalarTypeName = "BYTES"
+	DateTypeName      ScalarTypeName = "DATE"
+	TimestampTypeName ScalarTypeName = "TIMESTAMP"
+)
+
+type OnDeleteAction string
+
+const (
+	OnDeleteCascade  OnDeleteAction = "ON DELETE CASCADE"
+	OnDeleteNoAction OnDeleteAction = "ON DELETE NO ACTION"
 )
