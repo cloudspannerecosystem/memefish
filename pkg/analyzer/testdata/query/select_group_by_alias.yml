@@ -1,0 +1,15 @@
+---
+SQL: |
+  select t.x as tx, y, t.*
+  from
+    (select 1 as x, 2 as y) as t
+  group by x, t.y
+Results:
+  - Name: tx
+    Type: INT64
+  - Name: y
+    Type: INT64
+  - Name: x
+    Type: INT64
+  - Name: y
+    Type: INT64

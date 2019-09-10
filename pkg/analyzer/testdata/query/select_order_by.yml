@@ -1,0 +1,8 @@
+---
+SQL: |
+  select 1 as x
+  from (select 2 as x), (select 3 as x)
+  order by x -- x is not ambiguous, it is alias to "1 as x"
+Results:
+  - Name: x
+    Type: INT64

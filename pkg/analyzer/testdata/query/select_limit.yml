@@ -1,0 +1,5 @@
+---
+SQL:
+  select (select 1 as x limit 1)
+Results:
+  - Type: INT64

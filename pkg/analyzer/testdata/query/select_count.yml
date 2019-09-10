@@ -1,0 +1,4 @@
+---
+SQL: select count(*) from (select 1 as x)
+Results:
+  - Type: INT64

@@ -1,0 +1,13 @@
+---
+SQL: |
+  select (select 1 as x),
+         (select as struct 1 as x, 2),
+         array(select 1),
+         array(select as struct 1 as x, 2),
+         exists(select 1 as x)
+Results:
+  - Type: INT64
+  - Type: STRUCT<x INT64, INT64>
+  - Type: ARRAY<INT64>
+  - Type: ARRAY<STRUCT<x INT64, INT64>>
+  - Type: BOOL

@@ -1,0 +1,15 @@
+---
+SQL:
+  select *
+  from
+    (select 1 as x, 2 as y) join (select 2 as y, 3 as z) using (y)
+                            join (select 3 as z, 4 as w) using (z)
+Results:
+  - Name: z
+    Type: INT64
+  - Name: y
+    Type: INT64
+  - Name: x
+    Type: INT64
+  - Name: w
+    Type: INT64

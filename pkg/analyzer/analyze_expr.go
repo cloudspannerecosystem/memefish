@@ -281,10 +281,10 @@ func (a *Analyzer) analyzeBetweenExpr(e *parser.BetweenExpr) *TypeInfo {
 	ret := a.analyzeExpr(e.RightEnd)
 
 	if !(TypeCoerce(lt.Type, rst.Type) || TypeCoerce(rst.Type, lt.Type)) {
-		a.panicf(e, "operator BETWEEN require two compatible types, but: %s", TypeString(lt.Type), TypeString(rst.Type))
+		a.panicf(e, "operator BETWEEN require two compatible types, but: %s, %s", TypeString(lt.Type), TypeString(rst.Type))
 	}
 	if !(TypeCoerce(lt.Type, ret.Type) || TypeCoerce(ret.Type, lt.Type)) {
-		a.panicf(e, "operator BETWEEN require two compatible types, but: %s", TypeString(lt.Type), TypeString(ret.Type))
+		a.panicf(e, "operator BETWEEN require two compatible types, but: %s, %s", TypeString(lt.Type), TypeString(ret.Type))
 	}
 
 	return &TypeInfo{

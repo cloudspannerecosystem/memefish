@@ -1,0 +1,23 @@
+---
+SQL:
+  select 1 + 2,
+         1 - 2,
+         1 * 2,
+         1 / 2,
+         1 << 2,
+         1 >> 2,
+         1 & 2,
+         1 | 1,
+         true and false,
+         true or false
+Results:
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: INT64
+  - Type: BOOL
+  - Type: BOOL

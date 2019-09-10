@@ -1,0 +1,8 @@
+---
+SQL: |
+  (SELECT 1 as A, 2 as B) UNION ALL (SELECT 1.5 as A, 2.5 as B)
+Results:
+  - Name: A
+    Type: FLOAT64
+  - Name: B
+    Type: FLOAT64
