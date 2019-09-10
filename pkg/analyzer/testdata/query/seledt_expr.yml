@@ -1,5 +1,5 @@
 ---
-SQL:
+SQL: |
   select 1 + 2,
          1 - 2,
          1 * 2,
@@ -20,7 +20,16 @@ SQL:
          not true,
          +1,
          -1,
-         ~1
+         ~1,
+         "foo" LIKE "bar",
+         "foo" NOT LIKE "bar",
+         1 IN (select 1 union all select 2),
+         1 IN UNNEST([1, 2]),
+         1 IN (1, 2),
+         NULL IS NULL,
+         NULL IS NOT NULL,
+         TRUE IS TRUE, -- "KARASAWA MIHO" IS TRUE
+         FALSE IS NOT TRUE
 Results:
   - Type: INT64
   - Type: INT64
@@ -43,3 +52,12 @@ Results:
   - Type: INT64
   - Type: INT64
   - Type: INT64
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
+  - Type: BOOL
