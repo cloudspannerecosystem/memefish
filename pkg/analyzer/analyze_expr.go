@@ -188,6 +188,13 @@ func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires INT64/FLOAT64, but: %s", e.Op, TypeString(t.Type))
+	case parser.OpNot:
+		if TypeCoerce(t.Type, BoolType) {
+			return &TypeInfo{
+				Type: BoolType,
+			}
+		}
+		a.panicf(e, "operator NOT requires BOOL, but: %s", TypeString(t.Type))
 	}
 
 	panic("BUG: unreachable")

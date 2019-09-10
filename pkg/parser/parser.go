@@ -1014,18 +1014,20 @@ func (p *Parser) parseUnary() Expr {
 	p.NextToken()
 
 	e := p.parseUnary()
-	switch e := e.(type) {
-	case *IntLiteral:
-		if e.Value[0] != '+' && e.Value[0] != '-' {
-			e.pos = pos
-			e.Value = string(op) + e.Value
-			return e
-		}
-	case *FloatLiteral:
-		if e.Value[0] != '+' && e.Value[0] != '-' {
-			e.pos = pos
-			e.Value = string(op) + e.Value
-			return e
+	if op != OpBitNot {
+		switch e := e.(type) {
+		case *IntLiteral:
+			if e.Value[0] != '+' && e.Value[0] != '-' {
+				e.pos = pos
+				e.Value = string(op) + e.Value
+				return e
+			}
+		case *FloatLiteral:
+			if e.Value[0] != '+' && e.Value[0] != '-' {
+				e.pos = pos
+				e.Value = string(op) + e.Value
+				return e
+			}
 		}
 	}
 
