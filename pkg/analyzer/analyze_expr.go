@@ -328,6 +328,8 @@ func (a *Analyzer) analyzeExtractExpr(e *parser.ExtractExpr) *TypeInfo {
 		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", strings.ToUpper(e.Part.Name), allow, TypeString(t.Type))
 	}
 
+	// TODO: check e.AtTimeZone
+
 	return &TypeInfo{
 		Type: resultType,
 	}
