@@ -20,6 +20,18 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 		t = a.analyzeBinaryExpr(e)
 	case *parser.UnaryExpr:
 		t = a.analyzeUnaryExpr(e)
+	case *parser.InExpr:
+		t = a.analyzeInExpr(e)
+	case *parser.IsNullExpr:
+		t = a.analyzeIsNullExpr(e)
+	case *parser.IsBoolExpr:
+		t = a.analyzeIsBoolExpr(e)
+	case *parser.BetweenExpr:
+		t = a.analyzeBetweenExpr(e)
+	case *parser.SelectorExpr:
+		t = a.analyzeSelectorExpr(e)
+	case *parser.IndexExpr:
+		t = a.analyzeIndexExpr(e)
 	case *parser.CallExpr:
 		t = a.analyzeCallExpr(e)
 	case *parser.CountStarExpr:
@@ -32,10 +44,6 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 		t = a.analyzeArraySubQuery(e)
 	case *parser.ExistsSubQuery:
 		t = a.analyzeExistsSubQuery(e)
-	case *parser.SelectorExpr:
-		t = a.analyzeSelectorExpr(e)
-	case *parser.IndexExpr:
-		t = a.analyzeIndexExpr(e)
 	case *parser.Ident:
 		t = a.analyzeIdent(e)
 	case *parser.Path:
@@ -178,6 +186,141 @@ func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
 	panic("BUG: unreachable")
 }
 
+func (a *Analyzer) analyzeInExpr(e *parser.InExpr) *TypeInfo {
+	lt := a.analyzeExpr(e.Left)
+	rt := a.analyzeInCondition(e.Right)
+
+	if !(TypeCoerce(lt.Type, rt.Type) || TypeCoerce(rt.Type, lt.Type)) {
+		a.panicf(e, "operator IN requires incompatible type, but: %s, %s", TypeString(lt.Type), TypeString(rt.Type))
+	}
+
+	return &TypeInfo{
+		Type: BoolType,
+	}
+}
+
+func (a *Analyzer) analyzeInCondition(cond parser.InCondition) *TypeInfo {
+	switch c := cond.(type) {
+	case *parser.UnnestInCondition:
+		return a.analyzeUnnestInCondition(c)
+	case *parser.SubQueryInCondition:
+		return a.analyzeSubQueryInCondition(c)
+	case *parser.ValuesInCondition:
+		return a.analyzeValuesInCondition(c)
+	}
+
+	panic("BUG: unreachable")
+}
+
+func (a *Analyzer) analyzeUnnestInCondition(cond *parser.UnnestInCondition) *TypeInfo {
+	t := a.analyzeExpr(cond.Expr)
+	tt, ok := TypeCastArray(t.Type)
+	if !ok {
+		a.panicf(cond, "UNNEST value must be ARRAY, but: %s", TypeString(t.Type))
+	}
+
+	return &TypeInfo{
+		Type: tt.Item,
+	}
+}
+
+func (a *Analyzer) analyzeSubQueryInCondition(cond *parser.SubQueryInCondition) *TypeInfo {
+	list := a.analyzeQueryExpr(cond.Query)
+	if len(list) != 1 {
+		a.panicf(cond, "IN condition subquery must have just one column")
+	}
+	return &TypeInfo{
+		Type: list[0].Type,
+	}
+}
+
+func (a *Analyzer) analyzeValuesInCondition(cond *parser.ValuesInCondition) *TypeInfo {
+	var t Type
+
+	for _, e := range cond.Exprs {
+		vt := a.analyzeExpr(e)
+		t1, ok := MergeType(t, vt.Type)
+		if !ok {
+			panic(a.errorf(e, "%s is incompatible with %s", TypeString(t), TypeString(vt.Type)))
+		}
+		t = t1
+	}
+
+	return &TypeInfo{
+		Type: t,
+	}
+}
+
+func (a *Analyzer) analyzeIsNullExpr(e *parser.IsNullExpr) *TypeInfo {
+	a.analyzeExpr(e.Left)
+	return &TypeInfo{
+		Type: BoolType,
+	}
+}
+
+func (a *Analyzer) analyzeIsBoolExpr(e *parser.IsBoolExpr) *TypeInfo {
+	t := a.analyzeExpr(e.Left)
+	if !TypeCoerce(t.Type, BoolType) {
+		a.panicf(e, "operator IS TRUE/FALSE needs BOOL, but: %s", TypeString(t.Type))
+	}
+	return &TypeInfo{
+		Type: BoolType,
+	}
+}
+
+func (a *Analyzer) analyzeBetweenExpr(e *parser.BetweenExpr) *TypeInfo {
+	lt := a.analyzeExpr(e.Left)
+	rst := a.analyzeExpr(e.RightStart)
+	ret := a.analyzeExpr(e.RightEnd)
+
+	if !(TypeCoerce(lt.Type, rst.Type) || TypeCoerce(rst.Type, lt.Type)) {
+		a.panicf(e, "operator BETWEEN require two compatible types, but: %s", TypeString(lt.Type), TypeString(rst.Type))
+	}
+	if !(TypeCoerce(lt.Type, ret.Type) || TypeCoerce(ret.Type, lt.Type)) {
+		a.panicf(e, "operator BETWEEN require two compatible types, but: %s", TypeString(lt.Type), TypeString(ret.Type))
+	}
+
+	return &TypeInfo{
+		Type: BoolType,
+	}
+}
+
+func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
+	t := a.analyzeExpr(e.Expr)
+	var names NameList
+	if t.Name != nil {
+		names = t.Name.Children()
+	} else {
+		names = makeNameListFromType(t.Type, e.Expr)
+	}
+	child := names.Lookup(e.Member.Name)
+	if child == nil {
+		a.panicf(e.Member, "unknown field: %s", e.Member.SQL())
+	}
+	return &TypeInfo{
+		Type: child.Type,
+		Name: child,
+	}
+}
+
+func (a *Analyzer) analyzeIndexExpr(e *parser.IndexExpr) *TypeInfo {
+	et := a.analyzeExpr(e.Expr)
+	it := a.analyzeExpr(e.Index)
+
+	ett, ok := TypeCastArray(et.Type)
+	if !ok {
+		a.panicf(e.Expr, "element access using [] is not supported values of %s", TypeString(et.Type))
+	}
+
+	if !TypeCoerce(it.Type, Int64Type) {
+		a.panicf(e.Expr, "array position in [] must be INT64, but: %s", TypeString(it.Type))
+	}
+
+	return &TypeInfo{
+		Type: ett.Item,
+	}
+}
+
 func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
 	return a.analyzeExpr(e.Expr)
 }
@@ -224,42 +367,6 @@ func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
 	return &TypeInfo{
 		Type: name.Type,
 		Name: name,
-	}
-}
-
-func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
-	t := a.analyzeExpr(e.Expr)
-	var names NameList
-	if t.Name != nil {
-		names = t.Name.Children()
-	} else {
-		names = makeNameListFromType(t.Type, e.Expr)
-	}
-	child := names.Lookup(e.Member.Name)
-	if child == nil {
-		a.panicf(e.Member, "unknown field: %s", e.Member.SQL())
-	}
-	return &TypeInfo{
-		Type: child.Type,
-		Name: child,
-	}
-}
-
-func (a *Analyzer) analyzeIndexExpr(e *parser.IndexExpr) *TypeInfo {
-	et := a.analyzeExpr(e.Expr)
-	it := a.analyzeExpr(e.Index)
-
-	ett, ok := TypeCastArray(et.Type)
-	if !ok {
-		a.panicf(e.Expr, "element access using [] is not supported values of %s", TypeString(et.Type))
-	}
-
-	if !TypeCoerce(it.Type, Int64Type) {
-		a.panicf(e.Expr, "array position in [] must be INT64, but: %s", TypeString(it.Type))
-	}
-
-	return &TypeInfo{
-		Type: ett.Item,
 	}
 }
 
