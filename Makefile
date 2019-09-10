@@ -1,6 +1,7 @@
 .PHONY: test
 test:
 	richgo test -cover -v ./pkg/...
+	go build -o /dev/null ./example/... ./tools/...
 
 .PHONY: fmt
 fmt:
