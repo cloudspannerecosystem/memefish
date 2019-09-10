@@ -45,7 +45,7 @@ $ go run ./tools/analyze -param ./tools/param.yml 'select @bar + 1 as bar'
 exit status 1
 ```
 
-## Usage
+## Example
 
 ### Parse + Unparse
 
@@ -85,7 +85,7 @@ func main() {
 }
 ```
 
-## Analyze
+### Analyze
 
 ```go
 package main
