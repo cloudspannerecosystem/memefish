@@ -194,6 +194,14 @@ func TypeEqual(s, t Type) bool {
 	return s.EqualTo(t)
 }
 
+// TypeCast checks s can cast to t.
+func TypeCast(s, t Type) bool {
+	if s == nil || t == nil {
+		return true
+	}
+	return s.CastTo(t)
+}
+
 // TypeCoerce checks s convert to t implicitly.
 func TypeCoerce(s, t Type) bool {
 	if s == nil || t == nil {

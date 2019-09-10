@@ -3,6 +3,7 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
@@ -36,6 +37,12 @@ func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
 		t = a.analyzeCallExpr(e)
 	case *parser.CountStarExpr:
 		t = a.analyzeCountStarExpr(e)
+	case *parser.CastExpr:
+		t = a.analyzeCastExpr(e)
+	case *parser.ExtractExpr:
+		t = a.analyzeExtractExpr(e)
+	case *parser.CaseExpr:
+		t = a.analyzeCaseExpr(e)
 	case *parser.ParenExpr:
 		t = a.analyzeParenExpr(e)
 	case *parser.ScalarSubQuery:
@@ -282,6 +289,84 @@ func (a *Analyzer) analyzeBetweenExpr(e *parser.BetweenExpr) *TypeInfo {
 
 	return &TypeInfo{
 		Type: BoolType,
+	}
+}
+
+func (a *Analyzer) analyzeCastExpr(e *parser.CastExpr) *TypeInfo {
+	t1 := a.analyzeExpr(e.Expr)
+	t2 := a.analyzeType(e.Type)
+	if !TypeCast(t1.Type, t2) {
+		a.panicf(e, "%s cannot cast to %s", TypeString(t1.Type), TypeString(t2))
+	}
+
+	return &TypeInfo{
+		Type: t2,
+	}
+}
+
+func (a *Analyzer) analyzeExtractExpr(e *parser.ExtractExpr) *TypeInfo {
+	t := a.analyzeExpr(e.Expr)
+	var resultType Type
+	allowDate := false
+	switch strings.ToUpper(e.Part.Name) {
+	case "DAYOFWEEK", "DAY", "DAYOFYEAR", "WEEK", "ISOWEEK", "MONTH", "QUARTER", "YEAR":
+		allowDate = true
+		resultType = Int64Type
+	case "NANOSECOND", "MICROSECOND", "MILLISECOND", "SECOND", "MINUTE", "HOUR":
+		resultType = Int64Type
+	case "DATE":
+		resultType = DateType
+	default:
+		a.panicf(e.Part, "unknown EXTRACT part name: %s", e.Part.SQL())
+	}
+
+	if !(TypeCoerce(t.Type, TimestampType) || allowDate && TypeCoerce(t.Type, DateType)) {
+		allow := "TIMESTAMP"
+		if allowDate {
+			allow += "/DATE"
+		}
+		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", strings.ToUpper(e.Part.Name), allow, TypeString(t.Type))
+	}
+
+	return &TypeInfo{
+		Type: resultType,
+	}
+}
+
+func (a *Analyzer) analyzeCaseExpr(e *parser.CaseExpr) *TypeInfo {
+	var exprType Type
+	if e.Expr == nil {
+		exprType = BoolType
+	} else {
+		exprType = a.analyzeExpr(e.Expr).Type
+	}
+
+	var t Type
+
+	for _, w := range e.Whens {
+		ct := a.analyzeExpr(w.Cond)
+		if !(TypeCoerce(ct.Type, exprType) || TypeCoerce(exprType, ct.Type)) {
+			a.panicf(w.Cond, "WHEN clause condition requires %s, but: %s", TypeString(exprType), TypeString(ct.Type))
+		}
+		tt := a.analyzeExpr(w.Then)
+		t1, ok := MergeType(t, tt.Type)
+		if !ok {
+			a.panicf(w.Then, "%s is incompatible with %s", TypeString(t), TypeString(tt.Type))
+		}
+		t = t1
+	}
+
+	if e.Else != nil {
+		tt := a.analyzeExpr(e.Else.Expr)
+		t1, ok := MergeType(t, tt.Type)
+		if !ok {
+			a.panicf(e.Else.Expr, "%s is incompatible with %s", TypeString(t), TypeString(tt.Type))
+		}
+		t = t1
+	}
+
+	return &TypeInfo{
+		Type: t,
 	}
 }
 
