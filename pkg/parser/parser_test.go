@@ -67,7 +67,7 @@ func TestParser(t *testing.T) {
 
 			p := &parser.Parser{
 				Lexer: &parser.Lexer{
-					File: parser.NewFile(in.Name(), string(b)),
+					File: &parser.File{FilePath: in.Name(), Buffer: string(b)},
 				},
 			}
 
@@ -122,7 +122,7 @@ func TestParser(t *testing.T) {
 			s1 := stmt.SQL()
 			p1 := &parser.Parser{
 				Lexer: &parser.Lexer{
-					File: parser.NewFile(in.Name()+" (SQL)", s1),
+					File: &parser.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
 				},
 			}
 
