@@ -149,8 +149,7 @@ func main() {
 
 ## TODO
 
-- Add DDL/DML parsers
-- Support analyzing all syntax
-  - Some syntax is missing
+- Make more compatibility
 - Add tests for analyzer
+- Add DDL/DML parsers
 - Build Spanner emulator on memefish
