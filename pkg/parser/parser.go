@@ -49,6 +49,32 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 	return
 }
 
+func (p *Parser) ParseDDL() (ddl DDL, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			ddl = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	ddl = p.parseDDL()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+// ================================================================================
+//
+// SELECT
+//
+// ================================================================================
+
 func (p *Parser) parseQueryStatement() *QueryStatement {
 	hint := p.tryParseHint()
 	query := p.parseQueryExpr()
@@ -1634,6 +1660,77 @@ func (p *Parser) parseFieldType() *FieldType {
 func (p *Parser) lookaheadType() bool {
 	return p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
 }
+
+// ================================================================================
+//
+// DDL
+//
+// ================================================================================
+
+func (p *Parser) parseDDL() DDL {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.Kind == "CREATE":
+		p.NextToken()
+		switch {
+		case p.Token.IsKeywordLike("DATABASE"):
+			return p.parseCreateDatabase(pos)
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("INDEX"):
+			return p.parseCreateIndex(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, but: %s", p.Token.AsString)
+	case p.Token.IsKeywordLike("ALTER"):
+		p.NextToken()
+		return p.parseAlterTable(pos)
+	case p.Token.IsKeywordLike("DROP"):
+		p.NextToken()
+		switch {
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseDropTable(pos)
+		case p.Token.IsKeywordLike("INDEX"):
+			return p.parseDropIndex(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
+	}
+
+	if p.Token.Kind != TokenIdent {
+		panic(p.errorfAtToken(&p.Token, "expected token: CREATE, <ident>, but: %s", p.Token.Kind))
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
+}
+
+func (p *Parser) parseCreateDatabase(pos Pos) *CreateDatabase {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseCreateTable(pos Pos) *CreateTable {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseCreateIndex(pos Pos) *CreateIndex {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseAlterTable(pos Pos) *AlterTable {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseDropTable(pos Pos) *DropTable {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseDropIndex(pos Pos) *DropIndex {
+	panic("TODO: implement")
+}
+
+// ================================================================================
+//
+// Primitives
+//
+// ================================================================================
 
 func (p *Parser) parseIdent() *Ident {
 	id := p.expect(TokenIdent)
