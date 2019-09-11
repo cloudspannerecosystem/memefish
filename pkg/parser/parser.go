@@ -1703,7 +1703,12 @@ func (p *Parser) parseDDL() DDL {
 }
 
 func (p *Parser) parseCreateDatabase(pos Pos) *CreateDatabase {
-	panic("TODO: implement")
+	p.expectIdent("DATABASE")
+	name := p.parseIdent()
+	return &CreateDatabase{
+		pos:  pos,
+		Name: name,
+	}
 }
 
 func (p *Parser) parseCreateTable(pos Pos) *CreateTable {
@@ -1719,11 +1724,21 @@ func (p *Parser) parseAlterTable(pos Pos) *AlterTable {
 }
 
 func (p *Parser) parseDropTable(pos Pos) *DropTable {
-	panic("TODO: implement")
+	p.expectIdent("TABLE")
+	name := p.parseIdent()
+	return &DropTable{
+		pos:  pos,
+		Name: name,
+	}
 }
 
 func (p *Parser) parseDropIndex(pos Pos) *DropIndex {
-	panic("TODO: implement")
+	p.expectIdent("INDEX")
+	name := p.parseIdent()
+	return &DropIndex{
+		pos:  pos,
+		Name: name,
+	}
 }
 
 // ================================================================================
