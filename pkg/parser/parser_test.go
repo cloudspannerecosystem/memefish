@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/k0kubun/pp"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/k0kubun/pp"
 	"github.com/pmezard/go-difflib/difflib"
 )
 

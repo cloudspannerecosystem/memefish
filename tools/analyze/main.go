@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/k0kubun/pp"
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
 )

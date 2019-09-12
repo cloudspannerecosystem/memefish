@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/k0kubun/pp"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/k0kubun/pp"
 )
 
 func main() {
