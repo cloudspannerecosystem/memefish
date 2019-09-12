@@ -2,9 +2,12 @@
 	<img src="docs/memefish.svg" width="220px">
 </p>
 
-# memefish
+# méméfish
 
-> `memefish` is the foundation to analyze Spanner SQL.
+> méméfish is the foundation to analyze [Spanner][] [SQL][Spanner SQL].
+
+[Spanner]: https://cloud.google.com/spanner/
+[Spanner SQL]: https://cloud.google.com/spanner/docs/query-syntax
 
 ## Features
 
