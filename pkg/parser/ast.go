@@ -136,6 +136,41 @@ type StringValue interface {
 func (Param) isStringValue()         {}
 func (StringLiteral) isStringValue() {}
 
+// DDL is data definition language in SQL.
+type DDL interface {
+	Node
+	isDDL()
+}
+
+func (CreateDatabase) isDDL() {}
+func (CreateTable) isDDL()    {}
+func (AlterTable) isDDL()     {}
+func (DropTable) isDDL()      {}
+func (CreateIndex) isDDL()    {}
+func (DropIndex) isDDL()      {}
+
+// TableAlternation is ALTER TABLE action.
+type TableAlternation interface {
+	Node
+	isTableAlternation()
+}
+
+func (AddColumn) isTableAlternation()      {}
+func (DropColumn) isTableAlternation()     {}
+func (SetOnDelete) isTableAlternation()    {}
+func (AlterColumn) isTableAlternation()    {}
+func (AlterColumnSet) isTableAlternation() {}
+
+// SchemaType is types for schema.
+type SchemaType interface {
+	Node
+	isSchemaType()
+}
+
+func (ScalarSchemaType) isSchemaType() {}
+func (SizedSchemaType) isSchemaType()  {}
+func (ArraySchemaType) isSchemaType()  {}
+
 // ================================================================================
 //
 // SELECT
@@ -944,7 +979,7 @@ type SimpleType struct {
 	// end = pos + len(Name)
 	pos Pos
 
-	Name TypeName // except for ArrayTypeName and StructTypeName
+	Name ScalarTypeName
 }
 
 // ArrayType is array type node.
@@ -990,12 +1025,248 @@ type CastIntValue struct {
 	Expr IntValue // IntLit or Param
 }
 
-// CasrNumValue is cat call in number value context.
+// CasrNumValue is cast call in number value context.
 //
 //     CAST({{.Expr | sql}} AS {{.Type}})
 type CastNumValue struct {
 	pos, end Pos
 
-	Expr NumValue // IntLit, FloatLit or Param
-	Type TypeName // Int64Type or Float64Type
+	Expr NumValue       // IntLit, FloatLit or Param
+	Type ScalarTypeName // Int64Type or Float64Type
+}
+
+// ================================================================================
+//
+// DDL
+//
+// ================================================================================
+
+// CreateDatabase is CREATE DATABASE statement node.
+//
+//     CREATE DATABASE {{.Name | sql}}
+type CreateDatabase struct {
+	// end = Name.end
+	pos Pos
+
+	Name *Ident
+}
+
+// CreateTable is CREATE TABLE statement node.
+//
+//     CREATE TABLE {{.Name | sql}} (
+//       {{.Columns | sqlJoin ","}}
+//     )
+//     PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
+//     {{.Cluster | sqlOpt}}
+type CreateTable struct {
+	pos, end Pos
+
+	Name        *Ident
+	Columns     []*ColumnDef
+	PrimaryKeys []*IndexKey
+	Cluster     *Cluster // optional
+}
+
+// ColumnDef is column definition in CREATE TABLE.
+//
+//     {{.Name | sql}}
+//     {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+//     {{.Options | sqlOpt}}
+type ColumnDef struct {
+	// pos = Name.pos
+	end Pos
+
+	Name    *Ident
+	Type    SchemaType
+	NotNull bool
+	Options *ColumnDefOptions // optional
+}
+
+// ColumnDefOption is options for column definition.
+//
+//     OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
+type ColumnDefOptions struct {
+	pos, end Pos
+
+	AllowCommitTimestamp bool
+}
+
+// IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
+//
+//     {{.Name | sql}} {{.Dir}}
+type IndexKey struct {
+	// pos = Name.pos
+	end Pos
+
+	Name *Ident
+	Dir  Direction
+}
+
+// Cluster is INTERLEAVE IN PARENT clause in CREATE TABLE.
+//
+//     , INTERLEAVE IN PARENT {{.TableName | sql}} {{.OnDelete}}
+type Cluster struct {
+	pos, end Pos
+
+	TableName *Ident
+	OnDelete  OnDeleteAction // optional
+}
+
+// AlterTable is ALTER TABLE statement node.
+//
+//     ALTER TABLE {{.Name | sql}} {{.TableAlternation | sql}}
+type AlterTable struct {
+	// end = TableAlternation.end
+	pos Pos
+
+	Name             *Ident
+	TableAlternation TableAlternation
+}
+
+// AddColumn is ADD COLUMN clause in ALTER TABLE.
+//
+//     ADD COLUMN {{.Column | sql}}
+type AddColumn struct {
+	// end = Column.end
+	pos Pos
+
+	Column *ColumnDef
+}
+
+// DropColumn is DROP COLUMN clause in ALTER TABLE.
+//
+//     DROP COLUMN {{.Name | sql}}
+type DropColumn struct {
+	// end = Name.end
+	pos Pos
+
+	Name *Ident
+}
+
+// SetOnDelete is SET ON DELETE clause in ALTER TABLE.
+//
+//     SET ON DELETE {{.OnDelete}}
+type SetOnDelete struct {
+	pos, end Pos
+
+	OnDelete OnDeleteAction
+}
+
+// AlterColumn is ALTER COLUMN clause in ALTER TABLE.
+//
+//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+type AlterColumn struct {
+	pos, end Pos
+
+	Name    *Ident
+	Type    SchemaType
+	NotNull bool
+}
+
+// AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
+//
+//     ALTER COLUMN {{.Name | sql}} SET {{.Options | sql}}
+type AlterColumnSet struct {
+	// end = Options.end
+	pos Pos
+
+	Name    *Ident
+	Options *ColumnDefOptions
+}
+
+// DropTable is DROP TABLE statement node.
+//
+//     DROP TABLE {{.Name | sql}}
+type DropTable struct {
+	// end = Name.end
+	pos Pos
+
+	Name *Ident
+}
+
+// CreateIndex is CREATE INDEX statement node.
+//
+//     CREATE
+//       {{if .Unique}}UNIQUE{{end}}
+//       {{if .NullFiltered}}NULL_FILTERED{{end}}
+//       INDEX {{.Name | sql}} ON {{.TableName | sql}} (
+//         {{.Keys | sqlJoin ","}}
+//       )
+//       {{.Storing | sqlOpt}}
+//       {{.InterleaveIn | sqlOpt}}
+type CreateIndex struct {
+	pos, end Pos
+
+	Unique       bool
+	NullFiltered bool
+	Name         *Ident
+	TableName    *Ident
+	Keys         []*IndexKey
+	Storing      *Storing
+	InterleaveIn *InterleaveIn
+}
+
+// Storing is STORING clause in CREATE INDEX.
+//
+//     STORING ({{.Columns | sqlJoin ","}})
+type Storing struct {
+	pos, end Pos
+
+	Columns []*Ident
+}
+
+// InterleaveIn is INTERLEAVE IN clause in CREATE INDEX.
+//
+//     , INTERLEAVE IN {{.TableName | sql}}
+type InterleaveIn struct {
+	// end = TableName.end
+	pos Pos
+
+	TableName *Ident
+}
+
+// DropIndex is DROP INDEX statement node.
+//
+//     DROP INDEX {{.Name | sql}}
+type DropIndex struct {
+	// end = Name.end
+	pos Pos
+
+	Name *Ident
+}
+
+// ================================================================================
+//
+// Types for Schema
+//
+// ================================================================================
+
+// ScalarSchemaType is scalar type node in schema.
+//
+//     {{.Name}}
+type ScalarSchemaType struct {
+	pos Pos
+
+	Name ScalarTypeName // except for StringTypeName and BytesTypeName
+}
+
+// SizedSchemaType is sized type node in schema.
+//
+//     {{.Name}}({{if .Max}}MAX{{else}}{{.Size | sql}}{{end}})
+type SizedSchemaType struct {
+	pos, end Pos
+
+	Name ScalarTypeName // StringTypeName or BytesTypeName
+	// either Max or Size must be set
+	Max  bool
+	Size IntValue
+}
+
+// ArraySchemaType is array type node in schema.
+//
+//     ARRAY<{{.Item | sql}}>
+type ArraySchemaType struct {
+	pos, end Pos
+
+	Item SchemaType // ScalarSchemaType or SizedSchemaType
 }

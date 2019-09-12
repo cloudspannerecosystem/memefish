@@ -1,0 +1,102 @@
+--- create_table.sql
+create table foo (
+  foo int64,
+  bar float64 not null,
+  baz string(255) not null options(allow_commit_timestamp = null)
+) primary key (foo, bar)
+
+--- AST
+&parser.CreateTable{
+  pos:  0,
+  end:  146,
+  Name: &parser.Ident{
+    pos:  13,
+    end:  16,
+    Name: "foo",
+  },
+  Columns: []*parser.ColumnDef{
+    &parser.ColumnDef{
+      end:  30,
+      Name: &parser.Ident{
+        pos:  21,
+        end:  24,
+        Name: "foo",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  25,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  54,
+      Name: &parser.Ident{
+        pos:  34,
+        end:  37,
+        Name: "bar",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  38,
+        Name: "FLOAT64",
+      },
+      NotNull: true,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  121,
+      Name: &parser.Ident{
+        pos:  58,
+        end:  61,
+        Name: "baz",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  62,
+        end:  73,
+        Name: "STRING",
+        Max:  false,
+        Size: &parser.IntLiteral{
+          pos:   69,
+          end:   72,
+          Base:  10,
+          Value: "255",
+        },
+      },
+      NotNull: true,
+      Options: &parser.ColumnDefOptions{
+        pos:                  83,
+        end:                  121,
+        AllowCommitTimestamp: false,
+      },
+    },
+  },
+  PrimaryKeys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  140,
+      Name: &parser.Ident{
+        pos:  137,
+        end:  140,
+        Name: "foo",
+      },
+      Dir: "",
+    },
+    &parser.IndexKey{
+      end:  145,
+      Name: &parser.Ident{
+        pos:  142,
+        end:  145,
+        Name: "bar",
+      },
+      Dir: "",
+    },
+  },
+  Cluster: (*parser.Cluster)(nil),
+}
+
+--- SQL
+CREATE TABLE foo(
+  foo INT64,
+  bar FLOAT64 NOT NULL,
+  baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null),
+)
+PRIMARY KEY (foo, bar)

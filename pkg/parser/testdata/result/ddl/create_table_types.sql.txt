@@ -1,0 +1,242 @@
+--- create_table_types.sql
+create table types (
+  b bool,
+  i int64,
+  f float64,
+  d date,
+  t timestamp,
+  s string(256),
+  smax string(max),
+  bs bytes(256),
+  bsmax bytes(max),
+  ab array<bool>,
+  abs array<bytes(max)>
+) primary key (i)
+
+--- AST
+&parser.CreateTable{
+  pos:  0,
+  end:  213,
+  Name: &parser.Ident{
+    pos:  13,
+    end:  18,
+    Name: "types",
+  },
+  Columns: []*parser.ColumnDef{
+    &parser.ColumnDef{
+      end:  29,
+      Name: &parser.Ident{
+        pos:  23,
+        end:  24,
+        Name: "b",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  25,
+        Name: "BOOL",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  40,
+      Name: &parser.Ident{
+        pos:  33,
+        end:  34,
+        Name: "i",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  35,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  53,
+      Name: &parser.Ident{
+        pos:  44,
+        end:  45,
+        Name: "f",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  46,
+        Name: "FLOAT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  63,
+      Name: &parser.Ident{
+        pos:  57,
+        end:  58,
+        Name: "d",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  59,
+        Name: "DATE",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  78,
+      Name: &parser.Ident{
+        pos:  67,
+        end:  68,
+        Name: "t",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  69,
+        Name: "TIMESTAMP",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  95,
+      Name: &parser.Ident{
+        pos:  82,
+        end:  83,
+        Name: "s",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  84,
+        end:  95,
+        Name: "STRING",
+        Max:  false,
+        Size: &parser.IntLiteral{
+          pos:   91,
+          end:   94,
+          Base:  10,
+          Value: "256",
+        },
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  115,
+      Name: &parser.Ident{
+        pos:  99,
+        end:  103,
+        Name: "smax",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  104,
+        end:  115,
+        Name: "STRING",
+        Max:  true,
+        Size: nil,
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  132,
+      Name: &parser.Ident{
+        pos:  119,
+        end:  121,
+        Name: "bs",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  122,
+        end:  132,
+        Name: "BYTES",
+        Max:  false,
+        Size: &parser.IntLiteral{
+          pos:   128,
+          end:   131,
+          Base:  10,
+          Value: "256",
+        },
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  152,
+      Name: &parser.Ident{
+        pos:  136,
+        end:  141,
+        Name: "bsmax",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  142,
+        end:  152,
+        Name: "BYTES",
+        Max:  true,
+        Size: nil,
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  170,
+      Name: &parser.Ident{
+        pos:  156,
+        end:  158,
+        Name: "ab",
+      },
+      Type: &parser.ArraySchemaType{
+        pos:  159,
+        end:  170,
+        Item: &parser.ScalarSchemaType{
+          pos:  165,
+          Name: "BOOL",
+        },
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  195,
+      Name: &parser.Ident{
+        pos:  174,
+        end:  177,
+        Name: "abs",
+      },
+      Type: &parser.ArraySchemaType{
+        pos:  178,
+        end:  195,
+        Item: &parser.SizedSchemaType{
+          pos:  184,
+          end:  194,
+          Name: "BYTES",
+          Max:  true,
+          Size: nil,
+        },
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+  },
+  PrimaryKeys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  212,
+      Name: &parser.Ident{
+        pos:  211,
+        end:  212,
+        Name: "i",
+      },
+      Dir: "",
+    },
+  },
+  Cluster: (*parser.Cluster)(nil),
+}
+
+--- SQL
+CREATE TABLE types(
+  b BOOL,
+  i INT64,
+  f FLOAT64,
+  d DATE,
+  t TIMESTAMP,
+  s STRING(256),
+  smax STRING(MAX),
+  bs BYTES(256),
+  bsmax BYTES(MAX),
+  ab ARRAY<BOOL>,
+  abs ARRAY<BYTES(MAX)>,
+)
+PRIMARY KEY (i)

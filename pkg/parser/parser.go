@@ -49,6 +49,32 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 	return
 }
 
+func (p *Parser) ParseDDL() (ddl DDL, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			ddl = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	ddl = p.parseDDL()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+// ================================================================================
+//
+// SELECT
+//
+// ================================================================================
+
 func (p *Parser) parseQueryStatement() *QueryStatement {
 	hint := p.tryParseHint()
 	query := p.parseQueryExpr()
@@ -1537,7 +1563,7 @@ func (p *Parser) parseSimpleType() *SimpleType {
 		if id.IsIdent(typeName) {
 			return &SimpleType{
 				pos:  id.Pos,
-				Name: TypeName(typeName),
+				Name: ScalarTypeName(typeName),
 			}
 		}
 	}
@@ -1634,6 +1660,545 @@ func (p *Parser) parseFieldType() *FieldType {
 func (p *Parser) lookaheadType() bool {
 	return p.Token.Kind == TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
 }
+
+// ================================================================================
+//
+// DDL
+//
+// ================================================================================
+
+func (p *Parser) parseDDL() DDL {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.Kind == "CREATE":
+		p.NextToken()
+		switch {
+		case p.Token.IsKeywordLike("DATABASE"):
+			return p.parseCreateDatabase(pos)
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
+			return p.parseCreateIndex(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, but: %s", p.Token.AsString)
+	case p.Token.IsKeywordLike("ALTER"):
+		p.NextToken()
+		return p.parseAlterTable(pos)
+	case p.Token.IsKeywordLike("DROP"):
+		p.NextToken()
+		switch {
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseDropTable(pos)
+		case p.Token.IsKeywordLike("INDEX"):
+			return p.parseDropIndex(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
+	}
+
+	if p.Token.Kind != TokenIdent {
+		panic(p.errorfAtToken(&p.Token, "expected token: CREATE, <ident>, but: %s", p.Token.Kind))
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
+}
+
+func (p *Parser) parseCreateDatabase(pos Pos) *CreateDatabase {
+	p.expectKeywordLike("DATABASE")
+	name := p.parseIdent()
+	return &CreateDatabase{
+		pos:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseCreateTable(pos Pos) *CreateTable {
+	p.expectKeywordLike("TABLE")
+	name := p.parseIdent()
+
+	// This loop allows parsing trailing comma intentionally.
+	// TODO: is this allowed by Spanner really?
+	p.expect("(")
+	var columns []*ColumnDef
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind == ")" {
+			break
+		}
+		columns = append(columns, p.parseColumnDef())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+	}
+	p.expect(")")
+
+	p.expectKeywordLike("PRIMARY")
+	p.expectKeywordLike("KEY")
+
+	p.expect("(")
+	var keys []*IndexKey
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind == ")" {
+			break
+		}
+		keys = append(keys, p.parseIndexKey())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+	}
+	end := p.expect(")").End
+
+	cluster := p.tryParseCluster()
+	if cluster != nil {
+		end = cluster.End()
+	}
+
+	return &CreateTable{
+		pos:         pos,
+		end:         end,
+		Name:        name,
+		Columns:     columns,
+		PrimaryKeys: keys,
+		Cluster:     cluster,
+	}
+}
+
+func (p *Parser) parseColumnDef() *ColumnDef {
+	name := p.parseIdent()
+	t := p.parseSchemaType()
+	end := t.End()
+
+	notNull := false
+	if p.Token.Kind == "NOT" {
+		p.expect("NOT")
+		end = p.expect("NULL").End
+		notNull = true
+	}
+
+	options := p.tryParseColumnDefOptions()
+	if options != nil {
+		end = options.End()
+	}
+
+	return &ColumnDef{
+		end:     end,
+		Name:    name,
+		Type:    t,
+		NotNull: notNull,
+		Options: options,
+	}
+}
+
+func (p *Parser) tryParseColumnDefOptions() *ColumnDefOptions {
+	if !p.Token.IsKeywordLike("OPTIONS") {
+		return nil
+	}
+
+	return p.parseColumnDefOptions()
+}
+
+func (p *Parser) parseColumnDefOptions() *ColumnDefOptions {
+	pos := p.expectKeywordLike("OPTIONS").Pos
+
+	p.expect("(")
+	p.expectIdent("allow_commit_timestamp")
+	p.expect("=")
+
+	var allowCommitTimestamp bool
+	switch p.Token.Kind {
+	case "TRUE":
+		allowCommitTimestamp = true
+	case "NULL":
+		allowCommitTimestamp = false
+	default:
+		p.panicfAtToken(&p.Token, "expected token: TRUE, NULL, but: %s", p.Token.Kind)
+	}
+	p.NextToken()
+
+	end := p.expect(")").End
+	return &ColumnDefOptions{
+		pos:                  pos,
+		end:                  end,
+		AllowCommitTimestamp: allowCommitTimestamp,
+	}
+}
+
+func (p *Parser) parseIndexKey() *IndexKey {
+	name := p.parseIdent()
+	end := name.End()
+
+	var dir Direction
+	switch p.Token.Kind {
+	case "ASC":
+		end = p.expect("ASC").End
+		dir = DirectionAsc
+	case "DESC":
+		end = p.expect("DESC").End
+		dir = DirectionDesc
+	}
+
+	return &IndexKey{
+		end:  end,
+		Name: name,
+		Dir:  dir,
+	}
+}
+
+func (p *Parser) tryParseCluster() *Cluster {
+	if p.Token.Kind != "," {
+		return nil
+	}
+	pos := p.expect(",").Pos
+
+	p.expectKeywordLike("INTERLEAVE")
+	p.expect("IN")
+	p.expectKeywordLike("PARENT")
+	name := p.parseIdent()
+	end := name.End()
+
+	var onDelete OnDeleteAction
+	if p.Token.Kind == "ON" {
+		p.expect("ON")
+		p.expectKeywordLike("DELETE")
+		switch p.Token.Kind {
+		case TokenIdent:
+			end = p.expectKeywordLike("CASCADE").End
+			onDelete = OnDeleteCascade
+		case "NO":
+			p.NextToken()
+			end = p.expectKeywordLike("ACTION").End
+			onDelete = OnDeleteNoAction
+		default:
+			p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
+		}
+	}
+
+	return &Cluster{
+		pos:       pos,
+		end:       end,
+		TableName: name,
+		OnDelete:  onDelete,
+	}
+}
+
+func (p *Parser) parseCreateIndex(pos Pos) *CreateIndex {
+	unique := false
+	if p.Token.IsKeywordLike("UNIQUE") {
+		p.NextToken()
+		unique = true
+	}
+
+	nullFiltered := false
+	if p.Token.IsKeywordLike("NULL_FILTERED") {
+		p.NextToken()
+		nullFiltered = true
+	}
+
+	p.expectKeywordLike("INDEX")
+	name := p.parseIdent()
+
+	p.expect("ON")
+	tableName := p.parseIdent()
+
+	p.expect("(")
+	var keys []*IndexKey
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind == ")" {
+			break
+		}
+		keys = append(keys, p.parseIndexKey())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.NextToken()
+	}
+	end := p.expect(")").End
+
+	storing := p.tryParseStoring()
+	if storing != nil {
+		end = storing.End()
+	}
+
+	interleaveIn := p.tryParseInterleaveIn()
+	if interleaveIn != nil {
+		end = interleaveIn.End()
+	}
+
+	return &CreateIndex{
+		pos:          pos,
+		end:          end,
+		Unique:       unique,
+		NullFiltered: nullFiltered,
+		Name:         name,
+		TableName:    tableName,
+		Keys:         keys,
+		Storing:      storing,
+		InterleaveIn: interleaveIn,
+	}
+}
+
+func (p *Parser) tryParseStoring() *Storing {
+	if !p.Token.IsKeywordLike("STORING") {
+		return nil
+	}
+	pos := p.expectKeywordLike("STORING").Pos
+
+	p.expect("(")
+	columns := []*Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		columns = append(columns, p.parseIdent())
+	}
+
+	end := p.expect(")").End
+	return &Storing{
+		pos:     pos,
+		end:     end,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) tryParseInterleaveIn() *InterleaveIn {
+	if p.Token.Kind != "," {
+		return nil
+	}
+	pos := p.expect(",").Pos
+	p.expectKeywordLike("INTERLEAVE")
+	p.expect("IN")
+	name := p.parseIdent()
+
+	return &InterleaveIn{
+		pos:       pos,
+		TableName: name,
+	}
+}
+
+func (p *Parser) parseAlterTable(pos Pos) *AlterTable {
+	p.expectKeywordLike("TABLE")
+	name := p.parseIdent()
+
+	var alternation TableAlternation
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		alternation = p.parseAddColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		alternation = p.parseDropColumn()
+	case p.Token.Kind == "SET":
+		alternation = p.parseSetOnDelete()
+	case p.Token.IsKeywordLike("ALTER"):
+		alternation = p.parseAlterColumn()
+	default:
+		if p.Token.Kind == TokenIdent {
+			p.panicfAtToken(&p.Token, "expected pseuso keyword: ADD, ALTER, DROP, but: %s", p.Token.AsString)
+		} else {
+			p.panicfAtToken(&p.Token, "expected token: SET, <ident>, but: %s", p.Token.Kind)
+		}
+	}
+
+	return &AlterTable{
+		pos:              pos,
+		Name:             name,
+		TableAlternation: alternation,
+	}
+}
+
+func (p *Parser) parseAddColumn() *AddColumn {
+	pos := p.expectKeywordLike("ADD").Pos
+	p.expectKeywordLike("COLUMN")
+
+	column := p.parseColumnDef()
+
+	return &AddColumn{
+		pos:    pos,
+		Column: column,
+	}
+}
+
+func (p *Parser) parseDropColumn() *DropColumn {
+	pos := p.expectKeywordLike("DROP").Pos
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	return &DropColumn{
+		pos:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseSetOnDelete() *SetOnDelete {
+	pos := p.expect("SET").Pos
+	p.expect("ON")
+	p.expectKeywordLike("DELETE")
+
+	var onDelete OnDeleteAction
+	var end Pos
+	switch p.Token.Kind {
+	case TokenIdent:
+		end = p.expectKeywordLike("CASCADE").End
+		onDelete = OnDeleteCascade
+	case "NO":
+		p.NextToken()
+		end = p.expectKeywordLike("ACTION").End
+		onDelete = OnDeleteNoAction
+	default:
+		p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
+	}
+
+	return &SetOnDelete{
+		pos:      pos,
+		end:      end,
+		OnDelete: onDelete,
+	}
+}
+
+func (p *Parser) parseAlterColumn() TableAlternation {
+	pos := p.expectKeywordLike("ALTER").Pos
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	if p.Token.Kind == "SET" {
+		p.NextToken()
+		options := p.parseColumnDefOptions()
+		return &AlterColumnSet{
+			pos:     pos,
+			Name:    name,
+			Options: options,
+		}
+	}
+
+	t := p.parseSchemaType()
+
+	end := name.End()
+	notNull := false
+	if p.Token.Kind == "NOT" {
+		p.expect("NOT")
+		end = p.expect("NULL").End
+		notNull = true
+	}
+
+	return &AlterColumn{
+		pos:     pos,
+		end:     end,
+		Name:    name,
+		Type:    t,
+		NotNull: notNull,
+	}
+}
+
+func (p *Parser) parseDropTable(pos Pos) *DropTable {
+	p.expectKeywordLike("TABLE")
+	name := p.parseIdent()
+	return &DropTable{
+		pos:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseDropIndex(pos Pos) *DropIndex {
+	p.expectKeywordLike("INDEX")
+	name := p.parseIdent()
+	return &DropIndex{
+		pos:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseSchemaType() SchemaType {
+	switch p.Token.Kind {
+	case TokenIdent:
+		return p.parseScalarSchemaType()
+	case "ARRAY":
+		pos := p.expect("ARRAY").Pos
+		p.expect("<")
+		t := p.parseScalarSchemaType()
+		end := p.expect(">").End
+		return &ArraySchemaType{
+			pos:  pos,
+			end:  end,
+			Item: t,
+		}
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseScalarSchemaType() SchemaType {
+	id := p.expect(TokenIdent)
+	pos := id.Pos
+	switch {
+	case id.IsIdent("BOOL"):
+		return &ScalarSchemaType{
+			pos:  pos,
+			Name: BoolTypeName,
+		}
+	case id.IsIdent("INT64"):
+		return &ScalarSchemaType{
+			pos:  pos,
+			Name: Int64TypeName,
+		}
+	case id.IsIdent("FLOAT64"):
+		return &ScalarSchemaType{
+			pos:  pos,
+			Name: Float64TypeName,
+		}
+	case id.IsIdent("DATE"):
+		return &ScalarSchemaType{
+			pos:  pos,
+			Name: DateTypeName,
+		}
+	case id.IsIdent("TIMESTAMP"):
+		return &ScalarSchemaType{
+			pos:  pos,
+			Name: TimestampTypeName,
+		}
+	case id.IsIdent("STRING"):
+		p.expect("(")
+		max := false
+		var size IntValue
+		if p.Token.IsIdent("MAX") {
+			p.NextToken()
+			max = true
+		} else {
+			size = p.parseIntValue()
+		}
+		end := p.expect(")").End
+		return &SizedSchemaType{
+			pos:  pos,
+			end:  end,
+			Name: StringTypeName,
+			Max:  max,
+			Size: size,
+		}
+	case id.IsIdent("BYTES"):
+		p.expect("(")
+		max := false
+		var size IntValue
+		if p.Token.IsIdent("MAX") {
+			p.NextToken()
+			max = true
+		} else {
+			size = p.parseIntValue()
+		}
+		end := p.expect(")").End
+		return &SizedSchemaType{
+			pos:  pos,
+			end:  end,
+			Name: BytesTypeName,
+			Max:  max,
+			Size: size,
+		}
+	}
+
+	panic(p.errorfAtToken(id, "expect ident: BOOL, INT64, FLOAT64, DATE, TIMESTAMP, STRING, BYTES, but: %s", id.AsString))
+}
+
+// ================================================================================
+//
+// Primitives
+//
+// ================================================================================
 
 func (p *Parser) parseIdent() *Ident {
 	id := p.expect(TokenIdent)
@@ -1780,7 +2345,7 @@ func (p *Parser) parseCastNumValue() *CastNumValue {
 	}
 	p.expect("AS")
 	id := p.expect(TokenIdent)
-	var t TypeName
+	var t ScalarTypeName
 	switch {
 	case id.IsIdent("INT64"):
 		t = Int64TypeName

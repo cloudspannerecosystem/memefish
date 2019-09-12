@@ -1,0 +1,15 @@
+--- create_database.sql
+create database foo_bar_baz
+
+--- AST
+&parser.CreateDatabase{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  16,
+    end:  27,
+    Name: "foo_bar_baz",
+  },
+}
+
+--- SQL
+CREATE DATABASE foo_bar_baz

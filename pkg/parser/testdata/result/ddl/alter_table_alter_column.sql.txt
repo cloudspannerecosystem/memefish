@@ -1,0 +1,36 @@
+--- alter_table_alter_column.sql
+alter table foo alter column foo string(256) not null
+--- AST
+&parser.AlterTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  TableAlternation: &parser.AlterColumn{
+    pos:  16,
+    end:  53,
+    Name: &parser.Ident{
+      pos:  29,
+      end:  32,
+      Name: "foo",
+    },
+    Type: &parser.SizedSchemaType{
+      pos:  33,
+      end:  44,
+      Name: "STRING",
+      Max:  false,
+      Size: &parser.IntLiteral{
+        pos:   40,
+        end:   43,
+        Base:  10,
+        Value: "256",
+      },
+    },
+    NotNull: true,
+  },
+}
+
+--- SQL
+ALTER TABLE foo ALTER COLUMN foo STRING(256) NOT NULL

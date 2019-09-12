@@ -1,0 +1,53 @@
+--- create_index_storing.sql
+create index foo_bar on foo (
+  bar asc
+) storing (foo, baz)
+
+--- AST
+&parser.CreateIndex{
+  pos:          0,
+  end:          60,
+  Unique:       false,
+  NullFiltered: false,
+  Name:         &parser.Ident{
+    pos:  13,
+    end:  20,
+    Name: "foo_bar",
+  },
+  TableName: &parser.Ident{
+    pos:  24,
+    end:  27,
+    Name: "foo",
+  },
+  Keys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  39,
+      Name: &parser.Ident{
+        pos:  32,
+        end:  35,
+        Name: "bar",
+      },
+      Dir: "ASC",
+    },
+  },
+  Storing: &parser.Storing{
+    pos:     42,
+    end:     60,
+    Columns: []*parser.Ident{
+      &parser.Ident{
+        pos:  51,
+        end:  54,
+        Name: "foo",
+      },
+      &parser.Ident{
+        pos:  56,
+        end:  59,
+        Name: "baz",
+      },
+    },
+  },
+  InterleaveIn: (*parser.InterleaveIn)(nil),
+}
+
+--- SQL
+CREATE INDEX foo_bar ON foo (bar ASC) STORING (foo, baz)

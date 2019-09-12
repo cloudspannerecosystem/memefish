@@ -17,7 +17,7 @@ import (
 
 var update = flag.Bool("update", false, "update result files")
 
-func TestParser(t *testing.T) {
+func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser.Parser) (parser.Node, error)) {
 	// Disable color output.
 	// https://github.com/k0kubun/pp/issues/26
 	printer := pp.New()
@@ -35,9 +35,6 @@ func TestParser(t *testing.T) {
 		StructName:      pp.NoColor,
 		ObjectLength:    pp.NoColor,
 	})
-
-	inputPath := "./testdata/input/query"
-	resultPath := "./testdata/result/query"
 
 	if *update {
 		_, err := os.Stat(resultPath)
@@ -59,7 +56,10 @@ func TestParser(t *testing.T) {
 	}
 
 	for _, in := range inputs {
+		in := in
 		t.Run(in.Name(), func(t *testing.T) {
+			t.Parallel()
+
 			b, err := ioutil.ReadFile(filepath.Join(inputPath, in.Name()))
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
@@ -71,7 +71,7 @@ func TestParser(t *testing.T) {
 				},
 			}
 
-			stmt, err := p.ParseQuery()
+			node, err := parse(p)
 			if err != nil {
 				log.Fatalf("error on parsing input file: %v", err)
 			}
@@ -83,11 +83,11 @@ func TestParser(t *testing.T) {
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- AST\n")
-			_, _ = printer.Fprintln(&buf, stmt)
+			_, _ = printer.Fprintln(&buf, node)
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
-			fmt.Fprintln(&buf, stmt.SQL())
+			fmt.Fprintln(&buf, node.SQL())
 
 			actual := buf.Bytes()
 
@@ -119,22 +119,40 @@ func TestParser(t *testing.T) {
 				return
 			}
 
-			s1 := stmt.SQL()
+			s1 := node.SQL()
 			p1 := &parser.Parser{
 				Lexer: &parser.Lexer{
 					File: &parser.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
 				},
 			}
 
-			stmt1, err := p1.ParseQuery()
+			node1, err := parse(p1)
 			if err != nil {
 				log.Fatalf("error on parsing unparsed SQL: %v", err)
 			}
 
-			s2 := stmt1.SQL()
+			s2 := node1.SQL()
 			if s1 != s2 {
 				t.Errorf("%q != %q", s1, s2)
 			}
 		})
 	}
+}
+
+func TestParseQuery(t *testing.T) {
+	inputPath := "./testdata/input/query"
+	resultPath := "./testdata/result/query"
+
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+		return p.ParseQuery()
+	})
+}
+
+func TestParseDDL(t *testing.T) {
+	inputPath := "./testdata/input/ddl"
+	resultPath := "./testdata/result/ddl"
+
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+		return p.ParseDDL()
+	})
 }

@@ -446,3 +446,75 @@ func (c *CastIntValue) End() Pos { return c.end }
 
 func (c *CastNumValue) Pos() Pos { return c.pos }
 func (c *CastNumValue) End() Pos { return c.end }
+
+// ================================================================================
+//
+// DDL
+//
+// ================================================================================
+
+func (c *CreateDatabase) Pos() Pos { return c.pos }
+func (c *CreateDatabase) End() Pos { return c.Name.End() }
+
+func (c *CreateTable) Pos() Pos { return c.pos }
+func (c *CreateTable) End() Pos { return c.end }
+
+func (c *ColumnDef) Pos() Pos { return c.Name.Pos() }
+func (c *ColumnDef) End() Pos { return c.end }
+
+func (c *ColumnDefOptions) Pos() Pos { return c.pos }
+func (c *ColumnDefOptions) End() Pos { return c.end }
+
+func (i *IndexKey) Pos() Pos { return i.Name.Pos() }
+func (i *IndexKey) End() Pos { return i.end }
+
+func (c *Cluster) Pos() Pos { return c.pos }
+func (c *Cluster) End() Pos { return c.end }
+
+func (a *AlterTable) Pos() Pos { return a.pos }
+func (a *AlterTable) End() Pos { return a.TableAlternation.End() }
+
+func (a *AddColumn) Pos() Pos { return a.pos }
+func (a *AddColumn) End() Pos { return a.Column.End() }
+
+func (d *DropColumn) Pos() Pos { return d.pos }
+func (d *DropColumn) End() Pos { return d.Name.End() }
+
+func (s *SetOnDelete) Pos() Pos { return s.pos }
+func (s *SetOnDelete) End() Pos { return s.end }
+
+func (a *AlterColumn) Pos() Pos { return a.pos }
+func (a *AlterColumn) End() Pos { return a.end }
+
+func (a *AlterColumnSet) Pos() Pos { return a.pos }
+func (a *AlterColumnSet) End() Pos { return a.Options.End() }
+
+func (d *DropTable) Pos() Pos { return d.pos }
+func (d *DropTable) End() Pos { return d.Name.End() }
+
+func (c *CreateIndex) Pos() Pos { return c.pos }
+func (c *CreateIndex) End() Pos { return c.end }
+
+func (s *Storing) Pos() Pos { return s.pos }
+func (s *Storing) End() Pos { return s.end }
+
+func (i *InterleaveIn) Pos() Pos { return i.pos }
+func (i *InterleaveIn) End() Pos { return i.TableName.End() }
+
+func (d *DropIndex) Pos() Pos { return d.pos }
+func (d *DropIndex) End() Pos { return d.Name.End() }
+
+// ================================================================================
+//
+// Types for Schema
+//
+// ================================================================================
+
+func (s *ScalarSchemaType) Pos() Pos { return s.pos }
+func (s *ScalarSchemaType) End() Pos { return s.pos + Pos(len(s.Name)) }
+
+func (s *SizedSchemaType) Pos() Pos { return s.pos }
+func (s *SizedSchemaType) End() Pos { return s.end }
+
+func (a *ArraySchemaType) Pos() Pos { return a.pos }
+func (a *ArraySchemaType) End() Pos { return a.end }

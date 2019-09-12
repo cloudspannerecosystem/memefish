@@ -667,3 +667,172 @@ func (c *CastIntValue) SQL() string {
 func (c *CastNumValue) SQL() string {
 	return "CAST(" + c.Expr.SQL() + " AS " + string(c.Type) + ")"
 }
+
+// ================================================================================
+//
+// DDL
+//
+// ================================================================================
+
+func (c *CreateDatabase) SQL() string {
+	return "CREATE DATABASE " + c.Name.SQL()
+}
+
+func (c *CreateTable) SQL() string {
+	sql := "CREATE TABLE " + c.Name.SQL() + "(\n"
+	for _, c := range c.Columns {
+		sql += "  " + c.SQL() + ",\n"
+	}
+	sql += ")\n"
+	sql += "PRIMARY KEY ("
+	for i, k := range c.PrimaryKeys {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += k.SQL()
+	}
+	sql += ")"
+	if c.Cluster != nil {
+		sql += c.Cluster.SQL()
+	}
+	return sql
+}
+
+func (c *ColumnDef) SQL() string {
+	sql := c.Name.SQL() + " " + c.Type.SQL()
+	if c.NotNull {
+		sql += " NOT NULL"
+	}
+	if c.Options != nil {
+		sql += " " + c.Options.SQL()
+	}
+	return sql
+}
+
+func (c *ColumnDefOptions) SQL() string {
+	sql := "OPTIONS(allow_commit_timestamp = "
+	if c.AllowCommitTimestamp {
+		sql += "true)"
+	} else {
+		sql += "null)"
+	}
+	return sql
+}
+
+func (i *IndexKey) SQL() string {
+	sql := i.Name.SQL()
+	if i.Dir != "" {
+		sql += " " + string(i.Dir)
+	}
+	return sql
+}
+
+func (c *Cluster) SQL() string {
+	sql := ", INTERLEAVE IN PARENT " + c.TableName.SQL()
+	if c.OnDelete != "" {
+		sql += " " + string(c.OnDelete)
+	}
+	return sql
+}
+
+func (a *AlterTable) SQL() string {
+	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlternation.SQL()
+}
+
+func (a *AddColumn) SQL() string {
+	return "ADD COLUMN " + a.Column.SQL()
+}
+
+func (d *DropColumn) SQL() string {
+	return "DROP COLUMN " + d.Name.SQL()
+}
+
+func (s *SetOnDelete) SQL() string {
+	return "SET " + string(s.OnDelete)
+}
+
+func (a *AlterColumn) SQL() string {
+	sql := "ALTER COLUMN " + a.Name.SQL() + " " + a.Type.SQL()
+	if a.NotNull {
+		sql += " NOT NULL"
+	}
+	return sql
+}
+
+func (a *AlterColumnSet) SQL() string {
+	return "ALTER COLUMN " + a.Name.SQL() + " SET " + a.Options.SQL()
+}
+
+func (d *DropTable) SQL() string {
+	return "DROP TABLE " + d.Name.SQL()
+}
+
+func (c *CreateIndex) SQL() string {
+	sql := "CREATE "
+	if c.Unique {
+		sql += "UNIQUE "
+	}
+	if c.NullFiltered {
+		sql += "NULL_FILTERED "
+	}
+	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
+	for i, k := range c.Keys {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += k.SQL()
+	}
+	sql += ")"
+	if c.Storing != nil {
+		sql += " " + c.Storing.SQL()
+	}
+	if c.InterleaveIn != nil {
+		sql += c.InterleaveIn.SQL()
+	}
+	return sql
+}
+
+func (s *Storing) SQL() string {
+	sql := "STORING ("
+	for i, c := range s.Columns {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += c.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
+func (i *InterleaveIn) SQL() string {
+	return ", INTERLEAVE IN " + i.TableName.SQL()
+}
+
+func (d *DropIndex) SQL() string {
+	return "DROP INDEX " + d.Name.SQL()
+}
+
+// ================================================================================
+//
+// Types for Schema
+//
+// ================================================================================
+
+func (s *ScalarSchemaType) SQL() string {
+	return string(s.Name)
+}
+
+func (s *SizedSchemaType) SQL() string {
+	sql := string(s.Name) + "("
+	if s.Max {
+		sql += "MAX"
+	} else {
+		sql += s.Size.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
+func (a *ArraySchemaType) SQL() string {
+	return "ARRAY<" + a.Item.SQL() + ">"
+}

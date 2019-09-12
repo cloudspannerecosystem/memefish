@@ -1,0 +1,59 @@
+--- create_table_cluster_on_delete_no_action.sql
+create table foo (
+  foo int64,
+) primary key (foo),
+  interleave in parent foobar
+             on delete no action
+--- AST
+&parser.CreateTable{
+  pos:  0,
+  end:  115,
+  Name: &parser.Ident{
+    pos:  13,
+    end:  16,
+    Name: "foo",
+  },
+  Columns: []*parser.ColumnDef{
+    &parser.ColumnDef{
+      end:  30,
+      Name: &parser.Ident{
+        pos:  21,
+        end:  24,
+        Name: "foo",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  25,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+  },
+  PrimaryKeys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  50,
+      Name: &parser.Ident{
+        pos:  47,
+        end:  50,
+        Name: "foo",
+      },
+      Dir: "",
+    },
+  },
+  Cluster: &parser.Cluster{
+    pos:       51,
+    end:       115,
+    TableName: &parser.Ident{
+      pos:  76,
+      end:  82,
+      Name: "foobar",
+    },
+    OnDelete: "ON DELETE NO ACTION",
+  },
+}
+
+--- SQL
+CREATE TABLE foo(
+  foo INT64,
+)
+PRIMARY KEY (foo), INTERLEAVE IN PARENT foobar ON DELETE NO ACTION

@@ -1,0 +1,27 @@
+--- alter_table_alter_column_set.sql
+alter table foo alter column foo set options(allow_commit_timestamp = true)
+--- AST
+&parser.AlterTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  TableAlternation: &parser.AlterColumnSet{
+    pos:  16,
+    Name: &parser.Ident{
+      pos:  29,
+      end:  32,
+      Name: "foo",
+    },
+    Options: &parser.ColumnDefOptions{
+      pos:                  37,
+      end:                  75,
+      AllowCommitTimestamp: true,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ALTER COLUMN foo SET OPTIONS(allow_commit_timestamp = true)
