@@ -56,7 +56,6 @@ var lexerTestCases = []struct {
 	{"0123", []*Token{{Kind: TokenInt, Raw: "0123"}}},
 	{"0xbeaf", []*Token{{Kind: TokenInt, Raw: "0xbeaf"}}},
 	{"0XBEAF", []*Token{{Kind: TokenInt, Raw: "0XBEAF"}}},
-	{"0e", []*Token{{Kind: TokenInt, Raw: "0"}, {Kind: TokenIdent, Raw: "e", AsString: "e"}}},
 	// TokenFloat
 	{"1.2", []*Token{{Kind: TokenFloat, Raw: "1.2"}}},
 	{"+1.2", []*Token{{Kind: "+", Raw: "+"}, {Kind: TokenFloat, Raw: "1.2"}}},
@@ -68,7 +67,6 @@ var lexerTestCases = []struct {
 	{"1E1", []*Token{{Kind: TokenFloat, Raw: "1E1"}}},
 	{"1e+1", []*Token{{Kind: TokenFloat, Raw: "1e+1"}}},
 	{"1e-1", []*Token{{Kind: TokenFloat, Raw: "1e-1"}}},
-	{"1e+1e", []*Token{{Kind: TokenFloat, Raw: "1e+1"}, {Kind: TokenIdent, Raw: "e", AsString: "e"}}},
 	// TokenParam
 	{"@foo", []*Token{{Kind: TokenParam, Raw: "@foo", AsString: "foo"}}},
 	{"@foo.1", []*Token{{Kind: TokenParam, Raw: "@foo", AsString: "foo"}, {Kind: ".", Raw: "."}, {Kind: TokenIdent, Raw: "1", AsString: "1"}}},
@@ -135,6 +133,7 @@ var lexerWrongTestCase = []struct {
 	{`B"\U00000031"`, 1, "invalid escape sequence: \\U is not allowed in bytes literal"},
 	{`"\UFFFFFFFF"`, 0, "invalid escape sequence: invalid code point: U+FFFFFFFF"},
 	{"``", 0, "invalid empty identifier"},
+	{"1from", 1, "number literal cannot follow identifier without any spaces"},
 }
 
 func nextToken(l *Lexer) (tok *Token, err error) {

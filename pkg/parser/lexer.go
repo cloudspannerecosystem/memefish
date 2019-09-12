@@ -313,6 +313,10 @@ func (l *Lexer) nextNumber() {
 	} else {
 		l.Token.Kind = TokenFloat
 	}
+
+	if l.peekOk(0) && isIdentPart(l.peek(0)) {
+		l.panicf("number literal cannot follow identifier without any spaces")
+	}
 }
 
 func (l *Lexer) nextRawBytes() {
