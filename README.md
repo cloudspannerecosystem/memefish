@@ -1,11 +1,8 @@
+<div style="text-align: center">
+	<img src="docs/memefish.svg" style="width: 320px">
+</div>
+
 # memefish
-
-```
-
-  (x x) < memefish
-  /|||\
-
-```
 
 > `memefish` is the foundation to analyze Spanner SQL.
 
