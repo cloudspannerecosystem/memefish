@@ -1267,5 +1267,5 @@ type SizedSchemaType struct {
 type ArraySchemaType struct {
 	pos, end Pos
 
-	Item SchemaType
+	Item SchemaType // ScalarSchemaType or SizedSchemaType
 }
