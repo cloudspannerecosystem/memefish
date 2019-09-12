@@ -22,6 +22,7 @@ WHERE
   OR (SingerID = 1) IS NOT TRUE
   OR (SingerID = 1) IS FALSE
   OR (SingerID = 1) IS NOT FALSE
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

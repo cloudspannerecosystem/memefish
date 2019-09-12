@@ -5,6 +5,7 @@ from (
   JOIN
     (select 1 A, 2 B) USING (A)
 )
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

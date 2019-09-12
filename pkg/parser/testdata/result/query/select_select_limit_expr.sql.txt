@@ -1,5 +1,6 @@
 --- select_select_limit_expr.sql
 select ((select 1) limit 1 offset 0) + 3
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

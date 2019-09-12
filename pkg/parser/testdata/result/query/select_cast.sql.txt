@@ -4,6 +4,7 @@ from x tablesample BERNOULLI (cast(0.1 as float64) percent),
      y tablesample BERNOULLI (cast(1 as int64) rows),
      z tablesample BERNOULLI (cast(@param as int64) rows)
 limit cast(1 as INT64) offset cast(@foo as INT64)
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

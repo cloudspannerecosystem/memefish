@@ -3,6 +3,7 @@ SELECT
   *
 FROM
   Singers
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

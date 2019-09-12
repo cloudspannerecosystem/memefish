@@ -18,6 +18,7 @@ select
     extract(isoyear from date "2019-09-01"),
     extract(date from timestamp "2019-09-01 08:11:23"),
     extract(hour from timestamp "2019-09-01 08:11:23" at time zone "Asia/Tokyo")
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),

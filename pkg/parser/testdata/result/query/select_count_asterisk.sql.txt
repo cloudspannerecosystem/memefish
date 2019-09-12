@@ -1,5 +1,6 @@
 --- select_count_asterisk.sql
 select count(*) from singers
+
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),
