@@ -475,7 +475,7 @@ func (a *AlterTable) Pos() Pos { return a.pos }
 func (a *AlterTable) End() Pos { return a.TableAlternation.End() }
 
 func (a *AddColumn) Pos() Pos { return a.pos }
-func (a *AddColumn) End() Pos { return a.ColumnDef.End() }
+func (a *AddColumn) End() Pos { return a.Column.End() }
 
 func (d *DropColumn) Pos() Pos { return d.pos }
 func (d *DropColumn) End() Pos { return d.Name.End() }

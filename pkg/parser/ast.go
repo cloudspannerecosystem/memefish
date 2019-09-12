@@ -1125,12 +1125,12 @@ type AlterTable struct {
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
-//     ADD COLUMN {{.ColumnDef | sql}}
+//     ADD COLUMN {{.Column | sql}}
 type AddColumn struct {
-	// end = ColumnDef.end
+	// end = Column.end
 	pos Pos
 
-	ColumnDef *ColumnDef
+	Column *ColumnDef
 }
 
 // DropColumn is DROP COLUMN clause in ALTER TABLE.
@@ -1165,11 +1165,12 @@ type AlterColumn struct {
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
 //
-//     ALTER COLUMN SET {{.Options | sql}}
+//     ALTER COLUMN SET {{.Name | sql}} {{.Options | sql}}
 type AlterColumnSet struct {
 	// end = Options.end
 	pos Pos
 
+	Name    *Ident
 	Options *ColumnDefOptions
 }
 

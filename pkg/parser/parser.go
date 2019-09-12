@@ -1791,6 +1791,11 @@ func (p *Parser) tryParseColumnDefOptions() *ColumnDefOptions {
 	if !p.Token.IsKeywordLike("OPTIONS") {
 		return nil
 	}
+
+	return p.parseColumnDefOptions()
+}
+
+func (p *Parser) parseColumnDefOptions() *ColumnDefOptions {
 	pos := p.expectKeywordLike("OPTIONS").Pos
 
 	p.expect("(")
@@ -1853,14 +1858,16 @@ func (p *Parser) tryParseCluster() *Cluster {
 	if p.Token.Kind == "ON" {
 		p.expect("ON")
 		p.expectKeywordLike("DELETE")
-		switch {
-		case p.Token.IsKeywordLike("CASCADE"):
+		switch p.Token.Kind {
+		case TokenIdent:
 			end = p.expectKeywordLike("CASCADE").End
 			onDelete = OnDeleteCascade
-		case p.Token.Kind == "NO":
+		case "NO":
 			p.NextToken()
 			end = p.expectKeywordLike("ACTION").End
 			onDelete = OnDeleteNoAction
+		default:
+			p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
 		}
 	}
 
@@ -1964,7 +1971,117 @@ func (p *Parser) tryParseInterleaveIn() *InterleaveIn {
 }
 
 func (p *Parser) parseAlterTable(pos Pos) *AlterTable {
-	panic("TODO: implement")
+	p.expectKeywordLike("TABLE")
+	name := p.parseIdent()
+
+	var alternation TableAlternation
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		alternation = p.parseAddColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		alternation = p.parseDropColumn()
+	case p.Token.Kind == "SET":
+		alternation = p.parseSetOnDelete()
+	case p.Token.IsKeywordLike("ALTER"):
+		alternation = p.parseAlterColumn()
+	default:
+		if p.Token.Kind == TokenIdent {
+			p.panicfAtToken(&p.Token, "expected pseuso keyword: ADD, ALTER, DROP, but: %s", p.Token.AsString)
+		} else {
+			p.panicfAtToken(&p.Token, "expected token: SET, <ident>, but: %s", p.Token.Kind)
+		}
+	}
+
+	return &AlterTable{
+		pos:              pos,
+		Name:             name,
+		TableAlternation: alternation,
+	}
+}
+
+func (p *Parser) parseAddColumn() *AddColumn {
+	pos := p.expectKeywordLike("ADD").Pos
+	p.expectKeywordLike("COLUMN")
+
+	column := p.parseColumnDef()
+
+	return &AddColumn{
+		pos:    pos,
+		Column: column,
+	}
+}
+
+func (p *Parser) parseDropColumn() *DropColumn {
+	pos := p.expectKeywordLike("DROP").Pos
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	return &DropColumn{
+		pos:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseSetOnDelete() *SetOnDelete {
+	pos := p.expect("SET").Pos
+	p.expect("ON")
+	p.expectKeywordLike("DELETE")
+
+	var onDelete OnDeleteAction
+	var end Pos
+	switch p.Token.Kind {
+	case TokenIdent:
+		end = p.expectKeywordLike("CASCADE").End
+		onDelete = OnDeleteCascade
+	case "NO":
+		p.NextToken()
+		end = p.expectKeywordLike("ACTION").End
+		onDelete = OnDeleteNoAction
+	default:
+		p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
+	}
+
+	return &SetOnDelete{
+		pos:      pos,
+		end:      end,
+		OnDelete: onDelete,
+	}
+}
+
+func (p *Parser) parseAlterColumn() TableAlternation {
+	pos := p.expectKeywordLike("ALTER").Pos
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	if p.Token.Kind == "SET" {
+		p.NextToken()
+		options := p.parseColumnDefOptions()
+		return &AlterColumnSet{
+			pos:     pos,
+			Name:    name,
+			Options: options,
+		}
+	}
+
+	t := p.parseSchemaType()
+
+	end := name.End()
+	notNull := false
+	if p.Token.Kind == "NOT" {
+		p.expect("NOT")
+		end = p.expect("NULL").End
+		notNull = true
+	}
+
+	return &AlterColumn{
+		pos:     pos,
+		end:     end,
+		Name:    name,
+		Type:    t,
+		NotNull: notNull,
+	}
 }
 
 func (p *Parser) parseDropTable(pos Pos) *DropTable {

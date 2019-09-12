@@ -740,7 +740,7 @@ func (a *AlterTable) SQL() string {
 }
 
 func (a *AddColumn) SQL() string {
-	return "ADD COLUMN " + a.ColumnDef.SQL()
+	return "ADD COLUMN " + a.Column.SQL()
 }
 
 func (d *DropColumn) SQL() string {
@@ -760,7 +760,7 @@ func (a *AlterColumn) SQL() string {
 }
 
 func (a *AlterColumnSet) SQL() string {
-	return "ALTER COLUMN SET " + a.Options.SQL()
+	return "ALTER COLUMN SET " + a.Name.SQL() + " " + a.Options.SQL()
 }
 
 func (d *DropTable) SQL() string {
