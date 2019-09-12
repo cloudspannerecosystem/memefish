@@ -1,10 +1,18 @@
 .PHONY: test
 test: bin/richgo
-	bin/richgo test -cover -v ./pkg/...
+	@echo
+	@echo "  (x x) < memefish: test"
+	@echo "  /|||\\"
+	@echo
+	bin/richgo test -cover ./pkg/...
 	go build -o /dev/null ./example/... ./tools/...
 
 .PHONY: lint
 lint: bin/golangci-lint
+	@echo
+	@echo "  (x x) < memefish: lint"
+	@echo "  /|||\\"
+	@echo
 	bin/golangci-lint run ./...
 
 .PHONY: ci
