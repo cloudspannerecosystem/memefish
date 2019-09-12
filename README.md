@@ -1,6 +1,6 @@
-<div style="text-align: center">
-	<img src="docs/memefish.svg" style="width: 320px">
-</div>
+<p align="center">
+	<img src="docs/memefish.svg" width="220px">
+</p>
 
 # memefish
 
