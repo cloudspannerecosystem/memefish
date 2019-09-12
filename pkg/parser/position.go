@@ -431,6 +431,7 @@ func (f *FieldType) Pos() Pos {
 	}
 	return f.Type.Pos()
 }
+
 func (f *FieldType) End() Pos {
 	return f.Type.End()
 }
@@ -518,3 +519,42 @@ func (s *SizedSchemaType) End() Pos { return s.end }
 
 func (a *ArraySchemaType) Pos() Pos { return a.pos }
 func (a *ArraySchemaType) End() Pos { return a.end }
+
+// ================================================================================
+//
+// DML
+//
+// ================================================================================
+
+func (i *Insert) Pos() Pos { return i.pos }
+func (i *Insert) End() Pos { return i.Input.End() }
+
+func (v *ValuesInput) Pos() Pos { return v.pos }
+func (v *ValuesInput) End() Pos { return v.Rows[len(v.Rows)-1].End() }
+
+func (v *ValuesRow) Pos() Pos { return v.pos }
+func (v *ValuesRow) End() Pos { return v.end }
+
+func (d *DefaultExpr) Pos() Pos {
+	return d.pos
+}
+
+func (d *DefaultExpr) End() Pos {
+	if d.Default {
+		return d.pos + 7
+	} else {
+		return d.Expr.End()
+	}
+}
+
+func (s *SubQueryInput) Pos() Pos { return s.Query.Pos() }
+func (s *SubQueryInput) End() Pos { return s.Query.End() }
+
+func (d *Delete) Pos() Pos { return d.pos }
+func (d *Delete) End() Pos { return d.Where.End() }
+
+func (u *Update) Pos() Pos { return u.pos }
+func (u *Update) End() Pos { return u.Where.End() }
+
+func (u *UpdateItem) Pos() Pos { return u.Path[0].Pos() }
+func (u *UpdateItem) End() Pos { return u.Expr.End() }

@@ -171,6 +171,15 @@ func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
 
+// InsertInput is input values of INSERT statement.
+type InsertInput interface {
+	Node
+	isInsertInput()
+}
+
+func (ValuesInput) isInsertInput()   {}
+func (SubQueryInput) isInsertInput() {}
+
 // ================================================================================
 //
 // SELECT
@@ -1269,4 +1278,95 @@ type ArraySchemaType struct {
 	pos, end Pos
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
+}
+
+// ================================================================================
+//
+// DML
+//
+// ================================================================================
+
+// Insert is INSERT statement node.
+//
+//     INSERT INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+type Insert struct {
+	// end = Input.end
+	pos Pos
+
+	TableName *Ident
+	Columns   []*Ident
+	Input     InsertInput
+}
+
+// ValuesInput is VALUES clause in INSERT.
+//
+//     VALUES {{.Rows | sqlJoin ","}}
+type ValuesInput struct {
+	// end = Rows[$].end
+	pos Pos
+
+	Rows []*ValuesRow
+}
+
+// ValuesRow is row values of VALUES clause.
+//
+//     ({{.Values | sqlJoin ","}})
+type ValuesRow struct {
+	pos, end Pos
+
+	Values []*DefaultExpr
+}
+
+// DefaultExpr is DEFAULT or Expr.
+//
+//     {{if .Default}}DEFAULT{{else}}{{.Expr | sql}}{{end}}
+type DefaultExpr struct {
+	// end = Default ? pos + 7 : Expr.end
+	pos Pos
+
+	Default bool
+	Expr    Expr
+}
+
+// SubQueryInput is query clause in INSERT.
+//
+//     {{.Query | sql}}
+type SubQueryInput struct {
+	Query QueryExpr
+}
+
+// Delete is DELETE statement.
+//
+//     DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
+type Delete struct {
+	// end = Where.end
+	pos Pos
+
+	TableName *Ident
+	As        *AsAlias // optional
+	Where     *Where
+}
+
+// Update is UPDATE statement.
+//
+//     UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
+//     SET {{.UpdateItems | sqlJoin ","}} {{.Where | sql}}
+type Update struct {
+	// end = Where.end
+	pos Pos
+
+	TableName   *Ident
+	As          *AsAlias      // optional
+	UpdateItems []*UpdateItem // len(UpdateItems) > 0
+	Where       *Where
+}
+
+// UpdateItem is SET clause items in UPDATE.
+//
+//     {{.Path | sqlJoin "."}} = {{.Expr | sql}}
+type UpdateItem struct {
+	// pos = Path[0].pos, end = Expr.end
+
+	Path []*Ident // len(Path) > 0
+	Expr Expr
 }

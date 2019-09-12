@@ -836,3 +836,86 @@ func (s *SizedSchemaType) SQL() string {
 func (a *ArraySchemaType) SQL() string {
 	return "ARRAY<" + a.Item.SQL() + ">"
 }
+
+// ================================================================================
+//
+// DML
+//
+// ================================================================================
+
+func (i *Insert) SQL() string {
+	sql := "INSERT INTO " + i.TableName.SQL() + "("
+	for i, c := range i.Columns {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += c.SQL()
+	}
+	sql += ")\n" + i.Input.SQL()
+	return sql
+}
+
+func (v *ValuesInput) SQL() string {
+	sql := "VALUES "
+	for i, r := range v.Rows {
+		if i != 0 {
+			sql += ",\n       "
+		}
+		sql += r.SQL()
+	}
+	return sql
+}
+
+func (v *ValuesRow) SQL() string {
+	sql := "("
+	for i, v := range v.Values {
+		if i != 0 {
+			sql += ","
+		}
+		sql += v.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
+func (d *DefaultExpr) SQL() string {
+	if d.Default {
+		return "DEFAULT"
+	}
+	return d.Expr.SQL()
+}
+
+func (s *SubQueryInput) SQL() string {
+	return s.Query.SQL()
+}
+
+func (d *Delete) SQL() string {
+	sql := "DELETE FROM " + d.TableName.SQL()
+	if d.As != nil {
+		sql += " " + d.As.SQL()
+	}
+	sql += " " + d.Where.SQL()
+	return sql
+}
+
+func (u *Update) SQL() string {
+	sql := "UPDATE " + u.TableName.SQL()
+	if u.As != nil {
+		sql += " " + u.As.SQL()
+	}
+	sql += " SET " + u.UpdateItems[0].SQL()
+	for _, item := range u.UpdateItems[1:] {
+		sql += ", " + item.SQL()
+	}
+	sql += " " + u.Where.SQL()
+	return sql
+}
+
+func (u *UpdateItem) SQL() string {
+	sql := u.Path[0].SQL()
+	for _, id := range u.Path[1:] {
+		sql += "." + id.SQL()
+	}
+	sql += " = " + u.Expr.SQL()
+	return sql
+}
