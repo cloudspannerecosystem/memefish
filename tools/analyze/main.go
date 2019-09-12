@@ -82,7 +82,7 @@ func main() {
 	}
 
 	if *debug {
-		pp.Println(list)
+		_, _ = pp.Println(list)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

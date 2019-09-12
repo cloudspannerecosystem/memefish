@@ -25,7 +25,7 @@ func main() {
 
 	// Show AST.
 	log.Print("AST")
-	pp.Println(stmt)
+	_, _ = pp.Println(stmt)
 
 	// Unparse AST to SQL source string.
 	log.Print("Unparse")
