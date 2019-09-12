@@ -16,12 +16,6 @@ Try it!
 
 ```console
 $ go run ./tools/analyze -param ./tools/param.yml 'select 1 + @foo'
-2019/09/10 11:49:46 load param file: ./tools/param.yml
-2019/09/10 11:49:46 query: "select 1 + @foo as foo"
-2019/09/10 11:49:46 start parsing
-2019/09/10 11:49:46 finish parsing successfully
-2019/09/10 11:49:46 start analyzing
-2019/09/10 11:49:46 finish analyzing
 +-------+
 |  FOO  |
 +-------+
@@ -29,12 +23,7 @@ $ go run ./tools/analyze -param ./tools/param.yml 'select 1 + @foo'
 +-------+
 
 $ go run ./tools/analyze -param ./tools/param.yml 'select @bar + 1 as bar'
-2019/09/10 11:50:10 load param file: ./tools/param.yml
-2019/09/10 11:50:10 query: "select @bar + 1 as bar"
-2019/09/10 11:50:10 start parsing
-2019/09/10 11:50:10 finish parsing successfully
-2019/09/10 11:50:10 start analyzing
-2019/09/10 11:50:10 analyze error::1:8: operator + requires two INT64/FLOAT64, but: STRUCT<x INT64, y FLOAT64>, INT64
+analyze error::1:8: operator + requires two INT64/FLOAT64, but: STRUCT<x INT64, y FLOAT64>, INT64
 
   1:  select @bar + 1 as bar
              ^~~~~~~~
@@ -148,7 +137,7 @@ func main() {
 
 - Make more compatibility
 - Add tests for analyzer
-- Add DDL/DML parsers
+- Add DML parsers
 - Build Spanner emulator on memefish
 
 ## Notice
