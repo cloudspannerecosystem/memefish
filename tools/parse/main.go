@@ -47,7 +47,7 @@ func main() {
 	log.Printf("finish parsing successfully")
 
 	fmt.Println("--- AST")
-	pp.Println(node)
+	_, _ = pp.Println(node)
 	fmt.Println()
 	fmt.Println("--- SQL")
 	fmt.Println(node.SQL())
