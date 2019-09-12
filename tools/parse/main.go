@@ -9,6 +9,8 @@ import (
 	"github.com/MakeNowJust/memefish/pkg/parser"
 )
 
+var t = flag.String("type", "query", "statement type")
+
 func init() {
 	flag.Parse()
 }
@@ -29,15 +31,24 @@ func main() {
 	}
 
 	log.Printf("start parsing")
-	stmt, err := p.ParseQuery()
+	var node parser.Node
+	var err error
+	switch *t {
+	case "query":
+		node, err = p.ParseQuery()
+	case "expr":
+		node, err = p.ParseExpr()
+	case "ddl":
+		node, err = p.ParseDDL()
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("finish parsing successfully")
 
 	fmt.Println("--- AST")
-	pp.Println(stmt)
+	pp.Println(node)
 	fmt.Println()
 	fmt.Println("--- SQL")
-	fmt.Println(stmt.SQL())
+	fmt.Println(node.SQL())
 }
