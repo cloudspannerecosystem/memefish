@@ -84,7 +84,7 @@ func (a *Analyzer) analyzeIntValue(i parser.IntValue) int64 {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | int64 */ {
+func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | int64 */ { //nolint:unused
 	switch n := n.(type) {
 	case *parser.IntLiteral:
 		v, err := strconv.ParseInt(n.Value, n.Base, 64)
