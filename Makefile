@@ -4,7 +4,7 @@ test: bin/richgo
 	go build -o /dev/null ./example/... ./tools/...
 
 .PHONY: lint
-lint:
+lint: bin/golangci-lint
 	bin/golangci-lint run ./...
 
 .PHONY: ci
