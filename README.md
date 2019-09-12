@@ -7,12 +7,12 @@
 
 ```
 
-> `memefish` is the Spanner SQL dialect parser and analyzer.
+> `memefish` is the foundation to analyze Spanner SQL.
 
 ## Features
 
 - Parse Spanner SQL to AST
-- Generate Spanner SQL from AST
+- Generate Spanner SQL from AST (unparse)
 - Check expression type and semantics in SQL statement
 
 Try it!
@@ -153,3 +153,13 @@ func main() {
 - Add tests for analyzer
 - Add DDL/DML parsers
 - Build Spanner emulator on memefish
+
+## Notice
+
+This project is originally developed under "Expert team Go Engineer (Backend)" of [Mercari Summer Internship for Engineer 2019](https://mercan.mercari.com/articles/13497/).
+
+## License
+
+This project is licensed under MIT license.
+
+2019 (C) TSUYUSATO "MakeNowJust" Kitsune
