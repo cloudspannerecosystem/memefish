@@ -1,0 +1,7 @@
+---
+SQL: |
+  select cast(t as struct<int64, int64>).*
+  from (select as struct 1 as x, 2 as y) as t
+Results:
+  - Type: INT64
+  - Type: INT64

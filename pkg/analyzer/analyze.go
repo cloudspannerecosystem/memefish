@@ -44,8 +44,12 @@ func (a *Analyzer) analyzeType(t parser.Type) Type {
 	case *parser.StructType:
 		fields := make([]*StructField, len(t.Fields))
 		for i, f := range t.Fields {
+			var name string
+			if f.Member != nil {
+				name = f.Member.Name
+			}
 			fields[i] = &StructField{
-				Name: f.Member.Name,
+				Name: name,
 				Type: a.analyzeType(f.Type),
 			}
 		}
