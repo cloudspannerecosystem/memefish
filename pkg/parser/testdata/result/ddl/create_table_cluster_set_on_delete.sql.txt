@@ -1,0 +1,59 @@
+--- create_table_cluster_set_on_delete.sql
+create table foo (
+  foo int64
+) primary key (foo),
+  interleave in parent foobar
+             on delete cascade
+--- AST
+&parser.CreateTable{
+  pos:  0,
+  end:  112,
+  Name: &parser.Ident{
+    pos:  13,
+    end:  16,
+    Name: "foo",
+  },
+  Columns: []*parser.ColumnDef{
+    &parser.ColumnDef{
+      end:  30,
+      Name: &parser.Ident{
+        pos:  21,
+        end:  24,
+        Name: "foo",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  25,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+  },
+  PrimaryKeys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  49,
+      Name: &parser.Ident{
+        pos:  46,
+        end:  49,
+        Name: "foo",
+      },
+      Dir: "",
+    },
+  },
+  Cluster: &parser.Cluster{
+    pos:       50,
+    end:       112,
+    TableName: &parser.Ident{
+      pos:  75,
+      end:  81,
+      Name: "foobar",
+    },
+    OnDelete: "ON DELETE CASCADE",
+  },
+}
+
+--- SQL
+CREATE TABLE foo(
+  foo INT64,
+)
+PRIMARY KEY (foo), INTERLEAVE IN PARENT foobar ON DELETE CASCADE

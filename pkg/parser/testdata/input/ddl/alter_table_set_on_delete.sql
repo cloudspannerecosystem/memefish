@@ -1,0 +1,1 @@
+alter table foo set on delete cascade

@@ -1,0 +1,15 @@
+--- drop_index.sql
+drop index foo_bar
+
+--- AST
+&parser.DropIndex{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  11,
+    end:  18,
+    Name: "foo_bar",
+  },
+}
+
+--- SQL
+DROP INDEX foo_bar

@@ -1165,7 +1165,7 @@ type AlterColumn struct {
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
 //
-//     ALTER COLUMN SET {{.Name | sql}} {{.Options | sql}}
+//     ALTER COLUMN {{.Name | sql}} SET {{.Options | sql}}
 type AlterColumnSet struct {
 	// end = Options.end
 	pos Pos

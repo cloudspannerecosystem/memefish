@@ -1,0 +1,19 @@
+--- alter_table_set_on_delete_no_action.sql
+alter table foo set on delete no action
+--- AST
+&parser.AlterTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  TableAlternation: &parser.SetOnDelete{
+    pos:      16,
+    end:      39,
+    OnDelete: "ON DELETE NO ACTION",
+  },
+}
+
+--- SQL
+ALTER TABLE foo SET ON DELETE NO ACTION

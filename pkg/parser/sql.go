@@ -748,7 +748,7 @@ func (d *DropColumn) SQL() string {
 }
 
 func (s *SetOnDelete) SQL() string {
-	return "SET ON DELETE " + string(s.OnDelete)
+	return "SET " + string(s.OnDelete)
 }
 
 func (a *AlterColumn) SQL() string {
@@ -760,7 +760,7 @@ func (a *AlterColumn) SQL() string {
 }
 
 func (a *AlterColumnSet) SQL() string {
-	return "ALTER COLUMN SET " + a.Name.SQL() + " " + a.Options.SQL()
+	return "ALTER COLUMN " + a.Name.SQL() + " SET " + a.Options.SQL()
 }
 
 func (d *DropTable) SQL() string {
@@ -775,7 +775,7 @@ func (c *CreateIndex) SQL() string {
 	if c.NullFiltered {
 		sql += "NULL_FILTERED "
 	}
-	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + "("
+	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
 	for i, k := range c.Keys {
 		if i != 0 {
 			sql += ", "

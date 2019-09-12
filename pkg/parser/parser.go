@@ -1715,6 +1715,8 @@ func (p *Parser) parseCreateTable(pos Pos) *CreateTable {
 	p.expectKeywordLike("TABLE")
 	name := p.parseIdent()
 
+	// This loop allows parsing trailing comma intentionally.
+	// TODO: is this allowed by Spanner really?
 	p.expect("(")
 	var columns []*ColumnDef
 	for p.Token.Kind != TokenEOF {
@@ -1957,10 +1959,11 @@ func (p *Parser) tryParseStoring() *Storing {
 }
 
 func (p *Parser) tryParseInterleaveIn() *InterleaveIn {
-	if !p.Token.IsKeywordLike("INTERLEAVE") {
+	if p.Token.Kind != "," {
 		return nil
 	}
-	pos := p.expectKeywordLike("INTERLEAVE").Pos
+	pos := p.expect(",").Pos
+	p.expectKeywordLike("INTERLEAVE")
 	p.expect("IN")
 	name := p.parseIdent()
 

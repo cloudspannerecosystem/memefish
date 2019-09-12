@@ -1,0 +1,65 @@
+--- create_table_cluster.sql
+create table foo (
+  foo int64,
+  bar int64
+) primary key (),
+  interleave in parent foobar
+
+--- AST
+&parser.CreateTable{
+  pos:  0,
+  end:  91,
+  Name: &parser.Ident{
+    pos:  13,
+    end:  16,
+    Name: "foo",
+  },
+  Columns: []*parser.ColumnDef{
+    &parser.ColumnDef{
+      end:  30,
+      Name: &parser.Ident{
+        pos:  21,
+        end:  24,
+        Name: "foo",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  25,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+    &parser.ColumnDef{
+      end:  43,
+      Name: &parser.Ident{
+        pos:  34,
+        end:  37,
+        Name: "bar",
+      },
+      Type: &parser.ScalarSchemaType{
+        pos:  38,
+        Name: "INT64",
+      },
+      NotNull: false,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+  },
+  PrimaryKeys: []*parser.IndexKey{},
+  Cluster:     &parser.Cluster{
+    pos:       60,
+    end:       91,
+    TableName: &parser.Ident{
+      pos:  85,
+      end:  91,
+      Name: "foobar",
+    },
+    OnDelete: "",
+  },
+}
+
+--- SQL
+CREATE TABLE foo(
+  foo INT64,
+  bar INT64,
+)
+PRIMARY KEY (), INTERLEAVE IN PARENT foobar

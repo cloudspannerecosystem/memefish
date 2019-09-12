@@ -1,0 +1,56 @@
+--- create_index_interleave.sql
+create index foo_bar on foo (
+  foo desc
+) storing (bar),
+  interleave in foobar
+
+--- AST
+&parser.CreateIndex{
+  pos:          0,
+  end:          80,
+  Unique:       false,
+  NullFiltered: false,
+  Name:         &parser.Ident{
+    pos:  13,
+    end:  20,
+    Name: "foo_bar",
+  },
+  TableName: &parser.Ident{
+    pos:  24,
+    end:  27,
+    Name: "foo",
+  },
+  Keys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  40,
+      Name: &parser.Ident{
+        pos:  32,
+        end:  35,
+        Name: "foo",
+      },
+      Dir: "DESC",
+    },
+  },
+  Storing: &parser.Storing{
+    pos:     43,
+    end:     56,
+    Columns: []*parser.Ident{
+      &parser.Ident{
+        pos:  52,
+        end:  55,
+        Name: "bar",
+      },
+    },
+  },
+  InterleaveIn: &parser.InterleaveIn{
+    pos:       56,
+    TableName: &parser.Ident{
+      pos:  74,
+      end:  80,
+      Name: "foobar",
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX foo_bar ON foo (foo DESC) STORING (bar), INTERLEAVE IN foobar
