@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="docs/memefish.svg" width="220px">
+	<img src="docs/memefish.png" width="220px">
 </p>
 
 # méméfish
