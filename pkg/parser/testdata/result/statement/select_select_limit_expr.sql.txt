@@ -1,0 +1,82 @@
+--- select_select_limit_expr.sql
+select ((select 1) limit 1 offset 0) + 3
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.BinaryExpr{
+          Op:   "+",
+          Left: &parser.ScalarSubQuery{
+            pos:   7,
+            end:   36,
+            Query: &parser.SubQuery{
+              pos:   8,
+              end:   18,
+              Query: &parser.Select{
+                pos:      9,
+                Distinct: false,
+                AsStruct: false,
+                Results:  []parser.SelectItem{
+                  &parser.ExprSelectItem{
+                    Expr: &parser.IntLiteral{
+                      pos:   16,
+                      end:   17,
+                      Base:  10,
+                      Value: "1",
+                    },
+                  },
+                },
+                From:    (*parser.From)(nil),
+                Where:   (*parser.Where)(nil),
+                GroupBy: (*parser.GroupBy)(nil),
+                Having:  (*parser.Having)(nil),
+                OrderBy: (*parser.OrderBy)(nil),
+                Limit:   (*parser.Limit)(nil),
+              },
+              OrderBy: (*parser.OrderBy)(nil),
+              Limit:   &parser.Limit{
+                pos:   19,
+                Count: &parser.IntLiteral{
+                  pos:   25,
+                  end:   26,
+                  Base:  10,
+                  Value: "1",
+                },
+                Offset: &parser.Offset{
+                  pos:   27,
+                  Value: &parser.IntLiteral{
+                    pos:   34,
+                    end:   35,
+                    Base:  10,
+                    Value: "0",
+                  },
+                },
+              },
+            },
+          },
+          Right: &parser.IntLiteral{
+            pos:   39,
+            end:   40,
+            Base:  10,
+            Value: "3",
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT ((SELECT 1) LIMIT 1 OFFSET 0) + 3

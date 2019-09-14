@@ -1,0 +1,72 @@
+--- select_singer_with_full_join.sql
+SELECT
+  *
+FROM
+  Singers AS A,
+  Singers AS B
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.Join{
+        Op:     ",",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.TableName{
+          Table: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   26,
+            Alias: &parser.Ident{
+              pos:  29,
+              end:  30,
+              Name: "A",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  34,
+            end:  41,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   42,
+            Alias: &parser.Ident{
+              pos:  45,
+              end:  46,
+              Name: "B",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Cond: nil,
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers AS A, Singers AS B

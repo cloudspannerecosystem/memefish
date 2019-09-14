@@ -1,0 +1,42 @@
+--- select_singer_with_distinct.sql
+SELECT
+  DISTINCT
+  *
+FROM
+  Singers
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: true,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 20,
+      },
+    },
+    From: &parser.From{
+      pos:    22,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  29,
+          end:  36,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT DISTINCT * FROM Singers

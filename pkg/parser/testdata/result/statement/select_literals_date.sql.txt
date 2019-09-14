@@ -1,0 +1,179 @@
+--- select_literals_date.sql
+SELECT
+  DATE'2014-09-27',
+  DATE('2014-09-27'),
+  DATE r'2014-09-27',
+  TIMESTAMP '2014-09-27 12:30:00.45-08',
+  TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles",
+  TIMESTAMP'2014-09-27',
+  TIMESTAMP('2014-09-27'),
+  TIMESTAMP r'2014-09-27',
+  DATE('2014-09-27') AS FOO,
+  TIMESTAMP('2014-09-27') AS BAR
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.DateLiteral{
+          pos:   9,
+          end:   25,
+          Value: "2014-09-27",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.CallExpr{
+          end:  47,
+          Func: &parser.Ident{
+            pos:  29,
+            end:  33,
+            Name: "DATE",
+          },
+          Distinct: false,
+          Args:     []*parser.Arg{
+            &parser.Arg{
+              pos:  34,
+              Expr: &parser.StringLiteral{
+                pos:   34,
+                end:   46,
+                Value: "2014-09-27",
+              },
+              IntervalUnit: (*parser.Ident)(nil),
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.DateLiteral{
+          pos:   51,
+          end:   69,
+          Value: "2014-09-27",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
+          pos:   73,
+          end:   110,
+          Value: "2014-09-27 12:30:00.45-08",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
+          pos:   114,
+          end:   168,
+          Value: "2014-09-27 12:30:00.45 America/Los_Angeles",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
+          pos:   172,
+          end:   193,
+          Value: "2014-09-27",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.CallExpr{
+          end:  220,
+          Func: &parser.Ident{
+            pos:  197,
+            end:  206,
+            Name: "TIMESTAMP",
+          },
+          Distinct: false,
+          Args:     []*parser.Arg{
+            &parser.Arg{
+              pos:  207,
+              Expr: &parser.StringLiteral{
+                pos:   207,
+                end:   219,
+                Value: "2014-09-27",
+              },
+              IntervalUnit: (*parser.Ident)(nil),
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.TimestampLiteral{
+          pos:   224,
+          end:   247,
+          Value: "2014-09-27",
+        },
+      },
+      &parser.Alias{
+        Expr: &parser.CallExpr{
+          end:  269,
+          Func: &parser.Ident{
+            pos:  251,
+            end:  255,
+            Name: "DATE",
+          },
+          Distinct: false,
+          Args:     []*parser.Arg{
+            &parser.Arg{
+              pos:  256,
+              Expr: &parser.StringLiteral{
+                pos:   256,
+                end:   268,
+                Value: "2014-09-27",
+              },
+              IntervalUnit: (*parser.Ident)(nil),
+            },
+          },
+        },
+        As: &parser.AsAlias{
+          pos:   270,
+          Alias: &parser.Ident{
+            pos:  273,
+            end:  276,
+            Name: "FOO",
+          },
+        },
+      },
+      &parser.Alias{
+        Expr: &parser.CallExpr{
+          end:  303,
+          Func: &parser.Ident{
+            pos:  280,
+            end:  289,
+            Name: "TIMESTAMP",
+          },
+          Distinct: false,
+          Args:     []*parser.Arg{
+            &parser.Arg{
+              pos:  290,
+              Expr: &parser.StringLiteral{
+                pos:   290,
+                end:   302,
+                Value: "2014-09-27",
+              },
+              IntervalUnit: (*parser.Ident)(nil),
+            },
+          },
+        },
+        As: &parser.AsAlias{
+          pos:   304,
+          Alias: &parser.Ident{
+            pos:  307,
+            end:  310,
+            Name: "BAR",
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT DATE "2014-09-27", DATE("2014-09-27"), DATE "2014-09-27", TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), TIMESTAMP "2014-09-27", DATE("2014-09-27") AS FOO, TIMESTAMP("2014-09-27") AS BAR

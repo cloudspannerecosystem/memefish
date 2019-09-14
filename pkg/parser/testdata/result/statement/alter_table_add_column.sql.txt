@@ -1,0 +1,34 @@
+--- alter_table_add_column.sql
+alter table foo add column baz string(max) not null
+--- AST
+&parser.AlterTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  TableAlternation: &parser.AddColumn{
+    pos:    16,
+    Column: &parser.ColumnDef{
+      end:  51,
+      Name: &parser.Ident{
+        pos:  27,
+        end:  30,
+        Name: "baz",
+      },
+      Type: &parser.SizedSchemaType{
+        pos:  31,
+        end:  42,
+        Name: "STRING",
+        Max:  true,
+        Size: nil,
+      },
+      NotNull: true,
+      Options: (*parser.ColumnDefOptions)(nil),
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ADD COLUMN baz STRING(MAX) NOT NULL

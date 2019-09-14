@@ -1,0 +1,144 @@
+--- select_literals_array.sql
+SELECT
+  [1, 2, 3],
+  ['x', 'y', 'xy'],
+  ARRAY[1, 2, 3],
+  ARRAY<string>['x', 'y', 'xy'],
+  ARRAY<int64>[]
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:    9,
+          end:    18,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
+              pos:   10,
+              end:   11,
+              Base:  10,
+              Value: "1",
+            },
+            &parser.IntLiteral{
+              pos:   13,
+              end:   14,
+              Base:  10,
+              Value: "2",
+            },
+            &parser.IntLiteral{
+              pos:   16,
+              end:   17,
+              Base:  10,
+              Value: "3",
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:    22,
+          end:    38,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.StringLiteral{
+              pos:   23,
+              end:   26,
+              Value: "x",
+            },
+            &parser.StringLiteral{
+              pos:   28,
+              end:   31,
+              Value: "y",
+            },
+            &parser.StringLiteral{
+              pos:   33,
+              end:   37,
+              Value: "xy",
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:    42,
+          end:    56,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
+              pos:   48,
+              end:   49,
+              Base:  10,
+              Value: "1",
+            },
+            &parser.IntLiteral{
+              pos:   51,
+              end:   52,
+              Base:  10,
+              Value: "2",
+            },
+            &parser.IntLiteral{
+              pos:   54,
+              end:   55,
+              Base:  10,
+              Value: "3",
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:  60,
+          end:  89,
+          Type: &parser.SimpleType{
+            pos:  66,
+            Name: "STRING",
+          },
+          Values: []parser.Expr{
+            &parser.StringLiteral{
+              pos:   74,
+              end:   77,
+              Value: "x",
+            },
+            &parser.StringLiteral{
+              pos:   79,
+              end:   82,
+              Value: "y",
+            },
+            &parser.StringLiteral{
+              pos:   84,
+              end:   88,
+              Value: "xy",
+            },
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:  93,
+          end:  107,
+          Type: &parser.SimpleType{
+            pos:  99,
+            Name: "INT64",
+          },
+          Values: []parser.Expr{},
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT ARRAY[1, 2, 3], ARRAY["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[]

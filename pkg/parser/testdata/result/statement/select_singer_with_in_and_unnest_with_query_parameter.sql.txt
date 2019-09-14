@@ -1,0 +1,61 @@
+--- select_singer_with_in_and_unnest_with_query_parameter.sql
+SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerId IN UNNEST(@singerIDs)
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  18,
+          end:  25,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where: &parser.Where{
+      pos:  26,
+      Expr: &parser.InExpr{
+        Not:  false,
+        Left: &parser.Ident{
+          pos:  34,
+          end:  42,
+          Name: "SingerId",
+        },
+        Right: &parser.UnnestInCondition{
+          pos:  46,
+          end:  64,
+          Expr: &parser.Param{
+            pos:  53,
+            Name: "singerIDs",
+          },
+        },
+      },
+    },
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers WHERE SingerId IN UNNEST(@singerIDs)

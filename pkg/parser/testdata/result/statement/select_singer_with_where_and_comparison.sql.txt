@@ -1,0 +1,433 @@
+--- select_singer_with_where_and_comparison.sql
+SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = 1
+  OR SingerID < 1
+  OR SingerID > 1
+  OR SingerID <= 1
+  OR SingerID >= 1
+  OR SingerID != 1
+  OR SingerID IN (1, 2, 3)
+  OR SingerID NOT IN (1, 2, 3)
+  OR SingerID BETWEEN 1 AND 3
+  OR SingerID NOT BETWEEN 1 AND 3
+  OR FirstName LIKE "%a"
+  OR FirstName NOT LIKE "%a"
+  OR NULL IS NULL
+  OR NULL IS NOT NULL
+  OR (SingerID = 1) IS TRUE
+  OR (SingerID = 1) IS NOT TRUE
+  OR (SingerID = 1) IS FALSE
+  OR (SingerID = 1) IS NOT FALSE
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  18,
+          end:  25,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where: &parser.Where{
+      pos:  26,
+      Expr: &parser.BinaryExpr{
+        Op:   "OR",
+        Left: &parser.BinaryExpr{
+          Op:   "OR",
+          Left: &parser.BinaryExpr{
+            Op:   "OR",
+            Left: &parser.BinaryExpr{
+              Op:   "OR",
+              Left: &parser.BinaryExpr{
+                Op:   "OR",
+                Left: &parser.BinaryExpr{
+                  Op:   "OR",
+                  Left: &parser.BinaryExpr{
+                    Op:   "OR",
+                    Left: &parser.BinaryExpr{
+                      Op:   "OR",
+                      Left: &parser.BinaryExpr{
+                        Op:   "OR",
+                        Left: &parser.BinaryExpr{
+                          Op:   "OR",
+                          Left: &parser.BinaryExpr{
+                            Op:   "OR",
+                            Left: &parser.BinaryExpr{
+                              Op:   "OR",
+                              Left: &parser.BinaryExpr{
+                                Op:   "OR",
+                                Left: &parser.BinaryExpr{
+                                  Op:   "OR",
+                                  Left: &parser.BinaryExpr{
+                                    Op:   "OR",
+                                    Left: &parser.BinaryExpr{
+                                      Op:   "OR",
+                                      Left: &parser.BinaryExpr{
+                                        Op:   "OR",
+                                        Left: &parser.BinaryExpr{
+                                          Op:   "=",
+                                          Left: &parser.Ident{
+                                            pos:  34,
+                                            end:  42,
+                                            Name: "SingerID",
+                                          },
+                                          Right: &parser.IntLiteral{
+                                            pos:   45,
+                                            end:   46,
+                                            Base:  10,
+                                            Value: "1",
+                                          },
+                                        },
+                                        Right: &parser.BinaryExpr{
+                                          Op:   "<",
+                                          Left: &parser.Ident{
+                                            pos:  52,
+                                            end:  60,
+                                            Name: "SingerID",
+                                          },
+                                          Right: &parser.IntLiteral{
+                                            pos:   63,
+                                            end:   64,
+                                            Base:  10,
+                                            Value: "1",
+                                          },
+                                        },
+                                      },
+                                      Right: &parser.BinaryExpr{
+                                        Op:   ">",
+                                        Left: &parser.Ident{
+                                          pos:  70,
+                                          end:  78,
+                                          Name: "SingerID",
+                                        },
+                                        Right: &parser.IntLiteral{
+                                          pos:   81,
+                                          end:   82,
+                                          Base:  10,
+                                          Value: "1",
+                                        },
+                                      },
+                                    },
+                                    Right: &parser.BinaryExpr{
+                                      Op:   "<=",
+                                      Left: &parser.Ident{
+                                        pos:  88,
+                                        end:  96,
+                                        Name: "SingerID",
+                                      },
+                                      Right: &parser.IntLiteral{
+                                        pos:   100,
+                                        end:   101,
+                                        Base:  10,
+                                        Value: "1",
+                                      },
+                                    },
+                                  },
+                                  Right: &parser.BinaryExpr{
+                                    Op:   ">=",
+                                    Left: &parser.Ident{
+                                      pos:  107,
+                                      end:  115,
+                                      Name: "SingerID",
+                                    },
+                                    Right: &parser.IntLiteral{
+                                      pos:   119,
+                                      end:   120,
+                                      Base:  10,
+                                      Value: "1",
+                                    },
+                                  },
+                                },
+                                Right: &parser.BinaryExpr{
+                                  Op:   "!=",
+                                  Left: &parser.Ident{
+                                    pos:  126,
+                                    end:  134,
+                                    Name: "SingerID",
+                                  },
+                                  Right: &parser.IntLiteral{
+                                    pos:   138,
+                                    end:   139,
+                                    Base:  10,
+                                    Value: "1",
+                                  },
+                                },
+                              },
+                              Right: &parser.InExpr{
+                                Not:  false,
+                                Left: &parser.Ident{
+                                  pos:  145,
+                                  end:  153,
+                                  Name: "SingerID",
+                                },
+                                Right: &parser.ValuesInCondition{
+                                  pos:   157,
+                                  end:   166,
+                                  Exprs: []parser.Expr{
+                                    &parser.IntLiteral{
+                                      pos:   158,
+                                      end:   159,
+                                      Base:  10,
+                                      Value: "1",
+                                    },
+                                    &parser.IntLiteral{
+                                      pos:   161,
+                                      end:   162,
+                                      Base:  10,
+                                      Value: "2",
+                                    },
+                                    &parser.IntLiteral{
+                                      pos:   164,
+                                      end:   165,
+                                      Base:  10,
+                                      Value: "3",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            Right: &parser.InExpr{
+                              Not:  true,
+                              Left: &parser.Ident{
+                                pos:  172,
+                                end:  180,
+                                Name: "SingerID",
+                              },
+                              Right: &parser.ValuesInCondition{
+                                pos:   188,
+                                end:   197,
+                                Exprs: []parser.Expr{
+                                  &parser.IntLiteral{
+                                    pos:   189,
+                                    end:   190,
+                                    Base:  10,
+                                    Value: "1",
+                                  },
+                                  &parser.IntLiteral{
+                                    pos:   192,
+                                    end:   193,
+                                    Base:  10,
+                                    Value: "2",
+                                  },
+                                  &parser.IntLiteral{
+                                    pos:   195,
+                                    end:   196,
+                                    Base:  10,
+                                    Value: "3",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          Right: &parser.BetweenExpr{
+                            Not:  false,
+                            Left: &parser.Ident{
+                              pos:  203,
+                              end:  211,
+                              Name: "SingerID",
+                            },
+                            RightStart: &parser.IntLiteral{
+                              pos:   220,
+                              end:   221,
+                              Base:  10,
+                              Value: "1",
+                            },
+                            RightEnd: &parser.IntLiteral{
+                              pos:   226,
+                              end:   227,
+                              Base:  10,
+                              Value: "3",
+                            },
+                          },
+                        },
+                        Right: &parser.BetweenExpr{
+                          Not:  true,
+                          Left: &parser.Ident{
+                            pos:  233,
+                            end:  241,
+                            Name: "SingerID",
+                          },
+                          RightStart: &parser.IntLiteral{
+                            pos:   254,
+                            end:   255,
+                            Base:  10,
+                            Value: "1",
+                          },
+                          RightEnd: &parser.IntLiteral{
+                            pos:   260,
+                            end:   261,
+                            Base:  10,
+                            Value: "3",
+                          },
+                        },
+                      },
+                      Right: &parser.BinaryExpr{
+                        Op:   "LIKE",
+                        Left: &parser.Ident{
+                          pos:  267,
+                          end:  276,
+                          Name: "FirstName",
+                        },
+                        Right: &parser.StringLiteral{
+                          pos:   282,
+                          end:   286,
+                          Value: "%a",
+                        },
+                      },
+                    },
+                    Right: &parser.BinaryExpr{
+                      Op:   "NOT LIKE",
+                      Left: &parser.Ident{
+                        pos:  292,
+                        end:  301,
+                        Name: "FirstName",
+                      },
+                      Right: &parser.StringLiteral{
+                        pos:   311,
+                        end:   315,
+                        Value: "%a",
+                      },
+                    },
+                  },
+                  Right: &parser.IsNullExpr{
+                    end:  0,
+                    Not:  false,
+                    Left: &parser.NullLiteral{
+                      pos: 321,
+                    },
+                  },
+                },
+                Right: &parser.IsNullExpr{
+                  end:  0,
+                  Not:  true,
+                  Left: &parser.NullLiteral{
+                    pos: 339,
+                  },
+                },
+              },
+              Right: &parser.IsBoolExpr{
+                end:  0,
+                Not:  false,
+                Left: &parser.ParenExpr{
+                  pos:  361,
+                  end:  375,
+                  Expr: &parser.BinaryExpr{
+                    Op:   "=",
+                    Left: &parser.Ident{
+                      pos:  362,
+                      end:  370,
+                      Name: "SingerID",
+                    },
+                    Right: &parser.IntLiteral{
+                      pos:   373,
+                      end:   374,
+                      Base:  10,
+                      Value: "1",
+                    },
+                  },
+                },
+                Right: true,
+              },
+            },
+            Right: &parser.IsBoolExpr{
+              end:  0,
+              Not:  true,
+              Left: &parser.ParenExpr{
+                pos:  389,
+                end:  403,
+                Expr: &parser.BinaryExpr{
+                  Op:   "=",
+                  Left: &parser.Ident{
+                    pos:  390,
+                    end:  398,
+                    Name: "SingerID",
+                  },
+                  Right: &parser.IntLiteral{
+                    pos:   401,
+                    end:   402,
+                    Base:  10,
+                    Value: "1",
+                  },
+                },
+              },
+              Right: true,
+            },
+          },
+          Right: &parser.IsBoolExpr{
+            end:  0,
+            Not:  false,
+            Left: &parser.ParenExpr{
+              pos:  421,
+              end:  435,
+              Expr: &parser.BinaryExpr{
+                Op:   "=",
+                Left: &parser.Ident{
+                  pos:  422,
+                  end:  430,
+                  Name: "SingerID",
+                },
+                Right: &parser.IntLiteral{
+                  pos:   433,
+                  end:   434,
+                  Base:  10,
+                  Value: "1",
+                },
+              },
+            },
+            Right: false,
+          },
+        },
+        Right: &parser.IsBoolExpr{
+          end:  0,
+          Not:  true,
+          Left: &parser.ParenExpr{
+            pos:  450,
+            end:  464,
+            Expr: &parser.BinaryExpr{
+              Op:   "=",
+              Left: &parser.Ident{
+                pos:  451,
+                end:  459,
+                Name: "SingerID",
+              },
+              Right: &parser.IntLiteral{
+                pos:   462,
+                end:   463,
+                Base:  10,
+                Value: "1",
+              },
+            },
+          },
+          Right: false,
+        },
+      },
+    },
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers WHERE SingerID = 1 OR SingerID < 1 OR SingerID > 1 OR SingerID <= 1 OR SingerID >= 1 OR SingerID != 1 OR SingerID IN (1, 2, 3) OR SingerID NOT IN (1, 2, 3) OR SingerID BETWEEN 1 AND 3 OR SingerID NOT BETWEEN 1 AND 3 OR FirstName LIKE "%a" OR FirstName NOT LIKE "%a" OR NULL IS NULL OR NULL IS NOT NULL OR (SingerID = 1) IS TRUE OR (SingerID = 1) IS NOT TRUE OR (SingerID = 1) IS FALSE OR (SingerID = 1) IS NOT FALSE

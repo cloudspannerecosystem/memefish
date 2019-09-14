@@ -1,0 +1,73 @@
+--- select_singer_with_single_column_subquery.sql
+SELECT (
+  SELECT FirstName
+  FROM Singers LIMIT 100
+)
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.ScalarSubQuery{
+          pos:   7,
+          end:   54,
+          Query: &parser.Select{
+            pos:      11,
+            Distinct: false,
+            AsStruct: false,
+            Results:  []parser.SelectItem{
+              &parser.ExprSelectItem{
+                Expr: &parser.Ident{
+                  pos:  18,
+                  end:  27,
+                  Name: "FirstName",
+                },
+              },
+            },
+            From: &parser.From{
+              pos:    30,
+              Source: &parser.TableName{
+                Table: &parser.Ident{
+                  pos:  35,
+                  end:  42,
+                  Name: "Singers",
+                },
+                Hint:   (*parser.Hint)(nil),
+                As:     (*parser.AsAlias)(nil),
+                Sample: (*parser.TableSample)(nil),
+              },
+            },
+            Where:   (*parser.Where)(nil),
+            GroupBy: (*parser.GroupBy)(nil),
+            Having:  (*parser.Having)(nil),
+            OrderBy: (*parser.OrderBy)(nil),
+            Limit:   &parser.Limit{
+              pos:   43,
+              Count: &parser.IntLiteral{
+                pos:   49,
+                end:   52,
+                Base:  10,
+                Value: "100",
+              },
+              Offset: (*parser.Offset)(nil),
+            },
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT (SELECT FirstName FROM Singers LIMIT 100)

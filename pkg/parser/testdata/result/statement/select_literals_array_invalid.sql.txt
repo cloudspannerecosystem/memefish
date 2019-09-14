@@ -1,0 +1,108 @@
+--- select_literals_array_invalid.sql
+SELECT
+  [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.ArrayLiteral{
+          pos:    9,
+          end:    42,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.ArrayLiteral{
+              pos:    10,
+              end:    19,
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   11,
+                  end:   12,
+                  Base:  10,
+                  Value: "1",
+                },
+                &parser.IntLiteral{
+                  pos:   14,
+                  end:   15,
+                  Base:  10,
+                  Value: "2",
+                },
+                &parser.IntLiteral{
+                  pos:   17,
+                  end:   18,
+                  Base:  10,
+                  Value: "3",
+                },
+              },
+            },
+            &parser.ArrayLiteral{
+              pos:    21,
+              end:    30,
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   22,
+                  end:   23,
+                  Base:  10,
+                  Value: "2",
+                },
+                &parser.IntLiteral{
+                  pos:   25,
+                  end:   26,
+                  Base:  10,
+                  Value: "4",
+                },
+                &parser.IntLiteral{
+                  pos:   28,
+                  end:   29,
+                  Base:  10,
+                  Value: "6",
+                },
+              },
+            },
+            &parser.ArrayLiteral{
+              pos:    32,
+              end:    41,
+              Type:   nil,
+              Values: []parser.Expr{
+                &parser.IntLiteral{
+                  pos:   33,
+                  end:   34,
+                  Base:  10,
+                  Value: "3",
+                },
+                &parser.IntLiteral{
+                  pos:   36,
+                  end:   37,
+                  Base:  10,
+                  Value: "6",
+                },
+                &parser.IntLiteral{
+                  pos:   39,
+                  end:   40,
+                  Base:  10,
+                  Value: "9",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT ARRAY[ARRAY[1, 2, 3], ARRAY[2, 4, 6], ARRAY[3, 6, 9]]

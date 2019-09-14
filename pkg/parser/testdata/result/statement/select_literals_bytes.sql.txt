@@ -1,0 +1,123 @@
+--- select_literals_bytes.sql
+SELECT
+  B"abc",
+  B'''abc''',
+  b"""abc""",
+  b"""abc\n""",
+  br'abc+',
+  RB"abc+",
+  RB'''abc''',
+  RB'''abc\n''',
+  B"\000",
+  B"\077\077\077"
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   9,
+          end:   15,
+          Value: []uint8{
+            0x61, 0x62, 0x63,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   19,
+          end:   29,
+          Value: []uint8{
+            0x61, 0x62, 0x63,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   33,
+          end:   43,
+          Value: []uint8{
+            0x61, 0x62, 0x63,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   47,
+          end:   59,
+          Value: []uint8{
+            0x61, 0x62, 0x63, 0x0a,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   63,
+          end:   71,
+          Value: []uint8{
+            0x61, 0x62, 0x63, 0x2b,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   75,
+          end:   83,
+          Value: []uint8{
+            0x61, 0x62, 0x63, 0x2b,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   87,
+          end:   98,
+          Value: []uint8{
+            0x61, 0x62, 0x63,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   102,
+          end:   115,
+          Value: []uint8{
+            0x61, 0x62, 0x63, 0x5c, 0x6e,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   119,
+          end:   126,
+          Value: []uint8{
+            0x00,
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.BytesLiteral{
+          pos:   130,
+          end:   145,
+          Value: []uint8{
+            0x3f, 0x3f, 0x3f,
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT B"abc", B"abc", B"abc", B"abc\n", B"abc+", B"abc+", B"abc", B"abc\\n", B"\x00", B"\?\?\?"

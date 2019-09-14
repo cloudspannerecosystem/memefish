@@ -9,6 +9,51 @@ type Parser struct {
 	*Lexer
 }
 
+// ParseStatement parses a SQL statement.
+func (p *Parser) ParseStatement() (stmt Statement, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	stmt = p.parseStatement()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+// ParseStatements parses SQL statements list separated by semi-colon.
+func (p *Parser) ParseStatements() (stmts []Statement, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			stmts = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	p.parseStatements(func() {
+		stmts = append(stmts, p.parseStatement())
+	})
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+// ParseQuery parses a SELECT query statement.
 func (p *Parser) ParseQuery() (stmt *QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -49,6 +94,7 @@ func (p *Parser) ParseExpr() (expr Expr, err error) {
 	return
 }
 
+// ParseDDL parses a CREATE/ALTER/DROP statement.
 func (p *Parser) ParseDDL() (ddl DDL, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -69,6 +115,30 @@ func (p *Parser) ParseDDL() (ddl DDL, err error) {
 	return
 }
 
+// ParseDDLs parses CREATE/ALTER/DROP statements list separated by semi-colon.
+func (p *Parser) ParseDDLs() (ddls []DDL, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			ddls = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	p.parseStatements(func() {
+		ddls = append(ddls, p.parseDDL())
+	})
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+// ParseDML parses a INSERT/DELETE/UPDATE statement.
 func (p *Parser) ParseDML() (dml DML, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -87,6 +157,57 @@ func (p *Parser) ParseDML() (dml DML, err error) {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
+}
+
+// ParseDMLs parses INSERT/DELETE/UPDATE statements list separated by semi-colon.
+func (p *Parser) ParseDMLs() (dmls []DML, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			dmls = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	p.parseStatements(func() {
+		dmls = append(dmls, p.parseDML())
+	})
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
+func (p *Parser) parseStatement() Statement {
+	switch {
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "(":
+		return p.parseQueryStatement()
+	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP"):
+		return p.parseDDL()
+	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
+		return p.parseDML()
+	}
+
+	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseStatements(doParse func()) {
+	for p.Token.Kind != TokenEOF {
+		if p.Token.Kind == ";" {
+			p.NextToken()
+			continue
+		}
+
+		doParse()
+
+		if p.Token.Kind != ";" {
+			break
+		}
+	}
 }
 
 // ================================================================================

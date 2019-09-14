@@ -1,0 +1,107 @@
+--- select_singer_with_join.sql
+SELECT
+  *
+FROM
+  Singers A
+  LEFT OUTER JOIN
+  Singers B
+  ON A.SingerID = B.SingerID
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.Join{
+        Op:     "LEFT OUTER JOIN",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.TableName{
+          Table: &parser.Ident{
+            pos:  18,
+            end:  25,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   26,
+            Alias: &parser.Ident{
+              pos:  26,
+              end:  27,
+              Name: "A",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  48,
+            end:  55,
+            Name: "Singers",
+          },
+          Hint: (*parser.Hint)(nil),
+          As:   &parser.AsAlias{
+            pos:   56,
+            Alias: &parser.Ident{
+              pos:  56,
+              end:  57,
+              Name: "B",
+            },
+          },
+          Sample: (*parser.TableSample)(nil),
+        },
+        Cond: &parser.On{
+          pos:  60,
+          Expr: &parser.BinaryExpr{
+            Op:   "=",
+            Left: &parser.Path{
+              Idents: []*parser.Ident{
+                &parser.Ident{
+                  pos:  63,
+                  end:  64,
+                  Name: "A",
+                },
+                &parser.Ident{
+                  pos:  65,
+                  end:  73,
+                  Name: "SingerID",
+                },
+              },
+            },
+            Right: &parser.Path{
+              Idents: []*parser.Ident{
+                &parser.Ident{
+                  pos:  76,
+                  end:  77,
+                  Name: "B",
+                },
+                &parser.Ident{
+                  pos:  78,
+                  end:  86,
+                  Name: "SingerID",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID

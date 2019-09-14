@@ -1,0 +1,354 @@
+--- select_expr_extract.sql
+select
+    extract(nanosecond from timestamp "2019-09-01 08:11:23"),
+    extract(microsecond from timestamp "2019-09-01 08:11:23"),
+    extract(millisecond from timestamp "2019-09-01 08:11:23"),
+    extract(second from timestamp "2019-09-01 08:11:23"),
+    extract(minute from timestamp "2019-09-01 08:11:23"),
+    extract(hour from timestamp "2019-09-01 08:11:23"),
+    extract(dayofweek from date "2019-09-01"),
+    extract(day from date "2019-09-01"),
+    extract(dayofyear from date "2019-09-01"),
+    extract(dayofyear from date "2019-09-01"),
+    extract(week from date "2019-09-01"),
+    extract(isoweek from date "2019-09-01"),
+    extract(month from date "2019-09-01"),
+    extract(quarter from date "2019-09-01"),
+    extract(year from date "2019-09-01"),
+    extract(isoyear from date "2019-09-01"),
+    extract(date from timestamp "2019-09-01 08:11:23"),
+    extract(hour from timestamp "2019-09-01 08:11:23" at time zone "Asia/Tokyo")
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  11,
+          end:  67,
+          Part: &parser.Ident{
+            pos:  19,
+            end:  29,
+            Name: "nanosecond",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   35,
+            end:   66,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  73,
+          end:  130,
+          Part: &parser.Ident{
+            pos:  81,
+            end:  92,
+            Name: "microsecond",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   98,
+            end:   129,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  136,
+          end:  193,
+          Part: &parser.Ident{
+            pos:  144,
+            end:  155,
+            Name: "millisecond",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   161,
+            end:   192,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  199,
+          end:  251,
+          Part: &parser.Ident{
+            pos:  207,
+            end:  213,
+            Name: "second",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   219,
+            end:   250,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  257,
+          end:  309,
+          Part: &parser.Ident{
+            pos:  265,
+            end:  271,
+            Name: "minute",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   277,
+            end:   308,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  315,
+          end:  365,
+          Part: &parser.Ident{
+            pos:  323,
+            end:  327,
+            Name: "hour",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   333,
+            end:   364,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  371,
+          end:  412,
+          Part: &parser.Ident{
+            pos:  379,
+            end:  388,
+            Name: "dayofweek",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   394,
+            end:   411,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  418,
+          end:  453,
+          Part: &parser.Ident{
+            pos:  426,
+            end:  429,
+            Name: "day",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   435,
+            end:   452,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  459,
+          end:  500,
+          Part: &parser.Ident{
+            pos:  467,
+            end:  476,
+            Name: "dayofyear",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   482,
+            end:   499,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  506,
+          end:  547,
+          Part: &parser.Ident{
+            pos:  514,
+            end:  523,
+            Name: "dayofyear",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   529,
+            end:   546,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  553,
+          end:  589,
+          Part: &parser.Ident{
+            pos:  561,
+            end:  565,
+            Name: "week",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   571,
+            end:   588,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  595,
+          end:  634,
+          Part: &parser.Ident{
+            pos:  603,
+            end:  610,
+            Name: "isoweek",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   616,
+            end:   633,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  640,
+          end:  677,
+          Part: &parser.Ident{
+            pos:  648,
+            end:  653,
+            Name: "month",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   659,
+            end:   676,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  683,
+          end:  722,
+          Part: &parser.Ident{
+            pos:  691,
+            end:  698,
+            Name: "quarter",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   704,
+            end:   721,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  728,
+          end:  764,
+          Part: &parser.Ident{
+            pos:  736,
+            end:  740,
+            Name: "year",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   746,
+            end:   763,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  770,
+          end:  809,
+          Part: &parser.Ident{
+            pos:  778,
+            end:  785,
+            Name: "isoyear",
+          },
+          Expr: &parser.DateLiteral{
+            pos:   791,
+            end:   808,
+            Value: "2019-09-01",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  815,
+          end:  865,
+          Part: &parser.Ident{
+            pos:  823,
+            end:  827,
+            Name: "date",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   833,
+            end:   864,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: (*parser.AtTimeZone)(nil),
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.ExtractExpr{
+          pos:  871,
+          end:  947,
+          Part: &parser.Ident{
+            pos:  879,
+            end:  883,
+            Name: "hour",
+          },
+          Expr: &parser.TimestampLiteral{
+            pos:   889,
+            end:   920,
+            Value: "2019-09-01 08:11:23",
+          },
+          AtTimeZone: &parser.AtTimeZone{
+            pos:  921,
+            Expr: &parser.StringLiteral{
+              pos:   934,
+              end:   946,
+              Value: "Asia/Tokyo",
+            },
+          },
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT EXTRACT(nanosecond FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(microsecond FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(millisecond FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(second FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(minute FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(hour FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(dayofweek FROM DATE "2019-09-01"), EXTRACT(day FROM DATE "2019-09-01"), EXTRACT(dayofyear FROM DATE "2019-09-01"), EXTRACT(dayofyear FROM DATE "2019-09-01"), EXTRACT(week FROM DATE "2019-09-01"), EXTRACT(isoweek FROM DATE "2019-09-01"), EXTRACT(month FROM DATE "2019-09-01"), EXTRACT(quarter FROM DATE "2019-09-01"), EXTRACT(year FROM DATE "2019-09-01"), EXTRACT(isoyear FROM DATE "2019-09-01"), EXTRACT(date FROM TIMESTAMP "2019-09-01 08:11:23"), EXTRACT(hour FROM TIMESTAMP "2019-09-01 08:11:23" AT TIME ZONE "Asia/Tokyo")

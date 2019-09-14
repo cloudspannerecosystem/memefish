@@ -1,0 +1,69 @@
+--- select_unnest_with_offset.sql
+SELECT
+  *
+FROM
+  UNNEST([1,2,3]) WITH OFFSET
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.Unnest{
+        pos:      18,
+        end:      45,
+        Implicit: false,
+        Expr:     &parser.ArrayLiteral{
+          pos:    25,
+          end:    32,
+          Type:   nil,
+          Values: []parser.Expr{
+            &parser.IntLiteral{
+              pos:   26,
+              end:   27,
+              Base:  10,
+              Value: "1",
+            },
+            &parser.IntLiteral{
+              pos:   28,
+              end:   29,
+              Base:  10,
+              Value: "2",
+            },
+            &parser.IntLiteral{
+              pos:   30,
+              end:   31,
+              Base:  10,
+              Value: "3",
+            },
+          },
+        },
+        Hint:       (*parser.Hint)(nil),
+        As:         (*parser.AsAlias)(nil),
+        WithOffset: &parser.WithOffset{
+          pos: 34,
+          end: 45,
+          As:  (*parser.AsAlias)(nil),
+        },
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM UNNEST(ARRAY[1, 2, 3]) WITH OFFSET

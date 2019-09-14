@@ -1,10 +1,30 @@
 package parser
 
+// Node is base interface of Spanner SQL AST nodes.
 type Node interface {
 	Pos() Pos
 	End() Pos
+
+	// Convert AST node into SQL source string (a.k.a. Unparse).
 	SQL() string
 }
+
+// Statement represents toplevel statement node of Spanner SQL.
+type Statement interface {
+	Node
+	isStatement()
+}
+
+func (QueryStatement) isStatement() {}
+func (CreateDatabase) isStatement() {}
+func (CreateTable) isStatement()    {}
+func (CreateIndex) isStatement()    {}
+func (AlterTable) isStatement()     {}
+func (DropTable) isStatement()      {}
+func (DropIndex) isStatement()      {}
+func (Insert) isStatement()         {}
+func (Delete) isStatement()         {}
+func (Update) isStatement()         {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -106,7 +126,7 @@ func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
 
-// IntValue is integer values in SQL.
+// IntValue represents integer values in SQL.
 type IntValue interface {
 	Node
 	isIntValue()
@@ -116,7 +136,7 @@ func (Param) isIntValue()        {}
 func (IntLiteral) isIntValue()   {}
 func (CastIntValue) isIntValue() {}
 
-// NumValue is number values in SQL.
+// NumValue represents number values in SQL.
 type NumValue interface {
 	Node
 	isNumValue()
@@ -127,7 +147,7 @@ func (IntLiteral) isNumValue()   {}
 func (FloatLiteral) isNumValue() {}
 func (CastNumValue) isNumValue() {}
 
-// StringValue is string value in SQL.
+// StringValue represents string value in SQL.
 type StringValue interface {
 	Node
 	isStringValue()
@@ -136,9 +156,11 @@ type StringValue interface {
 func (Param) isStringValue()         {}
 func (StringLiteral) isStringValue() {}
 
-// DDL is data definition language in SQL.
+// DDL represents data definition language in SQL.
+//
+// https://cloud.google.com/spanner/docs/data-definition-language
 type DDL interface {
-	Node
+	Statement
 	isDDL()
 }
 
@@ -149,7 +171,7 @@ func (DropTable) isDDL()      {}
 func (CreateIndex) isDDL()    {}
 func (DropIndex) isDDL()      {}
 
-// TableAlternation is ALTER TABLE action.
+// TableAlternation represents ALTER TABLE action.
 type TableAlternation interface {
 	Node
 	isTableAlternation()
@@ -161,7 +183,7 @@ func (SetOnDelete) isTableAlternation()    {}
 func (AlterColumn) isTableAlternation()    {}
 func (AlterColumnSet) isTableAlternation() {}
 
-// SchemaType is types for schema.
+// SchemaType represents types for schema.
 type SchemaType interface {
 	Node
 	isSchemaType()
@@ -171,9 +193,11 @@ func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
 
-// DML is data manipulation language in SQL.
+// DML represents data manipulation language in SQL.
+//
+//https://cloud.google.com/spanner/docs/data-definition-language
 type DML interface {
-	Node
+	Statement
 	isDML()
 }
 
@@ -181,7 +205,7 @@ func (Insert) isDML() {}
 func (Delete) isDML() {}
 func (Update) isDML() {}
 
-// InsertInput is input values of INSERT statement.
+// InsertInput represents input values of INSERT statement.
 type InsertInput interface {
 	Node
 	isInsertInput()
@@ -200,6 +224,8 @@ func (SubQueryInput) isInsertInput() {}
 //
 //     {{if .Hint}}{{.Hint | sql}}{{end}}
 //     {{.Expr | sql}}
+//
+// https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
 	// pos = (Hint ?? Expr).pos, end = Expr.end
 

@@ -1,0 +1,99 @@
+--- select_union_chain.sql
+(select 1) union all (select 2) union all (select 3)
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.CompoundQuery{
+    Op:       "UNION",
+    Distinct: false,
+    Queries:  []parser.QueryExpr{
+      &parser.SubQuery{
+        pos:   0,
+        end:   10,
+        Query: &parser.Select{
+          pos:      1,
+          Distinct: false,
+          AsStruct: false,
+          Results:  []parser.SelectItem{
+            &parser.ExprSelectItem{
+              Expr: &parser.IntLiteral{
+                pos:   8,
+                end:   9,
+                Base:  10,
+                Value: "1",
+              },
+            },
+          },
+          From:    (*parser.From)(nil),
+          Where:   (*parser.Where)(nil),
+          GroupBy: (*parser.GroupBy)(nil),
+          Having:  (*parser.Having)(nil),
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
+        },
+        OrderBy: (*parser.OrderBy)(nil),
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.SubQuery{
+        pos:   21,
+        end:   31,
+        Query: &parser.Select{
+          pos:      22,
+          Distinct: false,
+          AsStruct: false,
+          Results:  []parser.SelectItem{
+            &parser.ExprSelectItem{
+              Expr: &parser.IntLiteral{
+                pos:   29,
+                end:   30,
+                Base:  10,
+                Value: "2",
+              },
+            },
+          },
+          From:    (*parser.From)(nil),
+          Where:   (*parser.Where)(nil),
+          GroupBy: (*parser.GroupBy)(nil),
+          Having:  (*parser.Having)(nil),
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
+        },
+        OrderBy: (*parser.OrderBy)(nil),
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.SubQuery{
+        pos:   42,
+        end:   52,
+        Query: &parser.Select{
+          pos:      43,
+          Distinct: false,
+          AsStruct: false,
+          Results:  []parser.SelectItem{
+            &parser.ExprSelectItem{
+              Expr: &parser.IntLiteral{
+                pos:   50,
+                end:   51,
+                Base:  10,
+                Value: "3",
+              },
+            },
+          },
+          From:    (*parser.From)(nil),
+          Where:   (*parser.Where)(nil),
+          GroupBy: (*parser.GroupBy)(nil),
+          Having:  (*parser.Having)(nil),
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
+        },
+        OrderBy: (*parser.OrderBy)(nil),
+        Limit:   (*parser.Limit)(nil),
+      },
+    },
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+(SELECT 1) UNION ALL (SELECT 2) UNION ALL (SELECT 3)
