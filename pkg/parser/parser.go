@@ -2220,7 +2220,98 @@ func (p *Parser) parseDML() DML {
 }
 
 func (p *Parser) parseInsert(pos Pos) *Insert {
-	panic("TODO: implement")
+	if p.Token.Kind == "INTO" {
+		p.NextToken()
+	}
+
+	name := p.parseIdent()
+
+	p.expect("(")
+	var columns []*Ident
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			columns = append(columns, p.parseIdent())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	p.expect(")")
+
+	var input InsertInput
+	if p.Token.IsKeywordLike("VALUES") {
+		input = p.parseValuesInput()
+	} else {
+		input = p.parseSubQueryInput()
+	}
+
+	return &Insert{
+		pos:       pos,
+		TableName: name,
+		Columns:   columns,
+		Input:     input,
+	}
+}
+
+func (p *Parser) parseValuesInput() *ValuesInput {
+	pos := p.expectKeywordLike("VALUES").Pos
+
+	rows := []*ValuesRow{p.parseValuesRow()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		rows = append(rows, p.parseValuesRow())
+	}
+
+	return &ValuesInput{
+		pos:  pos,
+		Rows: rows,
+	}
+}
+
+func (p *Parser) parseValuesRow() *ValuesRow {
+	pos := p.expect("(").Pos
+	var values []*DefaultExpr
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			values = append(values, p.parseDefaultExpr())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	end := p.expect(")").End
+
+	return &ValuesRow{
+		pos:    pos,
+		end:    end,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseDefaultExpr() *DefaultExpr {
+	if p.Token.Kind == "DEFAULT" {
+		pos := p.expect("DEFAULT").Pos
+		return &DefaultExpr{
+			pos:     pos,
+			Default: true,
+		}
+	}
+
+	expr := p.parseExpr()
+	return &DefaultExpr{
+		pos:  expr.Pos(),
+		Expr: expr,
+	}
+}
+
+func (p *Parser) parseSubQueryInput() *SubQueryInput {
+	query := p.parseQueryExpr()
+
+	return &SubQueryInput{
+		Query: query,
+	}
 }
 
 func (p *Parser) parseDelete(pos Pos) *Delete {
