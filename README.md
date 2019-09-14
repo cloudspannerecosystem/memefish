@@ -142,8 +142,6 @@ func main() {
 ## TODO
 
 - Make more compatibility
-- Add tests for analyzer
-- Add DML parsers
 - Build Spanner emulator on memefish
 
 ## Notice
