@@ -1,0 +1,62 @@
+--- update.sql
+update foo set foo = bar, bar = foo where foo = 1
+--- AST
+&parser.Update{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  7,
+    end:  10,
+    Name: "foo",
+  },
+  As:          (*parser.AsAlias)(nil),
+  UpdateItems: []*parser.UpdateItem{
+    &parser.UpdateItem{
+      Path: []*parser.Ident{
+        &parser.Ident{
+          pos:  15,
+          end:  18,
+          Name: "foo",
+        },
+      },
+      Expr: &parser.Ident{
+        pos:  21,
+        end:  24,
+        Name: "bar",
+      },
+    },
+    &parser.UpdateItem{
+      Path: []*parser.Ident{
+        &parser.Ident{
+          pos:  26,
+          end:  29,
+          Name: "bar",
+        },
+      },
+      Expr: &parser.Ident{
+        pos:  32,
+        end:  35,
+        Name: "foo",
+      },
+    },
+  },
+  Where: &parser.Where{
+    pos:  36,
+    Expr: &parser.BinaryExpr{
+      Op:   "=",
+      Left: &parser.Ident{
+        pos:  42,
+        end:  45,
+        Name: "foo",
+      },
+      Right: &parser.IntLiteral{
+        pos:   48,
+        end:   49,
+        Base:  10,
+        Value: "1",
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE foo SET foo = bar, bar = foo WHERE foo = 1

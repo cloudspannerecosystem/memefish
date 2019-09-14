@@ -69,6 +69,26 @@ func (p *Parser) ParseDDL() (ddl DDL, err error) {
 	return
 }
 
+func (p *Parser) ParseDML() (dml DML, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			dml = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	dml = p.parseDML()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
 // ================================================================================
 //
 // SELECT
@@ -297,6 +317,10 @@ func (p *Parser) tryParseWhere() *Where {
 	if p.Token.Kind != "WHERE" {
 		return nil
 	}
+	return p.parseWhere()
+}
+
+func (p *Parser) parseWhere() *Where {
 	pos := p.expect("WHERE").Pos
 	expr := p.parseExpr()
 	return &Where{
@@ -2192,6 +2216,178 @@ func (p *Parser) parseScalarSchemaType() SchemaType {
 	}
 
 	panic(p.errorfAtToken(id, "expect ident: BOOL, INT64, FLOAT64, DATE, TIMESTAMP, STRING, BYTES, but: %s", id.AsString))
+}
+
+// ================================================================================
+//
+// DML
+//
+// ================================================================================
+
+func (p *Parser) parseDML() DML {
+	id := p.expect(TokenIdent)
+	pos := id.Pos
+	switch {
+	case id.IsKeywordLike("INSERT"):
+		return p.parseInsert(pos)
+	case id.IsKeywordLike("DELETE"):
+		return p.parseDelete(pos)
+	case id.IsKeywordLike("UPDATE"):
+		return p.parseUpdate(pos)
+	}
+
+	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
+}
+
+func (p *Parser) parseInsert(pos Pos) *Insert {
+	if p.Token.Kind == "INTO" {
+		p.NextToken()
+	}
+
+	name := p.parseIdent()
+
+	p.expect("(")
+	var columns []*Ident
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			columns = append(columns, p.parseIdent())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	p.expect(")")
+
+	var input InsertInput
+	if p.Token.IsKeywordLike("VALUES") {
+		input = p.parseValuesInput()
+	} else {
+		input = p.parseSubQueryInput()
+	}
+
+	return &Insert{
+		pos:       pos,
+		TableName: name,
+		Columns:   columns,
+		Input:     input,
+	}
+}
+
+func (p *Parser) parseValuesInput() *ValuesInput {
+	pos := p.expectKeywordLike("VALUES").Pos
+
+	rows := []*ValuesRow{p.parseValuesRow()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		rows = append(rows, p.parseValuesRow())
+	}
+
+	return &ValuesInput{
+		pos:  pos,
+		Rows: rows,
+	}
+}
+
+func (p *Parser) parseValuesRow() *ValuesRow {
+	pos := p.expect("(").Pos
+	var values []*DefaultExpr
+	if p.Token.Kind != ")" {
+		for p.Token.Kind != TokenEOF {
+			values = append(values, p.parseDefaultExpr())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.NextToken()
+		}
+	}
+	end := p.expect(")").End
+
+	return &ValuesRow{
+		pos:    pos,
+		end:    end,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseDefaultExpr() *DefaultExpr {
+	if p.Token.Kind == "DEFAULT" {
+		pos := p.expect("DEFAULT").Pos
+		return &DefaultExpr{
+			pos:     pos,
+			Default: true,
+		}
+	}
+
+	expr := p.parseExpr()
+	return &DefaultExpr{
+		pos:  expr.Pos(),
+		Expr: expr,
+	}
+}
+
+func (p *Parser) parseSubQueryInput() *SubQueryInput {
+	query := p.parseQueryExpr()
+
+	return &SubQueryInput{
+		Query: query,
+	}
+}
+
+func (p *Parser) parseDelete(pos Pos) *Delete {
+	if p.Token.Kind == "FROM" {
+		p.NextToken()
+	}
+
+	name := p.parseIdent()
+	as := p.tryParseAsAlias()
+	where := p.parseWhere()
+
+	return &Delete{
+		pos:       pos,
+		TableName: name,
+		As:        as,
+		Where:     where,
+	}
+}
+
+func (p *Parser) parseUpdate(pos Pos) *Update {
+	name := p.parseIdent()
+	as := p.tryParseAsAlias()
+
+	p.expect("SET")
+
+	items := []*UpdateItem{p.parseUpdateItem()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		items = append(items, p.parseUpdateItem())
+	}
+
+	where := p.parseWhere()
+
+	return &Update{
+		pos:         pos,
+		TableName:   name,
+		As:          as,
+		UpdateItems: items,
+		Where:       where,
+	}
+}
+
+func (p *Parser) parseUpdateItem() *UpdateItem {
+	path := []*Ident{p.parseIdent()}
+	for p.Token.Kind == "." {
+		p.NextToken()
+		path = append(path, p.parseIdent())
+	}
+
+	p.expect("=")
+	expr := p.parseExpr()
+
+	return &UpdateItem{
+		Path: path,
+		Expr: expr,
+	}
 }
 
 // ================================================================================

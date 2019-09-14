@@ -1,0 +1,1 @@
+delete foo as F where F.foo = 1

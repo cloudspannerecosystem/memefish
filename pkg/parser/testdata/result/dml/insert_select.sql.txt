@@ -1,0 +1,102 @@
+--- insert_select.sql
+insert foo (foo, bar)
+select * from unnest([(1, 2), (3, 4)])
+--- AST
+&parser.Insert{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  7,
+    end:  10,
+    Name: "foo",
+  },
+  Columns: []*parser.Ident{
+    &parser.Ident{
+      pos:  12,
+      end:  15,
+      Name: "foo",
+    },
+    &parser.Ident{
+      pos:  17,
+      end:  20,
+      Name: "bar",
+    },
+  },
+  Input: &parser.SubQueryInput{
+    Query: &parser.Select{
+      pos:      22,
+      Distinct: false,
+      AsStruct: false,
+      Results:  []parser.SelectItem{
+        &parser.Star{
+          pos: 29,
+        },
+      },
+      From: &parser.From{
+        pos:    31,
+        Source: &parser.Unnest{
+          pos:      36,
+          end:      60,
+          Implicit: false,
+          Expr:     &parser.ArrayLiteral{
+            pos:    43,
+            end:    59,
+            Type:   nil,
+            Values: []parser.Expr{
+              &parser.StructLiteral{
+                pos:    44,
+                end:    50,
+                Fields: []*parser.FieldType{},
+                Values: []parser.Expr{
+                  &parser.IntLiteral{
+                    pos:   45,
+                    end:   46,
+                    Base:  10,
+                    Value: "1",
+                  },
+                  &parser.IntLiteral{
+                    pos:   48,
+                    end:   49,
+                    Base:  10,
+                    Value: "2",
+                  },
+                },
+              },
+              &parser.StructLiteral{
+                pos:    52,
+                end:    58,
+                Fields: []*parser.FieldType{},
+                Values: []parser.Expr{
+                  &parser.IntLiteral{
+                    pos:   53,
+                    end:   54,
+                    Base:  10,
+                    Value: "3",
+                  },
+                  &parser.IntLiteral{
+                    pos:   56,
+                    end:   57,
+                    Base:  10,
+                    Value: "4",
+                  },
+                },
+              },
+            },
+          },
+          Hint:       (*parser.Hint)(nil),
+          As:         (*parser.AsAlias)(nil),
+          WithOffset: (*parser.WithOffset)(nil),
+          Sample:     (*parser.TableSample)(nil),
+        },
+      },
+      Where:   (*parser.Where)(nil),
+      GroupBy: (*parser.GroupBy)(nil),
+      Having:  (*parser.Having)(nil),
+      OrderBy: (*parser.OrderBy)(nil),
+      Limit:   (*parser.Limit)(nil),
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar)
+SELECT * FROM UNNEST(ARRAY[STRUCT(1, 2), STRUCT(3, 4)])
