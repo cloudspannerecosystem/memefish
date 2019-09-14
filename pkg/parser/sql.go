@@ -844,7 +844,7 @@ func (a *ArraySchemaType) SQL() string {
 // ================================================================================
 
 func (i *Insert) SQL() string {
-	sql := "INSERT INTO " + i.TableName.SQL() + "("
+	sql := "INSERT INTO " + i.TableName.SQL() + " ("
 	for i, c := range i.Columns {
 		if i != 0 {
 			sql += ", "
@@ -870,7 +870,7 @@ func (v *ValuesRow) SQL() string {
 	sql := "("
 	for i, v := range v.Values {
 		if i != 0 {
-			sql += ","
+			sql += ", "
 		}
 		sql += v.SQL()
 	}

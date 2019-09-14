@@ -156,3 +156,12 @@ func TestParseDDL(t *testing.T) {
 		return p.ParseDDL()
 	})
 }
+
+func TestParseDML(t *testing.T) {
+	inputPath := "./testdata/input/dml"
+	resultPath := "./testdata/result/dml"
+
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+		return p.ParseDML()
+	})
+}

@@ -69,6 +69,26 @@ func (p *Parser) ParseDDL() (ddl DDL, err error) {
 	return
 }
 
+func (p *Parser) ParseDML() (dml DML, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			dml = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.NextToken()
+	dml = p.parseDML()
+	if p.Token.Kind != TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
 // ================================================================================
 //
 // SELECT
@@ -2334,6 +2354,8 @@ func (p *Parser) parseDelete(pos Pos) *Delete {
 func (p *Parser) parseUpdate(pos Pos) *Update {
 	name := p.parseIdent()
 	as := p.tryParseAsAlias()
+
+	p.expect("SET")
 
 	items := []*UpdateItem{p.parseUpdateItem()}
 	for p.Token.Kind == "," {

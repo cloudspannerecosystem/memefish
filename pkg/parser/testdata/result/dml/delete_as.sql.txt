@@ -1,0 +1,48 @@
+--- delete_as.sql
+delete foo as F where F.foo = 1
+--- AST
+&parser.Delete{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  7,
+    end:  10,
+    Name: "foo",
+  },
+  As: &parser.AsAlias{
+    pos:   11,
+    Alias: &parser.Ident{
+      pos:  14,
+      end:  15,
+      Name: "F",
+    },
+  },
+  Where: &parser.Where{
+    pos:  16,
+    Expr: &parser.BinaryExpr{
+      Op:   "=",
+      Left: &parser.Path{
+        Idents: []*parser.Ident{
+          &parser.Ident{
+            pos:  22,
+            end:  23,
+            Name: "F",
+          },
+          &parser.Ident{
+            pos:  24,
+            end:  27,
+            Name: "foo",
+          },
+        },
+      },
+      Right: &parser.IntLiteral{
+        pos:   30,
+        end:   31,
+        Base:  10,
+        Value: "1",
+      },
+    },
+  },
+}
+
+--- SQL
+DELETE FROM foo AS F WHERE F.foo = 1

@@ -1,0 +1,112 @@
+--- insert_into_values.sql
+insert into foo (foo, bar, baz)
+values (1, 2, 3),
+       (4, 5, 6)
+--- AST
+&parser.Insert{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  Columns: []*parser.Ident{
+    &parser.Ident{
+      pos:  17,
+      end:  20,
+      Name: "foo",
+    },
+    &parser.Ident{
+      pos:  22,
+      end:  25,
+      Name: "bar",
+    },
+    &parser.Ident{
+      pos:  27,
+      end:  30,
+      Name: "baz",
+    },
+  },
+  Input: &parser.ValuesInput{
+    pos:  32,
+    Rows: []*parser.ValuesRow{
+      &parser.ValuesRow{
+        pos:    39,
+        end:    48,
+        Values: []*parser.DefaultExpr{
+          &parser.DefaultExpr{
+            pos:     40,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   40,
+              end:   41,
+              Base:  10,
+              Value: "1",
+            },
+          },
+          &parser.DefaultExpr{
+            pos:     43,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   43,
+              end:   44,
+              Base:  10,
+              Value: "2",
+            },
+          },
+          &parser.DefaultExpr{
+            pos:     46,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   46,
+              end:   47,
+              Base:  10,
+              Value: "3",
+            },
+          },
+        },
+      },
+      &parser.ValuesRow{
+        pos:    57,
+        end:    66,
+        Values: []*parser.DefaultExpr{
+          &parser.DefaultExpr{
+            pos:     58,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   58,
+              end:   59,
+              Base:  10,
+              Value: "4",
+            },
+          },
+          &parser.DefaultExpr{
+            pos:     61,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   61,
+              end:   62,
+              Base:  10,
+              Value: "5",
+            },
+          },
+          &parser.DefaultExpr{
+            pos:     64,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   64,
+              end:   65,
+              Base:  10,
+              Value: "6",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar, baz)
+VALUES (1, 2, 3),
+       (4, 5, 6)

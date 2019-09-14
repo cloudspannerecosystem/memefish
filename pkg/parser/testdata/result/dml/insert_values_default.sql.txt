@@ -1,0 +1,54 @@
+--- insert_values_default.sql
+insert foo (foo, bar)
+values (1, default)
+--- AST
+&parser.Insert{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  7,
+    end:  10,
+    Name: "foo",
+  },
+  Columns: []*parser.Ident{
+    &parser.Ident{
+      pos:  12,
+      end:  15,
+      Name: "foo",
+    },
+    &parser.Ident{
+      pos:  17,
+      end:  20,
+      Name: "bar",
+    },
+  },
+  Input: &parser.ValuesInput{
+    pos:  22,
+    Rows: []*parser.ValuesRow{
+      &parser.ValuesRow{
+        pos:    29,
+        end:    41,
+        Values: []*parser.DefaultExpr{
+          &parser.DefaultExpr{
+            pos:     30,
+            Default: false,
+            Expr:    &parser.IntLiteral{
+              pos:   30,
+              end:   31,
+              Base:  10,
+              Value: "1",
+            },
+          },
+          &parser.DefaultExpr{
+            pos:     33,
+            Default: true,
+            Expr:    nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar)
+VALUES (1, DEFAULT)

@@ -1,0 +1,1 @@
+update foo as F set F.foo = F.bar + 1 where foo = F.bar
