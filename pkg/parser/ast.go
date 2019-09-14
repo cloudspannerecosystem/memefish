@@ -171,6 +171,16 @@ func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
 
+// DML is data manipulation language in SQL.
+type DML interface {
+	Node
+	isDML()
+}
+
+func (Insert) isDML() {}
+func (Delete) isDML() {}
+func (Update) isDML() {}
+
 // InsertInput is input values of INSERT statement.
 type InsertInput interface {
 	Node

@@ -297,6 +297,10 @@ func (p *Parser) tryParseWhere() *Where {
 	if p.Token.Kind != "WHERE" {
 		return nil
 	}
+	return p.parseWhere()
+}
+
+func (p *Parser) parseWhere() *Where {
 	pos := p.expect("WHERE").Pos
 	expr := p.parseExpr()
 	return &Where{
@@ -2192,6 +2196,85 @@ func (p *Parser) parseScalarSchemaType() SchemaType {
 	}
 
 	panic(p.errorfAtToken(id, "expect ident: BOOL, INT64, FLOAT64, DATE, TIMESTAMP, STRING, BYTES, but: %s", id.AsString))
+}
+
+// ================================================================================
+//
+// DML
+//
+// ================================================================================
+
+func (p *Parser) parseDML() DML {
+	id := p.expect(TokenIdent)
+	pos := id.Pos
+	switch {
+	case id.IsKeywordLike("INSERT"):
+		return p.parseInsert(pos)
+	case id.IsKeywordLike("DELETE"):
+		return p.parseDelete(pos)
+	case id.IsKeywordLike("UPDATE"):
+		return p.parseUpdate(pos)
+	}
+
+	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
+}
+
+func (p *Parser) parseInsert(pos Pos) *Insert {
+	panic("TODO: implement")
+}
+
+func (p *Parser) parseDelete(pos Pos) *Delete {
+	if p.Token.Kind == "FROM" {
+		p.NextToken()
+	}
+
+	name := p.parseIdent()
+	as := p.tryParseAsAlias()
+	where := p.parseWhere()
+
+	return &Delete{
+		pos:       pos,
+		TableName: name,
+		As:        as,
+		Where:     where,
+	}
+}
+
+func (p *Parser) parseUpdate(pos Pos) *Update {
+	name := p.parseIdent()
+	as := p.tryParseAsAlias()
+
+	items := []*UpdateItem{p.parseUpdateItem()}
+	for p.Token.Kind == "," {
+		p.NextToken()
+		items = append(items, p.parseUpdateItem())
+	}
+
+	where := p.parseWhere()
+
+	return &Update{
+		pos:         pos,
+		TableName:   name,
+		As:          as,
+		UpdateItems: items,
+		Where:       where,
+	}
+}
+
+func (p *Parser) parseUpdateItem() *UpdateItem {
+	path := []*Ident{p.parseIdent()}
+	for p.Token.Kind == "." {
+		p.NextToken()
+		path = append(path, p.parseIdent())
+	}
+
+	p.expect("=")
+	expr := p.parseExpr()
+
+	return &UpdateItem{
+		Path: path,
+		Expr: expr,
+	}
 }
 
 // ================================================================================
