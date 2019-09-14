@@ -39,4 +39,5 @@ lines''',
   TIMESTAMP '2014-09-27 12:30:00.45-08',
   TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles",
   TIMESTAMP'2014-09-27',
-  TIMESTAMP('2014-09-27')
+  TIMESTAMP('2014-09-27'),
+  true, fals

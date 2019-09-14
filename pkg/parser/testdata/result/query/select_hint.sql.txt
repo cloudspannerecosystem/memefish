@@ -1,0 +1,60 @@
+--- select_hint.sql
+@{hint1 = 1, hint2 = 2} select hint
+--- AST
+&parser.QueryStatement{
+  Hint: &parser.Hint{
+    pos:     0,
+    end:     23,
+    Records: []*parser.HintRecord{
+      &parser.HintRecord{
+        Key: &parser.Ident{
+          pos:  2,
+          end:  7,
+          Name: "hint1",
+        },
+        Value: &parser.IntLiteral{
+          pos:   10,
+          end:   11,
+          Base:  10,
+          Value: "1",
+        },
+      },
+      &parser.HintRecord{
+        Key: &parser.Ident{
+          pos:  13,
+          end:  18,
+          Name: "hint2",
+        },
+        Value: &parser.IntLiteral{
+          pos:   21,
+          end:   22,
+          Base:  10,
+          Value: "2",
+        },
+      },
+    },
+  },
+  Query: &parser.Select{
+    pos:      24,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  31,
+          end:  35,
+          Name: "hint",
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+@{hint1=1, hint2=2} SELECT hint

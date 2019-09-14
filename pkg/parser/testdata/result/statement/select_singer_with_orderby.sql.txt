@@ -5,9 +5,8 @@ FROM
   Singers
 ORDER BY
   FirstName,
-  LastName ASC,
+  LastName COLLATE "en_US",
   BirthDate DESC
-
 --- AST
 &parser.QueryStatement{
   Hint:  (*parser.Hint)(nil),
@@ -50,20 +49,27 @@ ORDER BY
           Dir:     "",
         },
         &parser.OrderByItem{
-          end:  62,
+          end:  74,
           Expr: &parser.Ident{
             pos:  50,
             end:  58,
             Name: "LastName",
           },
-          Collate: (*parser.Collate)(nil),
-          Dir:     "ASC",
+          Collate: &parser.Collate{
+            pos:   59,
+            Value: &parser.StringLiteral{
+              pos:   67,
+              end:   74,
+              Value: "en_US",
+            },
+          },
+          Dir: "",
         },
         &parser.OrderByItem{
-          end:  80,
+          end:  92,
           Expr: &parser.Ident{
-            pos:  66,
-            end:  75,
+            pos:  78,
+            end:  87,
             Name: "BirthDate",
           },
           Collate: (*parser.Collate)(nil),
@@ -76,4 +82,4 @@ ORDER BY
 }
 
 --- SQL
-SELECT * FROM Singers ORDER BY FirstName, LastName ASC, BirthDate DESC
+SELECT * FROM Singers ORDER BY FirstName, LastName COLLATE "en_US", BirthDate DESC

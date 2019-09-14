@@ -2,7 +2,7 @@
 SELECT
   *
 FROM
-  UNNEST([1,2,3]) WITH OFFSET
+  UNNEST([1,2,3]) @{hint = 1} WITH OFFSET
 
 --- AST
 &parser.QueryStatement{
@@ -47,11 +47,29 @@ FROM
             },
           },
         },
-        Hint:       (*parser.Hint)(nil),
+        Hint: &parser.Hint{
+          pos:     34,
+          end:     45,
+          Records: []*parser.HintRecord{
+            &parser.HintRecord{
+              Key: &parser.Ident{
+                pos:  36,
+                end:  40,
+                Name: "hint",
+              },
+              Value: &parser.IntLiteral{
+                pos:   43,
+                end:   44,
+                Base:  10,
+                Value: "1",
+              },
+            },
+          },
+        },
         As:         (*parser.AsAlias)(nil),
         WithOffset: &parser.WithOffset{
-          pos: 34,
-          end: 45,
+          pos: 46,
+          end: 57,
           As:  (*parser.AsAlias)(nil),
         },
         Sample: (*parser.TableSample)(nil),
@@ -66,4 +84,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY[1, 2, 3]) WITH OFFSET
+SELECT * FROM UNNEST(ARRAY[1, 2, 3]) @{hint=1} WITH OFFSET

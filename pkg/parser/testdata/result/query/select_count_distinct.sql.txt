@@ -1,0 +1,56 @@
+--- select_count_distinct.sql
+select count(distinct x) from foo
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.CallExpr{
+          end:  24,
+          Func: &parser.Ident{
+            pos:  7,
+            end:  12,
+            Name: "count",
+          },
+          Distinct: true,
+          Args:     []*parser.Arg{
+            &parser.Arg{
+              pos:  22,
+              Expr: &parser.Ident{
+                pos:  22,
+                end:  23,
+                Name: "x",
+              },
+              IntervalUnit: (*parser.Ident)(nil),
+            },
+          },
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    25,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  30,
+          end:  33,
+          Name: "foo",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT count(DISTINCT x) FROM foo
