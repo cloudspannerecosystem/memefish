@@ -679,11 +679,14 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE " + c.Name.SQL() + "(\n"
-	for _, c := range c.Columns {
-		sql += "  " + c.SQL() + ",\n"
+	sql := "CREATE TABLE " + c.Name.SQL() + " ("
+	for i, c := range c.Columns {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += c.SQL()
 	}
-	sql += ")\n"
+	sql += ") "
 	sql += "PRIMARY KEY ("
 	for i, k := range c.PrimaryKeys {
 		if i != 0 {
@@ -851,7 +854,7 @@ func (i *Insert) SQL() string {
 		}
 		sql += c.SQL()
 	}
-	sql += ")\n" + i.Input.SQL()
+	sql += ") " + i.Input.SQL()
 	return sql
 }
 
@@ -859,7 +862,7 @@ func (v *ValuesInput) SQL() string {
 	sql := "VALUES "
 	for i, r := range v.Rows {
 		if i != 0 {
-			sql += ",\n       "
+			sql += ", "
 		}
 		sql += r.SQL()
 	}

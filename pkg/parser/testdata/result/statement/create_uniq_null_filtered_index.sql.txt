@@ -1,0 +1,36 @@
+--- create_uniq_null_filtered_index.sql
+create unique null_filtered index foo_bar on foo (foo)
+
+--- AST
+&parser.CreateIndex{
+  pos:          0,
+  end:          54,
+  Unique:       true,
+  NullFiltered: true,
+  Name:         &parser.Ident{
+    pos:  34,
+    end:  41,
+    Name: "foo_bar",
+  },
+  TableName: &parser.Ident{
+    pos:  45,
+    end:  48,
+    Name: "foo",
+  },
+  Keys: []*parser.IndexKey{
+    &parser.IndexKey{
+      end:  53,
+      Name: &parser.Ident{
+        pos:  50,
+        end:  53,
+        Name: "foo",
+      },
+      Dir: "",
+    },
+  },
+  Storing:      (*parser.Storing)(nil),
+  InterleaveIn: (*parser.InterleaveIn)(nil),
+}
+
+--- SQL
+CREATE UNIQUE NULL_FILTERED INDEX foo_bar ON foo (foo)

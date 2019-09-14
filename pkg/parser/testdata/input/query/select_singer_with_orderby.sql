@@ -4,5 +4,5 @@ FROM
   Singers
 ORDER BY
   FirstName,
-  LastName ASC,
+  LastName COLLATE "en_US",
   BirthDate DESC

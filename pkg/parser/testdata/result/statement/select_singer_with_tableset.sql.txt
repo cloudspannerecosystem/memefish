@@ -1,0 +1,76 @@
+--- select_singer_with_tableset.sql
+SELECT * FROM Singers
+UNION ALL
+SELECT * FROM Singers
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.CompoundQuery{
+    Op:       "UNION",
+    Distinct: false,
+    Queries:  []parser.QueryExpr{
+      &parser.Select{
+        pos:      0,
+        Distinct: false,
+        AsStruct: false,
+        Results:  []parser.SelectItem{
+          &parser.Star{
+            pos: 7,
+          },
+        },
+        From: &parser.From{
+          pos:    9,
+          Source: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  14,
+              end:  21,
+              Name: "Singers",
+            },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: (*parser.TableSample)(nil),
+          },
+        },
+        Where:   (*parser.Where)(nil),
+        GroupBy: (*parser.GroupBy)(nil),
+        Having:  (*parser.Having)(nil),
+        OrderBy: (*parser.OrderBy)(nil),
+        Limit:   (*parser.Limit)(nil),
+      },
+      &parser.Select{
+        pos:      32,
+        Distinct: false,
+        AsStruct: false,
+        Results:  []parser.SelectItem{
+          &parser.Star{
+            pos: 39,
+          },
+        },
+        From: &parser.From{
+          pos:    41,
+          Source: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  46,
+              end:  53,
+              Name: "Singers",
+            },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: (*parser.TableSample)(nil),
+          },
+        },
+        Where:   (*parser.Where)(nil),
+        GroupBy: (*parser.GroupBy)(nil),
+        Having:  (*parser.Having)(nil),
+        OrderBy: (*parser.OrderBy)(nil),
+        Limit:   (*parser.Limit)(nil),
+      },
+    },
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers UNION ALL SELECT * FROM Singers

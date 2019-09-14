@@ -1,4 +1,4 @@
 SELECT
   *
 FROM
-  UNNEST([1,2,3]) WITH OFFSET
+  UNNEST([1,2,3]) @{hint = 1} WITH OFFSET

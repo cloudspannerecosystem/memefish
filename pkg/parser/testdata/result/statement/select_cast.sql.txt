@@ -1,0 +1,280 @@
+--- select_cast.sql
+select cast(1 as INT64), cast((struct(), 1, [2, 3], ["4", "5"]) as struct<struct<>, x int64, y array<int64>, z array<string>>)
+from x tablesample BERNOULLI (cast(0.1 as float64) percent),
+     y tablesample BERNOULLI (cast(1 as int64) rows),
+     z tablesample BERNOULLI (cast(@param as int64) rows)
+limit cast(1 as INT64) offset cast(@foo as INT64)
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.CastExpr{
+          pos:  7,
+          end:  23,
+          Expr: &parser.IntLiteral{
+            pos:   12,
+            end:   13,
+            Base:  10,
+            Value: "1",
+          },
+          Type: &parser.SimpleType{
+            pos:  17,
+            Name: "INT64",
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.CastExpr{
+          pos:  25,
+          end:  126,
+          Expr: &parser.StructLiteral{
+            pos:    30,
+            end:    63,
+            Fields: []*parser.FieldType{},
+            Values: []parser.Expr{
+              &parser.StructLiteral{
+                pos:    31,
+                end:    39,
+                Fields: []*parser.FieldType{},
+                Values: []parser.Expr{},
+              },
+              &parser.IntLiteral{
+                pos:   41,
+                end:   42,
+                Base:  10,
+                Value: "1",
+              },
+              &parser.ArrayLiteral{
+                pos:    44,
+                end:    50,
+                Type:   nil,
+                Values: []parser.Expr{
+                  &parser.IntLiteral{
+                    pos:   45,
+                    end:   46,
+                    Base:  10,
+                    Value: "2",
+                  },
+                  &parser.IntLiteral{
+                    pos:   48,
+                    end:   49,
+                    Base:  10,
+                    Value: "3",
+                  },
+                },
+              },
+              &parser.ArrayLiteral{
+                pos:    52,
+                end:    62,
+                Type:   nil,
+                Values: []parser.Expr{
+                  &parser.StringLiteral{
+                    pos:   53,
+                    end:   56,
+                    Value: "4",
+                  },
+                  &parser.StringLiteral{
+                    pos:   58,
+                    end:   61,
+                    Value: "5",
+                  },
+                },
+              },
+            },
+          },
+          Type: &parser.StructType{
+            pos:    67,
+            end:    125,
+            Fields: []*parser.FieldType{
+              &parser.FieldType{
+                Member: (*parser.Ident)(nil),
+                Type:   &parser.StructType{
+                  pos:    74,
+                  end:    82,
+                  Fields: []*parser.FieldType{},
+                },
+              },
+              &parser.FieldType{
+                Member: &parser.Ident{
+                  pos:  84,
+                  end:  85,
+                  Name: "x",
+                },
+                Type: &parser.SimpleType{
+                  pos:  86,
+                  Name: "INT64",
+                },
+              },
+              &parser.FieldType{
+                Member: &parser.Ident{
+                  pos:  93,
+                  end:  94,
+                  Name: "y",
+                },
+                Type: &parser.ArrayType{
+                  pos:  95,
+                  end:  107,
+                  Item: &parser.SimpleType{
+                    pos:  101,
+                    Name: "INT64",
+                  },
+                },
+              },
+              &parser.FieldType{
+                Member: &parser.Ident{
+                  pos:  109,
+                  end:  110,
+                  Name: "z",
+                },
+                Type: &parser.ArrayType{
+                  pos:  111,
+                  end:  124,
+                  Item: &parser.SimpleType{
+                    pos:  117,
+                    Name: "STRING",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    127,
+      Source: &parser.Join{
+        Op:     ",",
+        Method: "",
+        Hint:   (*parser.Hint)(nil),
+        Left:   &parser.Join{
+          Op:     ",",
+          Method: "",
+          Hint:   (*parser.Hint)(nil),
+          Left:   &parser.TableName{
+            Table: &parser.Ident{
+              pos:  132,
+              end:  133,
+              Name: "x",
+            },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: &parser.TableSample{
+              pos:    134,
+              Method: "BERNOULLI",
+              Size:   &parser.TableSampleSize{
+                pos:   156,
+                end:   186,
+                Value: &parser.CastNumValue{
+                  pos:  157,
+                  end:  177,
+                  Expr: &parser.FloatLiteral{
+                    pos:   162,
+                    end:   165,
+                    Value: "0.1",
+                  },
+                  Type: "FLOAT64",
+                },
+                Unit: "PERCENT",
+              },
+            },
+          },
+          Right: &parser.TableName{
+            Table: &parser.Ident{
+              pos:  193,
+              end:  194,
+              Name: "y",
+            },
+            Hint:   (*parser.Hint)(nil),
+            As:     (*parser.AsAlias)(nil),
+            Sample: &parser.TableSample{
+              pos:    195,
+              Method: "BERNOULLI",
+              Size:   &parser.TableSampleSize{
+                pos:   217,
+                end:   240,
+                Value: &parser.CastNumValue{
+                  pos:  218,
+                  end:  234,
+                  Expr: &parser.IntLiteral{
+                    pos:   223,
+                    end:   224,
+                    Base:  10,
+                    Value: "1",
+                  },
+                  Type: "INT64",
+                },
+                Unit: "ROWS",
+              },
+            },
+          },
+          Cond: nil,
+        },
+        Right: &parser.TableName{
+          Table: &parser.Ident{
+            pos:  247,
+            end:  248,
+            Name: "z",
+          },
+          Hint:   (*parser.Hint)(nil),
+          As:     (*parser.AsAlias)(nil),
+          Sample: &parser.TableSample{
+            pos:    249,
+            Method: "BERNOULLI",
+            Size:   &parser.TableSampleSize{
+              pos:   271,
+              end:   299,
+              Value: &parser.CastNumValue{
+                pos:  272,
+                end:  293,
+                Expr: &parser.Param{
+                  pos:  277,
+                  Name: "param",
+                },
+                Type: "INT64",
+              },
+              Unit: "ROWS",
+            },
+          },
+        },
+        Cond: nil,
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   &parser.Limit{
+      pos:   300,
+      Count: &parser.CastIntValue{
+        pos:  306,
+        end:  322,
+        Expr: &parser.IntLiteral{
+          pos:   311,
+          end:   312,
+          Base:  10,
+          Value: "1",
+        },
+      },
+      Offset: &parser.Offset{
+        pos:   323,
+        Value: &parser.CastIntValue{
+          pos:  330,
+          end:  349,
+          Expr: &parser.Param{
+            pos:  335,
+            Name: "foo",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT CAST(1 AS INT64), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)

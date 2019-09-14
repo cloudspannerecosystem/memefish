@@ -1,0 +1,73 @@
+--- select_singer_with_query_parameter.sql
+SELECT
+  *
+FROM
+  Singers
+WHERE
+  SingerID = @singerID
+  AND @singerID = SingerID
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  18,
+          end:  25,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where: &parser.Where{
+      pos:  26,
+      Expr: &parser.BinaryExpr{
+        Op:   "AND",
+        Left: &parser.BinaryExpr{
+          Op:   "=",
+          Left: &parser.Ident{
+            pos:  34,
+            end:  42,
+            Name: "SingerID",
+          },
+          Right: &parser.Param{
+            pos:  45,
+            Name: "singerID",
+          },
+        },
+        Right: &parser.BinaryExpr{
+          Op:   "=",
+          Left: &parser.Param{
+            pos:  61,
+            Name: "singerID",
+          },
+          Right: &parser.Ident{
+            pos:  73,
+            end:  81,
+            Name: "SingerID",
+          },
+        },
+      },
+    },
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM Singers WHERE SingerID = @singerID AND @singerID = SingerID

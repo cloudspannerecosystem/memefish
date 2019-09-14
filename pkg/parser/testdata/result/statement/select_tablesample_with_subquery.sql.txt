@@ -1,0 +1,79 @@
+--- select_tablesample_with_subquery.sql
+SELECT
+  *
+FROM
+  (SELECT * FROM Singers) TABLESAMPLE BERNOULLI (90 PERCENT)
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Star{
+        pos: 9,
+      },
+    },
+    From: &parser.From{
+      pos:    11,
+      Source: &parser.SubQueryTableExpr{
+        pos:   18,
+        end:   76,
+        Query: &parser.Select{
+          pos:      19,
+          Distinct: false,
+          AsStruct: false,
+          Results:  []parser.SelectItem{
+            &parser.Star{
+              pos: 26,
+            },
+          },
+          From: &parser.From{
+            pos:    28,
+            Source: &parser.TableName{
+              Table: &parser.Ident{
+                pos:  33,
+                end:  40,
+                Name: "Singers",
+              },
+              Hint:   (*parser.Hint)(nil),
+              As:     (*parser.AsAlias)(nil),
+              Sample: (*parser.TableSample)(nil),
+            },
+          },
+          Where:   (*parser.Where)(nil),
+          GroupBy: (*parser.GroupBy)(nil),
+          Having:  (*parser.Having)(nil),
+          OrderBy: (*parser.OrderBy)(nil),
+          Limit:   (*parser.Limit)(nil),
+        },
+        As:     (*parser.AsAlias)(nil),
+        Sample: &parser.TableSample{
+          pos:    42,
+          Method: "BERNOULLI",
+          Size:   &parser.TableSampleSize{
+            pos:   64,
+            end:   76,
+            Value: &parser.IntLiteral{
+              pos:   65,
+              end:   67,
+              Base:  10,
+              Value: "90",
+            },
+            Unit: "PERCENT",
+          },
+        },
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers) TABLESAMPLE BERNOULLI (90 PERCENT)

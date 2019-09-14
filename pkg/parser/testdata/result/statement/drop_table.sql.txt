@@ -1,0 +1,15 @@
+--- drop_table.sql
+drop table foo
+
+--- AST
+&parser.DropTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  11,
+    end:  14,
+    Name: "foo",
+  },
+}
+
+--- SQL
+DROP TABLE foo

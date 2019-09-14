@@ -1,0 +1,192 @@
+--- select_literals_string.sql
+SELECT
+  "abc!",
+  "a\nb!",
+  "\075!",
+  "\x3d!",
+  "\x3D!",
+  "\X3d!",
+  "\X3D!",
+  "\u203C!",
+  "\U0001F408!",
+  "it's",
+  'it\'s',
+  'Title: "Boy"',
+  """abc""",
+  '''it's''',
+  '''Title:"Boy"''',
+  '''two
+lines''',
+  '''why\?''',
+  R"abc+",
+  r'''abc+''',
+  R"""abc+""",
+  r'f\(abc,(.*),def\)'
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   9,
+          end:   15,
+          Value: "abc!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   19,
+          end:   26,
+          Value: "a\nb!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   30,
+          end:   37,
+          Value: "=!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   41,
+          end:   48,
+          Value: "=!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   52,
+          end:   59,
+          Value: "=!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   63,
+          end:   70,
+          Value: "=!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   74,
+          end:   81,
+          Value: "=!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   85,
+          end:   94,
+          Value: "‼!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   98,
+          end:   111,
+          Value: "🐈!",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   115,
+          end:   121,
+          Value: "it's",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   125,
+          end:   132,
+          Value: "it's",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   136,
+          end:   150,
+          Value: "Title: \"Boy\"",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   154,
+          end:   163,
+          Value: "abc",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   167,
+          end:   177,
+          Value: "it's",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   181,
+          end:   198,
+          Value: "Title:\"Boy\"",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   202,
+          end:   217,
+          Value: "two\nlines",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   221,
+          end:   232,
+          Value: "why?",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   236,
+          end:   243,
+          Value: "abc+",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   247,
+          end:   258,
+          Value: "abc+",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   262,
+          end:   273,
+          Value: "abc+",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.StringLiteral{
+          pos:   277,
+          end:   297,
+          Value: "f\\(abc,(.*),def\\)",
+        },
+      },
+    },
+    From:    (*parser.From)(nil),
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT "abc!", "a\nb!", "=!", "=!", "=!", "=!", "=!", "‼!", "🐈!", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)"

@@ -1,0 +1,68 @@
+--- select_singer_with_groupby.sql
+SELECT
+  FirstName, BirthDate
+FROM
+  Singers
+GROUP BY
+  FirstName, BirthDate
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  18,
+          Name: "FirstName",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  20,
+          end:  29,
+          Name: "BirthDate",
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    30,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  37,
+          end:  44,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: &parser.GroupBy{
+      pos:   45,
+      Exprs: []parser.Expr{
+        &parser.Ident{
+          pos:  56,
+          end:  65,
+          Name: "FirstName",
+        },
+        &parser.Ident{
+          pos:  67,
+          end:  76,
+          Name: "BirthDate",
+        },
+      },
+    },
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT FirstName, BirthDate FROM Singers GROUP BY FirstName, BirthDate

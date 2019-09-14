@@ -1,0 +1,49 @@
+--- select_singer_with_column_and_asterisk.sql
+SELECT
+  SingerId,
+  *
+FROM
+  Singers
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  17,
+          Name: "SingerId",
+        },
+      },
+      &parser.Star{
+        pos: 21,
+      },
+    },
+    From: &parser.From{
+      pos:    23,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  30,
+          end:  37,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT SingerId, * FROM Singers

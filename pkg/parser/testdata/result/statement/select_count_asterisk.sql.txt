@@ -1,0 +1,41 @@
+--- select_count_asterisk.sql
+select count(*) from singers
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.CountStarExpr{
+          pos: 7,
+          end: 15,
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    16,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  21,
+          end:  28,
+          Name: "singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT COUNT(*) FROM singers

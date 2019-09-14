@@ -1,0 +1,84 @@
+--- select_singer_with_column_names.sql
+SELECT
+  SingerId AS ID,
+  FirstName,
+  LastName,
+  SingerInfo,
+  BirthDate
+FROM Singers
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.Alias{
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  17,
+          Name: "SingerId",
+        },
+        As: &parser.AsAlias{
+          pos:   18,
+          Alias: &parser.Ident{
+            pos:  21,
+            end:  23,
+            Name: "ID",
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  27,
+          end:  36,
+          Name: "FirstName",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  40,
+          end:  48,
+          Name: "LastName",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  52,
+          end:  62,
+          Name: "SingerInfo",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  66,
+          end:  75,
+          Name: "BirthDate",
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    76,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  81,
+          end:  88,
+          Name: "Singers",
+        },
+        Hint:   (*parser.Hint)(nil),
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT SingerId AS ID, FirstName, LastName, SingerInfo, BirthDate FROM Singers

@@ -1,0 +1,49 @@
+--- delete _from.sql
+delete from foo where foo = 1 and bar = 2
+--- AST
+&parser.Delete{
+  pos:       0,
+  TableName: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  As:    (*parser.AsAlias)(nil),
+  Where: &parser.Where{
+    pos:  16,
+    Expr: &parser.BinaryExpr{
+      Op:   "AND",
+      Left: &parser.BinaryExpr{
+        Op:   "=",
+        Left: &parser.Ident{
+          pos:  22,
+          end:  25,
+          Name: "foo",
+        },
+        Right: &parser.IntLiteral{
+          pos:   28,
+          end:   29,
+          Base:  10,
+          Value: "1",
+        },
+      },
+      Right: &parser.BinaryExpr{
+        Op:   "=",
+        Left: &parser.Ident{
+          pos:  34,
+          end:  37,
+          Name: "bar",
+        },
+        Right: &parser.IntLiteral{
+          pos:   40,
+          end:   41,
+          Base:  10,
+          Value: "2",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+DELETE FROM foo WHERE foo = 1 AND bar = 2

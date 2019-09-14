@@ -1,0 +1,94 @@
+--- select_singer_with_table_alias.sql
+SELECT
+  S.*,
+  S.SingerId as ID,
+  S.FirstName
+FROM Singers S
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.DotStar{
+        end:  12,
+        Expr: &parser.Ident{
+          pos:  9,
+          end:  10,
+          Name: "S",
+        },
+      },
+      &parser.Alias{
+        Expr: &parser.Path{
+          Idents: []*parser.Ident{
+            &parser.Ident{
+              pos:  16,
+              end:  17,
+              Name: "S",
+            },
+            &parser.Ident{
+              pos:  18,
+              end:  26,
+              Name: "SingerId",
+            },
+          },
+        },
+        As: &parser.AsAlias{
+          pos:   27,
+          Alias: &parser.Ident{
+            pos:  30,
+            end:  32,
+            Name: "ID",
+          },
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Path{
+          Idents: []*parser.Ident{
+            &parser.Ident{
+              pos:  36,
+              end:  37,
+              Name: "S",
+            },
+            &parser.Ident{
+              pos:  38,
+              end:  47,
+              Name: "FirstName",
+            },
+          },
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    48,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  53,
+          end:  60,
+          Name: "Singers",
+        },
+        Hint: (*parser.Hint)(nil),
+        As:   &parser.AsAlias{
+          pos:   61,
+          Alias: &parser.Ident{
+            pos:  61,
+            end:  62,
+            Name: "S",
+          },
+        },
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where:   (*parser.Where)(nil),
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT S.*, S.SingerId AS ID, S.FirstName FROM Singers AS S

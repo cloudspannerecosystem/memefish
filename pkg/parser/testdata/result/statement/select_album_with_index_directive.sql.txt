@@ -1,0 +1,104 @@
+--- select_album_with_index_directive.sql
+SELECT AlbumId, AlbumTitle, MarketingBudget
+FROM Albums@{FORCE_INDEX=AlbumsByAlbumTitle}
+WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
+
+--- AST
+&parser.QueryStatement{
+  Hint:  (*parser.Hint)(nil),
+  Query: &parser.Select{
+    pos:      0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []parser.SelectItem{
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  7,
+          end:  14,
+          Name: "AlbumId",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  16,
+          end:  26,
+          Name: "AlbumTitle",
+        },
+      },
+      &parser.ExprSelectItem{
+        Expr: &parser.Ident{
+          pos:  28,
+          end:  43,
+          Name: "MarketingBudget",
+        },
+      },
+    },
+    From: &parser.From{
+      pos:    44,
+      Source: &parser.TableName{
+        Table: &parser.Ident{
+          pos:  49,
+          end:  55,
+          Name: "Albums",
+        },
+        Hint: &parser.Hint{
+          pos:     55,
+          end:     88,
+          Records: []*parser.HintRecord{
+            &parser.HintRecord{
+              Key: &parser.Ident{
+                pos:  57,
+                end:  68,
+                Name: "FORCE_INDEX",
+              },
+              Value: &parser.Ident{
+                pos:  69,
+                end:  87,
+                Name: "AlbumsByAlbumTitle",
+              },
+            },
+          },
+        },
+        As:     (*parser.AsAlias)(nil),
+        Sample: (*parser.TableSample)(nil),
+      },
+    },
+    Where: &parser.Where{
+      pos:  89,
+      Expr: &parser.BinaryExpr{
+        Op:   "AND",
+        Left: &parser.BinaryExpr{
+          Op:   ">=",
+          Left: &parser.Ident{
+            pos:  95,
+            end:  105,
+            Name: "AlbumTitle",
+          },
+          Right: &parser.Param{
+            pos:  109,
+            Name: "startTitle",
+          },
+        },
+        Right: &parser.BinaryExpr{
+          Op:   "<",
+          Left: &parser.Ident{
+            pos:  125,
+            end:  135,
+            Name: "AlbumTitle",
+          },
+          Right: &parser.Param{
+            pos:  138,
+            Name: "endTitle",
+          },
+        },
+      },
+    },
+    GroupBy: (*parser.GroupBy)(nil),
+    Having:  (*parser.Having)(nil),
+    OrderBy: (*parser.OrderBy)(nil),
+    Limit:   (*parser.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT AlbumId, AlbumTitle, MarketingBudget FROM Albums @{FORCE_INDEX=AlbumsByAlbumTitle} WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle

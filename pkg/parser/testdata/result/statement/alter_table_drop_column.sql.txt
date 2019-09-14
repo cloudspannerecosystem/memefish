@@ -1,0 +1,23 @@
+--- alter_table_drop_column.sql
+alter table foo drop column bar
+
+--- AST
+&parser.AlterTable{
+  pos:  0,
+  Name: &parser.Ident{
+    pos:  12,
+    end:  15,
+    Name: "foo",
+  },
+  TableAlternation: &parser.DropColumn{
+    pos:  16,
+    Name: &parser.Ident{
+      pos:  28,
+      end:  31,
+      Name: "bar",
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo DROP COLUMN bar
