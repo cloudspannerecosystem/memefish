@@ -9,7 +9,7 @@ import (
 	"github.com/k0kubun/pp"
 )
 
-var t = flag.String("type", "query", "statement type")
+var mode = flag.String("mode", "statement", "parsing mode")
 
 func init() {
 	flag.Parse()
@@ -17,7 +17,7 @@ func init() {
 
 func main() {
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./parse [SQL query]")
+		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [SQL query]")
 	}
 
 	query := flag.Arg(0)
@@ -33,13 +33,17 @@ func main() {
 	log.Printf("start parsing")
 	var node parser.Node
 	var err error
-	switch *t {
+	switch *mode {
+	case "statement":
+		node, err = p.ParseStatement()
 	case "query":
 		node, err = p.ParseQuery()
 	case "expr":
 		node, err = p.ParseExpr()
 	case "ddl":
 		node, err = p.ParseDDL()
+	case "dml":
+		node, err = p.ParseDML()
 	}
 	if err != nil {
 		log.Fatal(err)
