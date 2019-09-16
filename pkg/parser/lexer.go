@@ -538,7 +538,7 @@ func (l *Lexer) eof() bool {
 func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, param...),
-		Position: l.Position(Pos(l.pos), InvalidPos),
+		Position: l.Position(Pos(l.pos), Pos(l.pos)),
 	}
 }
 
