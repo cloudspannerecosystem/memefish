@@ -6,6 +6,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	. "github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type Lexer struct {
@@ -35,40 +37,6 @@ func (l *Lexer) Clone() *Lexer {
 	lex := *l
 	return &lex
 }
-
-type Token struct {
-	Kind     TokenKind
-	Space    string // TODO: better comment support
-	Raw      string
-	AsString string // available for TokenIdent, TokenString and TokenBytes
-	Base     int    // 10 or 16 on TokenInt
-	Pos, End Pos
-}
-
-func (t *Token) IsIdent(s string) bool {
-	return t.Kind == TokenIdent && strings.EqualFold(t.AsString, s)
-}
-
-func (t *Token) IsKeywordLike(s string) bool {
-	return t.Kind == TokenIdent && strings.EqualFold(t.Raw, s)
-}
-
-func (t *Token) Clone() *Token {
-	tok := *t
-	return &tok
-}
-
-type TokenKind string
-
-const (
-	TokenEOF    TokenKind = "<eof>"
-	TokenIdent  TokenKind = "<ident>"
-	TokenParam  TokenKind = "<param>"
-	TokenInt    TokenKind = "<int>"
-	TokenFloat  TokenKind = "<float>"
-	TokenString TokenKind = "<string>"
-	TokenBytes  TokenKind = "<bytes>"
-)
 
 func isDigit(c byte) bool {
 	return '0' <= c && c <= '9'
@@ -235,7 +203,7 @@ func (l *Lexer) nextToken() {
 		s := l.slice(0, i)
 		l.nextN(i)
 		k := TokenKind(strings.ToUpper(s))
-		if _, ok := keywordsMap[k]; ok {
+		if _, ok := KeywordsMap[k]; ok {
 			l.Token.Kind = k
 		} else {
 			l.Token.Kind = TokenIdent

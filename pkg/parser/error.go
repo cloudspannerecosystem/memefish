@@ -3,11 +3,13 @@ package parser
 import (
 	"bytes"
 	"fmt"
+
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type Error struct {
 	Message  string
-	Position *Position
+	Position *token.Position
 }
 
 func (e *Error) String() string {

@@ -1,6 +1,10 @@
-package parser
+package token
 
-var keywords = []TokenKind{
+import (
+	"strings"
+)
+
+var Keywords = []TokenKind{
 	"ALL",
 	"AND",
 	"ANY",
@@ -98,11 +102,16 @@ var keywords = []TokenKind{
 	"WITHIN",
 }
 
-var keywordsMap map[TokenKind]struct{}
+var KeywordsMap map[TokenKind]struct{}
 
 func init() {
-	keywordsMap = make(map[TokenKind]struct{})
-	for _, kw := range keywords {
-		keywordsMap[kw] = struct{}{}
+	KeywordsMap = make(map[TokenKind]struct{})
+	for _, k := range Keywords {
+		KeywordsMap[k] = struct{}{}
 	}
+}
+
+func IsKeyword(s string) bool {
+	_, ok := KeywordsMap[TokenKind(strings.ToUpper(s))]
+	return ok
 }

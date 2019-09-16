@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	. "github.com/MakeNowJust/memefish/pkg/token"
 )
 
 var symbols = []string{
@@ -194,7 +196,7 @@ func testLexer(t *testing.T, source string, tokens []*Token) {
 }
 
 func TestLexer(t *testing.T) {
-	for _, s := range keywords {
+	for _, s := range Keywords {
 		t.Run(fmt.Sprintf("keyword/%q", string(s)), func(t *testing.T) {
 			testLexer(t, string(s), []*Token{{Kind: s, Raw: string(s)}})
 		})

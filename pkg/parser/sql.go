@@ -1,5 +1,9 @@
 package parser
 
+import (
+	"github.com/MakeNowJust/memefish/pkg/token"
+)
+
 type prec int
 
 const (
@@ -533,7 +537,7 @@ func (p *Param) SQL() string {
 }
 
 func (i *Ident) SQL() string {
-	return QuoteSQLIdent(i.Name)
+	return token.QuoteSQLIdent(i.Name)
 }
 
 func (p *Path) SQL() string {
@@ -604,19 +608,19 @@ func (f *FloatLiteral) SQL() string {
 }
 
 func (s *StringLiteral) SQL() string {
-	return QuoteSQLString(s.Value)
+	return token.QuoteSQLString(s.Value)
 }
 
 func (b *BytesLiteral) SQL() string {
-	return QuoteSQLBytes(b.Value)
+	return token.QuoteSQLBytes(b.Value)
 }
 
 func (d *DateLiteral) SQL() string {
-	return "DATE " + QuoteSQLString(d.Value)
+	return "DATE " + token.QuoteSQLString(d.Value)
 }
 
 func (t *TimestampLiteral) SQL() string {
-	return "TIMESTAMP " + QuoteSQLString(t.Value)
+	return "TIMESTAMP " + token.QuoteSQLString(t.Value)
 }
 
 // ================================================================================

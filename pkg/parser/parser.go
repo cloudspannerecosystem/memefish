@@ -3,6 +3,8 @@ package parser
 import (
 	"fmt"
 	"strings"
+
+	. "github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type Parser struct {

@@ -12,6 +12,7 @@ import (
 
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 	"github.com/k0kubun/pp"
 	"github.com/pmezard/go-difflib/difflib"
 )
@@ -68,7 +69,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser
 
 			p := &parser.Parser{
 				Lexer: &parser.Lexer{
-					File: &parser.File{FilePath: in.Name(), Buffer: string(b)},
+					File: &token.File{FilePath: in.Name(), Buffer: string(b)},
 				},
 			}
 
@@ -123,7 +124,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser
 			s1 := node.SQL()
 			p1 := &parser.Parser{
 				Lexer: &parser.Lexer{
-					File: &parser.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
+					File: &token.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
 				},
 			}
 
@@ -185,7 +186,7 @@ func TestParseStatement(t *testing.T) {
 func ExampleParser_ParseStatements() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{Buffer: "SELECT 1; INSERT foo (x, y) VALUES (1, 2)"},
+			File: &token.File{Buffer: "SELECT 1; INSERT foo (x, y) VALUES (1, 2)"},
 		},
 	}
 
@@ -206,7 +207,7 @@ func ExampleParser_ParseStatements() {
 func ExampleParser_ParseQuery() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{Buffer: "SELECT * FROM foo"},
+			File: &token.File{Buffer: "SELECT * FROM foo"},
 		},
 	}
 
@@ -224,7 +225,7 @@ func ExampleParser_ParseQuery() {
 func ExampleParser_ParseDDL() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{
+			File: &token.File{
 				Buffer: heredoc.Doc(`
 					CREATE TABLE foo (
 						x int64,
@@ -249,7 +250,7 @@ func ExampleParser_ParseDDL() {
 func ExampleParser_ParseDDLs() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{
+			File: &token.File{
 				Buffer: heredoc.Doc(`
 					CREATE TABLE foo (x int64, y int64) PRIMARY KEY (x);
 
@@ -280,7 +281,7 @@ func ExampleParser_ParseDDLs() {
 func ExampleParser_ParseDML() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{
+			File: &token.File{
 				Buffer: heredoc.Doc(`
 					INSERT INTO foo (x, y)
 					VALUES (1, 2),
@@ -304,7 +305,7 @@ func ExampleParser_ParseDML() {
 func ExampleParser_ParseDMLs() {
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{
+			File: &token.File{
 				Buffer: heredoc.Doc(`
 					INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
 					DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;

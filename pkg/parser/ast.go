@@ -1,5 +1,9 @@
 package parser
 
+import (
+	. "github.com/MakeNowJust/memefish/pkg/token"
+)
+
 // Node is base interface of Spanner SQL AST nodes.
 type Node interface {
 	Pos() Pos
