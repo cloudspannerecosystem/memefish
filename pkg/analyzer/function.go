@@ -1,13 +1,12 @@
 package analyzer
 
 import (
-	"strings"
-
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 func isAggregateFuncName(name string) bool {
-	switch strings.ToUpper(name) {
+	switch char.ToUpper(name) {
 	case "ANY_VALUE", "ARRAY_AGG", "AVG",
 		"BIT_AND", "BIT_OR", "BIT_XOR", "COUNT",
 		"COUNTIF", "LOGICAL_AND", "LOGICAL_OR",

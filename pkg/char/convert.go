@@ -19,3 +19,24 @@ func ToUpper(s string) string {
 	}
 	return string(bs)
 }
+
+func EqualFold(s, t string) bool {
+	if len(s) != len(t) {
+		return false
+	}
+
+	for i := 0; i < len(s); i++ {
+		c, d := s[i], t[i]
+		if 'a' <= c && c <= 'z' {
+			c = 'A' + (c - 'a')
+		}
+		if 'a' <= d && d <= 'z' {
+			d = 'A' + (d - 'a')
+		}
+		if c != d {
+			return false
+		}
+	}
+
+	return true
+}

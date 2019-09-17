@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
+	"github.com/MakeNowJust/memefish/pkg/char"
 	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/MakeNowJust/memefish/pkg/token"
 	"gopkg.in/yaml.v2"
@@ -88,7 +89,7 @@ func TestAnalyzeQueryStatement(t *testing.T) {
 
 func parseTypeTiny(s string) (analyzer.Type, bool) {
 	s = strings.TrimSpace(s)
-	switch strings.ToUpper(s) {
+	switch char.ToUpper(s) {
 	case "NULL":
 		return nil, true
 	case "BOOL":
@@ -111,7 +112,7 @@ func parseTypeTiny(s string) (analyzer.Type, bool) {
 		return nil, false
 	}
 
-	if strings.EqualFold(s[:6], "ARRAY<") && s[len(s)-1] == '>' {
+	if char.EqualFold(s[:6], "ARRAY<") && s[len(s)-1] == '>' {
 		t, ok := parseTypeTiny(s[6 : len(s)-1])
 		if !ok {
 			return nil, false
@@ -119,7 +120,7 @@ func parseTypeTiny(s string) (analyzer.Type, bool) {
 		return &analyzer.ArrayType{Item: t}, true
 	}
 
-	if strings.EqualFold(s[:7], "STRUCT<") && s[len(s)-1] == '>' {
+	if char.EqualFold(s[:7], "STRUCT<") && s[len(s)-1] == '>' {
 		var fs []*analyzer.StructField
 		i := 7
 		for i < len(s) {

@@ -1,7 +1,7 @@
 package token
 
 import (
-	"strings"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type Token struct {
@@ -14,11 +14,11 @@ type Token struct {
 }
 
 func (t *Token) IsIdent(s string) bool {
-	return t.Kind == TokenIdent && strings.EqualFold(t.AsString, s)
+	return t.Kind == TokenIdent && char.EqualFold(t.AsString, s)
 }
 
 func (t *Token) IsKeywordLike(s string) bool {
-	return t.Kind == TokenIdent && strings.EqualFold(t.Raw, s)
+	return t.Kind == TokenIdent && char.EqualFold(t.Raw, s)
 }
 
 func (t *Token) Clone() *Token {

@@ -3,9 +3,9 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type TypeInfo struct {
@@ -315,7 +315,7 @@ func (a *Analyzer) analyzeExtractExpr(e *ast.ExtractExpr) *TypeInfo {
 	t := a.analyzeExpr(e.Expr)
 	var resultType Type
 	allowDate := false
-	switch strings.ToUpper(e.Part.Name) {
+	switch char.ToUpper(e.Part.Name) {
 	case "DAYOFWEEK", "DAY", "DAYOFYEAR", "WEEK", "ISOWEEK", "MONTH", "QUARTER", "YEAR":
 		allowDate = true
 		resultType = Int64Type
@@ -332,7 +332,7 @@ func (a *Analyzer) analyzeExtractExpr(e *ast.ExtractExpr) *TypeInfo {
 		if allowDate {
 			allow += "/DATE"
 		}
-		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", strings.ToUpper(e.Part.Name), allow, TypeString(t.Type))
+		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", char.ToUpper(e.Part.Name), allow, TypeString(t.Type))
 	}
 
 	// TODO: check e.AtTimeZone

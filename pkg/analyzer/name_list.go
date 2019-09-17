@@ -2,18 +2,18 @@ package analyzer
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type NameList []*Name
 
 func (list NameList) Lookup(target string) *Name {
 	var founds []*Name
-	for _, child := range list {
-		if strings.EqualFold(child.Text, target) {
-			founds = append(founds, child)
+	for _, name := range list {
+		if char.EqualFold(name.Text, target) {
+			founds = append(founds, name)
 		}
 	}
 

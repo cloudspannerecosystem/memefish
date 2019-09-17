@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type TableInfo struct {
@@ -171,7 +171,7 @@ func (a *Analyzer) analyzeJoin(j *ast.Join, ti *TableInfo) *TableInfo {
 	case *ast.Using:
 		names := make(map[string]bool)
 		for _, id := range cond.Idents {
-			names[strings.ToUpper(id.Name)] = false
+			names[char.ToUpper(id.Name)] = false
 		}
 
 		env := NameEnv{}
@@ -196,7 +196,7 @@ func (a *Analyzer) analyzeJoin(j *ast.Join, ti *TableInfo) *TableInfo {
 
 		var list NameList
 		for _, id := range cond.Idents {
-			text := strings.ToUpper(id.Name)
+			text := char.ToUpper(id.Name)
 			if names[text] {
 				continue
 			}
@@ -244,13 +244,13 @@ func (a *Analyzer) analyzeJoin(j *ast.Join, ti *TableInfo) *TableInfo {
 		}
 
 		for _, name := range lti.List {
-			if _, ok := names[strings.ToUpper(name.Text)]; ok {
+			if _, ok := names[char.ToUpper(name.Text)]; ok {
 				continue
 			}
 			list = append(list, name)
 		}
 		for _, name := range rti.List {
-			if _, ok := names[strings.ToUpper(name.Text)]; ok {
+			if _, ok := names[char.ToUpper(name.Text)]; ok {
 				continue
 			}
 			list = append(list, name)

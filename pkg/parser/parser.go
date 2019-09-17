@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
@@ -1275,9 +1276,9 @@ func (p *Parser) parseSelector() ast.Expr {
 			p.NextToken()
 			id := p.expect(token.TokenIdent)
 			ordinal := false
-			if strings.EqualFold(id.AsString, "ORDINAL") {
+			if char.EqualFold(id.AsString, "ORDINAL") {
 				ordinal = true
-			} else if strings.EqualFold(id.AsString, "OFFSET") {
+			} else if char.EqualFold(id.AsString, "OFFSET") {
 				ordinal = false
 			} else {
 				p.panicfAtToken(id, "expected identifier: ORDINAL, OFFSET, but: %s", id.Raw)
@@ -2690,7 +2691,7 @@ func (p *Parser) expectIdent(s string) *token.Token {
 func (p *Parser) expectKeywordLike(s string) *token.Token {
 	id := p.expect(token.TokenIdent)
 	if !id.IsKeywordLike(s) {
-		if strings.EqualFold(id.AsString, s) {
+		if char.EqualFold(id.AsString, s) {
 			p.panicfAtToken(id, "pseudo keyword %s cannot encloses with backquote", s)
 		} else {
 			p.panicfAtToken(id, "expected pseudo keyword: %s, but: %s", s, token.QuoteSQLIdent(id.AsString))

@@ -3,9 +3,9 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
@@ -162,7 +162,7 @@ func (a *Analyzer) lookupParam(target string) (interface{}, bool) {
 	if a.Params == nil {
 		return nil, false
 	}
-	p, ok := a.Params[strings.ToUpper(target)]
+	p, ok := a.Params[char.ToUpper(target)]
 	return p, ok
 }
 
@@ -170,7 +170,7 @@ func (a *Analyzer) lookupTable(target string) (*TableSchema, bool) {
 	if a.Catalog == nil {
 		return nil, false
 	}
-	table, ok := a.Catalog.Tables[strings.ToUpper(target)]
+	table, ok := a.Catalog.Tables[char.ToUpper(target)]
 	return table, ok
 }
 

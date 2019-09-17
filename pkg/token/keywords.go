@@ -1,7 +1,7 @@
 package token
 
 import (
-	"strings"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 var Keywords = []TokenKind{
@@ -112,6 +112,6 @@ func init() {
 }
 
 func IsKeyword(s string) bool {
-	_, ok := KeywordsMap[TokenKind(strings.ToUpper(s))]
+	_, ok := KeywordsMap[TokenKind(char.ToUpper(s))]
 	return ok
 }

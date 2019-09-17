@@ -3,9 +3,9 @@ package analyzer
 import (
 	"bytes"
 	"strconv"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 func (a *Analyzer) analyzeSelectWithGroupBy(s *ast.Select) NameList {
@@ -183,13 +183,13 @@ func isSameExprForGroupBy(expr1, expr2 ast.Expr) bool {
 		if !ok {
 			return false
 		}
-		return strings.EqualFold(e1.Name, e2.Name)
+		return char.EqualFold(e1.Name, e2.Name)
 	case *ast.Param:
 		e2, ok := e2.(*ast.Ident)
 		if !ok {
 			return false
 		}
-		return strings.EqualFold(e1.Name, e2.Name)
+		return char.EqualFold(e1.Name, e2.Name)
 	case *ast.NullLiteral:
 		_, ok := e2.(*ast.NullLiteral)
 		return ok

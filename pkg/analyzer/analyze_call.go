@@ -1,9 +1,8 @@
 package analyzer
 
 import (
-	"strings"
-
 	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type functionAnalyzer func(a *Analyzer, e *ast.CallExpr) *TypeInfo
@@ -18,7 +17,7 @@ func init() {
 }
 
 func (a *Analyzer) analyzeCallExpr(e *ast.CallExpr) *TypeInfo {
-	if ana, ok := functionAnalyzers[strings.ToUpper(e.Func.Name)]; ok {
+	if ana, ok := functionAnalyzers[char.ToUpper(e.Func.Name)]; ok {
 		return ana(a, e)
 	}
 
