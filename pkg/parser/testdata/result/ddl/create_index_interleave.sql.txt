@@ -5,49 +5,49 @@ create index foo_bar on foo (
   interleave in foobar
 
 --- AST
-&parser.CreateIndex{
-  pos:          0,
-  end:          80,
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       41,
   Unique:       false,
   NullFiltered: false,
-  Name:         &parser.Ident{
-    pos:  13,
-    end:  20,
-    Name: "foo_bar",
+  Name:         &ast.Ident{
+    NamePos: 13,
+    NameEnd: 20,
+    Name:    "foo_bar",
   },
-  TableName: &parser.Ident{
-    pos:  24,
-    end:  27,
-    Name: "foo",
+  TableName: &ast.Ident{
+    NamePos: 24,
+    NameEnd: 27,
+    Name:    "foo",
   },
-  Keys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  40,
-      Name: &parser.Ident{
-        pos:  32,
-        end:  35,
-        Name: "foo",
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: 36,
+      Name:   &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "foo",
       },
       Dir: "DESC",
     },
   },
-  Storing: &parser.Storing{
-    pos:     43,
-    end:     56,
-    Columns: []*parser.Ident{
-      &parser.Ident{
-        pos:  52,
-        end:  55,
-        Name: "bar",
+  Storing: &ast.Storing{
+    Storing: 43,
+    Rparen:  55,
+    Columns: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 52,
+        NameEnd: 55,
+        Name:    "bar",
       },
     },
   },
-  InterleaveIn: &parser.InterleaveIn{
-    pos:       56,
-    TableName: &parser.Ident{
-      pos:  74,
-      end:  80,
-      Name: "foobar",
+  InterleaveIn: &ast.InterleaveIn{
+    Comma:     56,
+    TableName: &ast.Ident{
+      NamePos: 74,
+      NameEnd: 80,
+      Name:    "foobar",
     },
   },
 }

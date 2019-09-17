@@ -1,13 +1,13 @@
 package analyzer
 
 import (
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
 )
 
 type GroupByContext struct {
-	Lists      map[parser.SelectItem]NameList
+	Lists      map[ast.SelectItem]NameList
 	ValidNames map[*Name]struct{}
-	ValidExprs []parser.Expr
+	ValidExprs []ast.Expr
 }
 
 func (gbc *GroupByContext) AddValidName(name *Name) {

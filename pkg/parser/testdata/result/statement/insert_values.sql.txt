@@ -3,101 +3,101 @@ insert foo (foo, bar, baz)
 values (1, 2, 3),
        (4, 5, 6)
 --- AST
-&parser.Insert{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Insert{
+  Insert:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  Columns: []*parser.Ident{
-    &parser.Ident{
-      pos:  12,
-      end:  15,
-      Name: "foo",
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
     },
-    &parser.Ident{
-      pos:  17,
-      end:  20,
-      Name: "bar",
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
     },
-    &parser.Ident{
-      pos:  22,
-      end:  25,
-      Name: "baz",
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 25,
+      Name:    "baz",
     },
   },
-  Input: &parser.ValuesInput{
-    pos:  27,
-    Rows: []*parser.ValuesRow{
-      &parser.ValuesRow{
-        pos:    34,
-        end:    43,
-        Values: []*parser.DefaultExpr{
-          &parser.DefaultExpr{
-            pos:     35,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   35,
-              end:   36,
-              Base:  10,
-              Value: "1",
+  Input: &ast.ValuesInput{
+    Values: 27,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 34,
+        Rparen: 42,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 35,
+              ValueEnd: 36,
+              Base:     10,
+              Value:    "1",
             },
           },
-          &parser.DefaultExpr{
-            pos:     38,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   38,
-              end:   39,
-              Base:  10,
-              Value: "2",
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 38,
+              ValueEnd: 39,
+              Base:     10,
+              Value:    "2",
             },
           },
-          &parser.DefaultExpr{
-            pos:     41,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   41,
-              end:   42,
-              Base:  10,
-              Value: "3",
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 41,
+              ValueEnd: 42,
+              Base:     10,
+              Value:    "3",
             },
           },
         },
       },
-      &parser.ValuesRow{
-        pos:    52,
-        end:    61,
-        Values: []*parser.DefaultExpr{
-          &parser.DefaultExpr{
-            pos:     53,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   53,
-              end:   54,
-              Base:  10,
-              Value: "4",
+      &ast.ValuesRow{
+        Lparen: 52,
+        Rparen: 60,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 53,
+              ValueEnd: 54,
+              Base:     10,
+              Value:    "4",
             },
           },
-          &parser.DefaultExpr{
-            pos:     56,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   56,
-              end:   57,
-              Base:  10,
-              Value: "5",
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 56,
+              ValueEnd: 57,
+              Base:     10,
+              Value:    "5",
             },
           },
-          &parser.DefaultExpr{
-            pos:     59,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   59,
-              end:   60,
-              Base:  10,
-              Value: "6",
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 59,
+              ValueEnd: 60,
+              Base:     10,
+              Value:    "6",
             },
           },
         },

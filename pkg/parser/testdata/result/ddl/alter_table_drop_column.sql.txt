@@ -2,19 +2,19 @@
 alter table foo drop column bar
 
 --- AST
-&parser.AlterTable{
-  pos:  0,
-  Name: &parser.Ident{
-    pos:  12,
-    end:  15,
-    Name: "foo",
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
   },
-  TableAlternation: &parser.DropColumn{
-    pos:  16,
-    Name: &parser.Ident{
-      pos:  28,
-      end:  31,
-      Name: "bar",
+  TableAlternation: &ast.DropColumn{
+    Drop: 16,
+    Name: &ast.Ident{
+      NamePos: 28,
+      NameEnd: 31,
+      Name:    "bar",
     },
   },
 }

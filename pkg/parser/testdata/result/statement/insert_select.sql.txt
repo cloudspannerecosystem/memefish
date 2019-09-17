@@ -2,97 +2,100 @@
 insert foo (foo, bar)
 select * from unnest([(1, 2), (3, 4)])
 --- AST
-&parser.Insert{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Insert{
+  Insert:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  Columns: []*parser.Ident{
-    &parser.Ident{
-      pos:  12,
-      end:  15,
-      Name: "foo",
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
     },
-    &parser.Ident{
-      pos:  17,
-      end:  20,
-      Name: "bar",
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
     },
   },
-  Input: &parser.SubQueryInput{
-    Query: &parser.Select{
-      pos:      22,
+  Input: &ast.SubQueryInput{
+    Query: &ast.Select{
+      Select:   22,
       Distinct: false,
       AsStruct: false,
-      Results:  []parser.SelectItem{
-        &parser.Star{
-          pos: 29,
+      Results:  []ast.SelectItem{
+        &ast.Star{
+          Star: 29,
         },
       },
-      From: &parser.From{
-        pos:    31,
-        Source: &parser.Unnest{
-          pos:      36,
-          end:      60,
+      From: &ast.From{
+        From:   31,
+        Source: &ast.Unnest{
+          Unnest:   36,
+          Rparen:   59,
           Implicit: false,
-          Expr:     &parser.ArrayLiteral{
-            pos:    43,
-            end:    59,
+          Expr:     &ast.ArrayLiteral{
+            Array:  0,
+            Lbrack: 43,
+            Rbrack: 58,
             Type:   nil,
-            Values: []parser.Expr{
-              &parser.StructLiteral{
-                pos:    44,
-                end:    50,
-                Fields: []*parser.FieldType{},
-                Values: []parser.Expr{
-                  &parser.IntLiteral{
-                    pos:   45,
-                    end:   46,
-                    Base:  10,
-                    Value: "1",
+            Values: []ast.Expr{
+              &ast.StructLiteral{
+                Struct: 0,
+                Lparen: 44,
+                Rparen: 49,
+                Fields: []*ast.StructField{},
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 45,
+                    ValueEnd: 46,
+                    Base:     10,
+                    Value:    "1",
                   },
-                  &parser.IntLiteral{
-                    pos:   48,
-                    end:   49,
-                    Base:  10,
-                    Value: "2",
+                  &ast.IntLiteral{
+                    ValuePos: 48,
+                    ValueEnd: 49,
+                    Base:     10,
+                    Value:    "2",
                   },
                 },
               },
-              &parser.StructLiteral{
-                pos:    52,
-                end:    58,
-                Fields: []*parser.FieldType{},
-                Values: []parser.Expr{
-                  &parser.IntLiteral{
-                    pos:   53,
-                    end:   54,
-                    Base:  10,
-                    Value: "3",
+              &ast.StructLiteral{
+                Struct: 0,
+                Lparen: 52,
+                Rparen: 57,
+                Fields: []*ast.StructField{},
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 53,
+                    ValueEnd: 54,
+                    Base:     10,
+                    Value:    "3",
                   },
-                  &parser.IntLiteral{
-                    pos:   56,
-                    end:   57,
-                    Base:  10,
-                    Value: "4",
+                  &ast.IntLiteral{
+                    ValuePos: 56,
+                    ValueEnd: 57,
+                    Base:     10,
+                    Value:    "4",
                   },
                 },
               },
             },
           },
-          Hint:       (*parser.Hint)(nil),
-          As:         (*parser.AsAlias)(nil),
-          WithOffset: (*parser.WithOffset)(nil),
-          Sample:     (*parser.TableSample)(nil),
+          Hint:       (*ast.Hint)(nil),
+          As:         (*ast.AsAlias)(nil),
+          WithOffset: (*ast.WithOffset)(nil),
+          Sample:     (*ast.TableSample)(nil),
         },
       },
-      Where:   (*parser.Where)(nil),
-      GroupBy: (*parser.GroupBy)(nil),
-      Having:  (*parser.Having)(nil),
-      OrderBy: (*parser.OrderBy)(nil),
-      Limit:   (*parser.Limit)(nil),
+      Where:   (*ast.Where)(nil),
+      GroupBy: (*ast.GroupBy)(nil),
+      Having:  (*ast.Having)(nil),
+      OrderBy: (*ast.OrderBy)(nil),
+      Limit:   (*ast.Limit)(nil),
     },
   },
 }

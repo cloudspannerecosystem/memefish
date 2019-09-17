@@ -1,31 +1,31 @@
 --- alter_table_alter_column.sql
 alter table foo alter column foo string(256) not null
 --- AST
-&parser.AlterTable{
-  pos:  0,
-  Name: &parser.Ident{
-    pos:  12,
-    end:  15,
-    Name: "foo",
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
   },
-  TableAlternation: &parser.AlterColumn{
-    pos:  16,
-    end:  53,
-    Name: &parser.Ident{
-      pos:  29,
-      end:  32,
-      Name: "foo",
+  TableAlternation: &ast.AlterColumn{
+    Alter: 16,
+    Null:  49,
+    Name:  &ast.Ident{
+      NamePos: 29,
+      NameEnd: 32,
+      Name:    "foo",
     },
-    Type: &parser.SizedSchemaType{
-      pos:  33,
-      end:  44,
-      Name: "STRING",
-      Max:  false,
-      Size: &parser.IntLiteral{
-        pos:   40,
-        end:   43,
-        Base:  10,
-        Value: "256",
+    Type: &ast.SizedSchemaType{
+      NamePos: 33,
+      Rparen:  43,
+      Name:    "STRING",
+      Max:     false,
+      Size:    &ast.IntLiteral{
+        ValuePos: 40,
+        ValueEnd: 43,
+        Base:     10,
+        Value:    "256",
       },
     },
     NotNull: true,

@@ -2,12 +2,12 @@
 drop table foo
 
 --- AST
-&parser.DropTable{
-  pos:  0,
-  Name: &parser.Ident{
-    pos:  11,
-    end:  14,
-    Name: "foo",
+&ast.DropTable{
+  Drop: 0,
+  Name: &ast.Ident{
+    NamePos: 11,
+    NameEnd: 14,
+    Name:    "foo",
   },
 }
 

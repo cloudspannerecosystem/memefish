@@ -1,13 +1,12 @@
 package analyzer
 
 import (
-	"strings"
-
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 func isAggregateFuncName(name string) bool {
-	switch strings.ToUpper(name) {
+	switch char.ToUpper(name) {
 	case "ANY_VALUE", "ARRAY_AGG", "AVG",
 		"BIT_AND", "BIT_OR", "BIT_XOR", "COUNT",
 		"COUNTIF", "LOGICAL_AND", "LOGICAL_OR",
@@ -17,42 +16,42 @@ func isAggregateFuncName(name string) bool {
 	return false
 }
 
-func hasAggregateFunc(e parser.Expr) bool {
+func hasAggregateFunc(e ast.Expr) bool {
 	switch e := e.(type) {
-	case *parser.BinaryExpr:
+	case *ast.BinaryExpr:
 		return hasAggregateFunc(e.Left) || hasAggregateFunc(e.Right)
-	case *parser.UnaryExpr:
+	case *ast.UnaryExpr:
 		return hasAggregateFunc(e.Expr)
-	case *parser.InExpr:
+	case *ast.InExpr:
 		if hasAggregateFunc(e.Left) {
 			return true
 		}
 		switch r := e.Right.(type) {
-		case *parser.UnnestInCondition:
+		case *ast.UnnestInCondition:
 			return hasAggregateFunc(r.Expr)
-		case *parser.ValuesInCondition:
+		case *ast.ValuesInCondition:
 			for _, v := range r.Exprs {
 				if hasAggregateFunc(v) {
 					return true
 				}
 			}
 			return false
-		case *parser.SubQueryInCondition:
+		case *ast.SubQueryInCondition:
 			// For example, `SELECT (SELECT SUM(x)) FROM table` is invalid
 			// because subqeury is evaluated by other context.
 			return false
 		}
-	case *parser.IsNullExpr:
+	case *ast.IsNullExpr:
 		return hasAggregateFunc(e.Left)
-	case *parser.IsBoolExpr:
+	case *ast.IsBoolExpr:
 		return hasAggregateFunc(e.Left)
-	case *parser.BetweenExpr:
+	case *ast.BetweenExpr:
 		return hasAggregateFunc(e.Left) || hasAggregateFunc(e.RightStart) || hasAggregateFunc(e.RightEnd)
-	case *parser.SelectorExpr:
+	case *ast.SelectorExpr:
 		return hasAggregateFunc(e.Expr)
-	case *parser.IndexExpr:
+	case *ast.IndexExpr:
 		return hasAggregateFunc(e.Expr) || hasAggregateFunc(e.Index)
-	case *parser.CallExpr:
+	case *ast.CallExpr:
 		if isAggregateFuncName(e.Func.Name) {
 			return true
 		}
@@ -62,16 +61,16 @@ func hasAggregateFunc(e parser.Expr) bool {
 			}
 		}
 		return false
-	case *parser.CountStarExpr:
+	case *ast.CountStarExpr:
 		return true
-	case *parser.CastExpr:
+	case *ast.CastExpr:
 		return hasAggregateFunc(e.Expr)
-	case *parser.ExtractExpr:
+	case *ast.ExtractExpr:
 		if e.AtTimeZone != nil && hasAggregateFunc(e.AtTimeZone.Expr) {
 			return true
 		}
 		return hasAggregateFunc(e.Expr)
-	case *parser.CaseExpr:
+	case *ast.CaseExpr:
 		if e.Expr != nil && hasAggregateFunc(e.Expr) {
 			return true
 		}
@@ -81,42 +80,42 @@ func hasAggregateFunc(e parser.Expr) bool {
 			}
 		}
 		return e.Else != nil && hasAggregateFunc(e.Else.Expr)
-	case *parser.ParenExpr:
+	case *ast.ParenExpr:
 		return hasAggregateFunc(e.Expr)
-	case *parser.ScalarSubQuery, *parser.ArraySubQuery, *parser.ExistsSubQuery,
-		*parser.Param, *parser.Ident, *parser.Path:
+	case *ast.ScalarSubQuery, *ast.ArraySubQuery, *ast.ExistsSubQuery,
+		*ast.Param, *ast.Ident, *ast.Path:
 		return false
-	case *parser.ArrayLiteral:
+	case *ast.ArrayLiteral:
 		for _, v := range e.Values {
 			if hasAggregateFunc(v) {
 				return true
 			}
 		}
 		return false
-	case *parser.StructLiteral:
+	case *ast.StructLiteral:
 		for _, v := range e.Values {
 			if hasAggregateFunc(v) {
 				return true
 			}
 		}
 		return false
-	case *parser.NullLiteral, *parser.BoolLiteral, *parser.IntLiteral, *parser.FloatLiteral,
-		*parser.StringLiteral, *parser.BytesLiteral, *parser.DateLiteral, *parser.TimestampLiteral:
+	case *ast.NullLiteral, *ast.BoolLiteral, *ast.IntLiteral, *ast.FloatLiteral,
+		*ast.StringLiteral, *ast.BytesLiteral, *ast.DateLiteral, *ast.TimestampLiteral:
 		return false
 	}
 
 	panic("BUG: unreachable")
 }
 
-func hasAggregateFuncInSelectItem(s parser.SelectItem) bool {
+func hasAggregateFuncInSelectItem(s ast.SelectItem) bool {
 	switch s := s.(type) {
-	case *parser.Star:
+	case *ast.Star:
 		return false
-	case *parser.DotStar:
+	case *ast.DotStar:
 		return hasAggregateFunc(s.Expr)
-	case *parser.Alias:
+	case *ast.Alias:
 		return hasAggregateFunc(s.Expr)
-	case *parser.ExprSelectItem:
+	case *ast.ExprSelectItem:
 		return hasAggregateFunc(s.Expr)
 	}
 

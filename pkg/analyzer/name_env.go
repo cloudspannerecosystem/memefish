@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/char"
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type NameEnv map[string]*Name
@@ -14,7 +14,7 @@ func (env NameEnv) Lookup(text string) *Name {
 		return nil
 	}
 
-	text = strings.ToUpper(text)
+	text = char.ToUpper(text)
 	if name, ok := env[text]; ok {
 		return name
 	}
@@ -26,11 +26,11 @@ func (env NameEnv) Insert(name *Name) error {
 		return nil
 	}
 
-	text := strings.ToUpper(name.Text)
+	text := char.ToUpper(name.Text)
 	if oldName, ok := env[text]; ok {
 		switch {
 		case name.Kind == TableName && oldName.Kind == TableName:
-			return fmt.Errorf("duplicate table name: %s", parser.QuoteSQLIdent(name.Text))
+			return fmt.Errorf("duplicate table name: %s", token.QuoteSQLIdent(name.Text))
 		case name.Kind == TableName:
 			env[text] = name
 		case oldName.Kind == TableName:
@@ -50,6 +50,6 @@ func (env NameEnv) InsertForce(name *Name) {
 		return
 	}
 
-	text := strings.ToUpper(name.Text)
+	text := char.ToUpper(name.Text)
 	env[text] = name
 }

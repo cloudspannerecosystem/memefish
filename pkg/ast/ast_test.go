@@ -1,4 +1,4 @@
-package parser
+package ast
 
 import (
 	"testing"
@@ -22,6 +22,20 @@ func TestSelectItem(t *testing.T) {
 	SelectItem(&DotStar{}).isSelectItem()
 	SelectItem(&Alias{}).isSelectItem()
 	SelectItem(&ExprSelectItem{}).isSelectItem()
+}
+
+func TestQueryExpr(t *testing.T) {
+	QueryExpr(&Select{}).isQueryExpr()
+	QueryExpr(&SubQuery{}).isQueryExpr()
+	QueryExpr(&CompoundQuery{}).isQueryExpr()
+}
+
+func TestTableExpr(t *testing.T) {
+	TableExpr(&Unnest{}).isTableExpr()
+	TableExpr(&TableName{}).isTableExpr()
+	TableExpr(&SubQueryTableExpr{}).isTableExpr()
+	TableExpr(&ParenTableExpr{}).isTableExpr()
+	TableExpr(&Join{}).isTableExpr()
 }
 
 func TestJoinCondition(t *testing.T) {

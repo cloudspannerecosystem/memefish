@@ -4,49 +4,49 @@ create index foo_bar on foo (
 ) storing (foo, baz)
 
 --- AST
-&parser.CreateIndex{
-  pos:          0,
-  end:          60,
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       40,
   Unique:       false,
   NullFiltered: false,
-  Name:         &parser.Ident{
-    pos:  13,
-    end:  20,
-    Name: "foo_bar",
+  Name:         &ast.Ident{
+    NamePos: 13,
+    NameEnd: 20,
+    Name:    "foo_bar",
   },
-  TableName: &parser.Ident{
-    pos:  24,
-    end:  27,
-    Name: "foo",
+  TableName: &ast.Ident{
+    NamePos: 24,
+    NameEnd: 27,
+    Name:    "foo",
   },
-  Keys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  39,
-      Name: &parser.Ident{
-        pos:  32,
-        end:  35,
-        Name: "bar",
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: 36,
+      Name:   &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "bar",
       },
       Dir: "ASC",
     },
   },
-  Storing: &parser.Storing{
-    pos:     42,
-    end:     60,
-    Columns: []*parser.Ident{
-      &parser.Ident{
-        pos:  51,
-        end:  54,
-        Name: "foo",
+  Storing: &ast.Storing{
+    Storing: 42,
+    Rparen:  59,
+    Columns: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 51,
+        NameEnd: 54,
+        Name:    "foo",
       },
-      &parser.Ident{
-        pos:  56,
-        end:  59,
-        Name: "baz",
+      &ast.Ident{
+        NamePos: 56,
+        NameEnd: 59,
+        Name:    "baz",
       },
     },
   },
-  InterleaveIn: (*parser.InterleaveIn)(nil),
+  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL

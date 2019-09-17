@@ -6,52 +6,52 @@ create table foo (
   interleave in parent foobar
 
 --- AST
-&parser.CreateTable{
-  pos:  0,
-  end:  91,
-  Name: &parser.Ident{
-    pos:  13,
-    end:  16,
-    Name: "foo",
+&ast.CreateTable{
+  Create: 0,
+  Rparen: 59,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 16,
+    Name:    "foo",
   },
-  Columns: []*parser.ColumnDef{
-    &parser.ColumnDef{
-      end:  30,
-      Name: &parser.Ident{
-        pos:  21,
-        end:  24,
-        Name: "foo",
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "foo",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  25,
-        Name: "INT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 25,
+        Name:    "INT64",
       },
       NotNull: false,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
-    &parser.ColumnDef{
-      end:  43,
-      Name: &parser.Ident{
-        pos:  34,
-        end:  37,
-        Name: "bar",
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 34,
+        NameEnd: 37,
+        Name:    "bar",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  38,
-        Name: "INT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "INT64",
       },
       NotNull: false,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*parser.IndexKey{},
-  Cluster:     &parser.Cluster{
-    pos:       60,
-    end:       91,
-    TableName: &parser.Ident{
-      pos:  85,
-      end:  91,
-      Name: "foobar",
+  PrimaryKeys: []*ast.IndexKey{},
+  Cluster:     &ast.Cluster{
+    Comma:       60,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Ident{
+      NamePos: 85,
+      NameEnd: 91,
+      Name:    "foobar",
     },
     OnDelete: "",
   },

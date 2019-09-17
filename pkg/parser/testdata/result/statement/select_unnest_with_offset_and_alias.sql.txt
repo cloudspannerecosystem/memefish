@@ -5,77 +5,78 @@ FROM
   UNNEST([1,2,3]) AS value WITH OFFSET AS num
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.Unnest{
-        pos:      18,
-        end:      42,
+    From: &ast.From{
+      From:   11,
+      Source: &ast.Unnest{
+        Unnest:   18,
+        Rparen:   32,
         Implicit: false,
-        Expr:     &parser.ArrayLiteral{
-          pos:    25,
-          end:    32,
+        Expr:     &ast.ArrayLiteral{
+          Array:  0,
+          Lbrack: 25,
+          Rbrack: 31,
           Type:   nil,
-          Values: []parser.Expr{
-            &parser.IntLiteral{
-              pos:   26,
-              end:   27,
-              Base:  10,
-              Value: "1",
+          Values: []ast.Expr{
+            &ast.IntLiteral{
+              ValuePos: 26,
+              ValueEnd: 27,
+              Base:     10,
+              Value:    "1",
             },
-            &parser.IntLiteral{
-              pos:   28,
-              end:   29,
-              Base:  10,
-              Value: "2",
+            &ast.IntLiteral{
+              ValuePos: 28,
+              ValueEnd: 29,
+              Base:     10,
+              Value:    "2",
             },
-            &parser.IntLiteral{
-              pos:   30,
-              end:   31,
-              Base:  10,
-              Value: "3",
-            },
-          },
-        },
-        Hint: (*parser.Hint)(nil),
-        As:   &parser.AsAlias{
-          pos:   34,
-          Alias: &parser.Ident{
-            pos:  37,
-            end:  42,
-            Name: "value",
-          },
-        },
-        WithOffset: &parser.WithOffset{
-          pos: 43,
-          end: 61,
-          As:  &parser.AsAlias{
-            pos:   55,
-            Alias: &parser.Ident{
-              pos:  58,
-              end:  61,
-              Name: "num",
+            &ast.IntLiteral{
+              ValuePos: 30,
+              ValueEnd: 31,
+              Base:     10,
+              Value:    "3",
             },
           },
         },
-        Sample: (*parser.TableSample)(nil),
+        Hint: (*ast.Hint)(nil),
+        As:   &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 37,
+            NameEnd: 42,
+            Name:    "value",
+          },
+        },
+        WithOffset: &ast.WithOffset{
+          With:   43,
+          Offset: 48,
+          As:     &ast.AsAlias{
+            As:    -1,
+            Alias: &ast.Ident{
+              NamePos: 58,
+              NameEnd: 61,
+              Name:    "num",
+            },
+          },
+        },
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

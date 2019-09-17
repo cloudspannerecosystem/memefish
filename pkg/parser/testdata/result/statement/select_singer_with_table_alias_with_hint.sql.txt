@@ -5,59 +5,59 @@ FROM
   Singers@{FORCE_INDEX=SingersByFirstLastName} AS S
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint: &parser.Hint{
-          pos:     25,
-          end:     62,
-          Records: []*parser.HintRecord{
-            &parser.HintRecord{
-              Key: &parser.Ident{
-                pos:  27,
-                end:  38,
-                Name: "FORCE_INDEX",
+        Hint: &ast.Hint{
+          Atmark:  25,
+          Rbrace:  61,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Ident{
+                NamePos: 27,
+                NameEnd: 38,
+                Name:    "FORCE_INDEX",
               },
-              Value: &parser.Ident{
-                pos:  39,
-                end:  61,
-                Name: "SingersByFirstLastName",
+              Value: &ast.Ident{
+                NamePos: 39,
+                NameEnd: 61,
+                Name:    "SingersByFirstLastName",
               },
             },
           },
         },
-        As: &parser.AsAlias{
-          pos:   63,
-          Alias: &parser.Ident{
-            pos:  66,
-            end:  67,
-            Name: "S",
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 66,
+            NameEnd: 67,
+            Name:    "S",
           },
         },
-        Sample: (*parser.TableSample)(nil),
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

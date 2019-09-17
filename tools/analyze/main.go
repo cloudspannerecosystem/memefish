@@ -5,10 +5,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
+	"github.com/MakeNowJust/memefish/pkg/char"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
@@ -53,7 +54,7 @@ func main() {
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{FilePath: "", Buffer: query},
+			File: &token.File{FilePath: "", Buffer: query},
 		},
 	}
 
@@ -124,7 +125,7 @@ func loadParamFile(file string) (map[string]interface{}, error) {
 
 	normalized := make(map[string]interface{})
 	for name, p := range params {
-		normalized[strings.ToUpper(name)] = decodeParam(p)
+		normalized[char.ToUpper(name)] = decodeParam(p)
 	}
 	return normalized, nil
 }
@@ -184,7 +185,7 @@ func loadSchemaFile(file string) (map[string]*analyzer.TableSchema, error) {
 
 	normalized := make(map[string]*analyzer.TableSchema)
 	for _, table := range catalog {
-		normalized[strings.ToUpper(table.Name)] = decodeTableSchema(table)
+		normalized[char.ToUpper(table.Name)] = decodeTableSchema(table)
 	}
 	return normalized, nil
 }

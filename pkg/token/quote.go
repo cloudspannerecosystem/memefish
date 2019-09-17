@@ -1,10 +1,11 @@
-package parser
+package token
 
 import (
 	"bytes"
 	"fmt"
-	"strings"
 	"unicode"
+
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 // QuoteSQLString returns quoted string with SQL string escaping.
@@ -26,7 +27,7 @@ func QuoteSQLBytes(bs []byte) string {
 			buf.WriteString(q)
 			continue
 		}
-		if isPrint(b) {
+		if char.IsPrint(b) {
 			buf.WriteByte(b)
 			continue
 		}
@@ -99,22 +100,18 @@ func quoteSingleEscape(r rune) string {
 	return ""
 }
 
-func isPrint(b byte) bool {
-	return 0x21 <= b && b <= 0x7D
-}
-
 func needQuoteSQLIdent(s string) bool {
 	// When s is keyword, it should be quoted.
-	if _, ok := keywordsMap[TokenKind(strings.ToUpper(s))]; ok {
+	if IsKeyword(s) {
 		return true
 	}
 
 	// Then, check s can be parsed as TokenIdent without backquoted.
-	if !isIdentStart(s[0]) {
+	if !char.IsIdentStart(s[0]) {
 		return true
 	}
 	for i := 0; i < len(s); i++ {
-		if !isIdentPart(s[i]) {
+		if !char.IsIdentPart(s[i]) {
 			return true
 		}
 	}

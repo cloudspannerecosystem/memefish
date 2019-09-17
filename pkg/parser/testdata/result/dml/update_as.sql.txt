@@ -1,80 +1,80 @@
 --- update_as.sql
 update foo as F set F.foo = F.bar + 1 where foo = F.bar
 --- AST
-&parser.Update{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Update{
+  Update:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  As: &parser.AsAlias{
-    pos:   11,
-    Alias: &parser.Ident{
-      pos:  14,
-      end:  15,
-      Name: "F",
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 14,
+      NameEnd: 15,
+      Name:    "F",
     },
   },
-  UpdateItems: []*parser.UpdateItem{
-    &parser.UpdateItem{
-      Path: []*parser.Ident{
-        &parser.Ident{
-          pos:  20,
-          end:  21,
-          Name: "F",
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 20,
+          NameEnd: 21,
+          Name:    "F",
         },
-        &parser.Ident{
-          pos:  22,
-          end:  25,
-          Name: "foo",
+        &ast.Ident{
+          NamePos: 22,
+          NameEnd: 25,
+          Name:    "foo",
         },
       },
-      Expr: &parser.BinaryExpr{
+      Expr: &ast.BinaryExpr{
         Op:   "+",
-        Left: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  28,
-              end:  29,
-              Name: "F",
+        Left: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 28,
+              NameEnd: 29,
+              Name:    "F",
             },
-            &parser.Ident{
-              pos:  30,
-              end:  33,
-              Name: "bar",
+            &ast.Ident{
+              NamePos: 30,
+              NameEnd: 33,
+              Name:    "bar",
             },
           },
         },
-        Right: &parser.IntLiteral{
-          pos:   36,
-          end:   37,
-          Base:  10,
-          Value: "1",
+        Right: &ast.IntLiteral{
+          ValuePos: 36,
+          ValueEnd: 37,
+          Base:     10,
+          Value:    "1",
         },
       },
     },
   },
-  Where: &parser.Where{
-    pos:  38,
-    Expr: &parser.BinaryExpr{
+  Where: &ast.Where{
+    Where: 38,
+    Expr:  &ast.BinaryExpr{
       Op:   "=",
-      Left: &parser.Ident{
-        pos:  44,
-        end:  47,
-        Name: "foo",
+      Left: &ast.Ident{
+        NamePos: 44,
+        NameEnd: 47,
+        Name:    "foo",
       },
-      Right: &parser.Path{
-        Idents: []*parser.Ident{
-          &parser.Ident{
-            pos:  50,
-            end:  51,
-            Name: "F",
+      Right: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 50,
+            NameEnd: 51,
+            Name:    "F",
           },
-          &parser.Ident{
-            pos:  52,
-            end:  55,
-            Name: "bar",
+          &ast.Ident{
+            NamePos: 52,
+            NameEnd: 55,
+            Name:    "bar",
           },
         },
       },

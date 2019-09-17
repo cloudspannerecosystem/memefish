@@ -2,9 +2,9 @@ package analyzer
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type TableInfo struct {
@@ -20,34 +20,34 @@ func (ti *TableInfo) toNameScope(next *NameScope) *NameScope {
 	}
 }
 
-func (a *Analyzer) analyzeFrom(f *parser.From) *TableInfo {
+func (a *Analyzer) analyzeFrom(f *ast.From) *TableInfo {
 	return a.analyzeTableExpr(f.Source, &TableInfo{})
 }
 
-func (a *Analyzer) analyzeTableExpr(e parser.TableExpr, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeTableExpr(e ast.TableExpr, ti *TableInfo) *TableInfo {
 	switch e := e.(type) {
-	case *parser.TableName:
+	case *ast.TableName:
 		return a.analyzeTableName(e, ti)
-	case *parser.Unnest:
+	case *ast.Unnest:
 		return a.analyzeUnnest(e, ti)
-	case *parser.SubQueryTableExpr:
+	case *ast.SubQueryTableExpr:
 		return a.analyzeSubQueryTableExpr(e, ti)
-	case *parser.ParenTableExpr:
+	case *ast.ParenTableExpr:
 		return a.analyzeParenTableExpr(e, ti)
-	case *parser.Join:
+	case *ast.Join:
 		return a.analyzeJoin(e, ti)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeTableName(e *parser.TableName, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeTableName(e *ast.TableName, ti *TableInfo) *TableInfo {
 	table, ok := a.lookupTable(e.Table.Name)
 	if !ok {
 		a.panicf(e, "unknown table: %s", e.Table.SQL())
 	}
 
-	var ident *parser.Ident
+	var ident *ast.Ident
 	if e.As != nil {
 		ident = e.As.Alias
 	}
@@ -65,7 +65,7 @@ func (a *Analyzer) analyzeTableName(e *parser.TableName, ti *TableInfo) *TableIn
 	}
 }
 
-func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeUnnest(e *ast.Unnest, ti *TableInfo) *TableInfo {
 	a.pushTableInfo(ti)
 	t := a.analyzeExpr(e.Expr)
 	a.popScope()
@@ -75,7 +75,7 @@ func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {
 		a.panicf(e, "UNNEST value must be ARRAY, but: %s", TypeString(t.Type))
 	}
 
-	var ident *parser.Ident
+	var ident *ast.Ident
 	if e.As != nil {
 		ident = e.As.Alias
 	} else if e.Implicit {
@@ -100,8 +100,8 @@ func (a *Analyzer) analyzeUnnest(e *parser.Unnest, ti *TableInfo) *TableInfo {
 	return result
 }
 
-func (a *Analyzer) analyzeWithOffset(w *parser.WithOffset) *TableInfo {
-	var ident *parser.Ident
+func (a *Analyzer) analyzeWithOffset(w *ast.WithOffset) *TableInfo {
+	var ident *ast.Ident
 	if w.As != nil {
 		ident = w.As.Alias
 	}
@@ -110,15 +110,15 @@ func (a *Analyzer) analyzeWithOffset(w *parser.WithOffset) *TableInfo {
 	return list.toTableInfo()
 }
 
-func (a *Analyzer) analyzeSubQueryTableExpr(e *parser.SubQueryTableExpr, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeSubQueryTableExpr(e *ast.SubQueryTableExpr, ti *TableInfo) *TableInfo {
 	list := a.analyzeQueryExpr(e.Query)
 
-	var ident *parser.Ident
+	var ident *ast.Ident
 	if e.As != nil {
 		ident = e.As.Alias
 	}
 
-	if q, ok := e.Query.(*parser.Select); ok && q.AsStruct {
+	if q, ok := e.Query.(*ast.Select); ok && q.AsStruct {
 		list = list[0].Children()
 	}
 
@@ -135,17 +135,17 @@ func (a *Analyzer) analyzeSubQueryTableExpr(e *parser.SubQueryTableExpr, ti *Tab
 	}
 }
 
-func (a *Analyzer) analyzeParenTableExpr(e *parser.ParenTableExpr, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeParenTableExpr(e *ast.ParenTableExpr, ti *TableInfo) *TableInfo {
 	return a.analyzeTableExpr(e.Source, &TableInfo{})
 }
 
-func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
+func (a *Analyzer) analyzeJoin(j *ast.Join, ti *TableInfo) *TableInfo {
 	lti := a.analyzeTableExpr(j.Left, ti)
 	rti := a.analyzeTableExpr(j.Right, a.mergeTableInfo(ti, lti))
 
 	// TODO: check j.Method and j.Hint
 
-	if j.Op == parser.CommaJoin || j.Op == parser.CrossJoin {
+	if j.Op == ast.CommaJoin || j.Op == ast.CrossJoin {
 		if j.Cond != nil {
 			a.panicf(j.Cond, "CROSS JOIN cannot have ON or USING clause")
 		}
@@ -159,7 +159,7 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
 	var result *TableInfo
 
 	switch cond := j.Cond.(type) {
-	case *parser.On:
+	case *ast.On:
 		result = a.mergeTableInfo(lti, rti)
 		a.pushTableInfo(result)
 		t := a.analyzeExpr(cond.Expr)
@@ -168,10 +168,10 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
 			a.panicf(cond.Expr, "ON clause expression must be BOOL")
 		}
 
-	case *parser.Using:
+	case *ast.Using:
 		names := make(map[string]bool)
 		for _, id := range cond.Idents {
-			names[strings.ToUpper(id.Name)] = false
+			names[char.ToUpper(id.Name)] = false
 		}
 
 		env := NameEnv{}
@@ -196,7 +196,7 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
 
 		var list NameList
 		for _, id := range cond.Idents {
-			text := strings.ToUpper(id.Name)
+			text := char.ToUpper(id.Name)
 			if names[text] {
 				continue
 			}
@@ -222,11 +222,11 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
 
 			var name *Name
 			switch j.Op {
-			case parser.InnerJoin, parser.LeftOuterJoin:
+			case ast.InnerJoin, ast.LeftOuterJoin:
 				name = makeLeftJoinName(lname, rname)
-			case parser.RightOuterJoin:
+			case ast.RightOuterJoin:
 				name = makeRightJoinName(lname, rname)
-			case parser.FullOuterJoin:
+			case ast.FullOuterJoin:
 				var ok bool
 				name, ok = makeFullJoinName(lname, rname)
 				if !ok {
@@ -244,13 +244,13 @@ func (a *Analyzer) analyzeJoin(j *parser.Join, ti *TableInfo) *TableInfo {
 		}
 
 		for _, name := range lti.List {
-			if _, ok := names[strings.ToUpper(name.Text)]; ok {
+			if _, ok := names[char.ToUpper(name.Text)]; ok {
 				continue
 			}
 			list = append(list, name)
 		}
 		for _, name := range rti.List {
-			if _, ok := names[strings.ToUpper(name.Text)]; ok {
+			if _, ok := names[char.ToUpper(name.Text)]; ok {
 				continue
 			}
 			list = append(list, name)

@@ -6,64 +6,64 @@ FROM
   ComplexTable.IntArray
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.Join{
+    From: &ast.From{
+      From:   11,
+      Source: &ast.Join{
         Op:     ",",
         Method: "",
-        Hint:   (*parser.Hint)(nil),
-        Left:   &parser.TableName{
-          Table: &parser.Ident{
-            pos:  18,
-            end:  30,
-            Name: "ComplexTable",
+        Hint:   (*ast.Hint)(nil),
+        Left:   &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 30,
+            Name:    "ComplexTable",
           },
-          Hint:   (*parser.Hint)(nil),
-          As:     (*parser.AsAlias)(nil),
-          Sample: (*parser.TableSample)(nil),
+          Hint:   (*ast.Hint)(nil),
+          As:     (*ast.AsAlias)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
-        Right: &parser.Unnest{
-          pos:      34,
-          end:      55,
+        Right: &ast.Unnest{
+          Unnest:   -1,
+          Rparen:   -1,
           Implicit: true,
-          Expr:     &parser.Path{
-            Idents: []*parser.Ident{
-              &parser.Ident{
-                pos:  34,
-                end:  46,
-                Name: "ComplexTable",
+          Expr:     &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 34,
+                NameEnd: 46,
+                Name:    "ComplexTable",
               },
-              &parser.Ident{
-                pos:  47,
-                end:  55,
-                Name: "IntArray",
+              &ast.Ident{
+                NamePos: 47,
+                NameEnd: 55,
+                Name:    "IntArray",
               },
             },
           },
-          Hint:       (*parser.Hint)(nil),
-          As:         (*parser.AsAlias)(nil),
-          WithOffset: (*parser.WithOffset)(nil),
-          Sample:     (*parser.TableSample)(nil),
+          Hint:       (*ast.Hint)(nil),
+          As:         (*ast.AsAlias)(nil),
+          WithOffset: (*ast.WithOffset)(nil),
+          Sample:     (*ast.TableSample)(nil),
         },
         Cond: nil,
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

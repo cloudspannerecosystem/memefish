@@ -3,12 +3,12 @@ package analyzer
 import (
 	"bytes"
 	"strconv"
-	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
-func (a *Analyzer) analyzeSelectWithGroupBy(s *parser.Select) NameList {
+func (a *Analyzer) analyzeSelectWithGroupBy(s *ast.Select) NameList {
 	ti := a.analyzeFrom(s.From)
 
 	a.pushTableInfo(ti)
@@ -38,7 +38,7 @@ func (a *Analyzer) analyzeSelectWithGroupBy(s *parser.Select) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeHaving(h *parser.Having) {
+func (a *Analyzer) analyzeHaving(h *ast.Having) {
 	if h == nil {
 		return
 	}
@@ -49,13 +49,13 @@ func (a *Analyzer) analyzeHaving(h *parser.Having) {
 	}
 }
 
-func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy, lists []NameList) (NameList, *GroupByContext) {
+func (a *Analyzer) analyzeGroupBy(results []ast.SelectItem, g *ast.GroupBy, lists []NameList) (NameList, *GroupByContext) {
 	var list NameList
 	for _, itemList := range lists {
 		list = append(list, itemList...)
 	}
 
-	listsMap := make(map[parser.SelectItem]NameList)
+	listsMap := make(map[ast.SelectItem]NameList)
 	for i, item := range results {
 		listsMap[item] = lists[i]
 	}
@@ -67,7 +67,7 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 	for _, expr := range g.Exprs {
 		e := simplifyExpr(expr)
 		switch e := e.(type) {
-		case *parser.Ident:
+		case *ast.Ident:
 			name := list.Lookup(e.Name)
 			if name != nil {
 				if name.Ambiguous {
@@ -76,12 +76,12 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 				gbc.AddValidName(name)
 				continue
 			}
-		case *parser.Path:
+		case *ast.Path:
 			name := list.Lookup(e.Idents[0].Name)
 			if name != nil {
 				a.panicf(e.Idents[1], "cannot access field of SELECT result column: %s", e.Idents[1].SQL())
 			}
-		case *parser.IntLiteral:
+		case *ast.IntLiteral:
 			v, err := strconv.ParseInt(e.Value, e.Base, 64)
 			if err != nil {
 				a.panicf(e, "error on parsing integer literal: %v", err)
@@ -90,7 +90,7 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 				gbc.AddValidName(list[v-1])
 				continue
 			}
-		case *parser.Param:
+		case *ast.Param:
 			v, ok := a.lookupParam(e.Name)
 			if !ok {
 				a.panicf(e, "unknown query parameter: %s", e.SQL())
@@ -111,7 +111,7 @@ func (a *Analyzer) analyzeGroupBy(results []parser.SelectItem, g *parser.GroupBy
 	return list, gbc
 }
 
-func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []parser.SelectItem, gbc *GroupByContext) {
+func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []ast.SelectItem, gbc *GroupByContext) {
 	for _, item := range results {
 		list := gbc.Lists[item]
 
@@ -123,8 +123,8 @@ func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []parser.SelectItem,
 			}
 		}
 
-		_, isStar := item.(*parser.Star)
-		_, isDotStar := item.(*parser.DotStar)
+		_, isStar := item.(*ast.Star)
+		_, isDotStar := item.(*ast.DotStar)
 
 		if hasValidName || isStar || isDotStar {
 			for _, name := range list {
@@ -136,9 +136,9 @@ func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []parser.SelectItem,
 		}
 
 		switch item := item.(type) {
-		case *parser.Alias:
+		case *ast.Alias:
 			a.analyzeExprAfterGroupBy(item.Expr, gbc)
-		case *parser.ExprSelectItem:
+		case *ast.ExprSelectItem:
 			a.analyzeExprAfterGroupBy(item.Expr, gbc)
 		default:
 			panic("BUG: unreachable")
@@ -150,7 +150,7 @@ func (a *Analyzer) analyzeSelectResultsAfterGroupBy(results []parser.SelectItem,
 	}
 }
 
-func (a *Analyzer) analyzeExprAfterGroupBy(expr parser.Expr, gbc *GroupByContext) {
+func (a *Analyzer) analyzeExprAfterGroupBy(expr ast.Expr, gbc *GroupByContext) {
 	for _, validExpr := range gbc.ValidExprs {
 		if isSameExprForGroupBy(expr, validExpr) {
 			return
@@ -161,46 +161,46 @@ func (a *Analyzer) analyzeExprAfterGroupBy(expr parser.Expr, gbc *GroupByContext
 	a.analyzeExpr(expr)
 }
 
-func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
+func isSameExprForGroupBy(expr1, expr2 ast.Expr) bool {
 	e1 := simplifyExpr(expr1)
 	e2 := simplifyExpr(expr2)
 
 	switch e1 := e1.(type) {
-	case *parser.BinaryExpr:
-		e2, ok := e2.(*parser.BinaryExpr)
+	case *ast.BinaryExpr:
+		e2, ok := e2.(*ast.BinaryExpr)
 		if !ok {
 			return false
 		}
 		return e1.Op == e2.Op && isSameExprForGroupBy(e1.Left, e2.Left) && isSameExprForGroupBy(e1.Right, e2.Right)
-	case *parser.UnaryExpr:
-		e2, ok := e2.(*parser.UnaryExpr)
+	case *ast.UnaryExpr:
+		e2, ok := e2.(*ast.UnaryExpr)
 		if !ok {
 			return false
 		}
 		return e1.Op == e2.Op && isSameExprForGroupBy(e1.Expr, e2.Expr)
-	case *parser.Ident:
-		e2, ok := e2.(*parser.Ident)
+	case *ast.Ident:
+		e2, ok := e2.(*ast.Ident)
 		if !ok {
 			return false
 		}
-		return strings.EqualFold(e1.Name, e2.Name)
-	case *parser.Param:
-		e2, ok := e2.(*parser.Ident)
+		return char.EqualFold(e1.Name, e2.Name)
+	case *ast.Param:
+		e2, ok := e2.(*ast.Ident)
 		if !ok {
 			return false
 		}
-		return strings.EqualFold(e1.Name, e2.Name)
-	case *parser.NullLiteral:
-		_, ok := e2.(*parser.NullLiteral)
+		return char.EqualFold(e1.Name, e2.Name)
+	case *ast.NullLiteral:
+		_, ok := e2.(*ast.NullLiteral)
 		return ok
-	case *parser.BoolLiteral:
-		e2, ok := e2.(*parser.BoolLiteral)
+	case *ast.BoolLiteral:
+		e2, ok := e2.(*ast.BoolLiteral)
 		if !ok {
 			return false
 		}
 		return e1.Value == e2.Value
-	case *parser.IntLiteral:
-		e2, ok := e2.(*parser.IntLiteral)
+	case *ast.IntLiteral:
+		e2, ok := e2.(*ast.IntLiteral)
 		if !ok {
 			return false
 		}
@@ -213,8 +213,8 @@ func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
 			return false
 		}
 		return v1 == v2
-	case *parser.FloatLiteral:
-		e2, ok := e2.(*parser.FloatLiteral)
+	case *ast.FloatLiteral:
+		e2, ok := e2.(*ast.FloatLiteral)
 		if !ok {
 			return false
 		}
@@ -227,26 +227,26 @@ func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
 			return false
 		}
 		return v1 == v2
-	case *parser.StringLiteral:
-		e2, ok := e2.(*parser.StringLiteral)
+	case *ast.StringLiteral:
+		e2, ok := e2.(*ast.StringLiteral)
 		if !ok {
 			return false
 		}
 		return e1.Value == e2.Value
-	case *parser.BytesLiteral:
-		e2, ok := e2.(*parser.BytesLiteral)
+	case *ast.BytesLiteral:
+		e2, ok := e2.(*ast.BytesLiteral)
 		if !ok {
 			return false
 		}
 		return bytes.Equal(e1.Value, e2.Value)
-	case *parser.DateLiteral:
-		e2, ok := e2.(*parser.DateLiteral)
+	case *ast.DateLiteral:
+		e2, ok := e2.(*ast.DateLiteral)
 		if !ok {
 			return false
 		}
 		return e1.Value == e2.Value
-	case *parser.TimestampLiteral:
-		e2, ok := e2.(*parser.TimestampLiteral)
+	case *ast.TimestampLiteral:
+		e2, ok := e2.(*ast.TimestampLiteral)
 		if !ok {
 			return false
 		}
@@ -258,8 +258,8 @@ func isSameExprForGroupBy(expr1, expr2 parser.Expr) bool {
 	return false
 }
 
-func simplifyExpr(e parser.Expr) parser.Expr {
-	if e, ok := e.(*parser.ParenExpr); ok {
+func simplifyExpr(e ast.Expr) ast.Expr {
+	if e, ok := e.(*ast.ParenExpr); ok {
 		return simplifyExpr(e.Expr)
 	}
 	return e

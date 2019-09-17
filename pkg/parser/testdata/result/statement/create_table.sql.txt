@@ -6,91 +6,91 @@ create table foo (
 ) primary key (foo, bar)
 
 --- AST
-&parser.CreateTable{
-  pos:  0,
-  end:  146,
-  Name: &parser.Ident{
-    pos:  13,
-    end:  16,
-    Name: "foo",
+&ast.CreateTable{
+  Create: 0,
+  Rparen: 145,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 16,
+    Name:    "foo",
   },
-  Columns: []*parser.ColumnDef{
-    &parser.ColumnDef{
-      end:  30,
-      Name: &parser.Ident{
-        pos:  21,
-        end:  24,
-        Name: "foo",
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "foo",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  25,
-        Name: "INT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 25,
+        Name:    "INT64",
       },
       NotNull: false,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
-    &parser.ColumnDef{
-      end:  54,
-      Name: &parser.Ident{
-        pos:  34,
-        end:  37,
-        Name: "bar",
+    &ast.ColumnDef{
+      Null: 50,
+      Name: &ast.Ident{
+        NamePos: 34,
+        NameEnd: 37,
+        Name:    "bar",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  38,
-        Name: "FLOAT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "FLOAT64",
       },
       NotNull: true,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
-    &parser.ColumnDef{
-      end:  121,
-      Name: &parser.Ident{
-        pos:  58,
-        end:  61,
-        Name: "baz",
+    &ast.ColumnDef{
+      Null: 78,
+      Name: &ast.Ident{
+        NamePos: 58,
+        NameEnd: 61,
+        Name:    "baz",
       },
-      Type: &parser.SizedSchemaType{
-        pos:  62,
-        end:  73,
-        Name: "STRING",
-        Max:  false,
-        Size: &parser.IntLiteral{
-          pos:   69,
-          end:   72,
-          Base:  10,
-          Value: "255",
+      Type: &ast.SizedSchemaType{
+        NamePos: 62,
+        Rparen:  72,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 69,
+          ValueEnd: 72,
+          Base:     10,
+          Value:    "255",
         },
       },
       NotNull: true,
-      Options: &parser.ColumnDefOptions{
-        pos:                  83,
-        end:                  121,
+      Options: &ast.ColumnDefOptions{
+        Options:              83,
+        Rparen:               121,
         AllowCommitTimestamp: false,
       },
     },
   },
-  PrimaryKeys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  140,
-      Name: &parser.Ident{
-        pos:  137,
-        end:  140,
-        Name: "foo",
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 137,
+        NameEnd: 140,
+        Name:    "foo",
       },
       Dir: "",
     },
-    &parser.IndexKey{
-      end:  145,
-      Name: &parser.Ident{
-        pos:  142,
-        end:  145,
-        Name: "bar",
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 142,
+        NameEnd: 145,
+        Name:    "bar",
       },
       Dir: "",
     },
   },
-  Cluster: (*parser.Cluster)(nil),
+  Cluster: (*ast.Cluster)(nil),
 }
 
 --- SQL

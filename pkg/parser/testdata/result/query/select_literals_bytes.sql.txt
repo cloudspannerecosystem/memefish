@@ -12,110 +12,110 @@ SELECT
   B"\077\077\077"
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   9,
-          end:   15,
-          Value: []uint8{
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 9,
+          ValueEnd: 15,
+          Value:    []uint8{
             0x61, 0x62, 0x63,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   19,
-          end:   29,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 19,
+          ValueEnd: 29,
+          Value:    []uint8{
             0x61, 0x62, 0x63,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   33,
-          end:   43,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 33,
+          ValueEnd: 43,
+          Value:    []uint8{
             0x61, 0x62, 0x63,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   47,
-          end:   59,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 47,
+          ValueEnd: 59,
+          Value:    []uint8{
             0x61, 0x62, 0x63, 0x0a,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   63,
-          end:   71,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 63,
+          ValueEnd: 71,
+          Value:    []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   75,
-          end:   83,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 75,
+          ValueEnd: 83,
+          Value:    []uint8{
             0x61, 0x62, 0x63, 0x2b,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   87,
-          end:   98,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 87,
+          ValueEnd: 98,
+          Value:    []uint8{
             0x61, 0x62, 0x63,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   102,
-          end:   115,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 102,
+          ValueEnd: 115,
+          Value:    []uint8{
             0x61, 0x62, 0x63, 0x5c, 0x6e,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   119,
-          end:   126,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 119,
+          ValueEnd: 126,
+          Value:    []uint8{
             0x00,
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.BytesLiteral{
-          pos:   130,
-          end:   145,
-          Value: []uint8{
+      &ast.ExprSelectItem{
+        Expr: &ast.BytesLiteral{
+          ValuePos: 130,
+          ValueEnd: 145,
+          Value:    []uint8{
             0x3f, 0x3f, 0x3f,
           },
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

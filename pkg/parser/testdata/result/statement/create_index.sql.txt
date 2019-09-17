@@ -5,43 +5,43 @@ create index foo_bar on foo (
 )
 
 --- AST
-&parser.CreateIndex{
-  pos:          0,
-  end:          54,
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       53,
   Unique:       false,
   NullFiltered: false,
-  Name:         &parser.Ident{
-    pos:  13,
-    end:  20,
-    Name: "foo_bar",
+  Name:         &ast.Ident{
+    NamePos: 13,
+    NameEnd: 20,
+    Name:    "foo_bar",
   },
-  TableName: &parser.Ident{
-    pos:  24,
-    end:  27,
-    Name: "foo",
+  TableName: &ast.Ident{
+    NamePos: 24,
+    NameEnd: 27,
+    Name:    "foo",
   },
-  Keys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  40,
-      Name: &parser.Ident{
-        pos:  32,
-        end:  35,
-        Name: "bar",
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: 36,
+      Name:   &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "bar",
       },
       Dir: "DESC",
     },
-    &parser.IndexKey{
-      end:  51,
-      Name: &parser.Ident{
-        pos:  44,
-        end:  47,
-        Name: "baz",
+    &ast.IndexKey{
+      DirPos: 48,
+      Name:   &ast.Ident{
+        NamePos: 44,
+        NameEnd: 47,
+        Name:    "baz",
       },
       Dir: "ASC",
     },
   },
-  Storing:      (*parser.Storing)(nil),
-  InterleaveIn: (*parser.InterleaveIn)(nil),
+  Storing:      (*ast.Storing)(nil),
+  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL

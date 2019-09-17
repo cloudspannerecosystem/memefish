@@ -8,75 +8,75 @@ SELECT
 FROM Singers
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Alias{
-        Expr: &parser.Ident{
-          pos:  9,
-          end:  17,
-          Name: "SingerId",
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.Ident{
+          NamePos: 9,
+          NameEnd: 17,
+          Name:    "SingerId",
         },
-        As: &parser.AsAlias{
-          pos:   18,
-          Alias: &parser.Ident{
-            pos:  21,
-            end:  23,
-            Name: "ID",
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 21,
+            NameEnd: 23,
+            Name:    "ID",
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  27,
-          end:  36,
-          Name: "FirstName",
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 27,
+          NameEnd: 36,
+          Name:    "FirstName",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  40,
-          end:  48,
-          Name: "LastName",
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 40,
+          NameEnd: 48,
+          Name:    "LastName",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  52,
-          end:  62,
-          Name: "SingerInfo",
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 52,
+          NameEnd: 62,
+          Name:    "SingerInfo",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  66,
-          end:  75,
-          Name: "BirthDate",
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 66,
+          NameEnd: 75,
+          Name:    "BirthDate",
         },
       },
     },
-    From: &parser.From{
-      pos:    76,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  81,
-          end:  88,
-          Name: "Singers",
+    From: &ast.From{
+      From:   76,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 81,
+          NameEnd: 88,
+          Name:    "Singers",
         },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: (*parser.TableSample)(nil),
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

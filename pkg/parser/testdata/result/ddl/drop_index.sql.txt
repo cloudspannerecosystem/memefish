@@ -2,12 +2,12 @@
 drop index foo_bar
 
 --- AST
-&parser.DropIndex{
-  pos:  0,
-  Name: &parser.Ident{
-    pos:  11,
-    end:  18,
-    Name: "foo_bar",
+&ast.DropIndex{
+  Drop: 0,
+  Name: &ast.Ident{
+    NamePos: 11,
+    NameEnd: 18,
+    Name:    "foo_bar",
   },
 }
 

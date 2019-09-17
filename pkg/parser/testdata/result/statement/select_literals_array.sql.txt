@@ -7,136 +7,141 @@ SELECT
   ARRAY<int64>[]
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.ArrayLiteral{
-          pos:    9,
-          end:    18,
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  0,
+          Lbrack: 9,
+          Rbrack: 17,
           Type:   nil,
-          Values: []parser.Expr{
-            &parser.IntLiteral{
-              pos:   10,
-              end:   11,
-              Base:  10,
-              Value: "1",
+          Values: []ast.Expr{
+            &ast.IntLiteral{
+              ValuePos: 10,
+              ValueEnd: 11,
+              Base:     10,
+              Value:    "1",
             },
-            &parser.IntLiteral{
-              pos:   13,
-              end:   14,
-              Base:  10,
-              Value: "2",
+            &ast.IntLiteral{
+              ValuePos: 13,
+              ValueEnd: 14,
+              Base:     10,
+              Value:    "2",
             },
-            &parser.IntLiteral{
-              pos:   16,
-              end:   17,
-              Base:  10,
-              Value: "3",
+            &ast.IntLiteral{
+              ValuePos: 16,
+              ValueEnd: 17,
+              Base:     10,
+              Value:    "3",
             },
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.ArrayLiteral{
-          pos:    22,
-          end:    38,
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  0,
+          Lbrack: 22,
+          Rbrack: 37,
           Type:   nil,
-          Values: []parser.Expr{
-            &parser.StringLiteral{
-              pos:   23,
-              end:   26,
-              Value: "x",
+          Values: []ast.Expr{
+            &ast.StringLiteral{
+              ValuePos: 23,
+              ValueEnd: 26,
+              Value:    "x",
             },
-            &parser.StringLiteral{
-              pos:   28,
-              end:   31,
-              Value: "y",
+            &ast.StringLiteral{
+              ValuePos: 28,
+              ValueEnd: 31,
+              Value:    "y",
             },
-            &parser.StringLiteral{
-              pos:   33,
-              end:   37,
-              Value: "xy",
+            &ast.StringLiteral{
+              ValuePos: 33,
+              ValueEnd: 37,
+              Value:    "xy",
             },
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.ArrayLiteral{
-          pos:    42,
-          end:    56,
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  42,
+          Lbrack: 47,
+          Rbrack: 55,
           Type:   nil,
-          Values: []parser.Expr{
-            &parser.IntLiteral{
-              pos:   48,
-              end:   49,
-              Base:  10,
-              Value: "1",
+          Values: []ast.Expr{
+            &ast.IntLiteral{
+              ValuePos: 48,
+              ValueEnd: 49,
+              Base:     10,
+              Value:    "1",
             },
-            &parser.IntLiteral{
-              pos:   51,
-              end:   52,
-              Base:  10,
-              Value: "2",
+            &ast.IntLiteral{
+              ValuePos: 51,
+              ValueEnd: 52,
+              Base:     10,
+              Value:    "2",
             },
-            &parser.IntLiteral{
-              pos:   54,
-              end:   55,
-              Base:  10,
-              Value: "3",
-            },
-          },
-        },
-      },
-      &parser.ExprSelectItem{
-        Expr: &parser.ArrayLiteral{
-          pos:  60,
-          end:  89,
-          Type: &parser.SimpleType{
-            pos:  66,
-            Name: "STRING",
-          },
-          Values: []parser.Expr{
-            &parser.StringLiteral{
-              pos:   74,
-              end:   77,
-              Value: "x",
-            },
-            &parser.StringLiteral{
-              pos:   79,
-              end:   82,
-              Value: "y",
-            },
-            &parser.StringLiteral{
-              pos:   84,
-              end:   88,
-              Value: "xy",
+            &ast.IntLiteral{
+              ValuePos: 54,
+              ValueEnd: 55,
+              Base:     10,
+              Value:    "3",
             },
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.ArrayLiteral{
-          pos:  93,
-          end:  107,
-          Type: &parser.SimpleType{
-            pos:  99,
-            Name: "INT64",
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  60,
+          Lbrack: 73,
+          Rbrack: 88,
+          Type:   &ast.SimpleType{
+            NamePos: 66,
+            Name:    "STRING",
           },
-          Values: []parser.Expr{},
+          Values: []ast.Expr{
+            &ast.StringLiteral{
+              ValuePos: 74,
+              ValueEnd: 77,
+              Value:    "x",
+            },
+            &ast.StringLiteral{
+              ValuePos: 79,
+              ValueEnd: 82,
+              Value:    "y",
+            },
+            &ast.StringLiteral{
+              ValuePos: 84,
+              ValueEnd: 88,
+              Value:    "xy",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  93,
+          Lbrack: 105,
+          Rbrack: 106,
+          Type:   &ast.SimpleType{
+            NamePos: 99,
+            Name:    "INT64",
+          },
+          Values: []ast.Expr{},
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

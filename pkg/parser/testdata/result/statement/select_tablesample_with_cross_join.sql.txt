@@ -8,66 +8,66 @@ FROM
   TABLESAMPLE BERNOULLI (90 PERCENT)
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.Join{
+    From: &ast.From{
+      From:   11,
+      Source: &ast.Join{
         Op:     "CROSS JOIN",
         Method: "",
-        Hint:   (*parser.Hint)(nil),
-        Left:   &parser.TableName{
-          Table: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+        Hint:   (*ast.Hint)(nil),
+        Left:   &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 25,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   26,
-            Alias: &parser.Ident{
-              pos:  26,
-              end:  27,
-              Name: "A",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    26,
+            Alias: &ast.Ident{
+              NamePos: 26,
+              NameEnd: 27,
+              Name:    "A",
             },
           },
-          Sample: (*parser.TableSample)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
-        Right: &parser.TableName{
-          Table: &parser.Ident{
-            pos:  43,
-            end:  50,
-            Name: "Singers",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 43,
+            NameEnd: 50,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   51,
-            Alias: &parser.Ident{
-              pos:  51,
-              end:  52,
-              Name: "B",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    51,
+            Alias: &ast.Ident{
+              NamePos: 51,
+              NameEnd: 52,
+              Name:    "B",
             },
           },
-          Sample: &parser.TableSample{
-            pos:    55,
-            Method: "BERNOULLI",
-            Size:   &parser.TableSampleSize{
-              pos:   77,
-              end:   89,
-              Value: &parser.IntLiteral{
-                pos:   78,
-                end:   80,
-                Base:  10,
-                Value: "90",
+          Sample: &ast.TableSample{
+            TableSample: 55,
+            Method:      "BERNOULLI",
+            Size:        &ast.TableSampleSize{
+              Lparen: 77,
+              Rparen: 88,
+              Value:  &ast.IntLiteral{
+                ValuePos: 78,
+                ValueEnd: 80,
+                Base:     10,
+                Value:    "90",
               },
               Unit: "PERCENT",
             },
@@ -76,11 +76,11 @@ FROM
         Cond: nil,
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

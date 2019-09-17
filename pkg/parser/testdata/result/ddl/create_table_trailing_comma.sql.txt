@@ -8,65 +8,65 @@ create table foo (
 )
 
 --- AST
-&parser.CreateTable{
-  pos:  0,
-  end:  84,
-  Name: &parser.Ident{
-    pos:  13,
-    end:  16,
-    Name: "foo",
+&ast.CreateTable{
+  Create: 0,
+  Rparen: 83,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 16,
+    Name:    "foo",
   },
-  Columns: []*parser.ColumnDef{
-    &parser.ColumnDef{
-      end:  30,
-      Name: &parser.Ident{
-        pos:  21,
-        end:  24,
-        Name: "foo",
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "foo",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  25,
-        Name: "INT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 25,
+        Name:    "INT64",
       },
       NotNull: false,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
-    &parser.ColumnDef{
-      end:  43,
-      Name: &parser.Ident{
-        pos:  34,
-        end:  37,
-        Name: "bar",
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 34,
+        NameEnd: 37,
+        Name:    "bar",
       },
-      Type: &parser.ScalarSchemaType{
-        pos:  38,
-        Name: "INT64",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "INT64",
       },
       NotNull: false,
-      Options: (*parser.ColumnDefOptions)(nil),
+      Options: (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  69,
-      Name: &parser.Ident{
-        pos:  62,
-        end:  65,
-        Name: "foo",
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: 66,
+      Name:   &ast.Ident{
+        NamePos: 62,
+        NameEnd: 65,
+        Name:    "foo",
       },
       Dir: "ASC",
     },
-    &parser.IndexKey{
-      end:  81,
-      Name: &parser.Ident{
-        pos:  73,
-        end:  76,
-        Name: "bar",
+    &ast.IndexKey{
+      DirPos: 77,
+      Name:   &ast.Ident{
+        NamePos: 73,
+        NameEnd: 76,
+        Name:    "bar",
       },
       Dir: "DESC",
     },
   },
-  Cluster: (*parser.Cluster)(nil),
+  Cluster: (*ast.Cluster)(nil),
 }
 
 --- SQL

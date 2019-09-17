@@ -2,18 +2,18 @@ package analyzer
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type NameList []*Name
 
 func (list NameList) Lookup(target string) *Name {
 	var founds []*Name
-	for _, child := range list {
-		if strings.EqualFold(child.Text, target) {
-			founds = append(founds, child)
+	for _, name := range list {
+		if char.EqualFold(name.Text, target) {
+			founds = append(founds, name)
 		}
 	}
 
@@ -64,8 +64,8 @@ func (list NameList) toNameScope(next *NameScope) *NameScope {
 	}
 }
 
-// for parser.DotStar
-func makeNameListFromType(t Type, node parser.Node) NameList {
+// for ast.DotStar
+func makeNameListFromType(t Type, node ast.Node) NameList {
 	parent := &Name{
 		Kind: ColumnName,
 		Type: t,

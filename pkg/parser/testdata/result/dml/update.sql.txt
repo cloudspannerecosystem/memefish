@@ -1,58 +1,58 @@
 --- update.sql
 update foo set foo = bar, bar = foo where foo = 1
 --- AST
-&parser.Update{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Update{
+  Update:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  As:          (*parser.AsAlias)(nil),
-  UpdateItems: []*parser.UpdateItem{
-    &parser.UpdateItem{
-      Path: []*parser.Ident{
-        &parser.Ident{
-          pos:  15,
-          end:  18,
-          Name: "foo",
+  As:      (*ast.AsAlias)(nil),
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 15,
+          NameEnd: 18,
+          Name:    "foo",
         },
       },
-      Expr: &parser.Ident{
-        pos:  21,
-        end:  24,
-        Name: "bar",
+      Expr: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "bar",
       },
     },
-    &parser.UpdateItem{
-      Path: []*parser.Ident{
-        &parser.Ident{
-          pos:  26,
-          end:  29,
-          Name: "bar",
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 26,
+          NameEnd: 29,
+          Name:    "bar",
         },
       },
-      Expr: &parser.Ident{
-        pos:  32,
-        end:  35,
-        Name: "foo",
+      Expr: &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "foo",
       },
     },
   },
-  Where: &parser.Where{
-    pos:  36,
-    Expr: &parser.BinaryExpr{
+  Where: &ast.Where{
+    Where: 36,
+    Expr:  &ast.BinaryExpr{
       Op:   "=",
-      Left: &parser.Ident{
-        pos:  42,
-        end:  45,
-        Name: "foo",
+      Left: &ast.Ident{
+        NamePos: 42,
+        NameEnd: 45,
+        Name:    "foo",
       },
-      Right: &parser.IntLiteral{
-        pos:   48,
-        end:   49,
-        Base:  10,
-        Value: "1",
+      Right: &ast.IntLiteral{
+        ValuePos: 48,
+        ValueEnd: 49,
+        Base:     10,
+        Value:    "1",
       },
     },
   },

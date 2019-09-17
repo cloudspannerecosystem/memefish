@@ -1,17 +1,17 @@
 --- alter_table_set_on_delete.sql
 alter table foo set on delete cascade
 --- AST
-&parser.AlterTable{
-  pos:  0,
-  Name: &parser.Ident{
-    pos:  12,
-    end:  15,
-    Name: "foo",
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
   },
-  TableAlternation: &parser.SetOnDelete{
-    pos:      16,
-    end:      37,
-    OnDelete: "ON DELETE CASCADE",
+  TableAlternation: &ast.SetOnDelete{
+    Set:         16,
+    OnDeleteEnd: 37,
+    OnDelete:    "ON DELETE CASCADE",
   },
 }
 

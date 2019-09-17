@@ -3,9 +3,9 @@ package analyzer
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/char"
 )
 
 type TypeInfo struct {
@@ -14,100 +14,100 @@ type TypeInfo struct {
 	Value interface{}
 }
 
-func (a *Analyzer) analyzeExpr(e parser.Expr) *TypeInfo {
+func (a *Analyzer) analyzeExpr(e ast.Expr) *TypeInfo {
 	var t *TypeInfo
 	switch e := e.(type) {
-	case *parser.BinaryExpr:
+	case *ast.BinaryExpr:
 		t = a.analyzeBinaryExpr(e)
-	case *parser.UnaryExpr:
+	case *ast.UnaryExpr:
 		t = a.analyzeUnaryExpr(e)
-	case *parser.InExpr:
+	case *ast.InExpr:
 		t = a.analyzeInExpr(e)
-	case *parser.IsNullExpr:
+	case *ast.IsNullExpr:
 		t = a.analyzeIsNullExpr(e)
-	case *parser.IsBoolExpr:
+	case *ast.IsBoolExpr:
 		t = a.analyzeIsBoolExpr(e)
-	case *parser.BetweenExpr:
+	case *ast.BetweenExpr:
 		t = a.analyzeBetweenExpr(e)
-	case *parser.SelectorExpr:
+	case *ast.SelectorExpr:
 		t = a.analyzeSelectorExpr(e)
-	case *parser.IndexExpr:
+	case *ast.IndexExpr:
 		t = a.analyzeIndexExpr(e)
-	case *parser.CallExpr:
+	case *ast.CallExpr:
 		t = a.analyzeCallExpr(e)
-	case *parser.CountStarExpr:
+	case *ast.CountStarExpr:
 		t = a.analyzeCountStarExpr(e)
-	case *parser.CastExpr:
+	case *ast.CastExpr:
 		t = a.analyzeCastExpr(e)
-	case *parser.ExtractExpr:
+	case *ast.ExtractExpr:
 		t = a.analyzeExtractExpr(e)
-	case *parser.CaseExpr:
+	case *ast.CaseExpr:
 		t = a.analyzeCaseExpr(e)
-	case *parser.ParenExpr:
+	case *ast.ParenExpr:
 		t = a.analyzeParenExpr(e)
-	case *parser.ScalarSubQuery:
+	case *ast.ScalarSubQuery:
 		t = a.analyzeScalarSubQuery(e)
-	case *parser.ArraySubQuery:
+	case *ast.ArraySubQuery:
 		t = a.analyzeArraySubQuery(e)
-	case *parser.ExistsSubQuery:
+	case *ast.ExistsSubQuery:
 		t = a.analyzeExistsSubQuery(e)
-	case *parser.Ident:
+	case *ast.Ident:
 		t = a.analyzeIdent(e)
-	case *parser.Path:
+	case *ast.Path:
 		t = a.analyzePath(e)
-	case *parser.Param:
+	case *ast.Param:
 		t = a.analyzeParam(e)
-	case *parser.ArrayLiteral:
+	case *ast.ArrayLiteral:
 		t = a.analyzeArrayLiteral(e)
-	case *parser.StructLiteral:
+	case *ast.StructLiteral:
 		t = a.analyzeStructLiteral(e)
-	case *parser.NullLiteral:
+	case *ast.NullLiteral:
 		t = a.analyzeNullLiteral(e)
-	case *parser.BoolLiteral:
+	case *ast.BoolLiteral:
 		t = a.analyzeBoolLiteral(e)
-	case *parser.IntLiteral:
+	case *ast.IntLiteral:
 		t = a.analyzeIntLiteral(e)
-	case *parser.FloatLiteral:
+	case *ast.FloatLiteral:
 		t = a.analyzeFloatLiteral(e)
-	case *parser.StringLiteral:
+	case *ast.StringLiteral:
 		t = a.analyzeStringLiteral(e)
-	case *parser.BytesLiteral:
+	case *ast.BytesLiteral:
 		t = a.analyzeBytesLiteral(e)
-	case *parser.DateLiteral:
+	case *ast.DateLiteral:
 		t = a.analyzeDateLiteral(e)
-	case *parser.TimestampLiteral:
+	case *ast.TimestampLiteral:
 		t = a.analyzeTimestampLiteral(e)
 	default:
 		panic(fmt.Sprintf("BUG: unreachable: %t", e))
 	}
 
 	if a.Types == nil {
-		a.Types = make(map[parser.Expr]*TypeInfo)
+		a.Types = make(map[ast.Expr]*TypeInfo)
 	}
 	a.Types[e] = t
 	return t
 }
 
-func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
+func (a *Analyzer) analyzeBinaryExpr(e *ast.BinaryExpr) *TypeInfo {
 	lt := a.analyzeExpr(e.Left)
 	rt := a.analyzeExpr(e.Right)
 
 	switch e.Op {
-	case parser.OpAnd, parser.OpOr:
+	case ast.OpAnd, ast.OpOr:
 		if TypeCoerce(lt.Type, BoolType) && TypeCoerce(rt.Type, BoolType) {
 			return &TypeInfo{
 				Type: BoolType,
 			}
 		}
 		a.panicf(e, "operator %s requires two BOOL, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
-	case parser.OpEqual, parser.OpNotEqual, parser.OpLess, parser.OpGreater, parser.OpLessEqual, parser.OpGreaterEqual:
+	case ast.OpEqual, ast.OpNotEqual, ast.OpLess, ast.OpGreater, ast.OpLessEqual, ast.OpGreaterEqual:
 		if TypeCoerce(lt.Type, rt.Type) || TypeCoerce(rt.Type, lt.Type) {
 			return &TypeInfo{
 				Type: BoolType,
 			}
 		}
 		a.panicf(e, "operator %s requires two compatible types, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
-	case parser.OpLike, parser.OpNotLike:
+	case ast.OpLike, ast.OpNotLike:
 		if TypeCoerce(lt.Type, StringType) && TypeCoerce(rt.Type, StringType) {
 			return &TypeInfo{
 				Type: BoolType,
@@ -119,7 +119,7 @@ func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires two STRING/BYTES, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
-	case parser.OpBitAnd, parser.OpBitXor, parser.OpBitOr:
+	case ast.OpBitAnd, ast.OpBitXor, ast.OpBitOr:
 		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
 			return &TypeInfo{
 				Type: Int64Type,
@@ -131,7 +131,7 @@ func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires two INT64/BYTES, but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
-	case parser.OpBitLeftShift, parser.OpBitRightShift:
+	case ast.OpBitLeftShift, ast.OpBitRightShift:
 		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
 			return &TypeInfo{
 				Type: Int64Type,
@@ -143,7 +143,7 @@ func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires (INT64, INT64) or (BYTES, INT64), but: %s, %s", e.Op, TypeString(lt.Type), TypeString(rt.Type))
-	case parser.OpAdd, parser.OpSub, parser.OpMul, parser.OpDiv:
+	case ast.OpAdd, ast.OpSub, ast.OpMul, ast.OpDiv:
 		if TypeCoerce(lt.Type, Int64Type) && TypeCoerce(rt.Type, Int64Type) {
 			return &TypeInfo{
 				Type: Int64Type,
@@ -160,11 +160,11 @@ func (a *Analyzer) analyzeBinaryExpr(e *parser.BinaryExpr) *TypeInfo {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
+func (a *Analyzer) analyzeUnaryExpr(e *ast.UnaryExpr) *TypeInfo {
 	t := a.analyzeExpr(e.Expr)
 
 	switch e.Op {
-	case parser.OpBitNot:
+	case ast.OpBitNot:
 		if TypeCoerce(t.Type, Int64Type) {
 			return &TypeInfo{
 				Type: Int64Type,
@@ -176,7 +176,7 @@ func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires INT64/BYTES, but: %s", e.Op, TypeString(t.Type))
-	case parser.OpPlus, parser.OpMinus:
+	case ast.OpPlus, ast.OpMinus:
 		if TypeCoerce(t.Type, Int64Type) {
 			return &TypeInfo{
 				Type: Int64Type,
@@ -188,7 +188,7 @@ func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
 			}
 		}
 		a.panicf(e, "operator %s requires INT64/FLOAT64, but: %s", e.Op, TypeString(t.Type))
-	case parser.OpNot:
+	case ast.OpNot:
 		if TypeCoerce(t.Type, BoolType) {
 			return &TypeInfo{
 				Type: BoolType,
@@ -200,7 +200,7 @@ func (a *Analyzer) analyzeUnaryExpr(e *parser.UnaryExpr) *TypeInfo {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeInExpr(e *parser.InExpr) *TypeInfo {
+func (a *Analyzer) analyzeInExpr(e *ast.InExpr) *TypeInfo {
 	lt := a.analyzeExpr(e.Left)
 	rt := a.analyzeInCondition(e.Right)
 
@@ -213,20 +213,20 @@ func (a *Analyzer) analyzeInExpr(e *parser.InExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeInCondition(cond parser.InCondition) *TypeInfo {
+func (a *Analyzer) analyzeInCondition(cond ast.InCondition) *TypeInfo {
 	switch c := cond.(type) {
-	case *parser.UnnestInCondition:
+	case *ast.UnnestInCondition:
 		return a.analyzeUnnestInCondition(c)
-	case *parser.SubQueryInCondition:
+	case *ast.SubQueryInCondition:
 		return a.analyzeSubQueryInCondition(c)
-	case *parser.ValuesInCondition:
+	case *ast.ValuesInCondition:
 		return a.analyzeValuesInCondition(c)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeUnnestInCondition(cond *parser.UnnestInCondition) *TypeInfo {
+func (a *Analyzer) analyzeUnnestInCondition(cond *ast.UnnestInCondition) *TypeInfo {
 	t := a.analyzeExpr(cond.Expr)
 	tt, ok := TypeCastArray(t.Type)
 	if !ok {
@@ -238,7 +238,7 @@ func (a *Analyzer) analyzeUnnestInCondition(cond *parser.UnnestInCondition) *Typ
 	}
 }
 
-func (a *Analyzer) analyzeSubQueryInCondition(cond *parser.SubQueryInCondition) *TypeInfo {
+func (a *Analyzer) analyzeSubQueryInCondition(cond *ast.SubQueryInCondition) *TypeInfo {
 	list := a.analyzeQueryExpr(cond.Query)
 	if len(list) != 1 {
 		a.panicf(cond, "IN condition subquery must have just one column")
@@ -248,7 +248,7 @@ func (a *Analyzer) analyzeSubQueryInCondition(cond *parser.SubQueryInCondition) 
 	}
 }
 
-func (a *Analyzer) analyzeValuesInCondition(cond *parser.ValuesInCondition) *TypeInfo {
+func (a *Analyzer) analyzeValuesInCondition(cond *ast.ValuesInCondition) *TypeInfo {
 	var t Type
 
 	for _, e := range cond.Exprs {
@@ -265,14 +265,14 @@ func (a *Analyzer) analyzeValuesInCondition(cond *parser.ValuesInCondition) *Typ
 	}
 }
 
-func (a *Analyzer) analyzeIsNullExpr(e *parser.IsNullExpr) *TypeInfo {
+func (a *Analyzer) analyzeIsNullExpr(e *ast.IsNullExpr) *TypeInfo {
 	a.analyzeExpr(e.Left)
 	return &TypeInfo{
 		Type: BoolType,
 	}
 }
 
-func (a *Analyzer) analyzeIsBoolExpr(e *parser.IsBoolExpr) *TypeInfo {
+func (a *Analyzer) analyzeIsBoolExpr(e *ast.IsBoolExpr) *TypeInfo {
 	t := a.analyzeExpr(e.Left)
 	if !TypeCoerce(t.Type, BoolType) {
 		a.panicf(e, "operator IS TRUE/FALSE needs BOOL, but: %s", TypeString(t.Type))
@@ -282,7 +282,7 @@ func (a *Analyzer) analyzeIsBoolExpr(e *parser.IsBoolExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeBetweenExpr(e *parser.BetweenExpr) *TypeInfo {
+func (a *Analyzer) analyzeBetweenExpr(e *ast.BetweenExpr) *TypeInfo {
 	lt := a.analyzeExpr(e.Left)
 	rst := a.analyzeExpr(e.RightStart)
 	ret := a.analyzeExpr(e.RightEnd)
@@ -299,7 +299,7 @@ func (a *Analyzer) analyzeBetweenExpr(e *parser.BetweenExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeCastExpr(e *parser.CastExpr) *TypeInfo {
+func (a *Analyzer) analyzeCastExpr(e *ast.CastExpr) *TypeInfo {
 	t1 := a.analyzeExpr(e.Expr)
 	t2 := a.analyzeType(e.Type)
 	if !TypeCast(t1.Type, t2) {
@@ -311,11 +311,11 @@ func (a *Analyzer) analyzeCastExpr(e *parser.CastExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeExtractExpr(e *parser.ExtractExpr) *TypeInfo {
+func (a *Analyzer) analyzeExtractExpr(e *ast.ExtractExpr) *TypeInfo {
 	t := a.analyzeExpr(e.Expr)
 	var resultType Type
 	allowDate := false
-	switch strings.ToUpper(e.Part.Name) {
+	switch char.ToUpper(e.Part.Name) {
 	case "DAYOFWEEK", "DAY", "DAYOFYEAR", "WEEK", "ISOWEEK", "MONTH", "QUARTER", "YEAR":
 		allowDate = true
 		resultType = Int64Type
@@ -332,7 +332,7 @@ func (a *Analyzer) analyzeExtractExpr(e *parser.ExtractExpr) *TypeInfo {
 		if allowDate {
 			allow += "/DATE"
 		}
-		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", strings.ToUpper(e.Part.Name), allow, TypeString(t.Type))
+		a.panicf(e.Part, "EXTRACT(%s FROM ...) requires %s, but: %s", char.ToUpper(e.Part.Name), allow, TypeString(t.Type))
 	}
 
 	// TODO: check e.AtTimeZone
@@ -342,7 +342,7 @@ func (a *Analyzer) analyzeExtractExpr(e *parser.ExtractExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeCaseExpr(e *parser.CaseExpr) *TypeInfo {
+func (a *Analyzer) analyzeCaseExpr(e *ast.CaseExpr) *TypeInfo {
 	var exprType Type
 	if e.Expr == nil {
 		exprType = BoolType
@@ -379,7 +379,7 @@ func (a *Analyzer) analyzeCaseExpr(e *parser.CaseExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
+func (a *Analyzer) analyzeSelectorExpr(e *ast.SelectorExpr) *TypeInfo {
 	t := a.analyzeExpr(e.Expr)
 	var names NameList
 	if t.Name != nil {
@@ -387,9 +387,9 @@ func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
 	} else {
 		names = makeNameListFromType(t.Type, e.Expr)
 	}
-	child := names.Lookup(e.Member.Name)
+	child := names.Lookup(e.Ident.Name)
 	if child == nil {
-		a.panicf(e.Member, "unknown field: %s", e.Member.SQL())
+		a.panicf(e.Ident, "unknown field: %s", e.Ident.SQL())
 	}
 	return &TypeInfo{
 		Type: child.Type,
@@ -397,7 +397,7 @@ func (a *Analyzer) analyzeSelectorExpr(e *parser.SelectorExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeIndexExpr(e *parser.IndexExpr) *TypeInfo {
+func (a *Analyzer) analyzeIndexExpr(e *ast.IndexExpr) *TypeInfo {
 	et := a.analyzeExpr(e.Expr)
 	it := a.analyzeExpr(e.Index)
 
@@ -415,11 +415,11 @@ func (a *Analyzer) analyzeIndexExpr(e *parser.IndexExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeParenExpr(e *parser.ParenExpr) *TypeInfo {
+func (a *Analyzer) analyzeParenExpr(e *ast.ParenExpr) *TypeInfo {
 	return a.analyzeExpr(e.Expr)
 }
 
-func (a *Analyzer) analyzeScalarSubQuery(e *parser.ScalarSubQuery) *TypeInfo {
+func (a *Analyzer) analyzeScalarSubQuery(e *ast.ScalarSubQuery) *TypeInfo {
 	list := a.analyzeQueryExpr(e.Query)
 	if len(list) != 1 {
 		a.panicf(e, "scalar subquery must have just one column")
@@ -429,7 +429,7 @@ func (a *Analyzer) analyzeScalarSubQuery(e *parser.ScalarSubQuery) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeArraySubQuery(e *parser.ArraySubQuery) *TypeInfo {
+func (a *Analyzer) analyzeArraySubQuery(e *ast.ArraySubQuery) *TypeInfo {
 	list := a.analyzeQueryExpr(e.Query)
 	if len(list) != 1 {
 		a.panicf(e, "ARRAY subquery must have just one column")
@@ -439,14 +439,14 @@ func (a *Analyzer) analyzeArraySubQuery(e *parser.ArraySubQuery) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeExistsSubQuery(e *parser.ExistsSubQuery) *TypeInfo {
+func (a *Analyzer) analyzeExistsSubQuery(e *ast.ExistsSubQuery) *TypeInfo {
 	a.analyzeQueryExpr(e.Query)
 	return &TypeInfo{
 		Type: BoolType,
 	}
 }
 
-func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
+func (a *Analyzer) analyzeIdent(e *ast.Ident) *TypeInfo {
 	name, context := a.lookup(e.Name)
 	if name == nil {
 		a.panicf(e, "unknown name: %s", e.SQL())
@@ -464,7 +464,7 @@ func (a *Analyzer) analyzeIdent(e *parser.Ident) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
+func (a *Analyzer) analyzePath(e *ast.Path) *TypeInfo {
 	id0 := e.Idents[0]
 	name, context := a.lookup(id0.Name)
 	if name == nil {
@@ -495,7 +495,7 @@ func (a *Analyzer) analyzePath(e *parser.Path) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeParam(e *parser.Param) *TypeInfo {
+func (a *Analyzer) analyzeParam(e *ast.Param) *TypeInfo {
 	v, ok := a.lookupParam(e.Name)
 	if !ok {
 		a.panicf(e, "unknown query parameter: %s", e.SQL())
@@ -510,7 +510,7 @@ func (a *Analyzer) analyzeParam(e *parser.Param) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
+func (a *Analyzer) analyzeArrayLiteral(e *ast.ArrayLiteral) *TypeInfo {
 	if e.Type == nil {
 		return a.analyzeArrayLiteralWithoutType(e)
 	}
@@ -528,7 +528,7 @@ func (a *Analyzer) analyzeArrayLiteral(e *parser.ArrayLiteral) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeInfo {
+func (a *Analyzer) analyzeArrayLiteralWithoutType(e *ast.ArrayLiteral) *TypeInfo {
 	var t Type
 
 	for _, v := range e.Values {
@@ -545,7 +545,7 @@ func (a *Analyzer) analyzeArrayLiteralWithoutType(e *parser.ArrayLiteral) *TypeI
 	}
 }
 
-func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {
+func (a *Analyzer) analyzeStructLiteral(e *ast.StructLiteral) *TypeInfo {
 	if e.Fields == nil {
 		return a.analyzeStructLiteralWithoutType(e)
 	}
@@ -557,8 +557,8 @@ func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {
 	fields := make([]*StructField, len(e.Fields))
 	for i, f := range e.Fields {
 		var name string
-		if f.Member != nil {
-			name = f.Member.Name
+		if f.Ident != nil {
+			name = f.Ident.Name
 		}
 		fields[i] = &StructField{
 			Name: name,
@@ -579,7 +579,7 @@ func (a *Analyzer) analyzeStructLiteral(e *parser.StructLiteral) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeStructLiteralWithoutType(e *parser.StructLiteral) *TypeInfo {
+func (a *Analyzer) analyzeStructLiteralWithoutType(e *ast.StructLiteral) *TypeInfo {
 	fields := make([]*StructField, len(e.Values))
 	for i, v := range e.Values {
 		t := a.analyzeExpr(v)
@@ -592,18 +592,18 @@ func (a *Analyzer) analyzeStructLiteralWithoutType(e *parser.StructLiteral) *Typ
 	}
 }
 
-func (a *Analyzer) analyzeNullLiteral(e *parser.NullLiteral) *TypeInfo {
+func (a *Analyzer) analyzeNullLiteral(e *ast.NullLiteral) *TypeInfo {
 	return &TypeInfo{}
 }
 
-func (a *Analyzer) analyzeBoolLiteral(e *parser.BoolLiteral) *TypeInfo {
+func (a *Analyzer) analyzeBoolLiteral(e *ast.BoolLiteral) *TypeInfo {
 	return &TypeInfo{
 		Type:  BoolType,
 		Value: e.Value,
 	}
 }
 
-func (a *Analyzer) analyzeIntLiteral(e *parser.IntLiteral) *TypeInfo {
+func (a *Analyzer) analyzeIntLiteral(e *ast.IntLiteral) *TypeInfo {
 	v, err := strconv.ParseInt(e.Value, e.Base, 64)
 	if err != nil {
 		a.panicf(e, "error on parsing integer literal: %v", err)
@@ -614,7 +614,7 @@ func (a *Analyzer) analyzeIntLiteral(e *parser.IntLiteral) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeFloatLiteral(e *parser.FloatLiteral) *TypeInfo {
+func (a *Analyzer) analyzeFloatLiteral(e *ast.FloatLiteral) *TypeInfo {
 	v, err := strconv.ParseFloat(e.Value, 64)
 	if err != nil {
 		a.panicf(e, "error on pasing floating point number literal: %v", err)
@@ -625,28 +625,28 @@ func (a *Analyzer) analyzeFloatLiteral(e *parser.FloatLiteral) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeStringLiteral(e *parser.StringLiteral) *TypeInfo {
+func (a *Analyzer) analyzeStringLiteral(e *ast.StringLiteral) *TypeInfo {
 	return &TypeInfo{
 		Type:  StringType,
 		Value: e.Value,
 	}
 }
 
-func (a *Analyzer) analyzeBytesLiteral(e *parser.BytesLiteral) *TypeInfo {
+func (a *Analyzer) analyzeBytesLiteral(e *ast.BytesLiteral) *TypeInfo {
 	return &TypeInfo{
 		Type:  BytesType,
 		Value: e.Value,
 	}
 }
 
-func (a *Analyzer) analyzeDateLiteral(e *parser.DateLiteral) *TypeInfo {
+func (a *Analyzer) analyzeDateLiteral(e *ast.DateLiteral) *TypeInfo {
 	// TODO: check e.Value format
 	return &TypeInfo{
 		Type: DateType,
 	}
 }
 
-func (a *Analyzer) analyzeTimestampLiteral(e *parser.TimestampLiteral) *TypeInfo {
+func (a *Analyzer) analyzeTimestampLiteral(e *ast.TimestampLiteral) *TypeInfo {
 	// TODO: check e.Value format
 	return &TypeInfo{
 		Type: TimestampType,

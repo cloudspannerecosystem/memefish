@@ -4,71 +4,71 @@ UNION ALL
 SELECT * FROM Singers
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.CompoundQuery{
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
-    Queries:  []parser.QueryExpr{
-      &parser.Select{
-        pos:      0,
+    Queries:  []ast.QueryExpr{
+      &ast.Select{
+        Select:   0,
         Distinct: false,
         AsStruct: false,
-        Results:  []parser.SelectItem{
-          &parser.Star{
-            pos: 7,
+        Results:  []ast.SelectItem{
+          &ast.Star{
+            Star: 7,
           },
         },
-        From: &parser.From{
-          pos:    9,
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  14,
-              end:  21,
-              Name: "Singers",
+        From: &ast.From{
+          From:   9,
+          Source: &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 14,
+              NameEnd: 21,
+              Name:    "Singers",
             },
-            Hint:   (*parser.Hint)(nil),
-            As:     (*parser.AsAlias)(nil),
-            Sample: (*parser.TableSample)(nil),
+            Hint:   (*ast.Hint)(nil),
+            As:     (*ast.AsAlias)(nil),
+            Sample: (*ast.TableSample)(nil),
           },
         },
-        Where:   (*parser.Where)(nil),
-        GroupBy: (*parser.GroupBy)(nil),
-        Having:  (*parser.Having)(nil),
-        OrderBy: (*parser.OrderBy)(nil),
-        Limit:   (*parser.Limit)(nil),
+        Where:   (*ast.Where)(nil),
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
       },
-      &parser.Select{
-        pos:      32,
+      &ast.Select{
+        Select:   32,
         Distinct: false,
         AsStruct: false,
-        Results:  []parser.SelectItem{
-          &parser.Star{
-            pos: 39,
+        Results:  []ast.SelectItem{
+          &ast.Star{
+            Star: 39,
           },
         },
-        From: &parser.From{
-          pos:    41,
-          Source: &parser.TableName{
-            Table: &parser.Ident{
-              pos:  46,
-              end:  53,
-              Name: "Singers",
+        From: &ast.From{
+          From:   41,
+          Source: &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 46,
+              NameEnd: 53,
+              Name:    "Singers",
             },
-            Hint:   (*parser.Hint)(nil),
-            As:     (*parser.AsAlias)(nil),
-            Sample: (*parser.TableSample)(nil),
+            Hint:   (*ast.Hint)(nil),
+            As:     (*ast.AsAlias)(nil),
+            Sample: (*ast.TableSample)(nil),
           },
         },
-        Where:   (*parser.Where)(nil),
-        GroupBy: (*parser.GroupBy)(nil),
-        Having:  (*parser.Having)(nil),
-        OrderBy: (*parser.OrderBy)(nil),
-        Limit:   (*parser.Limit)(nil),
+        Where:   (*ast.Where)(nil),
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
       },
     },
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 
