@@ -138,23 +138,6 @@ var lexerWrongTestCase = []struct {
 	{"1from", 1, "number literal cannot follow identifier without any spaces"},
 }
 
-func nextToken(l *Lexer) (tok *Token, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			tok = nil
-			if e, ok := r.(error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
-	l.NextToken()
-	tok = &l.Token
-	return
-}
-
 func tokenEqual(t1, t2 *Token) bool {
 	if t1.Kind != t2.Kind || t1.Raw != t2.Raw {
 		return false
@@ -174,23 +157,23 @@ func testLexer(t *testing.T, source string, tokens []*Token) {
 		File: &File{FilePath: "[test]", Buffer: source},
 	}
 	for _, t2 := range tokens {
-		t1, err := nextToken(l)
+		err := l.NextToken()
 		if err != nil {
 			t.Errorf("error on lexer: %v", err)
 			return
 		}
-		if !tokenEqual(t1, t2) {
-			t.Errorf("%#v != %#v", t1, t2)
+		if !tokenEqual(&l.Token, t2) {
+			t.Errorf("%#v != %#v", &l.Token, t2)
 			return
 		}
 	}
-	t1, err := nextToken(l)
+	err := l.NextToken()
 	if err != nil {
 		t.Errorf("error on lexer: %v", err)
 		return
 	}
-	if t1.Kind != TokenEOF {
-		t.Errorf("expected EOF, but: %#v", t1)
+	if l.Token.Kind != TokenEOF {
+		t.Errorf("expected EOF, but: %#v", &l.Token)
 		return
 	}
 }
@@ -227,7 +210,7 @@ func TestLexerWrong(t *testing.T) {
 			}
 			var err error
 			for l.Token.Kind != TokenEOF {
-				_, err = nextToken(l)
+				err = l.NextToken()
 				if err != nil {
 					break
 				}

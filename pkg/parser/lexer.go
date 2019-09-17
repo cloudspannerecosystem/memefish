@@ -46,7 +46,24 @@ func isNextDotIdent(t token.TokenKind) bool {
 	return false
 }
 
-func (l *Lexer) NextToken() {
+// NextToken reads a next token from source, then updates its Token field.
+func (l *Lexer) NextToken() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			e, ok := r.(*Error)
+			if ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	l.nextToken()
+	return
+}
+
+func (l *Lexer) nextToken() {
 	l.lastTokenKind = l.Token.Kind
 	l.Token = token.Token{}
 
@@ -59,34 +76,31 @@ func (l *Lexer) NextToken() {
 	l.Token.Pos = token.Pos(l.pos)
 	i = l.pos
 	if l.dotIdent {
-		l.nextFieldToken()
+		l.consumeFieldToken()
 		l.dotIdent = false
 	} else {
-		l.nextToken()
+		l.consumeToken()
 	}
 	l.Token.Raw = l.Buffer[i:l.pos]
 	l.Token.End = token.Pos(l.pos)
 }
 
-func (l *Lexer) nextToken() {
+func (l *Lexer) consumeToken() {
 	if l.eof() {
 		l.Token.Kind = token.TokenEOF
 		return
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '|', '=':
-		l.Token.Kind = token.TokenKind([]byte{l.next()})
-		return
-	case '+', '-':
-		l.Token.Kind = token.TokenKind([]byte{l.next()})
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '|', '=', '+', '-':
+		l.Token.Kind = token.TokenKind([]byte{l.skip()})
 		return
 	case '.':
 		nextDotIdent := isNextDotIdent(l.lastTokenKind)
 		if !nextDotIdent && l.peekOk(1) && char.IsDigit(l.peek(1)) {
-			l.nextNumber()
+			l.consumeNumber()
 		} else {
-			l.next()
+			l.skip()
 			l.Token.Kind = "."
 			l.dotIdent = nextDotIdent
 		}
@@ -94,35 +108,35 @@ func (l *Lexer) nextToken() {
 	case '<':
 		switch {
 		case l.peekIs(1, '<'):
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = "<<"
 		case l.peekIs(1, '='):
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = "<="
 		case l.peekIs(1, '>'):
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = "<>"
 		default:
-			l.next()
+			l.skip()
 			l.Token.Kind = "<"
 		}
 		return
 	case '>':
 		switch {
 		case l.peekIs(1, '>'):
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = ">>"
 		case l.peekIs(1, '='):
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = ">="
 		default:
-			l.next()
+			l.skip()
 			l.Token.Kind = ">"
 		}
 		return
 	case '!':
 		if l.peekIs(1, '=') {
-			l.nextN(2)
+			l.skipN(2)
 			l.Token.Kind = "!="
 			return
 		}
@@ -134,18 +148,18 @@ func (l *Lexer) nextToken() {
 			}
 			l.Token.Kind = token.TokenParam
 			l.Token.AsString = l.Buffer[l.pos+1 : l.pos+i]
-			l.nextN(i)
+			l.skipN(i)
 			return
 		}
-		l.next()
+		l.skip()
 		l.Token.Kind = "@"
 		return
 	case '`':
 		l.Token.Kind = token.TokenIdent
-		l.Token.AsString = l.nextQuotedContent("`", false, true, "identifier")
+		l.Token.AsString = l.consumeQuotedContent("`", false, true, "identifier")
 		return
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		l.nextNumber()
+		l.consumeNumber()
 		return
 	case 'B', 'b', 'R', 'r', '"', '\'':
 		bytes, raw := false, false
@@ -157,16 +171,16 @@ func (l *Lexer) nextToken() {
 			case !raw && (l.peekIs(i, 'R') || l.peekIs(i, 'r')):
 				raw = true
 			case l.peekIs(i, '"') || l.peekIs(i, '\''):
-				l.nextN(i)
+				l.skipN(i)
 				switch {
 				case bytes && raw:
-					l.nextRawBytes()
+					l.consumeRawBytes()
 				case bytes:
-					l.nextBytes()
+					l.consumeBytes()
 				case raw:
-					l.nextRawString()
+					l.consumeRawString()
 				default:
-					l.nextString()
+					l.consumeString()
 				}
 				return
 			default:
@@ -181,7 +195,7 @@ func (l *Lexer) nextToken() {
 			i++
 		}
 		s := l.slice(0, i)
-		l.nextN(i)
+		l.skipN(i)
 		k := token.TokenKind(char.ToUpper(s))
 		if _, ok := token.KeywordsMap[k]; ok {
 			l.Token.Kind = k
@@ -195,7 +209,7 @@ func (l *Lexer) nextToken() {
 	panic(l.errorf("illegal input character: %q", l.peek(0)))
 }
 
-func (l *Lexer) nextFieldToken() {
+func (l *Lexer) consumeFieldToken() {
 	if l.peekOk(0) && char.IsIdentPart(l.peek(0)) {
 		i := 0
 		for l.peekOk(i) && char.IsIdentPart(l.peek(i)) {
@@ -203,14 +217,14 @@ func (l *Lexer) nextFieldToken() {
 		}
 		l.Token.Kind = token.TokenIdent
 		l.Token.AsString = l.Buffer[l.pos : l.pos+i]
-		l.nextN(i)
+		l.skipN(i)
 		return
 	}
 
-	l.nextToken()
+	l.consumeToken()
 }
 
-func (l *Lexer) nextNumber() {
+func (l *Lexer) consumeNumber() {
 	// https://cloud.google.com/spanner/docs/lexical#integer-literals
 	// https://cloud.google.com/spanner/docs/lexical#floating-point-literals
 
@@ -254,7 +268,7 @@ func (l *Lexer) nextNumber() {
 		break
 	}
 
-	l.nextN(i)
+	l.skipN(i)
 	if int {
 		l.Token.Kind = token.TokenInt
 		l.Token.Base = base
@@ -267,24 +281,24 @@ func (l *Lexer) nextNumber() {
 	}
 }
 
-func (l *Lexer) nextRawBytes() {
+func (l *Lexer) consumeRawBytes() {
 	l.Token.Kind = token.TokenBytes
-	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), true, false, "raw bytes literal")
+	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), true, false, "raw bytes literal")
 }
 
-func (l *Lexer) nextBytes() {
+func (l *Lexer) consumeBytes() {
 	l.Token.Kind = token.TokenBytes
-	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), false, false, "bytes literal")
+	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), false, false, "bytes literal")
 }
 
-func (l *Lexer) nextRawString() {
+func (l *Lexer) consumeRawString() {
 	l.Token.Kind = token.TokenString
-	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), true, true, "raw string literal")
+	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), true, true, "raw string literal")
 }
 
-func (l *Lexer) nextString() {
+func (l *Lexer) consumeString() {
 	l.Token.Kind = token.TokenString
-	l.Token.AsString = l.nextQuotedContent(l.peekDelimiter(), false, true, "string literal")
+	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), false, true, "string literal")
 }
 
 func (l *Lexer) peekDelimiter() string {
@@ -314,7 +328,7 @@ func (l *Lexer) peekDelimiter() string {
 	}
 }
 
-func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) string {
+func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) string {
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
 	if len(q) == 3 {
@@ -329,7 +343,7 @@ func (l *Lexer) nextQuotedContent(q string, raw, unicode bool, name string) stri
 			if len(content) == 0 && name == "identifier" {
 				l.panicf("invalid empty identifier")
 			}
-			l.nextN(i + len(q))
+			l.skipN(i + len(q))
 			return string(content)
 		}
 
@@ -432,7 +446,7 @@ func (l *Lexer) skipSpaces() {
 		r, size := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 		switch {
 		case unicode.IsSpace(r):
-			l.nextN(size)
+			l.skipN(size)
 		case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
 			l.skipComment("\n")
 		case r == '/' && l.peekIs(1, '*'):
@@ -446,10 +460,10 @@ func (l *Lexer) skipSpaces() {
 func (l *Lexer) skipComment(end string) {
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
-			l.nextN(len(end))
+			l.skipN(len(end))
 			return
 		}
-		l.next()
+		l.skip()
 	}
 }
 
@@ -465,13 +479,13 @@ func (l *Lexer) peekIs(i int, c byte) bool {
 	return l.pos+i < len(l.Buffer) && l.Buffer[l.pos+i] == c
 }
 
-func (l *Lexer) next() byte {
+func (l *Lexer) skip() byte {
 	c := l.Buffer[l.pos]
 	l.pos++
 	return c
 }
 
-func (l *Lexer) nextN(n int) {
+func (l *Lexer) skipN(n int) {
 	l.pos += n
 }
 
