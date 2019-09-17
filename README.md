@@ -48,13 +48,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/k0kubun/pp"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/k0kubun/pp"
 )
 
 func main() {
 	// Create a new Parser instance.
-	file := &parser.File{
+	file := &token.File{
 		Buffer: "SELECT * FROM customers",
 	}
 	p := &parser.Parser{
@@ -88,11 +89,12 @@ import (
 
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 func main() {
 	// Create a new Parser instance.
-	file := &parser.File{
+	file := &token.File{
 		Buffer: "SELECT * FROM singers",
 	}
 	p := &parser.Parser{
