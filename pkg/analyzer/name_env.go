@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type NameEnv map[string]*Name
@@ -30,7 +30,7 @@ func (env NameEnv) Insert(name *Name) error {
 	if oldName, ok := env[text]; ok {
 		switch {
 		case name.Kind == TableName && oldName.Kind == TableName:
-			return fmt.Errorf("duplicate table name: %s", parser.QuoteSQLIdent(name.Text))
+			return fmt.Errorf("duplicate table name: %s", token.QuoteSQLIdent(name.Text))
 		case name.Kind == TableName:
 			env[text] = name
 		case oldName.Kind == TableName:

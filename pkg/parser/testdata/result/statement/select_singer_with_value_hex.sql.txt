@@ -7,51 +7,51 @@ WHERE
   SingerID = 0xF
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: (*parser.TableSample)(nil),
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where: &parser.Where{
-      pos:  26,
-      Expr: &parser.BinaryExpr{
+    Where: &ast.Where{
+      Where: 26,
+      Expr:  &ast.BinaryExpr{
         Op:   "=",
-        Left: &parser.Ident{
-          pos:  34,
-          end:  42,
-          Name: "SingerID",
+        Left: &ast.Ident{
+          NamePos: 34,
+          NameEnd: 42,
+          Name:    "SingerID",
         },
-        Right: &parser.IntLiteral{
-          pos:   45,
-          end:   48,
-          Base:  16,
-          Value: "0xF",
+        Right: &ast.IntLiteral{
+          ValuePos: 45,
+          ValueEnd: 48,
+          Base:     16,
+          Value:    "0xF",
         },
       },
     },
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

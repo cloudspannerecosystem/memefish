@@ -24,167 +24,167 @@ lines''',
   r'f\(abc,(.*),def\)'
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   9,
-          end:   15,
-          Value: "abc!",
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 9,
+          ValueEnd: 15,
+          Value:    "abc!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   19,
-          end:   26,
-          Value: "a\nb!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 19,
+          ValueEnd: 26,
+          Value:    "a\nb!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   30,
-          end:   37,
-          Value: "=!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 30,
+          ValueEnd: 37,
+          Value:    "=!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   41,
-          end:   48,
-          Value: "=!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 41,
+          ValueEnd: 48,
+          Value:    "=!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   52,
-          end:   59,
-          Value: "=!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 52,
+          ValueEnd: 59,
+          Value:    "=!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   63,
-          end:   70,
-          Value: "=!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 63,
+          ValueEnd: 70,
+          Value:    "=!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   74,
-          end:   81,
-          Value: "=!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 74,
+          ValueEnd: 81,
+          Value:    "=!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   85,
-          end:   94,
-          Value: "‼!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 85,
+          ValueEnd: 94,
+          Value:    "‼!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   98,
-          end:   111,
-          Value: "🐈!",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 98,
+          ValueEnd: 111,
+          Value:    "🐈!",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   115,
-          end:   121,
-          Value: "it's",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 115,
+          ValueEnd: 121,
+          Value:    "it's",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   125,
-          end:   132,
-          Value: "it's",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 125,
+          ValueEnd: 132,
+          Value:    "it's",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   136,
-          end:   150,
-          Value: "Title: \"Boy\"",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 136,
+          ValueEnd: 150,
+          Value:    "Title: \"Boy\"",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   154,
-          end:   163,
-          Value: "abc",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 154,
+          ValueEnd: 163,
+          Value:    "abc",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   167,
-          end:   177,
-          Value: "it's",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 167,
+          ValueEnd: 177,
+          Value:    "it's",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   181,
-          end:   198,
-          Value: "Title:\"Boy\"",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 181,
+          ValueEnd: 198,
+          Value:    "Title:\"Boy\"",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   202,
-          end:   217,
-          Value: "two\nlines",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 202,
+          ValueEnd: 217,
+          Value:    "two\nlines",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   221,
-          end:   232,
-          Value: "why?",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 221,
+          ValueEnd: 232,
+          Value:    "why?",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   236,
-          end:   243,
-          Value: "abc+",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 236,
+          ValueEnd: 243,
+          Value:    "abc+",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   247,
-          end:   258,
-          Value: "abc+",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 247,
+          ValueEnd: 258,
+          Value:    "abc+",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   262,
-          end:   273,
-          Value: "abc+",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 262,
+          ValueEnd: 273,
+          Value:    "abc+",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.StringLiteral{
-          pos:   277,
-          end:   297,
-          Value: "f\\(abc,(.*),def\\)",
+      &ast.ExprSelectItem{
+        Expr: &ast.StringLiteral{
+          ValuePos: 277,
+          ValueEnd: 297,
+          Value:    "f\\(abc,(.*),def\\)",
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

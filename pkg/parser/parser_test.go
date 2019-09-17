@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/MakeNowJust/memefish/pkg/ast"
 	"github.com/MakeNowJust/memefish/pkg/parser"
 	"github.com/MakeNowJust/memefish/pkg/token"
 	"github.com/k0kubun/pp"
@@ -19,7 +20,7 @@ import (
 
 var update = flag.Bool("update", false, "update result files")
 
-func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser.Parser) (parser.Node, error)) {
+func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser.Parser) (ast.Node, error)) {
 	// Disable color output.
 	// https://github.com/k0kubun/pp/issues/26
 	printer := pp.New()
@@ -145,7 +146,7 @@ func TestParseQuery(t *testing.T) {
 	inputPath := "./testdata/input/query"
 	resultPath := "./testdata/result/query"
 
-	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (ast.Node, error) {
 		return p.ParseQuery()
 	})
 }
@@ -154,7 +155,7 @@ func TestParseDDL(t *testing.T) {
 	inputPath := "./testdata/input/ddl"
 	resultPath := "./testdata/result/ddl"
 
-	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (ast.Node, error) {
 		return p.ParseDDL()
 	})
 }
@@ -163,7 +164,7 @@ func TestParseDML(t *testing.T) {
 	inputPath := "./testdata/input/dml"
 	resultPath := "./testdata/result/dml"
 
-	testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+	testParser(t, inputPath, resultPath, func(p *parser.Parser) (ast.Node, error) {
 		return p.ParseDML()
 	})
 }
@@ -177,7 +178,7 @@ func TestParseStatement(t *testing.T) {
 	resultPath := "./testdata/result/statement"
 
 	for _, inputPath := range inputPaths {
-		testParser(t, inputPath, resultPath, func(p *parser.Parser) (parser.Node, error) {
+		testParser(t, inputPath, resultPath, func(p *parser.Parser) (ast.Node, error) {
 			return p.ParseStatement()
 		})
 	}

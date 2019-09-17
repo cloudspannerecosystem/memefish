@@ -3,7 +3,8 @@ package analyzer
 import (
 	"fmt"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 // Name represents typed names like table name and column name.
@@ -20,8 +21,8 @@ type Name struct {
 
 	Ref *Name // for AliasName
 
-	Node  parser.Node
-	Ident *parser.Ident
+	Node  ast.Node
+	Ident *ast.Ident
 
 	TableSchema  *TableSchema
 	ColumnSchema *ColumnSchema
@@ -89,11 +90,11 @@ func (name *Name) Quote() string {
 	if name.Anonymous() {
 		return "(anonymous)"
 	}
-	return parser.QuoteSQLIdent(name.Text)
+	return token.QuoteSQLIdent(name.Text)
 }
 
-// for parser.Select with AS STRUCT
-func makeNameListColumnName(list NameList, node parser.Node) *Name {
+// for ast.Select with AS STRUCT
+func makeNameListColumnName(list NameList, node ast.Node) *Name {
 	return &Name{
 		Kind:     ColumnName,
 		Type:     list.ToType(),
@@ -101,8 +102,8 @@ func makeNameListColumnName(list NameList, node parser.Node) *Name {
 	}
 }
 
-// for parser.ExprSelectItem
-func makeExprColumnName(t Type, expr parser.Expr, node parser.Node, ident *parser.Ident) *Name {
+// for ast.ExprSelectItem
+func makeExprColumnName(t Type, expr ast.Expr, node ast.Node, ident *ast.Ident) *Name {
 	if ident == nil {
 		ident = extractIdentFromExpr(expr)
 	}
@@ -121,8 +122,8 @@ func makeExprColumnName(t Type, expr parser.Expr, node parser.Node, ident *parse
 	}
 }
 
-// for parser.Alias
-func makeAliasName(name *Name, node parser.Node, ident *parser.Ident) *Name {
+// for ast.Alias
+func makeAliasName(name *Name, node ast.Node, ident *ast.Ident) *Name {
 	var text string
 	if ident != nil {
 		text = ident.Name
@@ -138,8 +139,8 @@ func makeAliasName(name *Name, node parser.Node, ident *parser.Ident) *Name {
 	}
 }
 
-// for parser.TableName
-func makeTableSchemaName(table *TableSchema, node parser.Node, ident *parser.Ident) *Name {
+// for ast.TableName
+func makeTableSchemaName(table *TableSchema, node ast.Node, ident *ast.Ident) *Name {
 	text := table.Name
 	if ident != nil {
 		text = ident.Name
@@ -169,8 +170,8 @@ func makeTableSchemaName(table *TableSchema, node parser.Node, ident *parser.Ide
 	return parent
 }
 
-// for parser.Unnest
-func makeTableName(text string, t Type, node parser.Node, ident *parser.Ident) *Name {
+// for ast.Unnest
+func makeTableName(text string, t Type, node ast.Node, ident *ast.Ident) *Name {
 	if ident != nil {
 		text = ident.Name
 	}
@@ -184,8 +185,8 @@ func makeTableName(text string, t Type, node parser.Node, ident *parser.Ident) *
 	}
 }
 
-// for parser.SubQueryTableExpr
-func makeNameListTableName(list NameList, node parser.Node, ident *parser.Ident) *Name {
+// for ast.SubQueryTableExpr
+func makeNameListTableName(list NameList, node ast.Node, ident *ast.Ident) *Name {
 	var text string
 	if ident != nil {
 		text = ident.Name
@@ -214,7 +215,7 @@ func makeNameListTableName(list NameList, node parser.Node, ident *parser.Ident)
 	return parent
 }
 
-// for parser.Join with InnerJoin and LeftOuterJoin
+// for ast.Join with InnerJoin and LeftOuterJoin
 func makeLeftJoinName(left, right *Name) *Name {
 	return &Name{
 		Kind:   AliasName,
@@ -225,7 +226,7 @@ func makeLeftJoinName(left, right *Name) *Name {
 	}
 }
 
-// for parser.Join with RightOuterJoin
+// for ast.Join with RightOuterJoin
 func makeRightJoinName(left, right *Name) *Name {
 	return &Name{
 		Kind:   AliasName,
@@ -236,7 +237,7 @@ func makeRightJoinName(left, right *Name) *Name {
 	}
 }
 
-// for parser.Join with FullOuterJoin
+// for ast.Join with FullOuterJoin
 func makeFullJoinName(left, right *Name) (*Name, bool) {
 	t, ok := MergeType(left.Type, right.Type)
 	if !ok {
@@ -252,8 +253,8 @@ func makeFullJoinName(left, right *Name) (*Name, bool) {
 	}, true
 }
 
-// for parser.CompoundQuery and parser.Join with FullOuterJoin
-func makeCompoundQueryResultName(names []*Name, node parser.Node) (*Name, bool) {
+// for ast.CompoundQuery and ast.Join with FullOuterJoin
+func makeCompoundQueryResultName(names []*Name, node ast.Node) (*Name, bool) {
 	if len(names) <= 1 {
 		panic(fmt.Sprintf("BUG: too few names: %#+v", names))
 	}

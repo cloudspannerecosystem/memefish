@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/MakeNowJust/memefish/pkg/ast"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 	"github.com/k0kubun/pp"
 )
 
@@ -26,12 +28,12 @@ func main() {
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{FilePath: "", Buffer: query},
+			File: &token.File{FilePath: "", Buffer: query},
 		},
 	}
 
 	log.Printf("start parsing")
-	var node parser.Node
+	var node ast.Node
 	var err error
 	switch *mode {
 	case "statement":

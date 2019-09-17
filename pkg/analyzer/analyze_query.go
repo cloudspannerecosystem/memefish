@@ -3,33 +3,33 @@ package analyzer
 import (
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
 )
 
-func (a *Analyzer) analyzeQueryStatement(q *parser.QueryStatement) {
+func (a *Analyzer) analyzeQueryStatement(q *ast.QueryStatement) {
 	// TODO: check q.Hint
 	_ = a.analyzeQueryExpr(q.Query)
 }
 
-func (a *Analyzer) analyzeQueryExpr(q parser.QueryExpr) NameList {
+func (a *Analyzer) analyzeQueryExpr(q ast.QueryExpr) NameList {
 	var list NameList
 	switch q := q.(type) {
-	case *parser.Select:
+	case *ast.Select:
 		list = a.analyzeSelect(q)
-	case *parser.CompoundQuery:
+	case *ast.CompoundQuery:
 		list = a.analyzeCompoundQuery(q)
-	case *parser.SubQuery:
+	case *ast.SubQuery:
 		list = a.analyzeSubQuery(q)
 	}
 
 	if a.NameLists == nil {
-		a.NameLists = make(map[parser.QueryExpr]NameList)
+		a.NameLists = make(map[ast.QueryExpr]NameList)
 	}
 	a.NameLists[q] = list
 	return list
 }
 
-func (a *Analyzer) analyzeSelect(s *parser.Select) NameList {
+func (a *Analyzer) analyzeSelect(s *ast.Select) NameList {
 	switch {
 	case s.From == nil:
 		return a.analyzeSelectWithoutFrom(s)
@@ -40,7 +40,7 @@ func (a *Analyzer) analyzeSelect(s *parser.Select) NameList {
 	return a.analyzeSelectWithGroupBy(s)
 }
 
-func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) NameList {
+func (a *Analyzer) analyzeSelectWithoutFrom(s *ast.Select) NameList {
 	if s.Where != nil {
 		a.panicf(s.Where, "SELECT without FROM cannot have WHERE clause")
 	}
@@ -75,7 +75,7 @@ func (a *Analyzer) analyzeSelectWithoutFrom(s *parser.Select) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
+func (a *Analyzer) analyzeSelectWithoutGroupBy(s *ast.Select) NameList {
 	if s.Having != nil {
 		a.panicf(s.Having, "SELECT without GROUP BY cannot have HAVING clause")
 	}
@@ -95,7 +95,7 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
 		list = append(list, itemList...)
 	}
 
-	listsMap := make(map[parser.SelectItem]NameList)
+	listsMap := make(map[ast.SelectItem]NameList)
 	hasAggregate := false
 
 	for i, item := range s.Results {
@@ -126,7 +126,7 @@ func (a *Analyzer) analyzeSelectWithoutGroupBy(s *parser.Select) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) NameList {
+func (a *Analyzer) analyzeCompoundQuery(q *ast.CompoundQuery) NameList {
 	var lists []NameList
 
 	for _, query := range q.Queries {
@@ -166,7 +166,7 @@ func (a *Analyzer) analyzeCompoundQuery(q *parser.CompoundQuery) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) NameList {
+func (a *Analyzer) analyzeSubQuery(s *ast.SubQuery) NameList {
 	list := a.analyzeQueryExpr(s.Query)
 
 	a.pushNameList(list)
@@ -177,29 +177,29 @@ func (a *Analyzer) analyzeSubQuery(s *parser.SubQuery) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeSelectItem(s parser.SelectItem) NameList {
+func (a *Analyzer) analyzeSelectItem(s ast.SelectItem) NameList {
 	switch s := s.(type) {
-	case *parser.Star:
+	case *ast.Star:
 		return a.analyzeStar(s)
-	case *parser.DotStar:
+	case *ast.DotStar:
 		return a.analyzeDotStar(s)
-	case *parser.Alias:
+	case *ast.Alias:
 		return a.analyzeAlias(s)
-	case *parser.ExprSelectItem:
+	case *ast.ExprSelectItem:
 		return a.analyzeExprSelectItem(s)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeStar(s *parser.Star) NameList {
+func (a *Analyzer) analyzeStar(s *ast.Star) NameList {
 	if a.scope == nil || a.scope.List == nil {
 		a.panicf(s, "SELECT * must have a FROM clause")
 	}
 	return a.scope.List
 }
 
-func (a *Analyzer) analyzeDotStar(s *parser.DotStar) NameList {
+func (a *Analyzer) analyzeDotStar(s *ast.DotStar) NameList {
 	t := a.analyzeExpr(s.Expr)
 
 	var list NameList
@@ -216,7 +216,7 @@ func (a *Analyzer) analyzeDotStar(s *parser.DotStar) NameList {
 	return list
 }
 
-func (a *Analyzer) analyzeAlias(s *parser.Alias) NameList {
+func (a *Analyzer) analyzeAlias(s *ast.Alias) NameList {
 	t := a.analyzeExpr(s.Expr)
 	if t.Name != nil {
 		return NameList{makeAliasName(t.Name, s, s.As.Alias)}
@@ -224,7 +224,7 @@ func (a *Analyzer) analyzeAlias(s *parser.Alias) NameList {
 	return NameList{makeExprColumnName(t.Type, s.Expr, s, s.As.Alias)}
 }
 
-func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
+func (a *Analyzer) analyzeExprSelectItem(s *ast.ExprSelectItem) NameList {
 	t := a.analyzeExpr(s.Expr)
 	if t.Name != nil {
 		return NameList{makeAliasName(t.Name, s, extractIdentFromExpr(s.Expr))}
@@ -232,7 +232,7 @@ func (a *Analyzer) analyzeExprSelectItem(s *parser.ExprSelectItem) NameList {
 	return NameList{makeExprColumnName(t.Type, s.Expr, s, nil)}
 }
 
-func (a *Analyzer) analyzeWhere(w *parser.Where) {
+func (a *Analyzer) analyzeWhere(w *ast.Where) {
 	if w == nil {
 		return
 	}
@@ -243,7 +243,7 @@ func (a *Analyzer) analyzeWhere(w *parser.Where) {
 	}
 }
 
-func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {
+func (a *Analyzer) analyzeOrderBy(o *ast.OrderBy) {
 	if o == nil {
 		return
 	}
@@ -257,7 +257,7 @@ func (a *Analyzer) analyzeOrderBy(o *parser.OrderBy) {
 	}
 }
 
-func (a *Analyzer) analyzeLimit(l *parser.Limit) {
+func (a *Analyzer) analyzeLimit(l *ast.Limit) {
 	if l == nil {
 		return
 	}

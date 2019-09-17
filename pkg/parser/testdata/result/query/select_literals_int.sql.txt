@@ -6,52 +6,52 @@ SELECT
   -0xABC
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.IntLiteral{
-          pos:   9,
-          end:   12,
-          Base:  10,
-          Value: "123",
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 9,
+          ValueEnd: 12,
+          Base:     10,
+          Value:    "123",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.IntLiteral{
-          pos:   16,
-          end:   21,
-          Base:  16,
-          Value: "0xABC",
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 16,
+          ValueEnd: 21,
+          Base:     16,
+          Value:    "0xABC",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.IntLiteral{
-          pos:   25,
-          end:   29,
-          Base:  10,
-          Value: "-123",
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 25,
+          ValueEnd: 29,
+          Base:     10,
+          Value:    "-123",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.IntLiteral{
-          pos:   33,
-          end:   39,
-          Base:  16,
-          Value: "-0xABC",
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 33,
+          ValueEnd: 39,
+          Base:     16,
+          Value:    "-0xABC",
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -5,49 +5,49 @@ FROM
   Singers TABLESAMPLE BERNOULLI (90 PERCENT)
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: &parser.TableSample{
-          pos:    26,
-          Method: "BERNOULLI",
-          Size:   &parser.TableSampleSize{
-            pos:   48,
-            end:   60,
-            Value: &parser.IntLiteral{
-              pos:   49,
-              end:   51,
-              Base:  10,
-              Value: "90",
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: &ast.TableSample{
+          TableSample: 26,
+          Method:      "BERNOULLI",
+          Size:        &ast.TableSampleSize{
+            Lparen: 48,
+            Rparen: 59,
+            Value:  &ast.IntLiteral{
+              ValuePos: 49,
+              ValueEnd: 51,
+              Base:     10,
+              Value:    "90",
             },
             Unit: "PERCENT",
           },
         },
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

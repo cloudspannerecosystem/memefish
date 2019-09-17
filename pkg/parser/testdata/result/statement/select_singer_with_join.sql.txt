@@ -8,86 +8,86 @@ FROM
   ON A.SingerID = B.SingerID
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.Join{
+    From: &ast.From{
+      From:   11,
+      Source: &ast.Join{
         Op:     "LEFT OUTER JOIN",
         Method: "",
-        Hint:   (*parser.Hint)(nil),
-        Left:   &parser.TableName{
-          Table: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+        Hint:   (*ast.Hint)(nil),
+        Left:   &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 25,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   26,
-            Alias: &parser.Ident{
-              pos:  26,
-              end:  27,
-              Name: "A",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    26,
+            Alias: &ast.Ident{
+              NamePos: 26,
+              NameEnd: 27,
+              Name:    "A",
             },
           },
-          Sample: (*parser.TableSample)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
-        Right: &parser.TableName{
-          Table: &parser.Ident{
-            pos:  48,
-            end:  55,
-            Name: "Singers",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 48,
+            NameEnd: 55,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   56,
-            Alias: &parser.Ident{
-              pos:  56,
-              end:  57,
-              Name: "B",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    56,
+            Alias: &ast.Ident{
+              NamePos: 56,
+              NameEnd: 57,
+              Name:    "B",
             },
           },
-          Sample: (*parser.TableSample)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
-        Cond: &parser.On{
-          pos:  60,
-          Expr: &parser.BinaryExpr{
+        Cond: &ast.On{
+          On:   60,
+          Expr: &ast.BinaryExpr{
             Op:   "=",
-            Left: &parser.Path{
-              Idents: []*parser.Ident{
-                &parser.Ident{
-                  pos:  63,
-                  end:  64,
-                  Name: "A",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 63,
+                  NameEnd: 64,
+                  Name:    "A",
                 },
-                &parser.Ident{
-                  pos:  65,
-                  end:  73,
-                  Name: "SingerID",
+                &ast.Ident{
+                  NamePos: 65,
+                  NameEnd: 73,
+                  Name:    "SingerID",
                 },
               },
             },
-            Right: &parser.Path{
-              Idents: []*parser.Ident{
-                &parser.Ident{
-                  pos:  76,
-                  end:  77,
-                  Name: "B",
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 76,
+                  NameEnd: 77,
+                  Name:    "B",
                 },
-                &parser.Ident{
-                  pos:  78,
-                  end:  86,
-                  Name: "SingerID",
+                &ast.Ident{
+                  NamePos: 78,
+                  NameEnd: 86,
+                  Name:    "SingerID",
                 },
               },
             },
@@ -95,11 +95,11 @@ FROM
         },
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

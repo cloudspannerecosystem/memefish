@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
 )
 
 type NameList []*Name
@@ -64,8 +64,8 @@ func (list NameList) toNameScope(next *NameScope) *NameScope {
 	}
 }
 
-// for parser.DotStar
-func makeNameListFromType(t Type, node parser.Node) NameList {
+// for ast.DotStar
+func makeNameListFromType(t Type, node ast.Node) NameList {
 	parent := &Name{
 		Kind: ColumnName,
 		Type: t,

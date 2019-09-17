@@ -9,6 +9,7 @@ import (
 
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 	"github.com/k0kubun/pp"
 	"github.com/olekukonko/tablewriter"
 	"gopkg.in/yaml.v2"
@@ -53,7 +54,7 @@ func main() {
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
-			File: &parser.File{FilePath: "", Buffer: query},
+			File: &token.File{FilePath: "", Buffer: query},
 		},
 	}
 

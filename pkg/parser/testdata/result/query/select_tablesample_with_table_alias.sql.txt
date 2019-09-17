@@ -5,56 +5,56 @@ FROM
   Singers AS S TABLESAMPLE BERNOULLI (90 PERCENT)
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint: (*parser.Hint)(nil),
-        As:   &parser.AsAlias{
-          pos:   26,
-          Alias: &parser.Ident{
-            pos:  29,
-            end:  30,
-            Name: "S",
+        Hint: (*ast.Hint)(nil),
+        As:   &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 29,
+            NameEnd: 30,
+            Name:    "S",
           },
         },
-        Sample: &parser.TableSample{
-          pos:    31,
-          Method: "BERNOULLI",
-          Size:   &parser.TableSampleSize{
-            pos:   53,
-            end:   65,
-            Value: &parser.IntLiteral{
-              pos:   54,
-              end:   56,
-              Base:  10,
-              Value: "90",
+        Sample: &ast.TableSample{
+          TableSample: 31,
+          Method:      "BERNOULLI",
+          Size:        &ast.TableSampleSize{
+            Lparen: 53,
+            Rparen: 64,
+            Value:  &ast.IntLiteral{
+              ValuePos: 54,
+              ValueEnd: 56,
+              Base:     10,
+              Value:    "90",
             },
             Unit: "PERCENT",
           },
         },
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

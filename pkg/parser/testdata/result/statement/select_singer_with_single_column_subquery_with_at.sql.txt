@@ -5,75 +5,75 @@ SELECT (
 ) AS FN
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Alias{
-        Expr: &parser.ScalarSubQuery{
-          pos:   7,
-          end:   54,
-          Query: &parser.Select{
-            pos:      11,
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.ScalarSubQuery{
+          Lparen: 7,
+          Rparen: 53,
+          Query:  &ast.Select{
+            Select:   11,
             Distinct: false,
             AsStruct: false,
-            Results:  []parser.SelectItem{
-              &parser.ExprSelectItem{
-                Expr: &parser.Ident{
-                  pos:  18,
-                  end:  27,
-                  Name: "FirstName",
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 18,
+                  NameEnd: 27,
+                  Name:    "FirstName",
                 },
               },
             },
-            From: &parser.From{
-              pos:    30,
-              Source: &parser.TableName{
-                Table: &parser.Ident{
-                  pos:  35,
-                  end:  42,
-                  Name: "Singers",
+            From: &ast.From{
+              From:   30,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 35,
+                  NameEnd: 42,
+                  Name:    "Singers",
                 },
-                Hint:   (*parser.Hint)(nil),
-                As:     (*parser.AsAlias)(nil),
-                Sample: (*parser.TableSample)(nil),
+                Hint:   (*ast.Hint)(nil),
+                As:     (*ast.AsAlias)(nil),
+                Sample: (*ast.TableSample)(nil),
               },
             },
-            Where:   (*parser.Where)(nil),
-            GroupBy: (*parser.GroupBy)(nil),
-            Having:  (*parser.Having)(nil),
-            OrderBy: (*parser.OrderBy)(nil),
-            Limit:   &parser.Limit{
-              pos:   43,
-              Count: &parser.IntLiteral{
-                pos:   49,
-                end:   52,
-                Base:  10,
-                Value: "100",
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   &ast.Limit{
+              Limit: 43,
+              Count: &ast.IntLiteral{
+                ValuePos: 49,
+                ValueEnd: 52,
+                Base:     10,
+                Value:    "100",
               },
-              Offset: (*parser.Offset)(nil),
+              Offset: (*ast.Offset)(nil),
             },
           },
         },
-        As: &parser.AsAlias{
-          pos:   55,
-          Alias: &parser.Ident{
-            pos:  58,
-            end:  60,
-            Name: "FN",
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 58,
+            NameEnd: 60,
+            Name:    "FN",
           },
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

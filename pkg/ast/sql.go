@@ -1,4 +1,4 @@
-package parser
+package ast
 
 import (
 	"github.com/MakeNowJust/memefish/pkg/token"
@@ -430,7 +430,7 @@ func (b *BetweenExpr) SQL() string {
 
 func (s *SelectorExpr) SQL() string {
 	p := exprPrec(s)
-	return paren(p, s.Expr) + "." + s.Member.SQL()
+	return paren(p, s.Expr) + "." + s.Ident.SQL()
 }
 
 func (i *IndexExpr) SQL() string {
@@ -616,11 +616,11 @@ func (b *BytesLiteral) SQL() string {
 }
 
 func (d *DateLiteral) SQL() string {
-	return "DATE " + token.QuoteSQLString(d.Value)
+	return "DATE " + d.Value.SQL()
 }
 
 func (t *TimestampLiteral) SQL() string {
-	return "TIMESTAMP " + token.QuoteSQLString(t.Value)
+	return "TIMESTAMP " + t.Value.SQL()
 }
 
 // ================================================================================
@@ -649,10 +649,10 @@ func (s *StructType) SQL() string {
 	return sql
 }
 
-func (f *FieldType) SQL() string {
+func (f *StructField) SQL() string {
 	var sql string
-	if f.Member != nil {
-		sql += f.Member.SQL() + " "
+	if f.Ident != nil {
+		sql += f.Ident.SQL() + " "
 	}
 	sql += f.Type.SQL()
 	return sql
@@ -875,7 +875,7 @@ func (v *ValuesInput) SQL() string {
 
 func (v *ValuesRow) SQL() string {
 	sql := "("
-	for i, v := range v.Values {
+	for i, v := range v.Exprs {
 		if i != 0 {
 			sql += ", "
 		}
@@ -910,8 +910,8 @@ func (u *Update) SQL() string {
 	if u.As != nil {
 		sql += " " + u.As.SQL()
 	}
-	sql += " SET " + u.UpdateItems[0].SQL()
-	for _, item := range u.UpdateItems[1:] {
+	sql += " SET " + u.Updates[0].SQL()
+	for _, item := range u.Updates[1:] {
 		sql += ", " + item.SQL()
 	}
 	sql += " " + u.Where.SQL()

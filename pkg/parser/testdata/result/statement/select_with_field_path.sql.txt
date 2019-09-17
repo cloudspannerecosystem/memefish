@@ -18,189 +18,190 @@ FROM
 WHERE A.z.a = 2
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  9,
-              end:  10,
-              Name: "A",
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 10,
+              Name:    "A",
             },
-            &parser.Ident{
-              pos:  11,
-              end:  12,
-              Name: "x",
-            },
-          },
-        },
-      },
-      &parser.ExprSelectItem{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  16,
-              end:  17,
-              Name: "A",
-            },
-            &parser.Ident{
-              pos:  18,
-              end:  19,
-              Name: "y",
+            &ast.Ident{
+              NamePos: 11,
+              NameEnd: 12,
+              Name:    "x",
             },
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  23,
-              end:  24,
-              Name: "A",
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 16,
+              NameEnd: 17,
+              Name:    "A",
             },
-            &parser.Ident{
-              pos:  25,
-              end:  26,
-              Name: "z",
-            },
-            &parser.Ident{
-              pos:  27,
-              end:  28,
-              Name: "a",
+            &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "y",
             },
           },
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  32,
-              end:  33,
-              Name: "A",
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 23,
+              NameEnd: 24,
+              Name:    "A",
             },
-            &parser.Ident{
-              pos:  34,
-              end:  35,
-              Name: "z",
+            &ast.Ident{
+              NamePos: 25,
+              NameEnd: 26,
+              Name:    "z",
             },
-            &parser.Ident{
-              pos:  36,
-              end:  37,
-              Name: "b",
+            &ast.Ident{
+              NamePos: 27,
+              NameEnd: 28,
+              Name:    "a",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 32,
+              NameEnd: 33,
+              Name:    "A",
+            },
+            &ast.Ident{
+              NamePos: 34,
+              NameEnd: 35,
+              Name:    "z",
+            },
+            &ast.Ident{
+              NamePos: 36,
+              NameEnd: 37,
+              Name:    "b",
             },
           },
         },
       },
     },
-    From: &parser.From{
-      pos:    38,
-      Source: &parser.Unnest{
-        pos:      45,
-        end:      261,
+    From: &ast.From{
+      From:   38,
+      Source: &ast.Unnest{
+        Unnest:   45,
+        Rparen:   255,
         Implicit: false,
-        Expr:     &parser.ArraySubQuery{
-          pos:   57,
-          end:   252,
-          Query: &parser.Select{
-            pos:      70,
+        Expr:     &ast.ArraySubQuery{
+          Array:  57,
+          Rparen: 251,
+          Query:  &ast.Select{
+            Select:   70,
             Distinct: false,
             AsStruct: true,
-            Results:  []parser.SelectItem{
-              &parser.ExprSelectItem{
-                Expr: &parser.Ident{
-                  pos:  95,
-                  end:  96,
-                  Name: "x",
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 95,
+                  NameEnd: 96,
+                  Name:    "x",
                 },
               },
-              &parser.ExprSelectItem{
-                Expr: &parser.Ident{
-                  pos:  106,
-                  end:  107,
-                  Name: "y",
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 106,
+                  NameEnd: 107,
+                  Name:    "y",
                 },
               },
-              &parser.ExprSelectItem{
-                Expr: &parser.Ident{
-                  pos:  117,
-                  end:  118,
-                  Name: "z",
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 117,
+                  NameEnd: 118,
+                  Name:    "z",
                 },
               },
             },
-            From: &parser.From{
-              pos:    125,
-              Source: &parser.Unnest{
-                pos:      138,
-                end:      246,
+            From: &ast.From{
+              From:   125,
+              Source: &ast.Unnest{
+                Unnest:   138,
+                Rparen:   245,
                 Implicit: false,
-                Expr:     &parser.ArrayLiteral{
-                  pos:  145,
-                  end:  245,
-                  Type: &parser.StructType{
-                    pos:    151,
-                    end:    204,
-                    Fields: []*parser.FieldType{
-                      &parser.FieldType{
-                        Member: &parser.Ident{
-                          pos:  158,
-                          end:  159,
-                          Name: "x",
+                Expr:     &ast.ArrayLiteral{
+                  Array:  145,
+                  Lbrack: 205,
+                  Rbrack: 244,
+                  Type:   &ast.StructType{
+                    Struct: 151,
+                    Gt:     203,
+                    Fields: []*ast.StructField{
+                      &ast.StructField{
+                        Ident: &ast.Ident{
+                          NamePos: 158,
+                          NameEnd: 159,
+                          Name:    "x",
                         },
-                        Type: &parser.SimpleType{
-                          pos:  160,
-                          Name: "INT64",
-                        },
-                      },
-                      &parser.FieldType{
-                        Member: &parser.Ident{
-                          pos:  167,
-                          end:  168,
-                          Name: "y",
-                        },
-                        Type: &parser.SimpleType{
-                          pos:  169,
-                          Name: "STRING",
+                        Type: &ast.SimpleType{
+                          NamePos: 160,
+                          Name:    "INT64",
                         },
                       },
-                      &parser.FieldType{
-                        Member: &parser.Ident{
-                          pos:  177,
-                          end:  178,
-                          Name: "z",
+                      &ast.StructField{
+                        Ident: &ast.Ident{
+                          NamePos: 167,
+                          NameEnd: 168,
+                          Name:    "y",
                         },
-                        Type: &parser.StructType{
-                          pos:    179,
-                          end:    203,
-                          Fields: []*parser.FieldType{
-                            &parser.FieldType{
-                              Member: &parser.Ident{
-                                pos:  186,
-                                end:  187,
-                                Name: "a",
+                        Type: &ast.SimpleType{
+                          NamePos: 169,
+                          Name:    "STRING",
+                        },
+                      },
+                      &ast.StructField{
+                        Ident: &ast.Ident{
+                          NamePos: 177,
+                          NameEnd: 178,
+                          Name:    "z",
+                        },
+                        Type: &ast.StructType{
+                          Struct: 179,
+                          Gt:     202,
+                          Fields: []*ast.StructField{
+                            &ast.StructField{
+                              Ident: &ast.Ident{
+                                NamePos: 186,
+                                NameEnd: 187,
+                                Name:    "a",
                               },
-                              Type: &parser.SimpleType{
-                                pos:  188,
-                                Name: "INT64",
+                              Type: &ast.SimpleType{
+                                NamePos: 188,
+                                Name:    "INT64",
                               },
                             },
-                            &parser.FieldType{
-                              Member: &parser.Ident{
-                                pos:  195,
-                                end:  196,
-                                Name: "b",
+                            &ast.StructField{
+                              Ident: &ast.Ident{
+                                NamePos: 195,
+                                NameEnd: 196,
+                                Name:    "b",
                               },
-                              Type: &parser.SimpleType{
-                                pos:  197,
-                                Name: "INT64",
+                              Type: &ast.SimpleType{
+                                NamePos: 197,
+                                Name:    "INT64",
                               },
                             },
                           },
@@ -208,76 +209,80 @@ WHERE A.z.a = 2
                       },
                     },
                   },
-                  Values: []parser.Expr{
-                    &parser.StructLiteral{
-                      pos:    206,
-                      end:    224,
-                      Fields: []*parser.FieldType{},
-                      Values: []parser.Expr{
-                        &parser.IntLiteral{
-                          pos:   207,
-                          end:   208,
-                          Base:  10,
-                          Value: "1",
+                  Values: []ast.Expr{
+                    &ast.StructLiteral{
+                      Struct: 0,
+                      Lparen: 206,
+                      Rparen: 223,
+                      Fields: []*ast.StructField{},
+                      Values: []ast.Expr{
+                        &ast.IntLiteral{
+                          ValuePos: 207,
+                          ValueEnd: 208,
+                          Base:     10,
+                          Value:    "1",
                         },
-                        &parser.StringLiteral{
-                          pos:   210,
-                          end:   215,
-                          Value: "foo",
+                        &ast.StringLiteral{
+                          ValuePos: 210,
+                          ValueEnd: 215,
+                          Value:    "foo",
                         },
-                        &parser.StructLiteral{
-                          pos:    217,
-                          end:    223,
-                          Fields: []*parser.FieldType{},
-                          Values: []parser.Expr{
-                            &parser.IntLiteral{
-                              pos:   218,
-                              end:   219,
-                              Base:  10,
-                              Value: "2",
+                        &ast.StructLiteral{
+                          Struct: 0,
+                          Lparen: 217,
+                          Rparen: 222,
+                          Fields: []*ast.StructField{},
+                          Values: []ast.Expr{
+                            &ast.IntLiteral{
+                              ValuePos: 218,
+                              ValueEnd: 219,
+                              Base:     10,
+                              Value:    "2",
                             },
-                            &parser.IntLiteral{
-                              pos:   221,
-                              end:   222,
-                              Base:  10,
-                              Value: "3",
+                            &ast.IntLiteral{
+                              ValuePos: 221,
+                              ValueEnd: 222,
+                              Base:     10,
+                              Value:    "3",
                             },
                           },
                         },
                       },
                     },
-                    &parser.StructLiteral{
-                      pos:    226,
-                      end:    244,
-                      Fields: []*parser.FieldType{},
-                      Values: []parser.Expr{
-                        &parser.IntLiteral{
-                          pos:   227,
-                          end:   228,
-                          Base:  10,
-                          Value: "3",
+                    &ast.StructLiteral{
+                      Struct: 0,
+                      Lparen: 226,
+                      Rparen: 243,
+                      Fields: []*ast.StructField{},
+                      Values: []ast.Expr{
+                        &ast.IntLiteral{
+                          ValuePos: 227,
+                          ValueEnd: 228,
+                          Base:     10,
+                          Value:    "3",
                         },
-                        &parser.StringLiteral{
-                          pos:   230,
-                          end:   235,
-                          Value: "bar",
+                        &ast.StringLiteral{
+                          ValuePos: 230,
+                          ValueEnd: 235,
+                          Value:    "bar",
                         },
-                        &parser.StructLiteral{
-                          pos:    237,
-                          end:    243,
-                          Fields: []*parser.FieldType{},
-                          Values: []parser.Expr{
-                            &parser.IntLiteral{
-                              pos:   238,
-                              end:   239,
-                              Base:  10,
-                              Value: "4",
+                        &ast.StructLiteral{
+                          Struct: 0,
+                          Lparen: 237,
+                          Rparen: 242,
+                          Fields: []*ast.StructField{},
+                          Values: []ast.Expr{
+                            &ast.IntLiteral{
+                              ValuePos: 238,
+                              ValueEnd: 239,
+                              Base:     10,
+                              Value:    "4",
                             },
-                            &parser.IntLiteral{
-                              pos:   241,
-                              end:   242,
-                              Base:  10,
-                              Value: "5",
+                            &ast.IntLiteral{
+                              ValuePos: 241,
+                              ValueEnd: 242,
+                              Base:     10,
+                              Value:    "5",
                             },
                           },
                         },
@@ -285,67 +290,67 @@ WHERE A.z.a = 2
                     },
                   },
                 },
-                Hint:       (*parser.Hint)(nil),
-                As:         (*parser.AsAlias)(nil),
-                WithOffset: (*parser.WithOffset)(nil),
-                Sample:     (*parser.TableSample)(nil),
+                Hint:       (*ast.Hint)(nil),
+                As:         (*ast.AsAlias)(nil),
+                WithOffset: (*ast.WithOffset)(nil),
+                Sample:     (*ast.TableSample)(nil),
               },
             },
-            Where:   (*parser.Where)(nil),
-            GroupBy: (*parser.GroupBy)(nil),
-            Having:  (*parser.Having)(nil),
-            OrderBy: (*parser.OrderBy)(nil),
-            Limit:   (*parser.Limit)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
           },
         },
-        Hint: (*parser.Hint)(nil),
-        As:   &parser.AsAlias{
-          pos:   257,
-          Alias: &parser.Ident{
-            pos:  260,
-            end:  261,
-            Name: "A",
+        Hint: (*ast.Hint)(nil),
+        As:   &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 260,
+            NameEnd: 261,
+            Name:    "A",
           },
         },
-        WithOffset: (*parser.WithOffset)(nil),
-        Sample:     (*parser.TableSample)(nil),
+        WithOffset: (*ast.WithOffset)(nil),
+        Sample:     (*ast.TableSample)(nil),
       },
     },
-    Where: &parser.Where{
-      pos:  262,
-      Expr: &parser.BinaryExpr{
+    Where: &ast.Where{
+      Where: 262,
+      Expr:  &ast.BinaryExpr{
         Op:   "=",
-        Left: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  268,
-              end:  269,
-              Name: "A",
+        Left: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 268,
+              NameEnd: 269,
+              Name:    "A",
             },
-            &parser.Ident{
-              pos:  270,
-              end:  271,
-              Name: "z",
+            &ast.Ident{
+              NamePos: 270,
+              NameEnd: 271,
+              Name:    "z",
             },
-            &parser.Ident{
-              pos:  272,
-              end:  273,
-              Name: "a",
+            &ast.Ident{
+              NamePos: 272,
+              NameEnd: 273,
+              Name:    "a",
             },
           },
         },
-        Right: &parser.IntLiteral{
-          pos:   276,
-          end:   277,
-          Base:  10,
-          Value: "2",
+        Right: &ast.IntLiteral{
+          ValuePos: 276,
+          ValueEnd: 277,
+          Base:     10,
+          Value:    "2",
         },
       },
     },
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

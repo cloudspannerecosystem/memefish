@@ -8,6 +8,7 @@ import (
 
 	"github.com/MakeNowJust/memefish/pkg/analyzer"
 	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/token"
 	"gopkg.in/yaml.v2"
 )
 
@@ -41,7 +42,7 @@ func TestAnalyzeQueryStatement(t *testing.T) {
 				t.Fatalf("error on parsing YAML: %v", err)
 			}
 
-			file := &parser.File{FilePath: file.Name() + ".SQL", Buffer: testdata.SQL}
+			file := &token.File{FilePath: file.Name() + ".SQL", Buffer: testdata.SQL}
 			p := &parser.Parser{
 				Lexer: &parser.Lexer{File: file},
 			}

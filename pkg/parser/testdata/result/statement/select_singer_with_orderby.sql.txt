@@ -8,76 +8,76 @@ ORDER BY
   LastName COLLATE "en_US",
   BirthDate DESC
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: (*parser.TableSample)(nil),
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: &parser.OrderBy{
-      pos:   26,
-      Items: []*parser.OrderByItem{
-        &parser.OrderByItem{
-          end:  0,
-          Expr: &parser.Ident{
-            pos:  37,
-            end:  46,
-            Name: "FirstName",
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: &ast.OrderBy{
+      Order: 26,
+      Items: []*ast.OrderByItem{
+        &ast.OrderByItem{
+          DirPos: -1,
+          Expr:   &ast.Ident{
+            NamePos: 37,
+            NameEnd: 46,
+            Name:    "FirstName",
           },
-          Collate: (*parser.Collate)(nil),
+          Collate: (*ast.Collate)(nil),
           Dir:     "",
         },
-        &parser.OrderByItem{
-          end:  74,
-          Expr: &parser.Ident{
-            pos:  50,
-            end:  58,
-            Name: "LastName",
+        &ast.OrderByItem{
+          DirPos: -1,
+          Expr:   &ast.Ident{
+            NamePos: 50,
+            NameEnd: 58,
+            Name:    "LastName",
           },
-          Collate: &parser.Collate{
-            pos:   59,
-            Value: &parser.StringLiteral{
-              pos:   67,
-              end:   74,
-              Value: "en_US",
+          Collate: &ast.Collate{
+            Collate: 59,
+            Value:   &ast.StringLiteral{
+              ValuePos: 67,
+              ValueEnd: 74,
+              Value:    "en_US",
             },
           },
           Dir: "",
         },
-        &parser.OrderByItem{
-          end:  92,
-          Expr: &parser.Ident{
-            pos:  78,
-            end:  87,
-            Name: "BirthDate",
+        &ast.OrderByItem{
+          DirPos: 88,
+          Expr:   &ast.Ident{
+            NamePos: 78,
+            NameEnd: 87,
+            Name:    "BirthDate",
           },
-          Collate: (*parser.Collate)(nil),
+          Collate: (*ast.Collate)(nil),
           Dir:     "DESC",
         },
       },
     },
-    Limit: (*parser.Limit)(nil),
+    Limit: (*ast.Limit)(nil),
   },
 }
 

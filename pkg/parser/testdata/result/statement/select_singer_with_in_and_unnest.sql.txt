@@ -7,74 +7,75 @@ WHERE
   SingerId IN UNNEST(ARRAY[1, 2, 3])
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  18,
-          end:  25,
-          Name: "Singers",
+    From: &ast.From{
+      From:   11,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 25,
+          Name:    "Singers",
         },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: (*parser.TableSample)(nil),
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where: &parser.Where{
-      pos:  26,
-      Expr: &parser.InExpr{
+    Where: &ast.Where{
+      Where: 26,
+      Expr:  &ast.InExpr{
         Not:  false,
-        Left: &parser.Ident{
-          pos:  34,
-          end:  42,
-          Name: "SingerId",
+        Left: &ast.Ident{
+          NamePos: 34,
+          NameEnd: 42,
+          Name:    "SingerId",
         },
-        Right: &parser.UnnestInCondition{
-          pos:  46,
-          end:  68,
-          Expr: &parser.ArrayLiteral{
-            pos:    53,
-            end:    67,
+        Right: &ast.UnnestInCondition{
+          Unnest: 46,
+          Rparen: 67,
+          Expr:   &ast.ArrayLiteral{
+            Array:  53,
+            Lbrack: 58,
+            Rbrack: 66,
             Type:   nil,
-            Values: []parser.Expr{
-              &parser.IntLiteral{
-                pos:   59,
-                end:   60,
-                Base:  10,
-                Value: "1",
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 59,
+                ValueEnd: 60,
+                Base:     10,
+                Value:    "1",
               },
-              &parser.IntLiteral{
-                pos:   62,
-                end:   63,
-                Base:  10,
-                Value: "2",
+              &ast.IntLiteral{
+                ValuePos: 62,
+                ValueEnd: 63,
+                Base:     10,
+                Value:    "2",
               },
-              &parser.IntLiteral{
-                pos:   65,
-                end:   66,
-                Base:  10,
-                Value: "3",
+              &ast.IntLiteral{
+                ValuePos: 65,
+                ValueEnd: 66,
+                Base:     10,
+                Value:    "3",
               },
             },
           },
         },
       },
     },
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

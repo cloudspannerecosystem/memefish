@@ -2,34 +2,34 @@
 create unique null_filtered index foo_bar on foo (foo)
 
 --- AST
-&parser.CreateIndex{
-  pos:          0,
-  end:          54,
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       53,
   Unique:       true,
   NullFiltered: true,
-  Name:         &parser.Ident{
-    pos:  34,
-    end:  41,
-    Name: "foo_bar",
+  Name:         &ast.Ident{
+    NamePos: 34,
+    NameEnd: 41,
+    Name:    "foo_bar",
   },
-  TableName: &parser.Ident{
-    pos:  45,
-    end:  48,
-    Name: "foo",
+  TableName: &ast.Ident{
+    NamePos: 45,
+    NameEnd: 48,
+    Name:    "foo",
   },
-  Keys: []*parser.IndexKey{
-    &parser.IndexKey{
-      end:  53,
-      Name: &parser.Ident{
-        pos:  50,
-        end:  53,
-        Name: "foo",
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 50,
+        NameEnd: 53,
+        Name:    "foo",
       },
       Dir: "",
     },
   },
-  Storing:      (*parser.Storing)(nil),
-  InterleaveIn: (*parser.InterleaveIn)(nil),
+  Storing:      (*ast.Storing)(nil),
+  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL

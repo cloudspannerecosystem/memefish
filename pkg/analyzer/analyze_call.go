@@ -3,10 +3,10 @@ package analyzer
 import (
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
 )
 
-type functionAnalyzer func(a *Analyzer, e *parser.CallExpr) *TypeInfo
+type functionAnalyzer func(a *Analyzer, e *ast.CallExpr) *TypeInfo
 
 var functionAnalyzers map[string]functionAnalyzer
 
@@ -17,7 +17,7 @@ func init() {
 	}
 }
 
-func (a *Analyzer) analyzeCallExpr(e *parser.CallExpr) *TypeInfo {
+func (a *Analyzer) analyzeCallExpr(e *ast.CallExpr) *TypeInfo {
 	if ana, ok := functionAnalyzers[strings.ToUpper(e.Func.Name)]; ok {
 		return ana(a, e)
 	}
@@ -25,7 +25,7 @@ func (a *Analyzer) analyzeCallExpr(e *parser.CallExpr) *TypeInfo {
 	panic(a.errorf(e, "unknown function: %s", e.Func.SQL()))
 }
 
-func concatAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
+func concatAnalyzer(a *Analyzer, e *ast.CallExpr) *TypeInfo {
 	if e.Distinct {
 		a.panicf(e, "cannot specify DISTINT to scalar function CONCAT")
 	}
@@ -59,7 +59,7 @@ func concatAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
 	}
 }
 
-func sumAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
+func sumAnalyzer(a *Analyzer, e *ast.CallExpr) *TypeInfo {
 	var context *GroupByContext
 	a.scope.context, context = nil, a.scope.context
 	defer func() { a.scope.context = context }()
@@ -82,7 +82,7 @@ func sumAnalyzer(a *Analyzer, e *parser.CallExpr) *TypeInfo {
 	}
 }
 
-func (a *Analyzer) analyzeCountStarExpr(e *parser.CountStarExpr) *TypeInfo {
+func (a *Analyzer) analyzeCountStarExpr(e *ast.CountStarExpr) *TypeInfo {
 	return &TypeInfo{
 		Type: Int64Type,
 	}

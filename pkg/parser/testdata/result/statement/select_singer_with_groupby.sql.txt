@@ -7,60 +7,60 @@ GROUP BY
   FirstName, BirthDate
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  9,
-          end:  18,
-          Name: "FirstName",
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 9,
+          NameEnd: 18,
+          Name:    "FirstName",
         },
       },
-      &parser.ExprSelectItem{
-        Expr: &parser.Ident{
-          pos:  20,
-          end:  29,
-          Name: "BirthDate",
-        },
-      },
-    },
-    From: &parser.From{
-      pos:    30,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  37,
-          end:  44,
-          Name: "Singers",
-        },
-        Hint:   (*parser.Hint)(nil),
-        As:     (*parser.AsAlias)(nil),
-        Sample: (*parser.TableSample)(nil),
-      },
-    },
-    Where:   (*parser.Where)(nil),
-    GroupBy: &parser.GroupBy{
-      pos:   45,
-      Exprs: []parser.Expr{
-        &parser.Ident{
-          pos:  56,
-          end:  65,
-          Name: "FirstName",
-        },
-        &parser.Ident{
-          pos:  67,
-          end:  76,
-          Name: "BirthDate",
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 20,
+          NameEnd: 29,
+          Name:    "BirthDate",
         },
       },
     },
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From: &ast.From{
+      From:   30,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 37,
+          NameEnd: 44,
+          Name:    "Singers",
+        },
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: &ast.GroupBy{
+      Group: 45,
+      Exprs: []ast.Expr{
+        &ast.Ident{
+          NamePos: 56,
+          NameEnd: 65,
+          Name:    "FirstName",
+        },
+        &ast.Ident{
+          NamePos: 67,
+          NameEnd: 76,
+          Name:    "BirthDate",
+        },
+      },
+    },
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

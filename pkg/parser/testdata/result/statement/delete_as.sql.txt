@@ -1,44 +1,44 @@
 --- delete_as.sql
 delete foo as F where F.foo = 1
 --- AST
-&parser.Delete{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Delete{
+  Delete:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  As: &parser.AsAlias{
-    pos:   11,
-    Alias: &parser.Ident{
-      pos:  14,
-      end:  15,
-      Name: "F",
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 14,
+      NameEnd: 15,
+      Name:    "F",
     },
   },
-  Where: &parser.Where{
-    pos:  16,
-    Expr: &parser.BinaryExpr{
+  Where: &ast.Where{
+    Where: 16,
+    Expr:  &ast.BinaryExpr{
       Op:   "=",
-      Left: &parser.Path{
-        Idents: []*parser.Ident{
-          &parser.Ident{
-            pos:  22,
-            end:  23,
-            Name: "F",
+      Left: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 22,
+            NameEnd: 23,
+            Name:    "F",
           },
-          &parser.Ident{
-            pos:  24,
-            end:  27,
-            Name: "foo",
+          &ast.Ident{
+            NamePos: 24,
+            NameEnd: 27,
+            Name:    "foo",
           },
         },
       },
-      Right: &parser.IntLiteral{
-        pos:   30,
-        end:   31,
-        Base:  10,
-        Value: "1",
+      Right: &ast.IntLiteral{
+        ValuePos: 30,
+        ValueEnd: 31,
+        Base:     10,
+        Value:    "1",
       },
     },
   },

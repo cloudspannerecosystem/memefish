@@ -6,65 +6,65 @@ FROM
   Singers AS B
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Star{
-        pos: 9,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 9,
       },
     },
-    From: &parser.From{
-      pos:    11,
-      Source: &parser.Join{
+    From: &ast.From{
+      From:   11,
+      Source: &ast.Join{
         Op:     ",",
         Method: "",
-        Hint:   (*parser.Hint)(nil),
-        Left:   &parser.TableName{
-          Table: &parser.Ident{
-            pos:  18,
-            end:  25,
-            Name: "Singers",
+        Hint:   (*ast.Hint)(nil),
+        Left:   &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 25,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   26,
-            Alias: &parser.Ident{
-              pos:  29,
-              end:  30,
-              Name: "A",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    -1,
+            Alias: &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "A",
             },
           },
-          Sample: (*parser.TableSample)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
-        Right: &parser.TableName{
-          Table: &parser.Ident{
-            pos:  34,
-            end:  41,
-            Name: "Singers",
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 34,
+            NameEnd: 41,
+            Name:    "Singers",
           },
-          Hint: (*parser.Hint)(nil),
-          As:   &parser.AsAlias{
-            pos:   42,
-            Alias: &parser.Ident{
-              pos:  45,
-              end:  46,
-              Name: "B",
+          Hint: (*ast.Hint)(nil),
+          As:   &ast.AsAlias{
+            As:    -1,
+            Alias: &ast.Ident{
+              NamePos: 45,
+              NameEnd: 46,
+              Name:    "B",
             },
           },
-          Sample: (*parser.TableSample)(nil),
+          Sample: (*ast.TableSample)(nil),
         },
         Cond: nil,
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

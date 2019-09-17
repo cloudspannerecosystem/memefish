@@ -8,152 +8,155 @@ SELECT ARRAY(
 )
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.ExprSelectItem{
-        Expr: &parser.ArraySubQuery{
-          pos:   7,
-          end:   134,
-          Query: &parser.Select{
-            pos:      16,
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  7,
+          Rparen: 133,
+          Query:  &ast.Select{
+            Select:   16,
             Distinct: false,
             AsStruct: false,
-            Results:  []parser.SelectItem{
-              &parser.Star{
-                pos: 27,
+            Results:  []ast.SelectItem{
+              &ast.Star{
+                Star: 27,
               },
             },
-            From: &parser.From{
-              pos:    31,
-              Source: &parser.SubQueryTableExpr{
-                pos:   40,
-                end:   96,
-                Query: &parser.Select{
-                  pos:      41,
+            From: &ast.From{
+              From:   31,
+              Source: &ast.SubQueryTableExpr{
+                Lparen: 40,
+                Rparen: 90,
+                Query:  &ast.Select{
+                  Select:   41,
                   Distinct: false,
                   AsStruct: false,
-                  Results:  []parser.SelectItem{
-                    &parser.ExprSelectItem{
-                      Expr: &parser.StructLiteral{
-                        pos:    48,
-                        end:    90,
-                        Fields: []*parser.FieldType{
-                          &parser.FieldType{
-                            Member: &parser.Ident{
-                              pos:  55,
-                              end:  56,
-                              Name: "X",
+                  Results:  []ast.SelectItem{
+                    &ast.ExprSelectItem{
+                      Expr: &ast.StructLiteral{
+                        Struct: 48,
+                        Lparen: 81,
+                        Rparen: 89,
+                        Fields: []*ast.StructField{
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 55,
+                              NameEnd: 56,
+                              Name:    "X",
                             },
-                            Type: &parser.SimpleType{
-                              pos:  57,
-                              Name: "INT64",
-                            },
-                          },
-                          &parser.FieldType{
-                            Member: &parser.Ident{
-                              pos:  64,
-                              end:  65,
-                              Name: "Y",
-                            },
-                            Type: &parser.SimpleType{
-                              pos:  66,
-                              Name: "INT64",
+                            Type: &ast.SimpleType{
+                              NamePos: 57,
+                              Name:    "INT64",
                             },
                           },
-                          &parser.FieldType{
-                            Member: &parser.Ident{
-                              pos:  73,
-                              end:  74,
-                              Name: "Y",
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 64,
+                              NameEnd: 65,
+                              Name:    "Y",
                             },
-                            Type: &parser.SimpleType{
-                              pos:  75,
-                              Name: "INT64",
+                            Type: &ast.SimpleType{
+                              NamePos: 66,
+                              Name:    "INT64",
+                            },
+                          },
+                          &ast.StructField{
+                            Ident: &ast.Ident{
+                              NamePos: 73,
+                              NameEnd: 74,
+                              Name:    "Y",
+                            },
+                            Type: &ast.SimpleType{
+                              NamePos: 75,
+                              Name:    "INT64",
                             },
                           },
                         },
-                        Values: []parser.Expr{
-                          &parser.IntLiteral{
-                            pos:   82,
-                            end:   83,
-                            Base:  10,
-                            Value: "1",
+                        Values: []ast.Expr{
+                          &ast.IntLiteral{
+                            ValuePos: 82,
+                            ValueEnd: 83,
+                            Base:     10,
+                            Value:    "1",
                           },
-                          &parser.IntLiteral{
-                            pos:   85,
-                            end:   86,
-                            Base:  10,
-                            Value: "2",
+                          &ast.IntLiteral{
+                            ValuePos: 85,
+                            ValueEnd: 86,
+                            Base:     10,
+                            Value:    "2",
                           },
-                          &parser.IntLiteral{
-                            pos:   88,
-                            end:   89,
-                            Base:  10,
-                            Value: "3",
+                          &ast.IntLiteral{
+                            ValuePos: 88,
+                            ValueEnd: 89,
+                            Base:     10,
+                            Value:    "3",
                           },
                         },
                       },
                     },
                   },
-                  From:    (*parser.From)(nil),
-                  Where:   (*parser.Where)(nil),
-                  GroupBy: (*parser.GroupBy)(nil),
-                  Having:  (*parser.Having)(nil),
-                  OrderBy: (*parser.OrderBy)(nil),
-                  Limit:   (*parser.Limit)(nil),
+                  From:    (*ast.From)(nil),
+                  Where:   (*ast.Where)(nil),
+                  GroupBy: (*ast.GroupBy)(nil),
+                  Having:  (*ast.Having)(nil),
+                  OrderBy: (*ast.OrderBy)(nil),
+                  Limit:   (*ast.Limit)(nil),
                 },
-                As: &parser.AsAlias{
-                  pos:   92,
-                  Alias: &parser.Ident{
-                    pos:  95,
-                    end:  96,
-                    Name: "S",
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 95,
+                    NameEnd: 96,
+                    Name:    "S",
                   },
                 },
-                Sample: (*parser.TableSample)(nil),
+                Sample: (*ast.TableSample)(nil),
               },
             },
-            Where: &parser.Where{
-              pos:  99,
-              Expr: &parser.BinaryExpr{
+            Where: &ast.Where{
+              Where: 99,
+              Expr:  &ast.BinaryExpr{
                 Op:   "=",
-                Left: &parser.Ident{
-                  pos:  105,
-                  end:  106,
-                  Name: "S",
+                Left: &ast.Ident{
+                  NamePos: 105,
+                  NameEnd: 106,
+                  Name:    "S",
                 },
-                Right: &parser.StructLiteral{
-                  pos:    109,
-                  end:    132,
-                  Fields: []*parser.FieldType{},
-                  Values: []parser.Expr{
-                    &parser.StructLiteral{
-                      pos:    116,
-                      end:    131,
-                      Fields: []*parser.FieldType{},
-                      Values: []parser.Expr{
-                        &parser.IntLiteral{
-                          pos:   123,
-                          end:   124,
-                          Base:  10,
-                          Value: "1",
+                Right: &ast.StructLiteral{
+                  Struct: 109,
+                  Lparen: 115,
+                  Rparen: 131,
+                  Fields: []*ast.StructField{},
+                  Values: []ast.Expr{
+                    &ast.StructLiteral{
+                      Struct: 116,
+                      Lparen: 122,
+                      Rparen: 130,
+                      Fields: []*ast.StructField{},
+                      Values: []ast.Expr{
+                        &ast.IntLiteral{
+                          ValuePos: 123,
+                          ValueEnd: 124,
+                          Base:     10,
+                          Value:    "1",
                         },
-                        &parser.IntLiteral{
-                          pos:   126,
-                          end:   127,
-                          Base:  10,
-                          Value: "2",
+                        &ast.IntLiteral{
+                          ValuePos: 126,
+                          ValueEnd: 127,
+                          Base:     10,
+                          Value:    "2",
                         },
-                        &parser.IntLiteral{
-                          pos:   129,
-                          end:   130,
-                          Base:  10,
-                          Value: "3",
+                        &ast.IntLiteral{
+                          ValuePos: 129,
+                          ValueEnd: 130,
+                          Base:     10,
+                          Value:    "3",
                         },
                       },
                     },
@@ -161,20 +164,20 @@ SELECT ARRAY(
                 },
               },
             },
-            GroupBy: (*parser.GroupBy)(nil),
-            Having:  (*parser.Having)(nil),
-            OrderBy: (*parser.OrderBy)(nil),
-            Limit:   (*parser.Limit)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
           },
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

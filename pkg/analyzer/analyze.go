@@ -5,22 +5,23 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
+	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/MakeNowJust/memefish/pkg/token"
 )
 
 type Analyzer struct {
-	File    *parser.File
+	File    *token.File
 	Catalog *Catalog
 	Params  map[string]interface{}
 
-	Types     map[parser.Expr]*TypeInfo
-	Tables    map[parser.TableExpr]*TableInfo
-	NameLists map[parser.QueryExpr]NameList
+	Types     map[ast.Expr]*TypeInfo
+	Tables    map[ast.TableExpr]*TableInfo
+	NameLists map[ast.QueryExpr]NameList
 
 	scope *NameScope
 }
 
-func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) (err error) {
+func (a *Analyzer) AnalyzeQueryStatement(q *ast.QueryStatement) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if e, ok := r.(*Error); ok {
@@ -35,18 +36,18 @@ func (a *Analyzer) AnalyzeQueryStatement(q *parser.QueryStatement) (err error) {
 	return
 }
 
-func (a *Analyzer) analyzeType(t parser.Type) Type {
+func (a *Analyzer) analyzeType(t ast.Type) Type {
 	switch t := t.(type) {
-	case *parser.SimpleType:
+	case *ast.SimpleType:
 		return SimpleType(t.Name)
-	case *parser.ArrayType:
+	case *ast.ArrayType:
 		return &ArrayType{Item: a.analyzeType(t.Item)}
-	case *parser.StructType:
+	case *ast.StructType:
 		fields := make([]*StructField, len(t.Fields))
 		for i, f := range t.Fields {
 			var name string
-			if f.Member != nil {
-				name = f.Member.Name
+			if f.Ident != nil {
+				name = f.Ident.Name
 			}
 			fields[i] = &StructField{
 				Name: name,
@@ -59,15 +60,15 @@ func (a *Analyzer) analyzeType(t parser.Type) Type {
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeIntValue(i parser.IntValue) int64 {
+func (a *Analyzer) analyzeIntValue(i ast.IntValue) int64 {
 	switch i := i.(type) {
-	case *parser.IntLiteral:
+	case *ast.IntLiteral:
 		v, err := strconv.ParseInt(i.Value, i.Base, 64)
 		if err != nil {
 			a.panicf(i, "error on parsing integer literal: %v", err)
 		}
 		return v
-	case *parser.Param:
+	case *ast.Param:
 		v, ok := a.lookupParam(i.Name)
 		if !ok {
 			a.panicf(i, "unknown query parameter: %s", i.SQL())
@@ -77,28 +78,28 @@ func (a *Analyzer) analyzeIntValue(i parser.IntValue) int64 {
 			a.panicf(i, "invalid query parameter: %s", i.SQL())
 		}
 		return iv
-	case *parser.CastIntValue:
+	case *ast.CastIntValue:
 		return a.analyzeIntValue(i.Expr)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | int64 */ { //nolint:unused
+func (a *Analyzer) analyzeNumValue(n ast.NumValue) interface{} /* float64 | int64 */ { //nolint:unused
 	switch n := n.(type) {
-	case *parser.IntLiteral:
+	case *ast.IntLiteral:
 		v, err := strconv.ParseInt(n.Value, n.Base, 64)
 		if err != nil {
 			a.panicf(n, "error on parsing integer literal: %v", err)
 		}
 		return v
-	case *parser.FloatLiteral:
+	case *ast.FloatLiteral:
 		v, err := strconv.ParseFloat(n.Value, 64)
 		if err != nil {
 			a.panicf(n, "error on parsing integer literal: %v", err)
 		}
 		return v
-	case *parser.Param:
+	case *ast.Param:
 		v, ok := a.lookupParam(n.Name)
 		if !ok {
 			a.panicf(n, "unknown query parameter: %s", n.SQL())
@@ -112,18 +113,18 @@ func (a *Analyzer) analyzeNumValue(n parser.NumValue) interface{} /* float64 | i
 			return fv
 		}
 		a.panicf(n, "invalid query parameter: %s", n.SQL())
-	case *parser.CastNumValue:
+	case *ast.CastNumValue:
 		return a.analyzeNumValue(n.Expr)
 	}
 
 	panic("BUG: unreachable")
 }
 
-func (a *Analyzer) analyzeStringValue(s parser.StringValue) string {
+func (a *Analyzer) analyzeStringValue(s ast.StringValue) string {
 	switch s := s.(type) {
-	case *parser.StringLiteral:
+	case *ast.StringLiteral:
 		return s.Value
-	case *parser.Param:
+	case *ast.Param:
 		v, ok := a.lookupParam(s.Name)
 		if !ok {
 			a.panicf(s, "unknown query parameter: %s", s.SQL())
@@ -173,8 +174,8 @@ func (a *Analyzer) lookupTable(target string) (*TableSchema, bool) {
 	return table, ok
 }
 
-func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *Error {
-	var position *parser.Position
+func (a *Analyzer) errorf(node ast.Node, msg string, params ...interface{}) *Error {
+	var position *token.Position
 	if node != nil {
 		position = a.File.Position(node.Pos(), node.End())
 	}
@@ -185,19 +186,19 @@ func (a *Analyzer) errorf(node parser.Node, msg string, params ...interface{}) *
 	}
 }
 
-func (a *Analyzer) panicf(node parser.Node, msg string, params ...interface{}) {
+func (a *Analyzer) panicf(node ast.Node, msg string, params ...interface{}) {
 	panic(a.errorf(node, msg, params...))
 }
 
-func extractIdentFromExpr(e parser.Expr) *parser.Ident {
+func extractIdentFromExpr(e ast.Expr) *ast.Ident {
 	switch e := e.(type) {
-	case *parser.Ident:
+	case *ast.Ident:
 		return e
-	case *parser.Path:
+	case *ast.Path:
 		return e.Idents[len(e.Idents)-1]
-	case *parser.SelectorExpr:
-		return e.Member
-	case *parser.ParenExpr:
+	case *ast.SelectorExpr:
+		return e.Ident
+	case *ast.ParenExpr:
 		return extractIdentFromExpr(e.Expr)
 	}
 

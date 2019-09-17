@@ -2,46 +2,46 @@
 insert foo (foo, bar)
 values (1, default)
 --- AST
-&parser.Insert{
-  pos:       0,
-  TableName: &parser.Ident{
-    pos:  7,
-    end:  10,
-    Name: "foo",
+&ast.Insert{
+  Insert:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
   },
-  Columns: []*parser.Ident{
-    &parser.Ident{
-      pos:  12,
-      end:  15,
-      Name: "foo",
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
     },
-    &parser.Ident{
-      pos:  17,
-      end:  20,
-      Name: "bar",
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
     },
   },
-  Input: &parser.ValuesInput{
-    pos:  22,
-    Rows: []*parser.ValuesRow{
-      &parser.ValuesRow{
-        pos:    29,
-        end:    41,
-        Values: []*parser.DefaultExpr{
-          &parser.DefaultExpr{
-            pos:     30,
-            Default: false,
-            Expr:    &parser.IntLiteral{
-              pos:   30,
-              end:   31,
-              Base:  10,
-              Value: "1",
+  Input: &ast.ValuesInput{
+    Values: 22,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 29,
+        Rparen: 40,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 30,
+              ValueEnd: 31,
+              Base:     10,
+              Value:    "1",
             },
           },
-          &parser.DefaultExpr{
-            pos:     33,
-            Default: true,
-            Expr:    nil,
+          &ast.DefaultExpr{
+            DefaultPos: 33,
+            Default:    true,
+            Expr:       nil,
           },
         },
       },

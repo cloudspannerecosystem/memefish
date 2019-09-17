@@ -2,36 +2,36 @@
 select 1 A
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.Alias{
-        Expr: &parser.IntLiteral{
-          pos:   7,
-          end:   8,
-          Base:  10,
-          Value: "1",
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.IntLiteral{
+          ValuePos: 7,
+          ValueEnd: 8,
+          Base:     10,
+          Value:    "1",
         },
-        As: &parser.AsAlias{
-          pos:   9,
-          Alias: &parser.Ident{
-            pos:  9,
-            end:  10,
-            Name: "A",
+        As: &ast.AsAlias{
+          As:    9,
+          Alias: &ast.Ident{
+            NamePos: 9,
+            NameEnd: 10,
+            Name:    "A",
           },
         },
       },
     },
-    From:    (*parser.From)(nil),
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 

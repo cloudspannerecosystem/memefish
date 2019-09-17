@@ -6,87 +6,87 @@ SELECT
 FROM Singers S
 
 --- AST
-&parser.QueryStatement{
-  Hint:  (*parser.Hint)(nil),
-  Query: &parser.Select{
-    pos:      0,
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Select{
+    Select:   0,
     Distinct: false,
     AsStruct: false,
-    Results:  []parser.SelectItem{
-      &parser.DotStar{
-        end:  12,
-        Expr: &parser.Ident{
-          pos:  9,
-          end:  10,
-          Name: "S",
+    Results:  []ast.SelectItem{
+      &ast.DotStar{
+        Star: 11,
+        Expr: &ast.Ident{
+          NamePos: 9,
+          NameEnd: 10,
+          Name:    "S",
         },
       },
-      &parser.Alias{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  16,
-              end:  17,
-              Name: "S",
+      &ast.Alias{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 16,
+              NameEnd: 17,
+              Name:    "S",
             },
-            &parser.Ident{
-              pos:  18,
-              end:  26,
-              Name: "SingerId",
+            &ast.Ident{
+              NamePos: 18,
+              NameEnd: 26,
+              Name:    "SingerId",
             },
           },
         },
-        As: &parser.AsAlias{
-          pos:   27,
-          Alias: &parser.Ident{
-            pos:  30,
-            end:  32,
-            Name: "ID",
-          },
-        },
-      },
-      &parser.ExprSelectItem{
-        Expr: &parser.Path{
-          Idents: []*parser.Ident{
-            &parser.Ident{
-              pos:  36,
-              end:  37,
-              Name: "S",
-            },
-            &parser.Ident{
-              pos:  38,
-              end:  47,
-              Name: "FirstName",
-            },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 30,
+            NameEnd: 32,
+            Name:    "ID",
           },
         },
       },
-    },
-    From: &parser.From{
-      pos:    48,
-      Source: &parser.TableName{
-        Table: &parser.Ident{
-          pos:  53,
-          end:  60,
-          Name: "Singers",
-        },
-        Hint: (*parser.Hint)(nil),
-        As:   &parser.AsAlias{
-          pos:   61,
-          Alias: &parser.Ident{
-            pos:  61,
-            end:  62,
-            Name: "S",
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 36,
+              NameEnd: 37,
+              Name:    "S",
+            },
+            &ast.Ident{
+              NamePos: 38,
+              NameEnd: 47,
+              Name:    "FirstName",
+            },
           },
         },
-        Sample: (*parser.TableSample)(nil),
       },
     },
-    Where:   (*parser.Where)(nil),
-    GroupBy: (*parser.GroupBy)(nil),
-    Having:  (*parser.Having)(nil),
-    OrderBy: (*parser.OrderBy)(nil),
-    Limit:   (*parser.Limit)(nil),
+    From: &ast.From{
+      From:   48,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 53,
+          NameEnd: 60,
+          Name:    "Singers",
+        },
+        Hint: (*ast.Hint)(nil),
+        As:   &ast.AsAlias{
+          As:    61,
+          Alias: &ast.Ident{
+            NamePos: 61,
+            NameEnd: 62,
+            Name:    "S",
+          },
+        },
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
   },
 }
 
