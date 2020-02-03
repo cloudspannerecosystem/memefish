@@ -1,3 +1,41 @@
-baseURL = "http://example.org/"
-languageCode = "en-us"
-title = "My New Hugo Site"
+baseurl = "https://makenowjust.github.io/memefish"
+title = "méméfish"
+theme = "hugo-whisper-theme"
+languagecode = "en"
+defaultcontentlanguage = "en"
+
+paginate = 20
+canonifyurls = true
+
+pygmentsstyle = "bw"
+pygmentscodefences = true
+pygmentscodefencesguesssyntax = true
+
+summaryLength = 30
+
+[params]
+  homepage_button_link = "/docs"
+  homepage_button_text = "Read The Docs"
+  homepage_intro = "the foundation to analyze Spanner SQL"
+  homepage_image = "/images/terminal.svg"
+
+  [params.logo]
+    mobile = "/images/memefish.svg"
+    standard  = "/images/memefish.svg"
+
+[[menu.main]]
+    name = "Docs"
+    weight = 1
+    url  = "/docs/"
+[[menu.main]]
+    name = "Demo"
+    weight = 2
+    url = "/demo/"
+[[menu.main]]
+    name = "GoDoc"
+    weight = 3
+    url = "https://godoc.org/github.com/MakeNowJust/memefish/pkg"
+[[menu.main]]
+    name = "GitHub"
+    weight = 3
+    url = "https://github.com/MakeNowJust/memefish"

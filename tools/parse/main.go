@@ -12,6 +12,7 @@ import (
 )
 
 var mode = flag.String("mode", "statement", "parsing mode")
+var logging = flag.Bool("logging", false, "enable log")
 
 func init() {
 	flag.Parse()
@@ -19,12 +20,12 @@ func init() {
 
 func main() {
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [SQL query]")
+		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [-logging] <SQL query>")
 	}
 
 	query := flag.Arg(0)
 
-	log.Printf("query: %q", query)
+	logf("query: %q", query)
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
@@ -32,7 +33,7 @@ func main() {
 		},
 	}
 
-	log.Printf("start parsing")
+	logf("start parsing")
 	var node ast.Node
 	var err error
 	switch *mode {
@@ -50,11 +51,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("finish parsing successfully")
+	logf("finish parsing successfully")
 
 	fmt.Println("--- AST")
 	_, _ = pp.Println(node)
 	fmt.Println()
 	fmt.Println("--- SQL")
 	fmt.Println(node.SQL())
+}
+
+func logf(msg string, params ...interface{}) {
+	if *logging {
+		log.Printf(msg, params...)
+	}
 }

@@ -21,6 +21,14 @@ lint: bin/golangci-lint
 	@echo
 	bin/golangci-lint run ./...
 
+.PHONY: docs
+docs:
+	@echo
+	@echo "  (x x) < memefish: docs"
+	@echo "  /|||\\"
+	@echo
+	cd docs && hugo
+
 .PHONY: ci
 ci: lint test
 

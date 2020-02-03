@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,9 +16,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var param = flag.String("param", "", "param file")
-var schema = flag.String("schema", "", "schema file")
+var param = flag.String("param", "./tools/param.yml", "param file")
+var schema = flag.String("schema", "./tools/schema.yml", "schema file")
 var debug = flag.Bool("debug", false, "enable debug")
+var logging = flag.Bool("logging", false, "enable log")
 
 func init() {
 	flag.Parse()
@@ -25,14 +27,14 @@ func init() {
 
 func main() {
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./analyze [SQL query]")
+		log.Fatal("usage: ./analyze [-param FILE] [-schema FILE] [-debug] [-logging] <SQL query>")
 	}
 
 	query := flag.Arg(0)
 
 	var params map[string]interface{}
 	if *param != "" {
-		log.Printf("load param file: %s", *param)
+		logf("load param file: %s", *param)
 		var err error
 		params, err = loadParamFile(*param)
 		if err != nil {
@@ -42,7 +44,7 @@ func main() {
 
 	var catalog map[string]*analyzer.TableSchema
 	if *schema != "" {
-		log.Printf("load schema file: %s", *schema)
+		logf("load schema file: %s", *schema)
 		var err error
 		catalog, err = loadSchemaFile(*schema)
 		if err != nil {
@@ -50,7 +52,7 @@ func main() {
 		}
 	}
 
-	log.Printf("query: %q", query)
+	logf("query: %q", query)
 
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{
@@ -58,14 +60,15 @@ func main() {
 		},
 	}
 
-	log.Printf("start parsing")
+	logf("start parsing")
 	stmt, err := p.ParseQuery()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(1)
 	}
-	log.Printf("finish parsing successfully")
+	logf("finish parsing successfully")
 
-	log.Printf("start analyzing")
+	logf("start analyzing")
 	a := &analyzer.Analyzer{
 		File:    p.File,
 		Params:  params,
@@ -73,9 +76,10 @@ func main() {
 	}
 	err = a.AnalyzeQueryStatement(stmt)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(1)
 	}
-	log.Printf("finish analyzing")
+	logf("finish analyzing")
 
 	list := a.NameLists[stmt.Query]
 	if list == nil {
@@ -201,5 +205,11 @@ func decodeTableSchema(t *TableSchema) *analyzer.TableSchema {
 	return &analyzer.TableSchema{
 		Name:    t.Name,
 		Columns: columns,
+	}
+}
+
+func logf(msg string, params ...interface{}) {
+	if *logging {
+		log.Printf(msg, params...)
 	}
 }
