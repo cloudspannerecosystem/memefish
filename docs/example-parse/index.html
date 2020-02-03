@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Example: parse and unparse - méméfish</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="https://makenowjust.github.io/memefish/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="https://makenowjust.github.io/memefish/css/style.min.d0149e46d37ed09a60f55899204505f757aeb152bb817cdb02a1a2bf5728bb6b.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-docs">
+      <a href="https://makenowjust.github.io/memefish/docs/">
+        <span>Docs</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-github">
+      <a href="https://github.com/MakeNowJust/memefish">
+        <span>GitHub</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-godoc">
+      <a href="https://godoc.org/github.com/MakeNowJust/memefish/pkg">
+        <span>GoDoc</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="https://makenowjust.github.io/memefish"><img alt="Logo" src="https://makenowjust.github.io/memefish/images/memefish.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="https://makenowjust.github.io/memefish"><img alt="Logo" src="https://makenowjust.github.io/memefish/images/memefish.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-docs">
+      <a href="https://makenowjust.github.io/memefish/docs/">
+        <span>Docs</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-github">
+      <a href="https://github.com/MakeNowJust/memefish">
+        <span>GitHub</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-godoc">
+      <a href="https://godoc.org/github.com/MakeNowJust/memefish/pkg">
+        <span>GoDoc</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Docs</h4>
+  <ul>
+    
+    <li class="active ">
+      <a href="https://makenowjust.github.io/memefish/docs/example-parse/">Example: parse and unparse</a>
+    </li>
+    
+    <li class="">
+      <a href="https://makenowjust.github.io/memefish/docs/example-analyze/">Example: analyze</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Example: parse and unparse</h1>
+<div class="content ">
+  <p>This example shows how to parse a Spanner SQL and unparse it.</p>
+<h2 id="code">Code</h2>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="font-weight:bold">package</span> main
+
+<span style="font-weight:bold">import</span> (
+	<span style="font-style:italic">&#34;fmt&#34;</span>
+	<span style="font-style:italic">&#34;log&#34;</span>
+
+	<span style="font-style:italic">&#34;github.com/MakeNowJust/memefish/pkg/parser&#34;</span>
+	<span style="font-style:italic">&#34;github.com/MakeNowJust/memefish/pkg/token&#34;</span>
+	<span style="font-style:italic">&#34;github.com/k0kubun/pp&#34;</span>
+)
+
+<span style="font-weight:bold">func</span> main() {
+	<span style="font-style:italic">// Create a new Parser instance.
+</span><span style="font-style:italic"></span>	file := &amp;token.File{
+		Buffer: <span style="font-style:italic">&#34;SELECT * FROM customers&#34;</span>,
+	}
+	p := &amp;parser.Parser{
+		Lexer: &amp;parser.Lexer{File: file},
+	}
+
+	<span style="font-style:italic">// Do parsing!
+</span><span style="font-style:italic"></span>	stmt, err := p.ParseQuery()
+	<span style="font-weight:bold">if</span> err != <span style="font-weight:bold">nil</span> {
+		log.Fatal(err)
+	}
+
+	<span style="font-style:italic">// Show AST.
+</span><span style="font-style:italic"></span>	log.Print(<span style="font-style:italic">&#34;AST&#34;</span>)
+	_, _ = pp.Println(stmt)
+
+	<span style="font-style:italic">// Unparse AST to SQL source string.
+</span><span style="font-style:italic"></span>	log.Print(<span style="font-style:italic">&#34;Unparse&#34;</span>)
+	fmt.Println(stmt.SQL())
+}
+</code></pre></div><h2 id="links">Links</h2>
+<ul>
+<li><a href="https://godoc.org/github.com/MakeNowJust/memefish/pkg/ast">ast - GoDoc</a></li>
+<li><a href="https://godoc.org/github.com/MakeNowJust/memefish/pkg/parser">parser - GoDoc</a></li>
+<li><a href="https://cloud.google.com/spanner/docs/query-syntax">Query Syntax |  Cloud Spanner  |  Google Cloud</a></li>
+</ul>
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="sub-footer-inner">
+            <ul>
+              <li class="zerostatic"><a href="https://github.com/JugglerX/hugo-whisper-theme">Hugo Whisper Theme</a> by <a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+              <li>/</li>
+              <li>(C) 2019-2020 TSUYUSATO "<a href="https://github.com/MakeNowJust">MakeNowJust</a>" Kitsune</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="https://makenowjust.github.io/memefish/js/scripts.min.1237ff71925bb8625c97a9af8db4c54525258bedfd7c47493daaff723bea755e.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

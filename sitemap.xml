@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/docs/example-parse/</loc>
+    <lastmod>2020-02-03T00:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/docs/example-analyze/</loc>
+    <lastmod>2020-02-03T00:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/</loc>
+    <lastmod>2020-02-03T00:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/docs/</loc>
+    <lastmod>2020-02-03T00:00:00+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/categories/</loc>
+  </url>
+  
+  <url>
+    <loc>https://makenowjust.github.io/memefish/tags/</loc>
+  </url>
+  
+</urlset>

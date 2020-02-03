@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>README on méméfish</title>
+    <link>https://makenowjust.github.io/memefish/docs/</link>
+    <description>Recent content in README on méméfish</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 03 Feb 2020 00:00:00 +0900</lastBuildDate>
+    
+	<atom:link href="https://makenowjust.github.io/memefish/docs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Example: parse and unparse</title>
+      <link>https://makenowjust.github.io/memefish/docs/example-parse/</link>
+      <pubDate>Mon, 03 Feb 2020 00:00:00 +0900</pubDate>
+      
+      <guid>https://makenowjust.github.io/memefish/docs/example-parse/</guid>
+      <description>&lt;p&gt;This example shows how to parse a Spanner SQL and unparse it.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Example: analyze</title>
+      <link>https://makenowjust.github.io/memefish/docs/example-analyze/</link>
+      <pubDate>Mon, 03 Feb 2020 00:00:00 +0900</pubDate>
+      
+      <guid>https://makenowjust.github.io/memefish/docs/example-analyze/</guid>
+      <description>&lt;p&gt;This example shows how to analyze a Spanner SQL after parsing.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
