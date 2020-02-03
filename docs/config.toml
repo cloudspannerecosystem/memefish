@@ -27,10 +27,10 @@ summaryLength = 30
     name = "Docs"
     weight = 1
     url  = "/docs/"
-[[menu.main]]
-    name = "Demo"
-    weight = 2
-    url = "/demo/"
+# [[menu.main]]
+#     name = "Demo"
+#     weight = 2
+#     url = "/demo/"
 [[menu.main]]
     name = "GoDoc"
     weight = 3
