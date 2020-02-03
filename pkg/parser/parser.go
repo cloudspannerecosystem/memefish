@@ -78,6 +78,7 @@ func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
 	return
 }
 
+// ParseExpr parses a SQL expression.
 func (p *Parser) ParseExpr() (expr ast.Expr, err error) {
 	defer func() {
 		if r := recover(); r != nil {
