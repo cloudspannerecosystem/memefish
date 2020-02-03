@@ -16,6 +16,7 @@ jobs:
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: '0.63.2'
+          extended: true
       - name: Build docs
         run: make docs
       - name: Deploy
