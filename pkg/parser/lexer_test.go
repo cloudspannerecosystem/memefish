@@ -137,6 +137,7 @@ var lexerWrongTestCase = []struct {
 	{"``", 0, "invalid empty identifier"},
 	{"1from", 1, "number literal cannot follow identifier without any spaces"},
 	{`'''0`, 0, "unclosed triple-quoted string literal"},
+	{`/*`, 2, "unclosed comment"},
 }
 
 func tokenEqual(t1, t2 *Token) bool {

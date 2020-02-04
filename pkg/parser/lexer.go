@@ -448,22 +448,26 @@ func (l *Lexer) skipSpaces() {
 		case unicode.IsSpace(r):
 			l.skipN(size)
 		case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
-			l.skipComment("\n")
+			l.skipComment("\n", false)
 		case r == '/' && l.peekIs(1, '*'):
-			l.skipComment("*/")
+			l.skipComment("*/", true)
 		default:
 			return
 		}
 	}
 }
 
-func (l *Lexer) skipComment(end string) {
+func (l *Lexer) skipComment(end string, mustEnd bool) {
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
 			l.skipN(len(end))
 			return
 		}
 		l.skip()
+	}
+	if mustEnd {
+		// TODO: improve error position
+		l.panicf("unclosed comment")
 	}
 }
 
