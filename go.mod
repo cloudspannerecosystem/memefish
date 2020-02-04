@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/k0kubun/pp v1.3.1-0.20200204072010-14bf8931b16d
+	github.com/k0kubun/pp v1.3.1-0.20200204103551-99835366d1cc
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/go-runewidth v0.0.4 // indirect
