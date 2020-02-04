@@ -214,7 +214,7 @@ WHERE A.z.a = 2
                       Struct: 0,
                       Lparen: 206,
                       Rparen: 223,
-                      Fields: []*ast.StructField{},
+                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 207,
@@ -231,7 +231,7 @@ WHERE A.z.a = 2
                           Struct: 0,
                           Lparen: 217,
                           Rparen: 222,
-                          Fields: []*ast.StructField{},
+                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 218,
@@ -253,7 +253,7 @@ WHERE A.z.a = 2
                       Struct: 0,
                       Lparen: 226,
                       Rparen: 243,
-                      Fields: []*ast.StructField{},
+                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 227,
@@ -270,7 +270,7 @@ WHERE A.z.a = 2
                           Struct: 0,
                           Lparen: 237,
                           Rparen: 242,
-                          Fields: []*ast.StructField{},
+                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 238,

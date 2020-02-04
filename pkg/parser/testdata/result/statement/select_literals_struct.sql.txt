@@ -31,7 +31,7 @@ SELECT
                   Struct: 22,
                   Lparen: 28,
                   Rparen: 36,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 29,
@@ -78,7 +78,7 @@ SELECT
                   Struct: 55,
                   Lparen: 61,
                   Rparen: 72,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 62,
@@ -346,7 +346,7 @@ SELECT
                   Struct: 0,
                   Lparen: 261,
                   Rparen: 269,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 262,
@@ -394,7 +394,7 @@ SELECT
                   Lparen: 296,
                   Rparen: 297,
                   Fields: []*ast.StructField{},
-                  Values: []ast.Expr{},
+                  Values: []ast.Expr(nil),
                 },
               },
             },
@@ -422,7 +422,7 @@ SELECT
                   Struct: 0,
                   Lparen: 317,
                   Rparen: 322,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 318,

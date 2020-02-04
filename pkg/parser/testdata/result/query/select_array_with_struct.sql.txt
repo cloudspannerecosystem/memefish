@@ -59,7 +59,7 @@ FROM
               Struct: 0,
               Lparen: 58,
               Rparen: 67,
-              Fields: []*ast.StructField{},
+              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 59,
@@ -78,7 +78,7 @@ FROM
               Struct: 0,
               Lparen: 70,
               Rparen: 79,
-              Fields: []*ast.StructField{},
+              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 71,

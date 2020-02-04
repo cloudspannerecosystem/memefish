@@ -47,7 +47,7 @@ select * from unnest([(1, 2), (3, 4)])
                 Struct: 0,
                 Lparen: 44,
                 Rparen: 49,
-                Fields: []*ast.StructField{},
+                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 45,
@@ -67,7 +67,7 @@ select * from unnest([(1, 2), (3, 4)])
                 Struct: 0,
                 Lparen: 52,
                 Rparen: 57,
-                Fields: []*ast.StructField{},
+                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 53,

@@ -132,13 +132,13 @@ SELECT ARRAY(
                   Struct: 109,
                   Lparen: 115,
                   Rparen: 131,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.StructLiteral{
                       Struct: 116,
                       Lparen: 122,
                       Rparen: 130,
-                      Fields: []*ast.StructField{},
+                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 123,
