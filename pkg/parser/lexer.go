@@ -490,6 +490,9 @@ func (l *Lexer) skipN(n int) {
 }
 
 func (l *Lexer) slice(start, end int) string {
+	if len(l.Buffer) < l.pos+end {
+		end = len(l.Buffer) - l.pos
+	}
 	return string(l.Buffer[l.pos+start : l.pos+end])
 }
 
