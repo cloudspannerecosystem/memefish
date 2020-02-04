@@ -1,15 +1,15 @@
 .PHONY: test
-test: bin/richgo
+test:
 	@echo
 	@echo "  (x x) < memefish: test"
 	@echo "  /|||\\"
 	@echo
 	@echo go test ./pkg/...
-	@bin/richgo test -cover \
-	                 -coverprofile=cover.out \
-	                 -covermode=count \
-	                 -coverpkg=github.com/MakeNowJust/memefish/pkg/... \
-	                 ./pkg/...
+	@go test -cover \
+	         -coverprofile=cover.out \
+	         -covermode=count \
+	         -coverpkg=github.com/MakeNowJust/memefish/pkg/... \
+	         ./pkg/...
 	@echo go build ./example/... ./tools/...
 	@go build -o /dev/null ./example/... ./tools/...
 
@@ -45,10 +45,7 @@ update-mod:
 	go mod tidy
 
 .PHONY: install-dep
-install-dep: bin/richgo bin/golangci-lint
-
-bin/richgo:
-	go build -o bin/richgo github.com/kyoh86/richgo
+install-dep: bin/golangci-lint
 
 bin/golangci-lint:
-	go build -o bin/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ./bin v1.23.2
