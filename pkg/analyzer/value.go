@@ -23,6 +23,13 @@ func valueType(v interface{}) (Type, error) {
 		}
 		return &ArrayType{Item: item}, nil
 	case *Placeholder:
+		// Early resolve when placeholder is filled.
+		// It is needed for working such like `select @param.* FROM (select 1) WHERE cast(@param as struct<foo string>).foo = "foo"` SQL.
+		// In this SQL, `@param` is filled as `struct` type on `WHER` phase at first, and after,
+		// `@param` in `SELECT` is used as `struct`, however `@param` type is `PlaceholderType` in fact, so early resolve is needed.
+		if v.PlaceholderType.Type != nil {
+			return v.PlaceholderType.Type, nil
+		}
 		return v.PlaceholderType, nil
 	case []map[string]interface{}:
 		var fields []*StructField
