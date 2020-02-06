@@ -22,6 +22,8 @@ func valueType(v interface{}) (Type, error) {
 			return nil, err
 		}
 		return &ArrayType{Item: item}, nil
+	case *Placeholder:
+		return v.PlaceholderType, nil
 	case []map[string]interface{}:
 		var fields []*StructField
 		for _, kv := range v {

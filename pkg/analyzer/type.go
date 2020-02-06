@@ -38,6 +38,11 @@ type StructField struct {
 	Type Type
 }
 
+// PlaceholderType is placeholder that infers its type on analyzing.
+type PlaceholderType struct {
+	Type Type
+}
+
 func (s SimpleType) String() string {
 	return string(s)
 }
@@ -59,6 +64,13 @@ func (s *StructType) String() string {
 	}
 	t += ">"
 	return t
+}
+
+func (p *PlaceholderType) String() string {
+	if p.Type != nil {
+		return p.Type.String()
+	}
+	return "_"
 }
 
 func (s SimpleType) EqualTo(t Type) bool {
@@ -91,6 +103,10 @@ func (s *StructType) EqualTo(t Type) bool {
 	} else {
 		return false
 	}
+}
+
+func (p *PlaceholderType) EqualTo(t Type) bool {
+	return TypeEqual(p.Type, t)
 }
 
 func (s SimpleType) CastTo(t Type) bool {
@@ -148,6 +164,13 @@ func (s *StructType) CastTo(t Type) bool {
 	return false
 }
 
+func (p *PlaceholderType) CastTo(t Type) bool {
+	if p.Type == nil {
+		p.Type = t
+	}
+	return TypeCast(p.Type, t)
+}
+
 func (s SimpleType) CoerceTo(t Type) bool {
 	if t, ok := t.(SimpleType); ok {
 		if s == t {
@@ -186,6 +209,13 @@ func (s *StructType) CoerceTo(t Type) bool {
 	return false
 }
 
+func (p *PlaceholderType) CoerceTo(t Type) bool {
+	if p.Type == nil {
+		p.Type = t
+	}
+	return TypeCoerce(p.Type, t)
+}
+
 // TypeEqual checks s equals to t in structual.
 func TypeEqual(s, t Type) bool {
 	if s == nil || t == nil {
@@ -204,6 +234,9 @@ func TypeCast(s, t Type) bool {
 
 // TypeCoerce checks s convert to t implicitly.
 func TypeCoerce(s, t Type) bool {
+	if p, ok := t.(*PlaceholderType); ok && p.Type != nil {
+		t = p.Type
+	}
 	if s == nil || t == nil {
 		return true
 	}
