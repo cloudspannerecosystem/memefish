@@ -12,7 +12,7 @@ import (
 func main() {
 	// Create a new Parser instance.
 	file := &token.File{
-		Buffer: "SELECT * FROM singers",
+		Buffer: "SELECT * FROM singers WHERE CAST(@param As STRUCT<foo STRING>).foo = FirstName",
 	}
 	p := &parser.Parser{
 		Lexer: &parser.Lexer{File: file},
@@ -38,10 +38,16 @@ func main() {
 		},
 	}
 
+	placeholder := analyzer.NewPlaceholder()
+	params := map[string]interface{}{
+		"PARAM": placeholder,
+	}
+
 	// Create a new Analyzer instance.
 	a := &analyzer.Analyzer{
 		File:    file,
 		Catalog: catalog,
+		Params:  params,
 	}
 
 	// Analyze!
@@ -50,9 +56,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Get first column information.
+	// Get columns information.
 	columns := a.NameLists[stmt.Query]
-	fmt.Printf("1st column name  : %s\n", columns[0].Text)
-	fmt.Printf("1st column type  : %s\n", columns[0].Type)
-	fmt.Printf("1st column schema: %#v\n", columns[0].Deref().ColumnSchema) // == catalog.Tables["SINGERS"].Columns[0]
+	for i, column := range columns {
+		fmt.Printf("columns[%d] name  : %s\n", i, column.Text)
+		fmt.Printf("columns[%d] type  : %s\n", i, column.Type)
+		fmt.Printf("columns[%d] schema: %#v\n", i, column.Deref().ColumnSchema) // == catalog.Tables["SINGERS"].Columns[i]
+		fmt.Println()
+	}
+
+	// Get inferred placeholder type.
+	fmt.Printf("placeholder type : %s\n", placeholder.PlaceholderType)
 }
