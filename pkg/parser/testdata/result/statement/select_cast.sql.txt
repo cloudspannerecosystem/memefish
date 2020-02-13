@@ -37,14 +37,14 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             Struct: 0,
             Lparen: 30,
             Rparen: 62,
-            Fields: []*ast.StructField{},
+            Fields: []*ast.StructField(nil),
             Values: []ast.Expr{
               &ast.StructLiteral{
                 Struct: 31,
                 Lparen: 37,
                 Rparen: 38,
-                Fields: []*ast.StructField{},
-                Values: []ast.Expr{},
+                Fields: []*ast.StructField(nil),
+                Values: []ast.Expr(nil),
               },
               &ast.IntLiteral{
                 ValuePos: 41,

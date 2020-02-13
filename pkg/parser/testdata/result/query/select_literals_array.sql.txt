@@ -132,7 +132,7 @@ SELECT
             NamePos: 99,
             Name:    "INT64",
           },
-          Values: []ast.Expr{},
+          Values: []ast.Expr(nil),
         },
       },
     },

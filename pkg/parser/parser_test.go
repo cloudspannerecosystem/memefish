@@ -21,23 +21,8 @@ import (
 var update = flag.Bool("update", false, "update result files")
 
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser.Parser) (ast.Node, error)) {
-	// Disable color output.
-	// https://github.com/k0kubun/pp/issues/26
 	printer := pp.New()
-	printer.SetColorScheme(pp.ColorScheme{
-		Bool:            pp.NoColor,
-		Integer:         pp.NoColor,
-		Float:           pp.NoColor,
-		String:          pp.NoColor,
-		StringQuotation: pp.NoColor,
-		EscapedChar:     pp.NoColor,
-		FieldName:       pp.NoColor,
-		PointerAdress:   pp.NoColor,
-		Nil:             pp.NoColor,
-		Time:            pp.NoColor,
-		StructName:      pp.NoColor,
-		ObjectLength:    pp.NoColor,
-	})
+	printer.SetColoringEnabled(false)
 
 	if *update {
 		_, err := os.Stat(resultPath)

@@ -373,7 +373,7 @@ lines''',
             NamePos: 442,
             Name:    "INT64",
           },
-          Values: []ast.Expr{},
+          Values: []ast.Expr(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -390,7 +390,7 @@ lines''',
                   Struct: 467,
                   Lparen: 473,
                   Rparen: 481,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 474,
@@ -437,7 +437,7 @@ lines''',
                   Struct: 0,
                   Lparen: 500,
                   Rparen: 508,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 501,
