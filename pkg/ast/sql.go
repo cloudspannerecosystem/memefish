@@ -31,7 +31,7 @@ func exprPrec(e Expr) prec {
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
-		case OpMul, OpDiv:
+		case OpMul, OpDiv, OpConcat:
 			return precMulDiv
 		case OpAdd, OpSub:
 			return precAddSub

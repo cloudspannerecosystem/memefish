@@ -24,4 +24,5 @@ select 1 + 2, 1 - 2,
        timestamp_add(timestamp "2019-09-01 08:11:22", interval 5 hour),
        1 in (1, 2, 3),
        2 in unnest([1, 2, 3]),
-       3 in (select 1 union all select 2 union all select 3)
+       3 in (select 1 union all select 2 union all select 3),
+       [1] || [2]
