@@ -1195,6 +1195,8 @@ func (p *Parser) parseMulDiv() ast.Expr {
 			op = ast.OpMul
 		case "/":
 			op = ast.OpDiv
+		case "||":
+			op = ast.OpConcat
 		default:
 			return expr
 		}

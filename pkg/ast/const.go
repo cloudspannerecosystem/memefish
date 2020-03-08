@@ -84,6 +84,7 @@ const (
 	OpSub           BinaryOp = "-"
 	OpMul           BinaryOp = "*"
 	OpDiv           BinaryOp = "/"
+	OpConcat        BinaryOp = "||"
 )
 
 type UnaryOp string
