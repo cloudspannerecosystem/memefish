@@ -690,6 +690,9 @@ func (c *CreateTable) SQL() string {
 		}
 		sql += c.SQL()
 	}
+	for _, c := range c.ForeignKeys {
+		sql += ", " + c.SQL()
+	}
 	sql += ") "
 	sql += "PRIMARY KEY ("
 	for i, k := range c.PrimaryKeys {
@@ -713,6 +716,30 @@ func (c *ColumnDef) SQL() string {
 	if c.Options != nil {
 		sql += " " + c.Options.SQL()
 	}
+	return sql
+}
+
+func (c *ForeignKey) SQL() string {
+	var sql string
+	if c.Name != nil {
+		sql += "CONSTRAINT " + c.Name.SQL() + " "
+	}
+	sql += "FOREIGN KEY ("
+	for i, k := range c.Columns {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += k.SQL()
+	}
+	sql += ") "
+	sql += "REFERENCES " + c.ReferenceTable.SQL() + " ("
+	for i, k := range c.ReferenceColumns {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += k.SQL()
+	}
+	sql += ")"
 	return sql
 }
 

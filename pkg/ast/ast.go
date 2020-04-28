@@ -1244,6 +1244,7 @@ type CreateTable struct {
 	Name        *Ident
 	Columns     []*ColumnDef
 	PrimaryKeys []*IndexKey
+	ForeignKeys []*ForeignKey
 	Cluster     *Cluster // optional
 }
 
@@ -1275,6 +1276,21 @@ type ColumnDefOptions struct {
 	Rparen  token.Pos // position of ")"
 
 	AllowCommitTimestamp bool
+}
+
+// ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
+//
+//     {{if .Name}}CONSTRAINT {{.Name}}{{end}} FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
+type ForeignKey struct {
+	// pos = Constraint || Foreign
+
+	Constraint token.Pos // position of "CONSTRAINT" keyword when Implicit is true
+	Foreign    token.Pos // position of "FOREIGN" keyword
+
+	Name             *Ident // optional
+	Columns          []*Ident
+	ReferenceTable   *Ident
+	ReferenceColumns []*Ident
 }
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.

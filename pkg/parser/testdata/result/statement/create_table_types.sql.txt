@@ -222,7 +222,8 @@ create table types (
       Dir: "",
     },
   },
-  Cluster: (*ast.Cluster)(nil),
+  ForeignKeys: []*ast.ForeignKey(nil),
+  Cluster:     (*ast.Cluster)(nil),
 }
 
 --- SQL
