@@ -25,7 +25,9 @@ select 1 + 2, 1 - 2,
        timestamp_add(timestamp "2019-09-01 08:11:22", interval 5 hour),
        1 in (1, 2, 3),
        2 in unnest([1, 2, 3]),
-       3 in (select 1 union all select 2 union all select 3)
+       3 in (select 1 union all select 2 union all select 3),
+       [1] || [2]
+
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
@@ -818,6 +820,39 @@ select 1 + 2, 1 - 2,
           },
         },
       },
+      &ast.ExprSelectItem{
+        Expr: &ast.BinaryExpr{
+          Op:   "||",
+          Left: &ast.ArrayLiteral{
+            Array:  0,
+            Lbrack: 754,
+            Rbrack: 756,
+            Type:   nil,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 755,
+                ValueEnd: 756,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          Right: &ast.ArrayLiteral{
+            Array:  0,
+            Lbrack: 761,
+            Rbrack: 763,
+            Type:   nil,
+            Values: []ast.Expr{
+              &ast.IntLiteral{
+                ValuePos: 762,
+                ValueEnd: 763,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+        },
+      },
     },
     From:    (*ast.From)(nil),
     Where:   (*ast.Where)(nil),
@@ -829,4 +864,4 @@ select 1 + 2, 1 - 2,
 }
 
 --- SQL
-SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 AS `1`).`1`, NOT NOT TRUE, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST(ARRAY[1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3)
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 AS `1`).`1`, NOT NOT TRUE, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST(ARRAY[1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), ARRAY[1] || ARRAY[2]
