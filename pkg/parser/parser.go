@@ -1903,11 +1903,19 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	// TODO: is this allowed by Spanner really?
 	p.expect("(")
 	var columns []*ast.ColumnDef
+	var foreignKeys []*ast.ForeignKey
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ")" {
 			break
 		}
-		columns = append(columns, p.parseColumnDef())
+		switch {
+		case p.Token.IsKeywordLike("CONSTRAINT"):
+			foreignKeys = append(foreignKeys, p.parseConstraint())
+		case p.Token.IsKeywordLike("FOREIGN"):
+			foreignKeys = append(foreignKeys, p.parseForeignKey())
+		default:
+			columns = append(columns, p.parseColumnDef())
+		}
 		if p.Token.Kind != "," {
 			break
 		}
@@ -1939,6 +1947,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Rparen:      rparen,
 		Name:        name,
 		Columns:     columns,
+		ForeignKeys: foreignKeys,
 		PrimaryKeys: keys,
 		Cluster:     cluster,
 	}
@@ -1955,6 +1964,46 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		Type:    t,
 		NotNull: notNull,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseConstraint() *ast.ForeignKey {
+	pos := p.expectKeywordLike("CONSTRAINT").Pos
+	name := p.parseIdent()
+	fk := p.parseForeignKey()
+	fk.Constraint = pos
+	fk.Name = name
+	return fk
+}
+
+func (p *Parser) parseForeignKey() *ast.ForeignKey {
+	pos := p.expectKeywordLike("FOREIGN").Pos
+	p.expectKeywordLike("KEY")
+
+	p.expect("(")
+	columns := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		columns = append(columns, p.parseIdent())
+	}
+	p.expect(")")
+	p.expectKeywordLike("REFERENCES")
+	refTable := p.parseIdent()
+
+	p.expect("(")
+	refColumns := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		refColumns = append(refColumns, p.parseIdent())
+	}
+	p.expect(")")
+
+	return &ast.ForeignKey{
+		Foreign:          pos,
+		Name:             nil,
+		Columns:          columns,
+		ReferenceTable:   refTable,
+		ReferenceColumns: refColumns,
 	}
 }
 
