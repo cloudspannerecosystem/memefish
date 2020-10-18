@@ -108,6 +108,7 @@ func (StringLiteral) isExpr()    {}
 func (BytesLiteral) isExpr()     {}
 func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
+func (NumericLiteral) isExpr()   {}
 
 // InCondition is right-side value of IN operator.
 type InCondition interface {
@@ -1117,6 +1118,18 @@ type TimestampLiteral struct {
 	// end = ValueEnd.end
 
 	Timestamp token.Pos // position of "TIMESTAMP"
+
+	Value *StringLiteral
+}
+
+// NumericLiteral is numeric literal node.
+//
+//     NUMERIC {{.Value | sql}}
+type NumericLiteral struct {
+	// pos = Numeric
+	// end = ValueEnd.end
+
+	Numeric token.Pos // position of "NUMERIC"
 
 	Value *StringLiteral
 }

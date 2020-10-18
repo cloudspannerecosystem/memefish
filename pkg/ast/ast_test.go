@@ -74,6 +74,7 @@ func TestExpr(t *testing.T) {
 	Expr(&BytesLiteral{}).isExpr()
 	Expr(&DateLiteral{}).isExpr()
 	Expr(&TimestampLiteral{}).isExpr()
+	Expr(&NumericLiteral{}).isExpr()
 }
 
 func TestInCondition(t *testing.T) {

@@ -19,6 +19,7 @@ const (
 	BytesType     SimpleType = "BYTES"
 	DateType      SimpleType = "DATE"
 	TimestampType SimpleType = "TIMESTAMP"
+	NumericType   SimpleType = "NUMERIC"
 )
 
 // ArrayType is ARRAY type.
@@ -107,7 +108,7 @@ func (s SimpleType) CastTo(t Type) bool {
 		case Int64Type:
 			return t == StringType || t == Float64Type || t == BoolType
 		case Float64Type:
-			return t == StringType || t == Int64Type
+			return t == StringType || t == Int64Type || t == NumericType
 		case BoolType:
 			return t == StringType || t == Int64Type
 		case StringType:
@@ -118,6 +119,8 @@ func (s SimpleType) CastTo(t Type) bool {
 			return t == StringType || t == TimestampType
 		case TimestampType:
 			return t == StringType || t == DateType
+		case NumericType:
+			return t == Float64Type
 		}
 	}
 

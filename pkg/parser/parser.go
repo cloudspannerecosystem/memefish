@@ -1347,6 +1347,9 @@ func (p *Parser) parseLit() ast.Expr {
 			if id.IsKeywordLike("TIMESTAMP") {
 				return p.parseTimestampLiteral(id)
 			}
+			if id.IsKeywordLike("NUMERIC") {
+				return p.parseNumericLiteral(id)
+			}
 		}
 		return &ast.Ident{
 			NamePos: id.Pos,
@@ -1666,6 +1669,14 @@ func (p *Parser) parseTimestampLiteral(id token.Token) *ast.TimestampLiteral {
 	}
 }
 
+func (p *Parser) parseNumericLiteral(id token.Token) *ast.NumericLiteral {
+	s := p.parseStringLiteral()
+	return &ast.NumericLiteral{
+		Numeric: id.Pos,
+		Value:   s,
+	}
+}
+
 func (p *Parser) lookaheadSubQuery() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
@@ -1736,6 +1747,7 @@ var simpleTypes = []string{
 	"FLOAT64",
 	"DATE",
 	"TIMESTAMP",
+	"NUMERIC",
 	"STRING",
 	"BYTES",
 }
@@ -2331,6 +2343,7 @@ var scalarSchemaTypes = []string{
 	"FLOAT64",
 	"DATE",
 	"TIMESTAMP",
+	"NUMERIC",
 }
 
 var sizedSchemaTypes = []string{

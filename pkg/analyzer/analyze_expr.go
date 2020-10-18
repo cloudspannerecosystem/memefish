@@ -652,3 +652,10 @@ func (a *Analyzer) analyzeTimestampLiteral(e *ast.TimestampLiteral) *TypeInfo {
 		Type: TimestampType,
 	}
 }
+
+func (a *Analyzer) analyzeNumericLiteral(e *ast.NumericLiteral) *TypeInfo {
+	// TODO: check e.Value format
+	return &TypeInfo{
+		Type: NumericType,
+	}
+}
