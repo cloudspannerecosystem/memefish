@@ -106,6 +106,8 @@ func parseTypeTiny(s string) (analyzer.Type, bool) {
 		return analyzer.DateType, true
 	case "TIMESTAMP":
 		return analyzer.TimestampType, true
+	case "NUMERIC":
+		return analyzer.NumericType, true
 	}
 
 	if len(s) <= 6 {

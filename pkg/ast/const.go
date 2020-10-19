@@ -106,6 +106,7 @@ const (
 	BytesTypeName     ScalarTypeName = "BYTES"
 	DateTypeName      ScalarTypeName = "DATE"
 	TimestampTypeName ScalarTypeName = "TIMESTAMP"
+	NumericTypeName   ScalarTypeName = "NUMERIC"
 )
 
 type OnDeleteAction string

@@ -422,6 +422,9 @@ func (d *DateLiteral) End() token.Pos { return d.Value.End() }
 func (t *TimestampLiteral) Pos() token.Pos { return t.Timestamp }
 func (t *TimestampLiteral) End() token.Pos { return t.Value.End() }
 
+func (t *NumericLiteral) Pos() token.Pos { return t.Numeric }
+func (t *NumericLiteral) End() token.Pos { return t.Value.End() }
+
 // ================================================================================
 //
 // Type

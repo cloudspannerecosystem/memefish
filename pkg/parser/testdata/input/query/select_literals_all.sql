@@ -40,4 +40,6 @@ lines''',
   TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles",
   TIMESTAMP'2014-09-27',
   TIMESTAMP('2014-09-27'),
+  NUMERIC '0',
+  NUMERIC "0",
   true, fals
