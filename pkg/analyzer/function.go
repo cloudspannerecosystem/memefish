@@ -100,7 +100,7 @@ func hasAggregateFunc(e ast.Expr) bool {
 		}
 		return false
 	case *ast.NullLiteral, *ast.BoolLiteral, *ast.IntLiteral, *ast.FloatLiteral,
-		*ast.StringLiteral, *ast.BytesLiteral, *ast.DateLiteral, *ast.TimestampLiteral:
+		*ast.StringLiteral, *ast.BytesLiteral, *ast.DateLiteral, *ast.TimestampLiteral, *ast.NumericLiteral:
 		return false
 	}
 

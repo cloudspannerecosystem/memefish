@@ -77,6 +77,8 @@ func (a *Analyzer) analyzeExpr(e ast.Expr) *TypeInfo {
 		t = a.analyzeDateLiteral(e)
 	case *ast.TimestampLiteral:
 		t = a.analyzeTimestampLiteral(e)
+	case *ast.NumericLiteral:
+		t = a.analyzeNumericLiteral(e)
 	default:
 		panic(fmt.Sprintf("BUG: unreachable: %t", e))
 	}
