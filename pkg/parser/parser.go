@@ -1728,6 +1728,26 @@ func (p *Parser) lookaheadSubQuery() bool {
 	return false
 }
 
+// ParseType parses a type name.
+func (p *Parser) ParseType() (typ ast.Type, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			typ = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.nextToken()
+	typ = p.parseType()
+	if p.Token.Kind != token.TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
 func (p *Parser) parseType() ast.Type {
 	switch p.Token.Kind {
 	case token.TokenIdent:
