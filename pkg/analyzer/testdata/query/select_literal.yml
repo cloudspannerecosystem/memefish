@@ -7,6 +7,7 @@ SQL: |
     b"foo",
     date "2019-09-01",
     timestamp "2019-09-01 11:22:33",
+    numeric "0",
     true,
     null,
     [1, 2, 3],
@@ -20,6 +21,7 @@ Results:
   - Type: BYTES
   - Type: DATE
   - Type: TIMESTAMP
+  - Type: NUMERIC
   - Type: BOOL
   - Type: "NULL"
   - Type: ARRAY<INT64>
