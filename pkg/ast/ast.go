@@ -1265,10 +1265,11 @@ type CreateTable struct {
 //
 //     {{.Name | sql}}
 //     {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+//     {{.GeneratedExpr | sqlOpt}}
 //     {{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Null + 4 || Type.end
+	// end = Options.end || GeneratedExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 

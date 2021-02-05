@@ -491,11 +491,17 @@ func (c *ColumnDef) End() token.Pos {
 	if c.Options != nil {
 		return c.Options.End()
 	}
+	if c.GeneratedExpr != nil {
+		return c.GeneratedExpr.End()
+	}
 	if !c.Null.Invalid() {
 		return c.Null + 4
 	}
 	return c.Type.End()
 }
+
+func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
+func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored }
 
 func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
 func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
