@@ -25,8 +25,9 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      NotNull: false,
-      Options: (*ast.ColumnDefOptions)(nil),
+      NotNull:       false,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
   PrimaryKeys: []*ast.IndexKey{

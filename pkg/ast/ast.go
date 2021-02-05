@@ -1272,10 +1272,24 @@ type ColumnDef struct {
 
 	Null token.Pos // position of "NULL"
 
-	Name    *Ident
-	Type    SchemaType
-	NotNull bool
-	Options *ColumnDefOptions // optional
+	Name          *Ident
+	Type          SchemaType
+	NotNull       bool
+	GeneratedExpr *GeneratedColumnExpr // optional
+	Options       *ColumnDefOptions    // optional
+}
+
+// GeneratedColumnExpr is generated column expression.
+//
+//     AS ({{.Expr | sql}}) STORED
+type GeneratedColumnExpr struct {
+	// pos = As
+	// end = Stored
+
+	As     token.Pos // position of "AS" keyword
+	Stored token.Pos // position of "STORED" keyword
+
+	Expr Expr
 }
 
 // ColumnDefOption is options for column definition.
