@@ -717,6 +717,9 @@ func (c *ColumnDef) SQL() string {
 	if c.NotNull {
 		sql += " NOT NULL"
 	}
+	if c.GeneratedExpr != nil {
+		sql += " " + c.GeneratedExpr.SQL()
+	}
 	if c.Options != nil {
 		sql += " " + c.Options.SQL()
 	}
@@ -745,6 +748,10 @@ func (c *ForeignKey) SQL() string {
 	}
 	sql += ")"
 	return sql
+}
+
+func (g *GeneratedColumnExpr) SQL() string {
+	return "AS (" + g.Expr.SQL() + ") STORED"
 }
 
 func (c *ColumnDefOptions) SQL() string {

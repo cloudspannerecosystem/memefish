@@ -3,6 +3,7 @@ create table foo (
   foo int64,
   bar float64 not null,
   baz string(255) not null options(allow_commit_timestamp = null),
+  qux string(255) not null as (concat(baz, "a")) stored,
   foreign key (foo) references t2 (t2key1),
   constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2)
 ) primary key (foo, bar)
@@ -10,7 +11,7 @@ create table foo (
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 264,
+  Rparen: 321,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -28,8 +29,9 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      NotNull: false,
-      Options: (*ast.ColumnDefOptions)(nil),
+      NotNull:       false,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
       Null: 50,
@@ -42,8 +44,9 @@ create table foo (
         NamePos: 38,
         Name:    "FLOAT64",
       },
-      NotNull: true,
-      Options: (*ast.ColumnDefOptions)(nil),
+      NotNull:       true,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
       Null: 78,
@@ -64,20 +67,76 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull: true,
-      Options: &ast.ColumnDefOptions{
+      NotNull:       true,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       &ast.ColumnDefOptions{
         Options:              83,
         Rparen:               121,
         AllowCommitTimestamp: false,
       },
+    },
+    &ast.ColumnDef{
+      Null: 145,
+      Name: &ast.Ident{
+        NamePos: 125,
+        NameEnd: 128,
+        Name:    "qux",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 129,
+        Rparen:  139,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 136,
+          ValueEnd: 139,
+          Base:     10,
+          Value:    "255",
+        },
+      },
+      NotNull:       true,
+      GeneratedExpr: &ast.GeneratedColumnExpr{
+        As:     150,
+        Stored: 178,
+        Expr:   &ast.CallExpr{
+          Rparen: 169,
+          Func:   &ast.Ident{
+            NamePos: 154,
+            NameEnd: 160,
+            Name:    "concat",
+          },
+          Distinct: false,
+          Args:     []*ast.Arg{
+            &ast.Arg{
+              Interval: -1,
+              Expr:     &ast.Ident{
+                NamePos: 161,
+                NameEnd: 164,
+                Name:    "baz",
+              },
+              IntervalUnit: (*ast.Ident)(nil),
+            },
+            &ast.Arg{
+              Interval: -1,
+              Expr:     &ast.StringLiteral{
+                ValuePos: 166,
+                ValueEnd: 169,
+                Value:    "a",
+              },
+              IntervalUnit: (*ast.Ident)(nil),
+            },
+          },
+        },
+      },
+      Options: (*ast.ColumnDefOptions)(nil),
     },
   },
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 256,
-        NameEnd: 259,
+        NamePos: 313,
+        NameEnd: 316,
         Name:    "foo",
       },
       Dir: "",
@@ -85,8 +144,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 261,
-        NameEnd: 264,
+        NamePos: 318,
+        NameEnd: 321,
         Name:    "bar",
       },
       Dir: "",
@@ -95,62 +154,62 @@ create table foo (
   ForeignKeys: []*ast.ForeignKey{
     &ast.ForeignKey{
       Constraint: 0,
-      Foreign:    125,
+      Foreign:    182,
       Name:       (*ast.Ident)(nil),
       Columns:    []*ast.Ident{
         &ast.Ident{
-          NamePos: 138,
-          NameEnd: 141,
+          NamePos: 195,
+          NameEnd: 198,
           Name:    "foo",
         },
       },
       ReferenceTable: &ast.Ident{
-        NamePos: 154,
-        NameEnd: 156,
+        NamePos: 211,
+        NameEnd: 213,
         Name:    "t2",
       },
       ReferenceColumns: []*ast.Ident{
         &ast.Ident{
-          NamePos: 158,
-          NameEnd: 164,
+          NamePos: 215,
+          NameEnd: 221,
           Name:    "t2key1",
         },
       },
     },
     &ast.ForeignKey{
-      Constraint: 169,
-      Foreign:    187,
+      Constraint: 226,
+      Foreign:    244,
       Name:       &ast.Ident{
-        NamePos: 180,
-        NameEnd: 186,
+        NamePos: 237,
+        NameEnd: 243,
         Name:    "fkname",
       },
       Columns: []*ast.Ident{
         &ast.Ident{
-          NamePos: 200,
-          NameEnd: 203,
+          NamePos: 257,
+          NameEnd: 260,
           Name:    "foo",
         },
         &ast.Ident{
-          NamePos: 205,
-          NameEnd: 208,
+          NamePos: 262,
+          NameEnd: 265,
           Name:    "bar",
         },
       },
       ReferenceTable: &ast.Ident{
-        NamePos: 221,
-        NameEnd: 223,
+        NamePos: 278,
+        NameEnd: 280,
         Name:    "t2",
       },
       ReferenceColumns: []*ast.Ident{
         &ast.Ident{
-          NamePos: 225,
-          NameEnd: 231,
+          NamePos: 282,
+          NameEnd: 288,
           Name:    "t2key1",
         },
         &ast.Ident{
-          NamePos: 233,
-          NameEnd: 239,
+          NamePos: 290,
+          NameEnd: 296,
           Name:    "t2key2",
         },
       },
@@ -160,4 +219,4 @@ create table foo (
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)) PRIMARY KEY (foo, bar)

@@ -24,8 +24,9 @@ alter table foo add column baz string(max) not null
         Max:     true,
         Size:    nil,
       },
-      NotNull: true,
-      Options: (*ast.ColumnDefOptions)(nil),
+      NotNull:       true,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
 }
