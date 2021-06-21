@@ -1886,6 +1886,8 @@ func (p *Parser) lookaheadType() bool {
 func (p *Parser) parseDDL() ast.DDL {
 	pos := p.Token.Pos
 	switch {
+	case p.Token.Kind == token.TokenEOF:
+		return nil
 	case p.Token.Kind == "CREATE":
 		p.nextToken()
 		switch {

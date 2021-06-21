@@ -55,9 +55,11 @@ func main() {
 
 	fmt.Println("--- AST")
 	_, _ = pp.Println(node)
-	fmt.Println()
-	fmt.Println("--- SQL")
-	fmt.Println(node.SQL())
+	if node != nil {
+		fmt.Println()
+		fmt.Println("--- SQL")
+		fmt.Println(node.SQL())
+	}
 }
 
 func logf(msg string, params ...interface{}) {
