@@ -2030,10 +2030,11 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 		p.nextToken()
 		refColumns = append(refColumns, p.parseIdent())
 	}
-	p.expect(")")
+	rparen := p.expect(")").End
 
 	return &ast.ForeignKey{
 		Foreign:          pos,
+		Rparen:           rparen,
 		Name:             nil,
 		Columns:          columns,
 		ReferenceTable:   refTable,
@@ -2256,7 +2257,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	var alternation ast.TableAlternation
 	switch {
 	case p.Token.IsKeywordLike("ADD"):
-		alternation = p.parseAddColumn()
+		alternation = p.parseAlterTableAdd()
 	case p.Token.IsKeywordLike("DROP"):
 		alternation = p.parseDropColumn()
 	case p.Token.Kind == "SET":
@@ -2276,6 +2277,36 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 		Name:             name,
 		TableAlternation: alternation,
 	}
+}
+
+func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
+	lexer := p.Lexer.Clone()
+	lexer.nextToken()
+
+	var alternation ast.TableAlternation
+
+	switch {
+	case lexer.Token.IsKeywordLike("COLUMN"):
+		alternation = p.parseAddColumn()
+	case lexer.Token.IsKeywordLike("CONSTRAINT"):
+		pos := p.expectKeywordLike("ADD").Pos
+		fk := p.parseConstraint()
+		alternation = &ast.AddForeignKey{
+			Add:        pos,
+			ForeignKey: fk,
+		}
+	case lexer.Token.IsKeywordLike("FOREIGN"):
+		pos := p.expectKeywordLike("ADD").Pos
+		fk := p.parseForeignKey()
+		alternation = &ast.AddForeignKey{
+			Add:        pos,
+			ForeignKey: fk,
+		}
+	default:
+		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, FOREIGN, but: %s", p.Token.AsString)
+	}
+
+	return alternation
 }
 
 func (p *Parser) parseAddColumn() *ast.AddColumn {

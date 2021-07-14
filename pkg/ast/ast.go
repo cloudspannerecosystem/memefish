@@ -182,6 +182,7 @@ type TableAlternation interface {
 }
 
 func (AddColumn) isTableAlternation()      {}
+func (AddForeignKey) isTableAlternation()  {}
 func (DropColumn) isTableAlternation()     {}
 func (SetOnDelete) isTableAlternation()    {}
 func (AlterColumn) isTableAlternation()    {}
@@ -1311,9 +1312,11 @@ type ColumnDefOptions struct {
 //     {{if .Name}}CONSTRAINT {{.Name}}{{end}} FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
 type ForeignKey struct {
 	// pos = Constraint || Foreign
+	// end = Rparen + 1
 
 	Constraint token.Pos // position of "CONSTRAINT" keyword when Implicit is true
 	Foreign    token.Pos // position of "FOREIGN" keyword
+	Rparen     token.Pos // position of ")" after reference columns
 
 	Name             *Ident // optional
 	Columns          []*Ident
@@ -1372,6 +1375,20 @@ type AddColumn struct {
 
 	Column *ColumnDef
 }
+
+// AddForeignKey is ADD FOREIGN KEY clause in ALTER TABLE.
+//
+//     ADD {{.ForeignKey | sql}}
+type AddForeignKey struct {
+	// pos = Add
+	// end = ForeignKey.end
+
+	Add token.Pos // position of "ADD" keyword
+
+	ForeignKey *ForeignKey
+}
+
+var _ TableAlternation = (*AddForeignKey)(nil)
 
 // DropColumn is DROP COLUMN clause in ALTER TABLE.
 //
