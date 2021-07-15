@@ -726,21 +726,21 @@ func (c *ColumnDef) SQL() string {
 	return sql
 }
 
-func (c *ForeignKey) SQL() string {
+func (f *ForeignKey) SQL() string {
 	var sql string
-	if c.Name != nil {
-		sql += "CONSTRAINT " + c.Name.SQL() + " "
+	if f.Name != nil {
+		sql += "CONSTRAINT " + f.Name.SQL() + " "
 	}
 	sql += "FOREIGN KEY ("
-	for i, k := range c.Columns {
+	for i, k := range f.Columns {
 		if i != 0 {
 			sql += ", "
 		}
 		sql += k.SQL()
 	}
 	sql += ") "
-	sql += "REFERENCES " + c.ReferenceTable.SQL() + " ("
-	for i, k := range c.ReferenceColumns {
+	sql += "REFERENCES " + f.ReferenceTable.SQL() + " ("
+	for i, k := range f.ReferenceColumns {
 		if i != 0 {
 			sql += ", "
 		}
@@ -786,6 +786,10 @@ func (a *AlterTable) SQL() string {
 
 func (a *AddColumn) SQL() string {
 	return "ADD COLUMN " + a.Column.SQL()
+}
+
+func (a *AddForeignKey) SQL() string {
+	return "ADD " + a.ForeignKey.SQL()
 }
 
 func (d *DropColumn) SQL() string {

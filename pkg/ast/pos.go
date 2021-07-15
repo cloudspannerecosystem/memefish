@@ -506,6 +506,14 @@ func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored }
 func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
 func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
 
+func (f *ForeignKey) Pos() token.Pos {
+	if f.Name == nil {
+		return f.Foreign
+	}
+	return f.Constraint
+}
+func (f *ForeignKey) End() token.Pos { return f.Rparen + 1 }
+
 func (i *IndexKey) Pos() token.Pos {
 	return i.Name.Pos()
 }
@@ -533,6 +541,9 @@ func (a *AlterTable) End() token.Pos { return a.TableAlternation.End() }
 
 func (a *AddColumn) Pos() token.Pos { return a.Add }
 func (a *AddColumn) End() token.Pos { return a.Column.End() }
+
+func (a *AddForeignKey) Pos() token.Pos { return a.Add }
+func (a *AddForeignKey) End() token.Pos { return a.ForeignKey.End() }
 
 func (d *DropColumn) Pos() token.Pos { return d.Drop }
 func (d *DropColumn) End() token.Pos { return d.Name.End() }
