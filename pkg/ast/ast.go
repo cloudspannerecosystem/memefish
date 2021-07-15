@@ -183,6 +183,7 @@ type TableAlternation interface {
 
 func (AddColumn) isTableAlternation()      {}
 func (DropColumn) isTableAlternation()     {}
+func (DropConstraint) isTableAlternation() {}
 func (SetOnDelete) isTableAlternation()    {}
 func (AlterColumn) isTableAlternation()    {}
 func (AlterColumnSet) isTableAlternation() {}
@@ -1377,6 +1378,18 @@ type AddColumn struct {
 //
 //     DROP COLUMN {{.Name | sql}}
 type DropColumn struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of  "DROP" keyword
+
+	Name *Ident
+}
+
+// DropConstraint is DROP CONSTRAINT clause in ALTER TABLE.
+//
+//     DROP CONSTRAINT {{.Name | sql}}
+type DropConstraint struct {
 	// pos = Drop
 	// end = Name.end
 

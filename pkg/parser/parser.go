@@ -2258,7 +2258,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	case p.Token.IsKeywordLike("ADD"):
 		alternation = p.parseAddColumn()
 	case p.Token.IsKeywordLike("DROP"):
-		alternation = p.parseDropColumn()
+		alternation = p.parseAlterTableDrop()
 	case p.Token.Kind == "SET":
 		alternation = p.parseSetOnDelete()
 	case p.Token.IsKeywordLike("ALTER"):
@@ -2290,16 +2290,31 @@ func (p *Parser) parseAddColumn() *ast.AddColumn {
 	}
 }
 
-func (p *Parser) parseDropColumn() *ast.DropColumn {
+func (p *Parser) parseAlterTableDrop() ast.TableAlternation {
 	pos := p.expectKeywordLike("DROP").Pos
-	p.expectKeywordLike("COLUMN")
 
-	name := p.parseIdent()
+	var alternation ast.TableAlternation
 
-	return &ast.DropColumn{
-		Drop: pos,
-		Name: name,
+	switch {
+	case p.Token.IsKeywordLike("COLUMN"):
+		p.expectKeywordLike("COLUMN")
+		name := p.parseIdent()
+		alternation = &ast.DropColumn{
+			Drop: pos,
+			Name: name,
+		}
+	case p.Token.IsKeywordLike("CONSTRAINT"):
+		p.expectKeywordLike("CONSTRAINT")
+		name := p.parseIdent()
+		alternation = &ast.DropConstraint{
+			Drop: pos,
+			Name: name,
+		}
+	default:
+		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, but: %s", p.Token.AsString)
 	}
+
+	return alternation
 }
 
 func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {

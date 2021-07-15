@@ -537,6 +537,9 @@ func (a *AddColumn) End() token.Pos { return a.Column.End() }
 func (d *DropColumn) Pos() token.Pos { return d.Drop }
 func (d *DropColumn) End() token.Pos { return d.Name.End() }
 
+func (d *DropConstraint) Pos() token.Pos { return d.Drop }
+func (d *DropConstraint) End() token.Pos { return d.Name.End() }
+
 func (s *SetOnDelete) Pos() token.Pos { return s.Set }
 func (s *SetOnDelete) End() token.Pos { return s.OnDeleteEnd }
 

@@ -119,6 +119,7 @@ func TestDDL(t *testing.T) {
 func TestTableAlternation(t *testing.T) {
 	TableAlternation(&AddColumn{}).isTableAlternation()
 	TableAlternation(&DropColumn{}).isTableAlternation()
+	TableAlternation(&DropConstraint{}).isTableAlternation()
 	TableAlternation(&SetOnDelete{}).isTableAlternation()
 	TableAlternation(&AlterColumn{}).isTableAlternation()
 	TableAlternation(&AlterColumnSet{}).isTableAlternation()
