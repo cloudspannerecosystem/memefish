@@ -1388,8 +1388,6 @@ type AddForeignKey struct {
 	ForeignKey *ForeignKey
 }
 
-var _ TableAlternation = (*AddForeignKey)(nil)
-
 // DropColumn is DROP COLUMN clause in ALTER TABLE.
 //
 //     DROP COLUMN {{.Name | sql}}
