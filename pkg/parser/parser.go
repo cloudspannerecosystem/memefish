@@ -2280,23 +2280,25 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 }
 
 func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
-	lexer := p.Lexer.Clone()
-	lexer.nextToken()
+	pos := p.expectKeywordLike("ADD").Pos
 
 	var alternation ast.TableAlternation
 
 	switch {
-	case lexer.Token.IsKeywordLike("COLUMN"):
-		alternation = p.parseAddColumn()
-	case lexer.Token.IsKeywordLike("CONSTRAINT"):
-		pos := p.expectKeywordLike("ADD").Pos
+	case p.Token.IsKeywordLike("COLUMN"):
+		p.expectKeywordLike("COLUMN")
+		column := p.parseColumnDef()
+		alternation = &ast.AddColumn{
+			Add:    pos,
+			Column: column,
+		}
+	case p.Token.IsKeywordLike("CONSTRAINT"):
 		fk := p.parseConstraint()
 		alternation = &ast.AddForeignKey{
 			Add:        pos,
 			ForeignKey: fk,
 		}
-	case lexer.Token.IsKeywordLike("FOREIGN"):
-		pos := p.expectKeywordLike("ADD").Pos
+	case p.Token.IsKeywordLike("FOREIGN"):
 		fk := p.parseForeignKey()
 		alternation = &ast.AddForeignKey{
 			Add:        pos,
@@ -2307,18 +2309,6 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 	}
 
 	return alternation
-}
-
-func (p *Parser) parseAddColumn() *ast.AddColumn {
-	pos := p.expectKeywordLike("ADD").Pos
-	p.expectKeywordLike("COLUMN")
-
-	column := p.parseColumnDef()
-
-	return &ast.AddColumn{
-		Add:    pos,
-		Column: column,
-	}
 }
 
 func (p *Parser) parseDropColumn() *ast.DropColumn {
