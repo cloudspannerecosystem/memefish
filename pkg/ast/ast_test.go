@@ -120,6 +120,7 @@ func TestTableAlternation(t *testing.T) {
 	TableAlternation(&AddColumn{}).isTableAlternation()
 	TableAlternation(&AddForeignKey{}).isTableAlternation()
 	TableAlternation(&DropColumn{}).isTableAlternation()
+	TableAlternation(&DropConstraint{}).isTableAlternation()
 	TableAlternation(&SetOnDelete{}).isTableAlternation()
 	TableAlternation(&AlterColumn{}).isTableAlternation()
 	TableAlternation(&AlterColumnSet{}).isTableAlternation()

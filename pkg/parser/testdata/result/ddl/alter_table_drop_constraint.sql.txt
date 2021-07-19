@@ -1,0 +1,23 @@
+--- alter_table_drop_constraint.sql
+alter table foo drop constraint bar
+
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlternation: &ast.DropConstraint{
+    Drop: 16,
+    Name: &ast.Ident{
+      NamePos: 32,
+      NameEnd: 35,
+      Name:    "bar",
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo DROP CONSTRAINT bar

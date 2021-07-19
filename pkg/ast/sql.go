@@ -796,6 +796,10 @@ func (d *DropColumn) SQL() string {
 	return "DROP COLUMN " + d.Name.SQL()
 }
 
+func (d *DropConstraint) SQL() string {
+	return "DROP CONSTRAINT " + d.Name.SQL()
+}
+
 func (s *SetOnDelete) SQL() string {
 	return "SET " + string(s.OnDelete)
 }
