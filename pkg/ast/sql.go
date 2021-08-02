@@ -783,8 +783,12 @@ func (c *Cluster) SQL() string {
 	return sql
 }
 
-func (c *RowDeletionPolicy) SQL() string {
-	return ", ROW DELETION POLICY ( OLDER_THAN ( " + c.ColumnName.SQL() + ", INTERVAL " + c.NumDays.SQL() + " DAY ) )"
+func (c *CreateRowDeletionPolicy) SQL() string {
+	return ", " + c.RowDeletionPolicy.SQL()
+}
+
+func (r *RowDeletionPolicy) SQL() string {
+	return "ROW DELETION POLICY ( OLDER_THAN ( " + r.ColumnName.SQL() + ", INTERVAL " + r.NumDays.SQL() + " DAY ))"
 }
 
 func (a *AlterTable) SQL() string {
@@ -799,12 +803,24 @@ func (a *AddForeignKey) SQL() string {
 	return "ADD " + a.ForeignKey.SQL()
 }
 
+func (a *AddRowDeletionPolicy) SQL() string {
+	return "ADD " + a.RowDeletionPolicy.SQL()
+}
+
 func (d *DropColumn) SQL() string {
 	return "DROP COLUMN " + d.Name.SQL()
 }
 
 func (d *DropConstraint) SQL() string {
 	return "DROP CONSTRAINT " + d.Name.SQL()
+}
+
+func (d *DropRowDeletionPolicy) SQL() string {
+	return "DROP ROW DELETION POLICY"
+}
+
+func (r *ReplaceRowDeletionPolicy) SQL() string {
+	return "REPLACE " + r.RowDeletionPolicy.SQL()
 }
 
 func (s *SetOnDelete) SQL() string {

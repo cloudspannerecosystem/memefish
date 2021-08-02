@@ -1,0 +1,33 @@
+--- alter_table_replace_row_deletion_policy.sql
+alter table foo replace row deletion policy ( older_than ( bar, interval 30 day ))
+
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlternation: &ast.ReplaceRowDeletionPolicy{
+    Replace:           16,
+    RowDeletionPolicy: &ast.RowDeletionPolicy{
+      Row:        24,
+      ColumnName: &ast.Ident{
+        NamePos: 59,
+        NameEnd: 62,
+        Name:    "bar",
+      },
+      NumDays: &ast.IntLiteral{
+        ValuePos: 73,
+        ValueEnd: 75,
+        Base:     10,
+        Value:    "30",
+      },
+      Rparen: 81,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo REPLACE ROW DELETION POLICY ( OLDER_THAN ( bar, INTERVAL 30 DAY ))

@@ -58,7 +58,7 @@ create table foo (
     },
     OnDelete: "",
   },
-  RowDeletionPolicy: (*ast.RowDeletionPolicy)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

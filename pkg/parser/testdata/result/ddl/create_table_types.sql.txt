@@ -235,7 +235,7 @@ create table types (
   },
   ForeignKeys:       []*ast.ForeignKey(nil),
   Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.RowDeletionPolicy)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

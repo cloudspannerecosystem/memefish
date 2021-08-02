@@ -539,18 +539,30 @@ func (c *Cluster) End() token.Pos {
 	return c.TableName.End()
 }
 
+func (c *CreateRowDeletionPolicy) Pos() token.Pos {
+	return c.Comma
+}
+
+func (c *CreateRowDeletionPolicy) End() token.Pos {
+	return c.RowDeletionPolicy.End()
+}
+
 func (r *RowDeletionPolicy) Pos() token.Pos {
-	return r.Comma
+	return r.Row
 }
 
 func (r *RowDeletionPolicy) End() token.Pos {
 	return r.Rparen + 1
 }
+
 func (a *AlterTable) Pos() token.Pos { return a.Alter }
 func (a *AlterTable) End() token.Pos { return a.TableAlternation.End() }
 
 func (a *AddColumn) Pos() token.Pos { return a.Add }
 func (a *AddColumn) End() token.Pos { return a.Column.End() }
+
+func (a *AddRowDeletionPolicy) Pos() token.Pos { return a.Add }
+func (a *AddRowDeletionPolicy) End() token.Pos { return a.RowDeletionPolicy.End() }
 
 func (a *AddForeignKey) Pos() token.Pos { return a.Add }
 func (a *AddForeignKey) End() token.Pos { return a.ForeignKey.End() }
@@ -560,6 +572,12 @@ func (d *DropColumn) End() token.Pos { return d.Name.End() }
 
 func (d *DropConstraint) Pos() token.Pos { return d.Drop }
 func (d *DropConstraint) End() token.Pos { return d.Name.End() }
+
+func (d *DropRowDeletionPolicy) Pos() token.Pos { return d.Drop }
+func (d *DropRowDeletionPolicy) End() token.Pos { return d.Policy + 6 }
+
+func (d *ReplaceRowDeletionPolicy) Pos() token.Pos { return d.Replace }
+func (d *ReplaceRowDeletionPolicy) End() token.Pos { return d.RowDeletionPolicy.End() }
 
 func (s *SetOnDelete) Pos() token.Pos { return s.Set }
 func (s *SetOnDelete) End() token.Pos { return s.OnDeleteEnd }

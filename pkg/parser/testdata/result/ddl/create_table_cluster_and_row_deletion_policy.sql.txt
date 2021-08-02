@@ -75,22 +75,25 @@ create table foo (
     },
     OnDelete: "",
   },
-  RowDeletionPolicy: &ast.RowDeletionPolicy{
-    Comma:      109,
-    ColumnName: &ast.Ident{
-      NamePos: 148,
-      NameEnd: 151,
-      Name:    "baz",
+  RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
+    Comma:             109,
+    RowDeletionPolicy: &ast.RowDeletionPolicy{
+      Row:        113,
+      ColumnName: &ast.Ident{
+        NamePos: 148,
+        NameEnd: 151,
+        Name:    "baz",
+      },
+      NumDays: &ast.IntLiteral{
+        ValuePos: 162,
+        ValueEnd: 164,
+        Base:     10,
+        Value:    "30",
+      },
+      Rparen: 171,
     },
-    NumDays: &ast.IntLiteral{
-      ValuePos: 162,
-      ValueEnd: 164,
-      Base:     10,
-      Value:    "30",
-    },
-    Rparen: 171,
   },
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), INTERLEAVE IN PARENT foobar, ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ) )
+CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), INTERLEAVE IN PARENT foobar, ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))

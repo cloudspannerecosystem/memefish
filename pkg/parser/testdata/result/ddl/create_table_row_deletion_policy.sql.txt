@@ -65,22 +65,25 @@ create table foo (
   PrimaryKeys:       []*ast.IndexKey(nil),
   ForeignKeys:       []*ast.ForeignKey(nil),
   Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: &ast.RowDeletionPolicy{
-    Comma:      78,
-    ColumnName: &ast.Ident{
-      NamePos: 117,
-      NameEnd: 120,
-      Name:    "baz",
+  RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
+    Comma:             78,
+    RowDeletionPolicy: &ast.RowDeletionPolicy{
+      Row:        82,
+      ColumnName: &ast.Ident{
+        NamePos: 117,
+        NameEnd: 120,
+        Name:    "baz",
+      },
+      NumDays: &ast.IntLiteral{
+        ValuePos: 131,
+        ValueEnd: 133,
+        Base:     10,
+        Value:    "30",
+      },
+      Rparen: 140,
     },
-    NumDays: &ast.IntLiteral{
-      ValuePos: 131,
-      ValueEnd: 133,
-      Base:     10,
-      Value:    "30",
-    },
-    Rparen: 140,
   },
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ) )
+CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))
