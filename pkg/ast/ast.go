@@ -1362,7 +1362,7 @@ type Cluster struct {
 //     , {{.RowDeletionPolicy}}
 type CreateRowDeletionPolicy struct {
 	// pos = Comma
-	// end = RowDeletionPolicy
+	// end = RowDeletionPolicy.end
 	Comma             token.Pos // position of ","
 	RowDeletionPolicy *RowDeletionPolicy
 }
@@ -1457,7 +1457,7 @@ type DropConstraint struct {
 //     DROP ROW DELETION POLICY
 type DropRowDeletionPolicy struct {
 	// pos = Drop
-	// end = Policy.end
+	// end = Policy + 6
 
 	Drop   token.Pos // position of  "DROP" keyword
 	Policy token.Pos // position of  "POLICY" keyword
