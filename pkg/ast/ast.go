@@ -1249,18 +1249,20 @@ type CreateDatabase struct {
 //     )
 //     PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //     {{.Cluster | sqlOpt}}
+//     {{.RowDeletionPolicy | sqlOpt}}
 type CreateTable struct {
 	// pos = Create
-	// end = Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
-	Name        *Ident
-	Columns     []*ColumnDef
-	PrimaryKeys []*IndexKey
-	ForeignKeys []*ForeignKey
-	Cluster     *Cluster // optional
+	Name              *Ident
+	Columns           []*ColumnDef
+	PrimaryKeys       []*IndexKey
+	ForeignKeys       []*ForeignKey
+	Cluster           *Cluster           // optional
+	RowDeletionPolicy *RowDeletionPolicy // optional
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1350,6 +1352,18 @@ type Cluster struct {
 
 	TableName *Ident
 	OnDelete  OnDeleteAction // optional
+}
+
+// RowDeletionPolicy is ROW DELETION POLICY clause in CREATE TABLE.
+//
+//     , ROW DELETION POLICY (OLDER_THAN({{.ColymnName | sql}}, INTERVAL {{.NumDays}} DAY))
+type RowDeletionPolicy struct {
+	// pos = Comma
+	// end = Rparen + 1
+	Comma      token.Pos // position of ","
+	ColumnName *Ident
+	NumDays    *IntLiteral
+	Rparen     token.Pos // position of ")"
 }
 
 // AlterTable is ALTER TABLE statement node.

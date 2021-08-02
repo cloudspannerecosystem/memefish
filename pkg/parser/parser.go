@@ -1973,15 +1973,17 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	rparen := p.expect(")").Pos
 
 	cluster := p.tryParseCluster()
+	rdp := p.tryParseRowDeletionPolicy()
 
 	return &ast.CreateTable{
-		Create:      pos,
-		Rparen:      rparen,
-		Name:        name,
-		Columns:     columns,
-		ForeignKeys: foreignKeys,
-		PrimaryKeys: keys,
-		Cluster:     cluster,
+		Create:            pos,
+		Rparen:            rparen,
+		Name:              name,
+		Columns:           columns,
+		ForeignKeys:       foreignKeys,
+		PrimaryKeys:       keys,
+		Cluster:           cluster,
+		RowDeletionPolicy: rdp,
 	}
 }
 
@@ -2121,9 +2123,13 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	if p.Token.Kind != "," {
 		return nil
 	}
+	lexer := p.Lexer.Clone()
 	pos := p.expect(",").Pos
-
-	p.expectKeywordLike("INTERLEAVE")
+	if !p.Token.IsKeywordLike("INTERLEAVE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
 	name := p.parseIdent()
@@ -2135,6 +2141,32 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 		OnDeleteEnd: onDeleteEnd,
 		TableName:   name,
 		OnDelete:    onDelete,
+	}
+}
+
+func (p *Parser) tryParseRowDeletionPolicy() *ast.RowDeletionPolicy {
+	if p.Token.Kind != "," {
+		return nil
+	}
+	pos := p.expect(",").Pos
+	p.expectKeywordLike("ROW")
+	p.expectKeywordLike("DELETION")
+	p.expectKeywordLike("POLICY")
+	p.expect("(")
+	p.expectKeywordLike("OLDER_THAN")
+	p.expect("(")
+	timestampColumn := p.parseIdent()
+	p.expect(",")
+	p.expect("INTERVAL")
+	numDays := p.parseIntLiteral()
+	p.expectKeywordLike("DAY")
+	p.expect(")")
+	rparen := p.expect(")").Pos
+	return &ast.RowDeletionPolicy{
+		Comma:      pos,
+		ColumnName: timestampColumn,
+		NumDays:    numDays,
+		Rparen:     rparen,
 	}
 }
 

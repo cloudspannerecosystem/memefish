@@ -1,14 +1,16 @@
---- create_table_cluster.sql
+--- create_table_cluster_and_row_deletion_policy.sql
 create table foo (
   foo int64,
-  bar int64
+  bar int64,
+  baz timestamp,
 ) primary key (),
-  interleave in parent foobar
+  interleave in parent foobar,
+  row deletion policy ( older_than ( baz, INTERVAL 30 DAY ) )
 
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 59,
+  Rparen: 77,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -45,21 +47,50 @@ create table foo (
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 47,
+        NameEnd: 50,
+        Name:    "baz",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 51,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:       false,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
   },
   PrimaryKeys: []*ast.IndexKey(nil),
   ForeignKeys: []*ast.ForeignKey(nil),
   Cluster:     &ast.Cluster{
-    Comma:       60,
+    Comma:       78,
     OnDeleteEnd: -1,
     TableName:   &ast.Ident{
-      NamePos: 85,
-      NameEnd: 91,
+      NamePos: 103,
+      NameEnd: 109,
       Name:    "foobar",
     },
     OnDelete: "",
   },
-  RowDeletionPolicy: (*ast.RowDeletionPolicy)(nil),
+  RowDeletionPolicy: &ast.RowDeletionPolicy{
+    Comma:      109,
+    ColumnName: &ast.Ident{
+      NamePos: 148,
+      NameEnd: 151,
+      Name:    "baz",
+    },
+    NumDays: &ast.IntLiteral{
+      ValuePos: 162,
+      ValueEnd: 164,
+      Base:     10,
+      Value:    "30",
+    },
+    Rparen: 171,
+  },
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar INT64) PRIMARY KEY (), INTERLEAVE IN PARENT foobar
+CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), INTERLEAVE IN PARENT foobar, ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ) )

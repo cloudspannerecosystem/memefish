@@ -477,6 +477,9 @@ func (c *CreateTable) Pos() token.Pos {
 }
 
 func (c *CreateTable) End() token.Pos {
+	if c.RowDeletionPolicy != nil {
+		return c.RowDeletionPolicy.End()
+	}
 	if c.Cluster != nil {
 		return c.Cluster.End()
 	}
@@ -536,6 +539,13 @@ func (c *Cluster) End() token.Pos {
 	return c.TableName.End()
 }
 
+func (r *RowDeletionPolicy) Pos() token.Pos {
+	return r.Comma
+}
+
+func (r *RowDeletionPolicy) End() token.Pos {
+	return r.Rparen + 1
+}
 func (a *AlterTable) Pos() token.Pos { return a.Alter }
 func (a *AlterTable) End() token.Pos { return a.TableAlternation.End() }
 

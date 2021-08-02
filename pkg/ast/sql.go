@@ -709,6 +709,9 @@ func (c *CreateTable) SQL() string {
 	if c.Cluster != nil {
 		sql += c.Cluster.SQL()
 	}
+	if c.RowDeletionPolicy != nil {
+		sql += c.RowDeletionPolicy.SQL()
+	}
 	return sql
 }
 
@@ -778,6 +781,10 @@ func (c *Cluster) SQL() string {
 		sql += " " + string(c.OnDelete)
 	}
 	return sql
+}
+
+func (c *RowDeletionPolicy) SQL() string {
+	return ", ROW DELETION POLICY ( OLDER_THAN ( " + c.ColumnName.SQL() + ", INTERVAL " + c.NumDays.SQL() + " DAY ) )"
 }
 
 func (a *AlterTable) SQL() string {

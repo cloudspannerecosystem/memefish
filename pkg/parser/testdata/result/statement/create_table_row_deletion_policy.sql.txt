@@ -1,16 +1,15 @@
---- create_table_trailing_comma.sql
+--- create_table_row_deletion_policy.sql
 create table foo (
   foo int64,
   bar int64,
-) primary key(
-  foo asc,
-  bar desc,
-)
+  baz timestamp,
+) primary key (),
+  row deletion policy ( older_than ( baz, INTERVAL 30 DAY ) )
 
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 83,
+  Rparen: 77,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -47,31 +46,41 @@ create table foo (
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
-  },
-  PrimaryKeys: []*ast.IndexKey{
-    &ast.IndexKey{
-      DirPos: 66,
-      Name:   &ast.Ident{
-        NamePos: 62,
-        NameEnd: 65,
-        Name:    "foo",
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 47,
+        NameEnd: 50,
+        Name:    "baz",
       },
-      Dir: "ASC",
-    },
-    &ast.IndexKey{
-      DirPos: 77,
-      Name:   &ast.Ident{
-        NamePos: 73,
-        NameEnd: 76,
-        Name:    "bar",
+      Type: &ast.ScalarSchemaType{
+        NamePos: 51,
+        Name:    "TIMESTAMP",
       },
-      Dir: "DESC",
+      NotNull:       false,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
+  PrimaryKeys:       []*ast.IndexKey(nil),
   ForeignKeys:       []*ast.ForeignKey(nil),
   Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.RowDeletionPolicy)(nil),
+  RowDeletionPolicy: &ast.RowDeletionPolicy{
+    Comma:      78,
+    ColumnName: &ast.Ident{
+      NamePos: 117,
+      NameEnd: 120,
+      Name:    "baz",
+    },
+    NumDays: &ast.IntLiteral{
+      ValuePos: 131,
+      ValueEnd: 133,
+      Base:     10,
+      Value:    "30",
+    },
+    Rparen: 140,
+  },
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar INT64) PRIMARY KEY (foo ASC, bar DESC)
+CREATE TABLE foo (foo INT64, bar INT64, baz TIMESTAMP) PRIMARY KEY (), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ) )
