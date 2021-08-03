@@ -1973,15 +1973,17 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	rparen := p.expect(")").Pos
 
 	cluster := p.tryParseCluster()
+	rdp := p.tryParseCreateRowDeletionPolicy()
 
 	return &ast.CreateTable{
-		Create:      pos,
-		Rparen:      rparen,
-		Name:        name,
-		Columns:     columns,
-		ForeignKeys: foreignKeys,
-		PrimaryKeys: keys,
-		Cluster:     cluster,
+		Create:            pos,
+		Rparen:            rparen,
+		Name:              name,
+		Columns:           columns,
+		ForeignKeys:       foreignKeys,
+		PrimaryKeys:       keys,
+		Cluster:           cluster,
+		RowDeletionPolicy: rdp,
 	}
 }
 
@@ -2121,9 +2123,13 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	if p.Token.Kind != "," {
 		return nil
 	}
+	lexer := p.Lexer.Clone()
 	pos := p.expect(",").Pos
-
-	p.expectKeywordLike("INTERLEAVE")
+	if !p.Token.IsKeywordLike("INTERLEAVE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
 	name := p.parseIdent()
@@ -2135,6 +2141,40 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 		OnDeleteEnd: onDeleteEnd,
 		TableName:   name,
 		OnDelete:    onDelete,
+	}
+}
+
+func (p *Parser) tryParseCreateRowDeletionPolicy() *ast.CreateRowDeletionPolicy {
+	if p.Token.Kind != "," {
+		return nil
+	}
+	pos := p.expect(",").Pos
+	rdp := p.parseRowDeletionPolicy()
+	return &ast.CreateRowDeletionPolicy{
+		Comma:             pos,
+		RowDeletionPolicy: rdp,
+	}
+}
+
+func (p *Parser) parseRowDeletionPolicy() *ast.RowDeletionPolicy {
+	pos := p.expectKeywordLike("ROW").Pos
+	p.expectKeywordLike("DELETION")
+	p.expectKeywordLike("POLICY")
+	p.expect("(")
+	p.expectKeywordLike("OLDER_THAN")
+	p.expect("(")
+	timestampColumn := p.parseIdent()
+	p.expect(",")
+	p.expect("INTERVAL")
+	numDays := p.parseIntLiteral()
+	p.expectKeywordLike("DAY")
+	p.expect(")")
+	rparen := p.expect(")").Pos
+	return &ast.RowDeletionPolicy{
+		Row:        pos,
+		ColumnName: timestampColumn,
+		NumDays:    numDays,
+		Rparen:     rparen,
 	}
 }
 
@@ -2260,6 +2300,8 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 		alternation = p.parseAlterTableAdd()
 	case p.Token.IsKeywordLike("DROP"):
 		alternation = p.parseAlterTableDrop()
+	case p.Token.IsKeywordLike("REPLACE"):
+		alternation = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
 		alternation = p.parseSetOnDelete()
 	case p.Token.IsKeywordLike("ALTER"):
@@ -2304,6 +2346,13 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 			Add:        pos,
 			ForeignKey: fk,
 		}
+	case p.Token.IsKeywordLike("ROW"):
+		rdp := p.parseRowDeletionPolicy()
+
+		alternation = &ast.AddRowDeletionPolicy{
+			Add:               pos,
+			RowDeletionPolicy: rdp,
+		}
 	default:
 		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, FOREIGN, but: %s", p.Token.AsString)
 	}
@@ -2331,11 +2380,29 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlternation {
 			Drop: pos,
 			Name: name,
 		}
+	case p.Token.IsKeywordLike("ROW"):
+		p.expectKeywordLike("ROW")
+		p.expectKeywordLike("DELETION")
+		policyPos := p.expectKeywordLike("POLICY").Pos
+		alternation = &ast.DropRowDeletionPolicy{
+			Drop:   pos,
+			Policy: policyPos,
+		}
 	default:
 		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, but: %s", p.Token.AsString)
 	}
 
 	return alternation
+}
+
+func (p *Parser) parseAlterTableReplace() ast.TableAlternation {
+	pos := p.expectKeywordLike("REPLACE").Pos
+	rdp := p.parseRowDeletionPolicy()
+
+	return &ast.ReplaceRowDeletionPolicy{
+		Replace:           pos,
+		RowDeletionPolicy: rdp,
+	}
 }
 
 func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {

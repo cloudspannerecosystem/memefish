@@ -68,8 +68,9 @@ create table foo (
       Dir: "DESC",
     },
   },
-  ForeignKeys: []*ast.ForeignKey(nil),
-  Cluster:     (*ast.Cluster)(nil),
+  ForeignKeys:       []*ast.ForeignKey(nil),
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

@@ -181,13 +181,16 @@ type TableAlternation interface {
 	isTableAlternation()
 }
 
-func (AddColumn) isTableAlternation()      {}
-func (AddForeignKey) isTableAlternation()  {}
-func (DropColumn) isTableAlternation()     {}
-func (DropConstraint) isTableAlternation() {}
-func (SetOnDelete) isTableAlternation()    {}
-func (AlterColumn) isTableAlternation()    {}
-func (AlterColumnSet) isTableAlternation() {}
+func (AddColumn) isTableAlternation()                {}
+func (AddForeignKey) isTableAlternation()            {}
+func (AddRowDeletionPolicy) isTableAlternation()     {}
+func (DropColumn) isTableAlternation()               {}
+func (DropConstraint) isTableAlternation()           {}
+func (DropRowDeletionPolicy) isTableAlternation()    {}
+func (ReplaceRowDeletionPolicy) isTableAlternation() {}
+func (SetOnDelete) isTableAlternation()              {}
+func (AlterColumn) isTableAlternation()              {}
+func (AlterColumnSet) isTableAlternation()           {}
 
 // SchemaType represents types for schema.
 type SchemaType interface {
@@ -1249,18 +1252,20 @@ type CreateDatabase struct {
 //     )
 //     PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //     {{.Cluster | sqlOpt}}
+//     {{.CreateRowDeletionPolicy | sqlOpt}}
 type CreateTable struct {
 	// pos = Create
-	// end = Cluster.end || Rparen + 1
+	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
-	Name        *Ident
-	Columns     []*ColumnDef
-	PrimaryKeys []*IndexKey
-	ForeignKeys []*ForeignKey
-	Cluster     *Cluster // optional
+	Name              *Ident
+	Columns           []*ColumnDef
+	PrimaryKeys       []*IndexKey
+	ForeignKeys       []*ForeignKey
+	Cluster           *Cluster                 // optional
+	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1352,6 +1357,28 @@ type Cluster struct {
 	OnDelete  OnDeleteAction // optional
 }
 
+// CreateRowDeletionPolicy is ROW DELETION POLICY clause in CREATE TABLE.
+//
+//     , {{.RowDeletionPolicy}}
+type CreateRowDeletionPolicy struct {
+	// pos = Comma
+	// end = RowDeletionPolicy.end
+	Comma             token.Pos // position of ","
+	RowDeletionPolicy *RowDeletionPolicy
+}
+
+// RowDeletionPolicy is ROW DELETION POLICY clause.
+//
+//     ROW DELETION POLICY (OLDER_THAN({{.ColymnName | sql}}, INTERVAL {{.NumDays}} DAY))
+type RowDeletionPolicy struct {
+	// pos = Row
+	// end = Rparen + 1
+	Row        token.Pos // position of "ROW"
+	ColumnName *Ident
+	NumDays    *IntLiteral
+	Rparen     token.Pos // position of ")"
+}
+
 // AlterTable is ALTER TABLE statement node.
 //
 //     ALTER TABLE {{.Name | sql}} {{.TableAlternation | sql}}
@@ -1389,6 +1416,18 @@ type AddForeignKey struct {
 	ForeignKey *ForeignKey
 }
 
+// AddRowDeletionPolicy is ADD ROW DELETION POLICY clause in ALTER TABLE.
+//
+//     ADD {{.RowDeletionPolicy | sql}}
+type AddRowDeletionPolicy struct {
+	// pos = Add
+	// end = RowDeletionPolicy.end
+
+	Add token.Pos // position of "ADD" keyword
+
+	RowDeletionPolicy *RowDeletionPolicy
+}
+
 // DropColumn is DROP COLUMN clause in ALTER TABLE.
 //
 //     DROP COLUMN {{.Name | sql}}
@@ -1411,6 +1450,29 @@ type DropConstraint struct {
 	Drop token.Pos // position of  "DROP" keyword
 
 	Name *Ident
+}
+
+// DropRowDeletionPolicy is DROP ROW DELETION POLICY clause in ALTER TABLE.
+//
+//     DROP ROW DELETION POLICY
+type DropRowDeletionPolicy struct {
+	// pos = Drop
+	// end = Policy + 6
+
+	Drop   token.Pos // position of  "DROP" keyword
+	Policy token.Pos // position of  "POLICY" keyword
+}
+
+// ReplaceRowDeletionPolicy is REPLACE ROW DELETION POLICY clause in ALTER TABLE.
+//
+//     REPLACE {{.RowDeletionPolicy}}
+type ReplaceRowDeletionPolicy struct {
+	// pos = Replace
+	// end = RowDeletionPolicy.end
+
+	Replace token.Pos // position of  "REPLACE" keyword
+
+	RowDeletionPolicy *RowDeletionPolicy
 }
 
 // SetOnDelete is SET ON DELETE clause in ALTER TABLE.

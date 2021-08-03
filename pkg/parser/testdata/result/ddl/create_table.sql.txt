@@ -217,7 +217,8 @@ create table foo (
       },
     },
   },
-  Cluster: (*ast.Cluster)(nil),
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL
