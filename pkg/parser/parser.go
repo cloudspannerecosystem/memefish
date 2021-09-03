@@ -369,6 +369,9 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 			break
 		}
 		p.nextToken()
+		if p.Token.Kind == token.TokenEOF || p.Token.Kind == "FROM" {
+			break
+		}
 		results = append(results, p.parseSelectItem())
 	}
 	return results

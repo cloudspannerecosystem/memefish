@@ -47,8 +47,8 @@ type File struct {
 
 // Position returns a new Position from pos and end on this File.
 func (f *File) Position(pos, end Pos) *Position {
-	line, column := f.ResovlePos(pos)
-	endLine, endColumn := f.ResovlePos(end)
+	line, column := f.ResolvePos(pos)
+	endLine, endColumn := f.ResolvePos(end)
 
 	// Calculate source coude around this position.
 	var source bytes.Buffer
@@ -83,7 +83,7 @@ func (f *File) Position(pos, end Pos) *Position {
 }
 
 // ResolvePos returns line and column number from pos.
-func (f *File) ResovlePos(pos Pos) (line int, column int) {
+func (f *File) ResolvePos(pos Pos) (line int, column int) {
 	line, column = -1, -1
 
 	if pos.Invalid() {
