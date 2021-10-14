@@ -5,13 +5,14 @@ create table foo (
   baz string(255) not null options(allow_commit_timestamp = null),
   qux string(255) not null as (concat(baz, "a")) stored,
   foreign key (foo) references t2 (t2key1),
-  constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2)
+  constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  quux json
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 321,
+  Rparen: 334,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -130,13 +131,28 @@ create table foo (
       },
       Options: (*ast.ColumnDefOptions)(nil),
     },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 301,
+        NameEnd: 305,
+        Name:    "quux",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 306,
+        Name:    "JSON",
+      },
+      NotNull:       false,
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
   },
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 313,
-        NameEnd: 316,
+        NamePos: 326,
+        NameEnd: 329,
         Name:    "foo",
       },
       Dir: "",
@@ -144,8 +160,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 318,
-        NameEnd: 321,
+        NamePos: 331,
+        NameEnd: 334,
         Name:    "bar",
       },
       Dir: "",
@@ -222,4 +238,4 @@ create table foo (
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)) PRIMARY KEY (foo, bar)
