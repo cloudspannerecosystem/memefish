@@ -2490,6 +2490,7 @@ var scalarSchemaTypes = []string{
 	"DATE",
 	"TIMESTAMP",
 	"NUMERIC",
+	"JSON",
 }
 
 var sizedSchemaTypes = []string{
