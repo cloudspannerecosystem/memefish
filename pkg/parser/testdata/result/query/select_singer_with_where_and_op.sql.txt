@@ -34,24 +34,24 @@ WHERE
     Where: &ast.Where{
       Where: 26,
       Expr:  &ast.BinaryExpr{
-        Op:   "AND",
+        Op:   "OR",
         Left: &ast.BinaryExpr{
-          Op:   "OR",
-          Left: &ast.BinaryExpr{
-            Op:   "=",
-            Left: &ast.Ident{
-              NamePos: 34,
-              NameEnd: 42,
-              Name:    "SingerID",
-            },
-            Right: &ast.IntLiteral{
-              ValuePos: 45,
-              ValueEnd: 46,
-              Base:     10,
-              Value:    "1",
-            },
+          Op:   "=",
+          Left: &ast.Ident{
+            NamePos: 34,
+            NameEnd: 42,
+            Name:    "SingerID",
           },
-          Right: &ast.BinaryExpr{
+          Right: &ast.IntLiteral{
+            ValuePos: 45,
+            ValueEnd: 46,
+            Base:     10,
+            Value:    "1",
+          },
+        },
+        Right: &ast.BinaryExpr{
+          Op:   "AND",
+          Left: &ast.BinaryExpr{
             Op:   "=",
             Left: &ast.Ident{
               NamePos: 50,
@@ -64,18 +64,18 @@ WHERE
               Value:    "foobar",
             },
           },
-        },
-        Right: &ast.BinaryExpr{
-          Op:   "=",
-          Left: &ast.Ident{
-            NamePos: 75,
-            NameEnd: 83,
-            Name:    "LastName",
-          },
-          Right: &ast.StringLiteral{
-            ValuePos: 86,
-            ValueEnd: 96,
-            Value:    "fizzbuzz",
+          Right: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Ident{
+              NamePos: 75,
+              NameEnd: 83,
+              Name:    "LastName",
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 86,
+              ValueEnd: 96,
+              Value:    "fizzbuzz",
+            },
           },
         },
       },

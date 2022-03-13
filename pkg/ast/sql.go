@@ -18,7 +18,8 @@ const (
 	precBitOr
 	precComparison
 	precNot
-	precAndOr
+	precAnd
+	precOr
 )
 
 func exprPrec(e Expr) prec {
@@ -45,8 +46,10 @@ func exprPrec(e Expr) prec {
 			return precBitOr
 		case OpEqual, OpNotEqual, OpLess, OpLessEqual, OpGreater, OpGreaterEqual, OpLike, OpNotLike:
 			return precComparison
-		case OpAnd, OpOr:
-			return precAndOr
+		case OpAnd:
+			return precAnd
+		case OpOr:
+			return precOr
 		}
 	case *UnaryExpr:
 		switch e.Op {
