@@ -915,18 +915,35 @@ func (p *Parser) parseTableSampleSize() *ast.TableSampleSize {
 // ================================================================================
 
 func (p *Parser) parseExpr() ast.Expr {
-	return p.parseAndOr()
+	return p.parseOr()
 }
 
-func (p *Parser) parseAndOr() ast.Expr {
+func (p *Parser) parseOr() ast.Expr {
+	expr := p.parseAnd()
+	for {
+		var op ast.BinaryOp
+		switch p.Token.Kind {
+		case "OR":
+			op = ast.OpOr
+		default:
+			return expr
+		}
+		p.nextToken()
+		expr = &ast.BinaryExpr{
+			Left:  expr,
+			Op:    op,
+			Right: p.parseAnd(),
+		}
+	}
+}
+
+func (p *Parser) parseAnd() ast.Expr {
 	expr := p.parseNot()
 	for {
 		var op ast.BinaryOp
 		switch p.Token.Kind {
 		case "AND":
 			op = ast.OpAnd
-		case "OR":
-			op = ast.OpOr
 		default:
 			return expr
 		}
