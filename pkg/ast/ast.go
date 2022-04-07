@@ -1345,6 +1345,21 @@ type ForeignKey struct {
 
 func (*ForeignKey) isConstraint() {}
 
+// Check is check constraint in CREATE TABLE and ALTER TABLE.
+//
+//     Check ({{.Expr}})
+type Check struct {
+	// pos = Check
+	// end = Rparen + 1
+
+	Check  token.Pos // position of "CHECK" keyword
+	Rparen token.Pos // position of ")" after Expr
+
+	Expr Expr
+}
+
+func (*Check) isConstraint() {}
+
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
 //
 //     {{.Name | sql}} {{.Dir}}

@@ -6,13 +6,15 @@ create table foo (
   qux string(255) not null as (concat(baz, "a")) stored,
   foreign key (foo) references t2 (t2key1),
   constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  check (foo > 0),
+  constraint cname check (bar > 0),
   quux json
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 334,
+  Rparen: 389,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -134,12 +136,12 @@ create table foo (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 301,
-        NameEnd: 305,
+        NamePos: 356,
+        NameEnd: 360,
         Name:    "quux",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 306,
+        NamePos: 361,
         Name:    "JSON",
       },
       NotNull:       false,
@@ -151,8 +153,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 326,
-        NameEnd: 329,
+        NamePos: 381,
+        NameEnd: 384,
         Name:    "foo",
       },
       Dir: "",
@@ -160,8 +162,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 331,
-        NameEnd: 334,
+        NamePos: 386,
+        NameEnd: 389,
         Name:    "bar",
       },
       Dir: "",
@@ -236,10 +238,58 @@ create table foo (
         },
       },
     },
+    &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.Check{
+        Check:  301,
+        Rparen: 316,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 308,
+            NameEnd: 311,
+            Name:    "foo",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 314,
+            ValueEnd: 315,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 320,
+      Name:          &ast.Ident{
+        NamePos: 331,
+        NameEnd: 336,
+        Name:    "cname",
+      },
+      Constraint: &ast.Check{
+        Check:  337,
+        Rparen: 352,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 344,
+            NameEnd: 347,
+            Name:    "bar",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 350,
+            ValueEnd: 351,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
   },
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)

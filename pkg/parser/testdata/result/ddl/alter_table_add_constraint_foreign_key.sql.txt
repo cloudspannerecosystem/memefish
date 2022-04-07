@@ -1,4 +1,4 @@
---- alter_table_add_constraint.sql
+--- alter_table_add_constraint_foreign_key.sql
 alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2)
 
 --- AST

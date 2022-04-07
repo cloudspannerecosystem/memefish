@@ -762,6 +762,10 @@ func (f *ForeignKey) SQL() string {
 	return sql
 }
 
+func (c *Check) SQL() string {
+	return "CHECK (" + c.Expr.SQL() + ")"
+}
+
 func (g *GeneratedColumnExpr) SQL() string {
 	return "AS (" + g.Expr.SQL() + ") STORED"
 }

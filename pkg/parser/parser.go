@@ -1966,6 +1966,9 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		case p.Token.IsKeywordLike("FOREIGN"):
 			fk := p.parseForeignKey()
 			constraints = append(constraints, &ast.TableConstraint{Constraint: fk})
+		case p.Token.IsKeywordLike("CHECK"):
+			c := p.parseCheck()
+			constraints = append(constraints, &ast.TableConstraint{Constraint: c})
 		default:
 			columns = append(columns, p.parseColumnDef())
 		}
@@ -2031,6 +2034,8 @@ func (p *Parser) parseConstraint() *ast.TableConstraint {
 	switch {
 	case p.Token.IsKeywordLike("FOREIGN"):
 		c = p.parseForeignKey()
+	case p.Token.IsKeywordLike("CHECK"):
+		c = p.parseCheck()
 	default:
 		panic(p.errorfAtToken(&p.Token, "unknown constraint %s", p.Token.AsString))
 	}
@@ -2069,6 +2074,18 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 		Columns:          columns,
 		ReferenceTable:   refTable,
 		ReferenceColumns: refColumns,
+	}
+}
+
+func (p *Parser) parseCheck() *ast.Check {
+	pos := p.expectKeywordLike("CHECK").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	rparen := p.expect(")").End
+	return &ast.Check{
+		Check:  pos,
+		Rparen: rparen,
+		Expr:   expr,
 	}
 }
 
@@ -2373,6 +2390,14 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 			Add: pos,
 			TableConstraint: &ast.TableConstraint{
 				Constraint: fk,
+			},
+		}
+	case p.Token.IsKeywordLike("CHECK"):
+		c := p.parseCheck()
+		alternation = &ast.AddTableConstraint{
+			Add: pos,
+			TableConstraint: &ast.TableConstraint{
+				Constraint: c,
 			},
 		}
 	case p.Token.IsKeywordLike("ROW"):

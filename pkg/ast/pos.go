@@ -523,6 +523,9 @@ func (f *ForeignKey) Pos() token.Pos {
 }
 func (f *ForeignKey) End() token.Pos { return f.Rparen + 1 }
 
+func (c *Check) Pos() token.Pos { return c.Check }
+func (c *Check) End() token.Pos { return c.Rparen + 1 }
+
 func (i *IndexKey) Pos() token.Pos {
 	return i.Name.Pos()
 }
