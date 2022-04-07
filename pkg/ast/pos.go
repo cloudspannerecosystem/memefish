@@ -14,6 +14,9 @@ func (q *QueryStatement) Pos() token.Pos {
 	if q.Hint != nil {
 		return q.Hint.Pos()
 	}
+	if q.With != nil {
+		return q.With.Pos()
+	}
 	return q.Query.Pos()
 }
 
@@ -26,6 +29,12 @@ func (h *Hint) End() token.Pos { return h.Rbrace + 1 }
 
 func (h *HintRecord) Pos() token.Pos { return h.Key.Pos() }
 func (h *HintRecord) End() token.Pos { return h.Value.End() }
+
+func (w *With) Pos() token.Pos { return w.With }
+func (w *With) End() token.Pos { return w.CTEs[len(w.CTEs)-1].End() }
+
+func (c *CTE) Pos() token.Pos { return c.Name.Pos() }
+func (c *CTE) End() token.Pos { return c.Rparen + 1 }
 
 func (s *Select) Pos() token.Pos { return s.Select }
 

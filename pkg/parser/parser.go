@@ -189,7 +189,7 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "(":
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP"):
 		return p.parseDDL()
@@ -223,10 +223,12 @@ func (p *Parser) parseStatements(doParse func()) {
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
 	hint := p.tryParseHint()
+	with := p.tryParseWith()
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
 		Hint:  hint,
+		With:  with,
 		Query: query,
 	}
 }
@@ -262,6 +264,37 @@ func (p *Parser) parseHintRecord() *ast.HintRecord {
 	return &ast.HintRecord{
 		Key:   key,
 		Value: value,
+	}
+}
+
+func (p *Parser) tryParseWith() *ast.With {
+	if p.Token.Kind != "WITH" {
+		return nil
+	}
+	pos := p.Token.Pos
+	p.nextToken()
+	ctes := []*ast.CTE{p.parseCTE()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		ctes = append(ctes, p.parseCTE())
+	}
+
+	return &ast.With{
+		With: pos,
+		CTEs: ctes,
+	}
+}
+
+func (p *Parser) parseCTE() *ast.CTE {
+	name := p.parseIdent()
+	p.expect("AS")
+	p.expect("(")
+	query := p.parseQueryExpr()
+	rparen := p.expect(")").Pos
+	return &ast.CTE{
+		Name:      name,
+		QueryExpr: query,
+		Rparen:    rparen,
 	}
 }
 

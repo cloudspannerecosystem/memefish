@@ -236,10 +236,11 @@ func (SubQueryInput) isInsertInput() {}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
-	// pos = (Hint ?? Expr).pos
+	// pos = (Hint ?? With ?? Expr).pos
 	// end = Expr.end
 
 	Hint  *Hint // optional
+	With  *With // optional
 	Query QueryExpr
 }
 
@@ -265,6 +266,29 @@ type HintRecord struct {
 
 	Key   *Ident
 	Value Expr
+}
+
+// With is with clause node.
+//     WITH {{.CTEs | sqlJoin ","}}
+type With struct {
+	// pos = With
+	// end = CTEs[$].end
+
+	With token.Pos // position of "WITH" keyword
+
+	CTEs []*CTE
+}
+
+// CTE is common table expression node.
+//     {{.Name}} AS ({{.QueryExpr}})
+type CTE struct {
+	// pos = Name.pos
+	// end = Rparen + 1
+
+	Rparen token.Pos // position of ")"
+
+	Name      *Ident
+	QueryExpr QueryExpr
 }
 
 // Select is SELECT statement node.
