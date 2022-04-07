@@ -233,7 +233,7 @@ create table types (
       Dir: "",
     },
   },
-  ForeignKeys:       []*ast.ForeignKey(nil),
+  TableConstraints:  []*ast.TableConstraint(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

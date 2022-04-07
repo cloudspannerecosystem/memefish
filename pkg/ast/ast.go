@@ -182,7 +182,7 @@ type TableAlternation interface {
 }
 
 func (AddColumn) isTableAlternation()                {}
-func (AddForeignKey) isTableAlternation()            {}
+func (AddTableConstraint) isTableAlternation()       {}
 func (AddRowDeletionPolicy) isTableAlternation()     {}
 func (DropColumn) isTableAlternation()               {}
 func (DropConstraint) isTableAlternation()           {}
@@ -1263,7 +1263,7 @@ type CreateTable struct {
 	Name              *Ident
 	Columns           []*ColumnDef
 	PrimaryKeys       []*IndexKey
-	ForeignKeys       []*ForeignKey
+	TableConstraints  []*TableConstraint       // optional
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 }
@@ -1313,22 +1313,37 @@ type ColumnDefOptions struct {
 	AllowCommitTimestamp bool
 }
 
+// TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
+//
+//     {{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint}}
+type TableConstraint struct {
+	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
+
+	Name       *Ident // optional
+	Constraint Constraint
+}
+
+type Constraint interface {
+	isConstraint()
+	Node
+}
+
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
 //
-//     {{if .Name}}CONSTRAINT {{.Name}}{{end}} FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
+//     FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
 type ForeignKey struct {
-	// pos = Constraint || Foreign
+	// pos = Foreign
 	// end = Rparen + 1
 
-	Constraint token.Pos // position of "CONSTRAINT" keyword when Implicit is true
-	Foreign    token.Pos // position of "FOREIGN" keyword
-	Rparen     token.Pos // position of ")" after reference columns
+	Foreign token.Pos // position of "FOREIGN" keyword
+	Rparen  token.Pos // position of ")" after reference columns
 
-	Name             *Ident // optional
 	Columns          []*Ident
 	ReferenceTable   *Ident
 	ReferenceColumns []*Ident
 }
+
+func (*ForeignKey) isConstraint() {}
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
 //
@@ -1404,16 +1419,14 @@ type AddColumn struct {
 	Column *ColumnDef
 }
 
-// AddForeignKey is ADD FOREIGN KEY clause in ALTER TABLE.
-//
-//     ADD {{.ForeignKey | sql}}
-type AddForeignKey struct {
+// AddTableConstraint is ADD table_constraint clause in ALTER TABLE.
+type AddTableConstraint struct {
 	// pos = Add
-	// end = ForeignKey.end
+	// end = Constraint.end
 
 	Add token.Pos // position of "ADD" keyword
 
-	ForeignKey *ForeignKey
+	TableConstraint *TableConstraint
 }
 
 // AddRowDeletionPolicy is ADD ROW DELETION POLICY clause in ALTER TABLE.

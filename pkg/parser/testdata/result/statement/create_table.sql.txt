@@ -167,68 +167,72 @@ create table foo (
       Dir: "",
     },
   },
-  ForeignKeys: []*ast.ForeignKey{
-    &ast.ForeignKey{
-      Constraint: 0,
-      Foreign:    182,
-      Rparen:     222,
-      Name:       (*ast.Ident)(nil),
-      Columns:    []*ast.Ident{
-        &ast.Ident{
-          NamePos: 195,
-          NameEnd: 198,
-          Name:    "foo",
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.ForeignKey{
+        Foreign: 182,
+        Rparen:  222,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 195,
+            NameEnd: 198,
+            Name:    "foo",
+          },
         },
-      },
-      ReferenceTable: &ast.Ident{
-        NamePos: 211,
-        NameEnd: 213,
-        Name:    "t2",
-      },
-      ReferenceColumns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 215,
-          NameEnd: 221,
-          Name:    "t2key1",
+        ReferenceTable: &ast.Ident{
+          NamePos: 211,
+          NameEnd: 213,
+          Name:    "t2",
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 215,
+            NameEnd: 221,
+            Name:    "t2key1",
+          },
         },
       },
     },
-    &ast.ForeignKey{
-      Constraint: 226,
-      Foreign:    244,
-      Rparen:     297,
-      Name:       &ast.Ident{
+    &ast.TableConstraint{
+      ConstraintPos: 226,
+      Name:          &ast.Ident{
         NamePos: 237,
         NameEnd: 243,
         Name:    "fkname",
       },
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 257,
-          NameEnd: 260,
-          Name:    "foo",
+      Constraint: &ast.ForeignKey{
+        Foreign: 244,
+        Rparen:  297,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 257,
+            NameEnd: 260,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 262,
+            NameEnd: 265,
+            Name:    "bar",
+          },
         },
-        &ast.Ident{
-          NamePos: 262,
-          NameEnd: 265,
-          Name:    "bar",
+        ReferenceTable: &ast.Ident{
+          NamePos: 278,
+          NameEnd: 280,
+          Name:    "t2",
         },
-      },
-      ReferenceTable: &ast.Ident{
-        NamePos: 278,
-        NameEnd: 280,
-        Name:    "t2",
-      },
-      ReferenceColumns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 282,
-          NameEnd: 288,
-          Name:    "t2key1",
-        },
-        &ast.Ident{
-          NamePos: 290,
-          NameEnd: 296,
-          Name:    "t2key2",
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 282,
+            NameEnd: 288,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 290,
+            NameEnd: 296,
+            Name:    "t2key2",
+          },
         },
       },
     },

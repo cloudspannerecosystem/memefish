@@ -9,30 +9,32 @@ alter table foo add foreign key (bar) references t2 (t2key1)
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddForeignKey{
-    Add:        16,
-    ForeignKey: &ast.ForeignKey{
-      Constraint: 0,
-      Foreign:    20,
-      Rparen:     60,
-      Name:       (*ast.Ident)(nil),
-      Columns:    []*ast.Ident{
-        &ast.Ident{
-          NamePos: 33,
-          NameEnd: 36,
-          Name:    "bar",
+  TableAlternation: &ast.AddTableConstraint{
+    Add:             16,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.ForeignKey{
+        Foreign: 20,
+        Rparen:  60,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 33,
+            NameEnd: 36,
+            Name:    "bar",
+          },
         },
-      },
-      ReferenceTable: &ast.Ident{
-        NamePos: 49,
-        NameEnd: 51,
-        Name:    "t2",
-      },
-      ReferenceColumns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 53,
-          NameEnd: 59,
-          Name:    "t2key1",
+        ReferenceTable: &ast.Ident{
+          NamePos: 49,
+          NameEnd: 51,
+          Name:    "t2",
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 53,
+            NameEnd: 59,
+            Name:    "t2key1",
+          },
         },
       },
     },

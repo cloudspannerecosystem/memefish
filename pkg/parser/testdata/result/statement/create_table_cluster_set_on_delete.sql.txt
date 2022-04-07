@@ -41,8 +41,8 @@ create table foo (
       Dir: "",
     },
   },
-  ForeignKeys: []*ast.ForeignKey(nil),
-  Cluster:     &ast.Cluster{
+  TableConstraints: []*ast.TableConstraint(nil),
+  Cluster:          &ast.Cluster{
     Comma:       50,
     OnDeleteEnd: 112,
     TableName:   &ast.Ident{

@@ -9,44 +9,46 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddForeignKey{
-    Add:        16,
-    ForeignKey: &ast.ForeignKey{
-      Constraint: 20,
-      Foreign:    38,
-      Rparen:     91,
-      Name:       &ast.Ident{
+  TableAlternation: &ast.AddTableConstraint{
+    Add:             16,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: 20,
+      Name:          &ast.Ident{
         NamePos: 31,
         NameEnd: 37,
         Name:    "fkname",
       },
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 51,
-          NameEnd: 54,
-          Name:    "foo",
+      Constraint: &ast.ForeignKey{
+        Foreign: 38,
+        Rparen:  91,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 51,
+            NameEnd: 54,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 56,
+            NameEnd: 59,
+            Name:    "bar",
+          },
         },
-        &ast.Ident{
-          NamePos: 56,
-          NameEnd: 59,
-          Name:    "bar",
+        ReferenceTable: &ast.Ident{
+          NamePos: 72,
+          NameEnd: 74,
+          Name:    "t2",
         },
-      },
-      ReferenceTable: &ast.Ident{
-        NamePos: 72,
-        NameEnd: 74,
-        Name:    "t2",
-      },
-      ReferenceColumns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 76,
-          NameEnd: 82,
-          Name:    "t2key1",
-        },
-        &ast.Ident{
-          NamePos: 84,
-          NameEnd: 90,
-          Name:    "t2key2",
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 76,
+            NameEnd: 82,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 84,
+            NameEnd: 90,
+            Name:    "t2key2",
+          },
         },
       },
     },
