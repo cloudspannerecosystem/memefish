@@ -1263,7 +1263,7 @@ type CreateTable struct {
 	Name              *Ident
 	Columns           []*ColumnDef
 	PrimaryKeys       []*IndexKey
-	TableConstraints  []*TableConstraint       // optional
+	TableConstraints  []*TableConstraint
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 }
@@ -1435,6 +1435,8 @@ type AddColumn struct {
 }
 
 // AddTableConstraint is ADD table_constraint clause in ALTER TABLE.
+//
+//     ADD {{.TableConstraint}}
 type AddTableConstraint struct {
 	// pos = Add
 	// end = Constraint.end
