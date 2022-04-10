@@ -1,0 +1,40 @@
+--- alter_table_add_check.sql
+alter table foo add check (c1 > 0)
+
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlternation: &ast.AddTableConstraint{
+    Add:             16,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.Check{
+        Check:  20,
+        Rparen: 34,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 27,
+            NameEnd: 29,
+            Name:    "c1",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 32,
+            ValueEnd: 33,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ADD CHECK (c1 > 0)

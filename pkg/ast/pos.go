@@ -518,13 +518,22 @@ func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored }
 func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
 func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
 
-func (f *ForeignKey) Pos() token.Pos {
-	if f.Name == nil {
-		return f.Foreign
+func (c *TableConstraint) Pos() token.Pos {
+	if c.Name != nil {
+		return c.ConstraintPos
 	}
-	return f.Constraint
+	return c.Constraint.Pos()
+}
+
+func (c *TableConstraint) End() token.Pos { return c.Constraint.End() }
+
+func (f *ForeignKey) Pos() token.Pos {
+	return f.Foreign
 }
 func (f *ForeignKey) End() token.Pos { return f.Rparen + 1 }
+
+func (c *Check) Pos() token.Pos { return c.Check }
+func (c *Check) End() token.Pos { return c.Rparen + 1 }
 
 func (i *IndexKey) Pos() token.Pos {
 	return i.Name.Pos()
@@ -573,8 +582,8 @@ func (a *AddColumn) End() token.Pos { return a.Column.End() }
 func (a *AddRowDeletionPolicy) Pos() token.Pos { return a.Add }
 func (a *AddRowDeletionPolicy) End() token.Pos { return a.RowDeletionPolicy.End() }
 
-func (a *AddForeignKey) Pos() token.Pos { return a.Add }
-func (a *AddForeignKey) End() token.Pos { return a.ForeignKey.End() }
+func (a *AddTableConstraint) Pos() token.Pos { return a.Add }
+func (a *AddTableConstraint) End() token.Pos { return a.TableConstraint.End() }
 
 func (d *DropColumn) Pos() token.Pos { return d.Drop }
 func (d *DropColumn) End() token.Pos { return d.Name.End() }

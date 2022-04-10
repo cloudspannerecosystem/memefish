@@ -46,9 +46,9 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*ast.IndexKey(nil),
-  ForeignKeys: []*ast.ForeignKey(nil),
-  Cluster:     &ast.Cluster{
+  PrimaryKeys:      []*ast.IndexKey(nil),
+  TableConstraints: []*ast.TableConstraint(nil),
+  Cluster:          &ast.Cluster{
     Comma:       60,
     OnDeleteEnd: -1,
     TableName:   &ast.Ident{

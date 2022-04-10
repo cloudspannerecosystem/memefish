@@ -1988,16 +1988,20 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	// TODO: is this allowed by Spanner really?
 	p.expect("(")
 	var columns []*ast.ColumnDef
-	var foreignKeys []*ast.ForeignKey
+	var constraints []*ast.TableConstraint
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ")" {
 			break
 		}
 		switch {
 		case p.Token.IsKeywordLike("CONSTRAINT"):
-			foreignKeys = append(foreignKeys, p.parseConstraint())
+			constraints = append(constraints, p.parseConstraint())
 		case p.Token.IsKeywordLike("FOREIGN"):
-			foreignKeys = append(foreignKeys, p.parseForeignKey())
+			fk := p.parseForeignKey()
+			constraints = append(constraints, &ast.TableConstraint{Constraint: fk})
+		case p.Token.IsKeywordLike("CHECK"):
+			c := p.parseCheck()
+			constraints = append(constraints, &ast.TableConstraint{Constraint: c})
 		default:
 			columns = append(columns, p.parseColumnDef())
 		}
@@ -2033,7 +2037,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Rparen:            rparen,
 		Name:              name,
 		Columns:           columns,
-		ForeignKeys:       foreignKeys,
+		TableConstraints:  constraints,
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
@@ -2056,13 +2060,23 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	}
 }
 
-func (p *Parser) parseConstraint() *ast.ForeignKey {
+func (p *Parser) parseConstraint() *ast.TableConstraint {
 	pos := p.expectKeywordLike("CONSTRAINT").Pos
 	name := p.parseIdent()
-	fk := p.parseForeignKey()
-	fk.Constraint = pos
-	fk.Name = name
-	return fk
+	var c ast.Constraint
+	switch {
+	case p.Token.IsKeywordLike("FOREIGN"):
+		c = p.parseForeignKey()
+	case p.Token.IsKeywordLike("CHECK"):
+		c = p.parseCheck()
+	default:
+		panic(p.errorfAtToken(&p.Token, "unknown constraint %s", p.Token.AsString))
+	}
+	return &ast.TableConstraint{
+		ConstraintPos: pos,
+		Name:          name,
+		Constraint:    c,
+	}
 }
 
 func (p *Parser) parseForeignKey() *ast.ForeignKey {
@@ -2090,10 +2104,21 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	return &ast.ForeignKey{
 		Foreign:          pos,
 		Rparen:           rparen,
-		Name:             nil,
 		Columns:          columns,
 		ReferenceTable:   refTable,
 		ReferenceColumns: refColumns,
+	}
+}
+
+func (p *Parser) parseCheck() *ast.Check {
+	pos := p.expectKeywordLike("CHECK").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	rparen := p.expect(")").End
+	return &ast.Check{
+		Check:  pos,
+		Rparen: rparen,
+		Expr:   expr,
 	}
 }
 
@@ -2388,16 +2413,25 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 			Column: column,
 		}
 	case p.Token.IsKeywordLike("CONSTRAINT"):
-		fk := p.parseConstraint()
-		alternation = &ast.AddForeignKey{
-			Add:        pos,
-			ForeignKey: fk,
+		alternation = &ast.AddTableConstraint{
+			Add:             pos,
+			TableConstraint: p.parseConstraint(),
 		}
 	case p.Token.IsKeywordLike("FOREIGN"):
 		fk := p.parseForeignKey()
-		alternation = &ast.AddForeignKey{
-			Add:        pos,
-			ForeignKey: fk,
+		alternation = &ast.AddTableConstraint{
+			Add: pos,
+			TableConstraint: &ast.TableConstraint{
+				Constraint: fk,
+			},
+		}
+	case p.Token.IsKeywordLike("CHECK"):
+		c := p.parseCheck()
+		alternation = &ast.AddTableConstraint{
+			Add: pos,
+			TableConstraint: &ast.TableConstraint{
+				Constraint: c,
+			},
 		}
 	case p.Token.IsKeywordLike("ROW"):
 		rdp := p.parseRowDeletionPolicy()

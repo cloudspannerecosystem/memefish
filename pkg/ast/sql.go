@@ -712,7 +712,7 @@ func (c *CreateTable) SQL() string {
 		}
 		sql += c.SQL()
 	}
-	for _, c := range c.ForeignKeys {
+	for _, c := range c.TableConstraints {
 		sql += ", " + c.SQL()
 	}
 	sql += ") "
@@ -747,11 +747,17 @@ func (c *ColumnDef) SQL() string {
 	return sql
 }
 
+func (c *TableConstraint) SQL() string {
+	var sql string
+	if c.Name != nil {
+		sql += "CONSTRAINT " + c.Name.SQL() + " "
+	}
+	sql += c.Constraint.SQL()
+	return sql
+}
+
 func (f *ForeignKey) SQL() string {
 	var sql string
-	if f.Name != nil {
-		sql += "CONSTRAINT " + f.Name.SQL() + " "
-	}
 	sql += "FOREIGN KEY ("
 	for i, k := range f.Columns {
 		if i != 0 {
@@ -769,6 +775,10 @@ func (f *ForeignKey) SQL() string {
 	}
 	sql += ")"
 	return sql
+}
+
+func (c *Check) SQL() string {
+	return "CHECK (" + c.Expr.SQL() + ")"
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
@@ -817,8 +827,8 @@ func (a *AddColumn) SQL() string {
 	return "ADD COLUMN " + a.Column.SQL()
 }
 
-func (a *AddForeignKey) SQL() string {
-	return "ADD " + a.ForeignKey.SQL()
+func (a *AddTableConstraint) SQL() string {
+	return "ADD " + a.TableConstraint.SQL()
 }
 
 func (a *AddRowDeletionPolicy) SQL() string {
