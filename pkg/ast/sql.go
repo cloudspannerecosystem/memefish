@@ -83,6 +83,9 @@ func (q *QueryStatement) SQL() string {
 	if q.Hint != nil {
 		sql += q.Hint.SQL() + " "
 	}
+	if q.With != nil {
+		sql += q.With.SQL() + " "
+	}
 	sql += q.Query.SQL()
 	return sql
 }
@@ -98,6 +101,18 @@ func (h *Hint) SQL() string {
 
 func (h *HintRecord) SQL() string {
 	return h.Key.SQL() + "=" + h.Value.SQL()
+}
+
+func (w *With) SQL() string {
+	sql := "WITH " + w.CTEs[0].SQL()
+	for _, c := range w.CTEs[1:] {
+		sql += ", " + c.SQL()
+	}
+	return sql
+}
+
+func (c *CTE) SQL() string {
+	return c.Name.SQL() + " AS (" + c.QueryExpr.SQL() + ")"
 }
 
 func (s *Select) SQL() string {

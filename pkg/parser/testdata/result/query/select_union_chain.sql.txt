@@ -4,6 +4,7 @@
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
   Query: &ast.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
