@@ -8,13 +8,14 @@ create table foo (
   constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
   check (foo > 0),
   constraint cname check (bar > 0),
-  quux json
+  quux json,
+  corge timestamp not null default (current_timestamp())
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create: 0,
-  Rparen: 389,
+  Rparen: 447,
   Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
@@ -33,6 +34,7 @@ create table foo (
         Name:    "INT64",
       },
       NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
@@ -48,6 +50,7 @@ create table foo (
         Name:    "FLOAT64",
       },
       NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
@@ -71,6 +74,7 @@ create table foo (
         },
       },
       NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       &ast.ColumnDefOptions{
         Options:              83,
@@ -98,6 +102,7 @@ create table foo (
         },
       },
       NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 178,
@@ -145,6 +150,36 @@ create table foo (
         Name:    "JSON",
       },
       NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 389,
+      Name: &ast.Ident{
+        NamePos: 369,
+        NameEnd: 374,
+        Name:    "corge",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 375,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:     true,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 394,
+        Rparen:  422,
+        Expr:    &ast.CallExpr{
+          Rparen: 421,
+          Func:   &ast.Ident{
+            NamePos: 403,
+            NameEnd: 420,
+            Name:    "current_timestamp",
+          },
+          Distinct: false,
+          Args:     []*ast.Arg(nil),
+        },
+      },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
@@ -153,8 +188,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 381,
-        NameEnd: 384,
+        NamePos: 439,
+        NameEnd: 442,
         Name:    "foo",
       },
       Dir: "",
@@ -162,8 +197,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 386,
-        NameEnd: 389,
+        NamePos: 444,
+        NameEnd: 447,
         Name:    "bar",
       },
       Dir: "",
@@ -292,4 +327,4 @@ create table foo (
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)
