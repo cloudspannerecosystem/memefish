@@ -1296,19 +1296,34 @@ type CreateTable struct {
 //
 //     {{.Name | sql}}
 //     {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+//     {{.DefaultExpr | sqlOpt}}
 //     {{.GeneratedExpr | sqlOpt}}
 //     {{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || GeneratedExpr.end || Null + 4 || Type.end
+	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
 	Name          *Ident
 	Type          SchemaType
 	NotNull       bool
+	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
 	Options       *ColumnDefOptions    // optional
+}
+
+// ColumnDefaultExpr is a default value expression for the column.
+//
+//     DEFAULT ({{.Expr | sql}})
+type ColumnDefaultExpr struct {
+	// pos = Default
+	// end = Rparen
+
+	Default token.Pos // position of "DEFAULT" keyword
+	Rparen  token.Pos // position of ")"
+
+	Expr Expr
 }
 
 // GeneratedColumnExpr is generated column expression.

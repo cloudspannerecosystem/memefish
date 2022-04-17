@@ -2047,6 +2047,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	name := p.parseIdent()
 	t, notNull, null := p.parseTypeNotNull()
+	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
 	options := p.tryParseColumnDefOptions()
 
@@ -2055,6 +2056,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		Name:          name,
 		Type:          t,
 		NotNull:       notNull,
+		DefaultExpr:   defaultExpr,
 		GeneratedExpr: generated,
 		Options:       options,
 	}
@@ -2132,6 +2134,23 @@ func (p *Parser) parseTypeNotNull() (t ast.SchemaType, notNull bool, null token.
 		notNull = true
 	}
 	return
+}
+
+func (p *Parser) tryParseColumnDefaultExpr() *ast.ColumnDefaultExpr {
+	if p.Token.Kind != "DEFAULT" {
+		return nil
+	}
+
+	def := p.expect("DEFAULT").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+
+	return &ast.ColumnDefaultExpr{
+		Default: def,
+		Rparen:  rparen,
+		Expr:    expr,
+	}
 }
 
 func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
