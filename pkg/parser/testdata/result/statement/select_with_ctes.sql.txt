@@ -1,0 +1,126 @@
+--- select_with_ctes.sql
+WITH
+    subQ1 AS (SELECT * FROM Roster WHERE SchoolID = 52),
+    subQ2 AS (SELECT SchoolID FROM subQ1)
+SELECT DISTINCT * FROM subQ2
+--- AST
+&ast.QueryStatement{
+  Hint: (*ast.Hint)(nil),
+  CTEs: []ast.CommonTableExpression{
+    ast.CommonTableExpression{
+      Pos:   0,
+      Name:  "subQ1",
+      Query: &ast.Select{
+        Select:   19,
+        Distinct: false,
+        AsStruct: false,
+        Results:  []ast.SelectItem{
+          &ast.Star{
+            Star: 26,
+          },
+        },
+        From: &ast.From{
+          From:   28,
+          Source: &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 33,
+              NameEnd: 39,
+              Name:    "Roster",
+            },
+            Hint:   (*ast.Hint)(nil),
+            As:     (*ast.AsAlias)(nil),
+            Sample: (*ast.TableSample)(nil),
+          },
+        },
+        Where: &ast.Where{
+          Where: 40,
+          Expr:  &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Ident{
+              NamePos: 46,
+              NameEnd: 54,
+              Name:    "SchoolID",
+            },
+            Right: &ast.IntLiteral{
+              ValuePos: 57,
+              ValueEnd: 59,
+              Base:     10,
+              Value:    "52",
+            },
+          },
+        },
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
+      },
+    },
+    ast.CommonTableExpression{
+      Pos:   0,
+      Name:  "subQ2",
+      Query: &ast.Select{
+        Select:   76,
+        Distinct: false,
+        AsStruct: false,
+        Results:  []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.Ident{
+              NamePos: 83,
+              NameEnd: 91,
+              Name:    "SchoolID",
+            },
+          },
+        },
+        From: &ast.From{
+          From:   92,
+          Source: &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 97,
+              NameEnd: 102,
+              Name:    "subQ1",
+            },
+            Hint:   (*ast.Hint)(nil),
+            As:     (*ast.AsAlias)(nil),
+            Sample: (*ast.TableSample)(nil),
+          },
+        },
+        Where:   (*ast.Where)(nil),
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
+      },
+    },
+  },
+  Query: &ast.Select{
+    Select:   104,
+    Distinct: true,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 120,
+      },
+    },
+    From: &ast.From{
+      From:   122,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 127,
+          NameEnd: 132,
+          Name:    "subQ2",
+        },
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+WITH subQ1 AS (SELECT * FROM Roster WHERE SchoolID = 52),subQ2 AS (SELECT SchoolID FROM subQ1) SELECT DISTINCT * FROM subQ2

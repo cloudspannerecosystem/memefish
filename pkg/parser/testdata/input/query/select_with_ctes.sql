@@ -1,1 +1,4 @@
-@{hint1 = 1, hint2 = 2} select hint
+WITH
+    subQ1 AS (SELECT * FROM Roster WHERE SchoolID = 52),
+    subQ2 AS (SELECT SchoolID FROM subQ1)
+SELECT DISTINCT * FROM subQ2
