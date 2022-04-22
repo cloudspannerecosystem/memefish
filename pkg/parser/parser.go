@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"container/list"
 	"fmt"
 	"strings"
 
@@ -139,7 +140,10 @@ func (p *Parser) ParseDDLs() (ddls []ast.DDL, err error) {
 	})
 	if p.Token.Kind != token.TokenEOF {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+
 	}
+	lis := list.New()
+	lis.Back()
 	return
 }
 
@@ -189,7 +193,7 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "(":
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "(" || p.Token.Kind == "WITH":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP"):
 		return p.parseDDL()
@@ -223,12 +227,21 @@ func (p *Parser) parseStatements(doParse func()) {
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
 	hint := p.tryParseHint()
+	expressions := p.tryParseCTEs()
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
 		Hint:  hint,
+		CTEs:  expressions,
 		Query: query,
 	}
+}
+
+func (p *Parser) tryParseCTEs() []ast.CommonTableExpression {
+	if p.Token.Kind != "WITH" {
+		return nil
+	}
+	return p.parseCommonTableExpressions()
 }
 
 func (p *Parser) tryParseHint() *ast.Hint {
@@ -360,6 +373,27 @@ func (p *Parser) parseSelect() *ast.Select {
 		GroupBy:  groupBy,
 		Having:   having,
 	}
+}
+
+func (p *Parser) parseCommonTableExpressions() []ast.CommonTableExpression {
+	expressions := make([]ast.CommonTableExpression, 0)
+
+	for p.Token.Kind != token.TokenEOF {
+		p.nextToken()
+		nameToken := p.expect(token.TokenIdent)
+		p.expect("AS")
+		p.expect("(")
+		query := p.parseQueryExpr()
+		p.expect(")")
+		expressions = append(expressions, ast.CommonTableExpression{
+			Name:  nameToken.Raw,
+			Query: query,
+		})
+		if p.Token.Kind != "," {
+			break
+		}
+	}
+	return expressions
 }
 
 func (p *Parser) parseSelectResults() []ast.SelectItem {

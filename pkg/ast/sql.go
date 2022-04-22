@@ -80,6 +80,17 @@ func (q *QueryStatement) SQL() string {
 	if q.Hint != nil {
 		sql += q.Hint.SQL() + " "
 	}
+	if q.CTEs != nil {
+		sql += "WITH "
+		for i, cte := range q.CTEs {
+			sql += cte.Name + " AS (" + cte.Query.SQL() + ")"
+			if i != len(q.CTEs)-1 {
+				sql += ","
+			} else {
+				sql += " "
+			}
+		}
+	}
 	sql += q.Query.SQL()
 	return sql
 }

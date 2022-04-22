@@ -239,7 +239,8 @@ type QueryStatement struct {
 	// pos = (Hint ?? Expr).pos
 	// end = Expr.end
 
-	Hint  *Hint // optional
+	Hint  *Hint                   // optional
+	CTEs  []CommonTableExpression // optional
 	Query QueryExpr
 }
 
@@ -324,6 +325,15 @@ type SubQuery struct {
 	Query   QueryExpr
 	OrderBy *OrderBy // optional
 	Limit   *Limit   // optional
+}
+
+// CommonTableExpression is CTE statement node
+//
+// cte_name AS ( query_expr )
+type CommonTableExpression struct {
+	Pos   token.Pos // position of cte_name
+	Name  string
+	Query QueryExpr
 }
 
 // Star is a single * in SELECT result columns list.
