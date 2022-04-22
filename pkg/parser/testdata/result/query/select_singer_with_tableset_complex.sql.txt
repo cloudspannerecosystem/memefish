@@ -26,6 +26,7 @@ UNION ALL
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.CompoundQuery{
     Op:       "UNION",
     Distinct: false,

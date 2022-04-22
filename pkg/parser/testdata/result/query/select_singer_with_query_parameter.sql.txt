@@ -10,6 +10,7 @@ WHERE
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,

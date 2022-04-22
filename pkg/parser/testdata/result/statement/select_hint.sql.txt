@@ -34,6 +34,7 @@
       },
     },
   },
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.Select{
     Select:   24,
     Distinct: false,

@@ -8,6 +8,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,

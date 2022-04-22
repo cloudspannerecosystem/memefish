@@ -27,6 +27,7 @@ FROM
       },
     },
   },
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.Select{
     Select:   25,
     Distinct: false,

@@ -5,6 +5,7 @@ select 1
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
+  CTEs:  []ast.CommonTableExpression(nil),
   Query: &ast.Select{
     Select:   10,
     Distinct: false,
