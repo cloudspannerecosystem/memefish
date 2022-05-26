@@ -1946,6 +1946,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateDatabase(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("VIEW") || p.Token.Kind == "OR":
+			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
 		}
@@ -2041,6 +2043,32 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
+	}
+}
+
+func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
+	var orReplace bool
+	if p.Token.Kind == "OR" {
+		p.nextToken()
+		p.expectKeywordLike("REPLACE")
+		orReplace = true
+	}
+	p.expectKeywordLike("VIEW")
+
+	name := p.parseIdent()
+
+	p.expectKeywordLike("SQL")
+	p.expectKeywordLike("SECURITY")
+	p.expectKeywordLike("INVOKER")
+	p.expect("AS")
+
+	query := p.parseQueryExpr()
+
+	return &ast.CreateView{
+		Create:    pos,
+		Name:      name,
+		OrReplace: orReplace,
+		Query:     query,
 	}
 }
 

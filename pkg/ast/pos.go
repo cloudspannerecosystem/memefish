@@ -495,6 +495,14 @@ func (c *CreateTable) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateView) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateView) End() token.Pos {
+	return c.Query.End()
+}
+
 func (c *ColumnDef) Pos() token.Pos {
 	return c.Name.Pos()
 }

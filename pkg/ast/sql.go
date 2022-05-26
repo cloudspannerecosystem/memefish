@@ -733,6 +733,15 @@ func (c *CreateTable) SQL() string {
 	return sql
 }
 
+func (c *CreateView) SQL() string {
+	sql := "CREATE"
+	if c.OrReplace {
+		sql += " OR REPLACE"
+	}
+	sql += " VIEW " + c.Name.SQL() + " SQL SECURITY INVOKER AS " + c.Query.SQL()
+	return sql
+}
+
 func (c *ColumnDef) SQL() string {
 	sql := c.Name.SQL() + " " + c.Type.SQL()
 	if c.NotNull {
