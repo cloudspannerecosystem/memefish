@@ -26,7 +26,8 @@ select 1 + 2, 1 - 2,
        1 in (1, 2, 3),
        2 in unnest([1, 2, 3]),
        3 in (select 1 union all select 2 union all select 3),
-       [1] || [2]
+       [1] || [2],
+       IF (1 > 1, 1, 2)+1 AS result,
 
 --- AST
 &ast.QueryStatement{
@@ -854,6 +855,75 @@ select 1 + 2, 1 - 2,
           },
         },
       },
+      &ast.Alias{
+        Expr: &ast.BinaryExpr{
+          Op:   "+",
+          Left: &ast.CallExpr{
+            Rparen: 788,
+            Func:   &ast.Ident{
+              NamePos: 773,
+              NameEnd: 775,
+              Name:    "IF",
+            },
+            Distinct: false,
+            Args:     []*ast.Arg{
+              &ast.Arg{
+                Interval: -1,
+                Expr:     &ast.BinaryExpr{
+                  Op:   ">",
+                  Left: &ast.IntLiteral{
+                    ValuePos: 777,
+                    ValueEnd: 778,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  Right: &ast.IntLiteral{
+                    ValuePos: 781,
+                    ValueEnd: 782,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+                IntervalUnit: (*ast.Ident)(nil),
+              },
+              &ast.Arg{
+                Interval: -1,
+                Expr:     &ast.IntLiteral{
+                  ValuePos: 784,
+                  ValueEnd: 785,
+                  Base:     10,
+                  Value:    "1",
+                },
+                IntervalUnit: (*ast.Ident)(nil),
+              },
+              &ast.Arg{
+                Interval: -1,
+                Expr:     &ast.IntLiteral{
+                  ValuePos: 787,
+                  ValueEnd: 788,
+                  Base:     10,
+                  Value:    "2",
+                },
+                IntervalUnit: (*ast.Ident)(nil),
+              },
+            },
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 790,
+            ValueEnd: 791,
+            Base:     10,
+            Value:    "1",
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 795,
+            NameEnd: 801,
+            Name:    "result",
+          },
+        },
+      },
     },
     From:    (*ast.From)(nil),
     Where:   (*ast.Where)(nil),
@@ -865,4 +935,4 @@ select 1 + 2, 1 - 2,
 }
 
 --- SQL
-SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 AS `1`).`1`, NOT NOT TRUE, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST(ARRAY[1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), ARRAY[1] || ARRAY[2]
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 AS `1`).`1`, NOT NOT TRUE, ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][OFFSET(1)], ARRAY[1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST(ARRAY[1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), ARRAY[1] || ARRAY[2], IF(1 > 1, 1, 2) + 1 AS result

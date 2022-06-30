@@ -46,7 +46,6 @@ var Keywords = []TokenKind{
 	"GROUPS",
 	"HASH",
 	"HAVING",
-	"IF",
 	"IGNORE",
 	"IN",
 	"INNER",

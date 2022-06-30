@@ -25,4 +25,5 @@ select 1 + 2, 1 - 2,
        1 in (1, 2, 3),
        2 in unnest([1, 2, 3]),
        3 in (select 1 union all select 2 union all select 3),
-       [1] || [2]
+       [1] || [2],
+       IF (1 > 1, 1, 2)+1 AS result,
