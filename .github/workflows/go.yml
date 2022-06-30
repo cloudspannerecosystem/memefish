@@ -28,7 +28,6 @@ jobs:
       run: make ci
 
     - name: Send coverage to Codecov
-      uses: codecov/codecov-action@v1.0.2
+      uses: codecov/codecov-action@v3
       with:
-        token: ${{secrets.CODECOV_TOKEN}}
-        file: cover.out
+        files: cover.out
