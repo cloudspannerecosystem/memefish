@@ -22,6 +22,7 @@ type Statement interface {
 func (QueryStatement) isStatement() {}
 func (CreateDatabase) isStatement() {}
 func (CreateTable) isStatement()    {}
+func (CreateView) isStatement()     {}
 func (CreateIndex) isStatement()    {}
 func (AlterTable) isStatement()     {}
 func (DropTable) isStatement()      {}
@@ -170,6 +171,7 @@ type DDL interface {
 
 func (CreateDatabase) isDDL() {}
 func (CreateTable) isDDL()    {}
+func (CreateView) isDDL()     {}
 func (AlterTable) isDDL()     {}
 func (DropTable) isDDL()      {}
 func (CreateIndex) isDDL()    {}
@@ -1290,6 +1292,21 @@ type CreateTable struct {
 	TableConstraints  []*TableConstraint
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+}
+
+// CreateView is CREATE VIEW statement node.
+//
+//     CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
+//     SQL SECURITY INVOKER AS
+//     {{.Query | sql}}
+type CreateView struct {
+	// pos = Create
+	// end = Query.end
+	Create token.Pos
+
+	Name      *Ident
+	OrReplace bool
+	Query     QueryExpr
 }
 
 // ColumnDef is column definition in CREATE TABLE.

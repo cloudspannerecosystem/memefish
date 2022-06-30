@@ -1,0 +1,119 @@
+--- create_view.sql
+create view singernames
+sql security invoker
+as select
+    singers.singerid as singerid,
+    singers.firstname || ' ' || singers.lastname as name
+from singers
+
+--- AST
+&ast.CreateView{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 12,
+    NameEnd: 23,
+    Name:    "singernames",
+  },
+  OrReplace: false,
+  Query:     &ast.Select{
+    Select:   48,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 59,
+              NameEnd: 66,
+              Name:    "singers",
+            },
+            &ast.Ident{
+              NamePos: 67,
+              NameEnd: 75,
+              Name:    "singerid",
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 79,
+            NameEnd: 87,
+            Name:    "singerid",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.BinaryExpr{
+          Op:   "||",
+          Left: &ast.BinaryExpr{
+            Op:   "||",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 93,
+                  NameEnd: 100,
+                  Name:    "singers",
+                },
+                &ast.Ident{
+                  NamePos: 101,
+                  NameEnd: 110,
+                  Name:    "firstname",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 114,
+              ValueEnd: 117,
+              Value:    " ",
+            },
+          },
+          Right: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 121,
+                NameEnd: 128,
+                Name:    "singers",
+              },
+              &ast.Ident{
+                NamePos: 129,
+                NameEnd: 137,
+                Name:    "lastname",
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 141,
+            NameEnd: 145,
+            Name:    "name",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   146,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 151,
+          NameEnd: 158,
+          Name:    "singers",
+        },
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+CREATE VIEW singernames SQL SECURITY INVOKER AS SELECT singers.singerid AS singerid, singers.firstname || " " || singers.lastname AS name FROM singers
