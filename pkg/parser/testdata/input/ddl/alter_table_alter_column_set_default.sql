@@ -1,0 +1,1 @@
+alter table foo alter column foo set options(allow_commit_timestamp = true)

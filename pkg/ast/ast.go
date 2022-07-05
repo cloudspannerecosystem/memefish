@@ -1584,9 +1584,10 @@ type AlterColumn struct {
 	Alter token.Pos // position of "ALTER" keyword
 	Null  token.Pos // position of "NULL"
 
-	Name    *Ident
-	Type    SchemaType
-	NotNull bool
+	Name        *Ident
+	Type        SchemaType
+	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr
 }
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
@@ -1598,8 +1599,9 @@ type AlterColumnSet struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Ident
-	Options *ColumnDefOptions
+	Name        *Ident
+	Options     *ColumnDefOptions
+	DefaultExpr *ColumnDefaultExpr
 }
 
 // DropTable is DROP TABLE statement node.
