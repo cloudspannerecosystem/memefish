@@ -1576,7 +1576,7 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sql}}
+//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumn struct {
 	// pos = Alter
 	// end = DefaultExpr.end || Null + 4 || Type.end
@@ -1591,7 +1591,7 @@ type AlterColumn struct {
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} SET {{.Options | sql}} || {{.DefaultExpr | sql}}
+//     ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
 type AlterColumnSet struct {
 	// pos = Alter
 	// end = Name.end || Options.end || DefaultExpr.end
