@@ -876,11 +876,19 @@ func (a *AlterColumn) SQL() string {
 	if a.NotNull {
 		sql += " NOT NULL"
 	}
+	if a.DefaultExpr != nil {
+		sql += " " + a.DefaultExpr.SQL()
+	}
 	return sql
 }
 
 func (a *AlterColumnSet) SQL() string {
-	return "ALTER COLUMN " + a.Name.SQL() + " SET " + a.Options.SQL()
+	sql := "ALTER COLUMN " + a.Name.SQL() + " SET "
+	if a.Options != nil {
+		return sql + a.Options.SQL()
+	} else {
+		return sql + a.DefaultExpr.SQL()
+	}
 }
 
 func (d *DropTable) SQL() string {

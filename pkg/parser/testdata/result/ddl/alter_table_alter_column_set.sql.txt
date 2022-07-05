@@ -20,6 +20,7 @@ alter table foo alter column foo set options(allow_commit_timestamp = true)
       Rparen:               75,
       AllowCommitTimestamp: true,
     },
+    DefaultExpr: (*ast.ColumnDefaultExpr)(nil),
   },
 }
 

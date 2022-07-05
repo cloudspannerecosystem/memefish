@@ -1,0 +1,1 @@
+ALTER TABLE actions ALTER COLUMN output SET DEFAULT("")

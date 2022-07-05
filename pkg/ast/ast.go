@@ -1576,30 +1576,31 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumn struct {
 	// pos = Alter
-	// end = Null + 4 || Type.end
-
+	// end = DefaultExpr.end || Null + 4 || Type.end
 	Alter token.Pos // position of "ALTER" keyword
 	Null  token.Pos // position of "NULL"
 
-	Name    *Ident
-	Type    SchemaType
-	NotNull bool
+	Name        *Ident
+	Type        SchemaType
+	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr
 }
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} SET {{.Options | sql}}
+//     ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
 type AlterColumnSet struct {
 	// pos = Alter
-	// end = Name.end
+	// end = Name.end || Options.end || DefaultExpr.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Ident
-	Options *ColumnDefOptions
+	Name        *Ident
+	Options     *ColumnDefOptions
+	DefaultExpr *ColumnDefaultExpr
 }
 
 // DropTable is DROP TABLE statement node.

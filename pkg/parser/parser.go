@@ -2558,22 +2558,32 @@ func (p *Parser) parseAlterColumn() ast.TableAlternation {
 
 	if p.Token.Kind == "SET" {
 		p.nextToken()
-		options := p.parseColumnDefOptions()
-		return &ast.AlterColumnSet{
-			Alter:   pos,
-			Name:    name,
-			Options: options,
+		if p.Token.Kind == "DEFAULT" {
+			defaultExpr := p.tryParseColumnDefaultExpr()
+			return &ast.AlterColumnSet{
+				Alter:       pos,
+				Name:        name,
+				DefaultExpr: defaultExpr,
+			}
+		} else {
+			options := p.parseColumnDefOptions()
+			return &ast.AlterColumnSet{
+				Alter:   pos,
+				Name:    name,
+				Options: options,
+			}
 		}
 	}
 
 	t, notNull, null := p.parseTypeNotNull()
-
+	defaultExpr := p.tryParseColumnDefaultExpr()
 	return &ast.AlterColumn{
-		Alter:   pos,
-		Null:    null,
-		Name:    name,
-		Type:    t,
-		NotNull: notNull,
+		Alter:       pos,
+		Null:        null,
+		Name:        name,
+		Type:        t,
+		NotNull:     notNull,
+		DefaultExpr: defaultExpr,
 	}
 }
 
