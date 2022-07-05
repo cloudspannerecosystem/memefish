@@ -619,6 +619,9 @@ func (a *AlterColumn) Pos() token.Pos {
 }
 
 func (a *AlterColumn) End() token.Pos {
+	if a.DefaultExpr != nil {
+		return a.DefaultExpr.End()
+	}
 	if !a.Null.Invalid() {
 		return a.Null + 4
 	}
@@ -626,7 +629,13 @@ func (a *AlterColumn) End() token.Pos {
 }
 
 func (a *AlterColumnSet) Pos() token.Pos { return a.Alter }
-func (a *AlterColumnSet) End() token.Pos { return a.Options.End() }
+
+func (a *AlterColumnSet) End() token.Pos {
+	if a.Options != nil {
+		return a.Options.End()
+	}
+	return a.DefaultExpr.End()
+}
 
 func (d *DropTable) Pos() token.Pos { return d.Drop }
 func (d *DropTable) End() token.Pos { return d.Name.End() }
