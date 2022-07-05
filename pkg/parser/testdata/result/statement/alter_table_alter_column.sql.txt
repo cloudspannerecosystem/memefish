@@ -28,7 +28,8 @@ alter table foo alter column foo string(256) not null
         Value:    "256",
       },
     },
-    NotNull: true,
+    NotNull:     true,
+    DefaultExpr: (*ast.ColumnDefaultExpr)(nil),
   },
 }
 

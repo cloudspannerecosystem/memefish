@@ -1,1 +1,1 @@
-alter table foo alter column foo set options(allow_commit_timestamp = true)
+ALTER TABLE actions ALTER COLUMN output SET DEFAULT("")
