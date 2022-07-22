@@ -1,0 +1,39 @@
+--- select_with_trailing_semicolon.sql
+SELECT 1, 2;
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 7,
+          ValueEnd: 8,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 10,
+          ValueEnd: 11,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+    },
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT 1, 2

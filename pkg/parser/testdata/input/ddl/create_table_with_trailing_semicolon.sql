@@ -9,4 +9,4 @@ create table foo (
   constraint cname check (bar > 0),
   quux json,
   corge timestamp not null default (current_timestamp())
-) primary key (foo, bar)
+) primary key (foo, bar);

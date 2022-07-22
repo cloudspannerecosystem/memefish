@@ -1,0 +1,330 @@
+--- create_table_with_trailing_semicolon.sql
+create table foo (
+  foo int64,
+  bar float64 not null,
+  baz string(255) not null options(allow_commit_timestamp = null),
+  qux string(255) not null as (concat(baz, "a")) stored,
+  foreign key (foo) references t2 (t2key1),
+  constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  check (foo > 0),
+  constraint cname check (bar > 0),
+  quux json,
+  corge timestamp not null default (current_timestamp())
+) primary key (foo, bar);
+
+--- AST
+&ast.CreateTable{
+  Create: 0,
+  Rparen: 447,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 16,
+    Name:    "foo",
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "foo",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 25,
+        Name:    "INT64",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 50,
+      Name: &ast.Ident{
+        NamePos: 34,
+        NameEnd: 37,
+        Name:    "bar",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "FLOAT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 78,
+      Name: &ast.Ident{
+        NamePos: 58,
+        NameEnd: 61,
+        Name:    "baz",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 62,
+        Rparen:  72,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 69,
+          ValueEnd: 72,
+          Base:     10,
+          Value:    "255",
+        },
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       &ast.ColumnDefOptions{
+        Options:              83,
+        Rparen:               121,
+        AllowCommitTimestamp: false,
+      },
+    },
+    &ast.ColumnDef{
+      Null: 145,
+      Name: &ast.Ident{
+        NamePos: 125,
+        NameEnd: 128,
+        Name:    "qux",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 129,
+        Rparen:  139,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 136,
+          ValueEnd: 139,
+          Base:     10,
+          Value:    "255",
+        },
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: &ast.GeneratedColumnExpr{
+        As:     150,
+        Stored: 178,
+        Expr:   &ast.CallExpr{
+          Rparen: 169,
+          Func:   &ast.Ident{
+            NamePos: 154,
+            NameEnd: 160,
+            Name:    "concat",
+          },
+          Distinct: false,
+          Args:     []*ast.Arg{
+            &ast.Arg{
+              Interval: -1,
+              Expr:     &ast.Ident{
+                NamePos: 161,
+                NameEnd: 164,
+                Name:    "baz",
+              },
+              IntervalUnit: (*ast.Ident)(nil),
+            },
+            &ast.Arg{
+              Interval: -1,
+              Expr:     &ast.StringLiteral{
+                ValuePos: 166,
+                ValueEnd: 169,
+                Value:    "a",
+              },
+              IntervalUnit: (*ast.Ident)(nil),
+            },
+          },
+        },
+      },
+      Options: (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 356,
+        NameEnd: 360,
+        Name:    "quux",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 361,
+        Name:    "JSON",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 389,
+      Name: &ast.Ident{
+        NamePos: 369,
+        NameEnd: 374,
+        Name:    "corge",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 375,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:     true,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 394,
+        Rparen:  422,
+        Expr:    &ast.CallExpr{
+          Rparen: 421,
+          Func:   &ast.Ident{
+            NamePos: 403,
+            NameEnd: 420,
+            Name:    "current_timestamp",
+          },
+          Distinct: false,
+          Args:     []*ast.Arg(nil),
+        },
+      },
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 439,
+        NameEnd: 442,
+        Name:    "foo",
+      },
+      Dir: "",
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 444,
+        NameEnd: 447,
+        Name:    "bar",
+      },
+      Dir: "",
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.ForeignKey{
+        Foreign: 182,
+        Rparen:  222,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 195,
+            NameEnd: 198,
+            Name:    "foo",
+          },
+        },
+        ReferenceTable: &ast.Ident{
+          NamePos: 211,
+          NameEnd: 213,
+          Name:    "t2",
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 215,
+            NameEnd: 221,
+            Name:    "t2key1",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 226,
+      Name:          &ast.Ident{
+        NamePos: 237,
+        NameEnd: 243,
+        Name:    "fkname",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign: 244,
+        Rparen:  297,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 257,
+            NameEnd: 260,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 262,
+            NameEnd: 265,
+            Name:    "bar",
+          },
+        },
+        ReferenceTable: &ast.Ident{
+          NamePos: 278,
+          NameEnd: 280,
+          Name:    "t2",
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 282,
+            NameEnd: 288,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 290,
+            NameEnd: 296,
+            Name:    "t2key2",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 0,
+      Name:          (*ast.Ident)(nil),
+      Constraint:    &ast.Check{
+        Check:  301,
+        Rparen: 316,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 308,
+            NameEnd: 311,
+            Name:    "foo",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 314,
+            ValueEnd: 315,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 320,
+      Name:          &ast.Ident{
+        NamePos: 331,
+        NameEnd: 336,
+        Name:    "cname",
+      },
+      Constraint: &ast.Check{
+        Check:  337,
+        Rparen: 352,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 344,
+            NameEnd: 347,
+            Name:    "bar",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 350,
+            ValueEnd: 351,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+  },
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)

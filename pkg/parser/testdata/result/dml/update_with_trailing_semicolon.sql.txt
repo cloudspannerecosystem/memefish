@@ -1,0 +1,62 @@
+--- update_with_trailing_semicolon.sql
+update foo set foo = bar, bar = foo where foo = 1;
+--- AST
+&ast.Update{
+  Update:    0,
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
+  },
+  As:      (*ast.AsAlias)(nil),
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 15,
+          NameEnd: 18,
+          Name:    "foo",
+        },
+      },
+      Expr: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "bar",
+      },
+    },
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 26,
+          NameEnd: 29,
+          Name:    "bar",
+        },
+      },
+      Expr: &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "foo",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 36,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 42,
+        NameEnd: 45,
+        Name:    "foo",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 48,
+        ValueEnd: 49,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE foo SET foo = bar, bar = foo WHERE foo = 1
