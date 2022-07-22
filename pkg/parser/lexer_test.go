@@ -175,7 +175,7 @@ func testLexer(t *testing.T, source string, tokens []*Token) {
 		t.Errorf("error on lexer: %v", err)
 		return
 	}
-	if l.Token.Kind != TokenEOF {
+	if !l.IsTokenEOF() {
 		t.Errorf("expected EOF, but: %#v", &l.Token)
 		return
 	}
@@ -212,7 +212,7 @@ func TestLexerWrong(t *testing.T) {
 				File: &File{FilePath: "[test]", Buffer: tc.source},
 			}
 			var err error
-			for l.Token.Kind != TokenEOF {
+			for !l.IsTokenEOF() {
 				err = l.NextToken()
 				if err != nil {
 					break

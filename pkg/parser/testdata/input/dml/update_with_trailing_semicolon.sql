@@ -1,0 +1,1 @@
+update foo set foo = bar, bar = foo where foo = 1

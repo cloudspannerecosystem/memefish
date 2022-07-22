@@ -311,6 +311,15 @@ func (l *Lexer) consumeString() {
 	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), false, true, "string literal")
 }
 
+// IsTokenEOF is used to check whether reached EOF or not
+func (l *Lexer) IsTokenEOF() bool {
+	if l.Token.Kind == ";" {
+		l.skipSpaces()
+		return l.eof()
+	}
+	return l.Token.Kind == token.TokenEOF
+}
+
 func (l *Lexer) peekDelimiter() string {
 	i := 0
 	c := l.peek(i)

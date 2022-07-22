@@ -28,7 +28,7 @@ func (p *Parser) ParseStatement() (stmt ast.Statement, err error) {
 
 	p.nextToken()
 	stmt = p.parseStatement()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -51,7 +51,7 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	p.parseStatements(func() {
 		stmts = append(stmts, p.parseStatement())
 	})
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -72,7 +72,7 @@ func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
 
 	p.nextToken()
 	stmt = p.parseQueryStatement()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -93,7 +93,7 @@ func (p *Parser) ParseExpr() (expr ast.Expr, err error) {
 
 	p.nextToken()
 	expr = p.parseExpr()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -114,7 +114,7 @@ func (p *Parser) ParseDDL() (ddl ast.DDL, err error) {
 
 	p.nextToken()
 	ddl = p.parseDDL()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -137,7 +137,7 @@ func (p *Parser) ParseDDLs() (ddls []ast.DDL, err error) {
 	p.parseStatements(func() {
 		ddls = append(ddls, p.parseDDL())
 	})
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -158,7 +158,7 @@ func (p *Parser) ParseDML() (dml ast.DML, err error) {
 
 	p.nextToken()
 	dml = p.parseDML()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -181,7 +181,7 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 	p.parseStatements(func() {
 		dmls = append(dmls, p.parseDML())
 	})
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -201,7 +201,7 @@ func (p *Parser) parseStatement() ast.Statement {
 }
 
 func (p *Parser) parseStatements(doParse func()) {
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind == ";" {
 			p.nextToken()
 			continue
@@ -242,7 +242,7 @@ func (p *Parser) tryParseHint() *ast.Hint {
 	p.nextToken()
 	p.expect("{")
 	records := []*ast.HintRecord{p.parseHintRecord()}
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind != "," {
 			break
 		}
@@ -397,12 +397,12 @@ func (p *Parser) parseSelect() *ast.Select {
 
 func (p *Parser) parseSelectResults() []ast.SelectItem {
 	results := []ast.SelectItem{p.parseSelectItem()}
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind != "," {
 			break
 		}
 		p.nextToken()
-		if p.Token.Kind == token.TokenEOF || p.Token.Kind == "FROM" {
+		if p.IsTokenEOF() || p.Token.Kind == "FROM" {
 			break
 		}
 		results = append(results, p.parseSelectItem())
@@ -1127,7 +1127,7 @@ func (p *Parser) parseInCondition() ast.InCondition {
 		lparen := p.Token.Pos
 		p.nextToken()
 		exprs := []ast.Expr{p.parseExpr()}
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			if p.Token.Kind != "," {
 				break
 			}
@@ -1439,7 +1439,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 
 	var args []*ast.Arg
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			args = append(args, p.parseArg())
 			if p.Token.Kind != "," {
 				break
@@ -1483,7 +1483,7 @@ func (p *Parser) parseCaseExpr() *ast.CaseExpr {
 		expr = p.parseExpr()
 	}
 	whens := []*ast.CaseWhen{p.parseCaseWhen()}
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind != "WHEN" {
 			break
 		}
@@ -1670,7 +1670,7 @@ func (p *Parser) parseSimpleArrayLiteral() *ast.ArrayLiteral {
 func (p *Parser) parseArrayLiteralBody() (values []ast.Expr, lbrack, rbrack token.Pos) {
 	lbrack = p.expect("[").Pos
 	if p.Token.Kind != "]" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			values = append(values, p.parseExpr())
 			if p.Token.Kind != "," {
 				break
@@ -1688,7 +1688,7 @@ func (p *Parser) parseStructLiteral() *ast.StructLiteral {
 	lparen := p.expect("(").Pos
 	var values []ast.Expr
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			values = append(values, p.parseExpr())
 			if p.Token.Kind != "," {
 				break
@@ -1757,7 +1757,7 @@ func (p *Parser) lookaheadSubQuery() bool {
 	}
 
 	// ((...(SELECT ...)...) UNION indicates subquery.
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind == "(" {
 			nest++
 		}
@@ -1796,7 +1796,7 @@ func (p *Parser) ParseType() (typ ast.Type, err error) {
 
 	p.nextToken()
 	typ = p.parseType()
-	if p.Token.Kind != token.TokenEOF {
+	if !p.IsTokenEOF() {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
 	return
@@ -1886,7 +1886,7 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 
 	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			fields = append(fields, p.parseFieldType())
 			if p.Token.Kind != "," {
 				break
@@ -1991,7 +1991,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expect("(")
 	var columns []*ast.ColumnDef
 	var constraints []*ast.TableConstraint
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind == ")" {
 			break
 		}
@@ -2019,7 +2019,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 
 	p.expect("(")
 	var keys []*ast.IndexKey
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind == ")" {
 			break
 		}
@@ -2351,7 +2351,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	p.expect("(")
 	var keys []*ast.IndexKey
-	for p.Token.Kind != token.TokenEOF {
+	for !p.IsTokenEOF() {
 		if p.Token.Kind == ")" {
 			break
 		}
@@ -2708,7 +2708,7 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 	p.expect("(")
 	var columns []*ast.Ident
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			columns = append(columns, p.parseIdent())
 			if p.Token.Kind != "," {
 				break
@@ -2752,7 +2752,7 @@ func (p *Parser) parseValuesRow() *ast.ValuesRow {
 	lparen := p.expect("(").Pos
 	var exprs []*ast.DefaultExpr
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for !p.IsTokenEOF() {
 			exprs = append(exprs, p.parseDefaultExpr())
 			if p.Token.Kind != "," {
 				break
