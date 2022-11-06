@@ -1,0 +1,36 @@
+--- grant_role.sql
+GRANT ROLE pii_access, pii_writter TO ROLE hr_manager, hr_director
+
+--- AST
+&ast.Grant{
+  Grant:       0,
+  ToRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 43,
+      NameEnd: 53,
+      Name:    "hr_manager",
+    },
+    &ast.Ident{
+      NamePos: 55,
+      NameEnd: 66,
+      Name:    "hr_director",
+    },
+  },
+  GrantRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 11,
+      NameEnd: 21,
+      Name:    "pii_access",
+    },
+    &ast.Ident{
+      NamePos: 23,
+      NameEnd: 34,
+      Name:    "pii_writter",
+    },
+  },
+  Privileges: []*ast.Privilege(nil),
+  TableNames: []*ast.Ident(nil),
+}
+
+--- SQL
+GRANT ROLE pii_access, pii_writter TO ROLE hr_manager, hr_director

@@ -24,12 +24,16 @@ func (CreateDatabase) isStatement() {}
 func (CreateTable) isStatement()    {}
 func (CreateView) isStatement()     {}
 func (CreateIndex) isStatement()    {}
+func (CreateRole) isStatement()     {}
 func (AlterTable) isStatement()     {}
 func (DropTable) isStatement()      {}
 func (DropIndex) isStatement()      {}
+func (DropRole) isStatement()       {}
 func (Insert) isStatement()         {}
 func (Delete) isStatement()         {}
 func (Update) isStatement()         {}
+func (Grant) isStatement()          {}
+func (Revoke) isStatement()         {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -176,6 +180,10 @@ func (AlterTable) isDDL()     {}
 func (DropTable) isDDL()      {}
 func (CreateIndex) isDDL()    {}
 func (DropIndex) isDDL()      {}
+func (CreateRole) isDDL()     {}
+func (DropRole) isDDL()       {}
+func (Grant) isDDL()          {}
+func (Revoke) isDDL()         {}
 
 // TableAlternation represents ALTER TABLE action.
 type TableAlternation interface {
@@ -206,7 +214,7 @@ func (ArraySchemaType) isSchemaType()  {}
 
 // DML represents data manipulation language in SQL.
 //
-//https://cloud.google.com/spanner/docs/data-definition-language
+// https://cloud.google.com/spanner/docs/data-definition-language
 type DML interface {
 	Statement
 	isDML()
@@ -233,8 +241,8 @@ func (SubQueryInput) isInsertInput() {}
 
 // QueryStatement is query statement node.
 //
-//     {{if .Hint}}{{.Hint | sql}}{{end}}
-//     {{.Expr | sql}}
+//	{{if .Hint}}{{.Hint | sql}}{{end}}
+//	{{.Expr | sql}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
@@ -248,7 +256,7 @@ type QueryStatement struct {
 
 // Hint is hint node.
 //
-//     @{{"{"}}{{.Records | sqlJoin ","}}{{"}"}}
+//	@{{"{"}}{{.Records | sqlJoin ","}}{{"}"}}
 type Hint struct {
 	// pos = Atmark
 	// end = Rbrace + 1
@@ -261,7 +269,7 @@ type Hint struct {
 
 // HintRecord is hint record node.
 //
-//     {{.Key | sql}}={{.Value | sql}}
+//	{{.Key | sql}}={{.Value | sql}}
 type HintRecord struct {
 	// pos = Key.pos
 	// end = Value.end
@@ -271,7 +279,8 @@ type HintRecord struct {
 }
 
 // With is with clause node.
-//     WITH {{.CTEs | sqlJoin ","}}
+//
+//	WITH {{.CTEs | sqlJoin ","}}
 type With struct {
 	// pos = With
 	// end = CTEs[$].end
@@ -282,7 +291,8 @@ type With struct {
 }
 
 // CTE is common table expression node.
-//     {{.Name}} AS ({{.QueryExpr}})
+//
+//	{{.Name}} AS ({{.QueryExpr}})
 type CTE struct {
 	// pos = Name.pos
 	// end = Rparen + 1
@@ -295,16 +305,16 @@ type CTE struct {
 
 // Select is SELECT statement node.
 //
-//     SELECT
-//       {{if .Distinct}}DISTINCT{{end}}
-//       {{if .AsStruct}}AS STRUCT{{end}}
-//       {{.Results | sqlJoin ","}}
-//       {{.From | sqlOpt}}
-//       {{.Where | sqlOpt}}
-//       {{.GroupBy | sqlOpt}}
-//       {{.Having | sqlOpt}}
-//       {{.OrderBy | sqlOpt}}
-//       {{.Limit | sqlOpt}}
+//	SELECT
+//	  {{if .Distinct}}DISTINCT{{end}}
+//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.Results | sqlJoin ","}}
+//	  {{.From | sqlOpt}}
+//	  {{.Where | sqlOpt}}
+//	  {{.GroupBy | sqlOpt}}
+//	  {{.Having | sqlOpt}}
+//	  {{.OrderBy | sqlOpt}}
+//	  {{.Limit | sqlOpt}}
 type Select struct {
 	// pos = Select
 	// end = (Limit ?? OrderBy ?? Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
@@ -324,9 +334,9 @@ type Select struct {
 
 // CompoundQuery is query statement node compounded by set operators.
 //
-//     {{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
-//       {{.OrderBy | sqlOpt}}
-//       {{.Limit | sqlOpt}}
+//	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
+//	  {{.OrderBy | sqlOpt}}
+//	  {{.Limit | sqlOpt}}
 type CompoundQuery struct {
 	// pos = Queries[0].pos
 	// end = (Limit ?? OrderBy ?? Queries[$]).end
@@ -340,7 +350,7 @@ type CompoundQuery struct {
 
 // SubQuery is subquery statement node.
 //
-//     ({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
+//	({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
 type SubQuery struct {
 	// pos = Lparen
 	// end = (Query ?? Limit).end || Rparen + 1
@@ -354,7 +364,7 @@ type SubQuery struct {
 
 // Star is a single * in SELECT result columns list.
 //
-//     *
+//	*
 type Star struct {
 	// pos = Star
 	// end = Star + 1
@@ -364,7 +374,7 @@ type Star struct {
 
 // DotStar is expression with * in SELECT result columns list.
 //
-//     {{.Expr | sql}}.*
+//	{{.Expr | sql}}.*
 type DotStar struct {
 	// pos = Expr.pos
 	// end = Star + 1
@@ -376,7 +386,7 @@ type DotStar struct {
 
 // Alias is aliased expression by AS clause in SELECT result columns list.
 //
-//    {{.Expr | sql}} {{.As | sql}}
+//	{{.Expr | sql}} {{.As | sql}}
 type Alias struct {
 	// pos = Expr.pos
 	// end = As.end
@@ -390,9 +400,10 @@ type Alias struct {
 // It is used in Alias node and some JoinExpr nodes.
 //
 // NOTE: Sometime keyword AS can be omited.
-//       In this case, it.token.Pos() == it.Alias.token.Pos(), so we can detect this.
 //
-//     AS {{.Alias | sql}}
+//	  In this case, it.token.Pos() == it.Alias.token.Pos(), so we can detect this.
+//
+//	AS {{.Alias | sql}}
 type AsAlias struct {
 	// pos = As || Alias.pos
 	// end = Alias.End
@@ -404,7 +415,7 @@ type AsAlias struct {
 
 // ExprSelectItem is Expr wrapper for SelectItem.
 //
-//     {{.Expr | sql}}
+//	{{.Expr | sql}}
 type ExprSelectItem struct {
 	// pos = Expr.pos
 	// end = Expr.end
@@ -414,7 +425,7 @@ type ExprSelectItem struct {
 
 // From is FROM clause node.
 //
-//     FROM {{.Source | sql}}
+//	FROM {{.Source | sql}}
 type From struct {
 	// pos = From
 	// end = Source.end
@@ -426,7 +437,7 @@ type From struct {
 
 // Where is WHERE clause node.
 //
-//    WHERE {{.Expr | sql}}
+//	WHERE {{.Expr | sql}}
 type Where struct {
 	// pos = Where
 	// end = Expr.end
@@ -438,7 +449,7 @@ type Where struct {
 
 // GroupBy is GROUP BY clause node.
 //
-//    GROUP BY {{.Exprs | sqlJoin ","}}
+//	GROUP BY {{.Exprs | sqlJoin ","}}
 type GroupBy struct {
 	// pos = Group
 	// end = Exprs[$].end
@@ -450,7 +461,7 @@ type GroupBy struct {
 
 // Having is HAVING clause node.
 //
-//     HAVING {{.Expr | sql}}
+//	HAVING {{.Expr | sql}}
 type Having struct {
 	// pos = Having
 	// end = Expr.end
@@ -462,7 +473,7 @@ type Having struct {
 
 // OrderBy is ORDER BY clause node.
 //
-//     ORDER BY {{.Items | sqlJoin ","}}
+//	ORDER BY {{.Items | sqlJoin ","}}
 type OrderBy struct {
 	// pos = Order
 	// end = Items[$].end
@@ -474,7 +485,7 @@ type OrderBy struct {
 
 // OrderByItem is expression node in ORDER BY clause list.
 //
-//     {{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
+//	{{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
 type OrderByItem struct {
 	// pos = Expr.pos
 	// end = DirPos + len(Dir) || (Collate ?? Expr).pos
@@ -488,7 +499,7 @@ type OrderByItem struct {
 
 // Collate is COLLATE clause node in ORDER BY item.
 //
-//     COLLATE {{.Value | sql}}
+//	COLLATE {{.Value | sql}}
 type Collate struct {
 	// pos = Collate
 	// end = Value.end
@@ -500,7 +511,7 @@ type Collate struct {
 
 // Limit is LIMIT clause node.
 //
-//     LIMIT {{.Count | sql}} {{.Offset | sqlOpt}}
+//	LIMIT {{.Count | sql}} {{.Offset | sqlOpt}}
 type Limit struct {
 	// pos = Limit
 	// end = (Offset ?? Count).end
@@ -513,7 +524,7 @@ type Limit struct {
 
 // Offset is OFFSET clause node in LIMIT clause.
 //
-//     OFFSET {{.Value | sql}}
+//	OFFSET {{.Value | sql}}
 type Offset struct {
 	// pos = Offset
 	// end = Value.end
@@ -531,11 +542,11 @@ type Offset struct {
 
 // Unnest is UNNEST call in FROM clause.
 //
-//     {{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
-//       {{.Hint | sqlOpt}}
-//       {{.As | sqlOpt}}
-//       {{.WithOffset | sqlOpt}}
-//       {{.Sample | sqlOpt}}
+//	{{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
+//	  {{.Hint | sqlOpt}}
+//	  {{.As | sqlOpt}}
+//	  {{.WithOffset | sqlOpt}}
+//	  {{.Sample | sqlOpt}}
 type Unnest struct {
 	// pos = Unnest || Expr.pos
 	// end = (Sample ?? WithOffset ?? As ?? Hint).end || Rparen + 1 || Expr.end
@@ -553,7 +564,7 @@ type Unnest struct {
 
 // WithOffset is WITH OFFSET clause node after UNNEST call.
 //
-//     WITH OFFSET {{.As | sqlOpt}}
+//	WITH OFFSET {{.As | sqlOpt}}
 type WithOffset struct {
 	// pos = With
 	// end = As.end || Offset + 6
@@ -565,7 +576,7 @@ type WithOffset struct {
 
 // TableName is table name node in FROM clause.
 //
-//     {{.Table | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+//	{{.Table | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
 type TableName struct {
 	// pos = Table.pos
 	// end = (Sample ?? As ?? Hint ?? Table).end
@@ -578,7 +589,7 @@ type TableName struct {
 
 // SubQueryTableExpr is subquery inside JOIN expression.
 //
-//     ({{.Query | sql}}) {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+//	({{.Query | sql}}) {{.As | sqlOpt}} {{.Sample | sqlOpt}}
 type SubQueryTableExpr struct {
 	// pos = Lparen
 	// end = (Sample ?? As).end || Rparen + 1
@@ -592,7 +603,7 @@ type SubQueryTableExpr struct {
 
 // ParenTableExpr is parenthesized JOIN expression.
 //
-//     ({{.Source | sql}}) {{.Sample | sqlOpt}}
+//	({{.Source | sql}}) {{.Sample | sqlOpt}}
 type ParenTableExpr struct {
 	// pos = Lparen
 	// end = Sample.end || Rparen + 1
@@ -605,10 +616,10 @@ type ParenTableExpr struct {
 
 // Join is JOIN expression.
 //
-//     {{.Left | sql}}
-//       {{.Op}} {{.Method}} {{.Hint | sqlOpt}}
-//       {{.Right | sql}}
-//     {{.Cond | sqlOpt}}
+//	{{.Left | sql}}
+//	  {{.Op}} {{.Method}} {{.Hint | sqlOpt}}
+//	  {{.Right | sql}}
+//	{{.Cond | sqlOpt}}
 type Join struct {
 	// pos = Left.pos
 	// end = (Cond ?? Right).pos
@@ -622,7 +633,7 @@ type Join struct {
 
 // On is ON condition of JOIN expression.
 //
-//     ON {{.Expr | sql}}
+//	ON {{.Expr | sql}}
 type On struct {
 	// pos = On
 	// end = Expr.end
@@ -634,7 +645,7 @@ type On struct {
 
 // Using is Using condition of JOIN expression.
 //
-//     USING ({{Idents | sqlJoin ","}})
+//	USING ({{Idents | sqlJoin ","}})
 type Using struct {
 	// pos = Using
 	// end = Rparen + 1
@@ -647,7 +658,7 @@ type Using struct {
 
 // TableSample is TABLESAMPLE clause node.
 //
-//     TABLESAMPLE {{.Method}} {{.Size | sql}}
+//	TABLESAMPLE {{.Method}} {{.Size | sql}}
 type TableSample struct {
 	// pos = TableSample
 	// end = Size.end
@@ -660,7 +671,7 @@ type TableSample struct {
 
 // TableSampleSize is size part of TABLESAMPLE clause.
 //
-//     ({{.Value | sql}} {{.Unit}})
+//	({{.Value | sql}} {{.Unit}})
 type TableSampleSize struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -679,7 +690,7 @@ type TableSampleSize struct {
 
 // BinaryExpr is binary operator expression node.
 //
-//     {{.Left | sql}} {{.Op}} {{.Right | sql}}
+//	{{.Left | sql}} {{.Op}} {{.Right | sql}}
 type BinaryExpr struct {
 	// pos = Left.pos
 	// end = Right.pos
@@ -691,7 +702,7 @@ type BinaryExpr struct {
 
 // UnaryExpr is unary operator expression node.
 //
-//     {{.Op}} {{.Expr | sql}}
+//	{{.Op}} {{.Expr | sql}}
 type UnaryExpr struct {
 	// pos = OpPos
 	// end = Expr.end
@@ -704,7 +715,7 @@ type UnaryExpr struct {
 
 // InExpr is IN expression node.
 //
-//     {{.Left | sql}} {{if .Not}}NOT{{end}} IN {{.Right | sql}}
+//	{{.Left | sql}} {{if .Not}}NOT{{end}} IN {{.Right | sql}}
 type InExpr struct {
 	// pos = Left.pos
 	// end = Right.end
@@ -716,7 +727,7 @@ type InExpr struct {
 
 // UnnestInCondition is UNNEST call at IN condition.
 //
-//     UNNEST({{.Expr | sql}})
+//	UNNEST({{.Expr | sql}})
 type UnnestInCondition struct {
 	// pos = Unnest
 	// end = Rparen + 1
@@ -729,7 +740,7 @@ type UnnestInCondition struct {
 
 // SubQueryInCondition is subquery at IN condition.
 //
-//     ({{.Query | sql}})
+//	({{.Query | sql}})
 type SubQueryInCondition struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -741,7 +752,7 @@ type SubQueryInCondition struct {
 
 // ValuesInCondition is parenthesized values at IN condition.
 //
-//     ({{.Exprs | sqlJoin ","}})
+//	({{.Exprs | sqlJoin ","}})
 type ValuesInCondition struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -753,7 +764,7 @@ type ValuesInCondition struct {
 
 // IsNullExpr is IS NULL expression node.
 //
-//     {{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
+//	{{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
 type IsNullExpr struct {
 	// pos = Expr.pos
 	// end = Null + 4
@@ -766,7 +777,7 @@ type IsNullExpr struct {
 
 // IsBoolExpr is IS TRUE/FALSE expression node.
 //
-//     {{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
+//	{{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
 	// pos = Expr.pos
 	// end = RightPos + (Right ? 4 : 5)
@@ -780,7 +791,7 @@ type IsBoolExpr struct {
 
 // BetweenExpr is BETWEEN expression node.
 //
-//     {{.Left | sql}} {{if .Not}}NOT{{end}} BETWEEN {{.RightStart | sql}} AND {{.RightEnd | sql}}
+//	{{.Left | sql}} {{if .Not}}NOT{{end}} BETWEEN {{.RightStart | sql}} AND {{.RightEnd | sql}}
 type BetweenExpr struct {
 	// pos = Left.pos
 	// end = RightEnd.end
@@ -791,7 +802,7 @@ type BetweenExpr struct {
 
 // SelectorExpr is struct field access expression node.
 //
-//     {{.Expr | sql}}.{{.Ident | sql}}
+//	{{.Expr | sql}}.{{.Ident | sql}}
 type SelectorExpr struct {
 	// pos = Expr.pos
 	// end = Ident.pos
@@ -802,7 +813,7 @@ type SelectorExpr struct {
 
 // IndexExpr is array item access expression node.
 //
-//     {{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
@@ -815,7 +826,7 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//     {{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
+//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
@@ -829,11 +840,11 @@ type CallExpr struct {
 
 // Arg is function call argument.
 //
-//     {{if .IntervalUnit}}
-//       INTERVAL {{.Expr | sql}} {{.IntervalUnit | sql}}
-//     {{else}}
-//       {{.Expr | sql}}
-//     {{end}}
+//	{{if .IntervalUnit}}
+//	  INTERVAL {{.Expr | sql}} {{.IntervalUnit | sql}}
+//	{{else}}
+//	  {{.Expr | sql}}
+//	{{end}}
 type Arg struct {
 	// pos = Interval || Expr.pos
 	// end = (IntervalUnit ?? Expr).end
@@ -846,7 +857,7 @@ type Arg struct {
 
 // CountStarExpr is node just for COUNT(*).
 //
-//     COUNT(*)
+//	COUNT(*)
 type CountStarExpr struct {
 	// pos = Count
 	// end = Rparen + 1
@@ -857,7 +868,7 @@ type CountStarExpr struct {
 
 // ExtractExpr is EXTRACT call expression node.
 //
-//     EXTRACT({{.Part | sql}} FROM {{.Expr | sql}} {{.AtTimeZone | sqlOpt}})
+//	EXTRACT({{.Part | sql}} FROM {{.Expr | sql}} {{.AtTimeZone | sqlOpt}})
 type ExtractExpr struct {
 	// pos = Extract
 	// end = Rparen + 1
@@ -872,7 +883,7 @@ type ExtractExpr struct {
 
 // AtTimeZone is AT TIME ZONE clause in EXTRACT call.
 //
-//     AT TIME ZONE {{.Expr | sql}}
+//	AT TIME ZONE {{.Expr | sql}}
 type AtTimeZone struct {
 	// pos = At
 	// end = Expr.end
@@ -884,7 +895,7 @@ type AtTimeZone struct {
 
 // CastExpr is CAST call expression node.
 //
-//     CAST({{.Expr | sql}} AS {{.Type | sql}})
+//	CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	// pos = Cast
 	// end = Rparen + 1
@@ -898,10 +909,10 @@ type CastExpr struct {
 
 // CaseExpr is CASE expression node.
 //
-//     CASE {{.Expr | sqlOpt}}
-//       {{.Whens | sqlJoin "\n"}}
-//       {{.Else | sqlOpt}}
-//     END
+//	CASE {{.Expr | sqlOpt}}
+//	  {{.Whens | sqlJoin "\n"}}
+//	  {{.Else | sqlOpt}}
+//	END
 type CaseExpr struct {
 	// pos = Case
 	// end = EndPos + 3
@@ -915,7 +926,7 @@ type CaseExpr struct {
 
 // CaseWhen is WHEN clause in CASE expression.
 //
-//     WHEN {{.Cond | sql}} THEN {{.Then | sql}}
+//	WHEN {{.Cond | sql}} THEN {{.Then | sql}}
 type CaseWhen struct {
 	// pos = Case
 	// end = Then.end
@@ -927,7 +938,7 @@ type CaseWhen struct {
 
 // CaseElse is ELSE clause in CASE expression.
 //
-//     ELSE {{.Expr | sql}}
+//	ELSE {{.Expr | sql}}
 type CaseElse struct {
 	// pos = Else
 	// end = Expr.end
@@ -939,7 +950,7 @@ type CaseElse struct {
 
 // ParenExpr is parenthesized expression node.
 //
-//     ({{. | sql}})
+//	({{. | sql}})
 type ParenExpr struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -951,7 +962,7 @@ type ParenExpr struct {
 
 // ScalarSubQuery is subquery in expression.
 //
-//     ({{.Query | sql}})
+//	({{.Query | sql}})
 type ScalarSubQuery struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -963,7 +974,7 @@ type ScalarSubQuery struct {
 
 // ArraySubQuery is subquery in ARRAY call.
 //
-//     ARRAY({{.Query | sql}})
+//	ARRAY({{.Query | sql}})
 type ArraySubQuery struct {
 	// pos = Array
 	// end = Rparen + 1
@@ -976,7 +987,7 @@ type ArraySubQuery struct {
 
 // ExistsSubQuery is subquery in EXISTS call.
 //
-//     EXISTS {{.Hint | sqlOpt}} ({{.Query | sql}})
+//	EXISTS {{.Hint | sqlOpt}} ({{.Query | sql}})
 type ExistsSubQuery struct {
 	// pos = Exists
 	// end = Rparen + 1
@@ -996,7 +1007,7 @@ type ExistsSubQuery struct {
 
 // Param is Query parameter node.
 //
-//     @{{.Name}}
+//	@{{.Name}}
 type Param struct {
 	// pos = Atmark
 	// end = pos + 1 + len(Name)
@@ -1008,7 +1019,7 @@ type Param struct {
 
 // Ident is identifier node.
 //
-//     {{.Name | sqlIdentQuote}}
+//	{{.Name | sqlIdentQuote}}
 type Ident struct {
 	// pos = IdentPos
 	// end = IdentEnd
@@ -1020,7 +1031,7 @@ type Ident struct {
 
 // Path is dot-chained identifier list.
 //
-//     {{.Idents | sqlJoin "."}}
+//	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
 	// end = idents[$].end
@@ -1030,7 +1041,7 @@ type Path struct {
 
 // AraryLiteral is array literal node.
 //
-//     ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
@@ -1044,7 +1055,7 @@ type ArrayLiteral struct {
 
 // StructLiteral is struct literal node.
 //
-//     STRUCT{{if .Type}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
+//	STRUCT{{if .Type}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
 type StructLiteral struct {
 	// pos = Struct || Lparen
 	// end = Rparen
@@ -1060,7 +1071,7 @@ type StructLiteral struct {
 
 // NullLiteral is just NULL literal.
 //
-//     NULL
+//	NULL
 type NullLiteral struct {
 	// pos = Null
 	// end = Null + 4
@@ -1070,7 +1081,7 @@ type NullLiteral struct {
 
 // BoolLiteral is boolean literal node.
 //
-//     {{if .Value}}TRUE{{else}}FALSE{{end}}
+//	{{if .Value}}TRUE{{else}}FALSE{{end}}
 type BoolLiteral struct {
 	// pos = ValuePos
 	// end = ValuePos + (Value ? 4 : 5)
@@ -1082,7 +1093,7 @@ type BoolLiteral struct {
 
 // IntLiteral is integer literal node.
 //
-//     {{.Value}}
+//	{{.Value}}
 type IntLiteral struct {
 	// pos = ValuePos
 	// end = ValueEnd
@@ -1095,7 +1106,7 @@ type IntLiteral struct {
 
 // FloatLiteral is floating point number literal node.
 //
-//     {{.Value}}
+//	{{.Value}}
 type FloatLiteral struct {
 	// pos = ValuePos
 	// end = ValueEnd
@@ -1107,7 +1118,7 @@ type FloatLiteral struct {
 
 // StringLiteral is string literal node.
 //
-//     {{.Value | sqlStringQuote}}
+//	{{.Value | sqlStringQuote}}
 type StringLiteral struct {
 	// pos = ValuePos
 	// end = ValueEnd
@@ -1119,7 +1130,7 @@ type StringLiteral struct {
 
 // BytesLiteral is bytes literal node.
 //
-//     B{{.Value | sqlByesQuote}}
+//	B{{.Value | sqlByesQuote}}
 type BytesLiteral struct {
 	// pos = ValuePos
 	// end = ValueEnd
@@ -1131,7 +1142,7 @@ type BytesLiteral struct {
 
 // DateLiteral is date literal node.
 //
-//     DATE {{.Value | sql}}
+//	DATE {{.Value | sql}}
 type DateLiteral struct {
 	// pos = Date
 	// end = Value.end
@@ -1143,7 +1154,7 @@ type DateLiteral struct {
 
 // TimestampLiteral is timestamp literal node.
 //
-//     TIMESTAMP {{.Value | sql}}
+//	TIMESTAMP {{.Value | sql}}
 type TimestampLiteral struct {
 	// pos = Timestamp
 	// end = ValueEnd.end
@@ -1155,7 +1166,7 @@ type TimestampLiteral struct {
 
 // NumericLiteral is numeric literal node.
 //
-//     NUMERIC {{.Value | sql}}
+//	NUMERIC {{.Value | sql}}
 type NumericLiteral struct {
 	// pos = Numeric
 	// end = ValueEnd.end
@@ -1173,7 +1184,7 @@ type NumericLiteral struct {
 
 // SimpleType is type node having no parameter like INT64, STRING.
 //
-//    {{.Name}}
+//	{{.Name}}
 type SimpleType struct {
 	// pos = NamePos
 	// end = NamePos + len(Name)
@@ -1185,7 +1196,7 @@ type SimpleType struct {
 
 // ArrayType is array type node.
 //
-//     ARRAY<{{.Item | sql}}>
+//	ARRAY<{{.Item | sql}}>
 type ArrayType struct {
 	// pos = Array
 	// end = Gt + 1
@@ -1198,7 +1209,7 @@ type ArrayType struct {
 
 // StructType is struct type node.
 //
-//     STRUCT<{{.Fields | sqlJoin ","}}>
+//	STRUCT<{{.Fields | sqlJoin ","}}>
 type StructType struct {
 	// pos = Struct
 	// end = Gt + 1
@@ -1211,7 +1222,7 @@ type StructType struct {
 
 // StructField is field in struct type node.
 //
-//     {{if .Ident}}{{.Ident | sql}}{{end}} {{.Type | sql}}
+//	{{if .Ident}}{{.Ident | sql}}{{end}} {{.Type | sql}}
 type StructField struct {
 	// pos = (Ident ?? Type).pos
 	// end = Type.end
@@ -1228,7 +1239,7 @@ type StructField struct {
 
 // CastIntValue is cast call in integer value context.
 //
-//     CAST({{.Expr | sql}} AS INT64)
+//	CAST({{.Expr | sql}} AS INT64)
 type CastIntValue struct {
 	// pos = Cast
 	// end = Rparen + 1
@@ -1241,7 +1252,7 @@ type CastIntValue struct {
 
 // CasrNumValue is cast call in number value context.
 //
-//     CAST({{.Expr | sql}} AS {{.Type}})
+//	CAST({{.Expr | sql}} AS {{.Type}})
 type CastNumValue struct {
 	// pos = Cast
 	// end = Rparen + 1
@@ -1261,7 +1272,7 @@ type CastNumValue struct {
 
 // CreateDatabase is CREATE DATABASE statement node.
 //
-//     CREATE DATABASE {{.Name | sql}}
+//	CREATE DATABASE {{.Name | sql}}
 type CreateDatabase struct {
 	// pos = Create
 	// end = Name.end
@@ -1273,12 +1284,12 @@ type CreateDatabase struct {
 
 // CreateTable is CREATE TABLE statement node.
 //
-//     CREATE TABLE {{.Name | sql}} (
-//       {{.Columns | sqlJoin ","}}
-//     )
-//     PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
-//     {{.Cluster | sqlOpt}}
-//     {{.CreateRowDeletionPolicy | sqlOpt}}
+//	CREATE TABLE {{.Name | sql}} (
+//	  {{.Columns | sqlJoin ","}}
+//	)
+//	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
+//	{{.Cluster | sqlOpt}}
+//	{{.CreateRowDeletionPolicy | sqlOpt}}
 type CreateTable struct {
 	// pos = Create
 	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
@@ -1296,9 +1307,9 @@ type CreateTable struct {
 
 // CreateView is CREATE VIEW statement node.
 //
-//     CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
-//     SQL SECURITY INVOKER AS
-//     {{.Query | sql}}
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
+//	SQL SECURITY INVOKER AS
+//	{{.Query | sql}}
 type CreateView struct {
 	// pos = Create
 	// end = Query.end
@@ -1311,11 +1322,11 @@ type CreateView struct {
 
 // ColumnDef is column definition in CREATE TABLE.
 //
-//     {{.Name | sql}}
-//     {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
-//     {{.DefaultExpr | sqlOpt}}
-//     {{.GeneratedExpr | sqlOpt}}
-//     {{.Options | sqlOpt}}
+//	{{.Name | sql}}
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
+//	{{.DefaultExpr | sqlOpt}}
+//	{{.GeneratedExpr | sqlOpt}}
+//	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
 	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
@@ -1332,7 +1343,7 @@ type ColumnDef struct {
 
 // ColumnDefaultExpr is a default value expression for the column.
 //
-//     DEFAULT ({{.Expr | sql}})
+//	DEFAULT ({{.Expr | sql}})
 type ColumnDefaultExpr struct {
 	// pos = Default
 	// end = Rparen
@@ -1345,7 +1356,7 @@ type ColumnDefaultExpr struct {
 
 // GeneratedColumnExpr is generated column expression.
 //
-//     AS ({{.Expr | sql}}) STORED
+//	AS ({{.Expr | sql}}) STORED
 type GeneratedColumnExpr struct {
 	// pos = As
 	// end = Stored
@@ -1358,7 +1369,7 @@ type GeneratedColumnExpr struct {
 
 // ColumnDefOption is options for column definition.
 //
-//     OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
+//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
 type ColumnDefOptions struct {
 	// pos = Options
 	// end = Rparen + 1
@@ -1371,7 +1382,7 @@ type ColumnDefOptions struct {
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
 //
-//     {{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint}}
+//	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint}}
 type TableConstraint struct {
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
@@ -1386,7 +1397,7 @@ type Constraint interface {
 
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
 //
-//     FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
+//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
 type ForeignKey struct {
 	// pos = Foreign
 	// end = Rparen + 1
@@ -1403,7 +1414,7 @@ func (*ForeignKey) isConstraint() {}
 
 // Check is check constraint in CREATE TABLE and ALTER TABLE.
 //
-//     Check ({{.Expr}})
+//	Check ({{.Expr}})
 type Check struct {
 	// pos = Check
 	// end = Rparen + 1
@@ -1418,7 +1429,7 @@ func (*Check) isConstraint() {}
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
 //
-//     {{.Name | sql}} {{.Dir}}
+//	{{.Name | sql}} {{.Dir}}
 type IndexKey struct {
 	// pos = Name.Pos
 	// end = DirPos + len(Dir) || Name.end
@@ -1431,7 +1442,7 @@ type IndexKey struct {
 
 // Cluster is INTERLEAVE IN PARENT clause in CREATE TABLE.
 //
-//     , INTERLEAVE IN PARENT {{.TableName | sql}} {{.OnDelete}}
+//	, INTERLEAVE IN PARENT {{.TableName | sql}} {{.OnDelete}}
 type Cluster struct {
 	// pos = Comma
 	// end = OnDeleteEnd || TableName.end
@@ -1445,7 +1456,7 @@ type Cluster struct {
 
 // CreateRowDeletionPolicy is ROW DELETION POLICY clause in CREATE TABLE.
 //
-//     , {{.RowDeletionPolicy}}
+//	, {{.RowDeletionPolicy}}
 type CreateRowDeletionPolicy struct {
 	// pos = Comma
 	// end = RowDeletionPolicy.end
@@ -1455,7 +1466,7 @@ type CreateRowDeletionPolicy struct {
 
 // RowDeletionPolicy is ROW DELETION POLICY clause.
 //
-//     ROW DELETION POLICY (OLDER_THAN({{.ColymnName | sql}}, INTERVAL {{.NumDays}} DAY))
+//	ROW DELETION POLICY (OLDER_THAN({{.ColymnName | sql}}, INTERVAL {{.NumDays}} DAY))
 type RowDeletionPolicy struct {
 	// pos = Row
 	// end = Rparen + 1
@@ -1467,7 +1478,7 @@ type RowDeletionPolicy struct {
 
 // AlterTable is ALTER TABLE statement node.
 //
-//     ALTER TABLE {{.Name | sql}} {{.TableAlternation | sql}}
+//	ALTER TABLE {{.Name | sql}} {{.TableAlternation | sql}}
 type AlterTable struct {
 	// pos = Alter
 	// end = TableAlternation.end
@@ -1480,7 +1491,7 @@ type AlterTable struct {
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
-//     ADD COLUMN {{.Column | sql}}
+//	ADD COLUMN {{.Column | sql}}
 type AddColumn struct {
 	// pos = Add
 	// end = Column.end
@@ -1492,7 +1503,7 @@ type AddColumn struct {
 
 // AddTableConstraint is ADD table_constraint clause in ALTER TABLE.
 //
-//     ADD {{.TableConstraint}}
+//	ADD {{.TableConstraint}}
 type AddTableConstraint struct {
 	// pos = Add
 	// end = Constraint.end
@@ -1504,7 +1515,7 @@ type AddTableConstraint struct {
 
 // AddRowDeletionPolicy is ADD ROW DELETION POLICY clause in ALTER TABLE.
 //
-//     ADD {{.RowDeletionPolicy | sql}}
+//	ADD {{.RowDeletionPolicy | sql}}
 type AddRowDeletionPolicy struct {
 	// pos = Add
 	// end = RowDeletionPolicy.end
@@ -1516,7 +1527,7 @@ type AddRowDeletionPolicy struct {
 
 // DropColumn is DROP COLUMN clause in ALTER TABLE.
 //
-//     DROP COLUMN {{.Name | sql}}
+//	DROP COLUMN {{.Name | sql}}
 type DropColumn struct {
 	// pos = Drop
 	// end = Name.end
@@ -1528,7 +1539,7 @@ type DropColumn struct {
 
 // DropConstraint is DROP CONSTRAINT clause in ALTER TABLE.
 //
-//     DROP CONSTRAINT {{.Name | sql}}
+//	DROP CONSTRAINT {{.Name | sql}}
 type DropConstraint struct {
 	// pos = Drop
 	// end = Name.end
@@ -1540,7 +1551,7 @@ type DropConstraint struct {
 
 // DropRowDeletionPolicy is DROP ROW DELETION POLICY clause in ALTER TABLE.
 //
-//     DROP ROW DELETION POLICY
+//	DROP ROW DELETION POLICY
 type DropRowDeletionPolicy struct {
 	// pos = Drop
 	// end = Policy + 6
@@ -1551,7 +1562,7 @@ type DropRowDeletionPolicy struct {
 
 // ReplaceRowDeletionPolicy is REPLACE ROW DELETION POLICY clause in ALTER TABLE.
 //
-//     REPLACE {{.RowDeletionPolicy}}
+//	REPLACE {{.RowDeletionPolicy}}
 type ReplaceRowDeletionPolicy struct {
 	// pos = Replace
 	// end = RowDeletionPolicy.end
@@ -1563,7 +1574,7 @@ type ReplaceRowDeletionPolicy struct {
 
 // SetOnDelete is SET ON DELETE clause in ALTER TABLE.
 //
-//     SET ON DELETE {{.OnDelete}}
+//	SET ON DELETE {{.OnDelete}}
 type SetOnDelete struct {
 	// pos = Set
 	// end = OnDeleteEnd
@@ -1576,7 +1587,7 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumn struct {
 	// pos = Alter
 	// end = DefaultExpr.end || Null + 4 || Type.end
@@ -1591,7 +1602,7 @@ type AlterColumn struct {
 
 // AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
 //
-//     ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
+//	ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
 type AlterColumnSet struct {
 	// pos = Alter
 	// end = Name.end || Options.end || DefaultExpr.end
@@ -1605,7 +1616,7 @@ type AlterColumnSet struct {
 
 // DropTable is DROP TABLE statement node.
 //
-//     DROP TABLE {{.Name | sql}}
+//	DROP TABLE {{.Name | sql}}
 type DropTable struct {
 	// pos = Drop
 	// end = Name.end
@@ -1617,14 +1628,14 @@ type DropTable struct {
 
 // CreateIndex is CREATE INDEX statement node.
 //
-//     CREATE
-//       {{if .Unique}}UNIQUE{{end}}
-//       {{if .NullFiltered}}NULL_FILTERED{{end}}
-//       INDEX {{.Name | sql}} ON {{.TableName | sql}} (
-//         {{.Keys | sqlJoin ","}}
-//       )
-//       {{.Storing | sqlOpt}}
-//       {{.InterleaveIn | sqlOpt}}
+//	CREATE
+//	  {{if .Unique}}UNIQUE{{end}}
+//	  {{if .NullFiltered}}NULL_FILTERED{{end}}
+//	  INDEX {{.Name | sql}} ON {{.TableName | sql}} (
+//	    {{.Keys | sqlJoin ","}}
+//	  )
+//	  {{.Storing | sqlOpt}}
+//	  {{.InterleaveIn | sqlOpt}}
 type CreateIndex struct {
 	// pos = Create
 	// end = (InterleaveIn ?? Storing).end || Rparen + 1
@@ -1641,9 +1652,19 @@ type CreateIndex struct {
 	InterleaveIn *InterleaveIn // optional
 }
 
+// CreateRole is CREATE ROLE statement node.
+//
+//	CREATE ROLE {{.Name | sql}}
+type CreateRole struct {
+	// pos = Create
+	// end = Name.end
+	Create token.Pos // position of "CREATE" keyword
+	Name   *Ident
+}
+
 // Storing is STORING clause in CREATE INDEX.
 //
-//     STORING ({{.Columns | sqlJoin ","}})
+//	STORING ({{.Columns | sqlJoin ","}})
 type Storing struct {
 	// pos = Storing
 	// end = Rparen + 1
@@ -1656,7 +1677,7 @@ type Storing struct {
 
 // InterleaveIn is INTERLEAVE IN clause in CREATE INDEX.
 //
-//     , INTERLEAVE IN {{.TableName | sql}}
+//	, INTERLEAVE IN {{.TableName | sql}}
 type InterleaveIn struct {
 	// pos = Comma
 	// end = TableName.end
@@ -1668,7 +1689,7 @@ type InterleaveIn struct {
 
 // DropIndex is DROP INDEX statement node.
 //
-//     DROP INDEX {{.Name | sql}}
+//	DROP INDEX {{.Name | sql}}
 type DropIndex struct {
 	// pos = Drop
 	// end = Name.end
@@ -1676,6 +1697,59 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	Name *Ident
+}
+
+// DropRole is DROP ROLE statement node.
+//
+//	DROP ROLE {{.Name | sql}}
+type DropRole struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+	Name *Ident
+}
+
+// Grant is GRANT statement node.
+//
+// GRANT
+//
+//	{{ if .GrantRoleNames }}
+//	ROLE {{ .GrantRoleNames | sqlJoin "," }}
+//	{{ else }}
+//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
+//	{{ end }}
+//	TO ROLE {{ .ToRoleNames | sqlJoin "," }}
+type Grant struct {
+	// pos = Grant
+	// end = ToRoleNames[len(ToRoleNames)-1].end
+
+	Grant          token.Pos // position of "GRANT" keyword
+	ToRoleNames    []*Ident
+	GrantRoleNames []*Ident
+	Privileges     []*Privilege
+	TableNames     []*Ident
+}
+
+// Revoke is REVOKE statement node.
+//
+// REVOKE
+//
+//	{{ if .RoleNames }}
+//	ROLE {{ .RevokeRoleNames | sqlJoin "," }}
+//	{{ else }}
+//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
+//	{{ end }}
+//	FROM ROLE {{ .FromRoleNames | sqlJoin "," }}
+type Revoke struct {
+	// pos = Revoke
+	// end = Name.end
+
+	Revoke          token.Pos // position of "REVOKE" keyword
+	FromRoleNames   []*Ident
+	RevokeRoleNames []*Ident
+	Privileges      []*Privilege
+	TableNames      []*Ident
 }
 
 // ================================================================================
@@ -1686,7 +1760,7 @@ type DropIndex struct {
 
 // ScalarSchemaType is scalar type node in schema.
 //
-//     {{.Name}}
+//	{{.Name}}
 type ScalarSchemaType struct {
 	// pos = NamePos
 	// end = NamePos + len(Name)
@@ -1698,7 +1772,7 @@ type ScalarSchemaType struct {
 
 // SizedSchemaType is sized type node in schema.
 //
-//     {{.Name}}({{if .Max}}MAX{{else}}{{.Size | sql}}{{end}})
+//	{{.Name}}({{if .Max}}MAX{{else}}{{.Size | sql}}{{end}})
 type SizedSchemaType struct {
 	// pos = NamePos
 	// end = Rparen + 1
@@ -1714,7 +1788,7 @@ type SizedSchemaType struct {
 
 // ArraySchemaType is array type node in schema.
 //
-//     ARRAY<{{.Item | sql}}>
+//	ARRAY<{{.Item | sql}}>
 type ArraySchemaType struct {
 	// pos = Array
 	// end = Gt + 1
@@ -1725,6 +1799,20 @@ type ArraySchemaType struct {
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
 }
 
+// Privilege is plivilege type node in schema.
+//
+//	{{.Name}} {{if .Columns}}({{ .Columns | sqlJoin ","}}){{end}}
+type Privilege struct {
+	// pos = NamePos
+	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}Name.end{{end}}
+
+	NamePos        token.Pos // position of this privilege
+	Name           PrivilegeTypeName
+	Columns        []*Ident
+	Lparen, Rparen token.Pos // position of "(" and ")"
+
+}
+
 // ================================================================================
 //
 // DML
@@ -1733,7 +1821,7 @@ type ArraySchemaType struct {
 
 // Insert is INSERT statement node.
 //
-//     INSERT INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 type Insert struct {
 	// pos = Insert
 	// end = Input.end
@@ -1747,7 +1835,7 @@ type Insert struct {
 
 // ValuesInput is VALUES clause in INSERT.
 //
-//     VALUES {{.Rows | sqlJoin ","}}
+//	VALUES {{.Rows | sqlJoin ","}}
 type ValuesInput struct {
 	// pos = Values
 	// end = Rows[$].end
@@ -1759,7 +1847,7 @@ type ValuesInput struct {
 
 // ValuesRow is row values of VALUES clause.
 //
-//     ({{.Exprs | sqlJoin ","}})
+//	({{.Exprs | sqlJoin ","}})
 type ValuesRow struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -1771,7 +1859,7 @@ type ValuesRow struct {
 
 // DefaultExpr is DEFAULT or Expr.
 //
-//     {{if .Default}}DEFAULT{{else}}{{.Expr | sql}}{{end}}
+//	{{if .Default}}DEFAULT{{else}}{{.Expr | sql}}{{end}}
 type DefaultExpr struct {
 	// pos = DefaultPos || Expr.pos
 	// end = DefaultPos + 7 || Expr.end
@@ -1784,7 +1872,7 @@ type DefaultExpr struct {
 
 // SubQueryInput is query clause in INSERT.
 //
-//     {{.Query | sql}}
+//	{{.Query | sql}}
 type SubQueryInput struct {
 	// pos = Query.pos
 	// end = Query.end
@@ -1794,7 +1882,7 @@ type SubQueryInput struct {
 
 // Delete is DELETE statement.
 //
-//     DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
+//	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
 type Delete struct {
 	// pos = Delete
 	// end = Where.end
@@ -1808,8 +1896,8 @@ type Delete struct {
 
 // Update is UPDATE statement.
 //
-//     UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
-//     SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
+//	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
+//	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
 type Update struct {
 	// pos = Update
 	// end = Where.end
@@ -1824,7 +1912,7 @@ type Update struct {
 
 // UpdateItem is SET clause items in UPDATE.
 //
-//     {{.Path | sqlJoin "."}} = {{.Expr | sql}}
+//	{{.Path | sqlJoin "."}} = {{.Expr | sql}}
 type UpdateItem struct {
 	// pos = Path[0].pos
 	// end = Expr.end

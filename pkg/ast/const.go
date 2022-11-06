@@ -115,3 +115,12 @@ const (
 	OnDeleteCascade  OnDeleteAction = "ON DELETE CASCADE"
 	OnDeleteNoAction OnDeleteAction = "ON DELETE NO ACTION"
 )
+
+type PrivilegeTypeName string
+
+const (
+	PrivilegeSelectTypeName PrivilegeTypeName = "SELECT"
+	PrivilegeInsertTypeName PrivilegeTypeName = "INSERT"
+	PrivilegeUpdateTypeName PrivilegeTypeName = "UPDATE"
+	PrivilegeDeleteTypeName PrivilegeTypeName = "DELETE"
+)
