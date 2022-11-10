@@ -3193,18 +3193,6 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 	return id
 }
 
-func (p *Parser) isKeywordsLike(want ...string) bool {
-	orig := *p
-	for _, w := range want {
-		if !p.Token.IsKeywordLike(w) {
-			*p = orig
-			return false
-		}
-		p.nextToken()
-	}
-	return true
-}
-
 func (p *Parser) isTokenKinds(want ...token.TokenKind) bool {
 	orig := *p
 	for _, w := range want {
