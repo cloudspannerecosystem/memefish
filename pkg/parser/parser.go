@@ -2448,7 +2448,6 @@ func (p *Parser) parsePrivileges() []*ast.Privilege {
 		priv := &ast.Privilege{}
 		switch {
 		default:
-			fmt.Printf("%#v", p.Token)
 			p.panicfAtToken(&p.Token, "expected SELECT or UPDATE or INSERT or DELETE, but: %s", p.Token.AsString)
 		// TODO only SELECT is keywords, but adding others breaks codes.
 		case p.Token.Kind == "SELECT":
