@@ -14,12 +14,12 @@ test:
 	@go build -o /dev/null ./example/... ./tools/...
 
 .PHONY: lint
-lint: golangci-lint
+lint: bin/golangci-lint
 	@echo
 	@echo "  (x x) < memefish: lint"
 	@echo "  /|||\\"
 	@echo
-	golangci-lint run ./...
+	bin/golangci-lint run ./...
 
 .PHONY: docs
 docs:
@@ -45,7 +45,7 @@ update-mod:
 	go mod tidy
 
 .PHONY: install-dep
-install-dep: golangci-lint
+install-dep: bin/golangci-lint
 
-golangci-lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+bin/golangci-lint:
+	GOBIN=$(CURDIR)/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
