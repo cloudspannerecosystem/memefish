@@ -1710,7 +1710,6 @@ type DropRole struct {
 // Grant is GRANT statement node.
 //
 // GRANT
-//
 //	{{ if .GrantRoleNames }}
 //	ROLE {{ .GrantRoleNames | sqlJoin "," }}
 //	{{ else }}
@@ -1731,7 +1730,6 @@ type Grant struct {
 // Revoke is REVOKE statement node.
 //
 // REVOKE
-//
 //	{{ if .RoleNames }}
 //	ROLE {{ .RevokeRoleNames | sqlJoin "," }}
 //	{{ else }}
