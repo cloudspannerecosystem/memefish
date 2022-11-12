@@ -79,7 +79,6 @@ var Keywords = []TokenKind{
 	"RECURSIVE",
 	"RESPECT",
 	"RIGHT",
-	"ROLE",
 	"ROLLUP",
 	"ROWS",
 	"SELECT",

@@ -1950,7 +1950,7 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
-		case p.Token.Kind == "ROLE":
+		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, but: %s", p.Token.AsString)
@@ -1964,7 +1964,7 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
-		case p.Token.Kind == "ROLE":
+		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
@@ -2390,7 +2390,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 }
 
 func (p *Parser) parseCreateRole(pos token.Pos) *ast.CreateRole {
-	p.expect("ROLE")
+	p.expectKeywordLike("ROLE")
 	name := p.parseIdent()
 	return &ast.CreateRole{
 		Create: pos,
@@ -2399,7 +2399,7 @@ func (p *Parser) parseCreateRole(pos token.Pos) *ast.CreateRole {
 
 }
 func (p *Parser) parseDropRole(pos token.Pos) *ast.DropRole {
-	p.expect("ROLE")
+	p.expectKeywordLike("ROLE")
 	name := p.parseIdent()
 	return &ast.DropRole{
 		Drop: pos,
@@ -2411,12 +2411,12 @@ func (p *Parser) parseGrant(pos token.Pos) *ast.Grant {
 	g := &ast.Grant{
 		Grant: pos,
 	}
-	if p.Token.Kind == "ROLE" {
+	if p.Token.IsKeywordLike("ROLE") {
 		p.nextToken()
-		g.GrantRoleNames = p.parseCommaIdentListWithTokenKindEnds("TO", "ROLE")
+		g.GrantRoleNames = p.parseCommaIdentListWithRoleEnd("TO")
 	} else {
 		g.Privileges = p.parsePrivileges()
-		g.TableNames = p.parseCommaIdentListWithTokenKindEnds("TO", "ROLE")
+		g.TableNames = p.parseCommaIdentListWithRoleEnd("TO")
 	}
 	list := p.parseCommaIdentList()
 	g.ToRoleNames = list
@@ -2428,12 +2428,12 @@ func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
 	r := &ast.Revoke{
 		Revoke: pos,
 	}
-	if p.Token.Kind == "ROLE" {
+	if p.Token.IsKeywordLike("ROLE") {
 		p.nextToken()
-		r.RevokeRoleNames = p.parseCommaIdentListWithTokenKindEnds("FROM", "ROLE")
+		r.RevokeRoleNames = p.parseCommaIdentListWithRoleEnd("FROM")
 	} else {
 		r.Privileges = p.parsePrivileges()
-		r.TableNames = p.parseCommaIdentListWithTokenKindEnds("FROM", "ROLE")
+		r.TableNames = p.parseCommaIdentListWithRoleEnd("FROM")
 	}
 	list := p.parseCommaIdentList()
 	r.FromRoleNames = list
@@ -2464,7 +2464,7 @@ func (p *Parser) parsePrivileges() []*ast.Privilege {
 		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
 		if p.Token.Kind == "(" && priv.Name != ast.PrivilegeDeleteTypeName {
 			p.nextToken()
-			priv.Columns = p.parseCommaIdentListWithTokenKindEnds(")")
+			priv.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
 		}
 		privs = append(privs, priv)
 		if p.Token.Kind == "," {
@@ -2498,14 +2498,14 @@ func (p *Parser) parseCommaIdentList() []*ast.Ident {
 	return ids
 }
 
-func (p *Parser) parseCommaIdentListWithTokenKindEnds(ends ...token.TokenKind) []*ast.Ident {
+func (p *Parser) parseCommaIdentListWithRoleEnd(fromOrTo token.TokenKind) []*ast.Ident {
 	ids := []*ast.Ident{}
-	if p.isTokenKinds(ends...) {
+	if p.isRoleEnd(fromOrTo) {
 		return ids
 	}
 	for p.Token.Kind != token.TokenEOF {
 		ids = append(ids, p.parseIdent())
-		if p.isTokenKinds(ends...) {
+		if p.isRoleEnd(fromOrTo) {
 			return ids
 		}
 
@@ -2513,7 +2513,43 @@ func (p *Parser) parseCommaIdentListWithTokenKindEnds(ends ...token.TokenKind) [
 			p.nextToken()
 			continue
 		} else {
-			p.panicfAtToken(&p.Token, "expected , or %v, but: %s", ends, p.Token.AsString)
+			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", fromOrTo, p.Token.AsString)
+		}
+	}
+	return ids
+}
+
+func (p *Parser) isRoleEnd(fromOrTo token.TokenKind) bool {
+	orig := *p
+	if p.Token.Kind != fromOrTo {
+		return false
+	}
+	p.nextToken()
+	if p.Token.IsKeywordLike("ROLE") {
+		p.nextToken()
+		return true
+	}
+	*p = orig
+	return false
+}
+
+func (p *Parser) parseCommaIdentListWithTokenKindEnd(end token.TokenKind) []*ast.Ident {
+	ids := []*ast.Ident{}
+	if p.Token.Kind == end {
+		p.nextToken()
+		return ids
+	}
+	for p.Token.Kind != token.TokenEOF {
+		ids = append(ids, p.parseIdent())
+		if p.Token.Kind == end {
+			p.nextToken()
+			return ids
+		}
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		} else {
+			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", end, p.Token.AsString)
 		}
 	}
 	return ids
@@ -3190,18 +3226,6 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 		}
 	}
 	return id
-}
-
-func (p *Parser) isTokenKinds(want ...token.TokenKind) bool {
-	orig := *p
-	for _, w := range want {
-		if p.Token.Kind != w {
-			*p = orig
-			return false
-		}
-		p.nextToken()
-	}
-	return true
 }
 
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
