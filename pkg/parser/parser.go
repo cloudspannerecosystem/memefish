@@ -191,7 +191,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
 		return p.parseQueryStatement()
-	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP"):
+	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
@@ -1950,6 +1950,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
+		case p.Token.IsKeywordLike("ROLE"):
+			return p.parseCreateRole(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
@@ -1962,8 +1964,16 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
+		case p.Token.IsKeywordLike("ROLE"):
+			return p.parseDropRole(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
+	case p.Token.IsKeywordLike("GRANT"):
+		p.nextToken()
+		return p.parseGrant(pos)
+	case p.Token.IsKeywordLike("REVOKE"):
+		p.nextToken()
+		return p.parseRevoke(pos)
 	}
 
 	if p.Token.Kind != token.TokenIdent {
@@ -2379,6 +2389,171 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	}
 }
 
+func (p *Parser) parseCreateRole(pos token.Pos) *ast.CreateRole {
+	p.expectKeywordLike("ROLE")
+	name := p.parseIdent()
+	return &ast.CreateRole{
+		Create: pos,
+		Name:   name,
+	}
+
+}
+func (p *Parser) parseDropRole(pos token.Pos) *ast.DropRole {
+	p.expectKeywordLike("ROLE")
+	name := p.parseIdent()
+	return &ast.DropRole{
+		Drop: pos,
+		Name: name,
+	}
+
+}
+func (p *Parser) parseGrant(pos token.Pos) *ast.Grant {
+	g := &ast.Grant{
+		Grant: pos,
+	}
+	if p.Token.IsKeywordLike("ROLE") {
+		p.nextToken()
+		g.GrantRoleNames = p.parseCommaIdentListWithRoleEnd("TO")
+	} else {
+		g.Privileges = p.parsePrivileges()
+		g.TableNames = p.parseCommaIdentListWithRoleEnd("TO")
+	}
+	list := p.parseCommaIdentList()
+	g.ToRoleNames = list
+
+	return g
+}
+
+func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
+	r := &ast.Revoke{
+		Revoke: pos,
+	}
+	if p.Token.IsKeywordLike("ROLE") {
+		p.nextToken()
+		r.RevokeRoleNames = p.parseCommaIdentListWithRoleEnd("FROM")
+	} else {
+		r.Privileges = p.parsePrivileges()
+		r.TableNames = p.parseCommaIdentListWithRoleEnd("FROM")
+	}
+	list := p.parseCommaIdentList()
+	r.FromRoleNames = list
+
+	return r
+}
+
+func (p *Parser) parsePrivileges() []*ast.Privilege {
+	var privs []*ast.Privilege
+	for {
+
+		priv := &ast.Privilege{}
+		switch {
+		default:
+			p.panicfAtToken(&p.Token, "expected SELECT or UPDATE or INSERT or DELETE, but: %s", p.Token.AsString)
+		// TODO only SELECT is keywords, but adding others breaks codes.
+		case p.Token.Kind == "SELECT":
+			priv.Name = ast.PrivilegeSelectTypeName
+		case p.Token.IsKeywordLike("UPDATE"):
+			priv.Name = ast.PrivilegeUpdateTypeName
+		case p.Token.IsKeywordLike("INSERT"):
+			priv.Name = ast.PrivilegeInsertTypeName
+		case p.Token.IsKeywordLike("DELETE"):
+			priv.Name = ast.PrivilegeDeleteTypeName
+		}
+		p.nextToken()
+		// can grant DELETE only at the table level.
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
+		if p.Token.Kind == "(" && priv.Name != ast.PrivilegeDeleteTypeName {
+			p.nextToken()
+			priv.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
+		}
+		privs = append(privs, priv)
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		} else if p.Token.Kind == "ON" {
+			p.nextToken()
+			if p.Token.IsKeywordLike("TABLE") {
+				p.nextToken()
+				break
+			} else {
+				p.panicfAtToken(&p.Token, "got %q, want , or TABLE", p.Token.AsString)
+			}
+		} else {
+			p.panicfAtToken(&p.Token, "got %q, want , or ON TABLE", p.Token.AsString)
+		}
+	}
+	return privs
+}
+
+func (p *Parser) parseCommaIdentList() []*ast.Ident {
+	ids := []*ast.Ident{}
+	for p.Token.Kind != token.TokenEOF {
+		ids = append(ids, p.parseIdent())
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		break
+	}
+	return ids
+}
+
+func (p *Parser) parseCommaIdentListWithRoleEnd(fromOrTo token.TokenKind) []*ast.Ident {
+	ids := []*ast.Ident{}
+	if p.isRoleEnd(fromOrTo) {
+		return ids
+	}
+	for p.Token.Kind != token.TokenEOF {
+		ids = append(ids, p.parseIdent())
+		if p.isRoleEnd(fromOrTo) {
+			return ids
+		}
+
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		} else {
+			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", fromOrTo, p.Token.AsString)
+		}
+	}
+	return ids
+}
+
+func (p *Parser) isRoleEnd(fromOrTo token.TokenKind) bool {
+	orig := *p
+	if p.Token.Kind != fromOrTo {
+		return false
+	}
+	p.nextToken()
+	if p.Token.IsKeywordLike("ROLE") {
+		p.nextToken()
+		return true
+	}
+	*p = orig
+	return false
+}
+
+func (p *Parser) parseCommaIdentListWithTokenKindEnd(end token.TokenKind) []*ast.Ident {
+	ids := []*ast.Ident{}
+	if p.Token.Kind == end {
+		p.nextToken()
+		return ids
+	}
+	for p.Token.Kind != token.TokenEOF {
+		ids = append(ids, p.parseIdent())
+		if p.Token.Kind == end {
+			p.nextToken()
+			return ids
+		}
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		} else {
+			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", end, p.Token.AsString)
+		}
+	}
+	return ids
+}
 func (p *Parser) tryParseStoring() *ast.Storing {
 	if !p.Token.IsKeywordLike("STORING") {
 		return nil

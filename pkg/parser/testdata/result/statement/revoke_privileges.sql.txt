@@ -1,0 +1,73 @@
+--- revoke_privileges.sql
+REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager, hr_member
+
+--- AST
+&ast.Revoke{
+  Revoke:        0,
+  FromRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 97,
+      NameEnd: 107,
+      Name:    "hr_manager",
+    },
+    &ast.Ident{
+      NamePos: 109,
+      NameEnd: 118,
+      Name:    "hr_member",
+    },
+  },
+  RevokeRoleNames: []*ast.Ident(nil),
+  Privileges:      []*ast.Privilege{
+    &ast.Privilege{
+      NamePos: 0,
+      Name:    "SELECT",
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 14,
+          NameEnd: 18,
+          Name:    "name",
+        },
+        &ast.Ident{
+          NamePos: 20,
+          NameEnd: 25,
+          Name:    "level",
+        },
+        &ast.Ident{
+          NamePos: 27,
+          NameEnd: 35,
+          Name:    "location",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+    &ast.Privilege{
+      NamePos: 0,
+      Name:    "UPDATE",
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 45,
+          NameEnd: 53,
+          Name:    "location",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+  },
+  TableNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 64,
+      NameEnd: 73,
+      Name:    "employees",
+    },
+    &ast.Ident{
+      NamePos: 75,
+      NameEnd: 86,
+      Name:    "contractors",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager, hr_member

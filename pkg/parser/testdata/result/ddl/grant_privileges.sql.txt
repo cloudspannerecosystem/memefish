@@ -1,0 +1,73 @@
+--- grant_privileges.sql
+GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager, hr_member
+
+--- AST
+&ast.Grant{
+  Grant:       0,
+  ToRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 94,
+      NameEnd: 104,
+      Name:    "hr_manager",
+    },
+    &ast.Ident{
+      NamePos: 106,
+      NameEnd: 115,
+      Name:    "hr_member",
+    },
+  },
+  GrantRoleNames: []*ast.Ident(nil),
+  Privileges:     []*ast.Privilege{
+    &ast.Privilege{
+      NamePos: 0,
+      Name:    "SELECT",
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 13,
+          NameEnd: 17,
+          Name:    "name",
+        },
+        &ast.Ident{
+          NamePos: 19,
+          NameEnd: 24,
+          Name:    "level",
+        },
+        &ast.Ident{
+          NamePos: 26,
+          NameEnd: 34,
+          Name:    "location",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+    &ast.Privilege{
+      NamePos: 0,
+      Name:    "UPDATE",
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 44,
+          NameEnd: 52,
+          Name:    "location",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+  },
+  TableNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 63,
+      NameEnd: 72,
+      Name:    "employees",
+    },
+    &ast.Ident{
+      NamePos: 74,
+      NameEnd: 85,
+      Name:    "contractors",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager, hr_member

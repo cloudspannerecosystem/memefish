@@ -651,6 +651,14 @@ func (c *CreateIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateRole) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateRole) End() token.Pos {
+	return c.Name.End()
+}
+
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 
@@ -659,6 +667,15 @@ func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 
 func (d *DropIndex) Pos() token.Pos { return d.Drop }
 func (d *DropIndex) End() token.Pos { return d.Name.End() }
+
+func (d *DropRole) Pos() token.Pos { return d.Drop }
+func (d *DropRole) End() token.Pos { return d.Name.End() }
+
+func (g *Grant) Pos() token.Pos { return g.Grant }
+func (g *Grant) End() token.Pos { return g.ToRoleNames[len(g.ToRoleNames)-1].End() }
+
+func (r *Revoke) Pos() token.Pos { return r.Revoke }
+func (r *Revoke) End() token.Pos { return r.FromRoleNames[len(r.FromRoleNames)-1].End() }
 
 // ================================================================================
 //
@@ -674,6 +691,14 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
+
+func (p *Privilege) Pos() token.Pos { return p.NamePos }
+func (p *Privilege) End() token.Pos {
+	if len(p.Columns) > 0 {
+		return p.Rparen + 1
+	}
+	return p.NamePos + token.Pos(len(p.Name))
+}
 
 // ================================================================================
 //

@@ -72,6 +72,17 @@ func paren(p prec, e Expr) string {
 	}
 }
 
+func CommaSeparatedSQL(is []*Ident) string {
+	sql := ""
+	for i, id := range is {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += id.SQL()
+	}
+	return sql
+}
+
 // ================================================================================
 //
 // SELECT
@@ -917,6 +928,56 @@ func (c *CreateIndex) SQL() string {
 	if c.InterleaveIn != nil {
 		sql += c.InterleaveIn.SQL()
 	}
+	return sql
+}
+
+func (c *CreateRole) SQL() string {
+	return "CREATE ROLE " + c.Name.SQL()
+}
+
+func (d *DropRole) SQL() string {
+	return "DROP ROLE " + d.Name.SQL()
+}
+
+func (g *Grant) SQL() string {
+	sql := "GRANT "
+	if g.Privileges != nil {
+		sql += string(g.Privileges[0].Name)
+		if g.Privileges[0].Columns != nil {
+			sql += "(" + CommaSeparatedSQL(g.Privileges[0].Columns) + ")"
+		}
+		for _, priv := range g.Privileges[1:] {
+			sql += ", " + string(priv.Name)
+			if priv.Columns != nil {
+				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
+			}
+		}
+		sql += " ON TABLE " + CommaSeparatedSQL(g.TableNames)
+	} else {
+		sql += "ROLE " + CommaSeparatedSQL(g.GrantRoleNames)
+	}
+	sql += " TO ROLE " + CommaSeparatedSQL(g.ToRoleNames)
+	return sql
+}
+
+func (r *Revoke) SQL() string {
+	sql := "REVOKE "
+	if r.Privileges != nil {
+		sql += string(r.Privileges[0].Name)
+		if r.Privileges[0].Columns != nil {
+			sql += "(" + CommaSeparatedSQL(r.Privileges[0].Columns) + ")"
+		}
+		for _, priv := range r.Privileges[1:] {
+			sql += ", " + string(priv.Name)
+			if priv.Columns != nil {
+				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
+			}
+		}
+		sql += " ON TABLE " + CommaSeparatedSQL(r.TableNames)
+	} else {
+		sql += "ROLE " + CommaSeparatedSQL(r.RevokeRoleNames)
+	}
+	sql += " FROM ROLE " + CommaSeparatedSQL(r.FromRoleNames)
 	return sql
 }
 

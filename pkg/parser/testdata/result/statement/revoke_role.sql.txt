@@ -1,0 +1,36 @@
+--- revoke_role.sql
+REVOKE ROLE pii_access, pii_writter FROM ROLE hr_manager, hr_director
+
+--- AST
+&ast.Revoke{
+  Revoke:        0,
+  FromRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 46,
+      NameEnd: 56,
+      Name:    "hr_manager",
+    },
+    &ast.Ident{
+      NamePos: 58,
+      NameEnd: 69,
+      Name:    "hr_director",
+    },
+  },
+  RevokeRoleNames: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 22,
+      Name:    "pii_access",
+    },
+    &ast.Ident{
+      NamePos: 24,
+      NameEnd: 35,
+      Name:    "pii_writter",
+    },
+  },
+  Privileges: []*ast.Privilege(nil),
+  TableNames: []*ast.Ident(nil),
+}
+
+--- SQL
+REVOKE ROLE pii_access, pii_writter FROM ROLE hr_manager, hr_director

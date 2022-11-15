@@ -1,0 +1,15 @@
+--- create_role.sql
+CREATE ROLE hr_manager
+
+--- AST
+&ast.CreateRole{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 12,
+    NameEnd: 22,
+    Name:    "hr_manager",
+  },
+}
+
+--- SQL
+CREATE ROLE hr_manager

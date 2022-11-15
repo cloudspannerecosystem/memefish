@@ -24,12 +24,16 @@ func (CreateDatabase) isStatement() {}
 func (CreateTable) isStatement()    {}
 func (CreateView) isStatement()     {}
 func (CreateIndex) isStatement()    {}
+func (CreateRole) isStatement()     {}
 func (AlterTable) isStatement()     {}
 func (DropTable) isStatement()      {}
 func (DropIndex) isStatement()      {}
+func (DropRole) isStatement()       {}
 func (Insert) isStatement()         {}
 func (Delete) isStatement()         {}
 func (Update) isStatement()         {}
+func (Grant) isStatement()          {}
+func (Revoke) isStatement()         {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -176,6 +180,10 @@ func (AlterTable) isDDL()     {}
 func (DropTable) isDDL()      {}
 func (CreateIndex) isDDL()    {}
 func (DropIndex) isDDL()      {}
+func (CreateRole) isDDL()     {}
+func (DropRole) isDDL()       {}
+func (Grant) isDDL()          {}
+func (Revoke) isDDL()         {}
 
 // TableAlternation represents ALTER TABLE action.
 type TableAlternation interface {
@@ -1641,6 +1649,16 @@ type CreateIndex struct {
 	InterleaveIn *InterleaveIn // optional
 }
 
+// CreateRole is CREATE ROLE statement node.
+//
+//	CREATE ROLE {{.Name | sql}}
+type CreateRole struct {
+	// pos = Create
+	// end = Name.end
+	Create token.Pos // position of "CREATE" keyword
+	Name   *Ident
+}
+
 // Storing is STORING clause in CREATE INDEX.
 //
 //     STORING ({{.Columns | sqlJoin ","}})
@@ -1676,6 +1694,57 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	Name *Ident
+}
+
+// DropRole is DROP ROLE statement node.
+//
+//	DROP ROLE {{.Name | sql}}
+type DropRole struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+	Name *Ident
+}
+
+// Grant is GRANT statement node.
+//
+// GRANT
+//	{{ if .GrantRoleNames }}
+//	ROLE {{ .GrantRoleNames | sqlJoin "," }}
+//	{{ else }}
+//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
+//	{{ end }}
+//	TO ROLE {{ .ToRoleNames | sqlJoin "," }}
+type Grant struct {
+	// pos = Grant
+	// end = ToRoleNames[len(ToRoleNames)-1].end
+
+	Grant          token.Pos // position of "GRANT" keyword
+	ToRoleNames    []*Ident
+	GrantRoleNames []*Ident
+	Privileges     []*Privilege
+	TableNames     []*Ident
+}
+
+// Revoke is REVOKE statement node.
+//
+// REVOKE
+//	{{ if .RoleNames }}
+//	ROLE {{ .RevokeRoleNames | sqlJoin "," }}
+//	{{ else }}
+//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
+//	{{ end }}
+//	FROM ROLE {{ .FromRoleNames | sqlJoin "," }}
+type Revoke struct {
+	// pos = Revoke
+	// end = Name.end
+
+	Revoke          token.Pos // position of "REVOKE" keyword
+	FromRoleNames   []*Ident
+	RevokeRoleNames []*Ident
+	Privileges      []*Privilege
+	TableNames      []*Ident
 }
 
 // ================================================================================
@@ -1723,6 +1792,20 @@ type ArraySchemaType struct {
 	Gt    token.Pos // position of ">"
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
+}
+
+// Privilege is plivilege type node in schema.
+//
+//	{{.Name}} {{if .Columns}}({{ .Columns | sqlJoin ","}}){{end}}
+type Privilege struct {
+	// pos = NamePos
+	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}Name.end{{end}}
+
+	NamePos        token.Pos // position of this privilege
+	Name           PrivilegeTypeName
+	Columns        []*Ident
+	Lparen, Rparen token.Pos // position of "(" and ")"
+
 }
 
 // ================================================================================
