@@ -5,6 +5,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	. "github.com/MakeNowJust/memefish/pkg/token"
 )
 
@@ -43,22 +46,30 @@ var lexerTestCases = []struct {
 	source string
 	tokens []*Token
 }{
+	// Spaces
+	{"  0", []*Token{{Kind: "<int>", Space: "  ", Raw: "0", Base: 10}}},
 	// Comment
 	{"# foo", nil},
-	{"-- foo", nil},
-	{"// foo", nil},
-	{"/* foo */", nil},
+	{"# foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "# foo\n", Pos: 0, End: 6}}}}},
+	{"-- foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "-- foo\n", Pos: 0, End: 7}}}}},
+	{"// foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "// foo\n", Pos: 0, End: 7}}}}},
+	{"/* foo */ 0", []*Token{{Kind: "<int>", Space: " ", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "/* foo */", Pos: 0, End: 9}}}}},
+	{"// aaa\n// bbb\n/* foo */ 0", []*Token{{Kind: "<int>", Space: " ", Raw: "0", Base: 10, Comments: []TokenComment{
+		{Space: "", Raw: "// aaa\n", Pos: 0, End: 7},
+		{Space: "", Raw: "// bbb\n", Pos: 7, End: 14},
+		{Space: "", Raw: "/* foo */", Pos: 14, End: 23},
+	}}}},
 	// TokenInt
-	{"0", []*Token{{Kind: TokenInt, Raw: "0"}}},
-	{"1", []*Token{{Kind: TokenInt, Raw: "1"}}},
-	{"123", []*Token{{Kind: TokenInt, Raw: "123"}}},
-	{"+123", []*Token{{Kind: "+", Raw: "+"}, {Kind: TokenInt, Raw: "123"}}},
-	{"-123", []*Token{{Kind: "-", Raw: "-"}, {Kind: TokenInt, Raw: "123"}}},
-	{"9223372036854775807", []*Token{{Kind: TokenInt, Raw: "9223372036854775807"}}},
-	{"-9223372036854775808", []*Token{{Kind: "-", Raw: "-"}, {Kind: TokenInt, Raw: "9223372036854775808"}}},
-	{"0123", []*Token{{Kind: TokenInt, Raw: "0123"}}},
-	{"0xbeaf", []*Token{{Kind: TokenInt, Raw: "0xbeaf"}}},
-	{"0XBEAF", []*Token{{Kind: TokenInt, Raw: "0XBEAF"}}},
+	{"0", []*Token{{Kind: TokenInt, Raw: "0", Base: 10}}},
+	{"1", []*Token{{Kind: TokenInt, Raw: "1", Base: 10}}},
+	{"123", []*Token{{Kind: TokenInt, Raw: "123", Base: 10}}},
+	{"+123", []*Token{{Kind: "+", Raw: "+"}, {Kind: TokenInt, Raw: "123", Base: 10}}},
+	{"-123", []*Token{{Kind: "-", Raw: "-"}, {Kind: TokenInt, Raw: "123", Base: 10}}},
+	{"9223372036854775807", []*Token{{Kind: TokenInt, Raw: "9223372036854775807", Base: 10}}},
+	{"-9223372036854775808", []*Token{{Kind: "-", Raw: "-"}, {Kind: TokenInt, Raw: "9223372036854775808", Base: 10}}},
+	{"0123", []*Token{{Kind: TokenInt, Raw: "0123", Base: 10}}}, // TODO: fix base
+	{"0xbeaf", []*Token{{Kind: TokenInt, Raw: "0xbeaf", Base: 16}}},
+	{"0XBEAF", []*Token{{Kind: TokenInt, Raw: "0XBEAF", Base: 16}}},
 	// TokenFloat
 	{"1.2", []*Token{{Kind: TokenFloat, Raw: "1.2"}}},
 	{"+1.2", []*Token{{Kind: "+", Raw: "+"}, {Kind: TokenFloat, Raw: "1.2"}}},
@@ -84,7 +95,7 @@ var lexerTestCases = []struct {
 	{").1", []*Token{{Kind: ")", Raw: ")"}, {Kind: ".", Raw: "."}, {Kind: TokenIdent, Raw: "1", AsString: "1"}}},
 	{"`foo\\u0031`", []*Token{{Kind: TokenIdent, Raw: "`foo\\u0031`", AsString: "foo1"}}},
 	{"BR", []*Token{{Kind: TokenIdent, Raw: "BR", AsString: "BR"}}},
-	{`R "foo"`, []*Token{{Kind: TokenIdent, Raw: "R", AsString: "R"}, {Kind: TokenString, Raw: `"foo"`, AsString: "foo"}}},
+	{`R "foo"`, []*Token{{Kind: TokenIdent, Raw: "R", AsString: "R"}, {Kind: TokenString, Space: " ", Raw: `"foo"`, AsString: "foo"}}},
 	// TokenString
 	{`""`, []*Token{{Kind: TokenString, Raw: `""`, AsString: ""}}},
 	{`''`, []*Token{{Kind: TokenString, Raw: `''`, AsString: ""}}},
@@ -141,19 +152,6 @@ var lexerWrongTestCase = []struct {
 	{`/*`, 2, "unclosed comment"},
 }
 
-func tokenEqual(t1, t2 *Token) bool {
-	if t1.Kind != t2.Kind || t1.Raw != t2.Raw {
-		return false
-	}
-
-	switch t1.Kind {
-	case TokenParam, TokenIdent, TokenString, TokenBytes:
-		return t1.AsString == t2.AsString
-	}
-
-	return true
-}
-
 func testLexer(t *testing.T, source string, tokens []*Token) {
 	t.Helper()
 	l := &Lexer{
@@ -165,9 +163,11 @@ func testLexer(t *testing.T, source string, tokens []*Token) {
 			t.Errorf("error on lexer: %v", err)
 			return
 		}
-		if !tokenEqual(&l.Token, t2) {
-			t.Errorf("%#v != %#v", &l.Token, t2)
-			return
+		opts := []cmp.Option{
+			cmpopts.IgnoreFields(Token{}, "Pos", "End"),
+		}
+		if diff := cmp.Diff(&l.Token, t2, opts...); diff != "" {
+			t.Errorf("(-got, +want)\n%s", diff)
 		}
 	}
 	err := l.NextToken()

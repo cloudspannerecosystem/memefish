@@ -6,7 +6,8 @@ import (
 
 type Token struct {
 	Kind     TokenKind
-	Space    string // TODO: better comment support
+	Comments []TokenComment
+	Space    string
 	Raw      string
 	AsString string // available for TokenIdent, TokenString and TokenBytes
 	Base     int    // 10 or 16 on TokenInt
@@ -24,6 +25,12 @@ func (t *Token) IsKeywordLike(s string) bool {
 func (t *Token) Clone() *Token {
 	tok := *t
 	return &tok
+}
+
+type TokenComment struct {
+	Space    string // leading spaces
+	Raw      string
+	Pos, End Pos
 }
 
 type TokenKind string
