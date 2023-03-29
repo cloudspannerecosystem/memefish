@@ -67,14 +67,31 @@ func (l *Lexer) nextToken() {
 	l.lastTokenKind = l.Token.Kind
 	l.Token = token.Token{}
 
-	// Skips spaces.
-	i := l.pos
-	l.skipSpaces()
-	l.Token.Space = l.Buffer[i:l.pos]
+	// Skips spaces and comments.
+	var space string
+	for {
+		i := l.pos
+		l.skipSpaces()
+		space = l.Buffer[i:l.pos]
+
+		i = l.pos
+		l.skipComment()
+		if l.pos == i {
+			break
+		}
+		l.Token.Comments = append(l.Token.Comments, token.TokenComment{
+			Space: space,
+			Raw:   l.Buffer[i:l.pos],
+			Pos:   token.Pos(i),
+			End:   token.Pos(l.pos),
+		})
+	}
+
+	l.Token.Space = space
 
 	// Reads the next token.
 	l.Token.Pos = token.Pos(l.pos)
-	i = l.pos
+	i := l.pos
 	if l.dotIdent {
 		l.consumeFieldToken()
 		l.dotIdent = false
@@ -457,17 +474,25 @@ func (l *Lexer) skipSpaces() {
 		switch {
 		case unicode.IsSpace(r):
 			l.skipN(size)
-		case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
-			l.skipComment("\n", false)
-		case r == '/' && l.peekIs(1, '*'):
-			l.skipComment("*/", true)
 		default:
 			return
 		}
 	}
 }
 
-func (l *Lexer) skipComment(end string, mustEnd bool) {
+func (l *Lexer) skipComment() {
+	r, _ := utf8.DecodeRuneInString(l.Buffer[l.pos:])
+	switch {
+	case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
+		l.skipCommentUntil("\n", false)
+	case r == '/' && l.peekIs(1, '*'):
+		l.skipCommentUntil("*/", true)
+	default:
+		return
+	}
+}
+
+func (l *Lexer) skipCommentUntil(end string, mustEnd bool) {
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
 			l.skipN(len(end))
