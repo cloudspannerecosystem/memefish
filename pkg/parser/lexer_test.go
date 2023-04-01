@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	. "github.com/MakeNowJust/memefish/pkg/token"
+	. "github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 var symbols = []string{

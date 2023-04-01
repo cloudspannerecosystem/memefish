@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MakeNowJust/memefish/pkg/analyzer"
-	"github.com/MakeNowJust/memefish/pkg/parser"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/analyzer"
+	"github.com/cloudspannerecosystem/memefish/pkg/parser"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 func main() {

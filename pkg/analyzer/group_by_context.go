@@ -1,7 +1,7 @@
 package analyzer
 
 import (
-	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/cloudspannerecosystem/memefish/pkg/ast"
 )
 
 type GroupByContext struct {

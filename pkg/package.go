@@ -4,9 +4,9 @@
 package memefish
 
 import (
-	_ "github.com/MakeNowJust/memefish/pkg/analyzer"
-	_ "github.com/MakeNowJust/memefish/pkg/ast"
-	_ "github.com/MakeNowJust/memefish/pkg/char"
-	_ "github.com/MakeNowJust/memefish/pkg/parser"
-	_ "github.com/MakeNowJust/memefish/pkg/token"
+	_ "github.com/cloudspannerecosystem/memefish/pkg/analyzer"
+	_ "github.com/cloudspannerecosystem/memefish/pkg/ast"
+	_ "github.com/cloudspannerecosystem/memefish/pkg/char"
+	_ "github.com/cloudspannerecosystem/memefish/pkg/parser"
+	_ "github.com/cloudspannerecosystem/memefish/pkg/token"
 )

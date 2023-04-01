@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/ast"
-	"github.com/MakeNowJust/memefish/pkg/char"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/ast"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 type Parser struct {

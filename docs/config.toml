@@ -1,4 +1,4 @@
-baseurl = "https://makenowjust.github.io/memefish"
+baseurl = "https://cloudspannerecosystem.github.io/memefish"
 title = "méméfish"
 theme = "hugo-whisper-theme"
 languagecode = "en"
@@ -34,8 +34,8 @@ summaryLength = 30
 [[menu.main]]
     name = "GoDoc"
     weight = 3
-    url = "https://godoc.org/github.com/MakeNowJust/memefish/pkg"
+    url = "https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg"
 [[menu.main]]
     name = "GitHub"
     weight = 3
-    url = "https://github.com/MakeNowJust/memefish"
+    url = "https://github.com/cloudspannerecosystem/memefish"

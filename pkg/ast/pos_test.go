@@ -3,7 +3,7 @@ package ast
 import (
 	"testing"
 
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 func TestTableAlternation_Position(t *testing.T) {

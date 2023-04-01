@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 // Node is base interface of Spanner SQL AST nodes.

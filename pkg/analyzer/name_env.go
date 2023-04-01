@@ -3,8 +3,8 @@ package analyzer
 import (
 	"fmt"
 
-	"github.com/MakeNowJust/memefish/pkg/char"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 type NameEnv map[string]*Name
