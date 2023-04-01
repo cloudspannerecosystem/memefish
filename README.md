@@ -14,7 +14,6 @@ title: README
 [Spanner SQL]: https://cloud.google.com/spanner/docs/query-syntax
 
 [![GoDoc Reference][godoc-badge]](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg)
-[![Coverage][codecov-badge]](https://codecov.io/gh/cloudspannerecosystem/memefish/branch/master)
 
 <table>
   <tr><th>ℹ️</th><td>
@@ -47,4 +46,3 @@ This project is originally developed under "Expert team Go Engineer (Backend)" o
 This project is licensed under MIT license.
 
 [godoc-badge]: https://img.shields.io/badge/godoc-reference-black.svg?style=for-the-badge&colorA=%235272B4&logo=go&logoColor=white
-[codecov-badge]: https://img.shields.io/codecov/c/github/cloudspannerecosystem/memefish/master.svg?style=for-the-badge&colorA=FF005E&logo=codecov&logoColor=white
