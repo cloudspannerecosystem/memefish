@@ -6,8 +6,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/MakeNowJust/memefish/pkg/char"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 type Lexer struct {

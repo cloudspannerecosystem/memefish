@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 type prec int

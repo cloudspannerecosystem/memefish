@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/MakeNowJust/memefish/pkg/ast"
-	"github.com/MakeNowJust/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/ast"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
 )
 
 type TypeInfo struct {

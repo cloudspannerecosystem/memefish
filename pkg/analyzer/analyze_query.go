@@ -3,7 +3,7 @@ package analyzer
 import (
 	"strings"
 
-	"github.com/MakeNowJust/memefish/pkg/ast"
+	"github.com/cloudspannerecosystem/memefish/pkg/ast"
 )
 
 func (a *Analyzer) analyzeQueryStatement(q *ast.QueryStatement) {

@@ -1,4 +1,4 @@
-module github.com/MakeNowJust/memefish
+module github.com/cloudspannerecosystem/memefish
 
 go 1.12
 

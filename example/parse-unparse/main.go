@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MakeNowJust/memefish/pkg/parser"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/parser"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 	"github.com/k0kubun/pp"
 )
 

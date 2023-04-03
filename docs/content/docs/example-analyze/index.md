@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MakeNowJust/memefish/pkg/analyzer"
-	"github.com/MakeNowJust/memefish/pkg/parser"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/analyzer"
+	"github.com/cloudspannerecosystem/memefish/pkg/parser"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 func main() {
@@ -73,4 +73,4 @@ func main() {
 
 ## Links
 
-- [analyzer - GoDoc](https://godoc.org/github.com/MakeNowJust/memefish/pkg/analyzer)
+- [analyzer - GoDoc](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg/analyzer)

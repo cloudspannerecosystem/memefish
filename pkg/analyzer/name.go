@@ -3,8 +3,8 @@ package analyzer
 import (
 	"fmt"
 
-	"github.com/MakeNowJust/memefish/pkg/ast"
-	"github.com/MakeNowJust/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish/pkg/ast"
+	"github.com/cloudspannerecosystem/memefish/pkg/token"
 )
 
 // Name represents typed names like table name and column name.

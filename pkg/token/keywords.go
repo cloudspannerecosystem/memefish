@@ -1,7 +1,7 @@
 package token
 
 import (
-	"github.com/MakeNowJust/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
 )
 
 var Keywords = []TokenKind{

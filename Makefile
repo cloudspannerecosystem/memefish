@@ -8,7 +8,7 @@ test:
 	@go test -cover \
 	         -coverprofile=cover.out \
 	         -covermode=count \
-	         -coverpkg=github.com/MakeNowJust/memefish/pkg/... \
+	         -coverpkg=github.com/cloudspannerecosystem/memefish/pkg/... \
 	         ./pkg/...
 	@echo go build ./example/... ./tools/...
 	@go build -o /dev/null ./example/... ./tools/...
@@ -37,8 +37,8 @@ fmt:
 	go fmt ./...
 
 .PHONY: update-result
-update-result: bin/richgo
-	bin/richgo test -v ./pkg/parser/parser_test.go -update
+update-result:
+	go test -v ./pkg/parser/parser_test.go -update
 
 .PHONY: update-mod
 update-mod:

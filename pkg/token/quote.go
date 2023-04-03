@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unicode"
 
-	"github.com/MakeNowJust/memefish/pkg/char"
+	"github.com/cloudspannerecosystem/memefish/pkg/char"
 )
 
 // QuoteSQLString returns quoted string with SQL string escaping.

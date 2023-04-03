@@ -13,8 +13,23 @@ title: README
 [Spanner]: https://cloud.google.com/spanner/
 [Spanner SQL]: https://cloud.google.com/spanner/docs/query-syntax
 
-[![GoDoc Reference][godoc-badge]](https://godoc.org/github.com/MakeNowJust/memefish/pkg)
-[![Coverage][codecov-badge]](https://codecov.io/gh/MakeNowJust/memefish/branch/master)
+[![GoDoc Reference][godoc-badge]](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg)
+
+<table>
+  <tr><th>ℹ️</th><td>
+
+Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github.com/makenowjust) to [cloudspannerecosystem](https://github.com/cloudspannerecosystem). You may need to migrate import paths from `github.com/MakeNowJust/memefish` to `github.com/cloudspannerecosystem/memefish` like:
+
+```diff
+ import (
+-	"github.com/MakeNowJust/memefish/pkg/parser"
++	"github.com/cloudspannerecosystem/memefish/pkg/parser"
+ )
+```
+
+  </td></tr>
+</table>
+
 
 ## Features
 
@@ -31,4 +46,3 @@ This project is originally developed under "Expert team Go Engineer (Backend)" o
 This project is licensed under MIT license.
 
 [godoc-badge]: https://img.shields.io/badge/godoc-reference-black.svg?style=for-the-badge&colorA=%235272B4&logo=go&logoColor=white
-[codecov-badge]: https://img.shields.io/codecov/c/github/MakeNowJust/memefish/master.svg?style=for-the-badge&colorA=FF005E&logo=codecov&logoColor=white
