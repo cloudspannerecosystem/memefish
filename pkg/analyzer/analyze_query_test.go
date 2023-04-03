@@ -1,7 +1,7 @@
 package analyzer_test
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -25,14 +25,14 @@ type TestDataColumn struct {
 
 func TestAnalyzeQueryStatement(t *testing.T) {
 	testdataPath := "./testdata/query"
-	files, err := ioutil.ReadDir(testdataPath)
+	files, err := os.ReadDir(testdataPath)
 	if err != nil {
 		t.Fatalf("error on reading testdata path: %v", err)
 	}
 
 	for _, file := range files {
 		t.Run(file.Name(), func(t *testing.T) {
-			bs, err := ioutil.ReadFile(filepath.Join(testdataPath, file.Name()))
+			bs, err := os.ReadFile(filepath.Join(testdataPath, file.Name()))
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
 			}
