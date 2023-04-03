@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -38,7 +37,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser
 		}
 	}
 
-	inputs, err := ioutil.ReadDir(inputPath)
+	inputs, err := os.ReadDir(inputPath)
 	if err != nil {
 		t.Fatalf("error on reading input path: %v", err)
 	}
@@ -48,7 +47,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			b, err := ioutil.ReadFile(filepath.Join(inputPath, in.Name()))
+			b, err := os.ReadFile(filepath.Join(inputPath, in.Name()))
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
 			}
@@ -81,14 +80,14 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *parser
 
 			if *update {
 				t.Log("update " + in.Name() + ".txt")
-				err = ioutil.WriteFile(filepath.Join(resultPath, in.Name()+".txt"), buf.Bytes(), 0666)
+				err = os.WriteFile(filepath.Join(resultPath, in.Name()+".txt"), buf.Bytes(), 0666)
 				if err != nil {
 					log.Fatalf("error on writing result file: %v", err)
 				}
 				return
 			}
 
-			expected, err := ioutil.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
+			expected, err := os.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
 			if err != nil {
 				t.Fatalf("error on reading result file: %v", err)
 			}

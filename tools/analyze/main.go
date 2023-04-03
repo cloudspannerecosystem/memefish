@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -116,7 +115,7 @@ type Param struct {
 }
 
 func loadParamFile(file string) (map[string]interface{}, error) {
-	bs, err := ioutil.ReadFile(file)
+	bs, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +175,7 @@ type ColumnSchema struct {
 }
 
 func loadSchemaFile(file string) (map[string]*analyzer.TableSchema, error) {
-	bs, err := ioutil.ReadFile(file)
+	bs, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
