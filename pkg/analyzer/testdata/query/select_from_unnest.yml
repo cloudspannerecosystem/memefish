@@ -1,9 +1,0 @@
----
-SQL: |
-  select *, x + y from unnest([struct<x int64, y int64>(1, 2), (3, 4)]) as t
-Results:
-  - Name: x
-    Type: INT64
-  - Name: y
-    Type: INT64
-  - Type: INT64

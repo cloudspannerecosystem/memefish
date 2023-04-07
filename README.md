@@ -15,6 +15,8 @@ title: README
 
 [![GoDoc Reference][godoc-badge]](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg)
 
+## News
+
 <table>
   <tr><th>ℹ️</th><td>
 
@@ -28,6 +30,11 @@ Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github
 ```
 
   </td></tr>
+
+  <tr><th>ℹ️</th><td>
+
+Since 2023/4/8, the layout of this repository has been changed. Now, the old `parser` package has been moved to the top of the repository as the new `memefish` package, and sub-packages in the `pkg` directory are placed under the top.
+  </td></tr>
 </table>
 
 
@@ -35,7 +42,6 @@ Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github
 
 - Parse Spanner SQL to AST
 - Generate Spanner SQL from AST (unparse)
-- Check expression type and semantics in SQL statement
 
 ## Notice
 

@@ -1,8 +1,0 @@
----
-SQL: |
-  select * from (select as struct 1 x, 2 y) t
-Results:
-  - Name: x
-    Type: INT64
-  - Name: y
-    Type: INT64
