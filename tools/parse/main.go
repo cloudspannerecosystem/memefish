@@ -14,11 +14,8 @@ import (
 var mode = flag.String("mode", "statement", "parsing mode")
 var logging = flag.Bool("logging", false, "enable log")
 
-func init() {
-	flag.Parse()
-}
-
 func main() {
+	flag.Parse()
 	if flag.NArg() < 1 {
 		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [-logging] <SQL query>")
 	}
