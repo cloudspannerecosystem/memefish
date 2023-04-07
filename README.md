@@ -20,7 +20,8 @@ title: README
 <table>
   <tr><th>ℹ️</th><td>
 
-Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github.com/makenowjust) to [cloudspannerecosystem](https://github.com/cloudspannerecosystem). You may need to migrate import paths from `github.com/MakeNowJust/memefish` to `github.com/cloudspannerecosystem/memefish` like:
+Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github.com/makenowjust) to [cloudspannerecosystem](https://github.com/cloudspannerecosystem).
+You may need to migrate import paths from `github.com/MakeNowJust/memefish` to `github.com/cloudspannerecosystem/memefish` like:
 
 ```diff
  import (
@@ -34,9 +35,18 @@ Since 2023/4/1, this repository has been moved from [MakeNowJust](https://github
   <tr><th>ℹ️</th><td>
 
 Since 2023/4/8, the layout of this repository has been changed. Now, the old `parser` package has been moved to the top of the repository as the new `memefish` package, and sub-packages in the `pkg` directory are placed under the top.
+You may need to migrate import paths like:
+
+```diff
+ import (
+-	"github.com/cloudspannerecosystem/memefish/pkg/token"
+-	"github.com/cloudspannerecosystem/memefish/pkg/parser"
++	parser "github.com/cloudspannerecosystem/memefish"
++	"github.com/cloudspannerecosystem/memefish/token"
+ )
+```
   </td></tr>
 </table>
-
 
 ## Features
 
