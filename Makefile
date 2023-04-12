@@ -4,14 +4,14 @@ test:
 	@echo "  (x x) < memefish: test"
 	@echo "  /|||\\"
 	@echo
-	@echo go test ./pkg/...
+	@echo go test ./...
 	@go test -cover \
 	         -coverprofile=cover.out \
 	         -covermode=count \
-	         -coverpkg=github.com/cloudspannerecosystem/memefish/pkg/... \
-	         ./pkg/...
-	@echo go build ./example/... ./tools/...
-	@go build -o /dev/null ./example/... ./tools/...
+	         -coverpkg=github.com/cloudspannerecosystem/memefish/... \
+	         ./...
+	@echo go build ./examples/... ./tools/...
+	@go build -o /dev/null ./examples/... ./tools/...
 
 .PHONY: lint
 lint: bin/golangci-lint
@@ -38,7 +38,7 @@ fmt:
 
 .PHONY: update-result
 update-result:
-	go test -v ./pkg/parser/parser_test.go -update
+	go test -v ./parser_test.go -update
 
 .PHONY: update-mod
 update-mod:

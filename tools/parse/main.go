@@ -5,20 +5,17 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cloudspannerecosystem/memefish/pkg/ast"
-	"github.com/cloudspannerecosystem/memefish/pkg/parser"
-	"github.com/cloudspannerecosystem/memefish/pkg/token"
+	"github.com/cloudspannerecosystem/memefish"
+	"github.com/cloudspannerecosystem/memefish/ast"
+	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/k0kubun/pp"
 )
 
 var mode = flag.String("mode", "statement", "parsing mode")
 var logging = flag.Bool("logging", false, "enable log")
 
-func init() {
-	flag.Parse()
-}
-
 func main() {
+	flag.Parse()
 	if flag.NArg() < 1 {
 		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [-logging] <SQL query>")
 	}
@@ -27,8 +24,8 @@ func main() {
 
 	logf("query: %q", query)
 
-	p := &parser.Parser{
-		Lexer: &parser.Lexer{
+	p := &memefish.Parser{
+		Lexer: &memefish.Lexer{
 			File: &token.File{FilePath: "", Buffer: query},
 		},
 	}

@@ -16,8 +16,7 @@ summaryLength = 30
 [params]
   homepage_button_link = "/docs"
   homepage_button_text = "Read The Docs"
-  homepage_intro = "the foundation to analyze Spanner SQL"
-  homepage_image = "/images/terminal.svg"
+  homepage_intro = "Spanner SQL parser for Go"
 
   [params.logo]
     mobile = "/images/memefish.svg"
@@ -27,14 +26,10 @@ summaryLength = 30
     name = "Docs"
     weight = 1
     url  = "/docs/"
-# [[menu.main]]
-#     name = "Demo"
-#     weight = 2
-#     url = "/demo/"
 [[menu.main]]
     name = "GoDoc"
     weight = 3
-    url = "https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg"
+    url = "https://pkg.go.dev/github.com/cloudspannerecosystem/memefish"
 [[menu.main]]
     name = "GitHub"
     weight = 3

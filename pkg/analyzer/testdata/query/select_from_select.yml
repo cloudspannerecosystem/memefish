@@ -1,9 +1,0 @@
----
-SQL: |
-  select *
-  from (select 1 as x, 2 as y)
-Results:
-  - Name: x
-    Type: INT64
-  - Name: y
-    Type: INT64

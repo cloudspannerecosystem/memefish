@@ -1,8 +1,0 @@
----
-SQL: |
-  select struct<x int64, y int64>(1, 2).*
-Results:
-  - Name: x
-    Type: INT64
-  - Name: y
-    Type: INT64
