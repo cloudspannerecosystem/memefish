@@ -30,7 +30,8 @@ You may need to migrate import paths from `github.com/MakeNowJust/memefish` to `
 
   <tr><th>ℹ️</th><td>
 
-Since 2023/4/8, the layout of this repository has been changed. Now, the old `parser` package has been moved to the top of the repository as the new `memefish` package, and sub-packages in the `pkg` directory are placed under the top.
+Since 2023/4/12, the layout of this repository has been changed.
+Now, the old `parser` package has been moved to the top of the repository as the new `memefish` package, and sub-packages in the `pkg` directory are placed under the top.
 You may need to migrate import paths like:
 
 ```diff
@@ -41,6 +42,10 @@ You may need to migrate import paths like:
 +	"github.com/cloudspannerecosystem/memefish/token"
  )
 ```
+
+In addition, we removed the `analyzer` package from the repository.
+Thus, if you want to use the old `analyzer` package, please pin the dependency by the commit hash before this change.
+
   </td></tr>
 </table>
 
