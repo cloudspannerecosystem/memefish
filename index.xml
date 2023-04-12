@@ -20,14 +20,5 @@
       <description>&lt;p&gt;This example shows how to parse a Spanner SQL and unparse it.&lt;/p&gt;</description>
     </item>
     
-    <item>
-      <title>Example: analyze</title>
-      <link>https://cloudspannerecosystem.github.io/memefish/docs/example-analyze/</link>
-      <pubDate>Mon, 03 Feb 2020 00:00:00 +0900</pubDate>
-      
-      <guid>https://cloudspannerecosystem.github.io/memefish/docs/example-analyze/</guid>
-      <description>&lt;p&gt;This example shows how to analyze a Spanner SQL after parsing.&lt;/p&gt;</description>
-    </item>
-    
   </channel>
 </rss>
