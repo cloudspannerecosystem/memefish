@@ -1,19 +1,15 @@
----
-title: README
----
-
 <p align="center">
   <img src="images/memefish.png" width="220px">
 </p>
 
 # méméfish
 
-> méméfish is the foundation to analyze [Spanner][] [SQL][Spanner SQL].
+> méméfish is the [Spanner][] [SQL][Spanner SQL] parser for Go.
 
 [Spanner]: https://cloud.google.com/spanner/
 [Spanner SQL]: https://cloud.google.com/spanner/docs/query-syntax
 
-[![GoDoc Reference][godoc-badge]](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg)
+[![GoDoc Reference][godoc-badge]](https://pkg.go.dev/github.com/cloudspannerecosystem/memefish)
 
 ## News
 

@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cloudspannerecosystem/memefish/pkg/parser"
-	"github.com/cloudspannerecosystem/memefish/pkg/token"
+	parser "github.com/cloudspannerecosystem/memefish"
+	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/k0kubun/pp"
 )
 
@@ -49,6 +49,6 @@ func main() {
 
 ## Links
 
-- [ast - GoDoc](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg/ast)
-- [parser - GoDoc](https://godoc.org/github.com/cloudspannerecosystem/memefish/pkg/parser)
+- [memefish - GoDoc](https://pkg.go.dev/github.com/cloudspannerecosystem/memefish)
+- [ast - GoDoc](https://pkg.go.dev/github.com/cloudspannerecosystem/memefish/ast)
 - [Query Syntax |  Cloud Spanner  |  Google Cloud](https://cloud.google.com/spanner/docs/query-syntax)
