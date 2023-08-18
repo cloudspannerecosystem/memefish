@@ -24,7 +24,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *GenerateArray, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -558,6 +558,15 @@ func (e *ExistsSubQuery) SQL() string {
 		sql += " " + e.Hint.SQL() + " "
 	}
 	sql += "(" + e.Query.SQL() + ")"
+	return sql
+}
+
+func (e *GenerateArray) SQL() string {
+	sql := "GENERATE_ARRAY(" + e.StartValue.SQL() + ", " + e.EndValue.SQL()
+	if e.StepValue != nil {
+		sql += ", " + e.StepValue.SQL()
+	}
+	sql += ")"
 	return sql
 }
 

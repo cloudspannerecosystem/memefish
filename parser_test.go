@@ -312,3 +312,24 @@ func ExampleParser_ParseDMLs() {
 	// INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
 	// DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;
 }
+
+func ExampleParser_ParseGenerateArray() {
+	p := &memefish.Parser{
+		Lexer: &memefish.Lexer{
+			File: &token.File{
+				Buffer: heredoc.Doc(`
+					GENERATE_ARRAY(0, 10)
+				`),
+			},
+		},
+	}
+
+	expr, err := p.ParseExpr()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%s;\n", expr.SQL())
+	// Output:
+	// GENERATE_ARRAY(0, 10);
+}

@@ -61,6 +61,7 @@ func TestExpr(t *testing.T) {
 	Expr(&ScalarSubQuery{}).isExpr()
 	Expr(&ArraySubQuery{}).isExpr()
 	Expr(&ExistsSubQuery{}).isExpr()
+	Expr(&GenerateArray{}).isExpr()
 	Expr(&Param{}).isExpr()
 	Expr(&Ident{}).isExpr()
 	Expr(&Path{}).isExpr()

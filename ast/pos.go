@@ -361,6 +361,9 @@ func (a *ArraySubQuery) End() token.Pos { return a.Rparen + 1 }
 func (e *ExistsSubQuery) Pos() token.Pos { return e.Exists }
 func (e *ExistsSubQuery) End() token.Pos { return e.Rparen + 1 }
 
+func (e *GenerateArray) Pos() token.Pos { return e.GenerateArray }
+func (e *GenerateArray) End() token.Pos { return e.Rparen + 1 }
+
 // ================================================================================
 //
 // Literal

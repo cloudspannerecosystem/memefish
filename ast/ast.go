@@ -100,6 +100,7 @@ func (ParenExpr) isExpr()        {}
 func (ScalarSubQuery) isExpr()   {}
 func (ArraySubQuery) isExpr()    {}
 func (ExistsSubQuery) isExpr()   {}
+func (GenerateArray) isExpr()    {}
 func (Param) isExpr()            {}
 func (Ident) isExpr()            {}
 func (Path) isExpr()             {}
@@ -997,6 +998,21 @@ type ExistsSubQuery struct {
 
 	Hint  *Hint
 	Query QueryExpr
+}
+
+// GenerateArray is GENERATE_ARRAY call expression node.
+//
+//	GENERATE_ARRAY({{.Start | sql}}, {{.End | sql}}, {{.Step | sqlOpt}})
+type GenerateArray struct {
+	// pos = GenerateArray
+	// end = Rparen + 1
+
+	GenerateArray token.Pos // position of "GENERATE_ARRAY" keyword
+	Rparen        token.Pos // position of ")"
+
+	StartValue IntValue
+	EndValue   IntValue
+	StepValue  IntValue // optional
 }
 
 // ================================================================================
