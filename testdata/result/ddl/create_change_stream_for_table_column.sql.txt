@@ -1,0 +1,36 @@
+--- create_change_stream_for_table_column.sql
+CREATE CHANGE STREAM change_stream_name FOR table_name(column)
+
+--- AST
+&ast.CreateChangeStream{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 21,
+    NameEnd: 39,
+    Name:    "change_stream_name",
+  },
+  Watch: []*ast.ChangeStreamWatch{
+    &ast.ChangeStreamWatch{
+      TableNamePos: 44,
+      TableName:    &ast.Ident{
+        NamePos: 44,
+        NameEnd: 54,
+        Name:    "table_name",
+      },
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 55,
+          NameEnd: 61,
+          Name:    "column",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+  },
+  WatchAll: false,
+  Options:  []ast.Expr(nil),
+}
+
+--- SQL
+CREATE CHANGE STREAM change_stream_name FOR table_name(column)

@@ -19,21 +19,24 @@ type Statement interface {
 	isStatement()
 }
 
-func (QueryStatement) isStatement() {}
-func (CreateDatabase) isStatement() {}
-func (CreateTable) isStatement()    {}
-func (CreateView) isStatement()     {}
-func (CreateIndex) isStatement()    {}
-func (CreateRole) isStatement()     {}
-func (AlterTable) isStatement()     {}
-func (DropTable) isStatement()      {}
-func (DropIndex) isStatement()      {}
-func (DropRole) isStatement()       {}
-func (Insert) isStatement()         {}
-func (Delete) isStatement()         {}
-func (Update) isStatement()         {}
-func (Grant) isStatement()          {}
-func (Revoke) isStatement()         {}
+func (QueryStatement) isStatement()     {}
+func (CreateDatabase) isStatement()     {}
+func (CreateTable) isStatement()        {}
+func (CreateView) isStatement()         {}
+func (CreateIndex) isStatement()        {}
+func (CreateRole) isStatement()         {}
+func (CreateChangeStream) isStatement() {}
+func (AlterTable) isStatement()         {}
+func (AlterChangeStream) isStatement()  {}
+func (DropTable) isStatement()          {}
+func (DropIndex) isStatement()          {}
+func (DropRole) isStatement()           {}
+func (DropChangeStream) isStatement()   {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -173,17 +176,20 @@ type DDL interface {
 	isDDL()
 }
 
-func (CreateDatabase) isDDL() {}
-func (CreateTable) isDDL()    {}
-func (CreateView) isDDL()     {}
-func (AlterTable) isDDL()     {}
-func (DropTable) isDDL()      {}
-func (CreateIndex) isDDL()    {}
-func (DropIndex) isDDL()      {}
-func (CreateRole) isDDL()     {}
-func (DropRole) isDDL()       {}
-func (Grant) isDDL()          {}
-func (Revoke) isDDL()         {}
+func (CreateDatabase) isDDL()     {}
+func (CreateTable) isDDL()        {}
+func (CreateView) isDDL()         {}
+func (AlterTable) isDDL()         {}
+func (DropTable) isDDL()          {}
+func (CreateIndex) isDDL()        {}
+func (DropIndex) isDDL()          {}
+func (CreateRole) isDDL()         {}
+func (DropRole) isDDL()           {}
+func (Grant) isDDL()              {}
+func (Revoke) isDDL()             {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 
 // TableAlternation represents ALTER TABLE action.
 type TableAlternation interface {
@@ -1489,6 +1495,39 @@ type AlterTable struct {
 	TableAlternation TableAlternation
 }
 
+// AlterChangeStream is ALTER CHANGE STREAM statement node.
+//
+// ALTER CHANGE STREAM {{.Name | sql}}
+// {{ if or len(.Watch) > 0 .WatchAll }}
+// SET FOR {{ .WatchAll }}ALL{{ else }}{{ .Watch | sqlJoin ","}}{{ end }}
+// {{ end }}
+// {{ if  .DropAll }}
+// DROP FOR ALL
+// {{ end }}
+// {{ if len(.Options) > 0 }}
+// SET OPTIONS {{ .Options | sqlJoin ","}}
+// {{ end }}
+type AlterChangeStream struct {
+	// pos = Alter
+	// end = {{ if .Options }}
+	//          .Options.end
+	//       {{ else }}
+	//         {{ if len(.Watch) > 0 }}
+	//           .Watch[len(.Watch)-1].end
+	//         {{ else if .WatchAll }}
+	//           "ALL".end
+	//         {{ else }}
+	//           .Name.end
+	//         {{ end }}
+	//       {{ end }}
+	Alter    token.Pos // position of "ALTER" keyword
+	Name     *Ident
+	Watch    []*ChangeStreamWatch
+	WatchAll bool
+	DropAll  bool
+	Options  []Expr
+}
+
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
 //	ADD COLUMN {{.Column | sql}}
@@ -1662,6 +1701,49 @@ type CreateRole struct {
 	Name   *Ident
 }
 
+// CreateChangeStream is CREATE CHANGE STREAM statement node.
+//
+// CREATE CHANGE STREAM {{.Name | sql}}
+// {{ if or len(.Watch) > 0 .WatchAll }}
+// FOR {{ .WatchAll }}ALL{{ else }}{{ .Watch | sqlJoin ","}}{{ end }}
+// {{ end }}
+// {{ if .Options }}
+// OPTIONS {{ .Options | sqlJoin ","}}
+// {{ end }}
+type CreateChangeStream struct {
+	// pos = Create
+	// end = {{ if .Options }}
+	//          .Options.end
+	//       {{ else }}
+	//         {{ if len(.Watch) > 0 }}
+	//           .Watch[len(.Watch)-1].end
+	//         {{ else if .WatchAll }}
+	//           "ALL".end
+	//         {{ else }}
+	//           .Name.end
+	//         {{ end }}
+	//       {{ end }}
+	Create   token.Pos // position of "CREATE" keyword
+	Name     *Ident
+	Watch    []*ChangeStreamWatch
+	WatchAll bool
+	Options  []Expr
+}
+
+// Watch is tables and columns that are watched by change streams.
+//
+//	{{.TableName}} {{if .Columns}}({{ .Columns | sqlJoin ","}}){{end}}
+type ChangeStreamWatch struct {
+	// pos = TableNamePos
+	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}.TableName.end{{end}}
+
+	TableNamePos   token.Pos // position of this watch definition
+	TableName      *Ident
+	Columns        []*Ident
+	Lparen, Rparen token.Pos // position of "(" and ")"
+
+}
+
 // Storing is STORING clause in CREATE INDEX.
 //
 //	STORING ({{.Columns | sqlJoin ","}})
@@ -1703,6 +1785,17 @@ type DropIndex struct {
 //
 //	DROP ROLE {{.Name | sql}}
 type DropRole struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+	Name *Ident
+}
+
+// DropChangeStream is DROP CHANGE STREAM  statement node.
+//
+//	DROP CHANGE STREAM {{.Name | sql}}
+type DropChangeStream struct {
 	// pos = Drop
 	// end = Name.end
 

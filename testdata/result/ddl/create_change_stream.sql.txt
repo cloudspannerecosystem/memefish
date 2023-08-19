@@ -1,0 +1,18 @@
+--- create_change_stream.sql
+CREATE CHANGE STREAM change_stream_name
+
+--- AST
+&ast.CreateChangeStream{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 21,
+    NameEnd: 39,
+    Name:    "change_stream_name",
+  },
+  Watch:    []*ast.ChangeStreamWatch(nil),
+  WatchAll: false,
+  Options:  []ast.Expr(nil),
+}
+
+--- SQL
+CREATE CHANGE STREAM change_stream_name

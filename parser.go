@@ -1952,11 +1952,23 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			p.nextToken()
+			p.expectKeywordLike("STREAM")
+			return p.parseCreateChangeStream(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
 		p.nextToken()
-		return p.parseAlterTable(pos)
+		switch {
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			p.nextToken()
+			p.expectKeywordLike("STREAM")
+			return p.parseAlterChangeStream(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
 		p.nextToken()
 		switch {
@@ -1966,8 +1978,12 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			p.nextToken()
+			p.expectKeywordLike("STREAM")
+			return p.parseDropChangeStream(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("GRANT"):
 		p.nextToken()
 		return p.parseGrant(pos)
@@ -2485,6 +2501,111 @@ func (p *Parser) parsePrivileges() []*ast.Privilege {
 	return privs
 }
 
+func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream {
+	name := p.parseIdent()
+	cs := &ast.CreateChangeStream{
+		Create: pos,
+		Name:   name,
+	}
+	if p.Token.Kind == "FOR" {
+		p.nextToken()
+		watch, watchAllTables := p.parseChangeStreamWatches()
+		cs.Watch = watch
+		cs.WatchAll = watchAllTables
+	}
+	if p.Token.IsKeywordLike("OPTIONS") {
+		p.nextToken()
+		cs.Options = p.parseChangeStreamOptions()
+	}
+	return cs
+
+}
+
+func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
+	name := p.parseIdent()
+	cs := &ast.AlterChangeStream{
+		Alter: pos,
+		Name:  name,
+	}
+	switch {
+	case p.sniffTokens("SET", "FOR"):
+		watch, watchAllTables := p.parseChangeStreamWatches()
+		cs.Watch = watch
+		cs.WatchAll = watchAllTables
+	case p.sniffTokens("DROP", "FOR", "ALL"):
+		cs.DropAll = true
+	case p.sniffTokens("SET", "OPTIONS"):
+		cs.Options = p.parseChangeStreamOptions()
+	default:
+		p.panicfAtToken(&p.Token, "expected SET FOR or DROP FOR ALL or SET OPTIONS")
+	}
+	return cs
+}
+func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
+	name := p.parseIdent()
+	return &ast.DropChangeStream{
+		Drop: pos,
+		Name: name,
+	}
+
+}
+
+func (p *Parser) parseChangeStreamWatches() ([]*ast.ChangeStreamWatch, bool) {
+	if p.Token.Kind == "ALL" {
+		p.nextToken()
+		return nil, true
+	}
+	watches := []*ast.ChangeStreamWatch{}
+	for {
+		tname := p.parseIdent()
+		pos := tname.NamePos
+		watch := ast.ChangeStreamWatch{
+			TableName:    tname,
+			TableNamePos: pos,
+		}
+
+		if p.Token.Kind == "(" {
+			p.nextToken()
+			watch.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
+		} else {
+			p.nextToken()
+			// watch.WatchAllCols = true
+		}
+
+		watches = append(watches, &watch)
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		break
+	}
+	return watches, false
+
+}
+
+// Parse CHANGE STREAM OPTIONS.
+// We parse any expressions in OPTIONS. even if tokens includes unsupported expressions.
+// This is for the key, value which will supported in the future.
+// We don't need to modify this code for them.
+func (p *Parser) parseChangeStreamOptions() []ast.Expr {
+	p.expect("(")
+	exprs := []ast.Expr{}
+	for {
+		exprs = append(exprs, p.parseExpr())
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		if p.Token.Kind == ")" {
+			p.nextToken()
+			break
+		}
+		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
+	}
+
+	return exprs
+}
+
 func (p *Parser) parseCommaIdentList() []*ast.Ident {
 	ids := []*ast.Ident{}
 	for p.Token.Kind != token.TokenEOF {
@@ -2591,7 +2712,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 }
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
-	p.expectKeywordLike("TABLE")
+	p.nextToken()
 	name := p.parseIdent()
 
 	var alternation ast.TableAlternation
@@ -3226,6 +3347,18 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 		}
 	}
 	return id
+}
+
+func (p *Parser) sniffTokens(want ...string) bool {
+	origlex := p.Lexer.Clone()
+	for _, w := range want {
+		if string(p.Token.Kind) != w && !p.Token.IsKeywordLike(w) {
+			p.Lexer = origlex
+			return false
+		}
+		p.nextToken()
+	}
+	return true
 }
 
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {

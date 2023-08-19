@@ -659,6 +659,23 @@ func (c *CreateRole) End() token.Pos {
 	return c.Name.End()
 }
 
+func (c *CreateChangeStream) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateChangeStream) End() token.Pos {
+	if len(c.Options) > 0 {
+		return c.Options[len(c.Options)-1].End() + 1
+	}
+	if len(c.Watch) > 0 {
+		return c.Watch[len(c.Watch)-1].Rparen + 1
+	}
+	if c.WatchAll {
+		return c.Name.End() + token.Pos(len("FOR ALL"))
+	}
+	return c.Name.End()
+}
+
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 
@@ -670,6 +687,26 @@ func (d *DropIndex) End() token.Pos { return d.Name.End() }
 
 func (d *DropRole) Pos() token.Pos { return d.Drop }
 func (d *DropRole) End() token.Pos { return d.Name.End() }
+
+func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
+func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
+
+func (a *AlterChangeStream) Pos() token.Pos { return a.Alter }
+func (a *AlterChangeStream) End() token.Pos {
+	if len(a.Options) > 0 {
+		return a.Options[len(a.Options)-1].End() + 1
+	}
+	if len(a.Watch) > 0 {
+		return a.Watch[len(a.Watch)-1].Rparen + 1
+	}
+	if a.WatchAll {
+		return a.Name.End() + token.Pos(len("SET FOR ALL"))
+	}
+	if a.DropAll {
+		return a.Name.End() + token.Pos(len("DROP FOR ALL"))
+	}
+	return a.Name.End()
+}
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
 func (g *Grant) End() token.Pos { return g.ToRoleNames[len(g.ToRoleNames)-1].End() }

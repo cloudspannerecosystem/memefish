@@ -1,0 +1,15 @@
+--- drop_change_stream.sql
+DROP CHANGE STREAM change_stream_name
+
+--- AST
+&ast.DropChangeStream{
+  Drop: 0,
+  Name: &ast.Ident{
+    NamePos: 19,
+    NameEnd: 37,
+    Name:    "change_stream_name",
+  },
+}
+
+--- SQL
+DROP CHANGE STREAM change_stream_name

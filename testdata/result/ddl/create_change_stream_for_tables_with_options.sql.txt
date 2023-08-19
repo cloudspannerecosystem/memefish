@@ -1,0 +1,91 @@
+--- create_change_stream_for_tables_with_options.sql
+CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2)
+OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
+
+--- AST
+&ast.CreateChangeStream{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 21,
+    NameEnd: 39,
+    Name:    "change_stream_name",
+  },
+  Watch: []*ast.ChangeStreamWatch{
+    &ast.ChangeStreamWatch{
+      TableNamePos: 44,
+      TableName:    &ast.Ident{
+        NamePos: 44,
+        NameEnd: 55,
+        Name:    "table_name1",
+      },
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 56,
+          NameEnd: 63,
+          Name:    "column1",
+        },
+        &ast.Ident{
+          NamePos: 65,
+          NameEnd: 72,
+          Name:    "column2",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+    &ast.ChangeStreamWatch{
+      TableNamePos: 75,
+      TableName:    &ast.Ident{
+        NamePos: 75,
+        NameEnd: 86,
+        Name:    "table_name2",
+      },
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 87,
+          NameEnd: 94,
+          Name:    "column1",
+        },
+        &ast.Ident{
+          NamePos: 96,
+          NameEnd: 103,
+          Name:    "column2",
+        },
+      },
+      Lparen: 0,
+      Rparen: 0,
+    },
+  },
+  WatchAll: false,
+  Options:  []ast.Expr{
+    &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 113,
+        NameEnd: 129,
+        Name:    "retention_period",
+      },
+      Right: &ast.StringLiteral{
+        ValuePos: 132,
+        ValueEnd: 136,
+        Value:    "1d",
+      },
+    },
+    &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 138,
+        NameEnd: 156,
+        Name:    "value_capture_type",
+      },
+      Right: &ast.StringLiteral{
+        ValuePos: 159,
+        ValueEnd: 168,
+        Value:    "NEW_ROW",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2) OPTIONS (retention_period = "1d", value_capture_type = "NEW_ROW")

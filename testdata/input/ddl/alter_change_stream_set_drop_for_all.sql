@@ -1,0 +1,1 @@
+ALTER CHANGE STREAM change_stream_name DROP FOR ALL
