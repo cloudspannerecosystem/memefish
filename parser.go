@@ -2565,7 +2565,6 @@ func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
 			watchTable.Rparen = p.Token.Pos
 		} else {
 			p.nextToken()
-			// watch.WatchAllCols = true
 		}
 
 		csw.WatchTables = append(csw.WatchTables, &watchTable)

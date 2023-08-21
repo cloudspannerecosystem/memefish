@@ -735,7 +735,12 @@ func (c *ChangeStreamWatch) End() token.Pos {
 	if len(c.WatchTables) == 0 {
 		return c.SetForAllPos + token.Pos(len("ALL"))
 	}
-	return c.WatchTables[len(c.WatchTables)-1].Rparen + token.Pos(len(")"))
+	last := c.WatchTables[len(c.WatchTables)-1]
+	if len(last.Columns) == 0 {
+		return last.TableName.End()
+	}
+
+	return last.Rparen + token.Pos(len(")"))
 }
 
 // ================================================================================
