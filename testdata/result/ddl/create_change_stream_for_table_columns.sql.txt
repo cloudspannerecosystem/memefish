@@ -9,30 +9,33 @@ CREATE CHANGE STREAM change_stream_name FOR table_name(column1, column2)
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: []*ast.ChangeStreamWatch{
-    &ast.ChangeStreamWatch{
-      TableName: &ast.Ident{
-        NamePos: 44,
-        NameEnd: 54,
-        Name:    "table_name",
-      },
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 55,
-          NameEnd: 62,
-          Name:    "column1",
+  Watch: &ast.ChangeStreamWatch{
+    WatchAll:    false,
+    WatchTables: []*ast.ChangeStreamWatchTable{
+      &ast.ChangeStreamWatchTable{
+        TableName: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 54,
+          Name:    "table_name",
         },
-        &ast.Ident{
-          NamePos: 64,
-          NameEnd: 71,
-          Name:    "column2",
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 55,
+            NameEnd: 62,
+            Name:    "column1",
+          },
+          &ast.Ident{
+            NamePos: 64,
+            NameEnd: 71,
+            Name:    "column2",
+          },
         },
+        Rparen: 73,
       },
-      Rparen: 0,
     },
+    SetForAllPos: 0,
   },
-  WatchAll: false,
-  Options:  []ast.Expr(nil),
+  Options: (*ast.ChangeStreamOptions)(nil),
 }
 
 --- SQL

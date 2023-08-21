@@ -1498,34 +1498,39 @@ type AlterTable struct {
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
 //
 // ALTER CHANGE STREAM {{.Name | sql}}
-// {{ if or len(.Watch) > 0 .WatchAll }}
-// SET FOR {{ .WatchAll }}ALL{{ else }}{{ .Watch | sqlJoin ","}}{{ end }}
+// {{ if .Watch }}
+// SET FOR {{ if .Watch.WatchAll }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
 // {{ end }}
-// {{ if  .DropAll }}
+// {{ if .DropAll }}
 // DROP FOR ALL
 // {{ end }}
-// {{ if len(.Options) > 0 }}
-// SET OPTIONS {{ .Options | sqlJoin ","}}
+// {{ if .Options }}
+// SET OPTIONS ({{ .Options.Expr | sqlJoin ","}})
 // {{ end }}
 type AlterChangeStream struct {
 	// pos = Alter
-	// end = {{ if .Options }}
-	//          .Options.end
-	//       {{ else }}
-	//         {{ if len(.Watch) > 0 }}
-	//           .Watch[len(.Watch)-1].end
-	//         {{ else if .WatchAll }}
-	//           "ALL".end
-	//         {{ else }}
+	// end = if .Options {
+	//          .Options.Rparen + 1
+	//       }
+	//       if .Watch {
+	//         if .Watch.WatchAll {
+	//           "SET FOR ALL".end
+	//         }
+	//         if len(.Watch.WatchTables) > 0 {
+	//           .Watch.WatchTables[len(.Watch.WatchTables)-1].Rparen + 1
+	//         } else {
 	//           .Name.end
-	//         {{ end }}
-	//       {{ end }}
-	Alter    token.Pos // position of "ALTER" keyword
-	Name     *Ident
-	Watch    []*ChangeStreamWatch
-	WatchAll bool
-	DropAll  bool
-	Options  []Expr
+	//         }
+	//       }
+	//       if .DropAll {
+	//         "DROP FOR All".end
+	//       }
+	Alter      token.Pos // position of "ALTER" keyword
+	Name       *Ident
+	Watch      *ChangeStreamWatch
+	DropAll    bool
+	DropAllPos token.Pos // position of (DROP FOR) "ALL" keyword
+	Options    *ChangeStreamOptions
 }
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
@@ -1704,43 +1709,48 @@ type CreateRole struct {
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
 // CREATE CHANGE STREAM {{.Name | sql}}
-// {{ if or len(.Watch) > 0 .WatchAll }}
-// FOR {{ .WatchAll }}ALL{{ else }}{{ .Watch | sqlJoin ","}}{{ end }}
+// {{ if .Watch }}
+// FOR {{ .Watch.WatchAll }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
 // {{ end }}
 // {{ if .Options }}
-// OPTIONS {{ .Options | sqlJoin ","}}
+// OPTIONS {{ .Options.Exprs | sqlJoin ","}}
 // {{ end }}
 type CreateChangeStream struct {
 	// pos = Create
-	// end = {{ if .Options }}
-	//          .Options.end
-	//       {{ else }}
-	//         {{ if len(.Watch) > 0 }}
-	//           .Watch[len(.Watch)-1].end
-	//         {{ else if .WatchAll }}
+	// end = if .Options {
+	//          .Options.Rparen + 1
+	//       }
+	//       if .Watch {
+	//         if .Watch.WatchAll {
 	//           "ALL".end
-	//         {{ else }}
+	//         }
+	//         if len(.Watch.WatchTables) > 0 {
+	//           .Watch.WatchTables[len(.Watch.WatchTables)-1].Rparen + 1
+	//         } else {
 	//           .Name.end
-	//         {{ end }}
-	//       {{ end }}
-	Create   token.Pos // position of "CREATE" keyword
-	Name     *Ident
-	Watch    []*ChangeStreamWatch
-	WatchAll bool
-	Options  []Expr
+	//         }
+	//       }
+	Create  token.Pos // position of "CREATE" keyword
+	Name    *Ident
+	Watch   *ChangeStreamWatch
+	Options *ChangeStreamOptions
 }
 
-// Watch is tables and columns that are watched by change streams.
-//
-//	{{.TableName}} {{if .Columns}}({{ .Columns | sqlJoin ","}}){{end}}
 type ChangeStreamWatch struct {
-	// pos = TableNamePos
-	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}.TableName.end{{end}}
+	WatchAll     bool
+	WatchTables  []*ChangeStreamWatchTable
+	SetForAllPos token.Pos // position of (SET FOR) "ALL" keyword
+}
 
+type ChangeStreamWatchTable struct {
 	TableName *Ident
 	Columns   []*Ident
 	Rparen    token.Pos // position of ")"
+}
 
+type ChangeStreamOptions struct {
+	Exprs  []Expr
+	Rparen token.Pos // position of ")"
 }
 
 // Storing is STORING clause in CREATE INDEX.

@@ -2509,9 +2509,7 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 	}
 	if p.Token.Kind == "FOR" {
 		p.nextToken()
-		watch, watchAllTables := p.parseChangeStreamWatches()
-		cs.Watch = watch
-		cs.WatchAll = watchAllTables
+		cs.Watch = p.parseChangeStreamWatch()
 	}
 	if p.Token.IsKeywordLike("OPTIONS") {
 		p.nextToken()
@@ -2529,9 +2527,7 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 	}
 	switch {
 	case p.sniffTokens("SET", "FOR"):
-		watch, watchAllTables := p.parseChangeStreamWatches()
-		cs.Watch = watch
-		cs.WatchAll = watchAllTables
+		cs.Watch = p.parseChangeStreamWatch()
 	case p.sniffTokens("DROP", "FOR", "ALL"):
 		cs.DropAll = true
 	case p.sniffTokens("SET", "OPTIONS"):
@@ -2550,34 +2546,37 @@ func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 
 }
 
-func (p *Parser) parseChangeStreamWatches() ([]*ast.ChangeStreamWatch, bool) {
+func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
+	csw := &ast.ChangeStreamWatch{}
 	if p.Token.Kind == "ALL" {
 		p.nextToken()
-		return nil, true
+		csw.WatchAll = true
+		csw.SetForAllPos = p.Token.Pos
+		return csw
 	}
-	watches := []*ast.ChangeStreamWatch{}
 	for {
 		tname := p.parseIdent()
-		watch := ast.ChangeStreamWatch{
+		watchTable := ast.ChangeStreamWatchTable{
 			TableName: tname,
 		}
 
 		if p.Token.Kind == "(" {
 			p.nextToken()
-			watch.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
+			watchTable.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
+			watchTable.Rparen = p.Token.Pos
 		} else {
 			p.nextToken()
 			// watch.WatchAllCols = true
 		}
 
-		watches = append(watches, &watch)
+		csw.WatchTables = append(csw.WatchTables, &watchTable)
 		if p.Token.Kind == "," {
 			p.nextToken()
 			continue
 		}
 		break
 	}
-	return watches, false
+	return csw
 
 }
 
@@ -2585,23 +2584,24 @@ func (p *Parser) parseChangeStreamWatches() ([]*ast.ChangeStreamWatch, bool) {
 // We parse any expressions in OPTIONS. even if tokens includes unsupported expressions.
 // This is for the key, value which will supported in the future.
 // We don't need to modify this code for them.
-func (p *Parser) parseChangeStreamOptions() []ast.Expr {
+func (p *Parser) parseChangeStreamOptions() *ast.ChangeStreamOptions {
 	p.expect("(")
-	exprs := []ast.Expr{}
+	cso := &ast.ChangeStreamOptions{}
 	for {
-		exprs = append(exprs, p.parseExpr())
+		cso.Exprs = append(cso.Exprs, p.parseExpr())
 		if p.Token.Kind == "," {
 			p.nextToken()
 			continue
 		}
 		if p.Token.Kind == ")" {
+			cso.Rparen = p.Token.Pos
 			p.nextToken()
 			break
 		}
 		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
 	}
 
-	return exprs
+	return cso
 }
 
 func (p *Parser) parseCommaIdentList() []*ast.Ident {

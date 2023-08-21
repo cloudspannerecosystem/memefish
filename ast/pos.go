@@ -664,14 +664,14 @@ func (c *CreateChangeStream) Pos() token.Pos {
 }
 
 func (c *CreateChangeStream) End() token.Pos {
-	if len(c.Options) > 0 {
-		return c.Options[len(c.Options)-1].End() + 1
+	if c.Options != nil {
+		return c.Options.Rparen + token.Pos(len(")"))
 	}
-	if len(c.Watch) > 0 {
-		return c.Watch[len(c.Watch)-1].Rparen + 1
-	}
-	if c.WatchAll {
-		return c.Name.End() + token.Pos(len("FOR ALL"))
+	if c.Watch != nil {
+		if c.Watch.WatchAll {
+			return c.Watch.SetForAllPos + token.Pos(len("ALL"))
+		}
+		return c.Watch.WatchTables[len(c.Watch.WatchTables)-1].Rparen + token.Pos(len(")"))
 	}
 	return c.Name.End()
 }
@@ -693,17 +693,17 @@ func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
 func (a *AlterChangeStream) Pos() token.Pos { return a.Alter }
 func (a *AlterChangeStream) End() token.Pos {
-	if len(a.Options) > 0 {
-		return a.Options[len(a.Options)-1].End() + 1
+	if a.Options != nil {
+		return a.Options.Rparen + token.Pos(len(")"))
 	}
-	if len(a.Watch) > 0 {
-		return a.Watch[len(a.Watch)-1].Rparen + 1
-	}
-	if a.WatchAll {
-		return a.Name.End() + token.Pos(len("SET FOR ALL"))
+	if a.Watch != nil {
+		if a.Watch.WatchAll {
+			return a.Watch.SetForAllPos + token.Pos(len("ALL"))
+		}
+		return a.Watch.WatchTables[len(a.Watch.WatchTables)-1].Rparen + token.Pos(len(")"))
 	}
 	if a.DropAll {
-		return a.Name.End() + token.Pos(len("DROP FOR ALL"))
+		return a.DropAllPos + token.Pos(len("ALL"))
 	}
 	return a.Name.End()
 }

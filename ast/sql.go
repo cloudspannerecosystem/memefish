@@ -983,12 +983,12 @@ func (r *Revoke) SQL() string {
 
 func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
-	if len(c.Watch) > 0 || c.WatchAll {
+	if c.Watch != nil {
 		sql += " FOR "
-		if c.WatchAll {
+		if c.Watch.WatchAll {
 			sql += "ALL "
 		} else {
-			for i, watch := range c.Watch {
+			for i, watch := range c.Watch.WatchTables {
 				if i > 0 {
 					sql += ", "
 				}
@@ -996,9 +996,9 @@ func (c *CreateChangeStream) SQL() string {
 			}
 		}
 	}
-	if len(c.Options) > 0 {
+	if c.Options != nil {
 		sql += " OPTIONS ("
-		for i, expr := range c.Options {
+		for i, expr := range c.Options.Exprs {
 			if i > 0 {
 				sql += ", "
 			}
@@ -1013,21 +1013,21 @@ func (a *AlterChangeStream) SQL() string {
 	sql := "ALTER CHANGE STREAM " + a.Name.SQL()
 	if a.DropAll {
 		sql += " DROP FOR ALL"
-	} else if a.WatchAll || len(a.Watch) > 0 {
+	} else if a.Watch != nil {
 		sql += " SET FOR "
-		if a.WatchAll {
+		if a.Watch.WatchAll {
 			sql += "ALL"
 		} else {
-			for i, watch := range a.Watch {
+			for i, watch := range a.Watch.WatchTables {
 				if i > 0 {
 					sql += ", "
 				}
 				sql += watch.SQL()
 			}
 		}
-	} else if len(a.Options) > 0 {
+	} else if a.Options != nil {
 		sql += " SET OPTIONS ("
-		for i, expr := range a.Options {
+		for i, expr := range a.Options.Exprs {
 			if i > 0 {
 				sql += ", "
 			}
@@ -1038,7 +1038,7 @@ func (a *AlterChangeStream) SQL() string {
 	return sql
 }
 
-func (c *ChangeStreamWatch) SQL() string {
+func (c *ChangeStreamWatchTable) SQL() string {
 	sql := c.TableName.SQL()
 	if len(c.Columns) > 0 {
 		sql += "(" + CommaSeparatedSQL(c.Columns) + ")"

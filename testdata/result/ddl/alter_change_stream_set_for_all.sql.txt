@@ -9,10 +9,14 @@ ALTER CHANGE STREAM change_stream_name SET FOR ALL
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  Watch:    []*ast.ChangeStreamWatch(nil),
-  WatchAll: true,
-  DropAll:  false,
-  Options:  []ast.Expr(nil),
+  Watch: &ast.ChangeStreamWatch{
+    WatchAll:     true,
+    WatchTables:  []*ast.ChangeStreamWatchTable(nil),
+    SetForAllPos: 51,
+  },
+  DropAll:    false,
+  DropAllPos: 0,
+  Options:    (*ast.ChangeStreamOptions)(nil),
 }
 
 --- SQL

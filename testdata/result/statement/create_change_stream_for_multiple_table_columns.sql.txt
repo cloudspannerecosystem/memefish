@@ -9,50 +9,53 @@ CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: []*ast.ChangeStreamWatch{
-    &ast.ChangeStreamWatch{
-      TableName: &ast.Ident{
-        NamePos: 44,
-        NameEnd: 55,
-        Name:    "table_name1",
-      },
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 56,
-          NameEnd: 63,
-          Name:    "column1",
+  Watch: &ast.ChangeStreamWatch{
+    WatchAll:    false,
+    WatchTables: []*ast.ChangeStreamWatchTable{
+      &ast.ChangeStreamWatchTable{
+        TableName: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 55,
+          Name:    "table_name1",
         },
-        &ast.Ident{
-          NamePos: 65,
-          NameEnd: 72,
-          Name:    "column2",
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 56,
+            NameEnd: 63,
+            Name:    "column1",
+          },
+          &ast.Ident{
+            NamePos: 65,
+            NameEnd: 72,
+            Name:    "column2",
+          },
         },
+        Rparen: 73,
       },
-      Rparen: 0,
+      &ast.ChangeStreamWatchTable{
+        TableName: &ast.Ident{
+          NamePos: 75,
+          NameEnd: 86,
+          Name:    "table_name2",
+        },
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 87,
+            NameEnd: 94,
+            Name:    "column1",
+          },
+          &ast.Ident{
+            NamePos: 96,
+            NameEnd: 103,
+            Name:    "column2",
+          },
+        },
+        Rparen: 105,
+      },
     },
-    &ast.ChangeStreamWatch{
-      TableName: &ast.Ident{
-        NamePos: 75,
-        NameEnd: 86,
-        Name:    "table_name2",
-      },
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 87,
-          NameEnd: 94,
-          Name:    "column1",
-        },
-        &ast.Ident{
-          NamePos: 96,
-          NameEnd: 103,
-          Name:    "column2",
-        },
-      },
-      Rparen: 0,
-    },
+    SetForAllPos: 0,
   },
-  WatchAll: false,
-  Options:  []ast.Expr(nil),
+  Options: (*ast.ChangeStreamOptions)(nil),
 }
 
 --- SQL
