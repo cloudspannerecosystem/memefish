@@ -23,7 +23,6 @@ CREATE CHANGE STREAM change_stream_name FOR table_name(column)
           Name:    "column",
         },
       },
-      Lparen: 0,
       Rparen: 0,
     },
   },

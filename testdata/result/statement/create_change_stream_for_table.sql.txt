@@ -17,7 +17,6 @@ CREATE CHANGE STREAM change_stream_name FOR table_name
         Name:    "table_name",
       },
       Columns: []*ast.Ident(nil),
-      Lparen:  0,
       Rparen:  0,
     },
   },

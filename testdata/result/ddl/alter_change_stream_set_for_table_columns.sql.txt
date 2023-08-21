@@ -28,7 +28,6 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
           Name:    "column2",
         },
       },
-      Lparen: 0,
       Rparen: 0,
     },
     &ast.ChangeStreamWatch{
@@ -49,7 +48,6 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
           Name:    "column2",
         },
       },
-      Lparen: 0,
       Rparen: 0,
     },
   },
