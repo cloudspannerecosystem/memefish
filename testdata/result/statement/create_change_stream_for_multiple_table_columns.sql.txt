@@ -11,8 +11,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table
   },
   Watch: []*ast.ChangeStreamWatch{
     &ast.ChangeStreamWatch{
-      TableNamePos: 44,
-      TableName:    &ast.Ident{
+      TableName: &ast.Ident{
         NamePos: 44,
         NameEnd: 55,
         Name:    "table_name1",
@@ -33,8 +32,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table
       Rparen: 0,
     },
     &ast.ChangeStreamWatch{
-      TableNamePos: 75,
-      TableName:    &ast.Ident{
+      TableName: &ast.Ident{
         NamePos: 75,
         NameEnd: 86,
         Name:    "table_name2",

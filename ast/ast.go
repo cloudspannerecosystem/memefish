@@ -1737,7 +1737,6 @@ type ChangeStreamWatch struct {
 	// pos = TableNamePos
 	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}.TableName.end{{end}}
 
-	TableNamePos   token.Pos // position of this watch definition
 	TableName      *Ident
 	Columns        []*Ident
 	Lparen, Rparen token.Pos // position of "(" and ")"

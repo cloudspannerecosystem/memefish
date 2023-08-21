@@ -2558,10 +2558,8 @@ func (p *Parser) parseChangeStreamWatches() ([]*ast.ChangeStreamWatch, bool) {
 	watches := []*ast.ChangeStreamWatch{}
 	for {
 		tname := p.parseIdent()
-		pos := tname.NamePos
 		watch := ast.ChangeStreamWatch{
-			TableName:    tname,
-			TableNamePos: pos,
+			TableName: tname,
 		}
 
 		if p.Token.Kind == "(" {
