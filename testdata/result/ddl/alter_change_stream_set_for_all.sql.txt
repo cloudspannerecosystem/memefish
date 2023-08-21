@@ -10,7 +10,6 @@ ALTER CHANGE STREAM change_stream_name SET FOR ALL
     Name:    "change_stream_name",
   },
   Watch: &ast.ChangeStreamWatch{
-    WatchAll:     true,
     WatchTables:  []*ast.ChangeStreamWatchTable(nil),
     SetForAllPos: 51,
   },

@@ -11,7 +11,6 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
     Name:    "change_stream_name",
   },
   Watch: &ast.ChangeStreamWatch{
-    WatchAll:    false,
     WatchTables: []*ast.ChangeStreamWatchTable{
       &ast.ChangeStreamWatchTable{
         TableName: &ast.Ident{

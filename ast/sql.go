@@ -985,7 +985,7 @@ func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
 	if c.Watch != nil {
 		sql += " FOR "
-		if c.Watch.WatchAll {
+		if len(c.Watch.WatchTables) == 0 {
 			sql += "ALL "
 		} else {
 			for i, watch := range c.Watch.WatchTables {
@@ -1015,7 +1015,7 @@ func (a *AlterChangeStream) SQL() string {
 		sql += " DROP FOR ALL"
 	} else if a.Watch != nil {
 		sql += " SET FOR "
-		if a.Watch.WatchAll {
+		if len(a.Watch.WatchTables) == 0 {
 			sql += "ALL"
 		} else {
 			for i, watch := range a.Watch.WatchTables {

@@ -668,10 +668,7 @@ func (c *CreateChangeStream) End() token.Pos {
 		return c.Options.Rparen + token.Pos(len(")"))
 	}
 	if c.Watch != nil {
-		if c.Watch.WatchAll {
-			return c.Watch.SetForAllPos + token.Pos(len("ALL"))
-		}
-		return c.Watch.WatchTables[len(c.Watch.WatchTables)-1].Rparen + token.Pos(len(")"))
+		return c.Watch.End()
 	}
 	return c.Name.End()
 }
@@ -697,10 +694,7 @@ func (a *AlterChangeStream) End() token.Pos {
 		return a.Options.Rparen + token.Pos(len(")"))
 	}
 	if a.Watch != nil {
-		if a.Watch.WatchAll {
-			return a.Watch.SetForAllPos + token.Pos(len("ALL"))
-		}
-		return a.Watch.WatchTables[len(a.Watch.WatchTables)-1].Rparen + token.Pos(len(")"))
+		return a.Watch.End()
 	}
 	if a.DropAll {
 		return a.DropAllPos + token.Pos(len("ALL"))
@@ -735,6 +729,13 @@ func (p *Privilege) End() token.Pos {
 		return p.Rparen + 1
 	}
 	return p.NamePos + token.Pos(len(p.Name))
+}
+
+func (c *ChangeStreamWatch) End() token.Pos {
+	if len(c.WatchTables) == 0 {
+		return c.SetForAllPos + token.Pos(len("ALL"))
+	}
+	return c.WatchTables[len(c.WatchTables)-1].Rparen + token.Pos(len(")"))
 }
 
 // ================================================================================

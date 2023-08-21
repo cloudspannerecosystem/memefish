@@ -2550,7 +2550,6 @@ func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
 	csw := &ast.ChangeStreamWatch{}
 	if p.Token.Kind == "ALL" {
 		p.nextToken()
-		csw.WatchAll = true
 		csw.SetForAllPos = p.Token.Pos
 		return csw
 	}

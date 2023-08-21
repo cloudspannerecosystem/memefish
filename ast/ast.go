@@ -1499,7 +1499,7 @@ type AlterTable struct {
 //
 // ALTER CHANGE STREAM {{.Name | sql}}
 // {{ if .Watch }}
-// SET FOR {{ if .Watch.WatchAll }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
+// SET FOR {{ if len(.Watch.WatchTables) == 0 }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
 // {{ end }}
 // {{ if .DropAll }}
 // DROP FOR ALL
@@ -1513,14 +1513,7 @@ type AlterChangeStream struct {
 	//          .Options.Rparen + 1
 	//       }
 	//       if .Watch {
-	//         if .Watch.WatchAll {
-	//           "SET FOR ALL".end
-	//         }
-	//         if len(.Watch.WatchTables) > 0 {
-	//           .Watch.WatchTables[len(.Watch.WatchTables)-1].Rparen + 1
-	//         } else {
-	//           .Name.end
-	//         }
+	//         .Watch.end
 	//       }
 	//       if .DropAll {
 	//         "DROP FOR All".end
@@ -1710,7 +1703,7 @@ type CreateRole struct {
 //
 // CREATE CHANGE STREAM {{.Name | sql}}
 // {{ if .Watch }}
-// FOR {{ .Watch.WatchAll }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
+// FOR {{ len(.Watch.WatchTables) == 0 }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
 // {{ end }}
 // {{ if .Options }}
 // OPTIONS {{ .Options.Exprs | sqlJoin ","}}
@@ -1719,16 +1712,8 @@ type CreateChangeStream struct {
 	// pos = Create
 	// end = if .Options {
 	//          .Options.Rparen + 1
-	//       }
-	//       if .Watch {
-	//         if .Watch.WatchAll {
-	//           "ALL".end
-	//         }
-	//         if len(.Watch.WatchTables) > 0 {
-	//           .Watch.WatchTables[len(.Watch.WatchTables)-1].Rparen + 1
-	//         } else {
-	//           .Name.end
-	//         }
+	//       } else if .Watch {
+	//          .Watch.end
 	//       }
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
@@ -1737,9 +1722,8 @@ type CreateChangeStream struct {
 }
 
 type ChangeStreamWatch struct {
-	WatchAll     bool
-	WatchTables  []*ChangeStreamWatchTable
-	SetForAllPos token.Pos // position of (SET FOR) "ALL" keyword
+	WatchTables  []*ChangeStreamWatchTable // if len is 0, then this watches all.
+	SetForAllPos token.Pos                 // position of (SET FOR) "ALL" keyword
 }
 
 type ChangeStreamWatchTable struct {
