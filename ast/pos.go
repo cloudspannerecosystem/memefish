@@ -751,3 +751,6 @@ func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
 
 func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
 func (o *SequenceOption) End() token.Pos { return o.Value.End() }
+
+func (s *SequenceExpr) Pos() token.Pos { return s.Sequence }
+func (s *SequenceExpr) End() token.Pos { return s.Name.End() }

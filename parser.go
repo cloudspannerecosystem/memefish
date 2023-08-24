@@ -1431,6 +1431,25 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		Name:    id.AsString,
 	}
 
+	// sequence functions
+	if id.IsIdent("GET_NEXT_SEQUENCE_VALUE") || id.IsIdent("GET_INTERNAL_SEQUENCE_STATE") {
+		sequencePos := p.expectKeywordLike("SEQUENCE").Pos
+		name := p.parseIdent()
+		rparen := p.expect(")").Pos
+		return &ast.CallExpr{
+			Rparen:   rparen,
+			Func:     fn,
+			Distinct: false,
+			Args: []*ast.Arg{{
+				Interval: token.InvalidPos,
+				Expr: &ast.SequenceExpr{
+					Sequence: sequencePos,
+					Name:     name,
+				},
+			}},
+		}
+	}
+
 	distinct := false
 	if p.Token.Kind == "DISTINCT" {
 		p.nextToken()

@@ -55,6 +55,7 @@ func TestExpr(t *testing.T) {
 	Expr(&IndexExpr{}).isExpr()
 	Expr(&CallExpr{}).isExpr()
 	Expr(&CountStarExpr{}).isExpr()
+	Expr(&SequenceExpr{}).isExpr()
 	Expr(&CastExpr{}).isExpr()
 	Expr(&ExtractExpr{}).isExpr()
 	Expr(&CaseExpr{}).isExpr()
