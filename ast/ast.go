@@ -2001,8 +2001,8 @@ type UpdateItem struct {
 //
 // {{.Name | sql}} = {{.Value | sql}}
 type SequenceOption struct {
-	// pos = OptionNamePos
-	// end = OptionValuePos + len(OptionValue)
+	// pos = Name.pos
+	// end = Value.pos
 	Name  *Ident
 	Value Expr
 }

@@ -748,3 +748,6 @@ func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
 func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
+
+func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
+func (o *SequenceOption) End() token.Pos { return o.Value.End() }
