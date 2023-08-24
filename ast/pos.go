@@ -495,6 +495,14 @@ func (c *CreateTable) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateSequence) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSequence) End() token.Pos {
+	return c.Rparen + 1
+}
+
 func (c *CreateView) Pos() token.Pos {
 	return c.Create
 }

@@ -1946,6 +1946,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateDatabase(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("SEQUENCE"):
+			return p.parseCreateSequence(pos)
 		case p.Token.IsKeywordLike("VIEW") || p.Token.Kind == "OR":
 			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
@@ -2053,6 +2055,59 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
+	}
+}
+
+func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
+	p.expectKeywordLike("SEQUENCE")
+	ifNotExists := false
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("NOT")
+		p.expect("EXISTS")
+		ifNotExists = true
+	}
+	name := p.parseIdent()
+
+	p.expectKeywordLike("OPTIONS")
+	p.expect("(")
+	var options []*ast.SequenceOption
+	for p.Token.Kind != token.TokenEOF {
+		if p.Token.Kind == ")" {
+			break
+		}
+		optionName := p.parseIdent()
+		p.expect("=")
+		var value ast.Expr
+		switch p.Token.Kind {
+		case token.TokenInt:
+			value = p.parseIntLiteral()
+		case token.TokenString:
+			value = p.parseStringLiteral()
+		default:
+			p.panicfAtToken(&p.Token, "expected token: <int>, <string>, but: %s", p.Token.Kind)
+		}
+		options = append(options, &ast.SequenceOption{
+			Name:  optionName,
+			Value: value,
+		})
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+
+	}
+	if len(options) == 0 {
+		p.panicfAtToken(&p.Token, "required at least one option")
+	}
+
+	rparent := p.expect(")").Pos
+	return &ast.CreateSequence{
+		Create:      pos,
+		Rparen:      rparent,
+		Name:        name,
+		IfNotExists: ifNotExists,
+		Options:     options,
 	}
 }
 
