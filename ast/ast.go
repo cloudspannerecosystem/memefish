@@ -1324,7 +1324,7 @@ type CreateDatabase struct {
 
 // CreateTable is CREATE TABLE statement node.
 //
-//	CREATE TABLE {{.Name | sql}} (
+//	CREATE TABLE [IF NOT EXISTS] {{.Name | sql}} (
 //	  {{.Columns | sqlJoin ","}}
 //	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
 //	)
@@ -1342,6 +1342,7 @@ type CreateTable struct {
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
+	IfNotExists       bool
 	Name              *Ident
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint

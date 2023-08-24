@@ -1994,6 +1994,13 @@ func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
+	ifNotExists := false
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("NOT")
+		p.expect("EXISTS")
+		ifNotExists = true
+	}
 	name := p.parseIdent()
 
 	// This loop allows parsing trailing comma intentionally.
@@ -2047,6 +2054,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	return &ast.CreateTable{
 		Create:            pos,
 		Rparen:            rparen,
+		IfNotExists:       ifNotExists,
 		Name:              name,
 		Columns:           columns,
 		TableConstraints:  constraints,

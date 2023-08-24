@@ -1,32 +1,29 @@
---- create_table_trailing_comma.sql
-create table foo (
+--- create_table_if_not_exists.sql
+create table if not exists foo (
   foo int64,
-  bar int64,
-) primary key(
-  foo asc,
-  bar desc,
-)
+  bar float64 not null,
+) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      83,
-  IfNotExists: false,
+  Rparen:      93,
+  IfNotExists: true,
   Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
+    NamePos: 27,
+    NameEnd: 30,
     Name:    "foo",
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 21,
-        NameEnd: 24,
+        NamePos: 35,
+        NameEnd: 38,
         Name:    "foo",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 25,
+        NamePos: 39,
         Name:    "INT64",
       },
       NotNull:       false,
@@ -35,46 +32,46 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
-      Null: -1,
+      Null: 64,
       Name: &ast.Ident{
-        NamePos: 34,
-        NameEnd: 37,
+        NamePos: 48,
+        NameEnd: 51,
         Name:    "bar",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 38,
-        Name:    "INT64",
+        NamePos: 52,
+        Name:    "FLOAT64",
       },
-      NotNull:       false,
+      NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
-      DirPos: 66,
+      DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 62,
-        NameEnd: 65,
+        NamePos: 85,
+        NameEnd: 88,
         Name:    "foo",
       },
-      Dir: "ASC",
+      Dir: "",
     },
     &ast.IndexKey{
-      DirPos: 77,
+      DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 73,
-        NameEnd: 76,
+        NamePos: 90,
+        NameEnd: 93,
         Name:    "bar",
       },
-      Dir: "DESC",
+      Dir: "",
     },
   },
+  TableConstraints:  []*ast.TableConstraint(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar INT64) PRIMARY KEY (foo ASC, bar DESC)
+CREATE TABLE IF NOT EXISTS foo (foo INT64, bar FLOAT64 NOT NULL) PRIMARY KEY (foo, bar)
