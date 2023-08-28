@@ -2000,6 +2000,8 @@ type SequenceOption struct {
 type SequenceExpr struct {
 	// pos = Sequence
 	// end = Name.end
+
 	Sequence token.Pos // position of "SEQUENCE" keyword
+
 	Name     *Ident
 }
