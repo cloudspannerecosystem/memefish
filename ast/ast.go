@@ -1995,7 +1995,7 @@ type UpdateItem struct {
 
 // SequenceOption is option for CREATE SEQUENCE.
 //
-// {{.Name | sql}} = {{.Value | sql}}
+//	{{.Name | sql}} = {{.Value | sql}}
 type SequenceOption struct {
 	// pos = Name.pos
 	// end = Value.pos
