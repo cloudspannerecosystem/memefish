@@ -1324,7 +1324,7 @@ type CreateDatabase struct {
 
 // CreateTable is CREATE TABLE statement node.
 //
-//	CREATE TABLE [IF NOT EXISTS] {{.Name | sql}} (
+//	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
 //	  {{.Columns | sqlJoin ","}}
 //	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
 //	)
