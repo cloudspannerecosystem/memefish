@@ -22,7 +22,7 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
           Args:     []*ast.Arg{
             &ast.Arg{
               Interval: -1,
-              Expr:     &ast.SequenceExpr{
+              Expr:     &ast.SequenceArg{
                 Sequence: 31,
                 Name:     &ast.Ident{
                   NamePos: 40,

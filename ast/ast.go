@@ -125,7 +125,7 @@ func (SelectorExpr) isExpr()     {}
 func (IndexExpr) isExpr()        {}
 func (CallExpr) isExpr()         {}
 func (CountStarExpr) isExpr()    {}
-func (SequenceExpr) isExpr()     {}
+func (SequenceArg) isExpr()      {}
 func (CastExpr) isExpr()         {}
 func (ExtractExpr) isExpr()      {}
 func (CaseExpr) isExpr()         {}
@@ -1994,14 +1994,14 @@ type SequenceOption struct {
 	Value Expr
 }
 
-// SequenceExpr is sequence expression node.
+// SequenceArg is sequence expression node.
 //
 //	SEQUENCE {{.Name | sql}}
-type SequenceExpr struct {
+type SequenceArg struct {
 	// pos = Sequence
 	// end = Name.end
 
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
-	Name     *Ident
+	Name *Ident
 }

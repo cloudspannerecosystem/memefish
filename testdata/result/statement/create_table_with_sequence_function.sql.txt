@@ -42,7 +42,7 @@ CREATE TABLE foo
           Args:     []*ast.Arg{
             &ast.Arg{
               Interval: -1,
-              Expr:     &ast.SequenceExpr{
+              Expr:     &ast.SequenceArg{
                 Sequence: 66,
                 Name:     &ast.Ident{
                   NamePos: 75,

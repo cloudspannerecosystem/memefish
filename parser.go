@@ -1442,7 +1442,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 			Distinct: false,
 			Args: []*ast.Arg{{
 				Interval: token.InvalidPos,
-				Expr: &ast.SequenceExpr{
+				Expr: &ast.SequenceArg{
 					Sequence: sequencePos,
 					Name:     name,
 				},

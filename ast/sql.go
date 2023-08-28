@@ -1133,6 +1133,6 @@ func (o *SequenceOption) SQL() string {
 	return o.Name.SQL() + " = " + o.Value.SQL()
 }
 
-func (s *SequenceExpr) SQL() string {
+func (s *SequenceArg) SQL() string {
 	return "SEQUENCE " + s.Name.SQL()
 }
