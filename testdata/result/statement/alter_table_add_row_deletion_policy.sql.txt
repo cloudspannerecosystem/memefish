@@ -13,6 +13,7 @@ alter table foo add row deletion policy ( older_than ( bar, interval 30 day ))
     Add:               16,
     RowDeletionPolicy: &ast.RowDeletionPolicy{
       Row:        20,
+      Rparen:     77,
       ColumnName: &ast.Ident{
         NamePos: 55,
         NameEnd: 58,
@@ -24,7 +25,6 @@ alter table foo add row deletion policy ( older_than ( bar, interval 30 day ))
         Base:     10,
         Value:    "30",
       },
-      Rparen: 77,
     },
   },
 }

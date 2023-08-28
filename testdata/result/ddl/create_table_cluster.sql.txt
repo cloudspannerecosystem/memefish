@@ -48,8 +48,8 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys:      []*ast.IndexKey(nil),
   TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey(nil),
   Cluster:          &ast.Cluster{
     Comma:       60,
     OnDeleteEnd: -1,
