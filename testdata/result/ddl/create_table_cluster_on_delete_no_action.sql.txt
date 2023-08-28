@@ -6,9 +6,10 @@ create table foo (
              on delete no action
 --- AST
 &ast.CreateTable{
-  Create: 0,
-  Rparen: 50,
-  Name:   &ast.Ident{
+  Create:      0,
+  Rparen:      50,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
     Name:    "foo",

@@ -15,9 +15,10 @@ create table types (
 
 --- AST
 &ast.CreateTable{
-  Create: 0,
-  Rparen: 212,
-  Name:   &ast.Ident{
+  Create:      0,
+  Rparen:      212,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 18,
     Name:    "types",

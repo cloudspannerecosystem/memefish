@@ -716,7 +716,11 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE " + c.Name.SQL() + " ("
+	sql := "CREATE TABLE "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " ("
 	for i, c := range c.Columns {
 		if i != 0 {
 			sql += ", "

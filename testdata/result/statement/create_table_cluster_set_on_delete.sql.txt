@@ -6,9 +6,10 @@ create table foo (
              on delete cascade
 --- AST
 &ast.CreateTable{
-  Create: 0,
-  Rparen: 49,
-  Name:   &ast.Ident{
+  Create:      0,
+  Rparen:      49,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
     Name:    "foo",
