@@ -1357,11 +1357,14 @@ type CreateTable struct {
 //	CREATE SEQUENCE IF NOT EXISTS {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
 type CreateSequence struct {
 	// pos = Create
+	// end = Rparen + 1
+
 	Create      token.Pos // position of "CREATE" keyword
 	Rparen      token.Pos // position of ")" of OPTIONS clause
+
 	Name        *Ident
 	IfNotExists bool
-	Options     []*SequenceOption
+	Options     []*SequenceOption // len(Options) > 0
 }
 
 // CreateView is CREATE VIEW statement node.
