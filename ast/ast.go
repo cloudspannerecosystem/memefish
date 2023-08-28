@@ -1359,27 +1359,12 @@ type CreateSequence struct {
 	// pos = Create
 	// end = Rparen + 1
 
-	Create      token.Pos // position of "CREATE" keyword
-	Rparen      token.Pos // position of ")" of OPTIONS clause
+	Create token.Pos // position of "CREATE" keyword
+	Rparen token.Pos // position of ")" of OPTIONS clause
 
 	Name        *Ident
 	IfNotExists bool
 	Options     []*SequenceOption // len(Options) > 0
-}
-
-// CreateView is CREATE VIEW statement node.
-//
-//	CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
-//	SQL SECURITY INVOKER AS
-//	{{.Query | sql}}
-type CreateView struct {
-	// pos = Create
-	// end = Query.end
-	Create token.Pos
-
-	Name      *Ident
-	OrReplace bool
-	Query     QueryExpr
 }
 
 // ColumnDef is column definition in CREATE TABLE.
