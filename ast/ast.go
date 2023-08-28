@@ -53,6 +53,7 @@ type Statement interface {
 func (QueryStatement) isStatement() {}
 func (CreateDatabase) isStatement() {}
 func (CreateTable) isStatement()    {}
+func (CreateSequence) isStatement() {}
 func (CreateView) isStatement()     {}
 func (CreateIndex) isStatement()    {}
 func (CreateRole) isStatement()     {}
@@ -207,6 +208,7 @@ type DDL interface {
 func (CreateDatabase) isDDL() {}
 func (CreateTable) isDDL()    {}
 func (CreateView) isDDL()     {}
+func (CreateSequence) isDDL() {}
 func (AlterTable) isDDL()     {}
 func (DropTable) isDDL()      {}
 func (CreateIndex) isDDL()    {}
@@ -1350,6 +1352,21 @@ type CreateTable struct {
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 }
 
+// CreateSequence is CREATE SEQUENCE statement node.
+//
+//	CREATE SEQUENCE IF NOT EXISTS {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+type CreateSequence struct {
+	// pos = Create
+	// end = Rparen + 1
+
+	Create token.Pos // position of "CREATE" keyword
+	Rparen token.Pos // position of ")" of OPTIONS clause
+
+	Name        *Ident
+	IfNotExists bool
+	Options     []*SequenceOption // len(Options) > 0
+}
+
 // ColumnDef is column definition in CREATE TABLE.
 //
 //	{{.Name | sql}}
@@ -1962,4 +1979,15 @@ type UpdateItem struct {
 
 	Path []*Ident // len(Path) > 0
 	Expr Expr
+}
+
+// SequenceOption is option for CREATE SEQUENCE.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type SequenceOption struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
 }

@@ -744,6 +744,22 @@ func (c *CreateTable) SQL() string {
 	return sql
 }
 
+func (c *CreateSequence) SQL() string {
+	sql := "CREATE SEQUENCE "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " OPTIONS ("
+	for i, o := range c.Options {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += o.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
 func (c *CreateView) SQL() string {
 	sql := "CREATE"
 	if c.OrReplace {
@@ -1107,4 +1123,8 @@ func (u *UpdateItem) SQL() string {
 	}
 	sql += " = " + u.Expr.SQL()
 	return sql
+}
+
+func (o *SequenceOption) SQL() string {
+	return o.Name.SQL() + " = " + o.Value.SQL()
 }
