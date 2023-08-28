@@ -184,26 +184,6 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*ast.IndexKey{
-    &ast.IndexKey{
-      DirPos: -1,
-      Name:   &ast.Ident{
-        NamePos: 439,
-        NameEnd: 442,
-        Name:    "foo",
-      },
-      Dir: "",
-    },
-    &ast.IndexKey{
-      DirPos: -1,
-      Name:   &ast.Ident{
-        NamePos: 444,
-        NameEnd: 447,
-        Name:    "bar",
-      },
-      Dir: "",
-    },
-  },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
       ConstraintPos: 0,
@@ -320,6 +300,26 @@ create table foo (
           },
         },
       },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 439,
+        NameEnd: 442,
+        Name:    "foo",
+      },
+      Dir: "",
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 444,
+        NameEnd: 447,
+        Name:    "bar",
+      },
+      Dir: "",
     },
   },
   Cluster:           (*ast.Cluster)(nil),

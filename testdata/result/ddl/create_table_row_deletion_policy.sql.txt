@@ -65,13 +65,14 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys:       []*ast.IndexKey(nil),
   TableConstraints:  []*ast.TableConstraint(nil),
+  PrimaryKeys:       []*ast.IndexKey(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
     Comma:             78,
     RowDeletionPolicy: &ast.RowDeletionPolicy{
       Row:        82,
+      Rparen:     140,
       ColumnName: &ast.Ident{
         NamePos: 117,
         NameEnd: 120,
@@ -83,7 +84,6 @@ create table foo (
         Base:     10,
         Value:    "30",
       },
-      Rparen: 140,
     },
   },
 }

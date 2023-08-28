@@ -1,3 +1,34 @@
+// Package ast provides AST nodes definitions.
+//
+// The definitions of ASTs are based on the following document.
+//
+//   - <https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language>
+//   - <https://cloud.google.com/spanner/docs/query-syntax>
+//
+// Each `Node`'s documentation describes its syntax (SQL representation) in a `text/template`
+// fashion with thw following custom functions.
+//
+//   - `sql node`: Returns the SQL representation of `node`.
+//   - `sqlOpt node`: Like `sql node`, but returns the empty string if `node` is `nil`.
+//   - `sqlJoin sep nodes`: Concatenates the SQL representations of `nodes` with `sep`.
+//   - `sqlIdentQuote x`: Quotes the given identifier string if needed.
+//   - `sqlStringQuote s`: Returns the SQL quoted string of `s`.
+//   - `sqlBytesQuote bs`: Returns the SQL quotes bytes of `bs`.
+//   - `isnil v`: Checks whether `v` is `nil` or others.
+//
+// Each `Node`s documentation has `pos` and `end` information using the following EBNF.
+//
+//	PosChoice -> PosExpr ("||" PosExpr)*
+//	PosExpr   -> PosAtom (PosOp IntAtom)?
+//	PosAtom   -> PosVar | NodeExpr "." ("pos" | "end")
+//	NodeExpr  -> NodeAtom | "(" NodeAtom ("??" NodeAtom)* ")"
+//	NodeAtom  -> NodeVar | NodeSliceVar "[" (IntAtom | "$") "]"
+//	IntAtom   -> IntVal
+//	           | "len" "(" StringVar ")"
+//	           | "(" BoolVar "?" IntAtom ":" IntAtom ")"
+//	IntVal    -> "0" | "1" | ...
+//
+//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its `struct` definition.)
 package ast
 
 import (
@@ -184,6 +215,15 @@ func (CreateRole) isDDL()     {}
 func (DropRole) isDDL()       {}
 func (Grant) isDDL()          {}
 func (Revoke) isDDL()         {}
+
+// Constraint represents table constraint of CONSTARINT clause.
+type Constraint interface {
+	Node
+	isConstraint()
+}
+
+func (ForeignKey) isConstraint() {}
+func (Check) isConstraint()      {}
 
 // TableAlternation represents ALTER TABLE action.
 type TableAlternation interface {
@@ -488,7 +528,7 @@ type OrderBy struct {
 //	{{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
 type OrderByItem struct {
 	// pos = Expr.pos
-	// end = DirPos + len(Dir) || (Collate ?? Expr).pos
+	// end = DirPos + len(Dir) || (Collate ?? Expr).end
 
 	DirPos token.Pos // position of Dir
 
@@ -1055,10 +1095,10 @@ type ArrayLiteral struct {
 
 // StructLiteral is struct literal node.
 //
-//	STRUCT{{if .Type}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
+//	STRUCT{{if not (isnil .Fields)}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
 type StructLiteral struct {
 	// pos = Struct || Lparen
-	// end = Rparen
+	// end = Rparen + 1
 
 	Struct         token.Pos // position of "STRUCT"
 	Lparen, Rparen token.Pos // position of "(" and ")"
@@ -1130,7 +1170,7 @@ type StringLiteral struct {
 
 // BytesLiteral is bytes literal node.
 //
-//	B{{.Value | sqlByesQuote}}
+//	B{{.Value | sqlBytesQuote}}
 type BytesLiteral struct {
 	// pos = ValuePos
 	// end = ValueEnd
@@ -1286,10 +1326,15 @@ type CreateDatabase struct {
 //
 //	CREATE TABLE {{.Name | sql}} (
 //	  {{.Columns | sqlJoin ","}}
+//	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
 //	)
 //	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
+//
+// Spanner SQL allows to mix `Columns` and `TableConstraints`, however they are
+// separated in AST definition for historical reasons. If you want to get
+// the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
 	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
@@ -1299,25 +1344,10 @@ type CreateTable struct {
 
 	Name              *Ident
 	Columns           []*ColumnDef
-	PrimaryKeys       []*IndexKey
 	TableConstraints  []*TableConstraint
+	PrimaryKeys       []*IndexKey
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
-}
-
-// CreateView is CREATE VIEW statement node.
-//
-//	CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
-//	SQL SECURITY INVOKER AS
-//	{{.Query | sql}}
-type CreateView struct {
-	// pos = Create
-	// end = Query.end
-	Create token.Pos
-
-	Name      *Ident
-	OrReplace bool
-	Query     QueryExpr
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1382,7 +1412,7 @@ type ColumnDefOptions struct {
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
 //
-//	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint}}
+//	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
 type TableConstraint struct {
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
@@ -1390,14 +1420,9 @@ type TableConstraint struct {
 	Constraint Constraint
 }
 
-type Constraint interface {
-	isConstraint()
-	Node
-}
-
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
 //
-//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}}({{.ReferenceColumns | sqlJoin ","}})
+//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}})
 type ForeignKey struct {
 	// pos = Foreign
 	// end = Rparen + 1
@@ -1407,10 +1432,8 @@ type ForeignKey struct {
 
 	Columns          []*Ident
 	ReferenceTable   *Ident
-	ReferenceColumns []*Ident
+	ReferenceColumns []*Ident // len(ReferenceColumns) > 0
 }
-
-func (*ForeignKey) isConstraint() {}
 
 // Check is check constraint in CREATE TABLE and ALTER TABLE.
 //
@@ -1424,8 +1447,6 @@ type Check struct {
 
 	Expr Expr
 }
-
-func (*Check) isConstraint() {}
 
 // IndexKey is index key specifier in CREATE TABLE and CREATE INDEX.
 //
@@ -1460,7 +1481,9 @@ type Cluster struct {
 type CreateRowDeletionPolicy struct {
 	// pos = Comma
 	// end = RowDeletionPolicy.end
-	Comma             token.Pos // position of ","
+
+	Comma token.Pos // position of ","
+
 	RowDeletionPolicy *RowDeletionPolicy
 }
 
@@ -1470,10 +1493,27 @@ type CreateRowDeletionPolicy struct {
 type RowDeletionPolicy struct {
 	// pos = Row
 	// end = Rparen + 1
-	Row        token.Pos // position of "ROW"
+
+	Row    token.Pos // position of "ROW"
+	Rparen token.Pos // position of ")"
+
 	ColumnName *Ident
 	NumDays    *IntLiteral
-	Rparen     token.Pos // position of ")"
+}
+
+// CreateView is CREATE VIEW statement node.
+//
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
+//	SQL SECURITY INVOKER AS
+//	{{.Query | sql}}
+type CreateView struct {
+	// pos = Create
+	// end = Query.end
+	Create token.Pos
+
+	Name      *Ident
+	OrReplace bool
+	Query     QueryExpr
 }
 
 // AlterTable is ALTER TABLE statement node.
@@ -1631,11 +1671,11 @@ type DropTable struct {
 //	CREATE
 //	  {{if .Unique}}UNIQUE{{end}}
 //	  {{if .NullFiltered}}NULL_FILTERED{{end}}
-//	  INDEX {{.Name | sql}} ON {{.TableName | sql}} (
-//	    {{.Keys | sqlJoin ","}}
-//	  )
-//	  {{.Storing | sqlOpt}}
-//	  {{.InterleaveIn | sqlOpt}}
+//	INDEX {{.Name | sql}} ON {{.TableName | sql}} (
+//	  {{.Keys | sqlJoin ","}}
+//	)
+//	{{.Storing | sqlOpt}}
+//	{{.InterleaveIn | sqlOpt}}
 type CreateIndex struct {
 	// pos = Create
 	// end = (InterleaveIn ?? Storing).end || Rparen + 1
@@ -1658,8 +1698,10 @@ type CreateIndex struct {
 type CreateRole struct {
 	// pos = Create
 	// end = Name.end
+
 	Create token.Pos // position of "CREATE" keyword
-	Name   *Ident
+
+	Name *Ident
 }
 
 // Storing is STORING clause in CREATE INDEX.
@@ -1707,24 +1749,25 @@ type DropRole struct {
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
+
 	Name *Ident
 }
 
 // Grant is GRANT statement node.
 //
-// GRANT
-//
-//	{{ if .GrantRoleNames }}
-//	ROLE {{ .GrantRoleNames | sqlJoin "," }}
-//	{{ else }}
-//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
-//	{{ end }}
-//	TO ROLE {{ .ToRoleNames | sqlJoin "," }}
+//	GRANT
+//	{{if .GrantRoleNames}}
+//	ROLE {{.GrantRoleNames | sqlJoin ","}}
+//	{{else}}
+//	{{.Privileges | sqlJoin ","}} ON TABLE {{.TableNames | sqlJoin ","}}
+//	{{end}}
+//	TO ROLE {{.ToRoleNames | sqlJoin ","}}
 type Grant struct {
 	// pos = Grant
-	// end = ToRoleNames[len(ToRoleNames)-1].end
+	// end = ToRoleNames[$].end
 
-	Grant          token.Pos // position of "GRANT" keyword
+	Grant token.Pos // position of "GRANT" keyword
+
 	ToRoleNames    []*Ident
 	GrantRoleNames []*Ident
 	Privileges     []*Privilege
@@ -1733,9 +1776,8 @@ type Grant struct {
 
 // Revoke is REVOKE statement node.
 //
-// REVOKE
-//
-//	{{ if .RoleNames }}
+//	REVOKE
+//	{{if .RoleNames}}
 //	ROLE {{ .RevokeRoleNames | sqlJoin "," }}
 //	{{ else }}
 //	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
@@ -1745,11 +1787,26 @@ type Revoke struct {
 	// pos = Revoke
 	// end = Name.end
 
-	Revoke          token.Pos // position of "REVOKE" keyword
+	Revoke token.Pos // position of "REVOKE" keyword
+
 	FromRoleNames   []*Ident
 	RevokeRoleNames []*Ident
 	Privileges      []*Privilege
 	TableNames      []*Ident
+}
+
+// Privilege is plivilege type node in schema.
+//
+//	{{.Name}} {{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+type Privilege struct {
+	// pos = NamePos
+	// end = Rparen + 1 || NamePos + len(Name)
+
+	NamePos token.Pos // position of this privilege
+	Rparen  token.Pos // position of ")" when len(Columns) > 0
+
+	Name    PrivilegeTypeName
+	Columns []*Ident
 }
 
 // ================================================================================
@@ -1797,20 +1854,6 @@ type ArraySchemaType struct {
 	Gt    token.Pos // position of ">"
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
-}
-
-// Privilege is plivilege type node in schema.
-//
-//	{{.Name}} {{if .Columns}}({{ .Columns | sqlJoin ","}}){{end}}
-type Privilege struct {
-	// pos = NamePos
-	// end = {{if .Columns }}{{ Rparen + 1 }}{{else}}Name.end{{end}}
-
-	NamePos        token.Pos // position of this privilege
-	Name           PrivilegeTypeName
-	Columns        []*Ident
-	Lparen, Rparen token.Pos // position of "(" and ")"
-
 }
 
 // ================================================================================

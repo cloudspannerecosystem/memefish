@@ -20,6 +20,7 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
   Privileges:     []*ast.Privilege{
     &ast.Privilege{
       NamePos: 0,
+      Rparen:  0,
       Name:    "SELECT",
       Columns: []*ast.Ident{
         &ast.Ident{
@@ -38,11 +39,10 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
           Name:    "location",
         },
       },
-      Lparen: 0,
-      Rparen: 0,
     },
     &ast.Privilege{
       NamePos: 0,
+      Rparen:  0,
       Name:    "UPDATE",
       Columns: []*ast.Ident{
         &ast.Ident{
@@ -51,8 +51,6 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
           Name:    "location",
         },
       },
-      Lparen: 0,
-      Rparen: 0,
     },
   },
   TableNames: []*ast.Ident{

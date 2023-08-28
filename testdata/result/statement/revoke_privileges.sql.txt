@@ -20,6 +20,7 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
   Privileges:      []*ast.Privilege{
     &ast.Privilege{
       NamePos: 0,
+      Rparen:  0,
       Name:    "SELECT",
       Columns: []*ast.Ident{
         &ast.Ident{
@@ -38,11 +39,10 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
           Name:    "location",
         },
       },
-      Lparen: 0,
-      Rparen: 0,
     },
     &ast.Privilege{
       NamePos: 0,
+      Rparen:  0,
       Name:    "UPDATE",
       Columns: []*ast.Ident{
         &ast.Ident{
@@ -51,8 +51,6 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
           Name:    "location",
         },
       },
-      Lparen: 0,
-      Rparen: 0,
     },
   },
   TableNames: []*ast.Ident{

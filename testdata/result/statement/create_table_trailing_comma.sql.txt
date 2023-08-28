@@ -50,7 +50,8 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*ast.IndexKey{
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: 66,
       Name:   &ast.Ident{
@@ -70,7 +71,6 @@ create table foo (
       Dir: "DESC",
     },
   },
-  TableConstraints:  []*ast.TableConstraint(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

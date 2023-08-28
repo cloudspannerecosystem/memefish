@@ -233,7 +233,8 @@ create table types (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*ast.IndexKey{
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -244,7 +245,6 @@ create table types (
       Dir: "",
     },
   },
-  TableConstraints:  []*ast.TableConstraint(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
