@@ -1996,7 +1996,7 @@ type SequenceOption struct {
 
 // SequenceExpr is sequence expression node.
 //
-// SEQUENCE {{.Name | sql}}
+//	SEQUENCE {{.Name | sql}}
 type SequenceExpr struct {
 	// pos = Sequence
 	// end = Name.end
