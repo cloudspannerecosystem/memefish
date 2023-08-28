@@ -1353,12 +1353,8 @@ type CreateTable struct {
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
-// CREATE SEQUENCE IF NOT EXISTS {{.Name | sql}} }}
-// OPTIONS (
 //
-//	{{.Options | sqlJoin ","}}
-//
-// )
+//	CREATE SEQUENCE IF NOT EXISTS {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
 type CreateSequence struct {
 	// pos = Create
 	Create      token.Pos // position of "CREATE" keyword
