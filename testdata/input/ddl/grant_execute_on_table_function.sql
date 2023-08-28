@@ -1,0 +1,1 @@
+GRANT EXECUTE ON TABLE FUNCTION READ_SingersNameStream TO ROLE hr_manager

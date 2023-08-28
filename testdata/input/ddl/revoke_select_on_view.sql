@@ -1,0 +1,1 @@
+REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager
