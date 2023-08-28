@@ -72,17 +72,6 @@ func paren(p prec, e Expr) string {
 	}
 }
 
-func CommaSeparatedSQL(is []*Ident) string {
-	sql := ""
-	for i, id := range is {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += id.SQL()
-	}
-	return sql
-}
-
 // ================================================================================
 //
 // SELECT
@@ -951,56 +940,6 @@ func (c *CreateIndex) SQL() string {
 	return sql
 }
 
-func (c *CreateRole) SQL() string {
-	return "CREATE ROLE " + c.Name.SQL()
-}
-
-func (d *DropRole) SQL() string {
-	return "DROP ROLE " + d.Name.SQL()
-}
-
-func (g *Grant) SQL() string {
-	sql := "GRANT "
-	if g.Privileges != nil {
-		sql += string(g.Privileges[0].Name)
-		if g.Privileges[0].Columns != nil {
-			sql += "(" + CommaSeparatedSQL(g.Privileges[0].Columns) + ")"
-		}
-		for _, priv := range g.Privileges[1:] {
-			sql += ", " + string(priv.Name)
-			if priv.Columns != nil {
-				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
-			}
-		}
-		sql += " ON TABLE " + CommaSeparatedSQL(g.TableNames)
-	} else {
-		sql += "ROLE " + CommaSeparatedSQL(g.GrantRoleNames)
-	}
-	sql += " TO ROLE " + CommaSeparatedSQL(g.ToRoleNames)
-	return sql
-}
-
-func (r *Revoke) SQL() string {
-	sql := "REVOKE "
-	if r.Privileges != nil {
-		sql += string(r.Privileges[0].Name)
-		if r.Privileges[0].Columns != nil {
-			sql += "(" + CommaSeparatedSQL(r.Privileges[0].Columns) + ")"
-		}
-		for _, priv := range r.Privileges[1:] {
-			sql += ", " + string(priv.Name)
-			if priv.Columns != nil {
-				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
-			}
-		}
-		sql += " ON TABLE " + CommaSeparatedSQL(r.TableNames)
-	} else {
-		sql += "ROLE " + CommaSeparatedSQL(r.RevokeRoleNames)
-	}
-	sql += " FROM ROLE " + CommaSeparatedSQL(r.FromRoleNames)
-	return sql
-}
-
 func (s *Storing) SQL() string {
 	sql := "STORING ("
 	for i, c := range s.Columns {
@@ -1019,6 +958,120 @@ func (i *InterleaveIn) SQL() string {
 
 func (d *DropIndex) SQL() string {
 	return "DROP INDEX " + d.Name.SQL()
+}
+
+func (c *CreateRole) SQL() string {
+	return "CREATE ROLE " + c.Name.SQL()
+}
+
+func (d *DropRole) SQL() string {
+	return "DROP ROLE " + d.Name.SQL()
+}
+
+func (g *Grant) SQL() string {
+	sql := "GRANT "
+	sql += g.Privilege.SQL()
+	sql += " TO ROLE " + g.Roles[0].SQL()
+	for _, id := range g.Roles[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (r *Revoke) SQL() string {
+	sql := "REVOKE "
+	sql += r.Privilege.SQL()
+	sql += " FROM ROLE " + r.Roles[0].SQL()
+	for _, id := range r.Roles[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (p *PrivilegeOnTable) SQL() string {
+	sql := p.Privileges[0].SQL()
+	for _, p := range p.Privileges[1:] {
+		sql += ", " + p.SQL()
+	}
+	sql += " ON TABLE "
+	sql += p.Names[0].SQL()
+	for _, id := range p.Names[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (s *SelectPrivilege) SQL() string {
+	sql := "SELECT"
+	if len(s.Columns) > 0 {
+		sql += "("
+		for i, c := range s.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (i *InsertPrivilege) SQL() string {
+	sql := "INSERT"
+	if len(i.Columns) > 0 {
+		sql += "("
+		for j, c := range i.Columns {
+			if j > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (u *UpdatePrivilege) SQL() string {
+	sql := "UPDATE"
+	if len(u.Columns) > 0 {
+		sql += "("
+		for i, c := range u.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (d *DeletePrivilege) SQL() string {
+	return "DELETE"
+}
+
+func (s *SelectPrivilegeOnView) SQL() string {
+	sql := "SELECT ON VIEW " + s.Names[0].SQL()
+	for _, v := range s.Names[1:] {
+		sql += ", " + v.SQL()
+	}
+	return sql
+}
+
+func (e *ExecutePrivilegeOnTableFunction) SQL() string {
+	sql := "EXECUTE ON TABLE FUNCTION " + e.Names[0].SQL()
+	for _, f := range e.Names[1:] {
+		sql += ", " + f.SQL()
+	}
+	return sql
+}
+
+func (r *RolePrivilege) SQL() string {
+	sql := "ROLE " + r.Names[0].SQL()
+	for _, id := range r.Names[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
 }
 
 // ================================================================================
