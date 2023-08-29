@@ -1431,27 +1431,6 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		Name:    id.AsString,
 	}
 
-	// sequence functions
-	if p.Token.IsKeywordLike("SEQUENCE") {
-		sequencePos := p.Token.Pos
-		// consume "SEQUENCE"
-		p.nextToken()
-		name := p.parseIdent()
-		rparen := p.expect(")").Pos
-		return &ast.CallExpr{
-			Rparen:   rparen,
-			Func:     fn,
-			Distinct: false,
-			Args: []*ast.Arg{{
-				Interval: token.InvalidPos,
-				Expr: &ast.SequenceArg{
-					Sequence: sequencePos,
-					Name:     name,
-				},
-			}},
-		}
-	}
-
 	distinct := false
 	if p.Token.Kind == "DISTINCT" {
 		p.nextToken()
@@ -1478,22 +1457,33 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 }
 
 func (p *Parser) parseArg() *ast.Arg {
-	if p.Token.Kind != "INTERVAL" {
+	if p.Token.Kind == "INTERVAL" {
+		pos := p.Token.Pos
+		p.nextToken()
+		e := p.parseExpr()
+		unit := p.parseIdent()
+		return &ast.Arg{
+			Interval:     pos,
+			Expr:         e,
+			IntervalUnit: unit,
+		}
+	} else if p.Token.IsKeywordLike("SEQUENCE") {
+		pos := p.Token.Pos
+		p.nextToken()
+		name := p.parseIdent()
+		return &ast.Arg{
+			Interval: token.InvalidPos,
+			Expr: &ast.SequenceArg{
+				Sequence: pos,
+				Name:     name,
+			},
+		}
+	} else {
 		e := p.parseExpr()
 		return &ast.Arg{
 			Interval: token.InvalidPos,
 			Expr:     e,
 		}
-	}
-
-	pos := p.Token.Pos
-	p.nextToken()
-	e := p.parseExpr()
-	unit := p.parseIdent()
-	return &ast.Arg{
-		Interval:     pos,
-		Expr:         e,
-		IntervalUnit: unit,
 	}
 }
 
