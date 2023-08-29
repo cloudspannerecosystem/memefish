@@ -902,7 +902,7 @@ type ExprArg struct {
 
 // IntervalArg is argument of date function call.
 //
-// INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
+//	INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
 type IntervalArg struct {
 	// pos = Interval
 	// end = (Unit ?? Expr).end
