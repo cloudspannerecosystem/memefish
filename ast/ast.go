@@ -915,7 +915,7 @@ type IntervalArg struct {
 
 // SequenceArg is argument of sequence function call.
 //
-// SEQUENCE {{.Expr | sql}}
+//	SEQUENCE {{.Expr | sql}}
 type SequenceArg struct {
 	// pos = Sequence
 	// end = Expr.end
