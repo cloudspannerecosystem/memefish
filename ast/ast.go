@@ -1725,14 +1725,15 @@ type AlterColumnSet struct {
 
 // DropTable is DROP TABLE statement node.
 //
-//	DROP TABLE {{.Name | sql}}
+//	DROP TABLE {{if .IfExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
 type DropTable struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.

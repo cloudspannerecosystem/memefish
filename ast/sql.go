@@ -925,7 +925,11 @@ func (a *AlterColumnSet) SQL() string {
 }
 
 func (d *DropTable) SQL() string {
-	return "DROP TABLE " + d.Name.SQL()
+	sql := "DROP TABLE "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
 }
 
 func (c *CreateIndex) SQL() string {

@@ -2696,10 +2696,17 @@ func (p *Parser) parseAlterColumn() ast.TableAlternation {
 
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
+	ifExists := false
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("EXISTS")
+		ifExists = true
+	}
 	name := p.parseIdent()
 	return &ast.DropTable{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
