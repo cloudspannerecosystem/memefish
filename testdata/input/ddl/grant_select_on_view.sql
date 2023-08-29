@@ -1,0 +1,1 @@
+GRANT SELECT ON VIEW singernames TO ROLE hr_manager

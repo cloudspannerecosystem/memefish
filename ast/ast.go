@@ -254,6 +254,28 @@ func (SetOnDelete) isTableAlternation()              {}
 func (AlterColumn) isTableAlternation()              {}
 func (AlterColumnSet) isTableAlternation()           {}
 
+// Privilege represents privileges specified by GRANT and REVOKE.
+type Privilege interface {
+	Node
+	isPrivilege()
+}
+
+func (PrivilegeOnTable) isPrivilege()                {}
+func (SelectPrivilegeOnView) isPrivilege()           {}
+func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
+func (RolePrivilege) isPrivilege()                   {}
+
+// TablePrivilege represents privileges on table.
+type TablePrivilege interface {
+	Node
+	isTablePrivilege()
+}
+
+func (SelectPrivilege) isTablePrivilege() {}
+func (InsertPrivilege) isTablePrivilege() {}
+func (UpdatePrivilege) isTablePrivilege() {}
+func (DeletePrivilege) isTablePrivilege() {}
+
 // SchemaType represents types for schema.
 type SchemaType interface {
 	Node
@@ -1555,6 +1577,7 @@ type RowDeletionPolicy struct {
 type CreateView struct {
 	// pos = Create
 	// end = Query.end
+
 	Create token.Pos
 
 	Name      *Ident
@@ -1738,18 +1761,6 @@ type CreateIndex struct {
 	InterleaveIn *InterleaveIn // optional
 }
 
-// CreateRole is CREATE ROLE statement node.
-//
-//	CREATE ROLE {{.Name | sql}}
-type CreateRole struct {
-	// pos = Create
-	// end = Name.end
-
-	Create token.Pos // position of "CREATE" keyword
-
-	Name *Ident
-}
-
 // Storing is STORING clause in CREATE INDEX.
 //
 //	STORING ({{.Columns | sqlJoin ","}})
@@ -1787,6 +1798,18 @@ type DropIndex struct {
 	Name *Ident
 }
 
+// CreateRole is CREATE ROLE statement node.
+//
+//	CREATE ROLE {{.Name | sql}}
+type CreateRole struct {
+	// pos = Create
+	// end = Name.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name *Ident
+}
+
 // DropRole is DROP ROLE statement node.
 //
 //	DROP ROLE {{.Name | sql}}
@@ -1801,58 +1824,124 @@ type DropRole struct {
 
 // Grant is GRANT statement node.
 //
-//	GRANT
-//	{{if .GrantRoleNames}}
-//	ROLE {{.GrantRoleNames | sqlJoin ","}}
-//	{{else}}
-//	{{.Privileges | sqlJoin ","}} ON TABLE {{.TableNames | sqlJoin ","}}
-//	{{end}}
-//	TO ROLE {{.ToRoleNames | sqlJoin ","}}
+//	GRANT {{.Privilege | sql}} TO ROLE {{.Roles | sqlJoin ","}}
 type Grant struct {
 	// pos = Grant
-	// end = ToRoleNames[$].end
+	// end = Roles[$].end
 
 	Grant token.Pos // position of "GRANT" keyword
 
-	ToRoleNames    []*Ident
-	GrantRoleNames []*Ident
-	Privileges     []*Privilege
-	TableNames     []*Ident
+	Privilege Privilege
+	Roles     []*Ident
 }
 
 // Revoke is REVOKE statement node.
 //
-//	REVOKE
-//	{{if .RoleNames}}
-//	ROLE {{ .RevokeRoleNames | sqlJoin "," }}
-//	{{ else }}
-//	{{ .Privileges | sqlJoin ","}} ON TABLE {{ .TableNames | sqlJoin "," }}
-//	{{ end }}
-//	FROM ROLE {{ .FromRoleNames | sqlJoin "," }}
+//	REVOKE {{.Privilege | sql}} FROM ROLE {{.Roles | sqlJoin ","}}
 type Revoke struct {
 	// pos = Revoke
-	// end = Name.end
+	// end = Roles[$].end
 
 	Revoke token.Pos // position of "REVOKE" keyword
 
-	FromRoleNames   []*Ident
-	RevokeRoleNames []*Ident
-	Privileges      []*Privilege
-	TableNames      []*Ident
+	Privilege Privilege // len(Privileges) > 0
+	Roles     []*Ident  // len(Roles) > 0
 }
 
-// Privilege is plivilege type node in schema.
+// PrivilegeOnTable is ON TABLE privilege node in GRANT and REVOKE.
 //
-//	{{.Name}} {{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
-type Privilege struct {
-	// pos = NamePos
-	// end = Rparen + 1 || NamePos + len(Name)
+//	{{.Privileges | sqlJoin ","}} ON TABLE {{.Names | sqlJoin ","}}
+type PrivilegeOnTable struct {
+	// pos = Privileges[0].pos
+	// end = Names[$].end
 
-	NamePos token.Pos // position of this privilege
-	Rparen  token.Pos // position of ")" when len(Columns) > 0
+	Privileges []TablePrivilege // len(Privileges) > 0
+	Names      []*Ident         // len(Names) > 0
+}
 
-	Name    PrivilegeTypeName
+// SelectPrivilege is SELECT ON TABLE privilege node in GRANT and REVOKE.
+//
+//	SELECT{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+type SelectPrivilege struct {
+	// pos = Select
+	// end = Rparen + 1 || Select + 6
+
+	Select token.Pos // position of "SELECT" keyword
+	Rparen token.Pos // position of ")" when len(Columns) > 0
+
 	Columns []*Ident
+}
+
+// InsertPrivilege is INSERT ON TABLE privilege node in GRANT and REVOKE.
+//
+//	INSERT{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+type InsertPrivilege struct {
+	// pos = Insert
+	// end = Rparen + 1 || Insert + 6
+
+	Insert token.Pos // position of "INSERT" keyword
+	Rparen token.Pos // position of ")" when len(Columns) > 0
+
+	Columns []*Ident
+}
+
+// UpdatePrivilege is UPDATE ON TABLE privilege node in GRANT and REVOKE.
+//
+//	UPDATE{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+type UpdatePrivilege struct {
+	// pos = Update
+	// end = Rparen + 1 || Update + 6
+
+	Update token.Pos // position of "UPDATE" keyword
+	Rparen token.Pos // position of ")" when len(Columns) > 0
+
+	Columns []*Ident
+}
+
+// DeletePrivilege is DELETE ON TABLE privilege node in GRANT and REVOKE.
+//
+//	DELETE
+type DeletePrivilege struct {
+	// pos = Delete
+	// end = Delete + 6
+
+	Delete token.Pos // position of "DELETE" keyword
+}
+
+// SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
+//
+//	SELECT ON VIEW {{.Names | sqlJoin ","}}
+type SelectPrivilegeOnView struct {
+	// pos = Select
+	// end = Name[$].end
+
+	Select token.Pos
+
+	Names []*Ident // len(Names) > 0
+}
+
+// ExecutePrivilegeOnTableFunction is EXECUTE ON TABLE FUNCTION privilege node in GRANT and REVOKE.
+//
+//	EXECUTE ON TABLE FUNCTION {{.Names | sqlJoin ","}}
+type ExecutePrivilegeOnTableFunction struct {
+	// pos = Execute
+	// end = Names[$].end
+
+	Execute token.Pos
+
+	Names []*Ident // len(Names) > 0
+}
+
+// RolePrivilege is ROLE privilege node in GRANT and REVOKE.
+//
+//	ROLE {{.Names | sqlJoin ","}}
+type RolePrivilege struct {
+	// pos = Role
+	// end = Names[$].end
+
+	Role token.Pos
+
+	Names []*Ident // len(Names) > 0
 }
 
 // ================================================================================

@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON TABLE FUNCTION READ_SingersNameStream FROM ROLE hr_manager

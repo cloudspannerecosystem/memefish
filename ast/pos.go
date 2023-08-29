@@ -659,14 +659,6 @@ func (c *CreateIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
-func (c *CreateRole) Pos() token.Pos {
-	return c.Create
-}
-
-func (c *CreateRole) End() token.Pos {
-	return c.Name.End()
-}
-
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 
@@ -676,14 +668,65 @@ func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 func (d *DropIndex) Pos() token.Pos { return d.Drop }
 func (d *DropIndex) End() token.Pos { return d.Name.End() }
 
+func (c *CreateRole) Pos() token.Pos { return c.Create }
+func (c *CreateRole) End() token.Pos { return c.Name.End() }
+
 func (d *DropRole) Pos() token.Pos { return d.Drop }
 func (d *DropRole) End() token.Pos { return d.Name.End() }
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
-func (g *Grant) End() token.Pos { return g.ToRoleNames[len(g.ToRoleNames)-1].End() }
+func (g *Grant) End() token.Pos { return g.Roles[len(g.Roles)-1].End() }
 
 func (r *Revoke) Pos() token.Pos { return r.Revoke }
-func (r *Revoke) End() token.Pos { return r.FromRoleNames[len(r.FromRoleNames)-1].End() }
+func (r *Revoke) End() token.Pos { return r.Roles[len(r.Roles)-1].End() }
+
+func (p *PrivilegeOnTable) Pos() token.Pos { return p.Privileges[0].Pos() }
+func (p *PrivilegeOnTable) End() token.Pos { return p.Names[len(p.Names)-1].End() }
+
+func (s *SelectPrivilege) Pos() token.Pos {
+	return s.Select
+}
+
+func (s *SelectPrivilege) End() token.Pos {
+	if !s.Rparen.Invalid() {
+		return s.Rparen + 1
+	}
+	return s.Select + 6
+}
+
+func (i *InsertPrivilege) Pos() token.Pos {
+	return i.Insert
+}
+
+func (i *InsertPrivilege) End() token.Pos {
+	if !i.Rparen.Invalid() {
+		return i.Rparen + 1
+	}
+	return i.Insert + 6
+}
+
+func (u *UpdatePrivilege) Pos() token.Pos {
+	return u.Update
+}
+
+func (u *UpdatePrivilege) End() token.Pos {
+	if !u.Rparen.Invalid() {
+		return u.Rparen + 1
+	}
+	return u.Update + 6
+}
+
+func (d *DeletePrivilege) Pos() token.Pos { return d.Delete }
+func (d *DeletePrivilege) End() token.Pos { return d.Delete + 6 }
+
+func (s *SelectPrivilegeOnView) Pos() token.Pos { return s.Select }
+func (s *SelectPrivilegeOnView) End() token.Pos { return s.Names[len(s.Names)-1].End() }
+
+func (e *ExecutePrivilegeOnTableFunction) Pos() token.Pos { return e.Execute }
+func (e *ExecutePrivilegeOnTableFunction) End() token.Pos { return e.Names[len(e.Names)-1].End() }
+
+func (r *RolePrivilege) Pos() token.Pos { return r.Role }
+func (r *RolePrivilege) End() token.Pos { return r.Names[len(r.Names)-1].End() }
 
 // ================================================================================
 //
@@ -699,14 +742,6 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
-
-func (p *Privilege) Pos() token.Pos { return p.NamePos }
-func (p *Privilege) End() token.Pos {
-	if len(p.Columns) > 0 {
-		return p.Rparen + 1
-	}
-	return p.NamePos + token.Pos(len(p.Name))
-}
 
 // ================================================================================
 //

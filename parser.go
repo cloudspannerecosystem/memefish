@@ -2486,171 +2486,6 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	}
 }
 
-func (p *Parser) parseCreateRole(pos token.Pos) *ast.CreateRole {
-	p.expectKeywordLike("ROLE")
-	name := p.parseIdent()
-	return &ast.CreateRole{
-		Create: pos,
-		Name:   name,
-	}
-
-}
-func (p *Parser) parseDropRole(pos token.Pos) *ast.DropRole {
-	p.expectKeywordLike("ROLE")
-	name := p.parseIdent()
-	return &ast.DropRole{
-		Drop: pos,
-		Name: name,
-	}
-
-}
-func (p *Parser) parseGrant(pos token.Pos) *ast.Grant {
-	g := &ast.Grant{
-		Grant: pos,
-	}
-	if p.Token.IsKeywordLike("ROLE") {
-		p.nextToken()
-		g.GrantRoleNames = p.parseCommaIdentListWithRoleEnd("TO")
-	} else {
-		g.Privileges = p.parsePrivileges()
-		g.TableNames = p.parseCommaIdentListWithRoleEnd("TO")
-	}
-	list := p.parseCommaIdentList()
-	g.ToRoleNames = list
-
-	return g
-}
-
-func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
-	r := &ast.Revoke{
-		Revoke: pos,
-	}
-	if p.Token.IsKeywordLike("ROLE") {
-		p.nextToken()
-		r.RevokeRoleNames = p.parseCommaIdentListWithRoleEnd("FROM")
-	} else {
-		r.Privileges = p.parsePrivileges()
-		r.TableNames = p.parseCommaIdentListWithRoleEnd("FROM")
-	}
-	list := p.parseCommaIdentList()
-	r.FromRoleNames = list
-
-	return r
-}
-
-func (p *Parser) parsePrivileges() []*ast.Privilege {
-	var privs []*ast.Privilege
-	for {
-
-		priv := &ast.Privilege{}
-		switch {
-		default:
-			p.panicfAtToken(&p.Token, "expected SELECT or UPDATE or INSERT or DELETE, but: %s", p.Token.AsString)
-		// TODO only SELECT is keywords, but adding others breaks codes.
-		case p.Token.Kind == "SELECT":
-			priv.Name = ast.PrivilegeSelectTypeName
-		case p.Token.IsKeywordLike("UPDATE"):
-			priv.Name = ast.PrivilegeUpdateTypeName
-		case p.Token.IsKeywordLike("INSERT"):
-			priv.Name = ast.PrivilegeInsertTypeName
-		case p.Token.IsKeywordLike("DELETE"):
-			priv.Name = ast.PrivilegeDeleteTypeName
-		}
-		p.nextToken()
-		// can grant DELETE only at the table level.
-		// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#notes_and_restrictions
-		if p.Token.Kind == "(" && priv.Name != ast.PrivilegeDeleteTypeName {
-			p.nextToken()
-			priv.Columns = p.parseCommaIdentListWithTokenKindEnd(")")
-		}
-		privs = append(privs, priv)
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		} else if p.Token.Kind == "ON" {
-			p.nextToken()
-			if p.Token.IsKeywordLike("TABLE") {
-				p.nextToken()
-				break
-			} else {
-				p.panicfAtToken(&p.Token, "got %q, want , or TABLE", p.Token.AsString)
-			}
-		} else {
-			p.panicfAtToken(&p.Token, "got %q, want , or ON TABLE", p.Token.AsString)
-		}
-	}
-	return privs
-}
-
-func (p *Parser) parseCommaIdentList() []*ast.Ident {
-	ids := []*ast.Ident{}
-	for p.Token.Kind != token.TokenEOF {
-		ids = append(ids, p.parseIdent())
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		}
-		break
-	}
-	return ids
-}
-
-func (p *Parser) parseCommaIdentListWithRoleEnd(fromOrTo token.TokenKind) []*ast.Ident {
-	ids := []*ast.Ident{}
-	if p.isRoleEnd(fromOrTo) {
-		return ids
-	}
-	for p.Token.Kind != token.TokenEOF {
-		ids = append(ids, p.parseIdent())
-		if p.isRoleEnd(fromOrTo) {
-			return ids
-		}
-
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		} else {
-			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", fromOrTo, p.Token.AsString)
-		}
-	}
-	return ids
-}
-
-func (p *Parser) isRoleEnd(fromOrTo token.TokenKind) bool {
-	orig := *p
-	if p.Token.Kind != fromOrTo {
-		return false
-	}
-	p.nextToken()
-	if p.Token.IsKeywordLike("ROLE") {
-		p.nextToken()
-		return true
-	}
-	*p = orig
-	return false
-}
-
-func (p *Parser) parseCommaIdentListWithTokenKindEnd(end token.TokenKind) []*ast.Ident {
-	ids := []*ast.Ident{}
-	if p.Token.Kind == end {
-		p.nextToken()
-		return ids
-	}
-	for p.Token.Kind != token.TokenEOF {
-		ids = append(ids, p.parseIdent())
-		if p.Token.Kind == end {
-			p.nextToken()
-			return ids
-		}
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		} else {
-			p.panicfAtToken(&p.Token, "expected , or %s, but: %s", end, p.Token.AsString)
-		}
-	}
-	return ids
-}
 func (p *Parser) tryParseStoring() *ast.Storing {
 	if !p.Token.IsKeywordLike("STORING") {
 		return nil
@@ -2875,6 +2710,206 @@ func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 		Drop: pos,
 		Name: name,
 	}
+}
+
+func (p *Parser) parseCreateRole(pos token.Pos) *ast.CreateRole {
+	p.expectKeywordLike("ROLE")
+	name := p.parseIdent()
+	return &ast.CreateRole{
+		Create: pos,
+		Name:   name,
+	}
+
+}
+
+func (p *Parser) parseDropRole(pos token.Pos) *ast.DropRole {
+	p.expectKeywordLike("ROLE")
+	name := p.parseIdent()
+	return &ast.DropRole{
+		Drop: pos,
+		Name: name,
+	}
+
+}
+
+func (p *Parser) parseGrant(pos token.Pos) *ast.Grant {
+	privilege := p.parsePrivilege()
+	p.expect("TO")
+	p.expectKeywordLike("ROLE")
+	roles := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		roles = append(roles, p.parseIdent())
+	}
+	return &ast.Grant{
+		Grant:     pos,
+		Privilege: privilege,
+		Roles:     roles,
+	}
+}
+
+func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
+	privilege := p.parsePrivilege()
+	p.expect("FROM")
+	p.expectKeywordLike("ROLE")
+	roles := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		roles = append(roles, p.parseIdent())
+	}
+	return &ast.Revoke{
+		Revoke:    pos,
+		Privilege: privilege,
+		Roles:     roles,
+	}
+}
+
+func (p *Parser) parsePrivilege() ast.Privilege {
+	if s := p.tryParseSelectPrivilegeOnView(); s != nil {
+		return s
+	}
+	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
+		return e
+	}
+	if r := p.tryRolePrivilege(); r != nil {
+		return r
+	}
+	return p.parsePrivilegeOnTable()
+}
+
+func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
+	if p.Token.Kind != "SELECT" {
+		return nil
+	}
+	lexer := p.Lexer.Clone()
+	pos := p.expect("SELECT").Pos
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if !p.Token.IsKeywordLike("VIEW") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("VIEW")
+	names := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		names = append(names, p.parseIdent())
+	}
+	return &ast.SelectPrivilegeOnView{
+		Select: pos,
+		Names:  names,
+	}
+}
+
+func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilegeOnTableFunction {
+	if !p.Token.IsKeywordLike("EXECUTE") {
+		return nil
+	}
+	pos := p.expectKeywordLike("EXECUTE").Pos
+	p.expect("ON")
+	p.expectKeywordLike("TABLE")
+	p.expectKeywordLike("FUNCTION")
+	names := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		names = append(names, p.parseIdent())
+	}
+	return &ast.ExecutePrivilegeOnTableFunction{
+		Execute: pos,
+		Names:   names,
+	}
+}
+
+func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
+	if !p.Token.IsKeywordLike("ROLE") {
+		return nil
+	}
+	pos := p.expectKeywordLike("ROLE").Pos
+	names := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		names = append(names, p.parseIdent())
+	}
+	return &ast.RolePrivilege{
+		Role:  pos,
+		Names: names,
+	}
+}
+
+func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
+	ps := []ast.TablePrivilege{p.parseTablePrivilege()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		ps = append(ps, p.parseTablePrivilege())
+	}
+	p.expect("ON")
+	p.expectKeywordLike("TABLE")
+	names := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		names = append(names, p.parseIdent())
+	}
+	return &ast.PrivilegeOnTable{
+		Privileges: ps,
+		Names:      names,
+	}
+}
+
+func (p *Parser) parseTablePrivilege() ast.TablePrivilege {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.Kind == "SELECT":
+		p.nextToken()
+		columns, rparen := p.tryParseTablePrivilegeColumns()
+		return &ast.SelectPrivilege{
+			Select:  pos,
+			Rparen:  rparen,
+			Columns: columns,
+		}
+	case p.Token.IsKeywordLike("INSERT"):
+		p.nextToken()
+		columns, rparen := p.tryParseTablePrivilegeColumns()
+		return &ast.InsertPrivilege{
+			Insert:  pos,
+			Rparen:  rparen,
+			Columns: columns,
+		}
+	case p.Token.IsKeywordLike("UPDATE"):
+		p.nextToken()
+		columns, rparen := p.tryParseTablePrivilegeColumns()
+		return &ast.UpdatePrivilege{
+			Update:  pos,
+			Rparen:  rparen,
+			Columns: columns,
+		}
+	case p.Token.IsKeywordLike("DELETE"):
+		p.nextToken()
+		return &ast.DeletePrivilege{
+			Delete: pos,
+		}
+	}
+	if p.Token.Kind != token.TokenIdent {
+		panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: INSERT, UPDATE, DELETE, but: %s", p.Token.AsString))
+	} else {
+		panic(p.errorfAtToken(&p.Token, "expected token: SELECT, <ident>, but: %s", p.Token.Kind))
+	}
+}
+
+func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
+	if p.Token.Kind != "(" {
+		return nil, token.InvalidPos
+	}
+	p.nextToken()
+	columns := []*ast.Ident{p.parseIdent()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		columns = append(columns, p.parseIdent())
+	}
+	rparen := p.expect(")").Pos
+	return columns, rparen
 }
 
 func (p *Parser) parseSchemaType() ast.SchemaType {
