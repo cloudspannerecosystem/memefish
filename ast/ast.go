@@ -147,6 +147,7 @@ func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
 func (NumericLiteral) isExpr()   {}
 
+// Arg represents argument of function call.
 type Arg interface {
 	Node
 	isArg()
@@ -889,6 +890,9 @@ type CallExpr struct {
 	Args     []Arg
 }
 
+// ExprArg is argument of the generic function call.
+//
+// {{.Expr | sql}}
 type ExprArg struct {
 	// pos = Expr.pos
 	// end = Expr.end
@@ -896,6 +900,9 @@ type ExprArg struct {
 	Expr Expr
 }
 
+// IntervalArg is argument of date function call.
+//
+// INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
 type IntervalArg struct {
 	// pos = Interval
 	// end = (Unit ?? Expr).end
@@ -906,6 +913,9 @@ type IntervalArg struct {
 	Unit *Ident
 }
 
+// SequenceArg is argument of sequence function call.
+//
+// SEQUENCE {{.Expr | sql}}
 type SequenceArg struct {
 	// pos = Sequence
 	// end = Expr.end
