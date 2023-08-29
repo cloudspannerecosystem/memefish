@@ -1432,8 +1432,10 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	}
 
 	// sequence functions
-	if id.IsIdent("GET_NEXT_SEQUENCE_VALUE") || id.IsIdent("GET_INTERNAL_SEQUENCE_STATE") {
-		sequencePos := p.expectKeywordLike("SEQUENCE").Pos
+	if p.Token.IsKeywordLike("SEQUENCE") {
+		sequencePos := p.Token.Pos
+		// consume "SEQUENCE"
+		p.nextToken()
 		name := p.parseIdent()
 		rparen := p.expect(")").Pos
 		return &ast.CallExpr{
