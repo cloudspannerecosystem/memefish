@@ -892,7 +892,7 @@ type CallExpr struct {
 
 // ExprArg is argument of the generic function call.
 //
-// {{.Expr | sql}}
+//	{{.Expr | sql}}
 type ExprArg struct {
 	// pos = Expr.pos
 	// end = Expr.end
