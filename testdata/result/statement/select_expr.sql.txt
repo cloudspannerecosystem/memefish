@@ -591,10 +591,9 @@ select 1 + 2, 1 - 2,
             Name:    "date_add",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.DateLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.DateLiteral{
                 Date:  523,
                 Value: &ast.StringLiteral{
                   ValuePos: 528,
@@ -602,9 +601,8 @@ select 1 + 2, 1 - 2,
                   Value:    "2019-09-01",
                 },
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
-            &ast.Arg{
+            &ast.IntervalArg{
               Interval: 542,
               Expr:     &ast.IntLiteral{
                 ValuePos: 551,
@@ -612,7 +610,7 @@ select 1 + 2, 1 - 2,
                 Base:     10,
                 Value:    "5",
               },
-              IntervalUnit: &ast.Ident{
+              Unit: &ast.Ident{
                 NamePos: 553,
                 NameEnd: 556,
                 Name:    "day",
@@ -630,10 +628,9 @@ select 1 + 2, 1 - 2,
             Name:    "timestamp_add",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.TimestampLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.TimestampLiteral{
                 Timestamp: 580,
                 Value:     &ast.StringLiteral{
                   ValuePos: 590,
@@ -641,9 +638,8 @@ select 1 + 2, 1 - 2,
                   Value:    "2019-09-01 08:11:22",
                 },
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
-            &ast.Arg{
+            &ast.IntervalArg{
               Interval: 613,
               Expr:     &ast.IntLiteral{
                 ValuePos: 622,
@@ -651,7 +647,7 @@ select 1 + 2, 1 - 2,
                 Base:     10,
                 Value:    "5",
               },
-              IntervalUnit: &ast.Ident{
+              Unit: &ast.Ident{
                 NamePos: 624,
                 NameEnd: 628,
                 Name:    "hour",
@@ -866,10 +862,9 @@ select 1 + 2, 1 - 2,
               Name:    "IF",
             },
             Distinct: false,
-            Args:     []*ast.Arg{
-              &ast.Arg{
-                Interval: -1,
-                Expr:     &ast.BinaryExpr{
+            Args:     []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.BinaryExpr{
                   Op:   ">",
                   Left: &ast.IntLiteral{
                     ValuePos: 777,
@@ -884,27 +879,22 @@ select 1 + 2, 1 - 2,
                     Value:    "1",
                   },
                 },
-                IntervalUnit: (*ast.Ident)(nil),
               },
-              &ast.Arg{
-                Interval: -1,
-                Expr:     &ast.IntLiteral{
+              &ast.ExprArg{
+                Expr: &ast.IntLiteral{
                   ValuePos: 784,
                   ValueEnd: 785,
                   Base:     10,
                   Value:    "1",
                 },
-                IntervalUnit: (*ast.Ident)(nil),
               },
-              &ast.Arg{
-                Interval: -1,
-                Expr:     &ast.IntLiteral{
+              &ast.ExprArg{
+                Expr: &ast.IntLiteral{
                   ValuePos: 787,
                   ValueEnd: 788,
                   Base:     10,
                   Value:    "2",
                 },
-                IntervalUnit: (*ast.Ident)(nil),
               },
             },
           },

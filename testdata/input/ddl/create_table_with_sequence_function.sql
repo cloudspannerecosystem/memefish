@@ -1,0 +1,6 @@
+CREATE TABLE foo
+(
+    foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)),
+    bar STRING( MAX),
+    id  INT64
+)PRIMARY KEY (id)

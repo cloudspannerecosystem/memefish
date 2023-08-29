@@ -147,6 +147,16 @@ func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
 func (NumericLiteral) isExpr()   {}
 
+// Arg represents argument of function call.
+type Arg interface {
+	Node
+	isArg()
+}
+
+func (ExprArg) isArg()     {}
+func (IntervalArg) isArg() {}
+func (SequenceArg) isArg() {}
+
 // InCondition is right-side value of IN operator.
 type InCondition interface {
 	Node
@@ -877,24 +887,42 @@ type CallExpr struct {
 
 	Func     *Ident
 	Distinct bool
-	Args     []*Arg
+	Args     []Arg
 }
 
-// Arg is function call argument.
+// ExprArg is argument of the generic function call.
 //
-//	{{if .IntervalUnit}}
-//	  INTERVAL {{.Expr | sql}} {{.IntervalUnit | sql}}
-//	{{else}}
-//	  {{.Expr | sql}}
-//	{{end}}
-type Arg struct {
-	// pos = Interval || Expr.pos
-	// end = (IntervalUnit ?? Expr).end
+//	{{.Expr | sql}}
+type ExprArg struct {
+	// pos = Expr.pos
+	// end = Expr.end
+
+	Expr Expr
+}
+
+// IntervalArg is argument of date function call.
+//
+//	INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
+type IntervalArg struct {
+	// pos = Interval
+	// end = (Unit ?? Expr).end
 
 	Interval token.Pos // position of "INTERVAL" keyword
 
-	Expr         Expr
-	IntervalUnit *Ident // optional
+	Expr Expr
+	Unit *Ident // optional
+}
+
+// SequenceArg is argument of sequence function call.
+//
+//	SEQUENCE {{.Expr | sql}}
+type SequenceArg struct {
+	// pos = Sequence
+	// end = Expr.end
+
+	Sequence token.Pos // position of "SEQUENCE" keyword
+
+	Expr Expr
 }
 
 // CountStarExpr is node just for COUNT(*).

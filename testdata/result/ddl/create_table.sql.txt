@@ -115,24 +115,20 @@ create table foo (
             Name:    "concat",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.Ident{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
                 NamePos: 161,
                 NameEnd: 164,
                 Name:    "baz",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 166,
                 ValueEnd: 169,
                 Value:    "a",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
@@ -178,7 +174,7 @@ create table foo (
             Name:    "current_timestamp",
           },
           Distinct: false,
-          Args:     []*ast.Arg(nil),
+          Args:     []ast.Arg(nil),
         },
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),

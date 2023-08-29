@@ -1458,7 +1458,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		distinct = true
 	}
 
-	var args []*ast.Arg
+	var args []ast.Arg
 	if p.Token.Kind != ")" {
 		for p.Token.Kind != token.TokenEOF {
 			args = append(args, p.parseArg())
@@ -1477,23 +1477,50 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	}
 }
 
-func (p *Parser) parseArg() *ast.Arg {
+func (p *Parser) parseArg() ast.Arg {
+	if i := p.tryParseIntervalArg(); i != nil {
+		return i
+	}
+	if s := p.tryParseSequenceArg(); s != nil {
+		return s
+	}
+	return p.parseExprArg()
+}
+
+func (p *Parser) tryParseIntervalArg() *ast.IntervalArg {
 	if p.Token.Kind != "INTERVAL" {
-		e := p.parseExpr()
-		return &ast.Arg{
-			Interval: token.InvalidPos,
-			Expr:     e,
-		}
+		return nil
 	}
 
 	pos := p.Token.Pos
 	p.nextToken()
 	e := p.parseExpr()
 	unit := p.parseIdent()
-	return &ast.Arg{
-		Interval:     pos,
-		Expr:         e,
-		IntervalUnit: unit,
+	return &ast.IntervalArg{
+		Interval: pos,
+		Expr:     e,
+		Unit:     unit,
+	}
+}
+
+func (p *Parser) tryParseSequenceArg() *ast.SequenceArg {
+	if !p.Token.IsKeywordLike("SEQUENCE") {
+		return nil
+	}
+
+	pos := p.Token.Pos
+	p.nextToken()
+	e := p.parseExpr()
+	return &ast.SequenceArg{
+		Sequence: pos,
+		Expr:     e,
+	}
+}
+
+func (p *Parser) parseExprArg() *ast.ExprArg {
+	e := p.parseExpr()
+	return &ast.ExprArg{
+		Expr: e,
 	}
 }
 

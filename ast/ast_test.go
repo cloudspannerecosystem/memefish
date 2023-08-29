@@ -78,6 +78,12 @@ func TestExpr(t *testing.T) {
 	Expr(&NumericLiteral{}).isExpr()
 }
 
+func TestArg(t *testing.T) {
+	Arg(&IntervalArg{}).isArg()
+	Arg(&ExprArg{}).isArg()
+	Arg(&SequenceArg{}).isArg()
+}
+
 func TestInCondition(t *testing.T) {
 	InCondition(&ValuesInCondition{}).isInCondition()
 	InCondition(&UnnestInCondition{}).isInCondition()
