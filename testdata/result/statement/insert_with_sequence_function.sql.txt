@@ -34,18 +34,14 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
                 Name:    "GET_NEXT_SEQUENCE_VALUE",
               },
               Distinct: false,
-              Args:     []*ast.Arg{
-                &ast.Arg{
-                  Interval: -1,
-                  Expr:     &ast.SequenceArg{
-                    Sequence: 53,
-                    Name:     &ast.Ident{
-                      NamePos: 62,
-                      NameEnd: 73,
-                      Name:    "my_sequence",
-                    },
+              Args:     []ast.Arg{
+                &ast.SequenceArg{
+                  Sequence: 53,
+                  Expr:     &ast.Ident{
+                    NamePos: 62,
+                    NameEnd: 73,
+                    Name:    "my_sequence",
                   },
-                  IntervalUnit: (*ast.Ident)(nil),
                 },
               },
             },

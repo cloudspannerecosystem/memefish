@@ -314,19 +314,19 @@ func (i *IndexExpr) End() token.Pos { return i.Rbrack + 1 }
 func (c *CallExpr) Pos() token.Pos { return c.Func.Pos() }
 func (c *CallExpr) End() token.Pos { return c.Rparen + 1 }
 
-func (a *Arg) Pos() token.Pos {
-	if !a.Interval.Invalid() {
-		return a.Interval
+func (e *ExprArg) Pos() token.Pos { return e.Expr.Pos() }
+func (e *ExprArg) End() token.Pos { return e.Expr.End() }
+
+func (i *IntervalArg) Pos() token.Pos { return i.Interval }
+func (i *IntervalArg) End() token.Pos {
+	if i.Unit != nil {
+		return i.Unit.End()
 	}
-	return a.Expr.Pos()
+	return i.Expr.End()
 }
 
-func (a *Arg) End() token.Pos {
-	if a.IntervalUnit != nil {
-		return a.IntervalUnit.End()
-	}
-	return a.Expr.End()
-}
+func (s *SequenceArg) Pos() token.Pos { return s.Sequence }
+func (s *SequenceArg) End() token.Pos { return s.Expr.End() }
 
 func (c *CountStarExpr) Pos() token.Pos { return c.Count }
 func (c *CountStarExpr) End() token.Pos { return c.Rparen + 1 }
@@ -751,6 +751,3 @@ func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
 
 func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
 func (o *SequenceOption) End() token.Pos { return o.Value.End() }
-
-func (s *SequenceArg) Pos() token.Pos { return s.Sequence }
-func (s *SequenceArg) End() token.Pos { return s.Name.End() }

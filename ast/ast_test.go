@@ -55,7 +55,6 @@ func TestExpr(t *testing.T) {
 	Expr(&IndexExpr{}).isExpr()
 	Expr(&CallExpr{}).isExpr()
 	Expr(&CountStarExpr{}).isExpr()
-	Expr(&SequenceArg{}).isExpr()
 	Expr(&CastExpr{}).isExpr()
 	Expr(&ExtractExpr{}).isExpr()
 	Expr(&CaseExpr{}).isExpr()
@@ -77,6 +76,12 @@ func TestExpr(t *testing.T) {
 	Expr(&DateLiteral{}).isExpr()
 	Expr(&TimestampLiteral{}).isExpr()
 	Expr(&NumericLiteral{}).isExpr()
+}
+
+func TestArg(t *testing.T) {
+	Arg(&IntervalArg{}).isArg()
+	Arg(&ExprArg{}).isArg()
+	Arg(&SequenceArg{}).isArg()
 }
 
 func TestInCondition(t *testing.T) {

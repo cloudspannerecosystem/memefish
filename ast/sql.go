@@ -489,11 +489,24 @@ func (c *CallExpr) SQL() string {
 	return sql
 }
 
-func (a *Arg) SQL() string {
-	if a.IntervalUnit != nil {
-		return "INTERVAL " + a.Expr.SQL() + " " + a.IntervalUnit.SQL()
+func (o *SequenceOption) SQL() string {
+	return o.Name.SQL() + " = " + o.Value.SQL()
+}
+
+func (s *ExprArg) SQL() string {
+	return s.Expr.SQL()
+}
+
+func (i *IntervalArg) SQL() string {
+	sql := "INTERVAL " + i.Expr.SQL()
+	if i.Unit != nil {
+		sql += " " + i.Unit.SQL()
 	}
-	return a.Expr.SQL()
+	return sql
+}
+
+func (s *SequenceArg) SQL() string {
+	return "SEQUENCE " + s.Expr.SQL()
 }
 
 func (*CountStarExpr) SQL() string {
@@ -1127,12 +1140,4 @@ func (u *UpdateItem) SQL() string {
 	}
 	sql += " = " + u.Expr.SQL()
 	return sql
-}
-
-func (o *SequenceOption) SQL() string {
-	return o.Name.SQL() + " = " + o.Value.SQL()
-}
-
-func (s *SequenceArg) SQL() string {
-	return "SEQUENCE " + s.Name.SQL()
 }

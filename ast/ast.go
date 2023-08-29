@@ -125,7 +125,6 @@ func (SelectorExpr) isExpr()     {}
 func (IndexExpr) isExpr()        {}
 func (CallExpr) isExpr()         {}
 func (CountStarExpr) isExpr()    {}
-func (SequenceArg) isExpr()      {}
 func (CastExpr) isExpr()         {}
 func (ExtractExpr) isExpr()      {}
 func (CaseExpr) isExpr()         {}
@@ -147,6 +146,15 @@ func (BytesLiteral) isExpr()     {}
 func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
 func (NumericLiteral) isExpr()   {}
+
+type Arg interface {
+	Node
+	isArg()
+}
+
+func (ExprArg) isArg()     {}
+func (IntervalArg) isArg() {}
+func (SequenceArg) isArg() {}
 
 // InCondition is right-side value of IN operator.
 type InCondition interface {
@@ -878,24 +886,33 @@ type CallExpr struct {
 
 	Func     *Ident
 	Distinct bool
-	Args     []*Arg
+	Args     []Arg
 }
 
-// Arg is function call argument.
-//
-//	{{if .IntervalUnit}}
-//	  INTERVAL {{.Expr | sql}} {{.IntervalUnit | sql}}
-//	{{else}}
-//	  {{.Expr | sql}}
-//	{{end}}
-type Arg struct {
-	// pos = Interval || Expr.pos
-	// end = (IntervalUnit ?? Expr).end
+type ExprArg struct {
+	// pos = Expr.pos
+	// end = Expr.end
+
+	Expr Expr
+}
+
+type IntervalArg struct {
+	// pos = Interval
+	// end = (Unit ?? Expr).end
 
 	Interval token.Pos // position of "INTERVAL" keyword
 
-	Expr         Expr
-	IntervalUnit *Ident // optional
+	Expr Expr
+	Unit *Ident
+}
+
+type SequenceArg struct {
+	// pos = Sequence
+	// end = Expr.end
+
+	Sequence token.Pos // position of "SEQUENCE" keyword
+
+	Expr Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
@@ -1992,16 +2009,4 @@ type SequenceOption struct {
 
 	Name  *Ident
 	Value Expr
-}
-
-// SequenceArg is sequence expression node.
-//
-//	SEQUENCE {{.Name | sql}}
-type SequenceArg struct {
-	// pos = Sequence
-	// end = Name.end
-
-	Sequence token.Pos // position of "SEQUENCE" keyword
-
-	Name *Ident
 }

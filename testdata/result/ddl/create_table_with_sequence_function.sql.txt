@@ -40,18 +40,14 @@ CREATE TABLE foo
             Name:    "GET_NEXT_SEQUENCE_VALUE",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.SequenceArg{
-                Sequence: 66,
-                Name:     &ast.Ident{
-                  NamePos: 75,
-                  NameEnd: 87,
-                  Name:    "foo_sequence",
-                },
+          Args:     []ast.Arg{
+            &ast.SequenceArg{
+              Sequence: 66,
+              Expr:     &ast.Ident{
+                NamePos: 75,
+                NameEnd: 87,
+                Name:    "foo_sequence",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },

@@ -39,15 +39,13 @@ SELECT
             Name:    "DATE",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 34,
                 ValueEnd: 46,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
@@ -101,15 +99,13 @@ SELECT
             Name:    "TIMESTAMP",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 207,
                 ValueEnd: 219,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
@@ -133,15 +129,13 @@ SELECT
             Name:    "DATE",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 256,
                 ValueEnd: 268,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
@@ -163,15 +157,13 @@ SELECT
             Name:    "TIMESTAMP",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 290,
                 ValueEnd: 302,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },

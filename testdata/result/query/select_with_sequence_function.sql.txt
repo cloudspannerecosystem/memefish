@@ -19,18 +19,14 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
             Name:    "GET_NEXT_SEQUENCE_VALUE",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.SequenceArg{
-                Sequence: 31,
-                Name:     &ast.Ident{
-                  NamePos: 40,
-                  NameEnd: 51,
-                  Name:    "my_sequence",
-                },
+          Args:     []ast.Arg{
+            &ast.SequenceArg{
+              Sequence: 31,
+              Expr:     &ast.Ident{
+                NamePos: 40,
+                NameEnd: 51,
+                Name:    "my_sequence",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
