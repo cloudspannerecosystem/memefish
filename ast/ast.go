@@ -910,7 +910,7 @@ type IntervalArg struct {
 	Interval token.Pos // position of "INTERVAL" keyword
 
 	Expr Expr
-	Unit *Ident
+	Unit *Ident // optional
 }
 
 // SequenceArg is argument of sequence function call.
