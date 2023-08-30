@@ -940,7 +940,11 @@ func (c *CreateIndex) SQL() string {
 	if c.NullFiltered {
 		sql += "NULL_FILTERED "
 	}
-	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
+	sql += "INDEX "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
 	for i, k := range c.Keys {
 		if i != 0 {
 			sql += ", "

@@ -2451,6 +2451,15 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	}
 
 	p.expectKeywordLike("INDEX")
+
+	ifNotExists := false
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("NOT")
+		p.expect("EXISTS")
+		ifNotExists = true
+	}
+
 	name := p.parseIdent()
 
 	p.expect("ON")
@@ -2478,6 +2487,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		Rparen:       rparen,
 		Unique:       unique,
 		NullFiltered: nullFiltered,
+		IfNotExists:  ifNotExists,
 		Name:         name,
 		TableName:    tableName,
 		Keys:         keys,

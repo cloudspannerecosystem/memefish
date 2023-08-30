@@ -1,0 +1,37 @@
+--- create_index_if_not_exists.sql
+create index if not exists foo_bar on foo (bar)
+
+--- AST
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       46,
+  Unique:       false,
+  NullFiltered: false,
+  IfNotExists:  true,
+  Name:         &ast.Ident{
+    NamePos: 27,
+    NameEnd: 34,
+    Name:    "foo_bar",
+  },
+  TableName: &ast.Ident{
+    NamePos: 38,
+    NameEnd: 41,
+    Name:    "foo",
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 43,
+        NameEnd: 46,
+        Name:    "bar",
+      },
+      Dir: "",
+    },
+  },
+  Storing:      (*ast.Storing)(nil),
+  InterleaveIn: (*ast.InterleaveIn)(nil),
+}
+
+--- SQL
+CREATE INDEX IF NOT EXISTS foo_bar ON foo (bar)

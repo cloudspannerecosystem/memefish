@@ -1741,7 +1741,7 @@ type DropTable struct {
 //	CREATE
 //	  {{if .Unique}}UNIQUE{{end}}
 //	  {{if .NullFiltered}}NULL_FILTERED{{end}}
-//	INDEX {{.Name | sql}} ON {{.TableName | sql}} (
+//	INDEX {{if .IfExists}}IF NOT EXISTS{{end}} {{.Name | sql}} ON {{.TableName | sql}} (
 //	  {{.Keys | sqlJoin ","}}
 //	)
 //	{{.Storing | sqlOpt}}
@@ -1755,6 +1755,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 	Name         *Ident
 	TableName    *Ident
 	Keys         []*IndexKey
