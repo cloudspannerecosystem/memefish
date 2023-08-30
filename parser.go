@@ -2730,10 +2730,17 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
+	ifExists := false
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("EXISTS")
+		ifExists = true
+	}
 	name := p.parseIdent()
 	return &ast.DropIndex{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 

@@ -1791,14 +1791,15 @@ type InterleaveIn struct {
 
 // DropIndex is DROP INDEX statement node.
 //
-//	DROP INDEX {{.Name | sql}}
+//	DROP INDEX {{.IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropIndex struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // CreateRole is CREATE ROLE statement node.

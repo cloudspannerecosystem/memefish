@@ -982,7 +982,11 @@ func (i *InterleaveIn) SQL() string {
 }
 
 func (d *DropIndex) SQL() string {
-	return "DROP INDEX " + d.Name.SQL()
+	sql := "DROP INDEX "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
 }
 
 func (c *CreateRole) SQL() string {
