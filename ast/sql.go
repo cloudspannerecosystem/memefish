@@ -873,7 +873,11 @@ func (a *AlterTable) SQL() string {
 }
 
 func (a *AddColumn) SQL() string {
-	return "ADD COLUMN " + a.Column.SQL()
+	sql := "ADD COLUMN "
+	if a.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	return sql + a.Column.SQL()
 }
 
 func (a *AddTableConstraint) SQL() string {

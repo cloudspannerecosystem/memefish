@@ -1600,14 +1600,15 @@ type AlterTable struct {
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
-//	ADD COLUMN {{.Column | sql}}
+//	ADD COLUMN {{.IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
 type AddColumn struct {
 	// pos = Add
 	// end = Column.end
 
 	Add token.Pos // position of "ADD" keyword
 
-	Column *ColumnDef
+	IfNotExists bool
+	Column      *ColumnDef
 }
 
 // AddTableConstraint is ADD table_constraint clause in ALTER TABLE.

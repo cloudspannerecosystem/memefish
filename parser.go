@@ -2571,10 +2571,18 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 	switch {
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
+		ifNotExists := false
+		if p.Token.IsKeywordLike("IF") {
+			p.nextToken()
+			p.expect("NOT")
+			p.expect("EXISTS")
+			ifNotExists = true
+		}
 		column := p.parseColumnDef()
 		alternation = &ast.AddColumn{
-			Add:    pos,
-			Column: column,
+			Add:         pos,
+			IfNotExists: ifNotExists,
+			Column:      column,
 		}
 	case p.Token.IsKeywordLike("CONSTRAINT"):
 		alternation = &ast.AddTableConstraint{
