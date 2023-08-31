@@ -2030,13 +2030,7 @@ func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
-	ifNotExists := false
-	if p.Token.IsKeywordLike("IF") {
-		p.nextToken()
-		p.expect("NOT")
-		p.expect("EXISTS")
-		ifNotExists = true
-	}
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 
 	// This loop allows parsing trailing comma intentionally.
@@ -2102,13 +2096,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
-	ifNotExists := false
-	if p.Token.IsKeywordLike("IF") {
-		p.nextToken()
-		p.expect("NOT")
-		p.expect("EXISTS")
-		ifNotExists = true
-	}
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 
 	p.expectKeywordLike("OPTIONS")
@@ -2452,13 +2440,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	p.expectKeywordLike("INDEX")
 
-	ifNotExists := false
-	if p.Token.IsKeywordLike("IF") {
-		p.nextToken()
-		p.expect("NOT")
-		p.expect("EXISTS")
-		ifNotExists = true
-	}
+	ifNotExists := p.parseIfNotExists()
 
 	name := p.parseIdent()
 
@@ -2571,13 +2553,7 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 	switch {
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
-		ifNotExists := false
-		if p.Token.IsKeywordLike("IF") {
-			p.nextToken()
-			p.expect("NOT")
-			p.expect("EXISTS")
-			ifNotExists = true
-		}
+		ifNotExists := p.parseIfNotExists()
 		column := p.parseColumnDef()
 		alternation = &ast.AddColumn{
 			Add:         pos,
@@ -2714,12 +2690,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlternation {
 
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
-	ifExists := false
-	if p.Token.IsKeywordLike("IF") {
-		p.nextToken()
-		p.expect("EXISTS")
-		ifExists = true
-	}
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropTable{
 		Drop:     pos,
@@ -2730,12 +2701,7 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
-	ifExists := false
-	if p.Token.IsKeywordLike("IF") {
-		p.nextToken()
-		p.expect("EXISTS")
-		ifExists = true
-	}
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropIndex{
 		Drop:     pos,
@@ -3014,6 +2980,25 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 	}
 
 	panic(p.errorfAtToken(id, "expect ident: %s, %s, but: %s", strings.Join(scalarSchemaTypes, ","), strings.Join(sizedSchemaTypes, ","), id.AsString))
+}
+
+func (p *Parser) parseIfNotExists() bool {
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("NOT")
+		p.expect("EXISTS")
+		return true
+	}
+	return false
+}
+
+func (p *Parser) parseIfExists() bool {
+	if p.Token.IsKeywordLike("IF") {
+		p.nextToken()
+		p.expect("EXISTS")
+		return true
+	}
+	return false
 }
 
 // ================================================================================
