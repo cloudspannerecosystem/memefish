@@ -1490,17 +1490,19 @@ type TableConstraint struct {
 
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
 //
-//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}})
+//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}}) {{.OnDelete}}
 type ForeignKey struct {
 	// pos = Foreign
 	// end = Rparen + 1
 
-	Foreign token.Pos // position of "FOREIGN" keyword
-	Rparen  token.Pos // position of ")" after reference columns
+	Foreign     token.Pos // position of "FOREIGN" keyword
+	Rparen      token.Pos // position of ")" after reference columns
+	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	Columns          []*Ident
 	ReferenceTable   *Ident
 	ReferenceColumns []*Ident // len(ReferenceColumns) > 0
+	OnDelete         OnDeleteAction
 }
 
 // Check is check constraint in CREATE TABLE and ALTER TABLE.

@@ -19,9 +19,10 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
         Name:    "fkname",
       },
       Constraint: &ast.ForeignKey{
-        Foreign: 38,
-        Rparen:  91,
-        Columns: []*ast.Ident{
+        Foreign:     38,
+        Rparen:      91,
+        OnDeleteEnd: -1,
+        Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 51,
             NameEnd: 54,
@@ -50,6 +51,7 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
             Name:    "t2key2",
           },
         },
+        OnDelete: "",
       },
     },
   },

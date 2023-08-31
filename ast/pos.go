@@ -552,7 +552,12 @@ func (c *TableConstraint) End() token.Pos { return c.Constraint.End() }
 func (f *ForeignKey) Pos() token.Pos {
 	return f.Foreign
 }
-func (f *ForeignKey) End() token.Pos { return f.Rparen + 1 }
+func (f *ForeignKey) End() token.Pos {
+	if !f.OnDeleteEnd.Invalid() {
+		return f.OnDeleteEnd
+	}
+	return f.Rparen + 1
+}
 
 func (c *Check) Pos() token.Pos { return c.Check }
 func (c *Check) End() token.Pos { return c.Rparen + 1 }
