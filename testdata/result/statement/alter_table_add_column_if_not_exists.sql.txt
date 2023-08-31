@@ -1,5 +1,6 @@
---- alter_table_add_column.sql
-alter table foo add column baz string(max) not null
+--- alter_table_add_column_if_not_exists.sql
+alter table foo add column if not exists baz string(max) not null
+
 --- AST
 &ast.AlterTable{
   Alter: 0,
@@ -10,17 +11,17 @@ alter table foo add column baz string(max) not null
   },
   TableAlternation: &ast.AddColumn{
     Add:         16,
-    IfNotExists: false,
+    IfNotExists: true,
     Column:      &ast.ColumnDef{
-      Null: 47,
+      Null: 61,
       Name: &ast.Ident{
-        NamePos: 27,
-        NameEnd: 30,
+        NamePos: 41,
+        NameEnd: 44,
         Name:    "baz",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 31,
-        Rparen:  41,
+        NamePos: 45,
+        Rparen:  55,
         Name:    "STRING",
         Max:     true,
         Size:    nil,
@@ -34,4 +35,4 @@ alter table foo add column baz string(max) not null
 }
 
 --- SQL
-ALTER TABLE foo ADD COLUMN baz STRING(MAX) NOT NULL
+ALTER TABLE foo ADD COLUMN IF NOT EXISTS baz STRING(MAX) NOT NULL

@@ -873,7 +873,11 @@ func (a *AlterTable) SQL() string {
 }
 
 func (a *AddColumn) SQL() string {
-	return "ADD COLUMN " + a.Column.SQL()
+	sql := "ADD COLUMN "
+	if a.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	return sql + a.Column.SQL()
 }
 
 func (a *AddTableConstraint) SQL() string {
@@ -940,7 +944,11 @@ func (c *CreateIndex) SQL() string {
 	if c.NullFiltered {
 		sql += "NULL_FILTERED "
 	}
-	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
+	sql += "INDEX "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
 	for i, k := range c.Keys {
 		if i != 0 {
 			sql += ", "
@@ -974,7 +982,11 @@ func (i *InterleaveIn) SQL() string {
 }
 
 func (d *DropIndex) SQL() string {
-	return "DROP INDEX " + d.Name.SQL()
+	sql := "DROP INDEX "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
 }
 
 func (c *CreateRole) SQL() string {

@@ -1600,14 +1600,15 @@ type AlterTable struct {
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
-//	ADD COLUMN {{.Column | sql}}
+//	ADD COLUMN {{.IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
 type AddColumn struct {
 	// pos = Add
 	// end = Column.end
 
 	Add token.Pos // position of "ADD" keyword
 
-	Column *ColumnDef
+	IfNotExists bool
+	Column      *ColumnDef
 }
 
 // AddTableConstraint is ADD table_constraint clause in ALTER TABLE.
@@ -1741,7 +1742,7 @@ type DropTable struct {
 //	CREATE
 //	  {{if .Unique}}UNIQUE{{end}}
 //	  {{if .NullFiltered}}NULL_FILTERED{{end}}
-//	INDEX {{.Name | sql}} ON {{.TableName | sql}} (
+//	INDEX {{if .IfExists}}IF NOT EXISTS{{end}} {{.Name | sql}} ON {{.TableName | sql}} (
 //	  {{.Keys | sqlJoin ","}}
 //	)
 //	{{.Storing | sqlOpt}}
@@ -1755,6 +1756,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 	Name         *Ident
 	TableName    *Ident
 	Keys         []*IndexKey
@@ -1789,14 +1791,15 @@ type InterleaveIn struct {
 
 // DropIndex is DROP INDEX statement node.
 //
-//	DROP INDEX {{.Name | sql}}
+//	DROP INDEX {{.IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropIndex struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // CreateRole is CREATE ROLE statement node.
