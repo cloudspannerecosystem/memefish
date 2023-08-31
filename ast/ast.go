@@ -1405,7 +1405,7 @@ type CreateTable struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE IF NOT EXISTS {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
 type CreateSequence struct {
 	// pos = Create
 	// end = Rparen + 1
