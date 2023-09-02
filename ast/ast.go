@@ -1493,7 +1493,7 @@ type TableConstraint struct {
 //	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}}) {{.OnDelete}}
 type ForeignKey struct {
 	// pos = Foreign
-	// end = Rparen + 1
+	// end = OnDeleteEnd || Rparen + 1
 
 	Foreign     token.Pos // position of "FOREIGN" keyword
 	Rparen      token.Pos // position of ")" after reference columns
@@ -1501,8 +1501,8 @@ type ForeignKey struct {
 
 	Columns          []*Ident
 	ReferenceTable   *Ident
-	ReferenceColumns []*Ident // len(ReferenceColumns) > 0
-	OnDelete         OnDeleteAction
+	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
+	OnDelete         OnDeleteAction // optional
 }
 
 // Check is check constraint in CREATE TABLE and ALTER TABLE.
