@@ -1,5 +1,5 @@
---- alter_table_add_constraint_foreign_key.sql
-alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2)
+--- alter_table_add_constraint_foreign_key_on_delete_no_action.sql
+alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2) on delete no action
 
 --- AST
 &ast.AlterTable{
@@ -21,7 +21,7 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
       Constraint: &ast.ForeignKey{
         Foreign:     38,
         Rparen:      91,
-        OnDeleteEnd: -1,
+        OnDeleteEnd: 111,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 51,
@@ -51,11 +51,11 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
             Name:    "t2key2",
           },
         },
-        OnDelete: "",
+        OnDelete: "ON DELETE NO ACTION",
       },
     },
   },
 }
 
 --- SQL
-ALTER TABLE foo ADD CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2)
+ALTER TABLE foo ADD CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2) ON DELETE NO ACTION

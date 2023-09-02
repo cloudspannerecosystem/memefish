@@ -2226,12 +2226,16 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	}
 	rparen := p.expect(")").End
 
+	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
+
 	return &ast.ForeignKey{
 		Foreign:          pos,
 		Rparen:           rparen,
+		OnDeleteEnd:      onDeleteEnd,
 		Columns:          columns,
 		ReferenceTable:   refTable,
 		ReferenceColumns: refColumns,
+		OnDelete:         onDelete,
 	}
 }
 

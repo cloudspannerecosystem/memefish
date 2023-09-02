@@ -15,9 +15,10 @@ alter table foo add foreign key (bar) references t2 (t2key1)
       ConstraintPos: 0,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
-        Foreign: 20,
-        Rparen:  60,
-        Columns: []*ast.Ident{
+        Foreign:     20,
+        Rparen:      60,
+        OnDeleteEnd: -1,
+        Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 33,
             NameEnd: 36,
@@ -36,6 +37,7 @@ alter table foo add foreign key (bar) references t2 (t2key1)
             Name:    "t2key1",
           },
         },
+        OnDelete: "",
       },
     },
   },

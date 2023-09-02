@@ -819,6 +819,9 @@ func (f *ForeignKey) SQL() string {
 		sql += k.SQL()
 	}
 	sql += ")"
+	if f.OnDelete != "" {
+		sql += " " + string(f.OnDelete)
+	}
 	return sql
 }
 
