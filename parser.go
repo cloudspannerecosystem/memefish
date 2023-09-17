@@ -2564,8 +2564,6 @@ func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
 				watchTable.Columns = append(watchTable.Columns, p.parseIdent())
 			}
 			watchTable.Rparen = p.expect(")").Pos
-		} else {
-			p.nextToken()
 		}
 
 		csw.WatchTables = append(csw.WatchTables, &watchTable)
