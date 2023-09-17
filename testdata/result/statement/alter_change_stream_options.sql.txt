@@ -9,39 +9,39 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  Watch:      (*ast.ChangeStreamWatch)(nil),
-  DropAll:    false,
-  DropAllPos: 0,
-  Options:    &ast.ChangeStreamOptions{
-    Exprs: []ast.Expr{
-      &ast.BinaryExpr{
-        Op:   "=",
-        Left: &ast.Ident{
-          NamePos: 52,
-          NameEnd: 68,
-          Name:    "retention_period",
+  ChangeStreamAlternation: &ast.ChangeStreamAlternationSetOptions{
+    Set:     39,
+    Options: &ast.ChangeStreamOptions{
+      Exprs: []ast.Expr{
+        &ast.BinaryExpr{
+          Op:   "=",
+          Left: &ast.Ident{
+            NamePos: 52,
+            NameEnd: 68,
+            Name:    "retention_period",
+          },
+          Right: &ast.StringLiteral{
+            ValuePos: 71,
+            ValueEnd: 75,
+            Value:    "1d",
+          },
         },
-        Right: &ast.StringLiteral{
-          ValuePos: 71,
-          ValueEnd: 75,
-          Value:    "1d",
+        &ast.BinaryExpr{
+          Op:   "=",
+          Left: &ast.Ident{
+            NamePos: 77,
+            NameEnd: 95,
+            Name:    "value_capture_type",
+          },
+          Right: &ast.StringLiteral{
+            ValuePos: 98,
+            ValueEnd: 118,
+            Value:    "OLD_AND_NEW_VALUES",
+          },
         },
       },
-      &ast.BinaryExpr{
-        Op:   "=",
-        Left: &ast.Ident{
-          NamePos: 77,
-          NameEnd: 95,
-          Name:    "value_capture_type",
-        },
-        Right: &ast.StringLiteral{
-          ValuePos: 98,
-          ValueEnd: 118,
-          Value:    "OLD_AND_NEW_VALUES",
-        },
-      },
+      Rparen: 118,
     },
-    Rparen: 118,
   },
 }
 

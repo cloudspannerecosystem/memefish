@@ -10,7 +10,8 @@ OPTIONS(retention_period = '1d')
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: &ast.ChangeStreamWatch{
+  Watch: &ast.ChangeStreamWatchTables{
+    For:         40,
     WatchTables: []*ast.ChangeStreamWatchTable{
       &ast.ChangeStreamWatchTable{
         TableName: &ast.Ident{
@@ -53,7 +54,6 @@ OPTIONS(retention_period = '1d')
         Rparen: 103,
       },
     },
-    SetForAllPos: 0,
   },
   Options: &ast.ChangeStreamOptions{
     Exprs: []ast.Expr{

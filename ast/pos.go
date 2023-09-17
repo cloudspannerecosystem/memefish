@@ -678,6 +678,11 @@ func (c *CreateChangeStream) End() token.Pos {
 	return c.Name.End()
 }
 
+func (c *ChangeStreamWatchAll) Pos() token.Pos    { return c.For }
+func (c *ChangeStreamWatchAll) End() token.Pos    { return c.All }
+func (c *ChangeStreamWatchTables) Pos() token.Pos { return c.For }
+func (c *ChangeStreamWatchTables) End() token.Pos { return c.WatchTables[len(c.WatchTables)-1].End() }
+
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 
@@ -696,18 +701,15 @@ func (d *DropRole) End() token.Pos { return d.Name.End() }
 func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
 func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
-func (a *AlterChangeStream) Pos() token.Pos { return a.Alter }
-func (a *AlterChangeStream) End() token.Pos {
-	if a.Options != nil {
-		return a.Options.Rparen + token.Pos(len(")"))
-	}
-	if a.Watch != nil {
-		return a.Watch.End()
-	}
-	if a.DropAll {
-		return a.DropAllPos + token.Pos(len("ALL"))
-	}
-	return a.Name.End()
+func (a *AlterChangeStream) Pos() token.Pos                 { return a.Alter }
+func (a *AlterChangeStream) End() token.Pos                 { return a.ChangeStreamAlternation.End() }
+func (a *ChangeStreamAlternationSetFor) Pos() token.Pos     { return a.Set }
+func (a *ChangeStreamAlternationSetFor) End() token.Pos     { return a.Watch.End() }
+func (a *ChangeStreamAlternationDropForAll) Pos() token.Pos { return a.Drop }
+func (a *ChangeStreamAlternationDropForAll) End() token.Pos { return a.All + token.Pos(len("ALL")) }
+func (a *ChangeStreamAlternationSetOptions) Pos() token.Pos { return a.Set }
+func (a *ChangeStreamAlternationSetOptions) End() token.Pos {
+	return a.Options.Rparen + token.Pos(len(")"))
 }
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
@@ -779,16 +781,12 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
 
-func (c *ChangeStreamWatch) End() token.Pos {
-	if len(c.WatchTables) == 0 {
-		return c.SetForAllPos + token.Pos(len("ALL"))
-	}
-	last := c.WatchTables[len(c.WatchTables)-1]
-	if len(last.Columns) == 0 {
-		return last.TableName.End()
+func (c *ChangeStreamWatchTable) End() token.Pos {
+	if len(c.Columns) == 0 {
+		return c.TableName.End()
 	}
 
-	return last.Rparen + token.Pos(len(")"))
+	return c.Rparen + token.Pos(len(")"))
 }
 
 // ================================================================================

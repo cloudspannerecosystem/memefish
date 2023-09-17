@@ -9,7 +9,7 @@ CREATE CHANGE STREAM change_stream_name
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch:   (*ast.ChangeStreamWatch)(nil),
+  Watch:   nil,
   Options: (*ast.ChangeStreamOptions)(nil),
 }
 

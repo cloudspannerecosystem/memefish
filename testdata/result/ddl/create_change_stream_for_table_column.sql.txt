@@ -9,7 +9,8 @@ CREATE CHANGE STREAM change_stream_name FOR table_name(column)
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: &ast.ChangeStreamWatch{
+  Watch: &ast.ChangeStreamWatchTables{
+    For:         40,
     WatchTables: []*ast.ChangeStreamWatchTable{
       &ast.ChangeStreamWatchTable{
         TableName: &ast.Ident{
@@ -27,7 +28,6 @@ CREATE CHANGE STREAM change_stream_name FOR table_name(column)
         Rparen: 61,
       },
     },
-    SetForAllPos: 0,
   },
   Options: (*ast.ChangeStreamOptions)(nil),
 }

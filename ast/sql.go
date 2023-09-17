@@ -1,6 +1,8 @@
 package ast
 
 import (
+	"fmt"
+
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -971,17 +973,7 @@ func (c *CreateIndex) SQL() string {
 func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
 	if c.Watch != nil {
-		sql += " FOR "
-		if len(c.Watch.WatchTables) == 0 {
-			sql += "ALL "
-		} else {
-			for i, watch := range c.Watch.WatchTables {
-				if i > 0 {
-					sql += ", "
-				}
-				sql += watch.SQL()
-			}
-		}
+		sql += fmt.Sprintf(" %s", c.Watch.SQL())
 	}
 	if c.Options != nil {
 		sql += " OPTIONS ("
@@ -996,35 +988,37 @@ func (c *CreateChangeStream) SQL() string {
 	return sql
 }
 
-func (a *AlterChangeStream) SQL() string {
-	sql := "ALTER CHANGE STREAM " + a.Name.SQL()
-	if a.DropAll {
-		sql += " DROP FOR ALL"
-	} else if a.Watch != nil {
-		sql += " SET FOR "
-		if len(a.Watch.WatchTables) == 0 {
-			sql += "ALL"
-		} else {
-			for i, watch := range a.Watch.WatchTables {
-				if i > 0 {
-					sql += ", "
-				}
-				sql += watch.SQL()
-			}
+func (c *ChangeStreamWatchAll) SQL() string { return "FOR ALL" }
+func (c *ChangeStreamWatchTables) SQL() string {
+	sql := "FOR "
+	for i, table := range c.WatchTables {
+		if i > 0 {
+			sql += ", "
 		}
-	} else if a.Options != nil {
-		sql += " SET OPTIONS ("
-		for i, expr := range a.Options.Exprs {
-			if i > 0 {
-				sql += ", "
-			}
-			sql += expr.SQL()
-		}
-		sql += ")"
+		sql += table.SQL()
 	}
 	return sql
 }
 
+func (a *AlterChangeStream) SQL() string {
+	return fmt.Sprintf("ALTER CHANGE STREAM %s %s", a.Name.SQL(), a.ChangeStreamAlternation.SQL())
+}
+
+func (a ChangeStreamAlternationSetFor) SQL() string {
+	return fmt.Sprintf("SET %s", a.Watch.SQL())
+}
+func (a ChangeStreamAlternationDropForAll) SQL() string { return "DROP FOR ALL" }
+func (a ChangeStreamAlternationSetOptions) SQL() string {
+	sql := "SET OPTIONS ("
+	for i, expr := range a.Options.Exprs {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += expr.SQL()
+	}
+	sql += ")"
+	return sql
+}
 func (c *ChangeStreamWatchTable) SQL() string {
 	sql := c.TableName.SQL()
 	if len(c.Columns) > 0 {

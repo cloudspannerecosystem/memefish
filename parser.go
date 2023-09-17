@@ -2505,7 +2505,6 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 		Name:   name,
 	}
 	if p.Token.Kind == "FOR" {
-		p.nextToken()
 		cs.Watch = p.parseChangeStreamWatch()
 	}
 	if p.Token.IsKeywordLike("OPTIONS") {
@@ -2522,14 +2521,36 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		Alter: pos,
 		Name:  name,
 	}
-	switch {
-	case p.sniffTokens("SET", "FOR"):
-		cs.Watch = p.parseChangeStreamWatch()
-	case p.sniffTokens("DROP", "FOR", "ALL"):
-		cs.DropAll = true
-	case p.sniffTokens("SET", "OPTIONS"):
-		cs.Options = p.parseChangeStreamOptions()
-	default:
+	if p.Token.Kind == "SET" {
+		setpos := p.Token.Pos
+		p.nextToken()
+		if p.Token.Kind == "FOR" {
+			csa := &ast.ChangeStreamAlternationSetFor{
+				Set:   setpos,
+				Watch: p.parseChangeStreamWatch(),
+			}
+			cs.ChangeStreamAlternation = csa
+			return cs
+		} else if p.Token.IsKeywordLike("OPTIONS") {
+			p.nextToken()
+			csa := &ast.ChangeStreamAlternationSetOptions{
+				Set:     setpos,
+				Options: p.parseChangeStreamOptions(),
+			}
+			cs.ChangeStreamAlternation = csa
+			return cs
+		}
+	} else if p.Token.IsKeywordLike("DROP") {
+		droppos := p.Token.Pos
+		p.nextToken()
+		p.expect("FOR")
+		allpos := p.expect("ALL").Pos
+		cs.ChangeStreamAlternation = &ast.ChangeStreamAlternationDropForAll{
+			Drop: droppos,
+			All:  allpos,
+		}
+		return cs
+	} else {
 		p.panicfAtToken(&p.Token, "expected SET FOR or DROP FOR ALL or SET OPTIONS")
 	}
 	return cs
@@ -2543,12 +2564,19 @@ func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 
 }
 
-func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
-	csw := &ast.ChangeStreamWatch{}
+func (p *Parser) parseChangeStreamWatch() ast.ChangeStreamWatch {
+	pos := p.Token.Pos
+	p.nextToken()
 	if p.Token.Kind == "ALL" {
 		p.nextToken()
-		csw.SetForAllPos = p.Token.Pos
-		return csw
+		return &ast.ChangeStreamWatchAll{
+			For: pos,
+			All: p.Token.Pos,
+		}
+
+	}
+	cswt := &ast.ChangeStreamWatchTables{
+		For: pos,
 	}
 	for {
 		tname := p.parseIdent()
@@ -2566,14 +2594,14 @@ func (p *Parser) parseChangeStreamWatch() *ast.ChangeStreamWatch {
 			watchTable.Rparen = p.expect(")").Pos
 		}
 
-		csw.WatchTables = append(csw.WatchTables, &watchTable)
+		cswt.WatchTables = append(cswt.WatchTables, &watchTable)
 		if p.Token.Kind == "," {
 			p.nextToken()
 			continue
 		}
 		break
 	}
-	return csw
+	return cswt
 
 }
 
@@ -3498,18 +3526,6 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 		}
 	}
 	return id
-}
-
-func (p *Parser) sniffTokens(want ...string) bool {
-	origlex := p.Lexer.Clone()
-	for _, w := range want {
-		if string(p.Token.Kind) != w && !p.Token.IsKeywordLike(w) {
-			p.Lexer = origlex
-			return false
-		}
-		p.nextToken()
-	}
-	return true
 }
 
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {

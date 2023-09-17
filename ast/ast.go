@@ -313,6 +313,25 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
+// ChangeStreamWatch represents watch statement in CREATE/ALTER CHANGE STREAM statement.
+type ChangeStreamWatch interface {
+	Node
+	isChangeStreamWatch()
+}
+
+func (ChangeStreamWatchAll) isChangeStreamWatch()    {}
+func (ChangeStreamWatchTables) isChangeStreamWatch() {}
+
+// ChangeStreamAlternation represents alter statement in ALTER CHANGE STREAM statement.
+type ChangeStreamAlternation interface {
+	Node
+	isChangeStreamAlternation()
+}
+
+func (ChangeStreamAlternationSetFor) isChangeStreamAlternation()     {}
+func (ChangeStreamAlternationDropForAll) isChangeStreamAlternation() {}
+func (ChangeStreamAlternationSetOptions) isChangeStreamAlternation() {}
+
 // ================================================================================
 //
 // SELECT
@@ -1629,12 +1648,9 @@ type AlterChangeStream struct {
 	//       if .DropAll {
 	//         "DROP FOR All".end
 	//       }
-	Alter      token.Pos // position of "ALTER" keyword
-	Name       *Ident
-	Watch      *ChangeStreamWatch
-	DropAll    bool
-	DropAllPos token.Pos // position of (DROP FOR) "ALL" keyword
-	Options    *ChangeStreamOptions
+	Alter                   token.Pos // position of "ALTER" keyword
+	Name                    *Ident
+	ChangeStreamAlternation ChangeStreamAlternation
 }
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
@@ -1821,13 +1837,18 @@ type CreateChangeStream struct {
 	//       }
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
-	Watch   *ChangeStreamWatch
+	Watch   ChangeStreamWatch
 	Options *ChangeStreamOptions
 }
 
-type ChangeStreamWatch struct {
-	WatchTables  []*ChangeStreamWatchTable // if len is 0, then this watches all.
-	SetForAllPos token.Pos                 // position of (SET FOR) "ALL" keyword
+type ChangeStreamWatchAll struct {
+	For token.Pos // position of "FOR" keyword
+	All token.Pos // position of "ALL" keyword
+}
+
+type ChangeStreamWatchTables struct {
+	For         token.Pos // position of "FOR" keyword
+	WatchTables []*ChangeStreamWatchTable
 }
 
 type ChangeStreamWatchTable struct {
@@ -1839,6 +1860,21 @@ type ChangeStreamWatchTable struct {
 type ChangeStreamOptions struct {
 	Exprs  []Expr
 	Rparen token.Pos // position of ")"
+}
+
+type ChangeStreamAlternationSetFor struct {
+	Set   token.Pos // position of "SET" keyword
+	Watch ChangeStreamWatch
+}
+
+type ChangeStreamAlternationDropForAll struct {
+	Drop token.Pos // position of "DROP" keyword
+	All  token.Pos // position of "ALL" keyword
+}
+
+type ChangeStreamAlternationSetOptions struct {
+	Set     token.Pos // position of "SET" keyword
+	Options *ChangeStreamOptions
 }
 
 // Storing is STORING clause in CREATE INDEX.
