@@ -3,8 +3,56 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
 
 --- AST
 &ast.Revoke{
-  Revoke:        0,
-  FromRoleNames: []*ast.Ident{
+  Revoke:    0,
+  Privilege: &ast.PrivilegeOnTable{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select:  7,
+        Rparen:  35,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 14,
+            NameEnd: 18,
+            Name:    "name",
+          },
+          &ast.Ident{
+            NamePos: 20,
+            NameEnd: 25,
+            Name:    "level",
+          },
+          &ast.Ident{
+            NamePos: 27,
+            NameEnd: 35,
+            Name:    "location",
+          },
+        },
+      },
+      &ast.UpdatePrivilege{
+        Update:  38,
+        Rparen:  53,
+        Columns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 45,
+            NameEnd: 53,
+            Name:    "location",
+          },
+        },
+      },
+    },
+    Names: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 64,
+        NameEnd: 73,
+        Name:    "employees",
+      },
+      &ast.Ident{
+        NamePos: 75,
+        NameEnd: 86,
+        Name:    "contractors",
+      },
+    },
+  },
+  Roles: []*ast.Ident{
     &ast.Ident{
       NamePos: 97,
       NameEnd: 107,
@@ -14,57 +62,6 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
       NamePos: 109,
       NameEnd: 118,
       Name:    "hr_member",
-    },
-  },
-  RevokeRoleNames: []*ast.Ident(nil),
-  Privileges:      []*ast.Privilege{
-    &ast.Privilege{
-      NamePos: 0,
-      Name:    "SELECT",
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 14,
-          NameEnd: 18,
-          Name:    "name",
-        },
-        &ast.Ident{
-          NamePos: 20,
-          NameEnd: 25,
-          Name:    "level",
-        },
-        &ast.Ident{
-          NamePos: 27,
-          NameEnd: 35,
-          Name:    "location",
-        },
-      },
-      Lparen: 0,
-      Rparen: 0,
-    },
-    &ast.Privilege{
-      NamePos: 0,
-      Name:    "UPDATE",
-      Columns: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 45,
-          NameEnd: 53,
-          Name:    "location",
-        },
-      },
-      Lparen: 0,
-      Rparen: 0,
-    },
-  },
-  TableNames: []*ast.Ident{
-    &ast.Ident{
-      NamePos: 64,
-      NameEnd: 73,
-      Name:    "employees",
-    },
-    &ast.Ident{
-      NamePos: 75,
-      NameEnd: 86,
-      Name:    "contractors",
     },
   },
 }

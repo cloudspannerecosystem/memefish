@@ -314,19 +314,19 @@ func (i *IndexExpr) End() token.Pos { return i.Rbrack + 1 }
 func (c *CallExpr) Pos() token.Pos { return c.Func.Pos() }
 func (c *CallExpr) End() token.Pos { return c.Rparen + 1 }
 
-func (a *Arg) Pos() token.Pos {
-	if !a.Interval.Invalid() {
-		return a.Interval
+func (e *ExprArg) Pos() token.Pos { return e.Expr.Pos() }
+func (e *ExprArg) End() token.Pos { return e.Expr.End() }
+
+func (i *IntervalArg) Pos() token.Pos { return i.Interval }
+func (i *IntervalArg) End() token.Pos {
+	if i.Unit != nil {
+		return i.Unit.End()
 	}
-	return a.Expr.Pos()
+	return i.Expr.End()
 }
 
-func (a *Arg) End() token.Pos {
-	if a.IntervalUnit != nil {
-		return a.IntervalUnit.End()
-	}
-	return a.Expr.End()
-}
+func (s *SequenceArg) Pos() token.Pos { return s.Sequence }
+func (s *SequenceArg) End() token.Pos { return s.Expr.End() }
 
 func (c *CountStarExpr) Pos() token.Pos { return c.Count }
 func (c *CountStarExpr) End() token.Pos { return c.Rparen + 1 }
@@ -495,6 +495,14 @@ func (c *CreateTable) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateSequence) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSequence) End() token.Pos {
+	return c.Rparen + 1
+}
+
 func (c *CreateView) Pos() token.Pos {
 	return c.Create
 }
@@ -544,7 +552,12 @@ func (c *TableConstraint) End() token.Pos { return c.Constraint.End() }
 func (f *ForeignKey) Pos() token.Pos {
 	return f.Foreign
 }
-func (f *ForeignKey) End() token.Pos { return f.Rparen + 1 }
+func (f *ForeignKey) End() token.Pos {
+	if !f.OnDeleteEnd.Invalid() {
+		return f.OnDeleteEnd
+	}
+	return f.Rparen + 1
+}
 
 func (c *Check) Pos() token.Pos { return c.Check }
 func (c *Check) End() token.Pos { return c.Rparen + 1 }
@@ -651,14 +664,6 @@ func (c *CreateIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
-func (c *CreateRole) Pos() token.Pos {
-	return c.Create
-}
-
-func (c *CreateRole) End() token.Pos {
-	return c.Name.End()
-}
-
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }
@@ -682,6 +687,9 @@ func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 func (d *DropIndex) Pos() token.Pos { return d.Drop }
 func (d *DropIndex) End() token.Pos { return d.Name.End() }
 
+func (c *CreateRole) Pos() token.Pos { return c.Create }
+func (c *CreateRole) End() token.Pos { return c.Name.End() }
+
 func (d *DropRole) Pos() token.Pos { return d.Drop }
 func (d *DropRole) End() token.Pos { return d.Name.End() }
 
@@ -703,10 +711,58 @@ func (a *AlterChangeStream) End() token.Pos {
 }
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
-func (g *Grant) End() token.Pos { return g.ToRoleNames[len(g.ToRoleNames)-1].End() }
+func (g *Grant) End() token.Pos { return g.Roles[len(g.Roles)-1].End() }
 
 func (r *Revoke) Pos() token.Pos { return r.Revoke }
-func (r *Revoke) End() token.Pos { return r.FromRoleNames[len(r.FromRoleNames)-1].End() }
+func (r *Revoke) End() token.Pos { return r.Roles[len(r.Roles)-1].End() }
+
+func (p *PrivilegeOnTable) Pos() token.Pos { return p.Privileges[0].Pos() }
+func (p *PrivilegeOnTable) End() token.Pos { return p.Names[len(p.Names)-1].End() }
+
+func (s *SelectPrivilege) Pos() token.Pos {
+	return s.Select
+}
+
+func (s *SelectPrivilege) End() token.Pos {
+	if !s.Rparen.Invalid() {
+		return s.Rparen + 1
+	}
+	return s.Select + 6
+}
+
+func (i *InsertPrivilege) Pos() token.Pos {
+	return i.Insert
+}
+
+func (i *InsertPrivilege) End() token.Pos {
+	if !i.Rparen.Invalid() {
+		return i.Rparen + 1
+	}
+	return i.Insert + 6
+}
+
+func (u *UpdatePrivilege) Pos() token.Pos {
+	return u.Update
+}
+
+func (u *UpdatePrivilege) End() token.Pos {
+	if !u.Rparen.Invalid() {
+		return u.Rparen + 1
+	}
+	return u.Update + 6
+}
+
+func (d *DeletePrivilege) Pos() token.Pos { return d.Delete }
+func (d *DeletePrivilege) End() token.Pos { return d.Delete + 6 }
+
+func (s *SelectPrivilegeOnView) Pos() token.Pos { return s.Select }
+func (s *SelectPrivilegeOnView) End() token.Pos { return s.Names[len(s.Names)-1].End() }
+
+func (e *ExecutePrivilegeOnTableFunction) Pos() token.Pos { return e.Execute }
+func (e *ExecutePrivilegeOnTableFunction) End() token.Pos { return e.Names[len(e.Names)-1].End() }
+
+func (r *RolePrivilege) Pos() token.Pos { return r.Role }
+func (r *RolePrivilege) End() token.Pos { return r.Names[len(r.Names)-1].End() }
 
 // ================================================================================
 //
@@ -722,14 +778,6 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
-
-func (p *Privilege) Pos() token.Pos { return p.NamePos }
-func (p *Privilege) End() token.Pos {
-	if len(p.Columns) > 0 {
-		return p.Rparen + 1
-	}
-	return p.NamePos + token.Pos(len(p.Name))
-}
 
 func (c *ChangeStreamWatch) End() token.Pos {
 	if len(c.WatchTables) == 0 {
@@ -783,3 +831,6 @@ func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
 func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
+
+func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
+func (o *SequenceOption) End() token.Pos { return o.Value.End() }

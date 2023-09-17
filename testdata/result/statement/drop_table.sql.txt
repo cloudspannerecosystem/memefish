@@ -3,8 +3,9 @@ drop table foo
 
 --- AST
 &ast.DropTable{
-  Drop: 0,
-  Name: &ast.Ident{
+  Drop:     0,
+  IfExists: false,
+  Name:     &ast.Ident{
     NamePos: 11,
     NameEnd: 14,
     Name:    "foo",

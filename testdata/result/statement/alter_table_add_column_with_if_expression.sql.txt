@@ -9,8 +9,9 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
     Name:    "foo",
   },
   TableAlternation: &ast.AddColumn{
-    Add:    16,
-    Column: &ast.ColumnDef{
+    Add:         16,
+    IfNotExists: false,
+    Column:      &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 27,
@@ -34,10 +35,9 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
             Name:    "IF",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.BinaryExpr{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.BinaryExpr{
                 Op:   "AND",
                 Left: &ast.BinaryExpr{
                   Op:   "!=",
@@ -66,11 +66,9 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
                   },
                 },
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.CallExpr{
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
                 Rparen: 143,
                 Func:   &ast.Ident{
                   NamePos: 101,
@@ -78,17 +76,15 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
                   Name:    "TIMESTAMP_ADD",
                 },
                 Distinct: false,
-                Args:     []*ast.Arg{
-                  &ast.Arg{
-                    Interval: -1,
-                    Expr:     &ast.Ident{
+                Args:     []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
                       NamePos: 115,
                       NameEnd: 125,
                       Name:    "updated_at",
                     },
-                    IntervalUnit: (*ast.Ident)(nil),
                   },
-                  &ast.Arg{
+                  &ast.IntervalArg{
                     Interval: 127,
                     Expr:     &ast.IntLiteral{
                       ValuePos: 136,
@@ -96,7 +92,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
                       Base:     10,
                       Value:    "120",
                     },
-                    IntervalUnit: &ast.Ident{
+                    Unit: &ast.Ident{
                       NamePos: 140,
                       NameEnd: 143,
                       Name:    "DAY",
@@ -104,14 +100,11 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
                   },
                 },
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.NullLiteral{
+            &ast.ExprArg{
+              Expr: &ast.NullLiteral{
                 Null: 146,
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },

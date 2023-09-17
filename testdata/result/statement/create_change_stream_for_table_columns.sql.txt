@@ -29,7 +29,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name(column1, column2)
             Name:    "column2",
           },
         },
-        Rparen: 73,
+        Rparen: 71,
       },
     },
     SetForAllPos: 0,

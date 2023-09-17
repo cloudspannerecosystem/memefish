@@ -1,0 +1,111 @@
+--- create_table_with_sequence_function.sql
+CREATE TABLE foo
+(
+    foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)),
+    bar STRING( MAX),
+    id  INT64
+)PRIMARY KEY (id)
+
+--- AST
+&ast.CreateTable{
+  Create:      0,
+  Rparen:      143,
+  IfNotExists: false,
+  Name:        &ast.Ident{
+    NamePos: 13,
+    NameEnd: 16,
+    Name:    "foo",
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 23,
+        NameEnd: 26,
+        Name:    "foo",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 27,
+        Name:    "INT64",
+      },
+      NotNull:     false,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 33,
+        Rparen:  88,
+        Expr:    &ast.CallExpr{
+          Rparen: 87,
+          Func:   &ast.Ident{
+            NamePos: 42,
+            NameEnd: 65,
+            Name:    "GET_NEXT_SEQUENCE_VALUE",
+          },
+          Distinct: false,
+          Args:     []ast.Arg{
+            &ast.SequenceArg{
+              Sequence: 66,
+              Expr:     &ast.Ident{
+                NamePos: 75,
+                NameEnd: 87,
+                Name:    "foo_sequence",
+              },
+            },
+          },
+        },
+      },
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 95,
+        NameEnd: 98,
+        Name:    "bar",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 99,
+        Rparen:  110,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 117,
+        NameEnd: 119,
+        Name:    "id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 121,
+        Name:    "INT64",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 141,
+        NameEnd: 143,
+        Name:    "id",
+      },
+      Dir: "",
+    },
+  },
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE foo (foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)), bar STRING(MAX), id INT64) PRIMARY KEY (id)

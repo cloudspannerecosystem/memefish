@@ -29,7 +29,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
             Name:    "column2",
           },
         },
-        Rparen: 76,
+        Rparen: 75,
       },
       &ast.ChangeStreamWatchTable{
         TableName: &ast.Ident{
@@ -49,7 +49,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
             Name:    "column2",
           },
         },
-        Rparen: 108,
+        Rparen: 106,
       },
     },
     SetForAllPos: 0,

@@ -8,9 +8,10 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Create: 0,
-  Rparen: 77,
-  Name:   &ast.Ident{
+  Create:      0,
+  Rparen:      77,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 16,
     Name:    "foo",
@@ -65,13 +66,14 @@ create table foo (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys:       []*ast.IndexKey(nil),
   TableConstraints:  []*ast.TableConstraint(nil),
+  PrimaryKeys:       []*ast.IndexKey(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
     Comma:             78,
     RowDeletionPolicy: &ast.RowDeletionPolicy{
       Row:        82,
+      Rparen:     140,
       ColumnName: &ast.Ident{
         NamePos: 117,
         NameEnd: 120,
@@ -83,7 +85,6 @@ create table foo (
         Base:     10,
         Value:    "30",
       },
-      Rparen: 140,
     },
   },
 }

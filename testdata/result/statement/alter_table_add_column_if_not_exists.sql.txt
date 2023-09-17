@@ -1,0 +1,38 @@
+--- alter_table_add_column_if_not_exists.sql
+alter table foo add column if not exists baz string(max) not null
+
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlternation: &ast.AddColumn{
+    Add:         16,
+    IfNotExists: true,
+    Column:      &ast.ColumnDef{
+      Null: 61,
+      Name: &ast.Ident{
+        NamePos: 41,
+        NameEnd: 44,
+        Name:    "baz",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 45,
+        Rparen:  55,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ADD COLUMN IF NOT EXISTS baz STRING(MAX) NOT NULL

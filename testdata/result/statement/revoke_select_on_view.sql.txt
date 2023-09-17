@@ -1,0 +1,26 @@
+--- revoke_select_on_view.sql
+REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager
+--- AST
+&ast.Revoke{
+  Revoke:    0,
+  Privilege: &ast.SelectPrivilegeOnView{
+    Select: 7,
+    Names:  []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 33,
+        Name:    "singernames",
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 44,
+      NameEnd: 54,
+      Name:    "hr_manager",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager

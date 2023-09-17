@@ -9,6 +9,7 @@ create index foo_bar on foo (
   Rparen:       40,
   Unique:       false,
   NullFiltered: false,
+  IfNotExists:  false,
   Name:         &ast.Ident{
     NamePos: 13,
     NameEnd: 20,

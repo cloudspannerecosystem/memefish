@@ -1,0 +1,26 @@
+--- revoke_execute_on_table_function.sql
+REVOKE EXECUTE ON TABLE FUNCTION READ_SingersNameStream FROM ROLE hr_manager
+--- AST
+&ast.Revoke{
+  Revoke:    0,
+  Privilege: &ast.ExecutePrivilegeOnTableFunction{
+    Execute: 7,
+    Names:   []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 55,
+        Name:    "READ_SingersNameStream",
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 66,
+      NameEnd: 76,
+      Name:    "hr_manager",
+    },
+  },
+}
+
+--- SQL
+REVOKE EXECUTE ON TABLE FUNCTION READ_SingersNameStream FROM ROLE hr_manager

@@ -8,13 +8,25 @@ func TestStatement(t *testing.T) {
 	Statement(&QueryStatement{}).isStatement()
 	Statement(&CreateDatabase{}).isStatement()
 	Statement(&CreateTable{}).isStatement()
+	Statement(&CreateView{}).isStatement()
 	Statement(&CreateIndex{}).isStatement()
+	Statement(&CreateSequence{}).isStatement()
+	Statement(&CreateRole{}).isStatement()
 	Statement(&AlterTable{}).isStatement()
 	Statement(&DropTable{}).isStatement()
 	Statement(&DropIndex{}).isStatement()
+	Statement(&DropRole{}).isStatement()
 	Statement(&Insert{}).isStatement()
-	Statement(&Update{}).isStatement()
 	Statement(&Delete{}).isStatement()
+	Statement(&Update{}).isStatement()
+	Statement(&Grant{}).isStatement()
+	Statement(&Revoke{}).isStatement()
+}
+
+func TestQueryExpr(t *testing.T) {
+	QueryExpr(&Select{}).isQueryExpr()
+	QueryExpr(&SubQuery{}).isQueryExpr()
+	QueryExpr(&CompoundQuery{}).isQueryExpr()
 }
 
 func TestSelectItem(t *testing.T) {
@@ -22,12 +34,6 @@ func TestSelectItem(t *testing.T) {
 	SelectItem(&DotStar{}).isSelectItem()
 	SelectItem(&Alias{}).isSelectItem()
 	SelectItem(&ExprSelectItem{}).isSelectItem()
-}
-
-func TestQueryExpr(t *testing.T) {
-	QueryExpr(&Select{}).isQueryExpr()
-	QueryExpr(&SubQuery{}).isQueryExpr()
-	QueryExpr(&CompoundQuery{}).isQueryExpr()
 }
 
 func TestTableExpr(t *testing.T) {
@@ -77,10 +83,16 @@ func TestExpr(t *testing.T) {
 	Expr(&NumericLiteral{}).isExpr()
 }
 
+func TestArg(t *testing.T) {
+	Arg(&IntervalArg{}).isArg()
+	Arg(&ExprArg{}).isArg()
+	Arg(&SequenceArg{}).isArg()
+}
+
 func TestInCondition(t *testing.T) {
-	InCondition(&ValuesInCondition{}).isInCondition()
 	InCondition(&UnnestInCondition{}).isInCondition()
 	InCondition(&SubQueryInCondition{}).isInCondition()
+	InCondition(&ValuesInCondition{}).isInCondition()
 }
 
 func TestType(t *testing.T) {
@@ -90,30 +102,42 @@ func TestType(t *testing.T) {
 }
 
 func TestIntValue(t *testing.T) {
-	IntValue(&IntLiteral{}).isIntValue()
 	IntValue(&Param{}).isIntValue()
+	IntValue(&IntLiteral{}).isIntValue()
 	IntValue(&CastIntValue{}).isIntValue()
 }
 
 func TestNumValue(t *testing.T) {
+	NumValue(&Param{}).isNumValue()
 	NumValue(&IntLiteral{}).isNumValue()
 	NumValue(&FloatLiteral{}).isNumValue()
-	NumValue(&Param{}).isNumValue()
 	NumValue(&CastNumValue{}).isNumValue()
 }
 
 func TestStringValue(t *testing.T) {
-	StringValue(&StringLiteral{}).isStringValue()
 	StringValue(&Param{}).isStringValue()
+	StringValue(&StringLiteral{}).isStringValue()
 }
 
 func TestDDL(t *testing.T) {
 	DDL(&CreateDatabase{}).isDDL()
 	DDL(&CreateTable{}).isDDL()
 	DDL(&CreateIndex{}).isDDL()
+	DDL(&CreateSequence{}).isDDL()
+	DDL(&CreateView{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()
+	DDL(&CreateIndex{}).isDDL()
 	DDL(&DropIndex{}).isDDL()
+	DDL(&CreateRole{}).isDDL()
+	DDL(&DropRole{}).isDDL()
+	DDL(&Grant{}).isDDL()
+	DDL(&Revoke{}).isDDL()
+}
+
+func TestConstraint(t *testing.T) {
+	Constraint(&ForeignKey{}).isConstraint()
+	Constraint(&Check{}).isConstraint()
 }
 
 func TestTableAlternation(t *testing.T) {
@@ -124,6 +148,20 @@ func TestTableAlternation(t *testing.T) {
 	TableAlternation(&SetOnDelete{}).isTableAlternation()
 	TableAlternation(&AlterColumn{}).isTableAlternation()
 	TableAlternation(&AlterColumnSet{}).isTableAlternation()
+}
+
+func TestPrivilege(t *testing.T) {
+	Privilege(&PrivilegeOnTable{}).isPrivilege()
+	Privilege(&SelectPrivilegeOnView{}).isPrivilege()
+	Privilege(&ExecutePrivilegeOnTableFunction{}).isPrivilege()
+	Privilege(&RolePrivilege{}).isPrivilege()
+}
+
+func TestTablePrivilege(t *testing.T) {
+	TablePrivilege(&SelectPrivilege{}).isTablePrivilege()
+	TablePrivilege(&InsertPrivilege{}).isTablePrivilege()
+	TablePrivilege(&UpdatePrivilege{}).isTablePrivilege()
+	TablePrivilege(&DeletePrivilege{}).isTablePrivilege()
 }
 
 func TestSchemaType(t *testing.T) {

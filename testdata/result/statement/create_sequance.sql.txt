@@ -1,0 +1,74 @@
+--- create_sequance.sql
+CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
+    sequence_kind='bit_reversed_positive',
+    skip_range_min = 1,
+    skip_range_max = 1000,
+    start_with_counter = 50)
+
+--- AST
+&ast.CreateSequence{
+  Create: 0,
+  Rparen: 172,
+  Name:   &ast.Ident{
+    NamePos: 30,
+    NameEnd: 40,
+    Name:    "MySequence",
+  },
+  IfNotExists: true,
+  Options:     []*ast.SequenceOption{
+    &ast.SequenceOption{
+      Name: &ast.Ident{
+        NamePos: 55,
+        NameEnd: 68,
+        Name:    "sequence_kind",
+      },
+      Value: &ast.StringLiteral{
+        ValuePos: 69,
+        ValueEnd: 92,
+        Value:    "bit_reversed_positive",
+      },
+    },
+    &ast.SequenceOption{
+      Name: &ast.Ident{
+        NamePos: 98,
+        NameEnd: 112,
+        Name:    "skip_range_min",
+      },
+      Value: &ast.IntLiteral{
+        ValuePos: 115,
+        ValueEnd: 116,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+    &ast.SequenceOption{
+      Name: &ast.Ident{
+        NamePos: 122,
+        NameEnd: 136,
+        Name:    "skip_range_max",
+      },
+      Value: &ast.IntLiteral{
+        ValuePos: 139,
+        ValueEnd: 143,
+        Base:     10,
+        Value:    "1000",
+      },
+    },
+    &ast.SequenceOption{
+      Name: &ast.Ident{
+        NamePos: 149,
+        NameEnd: 167,
+        Name:    "start_with_counter",
+      },
+      Value: &ast.IntLiteral{
+        ValuePos: 170,
+        ValueEnd: 172,
+        Base:     10,
+        Value:    "50",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (sequence_kind = "bit_reversed_positive", skip_range_min = 1, skip_range_max = 1000, start_with_counter = 50)

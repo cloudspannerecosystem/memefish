@@ -30,7 +30,7 @@ OPTIONS(retention_period = '1d')
             Name:    "column2",
           },
         },
-        Rparen: 73,
+        Rparen: 72,
       },
       &ast.ChangeStreamWatchTable{
         TableName: &ast.Ident{
@@ -50,7 +50,7 @@ OPTIONS(retention_period = '1d')
             Name:    "column2",
           },
         },
-        Rparen: 105,
+        Rparen: 103,
       },
     },
     SetForAllPos: 0,

@@ -72,17 +72,6 @@ func paren(p prec, e Expr) string {
 	}
 }
 
-func CommaSeparatedSQL(is []*Ident) string {
-	sql := ""
-	for i, id := range is {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += id.SQL()
-	}
-	return sql
-}
-
 // ================================================================================
 //
 // SELECT
@@ -489,11 +478,24 @@ func (c *CallExpr) SQL() string {
 	return sql
 }
 
-func (a *Arg) SQL() string {
-	if a.IntervalUnit != nil {
-		return "INTERVAL " + a.Expr.SQL() + " " + a.IntervalUnit.SQL()
+func (o *SequenceOption) SQL() string {
+	return o.Name.SQL() + " = " + o.Value.SQL()
+}
+
+func (s *ExprArg) SQL() string {
+	return s.Expr.SQL()
+}
+
+func (i *IntervalArg) SQL() string {
+	sql := "INTERVAL " + i.Expr.SQL()
+	if i.Unit != nil {
+		sql += " " + i.Unit.SQL()
 	}
-	return a.Expr.SQL()
+	return sql
+}
+
+func (s *SequenceArg) SQL() string {
+	return "SEQUENCE " + s.Expr.SQL()
 }
 
 func (*CountStarExpr) SQL() string {
@@ -716,7 +718,11 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE " + c.Name.SQL() + " ("
+	sql := "CREATE TABLE "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " ("
 	for i, c := range c.Columns {
 		if i != 0 {
 			sql += ", "
@@ -741,6 +747,22 @@ func (c *CreateTable) SQL() string {
 	if c.RowDeletionPolicy != nil {
 		sql += c.RowDeletionPolicy.SQL()
 	}
+	return sql
+}
+
+func (c *CreateSequence) SQL() string {
+	sql := "CREATE SEQUENCE "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " OPTIONS ("
+	for i, o := range c.Options {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += o.SQL()
+	}
+	sql += ")"
 	return sql
 }
 
@@ -797,6 +819,9 @@ func (f *ForeignKey) SQL() string {
 		sql += k.SQL()
 	}
 	sql += ")"
+	if f.OnDelete != "" {
+		sql += " " + string(f.OnDelete)
+	}
 	return sql
 }
 
@@ -851,7 +876,11 @@ func (a *AlterTable) SQL() string {
 }
 
 func (a *AddColumn) SQL() string {
-	return "ADD COLUMN " + a.Column.SQL()
+	sql := "ADD COLUMN "
+	if a.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	return sql + a.Column.SQL()
 }
 
 func (a *AddTableConstraint) SQL() string {
@@ -903,7 +932,11 @@ func (a *AlterColumnSet) SQL() string {
 }
 
 func (d *DropTable) SQL() string {
-	return "DROP TABLE " + d.Name.SQL()
+	sql := "DROP TABLE "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
 }
 
 func (c *CreateIndex) SQL() string {
@@ -914,7 +947,11 @@ func (c *CreateIndex) SQL() string {
 	if c.NullFiltered {
 		sql += "NULL_FILTERED "
 	}
-	sql += "INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
+	sql += "INDEX "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
 	for i, k := range c.Keys {
 		if i != 0 {
 			sql += ", "
@@ -928,56 +965,6 @@ func (c *CreateIndex) SQL() string {
 	if c.InterleaveIn != nil {
 		sql += c.InterleaveIn.SQL()
 	}
-	return sql
-}
-
-func (c *CreateRole) SQL() string {
-	return "CREATE ROLE " + c.Name.SQL()
-}
-
-func (d *DropRole) SQL() string {
-	return "DROP ROLE " + d.Name.SQL()
-}
-
-func (g *Grant) SQL() string {
-	sql := "GRANT "
-	if g.Privileges != nil {
-		sql += string(g.Privileges[0].Name)
-		if g.Privileges[0].Columns != nil {
-			sql += "(" + CommaSeparatedSQL(g.Privileges[0].Columns) + ")"
-		}
-		for _, priv := range g.Privileges[1:] {
-			sql += ", " + string(priv.Name)
-			if priv.Columns != nil {
-				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
-			}
-		}
-		sql += " ON TABLE " + CommaSeparatedSQL(g.TableNames)
-	} else {
-		sql += "ROLE " + CommaSeparatedSQL(g.GrantRoleNames)
-	}
-	sql += " TO ROLE " + CommaSeparatedSQL(g.ToRoleNames)
-	return sql
-}
-
-func (r *Revoke) SQL() string {
-	sql := "REVOKE "
-	if r.Privileges != nil {
-		sql += string(r.Privileges[0].Name)
-		if r.Privileges[0].Columns != nil {
-			sql += "(" + CommaSeparatedSQL(r.Privileges[0].Columns) + ")"
-		}
-		for _, priv := range r.Privileges[1:] {
-			sql += ", " + string(priv.Name)
-			if priv.Columns != nil {
-				sql += "(" + CommaSeparatedSQL(priv.Columns) + ")"
-			}
-		}
-		sql += " ON TABLE " + CommaSeparatedSQL(r.TableNames)
-	} else {
-		sql += "ROLE " + CommaSeparatedSQL(r.RevokeRoleNames)
-	}
-	sql += " FROM ROLE " + CommaSeparatedSQL(r.FromRoleNames)
 	return sql
 }
 
@@ -1041,10 +1028,19 @@ func (a *AlterChangeStream) SQL() string {
 func (c *ChangeStreamWatchTable) SQL() string {
 	sql := c.TableName.SQL()
 	if len(c.Columns) > 0 {
-		sql += "(" + CommaSeparatedSQL(c.Columns) + ")"
+		sql += "("
+		for i, id := range c.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += id.SQL()
+		}
+
+		sql += ")"
 	}
 	return sql
 }
+
 func (d *DropChangeStream) SQL() string {
 	return "DROP CHANGE STREAM " + d.Name.SQL()
 }
@@ -1065,7 +1061,125 @@ func (i *InterleaveIn) SQL() string {
 }
 
 func (d *DropIndex) SQL() string {
-	return "DROP INDEX " + d.Name.SQL()
+	sql := "DROP INDEX "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
+}
+
+func (c *CreateRole) SQL() string {
+	return "CREATE ROLE " + c.Name.SQL()
+}
+
+func (d *DropRole) SQL() string {
+	return "DROP ROLE " + d.Name.SQL()
+}
+
+func (g *Grant) SQL() string {
+	sql := "GRANT "
+	sql += g.Privilege.SQL()
+	sql += " TO ROLE " + g.Roles[0].SQL()
+	for _, id := range g.Roles[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (r *Revoke) SQL() string {
+	sql := "REVOKE "
+	sql += r.Privilege.SQL()
+	sql += " FROM ROLE " + r.Roles[0].SQL()
+	for _, id := range r.Roles[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (p *PrivilegeOnTable) SQL() string {
+	sql := p.Privileges[0].SQL()
+	for _, p := range p.Privileges[1:] {
+		sql += ", " + p.SQL()
+	}
+	sql += " ON TABLE "
+	sql += p.Names[0].SQL()
+	for _, id := range p.Names[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
+}
+
+func (s *SelectPrivilege) SQL() string {
+	sql := "SELECT"
+	if len(s.Columns) > 0 {
+		sql += "("
+		for i, c := range s.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (i *InsertPrivilege) SQL() string {
+	sql := "INSERT"
+	if len(i.Columns) > 0 {
+		sql += "("
+		for j, c := range i.Columns {
+			if j > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (u *UpdatePrivilege) SQL() string {
+	sql := "UPDATE"
+	if len(u.Columns) > 0 {
+		sql += "("
+		for i, c := range u.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += c.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (d *DeletePrivilege) SQL() string {
+	return "DELETE"
+}
+
+func (s *SelectPrivilegeOnView) SQL() string {
+	sql := "SELECT ON VIEW " + s.Names[0].SQL()
+	for _, v := range s.Names[1:] {
+		sql += ", " + v.SQL()
+	}
+	return sql
+}
+
+func (e *ExecutePrivilegeOnTableFunction) SQL() string {
+	sql := "EXECUTE ON TABLE FUNCTION " + e.Names[0].SQL()
+	for _, f := range e.Names[1:] {
+		sql += ", " + f.SQL()
+	}
+	return sql
+}
+
+func (r *RolePrivilege) SQL() string {
+	sql := "ROLE " + r.Names[0].SQL()
+	for _, id := range r.Names[1:] {
+		sql += ", " + id.SQL()
+	}
+	return sql
 }
 
 // ================================================================================

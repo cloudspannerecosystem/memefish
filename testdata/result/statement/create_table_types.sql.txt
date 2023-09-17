@@ -15,9 +15,10 @@ create table types (
 
 --- AST
 &ast.CreateTable{
-  Create: 0,
-  Rparen: 212,
-  Name:   &ast.Ident{
+  Create:      0,
+  Rparen:      212,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 18,
     Name:    "types",
@@ -233,7 +234,8 @@ create table types (
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
-  PrimaryKeys: []*ast.IndexKey{
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -244,7 +246,6 @@ create table types (
       Dir: "",
     },
   },
-  TableConstraints:  []*ast.TableConstraint(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

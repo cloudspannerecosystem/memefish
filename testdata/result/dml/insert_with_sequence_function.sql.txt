@@ -1,0 +1,56 @@
+--- insert_with_sequence_function.sql
+INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
+
+--- AST
+&ast.Insert{
+  Insert:    0,
+  TableName: &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 16,
+      NameEnd: 19,
+      Name:    "bar",
+    },
+  },
+  Input: &ast.ValuesInput{
+    Values: 21,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 28,
+        Rparen: 74,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.CallExpr{
+              Rparen: 73,
+              Func:   &ast.Ident{
+                NamePos: 29,
+                NameEnd: 52,
+                Name:    "GET_NEXT_SEQUENCE_VALUE",
+              },
+              Distinct: false,
+              Args:     []ast.Arg{
+                &ast.SequenceArg{
+                  Sequence: 53,
+                  Expr:     &ast.Ident{
+                    NamePos: 62,
+                    NameEnd: 73,
+                    Name:    "my_sequence",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))

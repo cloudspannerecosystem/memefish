@@ -18,15 +18,13 @@ select count(distinct x) from foo
             Name:    "count",
           },
           Distinct: true,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.Ident{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
                 NamePos: 22,
                 NameEnd: 23,
                 Name:    "x",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },

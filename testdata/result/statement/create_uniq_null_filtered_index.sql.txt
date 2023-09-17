@@ -7,6 +7,7 @@ create unique null_filtered index foo_bar on foo (foo)
   Rparen:       53,
   Unique:       true,
   NullFiltered: true,
+  IfNotExists:  false,
   Name:         &ast.Ident{
     NamePos: 34,
     NameEnd: 41,

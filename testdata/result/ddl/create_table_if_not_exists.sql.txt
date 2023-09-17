@@ -1,0 +1,77 @@
+--- create_table_if_not_exists.sql
+create table if not exists foo (
+  foo int64,
+  bar float64 not null,
+) primary key (foo, bar)
+
+--- AST
+&ast.CreateTable{
+  Create:      0,
+  Rparen:      93,
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 27,
+    NameEnd: 30,
+    Name:    "foo",
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 35,
+        NameEnd: 38,
+        Name:    "foo",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 39,
+        Name:    "INT64",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 64,
+      Name: &ast.Ident{
+        NamePos: 48,
+        NameEnd: 51,
+        Name:    "bar",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 52,
+        Name:    "FLOAT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 85,
+        NameEnd: 88,
+        Name:    "foo",
+      },
+      Dir: "",
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 90,
+        NameEnd: 93,
+        Name:    "bar",
+      },
+      Dir: "",
+    },
+  },
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE IF NOT EXISTS foo (foo INT64, bar FLOAT64 NOT NULL) PRIMARY KEY (foo, bar)

@@ -492,15 +492,13 @@ lines''',
             Name:    "DATE",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 540,
                 ValueEnd: 552,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },
@@ -544,15 +542,13 @@ lines''',
             Name:    "TIMESTAMP",
           },
           Distinct: false,
-          Args:     []*ast.Arg{
-            &ast.Arg{
-              Interval: -1,
-              Expr:     &ast.StringLiteral{
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
                 ValuePos: 691,
                 ValueEnd: 703,
                 Value:    "2014-09-27",
               },
-              IntervalUnit: (*ast.Ident)(nil),
             },
           },
         },

@@ -1,0 +1,53 @@
+--- select_with_sequence_function.sql
+SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
+
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 51,
+          Func:   &ast.Ident{
+            NamePos: 7,
+            NameEnd: 30,
+            Name:    "GET_NEXT_SEQUENCE_VALUE",
+          },
+          Distinct: false,
+          Args:     []ast.Arg{
+            &ast.SequenceArg{
+              Sequence: 31,
+              Expr:     &ast.Ident{
+                NamePos: 40,
+                NameEnd: 51,
+                Name:    "my_sequence",
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 56,
+            NameEnd: 63,
+            Name:    "next_id",
+          },
+        },
+      },
+    },
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) AS next_id
