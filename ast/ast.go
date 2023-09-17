@@ -1627,27 +1627,10 @@ type AlterTable struct {
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
 //
-// ALTER CHANGE STREAM {{.Name | sql}}
-// {{ if .Watch }}
-// SET FOR {{ if len(.Watch.WatchTables) == 0 }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
-// {{ end }}
-// {{ if .DropAll }}
-// DROP FOR ALL
-// {{ end }}
-// {{ if .Options }}
-// SET OPTIONS ({{ .Options.Expr | sqlJoin ","}})
-// {{ end }}
+// ALTER CHANGE STREAM {{.Name | sql}} {{ .ChangeStreamAlternation | sql }}
 type AlterChangeStream struct {
 	// pos = Alter
-	// end = if .Options {
-	//          .Options.Rparen + 1
-	//       }
-	//       if .Watch {
-	//         .Watch.end
-	//       }
-	//       if .DropAll {
-	//         "DROP FOR All".end
-	//       }
+	// end = ChangeStreamAlternation.end
 	Alter                   token.Pos // position of "ALTER" keyword
 	Name                    *Ident
 	ChangeStreamAlternation ChangeStreamAlternation
