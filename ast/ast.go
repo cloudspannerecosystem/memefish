@@ -1821,37 +1821,41 @@ type CreateIndex struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-// CREATE CHANGE STREAM {{.Name | sql}}
-// {{ if .Watch }}
-// FOR {{ len(.Watch.WatchTables) == 0 }}ALL{{ else }}{{ .Watch.WatchTables | sqlJoin ","}}{{ end }}
-// {{ end }}
-// {{ if .Options }}
-// OPTIONS {{ .Options.Exprs | sqlJoin ","}}
-// {{ end }}
+// CREATE CHANGE STREAM {{.Name | sql}} {{.Watch | sql }}
+// {{ if .Options }}OPTIONS {{ .Options.Exprs | sqlJoin ","}}{{end}}
 type CreateChangeStream struct {
 	// pos = Create
-	// end = if .Options {
-	//          .Options.Rparen + 1
-	//       } else if .Watch {
-	//          .Watch.end
-	//       }
+	// end = Options.Rparen + 1 || .Watch.end
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
 	Watch   ChangeStreamWatch
 	Options *ChangeStreamOptions
 }
 
+// ChangeStreamWatchAll is FOR ALL node in CREATE CHANGE STREAM
 type ChangeStreamWatchAll struct {
+	// pos = For
+	// end = All
 	For token.Pos // position of "FOR" keyword
 	All token.Pos // position of "ALL" keyword
 }
 
+// ChangeStreamWatchTables is FOR tables node in CREATE CHANGE STREAM
+//
+// FOR {{.WatchTables | sqlJoin ","}}
 type ChangeStreamWatchTables struct {
+	// pos = For
+	// end = WatchTables[$].end
 	For         token.Pos // position of "FOR" keyword
 	WatchTables []*ChangeStreamWatchTable
 }
 
+// ChangeStreamWatchTable table node in CREATE CHANGE STREAM SET FOR
+//
+// .TableName{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
 type ChangeStreamWatchTable struct {
+	// pos = TableName.pos
+	// end = TableName.end || Rparen + 1
 	TableName *Ident
 	Columns   []*Ident
 	Rparen    token.Pos // position of ")"
@@ -1862,17 +1866,30 @@ type ChangeStreamOptions struct {
 	Rparen token.Pos // position of ")"
 }
 
+// ChangeStreamAlternationSetFor is SET FOR tables node in ALTER CHANGE STREAM
+//
+// SET FOR {{.Watch | sql }}
 type ChangeStreamAlternationSetFor struct {
+	// pos = Set
+	// end = Watch.end
 	Set   token.Pos // position of "SET" keyword
 	Watch ChangeStreamWatch
 }
 
+// ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM
 type ChangeStreamAlternationDropForAll struct {
+	// pos = Drop
+	// end = All + 3
 	Drop token.Pos // position of "DROP" keyword
 	All  token.Pos // position of "ALL" keyword
 }
 
+// ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM
+//
+// SET OPTIONS {{ .Options.Exprs | sqlJoin "," }}
 type ChangeStreamAlternationSetOptions struct {
+	// pos = Set
+	// end = Options.Rparen + 1
 	Set     token.Pos // position of "SET" keyword
 	Options *ChangeStreamOptions
 }
