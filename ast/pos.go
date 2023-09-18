@@ -786,7 +786,7 @@ func (c *ChangeStreamForTable) End() token.Pos {
 		return c.TableName.End()
 	}
 
-	return c.Rparen + token.Pos(len(")"))
+	return c.Rparen + 1
 }
 
 // ================================================================================
