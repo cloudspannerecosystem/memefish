@@ -974,14 +974,7 @@ func (c *CreateChangeStream) SQL() string {
 		sql += " " + c.For.SQL()
 	}
 	if c.Options != nil {
-		sql += " OPTIONS ("
-		for i, expr := range c.Options.Exprs {
-			if i > 0 {
-				sql += ", "
-			}
-			sql += expr.SQL()
-		}
-		sql += ")"
+		sql += c.Options.SQL()
 	}
 	return sql
 }
@@ -998,6 +991,18 @@ func (c *ChangeStreamForTables) SQL() string {
 	return sql
 }
 
+func (c *ChangeStreamOptions) SQL() string {
+	sql := " OPTIONS ("
+	for i, record := range c.Records {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += record.Key.SQL() + "=" + record.Value.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
 func (a *AlterChangeStream) SQL() string {
 	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlternation.SQL()
 }
@@ -1007,14 +1012,7 @@ func (a ChangeStreamAlternationSetFor) SQL() string {
 }
 func (a ChangeStreamAlternationDropForAll) SQL() string { return "DROP FOR ALL" }
 func (a ChangeStreamAlternationSetOptions) SQL() string {
-	sql := "SET OPTIONS ("
-	for i, expr := range a.Options.Exprs {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += expr.SQL()
-	}
-	sql += ")"
+	sql := "SET " + a.Options.SQL()
 	return sql
 }
 func (c *ChangeStreamForTable) SQL() string {

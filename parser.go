@@ -2508,7 +2508,6 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 		cs.For = p.parseChangeStreamFor()
 	}
 	if p.Token.IsKeywordLike("OPTIONS") {
-		p.nextToken()
 		cs.Options = p.parseChangeStreamOptions()
 	}
 	return cs
@@ -2532,7 +2531,6 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 			cs.ChangeStreamAlternation = csa
 			return cs
 		} else if p.Token.IsKeywordLike("OPTIONS") {
-			p.nextToken()
 			csa := &ast.ChangeStreamAlternationSetOptions{
 				Set:     setpos,
 				Options: p.parseChangeStreamOptions(),
@@ -2610,10 +2608,15 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 // This is for the key, value which will supported in the future.
 // We don't need to modify this code for them.
 func (p *Parser) parseChangeStreamOptions() *ast.ChangeStreamOptions {
+	pos := p.Token.Pos
+	p.nextToken()
 	p.expect("(")
-	cso := &ast.ChangeStreamOptions{}
+	cso := &ast.ChangeStreamOptions{Options: pos}
 	for {
-		cso.Exprs = append(cso.Exprs, p.parseExpr())
+		key := p.parseIdent()
+		p.expect("=")
+		value := p.parseExpr()
+		cso.Records = append(cso.Records, &ast.ChangeStreamOptionsRecord{Key: key, Value: value})
 		if p.Token.Kind == "," {
 			p.nextToken()
 			continue

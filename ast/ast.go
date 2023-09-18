@@ -1806,11 +1806,10 @@ type CreateIndex struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-// CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }}
-// {{ if .Options }}OPTIONS {{ .Options.Exprs | sqlJoin ","}}{{end}}
+// CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }} {{.Options | sql }}
 type CreateChangeStream struct {
 	// pos = Create
-	// end = Options.Rparen + 1 || .For.end
+	// end = Options.end || For.end
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
 	For     ChangeStreamFor
@@ -1846,9 +1845,28 @@ type ChangeStreamForTable struct {
 	Rparen    token.Pos // position of ")"
 }
 
+// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
 type ChangeStreamOptions struct {
-	Exprs  []Expr
-	Rparen token.Pos // position of ")"
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*ChangeStreamOptionsRecord
+}
+
+// ChangeStreamOptionsRecord is OPTIONS record node.
+//
+//	{{.Key | sql}}={{.Expr | sql}}
+type ChangeStreamOptionsRecord struct {
+	// pos = Key
+	// end = Value.end
+
+	Key   *Ident
+	Value Expr
 }
 
 // ChangeStreamAlternationSetFor is SET FOR tables node in ALTER CHANGE STREAM
@@ -1857,6 +1875,7 @@ type ChangeStreamOptions struct {
 type ChangeStreamAlternationSetFor struct {
 	// pos = Set
 	// end = For.end
+
 	Set token.Pos // position of "SET" keyword
 	For ChangeStreamFor
 }
@@ -1865,16 +1884,18 @@ type ChangeStreamAlternationSetFor struct {
 type ChangeStreamAlternationDropForAll struct {
 	// pos = Drop
 	// end = All + 3
+
 	Drop token.Pos // position of "DROP" keyword
 	All  token.Pos // position of "ALL" keyword
 }
 
 // ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM
 //
-// SET OPTIONS {{ .Options.Exprs | sqlJoin "," }}
+//	SET {{ .Options | sql }}
 type ChangeStreamAlternationSetOptions struct {
 	// pos = Set
 	// end = Options.Rparen + 1
+
 	Set     token.Pos // position of "SET" keyword
 	Options *ChangeStreamOptions
 }

@@ -56,22 +56,22 @@ OPTIONS(retention_period = null)
     },
   },
   Options: &ast.ChangeStreamOptions{
-    Exprs: []ast.Expr{
-      &ast.BinaryExpr{
-        Op:   "=",
-        Left: &ast.Ident{
+    Options: 105,
+    Rparen:  136,
+    Records: []*ast.ChangeStreamOptionsRecord{
+      &ast.ChangeStreamOptionsRecord{
+        Key: &ast.Ident{
           NamePos: 113,
           NameEnd: 129,
           Name:    "retention_period",
         },
-        Right: &ast.NullLiteral{
+        Value: &ast.NullLiteral{
           Null: 132,
         },
       },
     },
-    Rparen: 136,
   },
 }
 
 --- SQL
-CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2) OPTIONS (retention_period = NULL)
+CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2) OPTIONS (retention_period=NULL)

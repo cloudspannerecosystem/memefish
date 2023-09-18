@@ -12,38 +12,37 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
   ChangeStreamAlternation: &ast.ChangeStreamAlternationSetOptions{
     Set:     39,
     Options: &ast.ChangeStreamOptions{
-      Exprs: []ast.Expr{
-        &ast.BinaryExpr{
-          Op:   "=",
-          Left: &ast.Ident{
+      Options: 43,
+      Rparen:  118,
+      Records: []*ast.ChangeStreamOptionsRecord{
+        &ast.ChangeStreamOptionsRecord{
+          Key: &ast.Ident{
             NamePos: 52,
             NameEnd: 68,
             Name:    "retention_period",
           },
-          Right: &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 71,
             ValueEnd: 75,
             Value:    "1d",
           },
         },
-        &ast.BinaryExpr{
-          Op:   "=",
-          Left: &ast.Ident{
+        &ast.ChangeStreamOptionsRecord{
+          Key: &ast.Ident{
             NamePos: 77,
             NameEnd: 95,
             Name:    "value_capture_type",
           },
-          Right: &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 98,
             ValueEnd: 118,
             Value:    "OLD_AND_NEW_VALUES",
           },
         },
       },
-      Rparen: 118,
     },
   },
 }
 
 --- SQL
-ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = "1d", value_capture_type = "OLD_AND_NEW_VALUES")
+ALTER CHANGE STREAM change_stream_name SET  OPTIONS (retention_period="1d", value_capture_type="OLD_AND_NEW_VALUES")

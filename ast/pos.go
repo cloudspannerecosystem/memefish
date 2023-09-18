@@ -670,13 +670,16 @@ func (c *CreateChangeStream) Pos() token.Pos {
 
 func (c *CreateChangeStream) End() token.Pos {
 	if c.Options != nil {
-		return c.Options.Rparen + token.Pos(len(")"))
+		return c.Options.End()
 	}
 	if c.For != nil {
 		return c.For.End()
 	}
 	return c.Name.End()
 }
+
+func (c *ChangeStreamOptions) Pos() token.Pos { return c.Options }
+func (c *ChangeStreamOptions) End() token.Pos { return c.Rparen + 1 }
 
 func (c *ChangeStreamForAll) Pos() token.Pos    { return c.For }
 func (c *ChangeStreamForAll) End() token.Pos    { return c.All }
