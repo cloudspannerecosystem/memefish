@@ -10,10 +10,10 @@ OPTIONS(retention_period = null)
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: &ast.ChangeStreamWatchTables{
-    For:         40,
-    WatchTables: []*ast.ChangeStreamWatchTable{
-      &ast.ChangeStreamWatchTable{
+  For: &ast.ChangeStreamForTables{
+    For:    40,
+    Tables: []*ast.ChangeStreamForTable{
+      &ast.ChangeStreamForTable{
         TableName: &ast.Ident{
           NamePos: 44,
           NameEnd: 55,
@@ -33,7 +33,7 @@ OPTIONS(retention_period = null)
         },
         Rparen: 72,
       },
-      &ast.ChangeStreamWatchTable{
+      &ast.ChangeStreamForTable{
         TableName: &ast.Ident{
           NamePos: 75,
           NameEnd: 86,

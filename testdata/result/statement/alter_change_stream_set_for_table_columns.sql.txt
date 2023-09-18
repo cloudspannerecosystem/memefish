@@ -10,11 +10,11 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
     Name:    "change_stream_name",
   },
   ChangeStreamAlternation: &ast.ChangeStreamAlternationSetFor{
-    Set:   39,
-    Watch: &ast.ChangeStreamWatchTables{
-      For:         43,
-      WatchTables: []*ast.ChangeStreamWatchTable{
-        &ast.ChangeStreamWatchTable{
+    Set: 39,
+    For: &ast.ChangeStreamForTables{
+      For:    43,
+      Tables: []*ast.ChangeStreamForTable{
+        &ast.ChangeStreamForTable{
           TableName: &ast.Ident{
             NamePos: 47,
             NameEnd: 58,
@@ -34,7 +34,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
           },
           Rparen: 75,
         },
-        &ast.ChangeStreamWatchTable{
+        &ast.ChangeStreamForTable{
           TableName: &ast.Ident{
             NamePos: 78,
             NameEnd: 89,

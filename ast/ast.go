@@ -313,14 +313,14 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
-// ChangeStreamWatch represents watch statement in CREATE/ALTER CHANGE STREAM statement.
-type ChangeStreamWatch interface {
+// ChangeStreamFor represents for statement in CREATE/ALTER CHANGE STREAM statement.
+type ChangeStreamFor interface {
 	Node
-	isChangeStreamWatch()
+	isChangeStreamFor()
 }
 
-func (ChangeStreamWatchAll) isChangeStreamWatch()    {}
-func (ChangeStreamWatchTables) isChangeStreamWatch() {}
+func (ChangeStreamForAll) isChangeStreamFor()    {}
+func (ChangeStreamForTables) isChangeStreamFor() {}
 
 // ChangeStreamAlternation represents alter statement in ALTER CHANGE STREAM statement.
 type ChangeStreamAlternation interface {
@@ -1804,39 +1804,39 @@ type CreateIndex struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-// CREATE CHANGE STREAM {{.Name | sql}} {{.Watch | sql }}
+// CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }}
 // {{ if .Options }}OPTIONS {{ .Options.Exprs | sqlJoin ","}}{{end}}
 type CreateChangeStream struct {
 	// pos = Create
-	// end = Options.Rparen + 1 || .Watch.end
+	// end = Options.Rparen + 1 || .For.end
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
-	Watch   ChangeStreamWatch
+	For     ChangeStreamFor
 	Options *ChangeStreamOptions
 }
 
-// ChangeStreamWatchAll is FOR ALL node in CREATE CHANGE STREAM
-type ChangeStreamWatchAll struct {
+// ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
+type ChangeStreamForAll struct {
 	// pos = For
 	// end = All
 	For token.Pos // position of "FOR" keyword
 	All token.Pos // position of "ALL" keyword
 }
 
-// ChangeStreamWatchTables is FOR tables node in CREATE CHANGE STREAM
+// ChangeStreamForTables is FOR tables node in CREATE CHANGE STREAM
 //
-// FOR {{.WatchTables | sqlJoin ","}}
-type ChangeStreamWatchTables struct {
+// FOR {{.Tables | sqlJoin ","}}
+type ChangeStreamForTables struct {
 	// pos = For
-	// end = WatchTables[$].end
-	For         token.Pos // position of "FOR" keyword
-	WatchTables []*ChangeStreamWatchTable
+	// end = Tables[$].end
+	For    token.Pos // position of "FOR" keyword
+	Tables []*ChangeStreamForTable
 }
 
-// ChangeStreamWatchTable table node in CREATE CHANGE STREAM SET FOR
+// ChangeStreamForTable table node in CREATE CHANGE STREAM SET FOR
 //
 // .TableName{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
-type ChangeStreamWatchTable struct {
+type ChangeStreamForTable struct {
 	// pos = TableName.pos
 	// end = TableName.end || Rparen + 1
 	TableName *Ident
@@ -1851,12 +1851,12 @@ type ChangeStreamOptions struct {
 
 // ChangeStreamAlternationSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
-// SET FOR {{.Watch | sql }}
+// SET FOR {{.For | sql }}
 type ChangeStreamAlternationSetFor struct {
 	// pos = Set
-	// end = Watch.end
-	Set   token.Pos // position of "SET" keyword
-	Watch ChangeStreamWatch
+	// end = For.end
+	Set token.Pos // position of "SET" keyword
+	For ChangeStreamFor
 }
 
 // ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM

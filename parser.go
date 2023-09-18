@@ -2505,7 +2505,7 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 		Name:   name,
 	}
 	if p.Token.Kind == "FOR" {
-		cs.Watch = p.parseChangeStreamWatch()
+		cs.For = p.parseChangeStreamFor()
 	}
 	if p.Token.IsKeywordLike("OPTIONS") {
 		p.nextToken()
@@ -2526,8 +2526,8 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		p.nextToken()
 		if p.Token.Kind == "FOR" {
 			csa := &ast.ChangeStreamAlternationSetFor{
-				Set:   setpos,
-				Watch: p.parseChangeStreamWatch(),
+				Set: setpos,
+				For: p.parseChangeStreamFor(),
 			}
 			cs.ChangeStreamAlternation = csa
 			return cs
@@ -2564,37 +2564,37 @@ func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 
 }
 
-func (p *Parser) parseChangeStreamWatch() ast.ChangeStreamWatch {
+func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 	pos := p.Token.Pos
 	p.nextToken()
 	if p.Token.Kind == "ALL" {
 		p.nextToken()
-		return &ast.ChangeStreamWatchAll{
+		return &ast.ChangeStreamForAll{
 			For: pos,
 			All: p.Token.Pos,
 		}
 
 	}
-	cswt := &ast.ChangeStreamWatchTables{
+	cswt := &ast.ChangeStreamForTables{
 		For: pos,
 	}
 	for {
 		tname := p.parseIdent()
-		watchTable := ast.ChangeStreamWatchTable{
+		forTable := ast.ChangeStreamForTable{
 			TableName: tname,
 		}
 
 		if p.Token.Kind == "(" {
 			p.nextToken()
-			watchTable.Columns = []*ast.Ident{p.parseIdent()}
+			forTable.Columns = []*ast.Ident{p.parseIdent()}
 			for p.Token.Kind == "," {
 				p.nextToken()
-				watchTable.Columns = append(watchTable.Columns, p.parseIdent())
+				forTable.Columns = append(forTable.Columns, p.parseIdent())
 			}
-			watchTable.Rparen = p.expect(")").Pos
+			forTable.Rparen = p.expect(")").Pos
 		}
 
-		cswt.WatchTables = append(cswt.WatchTables, &watchTable)
+		cswt.Tables = append(cswt.Tables, &forTable)
 		if p.Token.Kind == "," {
 			p.nextToken()
 			continue

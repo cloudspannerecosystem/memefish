@@ -9,7 +9,7 @@ CREATE CHANGE STREAM change_stream_name FOR ALL
     NameEnd: 39,
     Name:    "change_stream_name",
   },
-  Watch: &ast.ChangeStreamWatchAll{
+  For: &ast.ChangeStreamForAll{
     For: 40,
     All: 48,
   },

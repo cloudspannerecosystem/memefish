@@ -672,16 +672,16 @@ func (c *CreateChangeStream) End() token.Pos {
 	if c.Options != nil {
 		return c.Options.Rparen + token.Pos(len(")"))
 	}
-	if c.Watch != nil {
-		return c.Watch.End()
+	if c.For != nil {
+		return c.For.End()
 	}
 	return c.Name.End()
 }
 
-func (c *ChangeStreamWatchAll) Pos() token.Pos    { return c.For }
-func (c *ChangeStreamWatchAll) End() token.Pos    { return c.All }
-func (c *ChangeStreamWatchTables) Pos() token.Pos { return c.For }
-func (c *ChangeStreamWatchTables) End() token.Pos { return c.WatchTables[len(c.WatchTables)-1].End() }
+func (c *ChangeStreamForAll) Pos() token.Pos    { return c.For }
+func (c *ChangeStreamForAll) End() token.Pos    { return c.All }
+func (c *ChangeStreamForTables) Pos() token.Pos { return c.For }
+func (c *ChangeStreamForTables) End() token.Pos { return c.Tables[len(c.Tables)-1].End() }
 
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
@@ -704,7 +704,7 @@ func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 func (a *AlterChangeStream) Pos() token.Pos                 { return a.Alter }
 func (a *AlterChangeStream) End() token.Pos                 { return a.ChangeStreamAlternation.End() }
 func (a *ChangeStreamAlternationSetFor) Pos() token.Pos     { return a.Set }
-func (a *ChangeStreamAlternationSetFor) End() token.Pos     { return a.Watch.End() }
+func (a *ChangeStreamAlternationSetFor) End() token.Pos     { return a.For.End() }
 func (a *ChangeStreamAlternationDropForAll) Pos() token.Pos { return a.Drop }
 func (a *ChangeStreamAlternationDropForAll) End() token.Pos { return a.All + token.Pos(len("ALL")) }
 func (a *ChangeStreamAlternationSetOptions) Pos() token.Pos { return a.Set }
@@ -781,7 +781,7 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
 
-func (c *ChangeStreamWatchTable) End() token.Pos {
+func (c *ChangeStreamForTable) End() token.Pos {
 	if len(c.Columns) == 0 {
 		return c.TableName.End()
 	}

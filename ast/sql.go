@@ -972,8 +972,8 @@ func (c *CreateIndex) SQL() string {
 
 func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
-	if c.Watch != nil {
-		sql += fmt.Sprintf(" %s", c.Watch.SQL())
+	if c.For != nil {
+		sql += fmt.Sprintf(" %s", c.For.SQL())
 	}
 	if c.Options != nil {
 		sql += " OPTIONS ("
@@ -988,10 +988,10 @@ func (c *CreateChangeStream) SQL() string {
 	return sql
 }
 
-func (c *ChangeStreamWatchAll) SQL() string { return "FOR ALL" }
-func (c *ChangeStreamWatchTables) SQL() string {
+func (c *ChangeStreamForAll) SQL() string { return "FOR ALL" }
+func (c *ChangeStreamForTables) SQL() string {
 	sql := "FOR "
-	for i, table := range c.WatchTables {
+	for i, table := range c.Tables {
 		if i > 0 {
 			sql += ", "
 		}
@@ -1005,7 +1005,7 @@ func (a *AlterChangeStream) SQL() string {
 }
 
 func (a ChangeStreamAlternationSetFor) SQL() string {
-	return fmt.Sprintf("SET %s", a.Watch.SQL())
+	return fmt.Sprintf("SET %s", a.For.SQL())
 }
 func (a ChangeStreamAlternationDropForAll) SQL() string { return "DROP FOR ALL" }
 func (a ChangeStreamAlternationSetOptions) SQL() string {
@@ -1019,7 +1019,7 @@ func (a ChangeStreamAlternationSetOptions) SQL() string {
 	sql += ")"
 	return sql
 }
-func (c *ChangeStreamWatchTable) SQL() string {
+func (c *ChangeStreamForTable) SQL() string {
 	sql := c.TableName.SQL()
 	if len(c.Columns) > 0 {
 		sql += "("
