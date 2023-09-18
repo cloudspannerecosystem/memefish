@@ -322,7 +322,7 @@ type ChangeStreamFor interface {
 func (ChangeStreamForAll) isChangeStreamFor()    {}
 func (ChangeStreamForTables) isChangeStreamFor() {}
 
-// ChangeStreamAlternation represents alter statement in ALTER CHANGE STREAM statement.
+// ChangeStreamAlternation represents ALTER CHANGE STREAM action.
 type ChangeStreamAlternation interface {
 	Node
 	isChangeStreamAlternation()
