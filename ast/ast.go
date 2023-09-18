@@ -1631,7 +1631,9 @@ type AlterTable struct {
 type AlterChangeStream struct {
 	// pos = Alter
 	// end = ChangeStreamAlternation.end
-	Alter                   token.Pos // position of "ALTER" keyword
+
+	Alter token.Pos // position of "ALTER" keyword
+
 	Name                    *Ident
 	ChangeStreamAlternation ChangeStreamAlternation
 }
