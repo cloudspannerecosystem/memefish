@@ -1,8 +1,6 @@
 package ast
 
 import (
-	"fmt"
-
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -973,7 +971,7 @@ func (c *CreateIndex) SQL() string {
 func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
 	if c.For != nil {
-		sql += fmt.Sprintf(" %s", c.For.SQL())
+		sql += " " + c.For.SQL()
 	}
 	if c.Options != nil {
 		sql += " OPTIONS ("
@@ -1001,11 +999,11 @@ func (c *ChangeStreamForTables) SQL() string {
 }
 
 func (a *AlterChangeStream) SQL() string {
-	return fmt.Sprintf("ALTER CHANGE STREAM %s %s", a.Name.SQL(), a.ChangeStreamAlternation.SQL())
+	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlternation.SQL()
 }
 
 func (a ChangeStreamAlternationSetFor) SQL() string {
-	return fmt.Sprintf("SET %s", a.For.SQL())
+	return "SET " + a.For.SQL()
 }
 func (a ChangeStreamAlternationDropForAll) SQL() string { return "DROP FOR ALL" }
 func (a ChangeStreamAlternationSetOptions) SQL() string {
