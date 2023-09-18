@@ -1806,10 +1806,11 @@ type CreateIndex struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-// CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }} {{.Options | sql }}
+//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }} {{.Options | sql }}
 type CreateChangeStream struct {
 	// pos = Create
 	// end = Options.end || For.end
+
 	Create  token.Pos // position of "CREATE" keyword
 	Name    *Ident
 	For     ChangeStreamFor
@@ -1820,26 +1821,29 @@ type CreateChangeStream struct {
 type ChangeStreamForAll struct {
 	// pos = For
 	// end = All
+
 	For token.Pos // position of "FOR" keyword
 	All token.Pos // position of "ALL" keyword
 }
 
 // ChangeStreamForTables is FOR tables node in CREATE CHANGE STREAM
 //
-// FOR {{.Tables | sqlJoin ","}}
+//	FOR {{.Tables | sqlJoin ","}}
 type ChangeStreamForTables struct {
 	// pos = For
 	// end = Tables[$].end
+
 	For    token.Pos // position of "FOR" keyword
 	Tables []*ChangeStreamForTable
 }
 
 // ChangeStreamForTable table node in CREATE CHANGE STREAM SET FOR
 //
-// .TableName{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+//	.TableName{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
 type ChangeStreamForTable struct {
 	// pos = TableName.pos
 	// end = TableName.end || Rparen + 1
+
 	TableName *Ident
 	Columns   []*Ident
 	Rparen    token.Pos // position of ")"
@@ -1871,7 +1875,7 @@ type ChangeStreamOptionsRecord struct {
 
 // ChangeStreamAlternationSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
-// SET FOR {{.For | sql }}
+//	SET FOR {{.For | sql }}
 type ChangeStreamAlternationSetFor struct {
 	// pos = Set
 	// end = For.end
