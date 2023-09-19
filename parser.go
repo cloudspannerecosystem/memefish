@@ -2669,7 +2669,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 }
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
-	p.nextToken()
+	p.expectKeywordLike("TABLE")
 	name := p.parseIdent()
 
 	var alternation ast.TableAlternation
