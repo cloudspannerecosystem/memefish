@@ -1600,7 +1600,7 @@ type AlterTable struct {
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
-//	ADD COLUMN {{.IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
+//	ADD COLUMN {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
 type AddColumn struct {
 	// pos = Add
 	// end = Column.end
@@ -1791,7 +1791,7 @@ type InterleaveIn struct {
 
 // DropIndex is DROP INDEX statement node.
 //
-//	DROP INDEX {{.IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+//	DROP INDEX {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropIndex struct {
 	// pos = Drop
 	// end = Name.end
