@@ -1989,8 +1989,6 @@ func (p *Parser) parseDDL() ast.DDL {
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
-			p.nextToken()
-			p.expectKeywordLike("STREAM")
 			return p.parseCreateChangeStream(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
@@ -2499,6 +2497,8 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 }
 
 func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
 	name := p.parseIdent()
 	cs := &ast.CreateChangeStream{
 		Create: pos,
