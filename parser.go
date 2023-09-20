@@ -2564,8 +2564,7 @@ func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 }
 
 func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
-	pos := p.Token.Pos
-	p.nextToken()
+	pos := p.expect("FOR").Pos
 	if p.Token.Kind == "ALL" {
 		p.nextToken()
 		return &ast.ChangeStreamForAll{
