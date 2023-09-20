@@ -2609,8 +2609,7 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 // This is for the key, value which will supported in the future.
 // We don't need to modify this code for them.
 func (p *Parser) parseChangeStreamOptions() *ast.ChangeStreamOptions {
-	pos := p.Token.Pos
-	p.nextToken()
+	pos := p.expectKeywordLike("OPTIONS").Pos
 	p.expect("(")
 	cso := &ast.ChangeStreamOptions{Options: pos}
 	for {
