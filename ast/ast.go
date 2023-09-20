@@ -1818,6 +1818,8 @@ type CreateChangeStream struct {
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
+//
+//	FOR ALL
 type ChangeStreamForAll struct {
 	// pos = For
 	// end = All
