@@ -1811,7 +1811,8 @@ type CreateChangeStream struct {
 	// pos = Create
 	// end = Options.end || For.end
 
-	Create  token.Pos // position of "CREATE" keyword
+	Create token.Pos // position of "CREATE" keyword
+	
 	Name    *Ident
 	For     ChangeStreamFor
 	Options *ChangeStreamOptions
