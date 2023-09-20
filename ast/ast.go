@@ -1809,7 +1809,7 @@ type CreateIndex struct {
 //	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
 type CreateChangeStream struct {
 	// pos = Create
-	// end = Options.end || For.end
+	// end = (Options ?? For ?? Name).end
 
 	Create token.Pos // position of "CREATE" keyword
 	
