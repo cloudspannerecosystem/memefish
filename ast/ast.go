@@ -1806,7 +1806,7 @@ type CreateIndex struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sql }} {{.Options | sql }}
+//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
 type CreateChangeStream struct {
 	// pos = Create
 	// end = Options.end || For.end
