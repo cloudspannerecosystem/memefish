@@ -1007,11 +1007,11 @@ func (a *AlterChangeStream) SQL() string {
 	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlternation.SQL()
 }
 
-func (a ChangeStreamAlternationSetFor) SQL() string {
+func (a ChangeStreamSetFor) SQL() string {
 	return "SET " + a.For.SQL()
 }
-func (a ChangeStreamAlternationDropForAll) SQL() string { return "DROP FOR ALL" }
-func (a ChangeStreamAlternationSetOptions) SQL() string {
+func (a ChangeStreamDropForAll) SQL() string { return "DROP FOR ALL" }
+func (a ChangeStreamSetOptions) SQL() string {
 	sql := "SET " + a.Options.SQL()
 	return sql
 }

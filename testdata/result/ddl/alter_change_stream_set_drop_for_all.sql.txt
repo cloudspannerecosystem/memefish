@@ -9,7 +9,7 @@ ALTER CHANGE STREAM change_stream_name DROP FOR ALL
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  ChangeStreamAlternation: &ast.ChangeStreamAlternationDropForAll{
+  ChangeStreamAlternation: &ast.ChangeStreamDropForAll{
     Drop: 39,
     All:  48,
   },

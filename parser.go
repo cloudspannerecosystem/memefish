@@ -2524,18 +2524,16 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		setpos := p.Token.Pos
 		p.nextToken()
 		if p.Token.Kind == "FOR" {
-			csa := &ast.ChangeStreamAlternationSetFor{
+			cs.ChangeStreamAlternation = &ast.ChangeStreamSetFor{
 				Set: setpos,
 				For: p.parseChangeStreamFor(),
 			}
-			cs.ChangeStreamAlternation = csa
 			return cs
 		} else if p.Token.IsKeywordLike("OPTIONS") {
-			csa := &ast.ChangeStreamAlternationSetOptions{
+			cs.ChangeStreamAlternation = &ast.ChangeStreamSetOptions{
 				Set:     setpos,
 				Options: p.parseChangeStreamOptions(),
 			}
-			cs.ChangeStreamAlternation = csa
 			return cs
 		}
 	} else if p.Token.IsKeywordLike("DROP") {
@@ -2543,7 +2541,7 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		p.nextToken()
 		p.expect("FOR")
 		allpos := p.expect("ALL").Pos
-		cs.ChangeStreamAlternation = &ast.ChangeStreamAlternationDropForAll{
+		cs.ChangeStreamAlternation = &ast.ChangeStreamDropForAll{
 			Drop: droppos,
 			All:  allpos,
 		}

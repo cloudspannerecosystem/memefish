@@ -9,7 +9,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR ALL
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  ChangeStreamAlternation: &ast.ChangeStreamAlternationSetFor{
+  ChangeStreamAlternation: &ast.ChangeStreamSetFor{
     Set: 39,
     For: &ast.ChangeStreamForAll{
       For: 43,

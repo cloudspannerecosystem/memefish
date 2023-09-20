@@ -9,7 +9,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  ChangeStreamAlternation: &ast.ChangeStreamAlternationSetFor{
+  ChangeStreamAlternation: &ast.ChangeStreamSetFor{
     Set: 39,
     For: &ast.ChangeStreamForTables{
       For:    43,

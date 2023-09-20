@@ -328,9 +328,9 @@ type ChangeStreamAlternation interface {
 	isChangeStreamAlternation()
 }
 
-func (ChangeStreamAlternationSetFor) isChangeStreamAlternation()     {}
-func (ChangeStreamAlternationDropForAll) isChangeStreamAlternation() {}
-func (ChangeStreamAlternationSetOptions) isChangeStreamAlternation() {}
+func (ChangeStreamSetFor) isChangeStreamAlternation()     {}
+func (ChangeStreamDropForAll) isChangeStreamAlternation() {}
+func (ChangeStreamSetOptions) isChangeStreamAlternation() {}
 
 // ================================================================================
 //
@@ -1812,7 +1812,7 @@ type CreateChangeStream struct {
 	// end = (Options ?? For ?? Name).end
 
 	Create token.Pos // position of "CREATE" keyword
-	
+
 	Name    *Ident
 	For     ChangeStreamFor      // optional
 	Options *ChangeStreamOptions // optional
@@ -1876,10 +1876,10 @@ type ChangeStreamOptionsRecord struct {
 	Value Expr
 }
 
-// ChangeStreamAlternationSetFor is SET FOR tables node in ALTER CHANGE STREAM
+// ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
 //	SET FOR {{.For | sql }}
-type ChangeStreamAlternationSetFor struct {
+type ChangeStreamSetFor struct {
 	// pos = Set
 	// end = For.end
 
@@ -1887,8 +1887,8 @@ type ChangeStreamAlternationSetFor struct {
 	For ChangeStreamFor
 }
 
-// ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM
-type ChangeStreamAlternationDropForAll struct {
+// ChangeStreamDropForAll is DROP FOR ALL node in ALTER CHANGE STREAM
+type ChangeStreamDropForAll struct {
 	// pos = Drop
 	// end = All + 3
 
@@ -1896,10 +1896,10 @@ type ChangeStreamAlternationDropForAll struct {
 	All  token.Pos // position of "ALL" keyword
 }
 
-// ChangeStreamAlternationSetFor is DROP FOR ALL node in ALTER CHANGE STREAM
+// ChangeStreamSetOptions is SET OPTIONS node in ALTER CHANGE STREAM
 //
 //	SET {{ .Options | sql }}
-type ChangeStreamAlternationSetOptions struct {
+type ChangeStreamSetOptions struct {
 	// pos = Set
 	// end = Options.Rparen + 1
 

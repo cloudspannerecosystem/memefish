@@ -704,14 +704,14 @@ func (d *DropRole) End() token.Pos { return d.Name.End() }
 func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
 func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
-func (a *AlterChangeStream) Pos() token.Pos                 { return a.Alter }
-func (a *AlterChangeStream) End() token.Pos                 { return a.ChangeStreamAlternation.End() }
-func (a *ChangeStreamAlternationSetFor) Pos() token.Pos     { return a.Set }
-func (a *ChangeStreamAlternationSetFor) End() token.Pos     { return a.For.End() }
-func (a *ChangeStreamAlternationDropForAll) Pos() token.Pos { return a.Drop }
-func (a *ChangeStreamAlternationDropForAll) End() token.Pos { return a.All + token.Pos(len("ALL")) }
-func (a *ChangeStreamAlternationSetOptions) Pos() token.Pos { return a.Set }
-func (a *ChangeStreamAlternationSetOptions) End() token.Pos {
+func (a *AlterChangeStream) Pos() token.Pos      { return a.Alter }
+func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlternation.End() }
+func (a *ChangeStreamSetFor) Pos() token.Pos     { return a.Set }
+func (a *ChangeStreamSetFor) End() token.Pos     { return a.For.End() }
+func (a *ChangeStreamDropForAll) Pos() token.Pos { return a.Drop }
+func (a *ChangeStreamDropForAll) End() token.Pos { return a.All + token.Pos(len("ALL")) }
+func (a *ChangeStreamSetOptions) Pos() token.Pos { return a.Set }
+func (a *ChangeStreamSetOptions) End() token.Pos {
 	return a.Options.Rparen + token.Pos(len(")"))
 }
 
