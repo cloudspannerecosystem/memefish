@@ -1814,8 +1814,8 @@ type CreateChangeStream struct {
 	Create token.Pos // position of "CREATE" keyword
 	
 	Name    *Ident
-	For     ChangeStreamFor
-	Options *ChangeStreamOptions
+	For     ChangeStreamFor      // optional
+	Options *ChangeStreamOptions // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
