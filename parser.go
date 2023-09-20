@@ -2553,6 +2553,7 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 	}
 	return cs
 }
+
 func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 	name := p.parseIdent()
 	return &ast.DropChangeStream{
