@@ -1018,6 +1018,7 @@ func (a ChangeStreamSetOptions) SQL() string {
 	sql := "SET " + a.Options.SQL()
 	return sql
 }
+
 func (c *ChangeStreamForTable) SQL() string {
 	sql := c.TableName.SQL()
 	if len(c.Columns) > 0 {
