@@ -1843,7 +1843,7 @@ type ChangeStreamForTables struct {
 
 // ChangeStreamForTable table node in CREATE CHANGE STREAM SET FOR
 //
-//	.TableName{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+//	{{.TableName | sql}}{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
 type ChangeStreamForTable struct {
 	// pos = TableName.pos
 	// end = TableName.end || Rparen + 1
