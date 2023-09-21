@@ -1888,6 +1888,8 @@ type ChangeStreamSetFor struct {
 }
 
 // ChangeStreamDropForAll is DROP FOR ALL node in ALTER CHANGE STREAM
+//
+//	DROP FOR ALL
 type ChangeStreamDropForAll struct {
 	// pos = Drop
 	// end = All + 3
