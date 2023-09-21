@@ -313,7 +313,7 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
-// ChangeStreamFor represents for statement in CREATE/ALTER CHANGE STREAM statement.
+// ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
 	Node
 	isChangeStreamFor()
