@@ -1871,7 +1871,7 @@ type ChangeStreamOptions struct {
 //
 //	{{.Key | sql}}={{.Expr | sql}}
 type ChangeStreamOptionsRecord struct {
-	// pos = Key
+	// pos = Key.pos
 	// end = Value.end
 
 	Key   *Ident
