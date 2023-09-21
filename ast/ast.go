@@ -1903,7 +1903,7 @@ type ChangeStreamDropForAll struct {
 
 // ChangeStreamSetOptions is SET OPTIONS node in ALTER CHANGE STREAM
 //
-//	SET {{ .Options | sql }}
+//	SET {{.Options | sql}}
 type ChangeStreamSetOptions struct {
 	// pos = Set
 	// end = Options.Rparen + 1
