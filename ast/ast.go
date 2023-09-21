@@ -1880,7 +1880,7 @@ type ChangeStreamOptionsRecord struct {
 
 // ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
-//	SET FOR {{.For | sql }}
+//	SET FOR {{.For | sql}}
 type ChangeStreamSetFor struct {
 	// pos = Set
 	// end = For.end
