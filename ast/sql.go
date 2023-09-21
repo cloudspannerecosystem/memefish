@@ -979,7 +979,10 @@ func (c *CreateChangeStream) SQL() string {
 	return sql
 }
 
-func (c *ChangeStreamForAll) SQL() string { return "FOR ALL" }
+func (c *ChangeStreamForAll) SQL() string {
+	return "FOR ALL"
+}
+
 func (c *ChangeStreamForTables) SQL() string {
 	sql := "FOR "
 	for i, table := range c.Tables {
