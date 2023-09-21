@@ -1886,6 +1886,7 @@ type ChangeStreamSetFor struct {
 	// end = For.end
 
 	Set token.Pos // position of "SET" keyword
+
 	For ChangeStreamFor
 }
 
