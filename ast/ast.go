@@ -1836,7 +1836,8 @@ type ChangeStreamForTables struct {
 	// pos = For
 	// end = Tables[$].end
 
-	For    token.Pos // position of "FOR" keyword
+	For token.Pos // position of "FOR" keyword
+
 	Tables []*ChangeStreamForTable
 }
 
