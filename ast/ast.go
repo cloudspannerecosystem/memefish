@@ -1627,7 +1627,7 @@ type AlterTable struct {
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
 //
-//	ALTER CHANGE STREAM {{.Name | sql}} {{ .ChangeStreamAlternation | sql }}
+//	ALTER CHANGE STREAM {{.Name | sql}} {{.ChangeStreamAlternation | sql}}
 type AlterChangeStream struct {
 	// pos = Alter
 	// end = ChangeStreamAlternation.end
