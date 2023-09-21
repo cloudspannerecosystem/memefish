@@ -1983,6 +1983,7 @@ type DropChangeStream struct {
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
+
 	Name *Ident
 }
 
