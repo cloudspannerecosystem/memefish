@@ -1848,9 +1848,10 @@ type ChangeStreamForTable struct {
 	// pos = TableName.pos
 	// end = TableName.end || Rparen + 1
 
+	Rparen token.Pos // position of ")"
+
 	TableName *Ident
 	Columns   []*Ident
-	Rparen    token.Pos // position of ")"
 }
 
 // ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
