@@ -1864,7 +1864,7 @@ type ChangeStreamOptions struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*ChangeStreamOptionsRecord
+	Records []*ChangeStreamOptionsRecord // len(Records) > 0
 }
 
 // ChangeStreamOptionsRecord is OPTIONS record node.
