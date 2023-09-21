@@ -1908,7 +1908,8 @@ type ChangeStreamSetOptions struct {
 	// pos = Set
 	// end = Options.Rparen + 1
 
-	Set     token.Pos // position of "SET" keyword
+	Set token.Pos // position of "SET" keyword
+
 	Options *ChangeStreamOptions
 }
 
