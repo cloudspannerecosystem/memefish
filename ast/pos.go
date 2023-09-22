@@ -789,7 +789,6 @@ func (c *ChangeStreamForTable) End() token.Pos {
 	if len(c.Columns) == 0 {
 		return c.TableName.End()
 	}
-
 	return c.Rparen + 1
 }
 
