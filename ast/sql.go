@@ -1032,7 +1032,6 @@ func (c *ChangeStreamForTable) SQL() string {
 			}
 			sql += id.SQL()
 		}
-
 		sql += ")"
 	}
 	return sql
