@@ -1013,10 +1013,13 @@ func (a *AlterChangeStream) SQL() string {
 func (a ChangeStreamSetFor) SQL() string {
 	return "SET " + a.For.SQL()
 }
-func (a ChangeStreamDropForAll) SQL() string { return "DROP FOR ALL" }
+
+func (a ChangeStreamDropForAll) SQL() string {
+	return "DROP FOR ALL"
+}
+
 func (a ChangeStreamSetOptions) SQL() string {
-	sql := "SET " + a.Options.SQL()
-	return sql
+	return "SET " + a.Options.SQL()
 }
 
 func (c *ChangeStreamForTable) SQL() string {
