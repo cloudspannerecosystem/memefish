@@ -706,14 +706,15 @@ func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
 func (a *AlterChangeStream) Pos() token.Pos      { return a.Alter }
 func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlternation.End() }
+
 func (a *ChangeStreamSetFor) Pos() token.Pos     { return a.Set }
 func (a *ChangeStreamSetFor) End() token.Pos     { return a.For.End() }
+
 func (a *ChangeStreamDropForAll) Pos() token.Pos { return a.Drop }
-func (a *ChangeStreamDropForAll) End() token.Pos { return a.All + token.Pos(len("ALL")) }
+func (a *ChangeStreamDropForAll) End() token.Pos { return a.All + 3 }
+
 func (a *ChangeStreamSetOptions) Pos() token.Pos { return a.Set }
-func (a *ChangeStreamSetOptions) End() token.Pos {
-	return a.Options.Rparen + token.Pos(len(")"))
-}
+func (a *ChangeStreamSetOptions) End() token.Pos { return a.Options.Rparen + 1 }
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
 func (g *Grant) End() token.Pos { return g.Roles[len(g.Roles)-1].End() }
