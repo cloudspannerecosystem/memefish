@@ -1998,8 +1998,6 @@ func (p *Parser) parseDDL() ast.DDL {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
-			p.nextToken()
-			p.expectKeywordLike("STREAM")
 			return p.parseAlterChangeStream(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
@@ -2013,8 +2011,6 @@ func (p *Parser) parseDDL() ast.DDL {
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
-			p.nextToken()
-			p.expectKeywordLike("STREAM")
 			return p.parseDropChangeStream(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
@@ -2515,6 +2511,8 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 }
 
 func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
 	name := p.parseIdent()
 	cs := &ast.AlterChangeStream{
 		Alter: pos,
@@ -2553,6 +2551,8 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 }
 
 func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
 	name := p.parseIdent()
 	return &ast.DropChangeStream{
 		Drop: pos,
