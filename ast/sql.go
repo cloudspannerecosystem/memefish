@@ -968,6 +968,79 @@ func (c *CreateIndex) SQL() string {
 	return sql
 }
 
+func (c *CreateChangeStream) SQL() string {
+	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
+	if c.For != nil {
+		sql += " " + c.For.SQL()
+	}
+	if c.Options != nil {
+		sql += c.Options.SQL()
+	}
+	return sql
+}
+
+func (c *ChangeStreamForAll) SQL() string {
+	return "FOR ALL"
+}
+
+func (c *ChangeStreamForTables) SQL() string {
+	sql := "FOR "
+	for i, table := range c.Tables {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += table.SQL()
+	}
+	return sql
+}
+
+func (c *ChangeStreamOptions) SQL() string {
+	sql := " OPTIONS ("
+	for i, record := range c.Records {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += record.Key.SQL() + "=" + record.Value.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
+func (a *AlterChangeStream) SQL() string {
+	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlternation.SQL()
+}
+
+func (a ChangeStreamSetFor) SQL() string {
+	return "SET " + a.For.SQL()
+}
+
+func (a ChangeStreamDropForAll) SQL() string {
+	return "DROP FOR ALL"
+}
+
+func (a ChangeStreamSetOptions) SQL() string {
+	return "SET " + a.Options.SQL()
+}
+
+func (c *ChangeStreamForTable) SQL() string {
+	sql := c.TableName.SQL()
+	if len(c.Columns) > 0 {
+		sql += "("
+		for i, id := range c.Columns {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += id.SQL()
+		}
+		sql += ")"
+	}
+	return sql
+}
+
+func (d *DropChangeStream) SQL() string {
+	return "DROP CHANGE STREAM " + d.Name.SQL()
+}
+
 func (s *Storing) SQL() string {
 	sql := "STORING ("
 	for i, c := range s.Columns {

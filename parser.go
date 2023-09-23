@@ -1988,11 +1988,19 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			return p.parseCreateChangeStream(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
 		p.nextToken()
-		return p.parseAlterTable(pos)
+		switch {
+		case p.Token.IsKeywordLike("TABLE"):
+			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			return p.parseAlterChangeStream(pos)
+		}
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
 		p.nextToken()
 		switch {
@@ -2002,8 +2010,10 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
+		case p.Token.IsKeywordLike("CHANGE"):
+			return p.parseDropChangeStream(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("GRANT"):
 		p.nextToken()
 		return p.parseGrant(pos)
@@ -2480,6 +2490,143 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		Storing:      storing,
 		InterleaveIn: interleaveIn,
 	}
+}
+
+func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
+	name := p.parseIdent()
+	cs := &ast.CreateChangeStream{
+		Create: pos,
+		Name:   name,
+	}
+	if p.Token.Kind == "FOR" {
+		cs.For = p.parseChangeStreamFor()
+	}
+	if p.Token.IsKeywordLike("OPTIONS") {
+		cs.Options = p.parseChangeStreamOptions()
+	}
+	return cs
+
+}
+
+func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
+	name := p.parseIdent()
+	cs := &ast.AlterChangeStream{
+		Alter: pos,
+		Name:  name,
+	}
+	if p.Token.Kind == "SET" {
+		setpos := p.Token.Pos
+		p.nextToken()
+		if p.Token.Kind == "FOR" {
+			cs.ChangeStreamAlternation = &ast.ChangeStreamSetFor{
+				Set: setpos,
+				For: p.parseChangeStreamFor(),
+			}
+			return cs
+		} else if p.Token.IsKeywordLike("OPTIONS") {
+			cs.ChangeStreamAlternation = &ast.ChangeStreamSetOptions{
+				Set:     setpos,
+				Options: p.parseChangeStreamOptions(),
+			}
+			return cs
+		}
+	} else if p.Token.IsKeywordLike("DROP") {
+		droppos := p.Token.Pos
+		p.nextToken()
+		p.expect("FOR")
+		allpos := p.expect("ALL").Pos
+		cs.ChangeStreamAlternation = &ast.ChangeStreamDropForAll{
+			Drop: droppos,
+			All:  allpos,
+		}
+		return cs
+	} else {
+		p.panicfAtToken(&p.Token, "expected SET FOR or DROP FOR ALL or SET OPTIONS")
+	}
+	return cs
+}
+
+func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
+	name := p.parseIdent()
+	return &ast.DropChangeStream{
+		Drop: pos,
+		Name: name,
+	}
+
+}
+
+func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
+	pos := p.expect("FOR").Pos
+	if p.Token.Kind == "ALL" {
+		p.nextToken()
+		return &ast.ChangeStreamForAll{
+			For: pos,
+			All: p.Token.Pos,
+		}
+
+	}
+	cswt := &ast.ChangeStreamForTables{
+		For: pos,
+	}
+	for {
+		tname := p.parseIdent()
+		forTable := ast.ChangeStreamForTable{
+			TableName: tname,
+		}
+
+		if p.Token.Kind == "(" {
+			p.nextToken()
+			forTable.Columns = []*ast.Ident{p.parseIdent()}
+			for p.Token.Kind == "," {
+				p.nextToken()
+				forTable.Columns = append(forTable.Columns, p.parseIdent())
+			}
+			forTable.Rparen = p.expect(")").Pos
+		}
+
+		cswt.Tables = append(cswt.Tables, &forTable)
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		break
+	}
+	return cswt
+
+}
+
+// Parse CHANGE STREAM OPTIONS.
+// We parse any expressions in OPTIONS. even if tokens includes unsupported expressions.
+// This is for the key, value which will supported in the future.
+// We don't need to modify this code for them.
+func (p *Parser) parseChangeStreamOptions() *ast.ChangeStreamOptions {
+	pos := p.expectKeywordLike("OPTIONS").Pos
+	p.expect("(")
+	cso := &ast.ChangeStreamOptions{Options: pos}
+	for {
+		key := p.parseIdent()
+		p.expect("=")
+		value := p.parseExpr()
+		cso.Records = append(cso.Records, &ast.ChangeStreamOptionsRecord{Key: key, Value: value})
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		if p.Token.Kind == ")" {
+			cso.Rparen = p.Token.Pos
+			p.nextToken()
+			break
+		}
+		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
+	}
+
+	return cso
 }
 
 func (p *Parser) tryParseStoring() *ast.Storing {

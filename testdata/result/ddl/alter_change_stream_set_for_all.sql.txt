@@ -1,0 +1,22 @@
+--- alter_change_stream_set_for_all.sql
+ALTER CHANGE STREAM change_stream_name SET FOR ALL
+
+--- AST
+&ast.AlterChangeStream{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 20,
+    NameEnd: 38,
+    Name:    "change_stream_name",
+  },
+  ChangeStreamAlternation: &ast.ChangeStreamSetFor{
+    Set: 39,
+    For: &ast.ChangeStreamForAll{
+      For: 43,
+      All: 51,
+    },
+  },
+}
+
+--- SQL
+ALTER CHANGE STREAM change_stream_name SET FOR ALL

@@ -50,22 +50,25 @@ type Statement interface {
 	isStatement()
 }
 
-func (QueryStatement) isStatement() {}
-func (CreateDatabase) isStatement() {}
-func (CreateTable) isStatement()    {}
-func (CreateSequence) isStatement() {}
-func (CreateView) isStatement()     {}
-func (CreateIndex) isStatement()    {}
-func (CreateRole) isStatement()     {}
-func (AlterTable) isStatement()     {}
-func (DropTable) isStatement()      {}
-func (DropIndex) isStatement()      {}
-func (DropRole) isStatement()       {}
-func (Insert) isStatement()         {}
-func (Delete) isStatement()         {}
-func (Update) isStatement()         {}
-func (Grant) isStatement()          {}
-func (Revoke) isStatement()         {}
+func (QueryStatement) isStatement()     {}
+func (CreateDatabase) isStatement()     {}
+func (CreateTable) isStatement()        {}
+func (CreateSequence) isStatement()     {}
+func (CreateView) isStatement()         {}
+func (CreateIndex) isStatement()        {}
+func (CreateRole) isStatement()         {}
+func (AlterTable) isStatement()         {}
+func (DropTable) isStatement()          {}
+func (DropIndex) isStatement()          {}
+func (DropRole) isStatement()           {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
+func (CreateChangeStream) isStatement() {}
+func (AlterChangeStream) isStatement()  {}
+func (DropChangeStream) isStatement()   {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -215,18 +218,21 @@ type DDL interface {
 	isDDL()
 }
 
-func (CreateDatabase) isDDL() {}
-func (CreateTable) isDDL()    {}
-func (CreateView) isDDL()     {}
-func (CreateSequence) isDDL() {}
-func (AlterTable) isDDL()     {}
-func (DropTable) isDDL()      {}
-func (CreateIndex) isDDL()    {}
-func (DropIndex) isDDL()      {}
-func (CreateRole) isDDL()     {}
-func (DropRole) isDDL()       {}
-func (Grant) isDDL()          {}
-func (Revoke) isDDL()         {}
+func (CreateDatabase) isDDL()     {}
+func (CreateTable) isDDL()        {}
+func (CreateView) isDDL()         {}
+func (CreateSequence) isDDL()     {}
+func (AlterTable) isDDL()         {}
+func (DropTable) isDDL()          {}
+func (CreateIndex) isDDL()        {}
+func (DropIndex) isDDL()          {}
+func (CreateRole) isDDL()         {}
+func (DropRole) isDDL()           {}
+func (Grant) isDDL()              {}
+func (Revoke) isDDL()             {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -306,6 +312,25 @@ type InsertInput interface {
 
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
+
+// ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
+type ChangeStreamFor interface {
+	Node
+	isChangeStreamFor()
+}
+
+func (ChangeStreamForAll) isChangeStreamFor()    {}
+func (ChangeStreamForTables) isChangeStreamFor() {}
+
+// ChangeStreamAlternation represents ALTER CHANGE STREAM action.
+type ChangeStreamAlternation interface {
+	Node
+	isChangeStreamAlternation()
+}
+
+func (ChangeStreamSetFor) isChangeStreamAlternation()     {}
+func (ChangeStreamDropForAll) isChangeStreamAlternation() {}
+func (ChangeStreamSetOptions) isChangeStreamAlternation() {}
 
 // ================================================================================
 //
@@ -1600,6 +1625,19 @@ type AlterTable struct {
 	TableAlternation TableAlternation
 }
 
+// AlterChangeStream is ALTER CHANGE STREAM statement node.
+//
+//	ALTER CHANGE STREAM {{.Name | sql}} {{.ChangeStreamAlternation | sql}}
+type AlterChangeStream struct {
+	// pos = Alter
+	// end = ChangeStreamAlternation.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name                    *Ident
+	ChangeStreamAlternation ChangeStreamAlternation
+}
+
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
 //	ADD COLUMN {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
@@ -1766,6 +1804,115 @@ type CreateIndex struct {
 	InterleaveIn *InterleaveIn // optional
 }
 
+// CreateChangeStream is CREATE CHANGE STREAM statement node.
+//
+//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
+type CreateChangeStream struct {
+	// pos = Create
+	// end = (Options ?? For ?? Name).end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name    *Ident
+	For     ChangeStreamFor      // optional
+	Options *ChangeStreamOptions // optional
+}
+
+// ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
+//
+//	FOR ALL
+type ChangeStreamForAll struct {
+	// pos = For
+	// end = All
+
+	For token.Pos // position of "FOR" keyword
+	All token.Pos // position of "ALL" keyword
+}
+
+// ChangeStreamForTables is FOR tables node in CREATE CHANGE STREAM
+//
+//	FOR {{.Tables | sqlJoin ","}}
+type ChangeStreamForTables struct {
+	// pos = For
+	// end = Tables[$].end
+
+	For token.Pos // position of "FOR" keyword
+
+	Tables []*ChangeStreamForTable
+}
+
+// ChangeStreamForTable table node in CREATE CHANGE STREAM SET FOR
+//
+//	{{.TableName | sql}}{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
+type ChangeStreamForTable struct {
+	// pos = TableName.pos
+	// end = TableName.end || Rparen + 1
+
+	Rparen token.Pos // position of ")"
+
+	TableName *Ident
+	Columns   []*Ident
+}
+
+// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type ChangeStreamOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*ChangeStreamOptionsRecord // len(Records) > 0
+}
+
+// ChangeStreamOptionsRecord is OPTIONS record node.
+//
+//	{{.Key | sql}}={{.Expr | sql}}
+type ChangeStreamOptionsRecord struct {
+	// pos = Key.pos
+	// end = Value.end
+
+	Key   *Ident
+	Value Expr
+}
+
+// ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
+//
+//	SET FOR {{.For | sql}}
+type ChangeStreamSetFor struct {
+	// pos = Set
+	// end = For.end
+
+	Set token.Pos // position of "SET" keyword
+
+	For ChangeStreamFor
+}
+
+// ChangeStreamDropForAll is DROP FOR ALL node in ALTER CHANGE STREAM
+//
+//	DROP FOR ALL
+type ChangeStreamDropForAll struct {
+	// pos = Drop
+	// end = All + 3
+
+	Drop token.Pos // position of "DROP" keyword
+	All  token.Pos // position of "ALL" keyword
+}
+
+// ChangeStreamSetOptions is SET OPTIONS node in ALTER CHANGE STREAM
+//
+//	SET {{.Options | sql}}
+type ChangeStreamSetOptions struct {
+	// pos = Set
+	// end = Options.Rparen + 1
+
+	Set token.Pos // position of "SET" keyword
+
+	Options *ChangeStreamOptions
+}
+
 // Storing is STORING clause in CREATE INDEX.
 //
 //	STORING ({{.Columns | sqlJoin ","}})
@@ -1820,6 +1967,18 @@ type CreateRole struct {
 //
 //	DROP ROLE {{.Name | sql}}
 type DropRole struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
+}
+
+// DropChangeStream is DROP CHANGE STREAM  statement node.
+//
+//	DROP CHANGE STREAM {{.Name | sql}}
+type DropChangeStream struct {
 	// pos = Drop
 	// end = Name.end
 

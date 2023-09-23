@@ -664,6 +664,28 @@ func (c *CreateIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateChangeStream) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateChangeStream) End() token.Pos {
+	if c.Options != nil {
+		return c.Options.End()
+	}
+	if c.For != nil {
+		return c.For.End()
+	}
+	return c.Name.End()
+}
+
+func (c *ChangeStreamOptions) Pos() token.Pos { return c.Options }
+func (c *ChangeStreamOptions) End() token.Pos { return c.Rparen + 1 }
+
+func (c *ChangeStreamForAll) Pos() token.Pos    { return c.For }
+func (c *ChangeStreamForAll) End() token.Pos    { return c.All }
+func (c *ChangeStreamForTables) Pos() token.Pos { return c.For }
+func (c *ChangeStreamForTables) End() token.Pos { return c.Tables[len(c.Tables)-1].End() }
+
 func (s *Storing) Pos() token.Pos { return s.Storing }
 func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 
@@ -678,6 +700,21 @@ func (c *CreateRole) End() token.Pos { return c.Name.End() }
 
 func (d *DropRole) Pos() token.Pos { return d.Drop }
 func (d *DropRole) End() token.Pos { return d.Name.End() }
+
+func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
+func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
+
+func (a *AlterChangeStream) Pos() token.Pos      { return a.Alter }
+func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlternation.End() }
+
+func (a *ChangeStreamSetFor) Pos() token.Pos     { return a.Set }
+func (a *ChangeStreamSetFor) End() token.Pos     { return a.For.End() }
+
+func (a *ChangeStreamDropForAll) Pos() token.Pos { return a.Drop }
+func (a *ChangeStreamDropForAll) End() token.Pos { return a.All + 3 }
+
+func (a *ChangeStreamSetOptions) Pos() token.Pos { return a.Set }
+func (a *ChangeStreamSetOptions) End() token.Pos { return a.Options.Rparen + 1 }
 
 func (g *Grant) Pos() token.Pos { return g.Grant }
 func (g *Grant) End() token.Pos { return g.Roles[len(g.Roles)-1].End() }
@@ -747,6 +784,13 @@ func (s *SizedSchemaType) End() token.Pos { return s.Rparen + 1 }
 
 func (a *ArraySchemaType) Pos() token.Pos { return a.Array }
 func (a *ArraySchemaType) End() token.Pos { return a.Gt + 1 }
+
+func (c *ChangeStreamForTable) End() token.Pos {
+	if len(c.Columns) == 0 {
+		return c.TableName.End()
+	}
+	return c.Rparen + 1
+}
 
 // ================================================================================
 //
