@@ -692,6 +692,15 @@ func (s *Storing) End() token.Pos { return s.Rparen + 1 }
 func (i *InterleaveIn) Pos() token.Pos { return i.Comma }
 func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 
+func (a *AlterIndex) Pos() token.Pos { return a.Alter }
+func (a *AlterIndex) End() token.Pos { return a.IndexAlternation.End() }
+
+func (a *AddStoredColumn) Pos() token.Pos { return a.Add }
+func (a *AddStoredColumn) End() token.Pos { return a.Name.End() }
+
+func (a *DropStoredColumn) Pos() token.Pos { return a.Drop }
+func (a *DropStoredColumn) End() token.Pos { return a.Name.End() }
+
 func (d *DropIndex) Pos() token.Pos { return d.Drop }
 func (d *DropIndex) End() token.Pos { return d.Name.End() }
 

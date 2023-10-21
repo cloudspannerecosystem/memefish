@@ -13,6 +13,7 @@ func TestStatement(t *testing.T) {
 	Statement(&CreateSequence{}).isStatement()
 	Statement(&CreateRole{}).isStatement()
 	Statement(&AlterTable{}).isStatement()
+	Statement(&AlterIndex{}).isStatement()
 	Statement(&DropTable{}).isStatement()
 	Statement(&DropIndex{}).isStatement()
 	Statement(&DropRole{}).isStatement()
@@ -128,6 +129,7 @@ func TestDDL(t *testing.T) {
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()
 	DDL(&CreateIndex{}).isDDL()
+	DDL(&AlterIndex{}).isDDL()
 	DDL(&DropIndex{}).isDDL()
 	DDL(&CreateRole{}).isDDL()
 	DDL(&DropRole{}).isDDL()
@@ -168,6 +170,11 @@ func TestSchemaType(t *testing.T) {
 	SchemaType(&ScalarSchemaType{}).isSchemaType()
 	SchemaType(&SizedSchemaType{}).isSchemaType()
 	SchemaType(&ArraySchemaType{}).isSchemaType()
+}
+
+func TestIndexAlternation(t *testing.T) {
+	IndexAlternation(&AddStoredColumn{}).isIndexAlternation()
+	IndexAlternation(&DropStoredColumn{}).isIndexAlternation()
 }
 
 func TestDML(t *testing.T) {

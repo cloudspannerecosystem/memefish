@@ -1,0 +1,23 @@
+--- alter_index_add_stored_column.sql
+alter index foo add stored column bar
+
+--- AST
+&ast.AlterIndex{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  IndexAlternation: &ast.AddStoredColumn{
+    Add:  16,
+    Name: &ast.Ident{
+      NamePos: 34,
+      NameEnd: 37,
+      Name:    "bar",
+    },
+  },
+}
+
+--- SQL
+ALTER INDEX foo ADD STORED COLUMN bar
