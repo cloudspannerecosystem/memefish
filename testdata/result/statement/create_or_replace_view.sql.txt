@@ -14,8 +14,9 @@ from singers
     NameEnd: 34,
     Name:    "singernames",
   },
-  OrReplace: true,
-  Query:     &ast.Select{
+  OrReplace:    true,
+  SecurityType: "INVOKER",
+  Query:        &ast.Select{
     Select:   59,
     Distinct: false,
     AsStruct: false,

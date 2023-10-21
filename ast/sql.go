@@ -771,7 +771,7 @@ func (c *CreateView) SQL() string {
 	if c.OrReplace {
 		sql += " OR REPLACE"
 	}
-	sql += " VIEW " + c.Name.SQL() + " SQL SECURITY INVOKER AS " + c.Query.SQL()
+	sql += " VIEW " + c.Name.SQL() + " SQL SECURITY " + string(c.SecurityType) + " AS " + c.Query.SQL()
 	return sql
 }
 

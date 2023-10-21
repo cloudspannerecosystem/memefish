@@ -115,3 +115,10 @@ const (
 	OnDeleteCascade  OnDeleteAction = "ON DELETE CASCADE"
 	OnDeleteNoAction OnDeleteAction = "ON DELETE NO ACTION"
 )
+
+type SecurityType string
+
+const (
+	SecurityTypeInvoker SecurityType = "INVOKER"
+	SecurityTypeDefiner SecurityType = "DEFINER"
+)
