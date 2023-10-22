@@ -1057,6 +1057,18 @@ func (i *InterleaveIn) SQL() string {
 	return ", INTERLEAVE IN " + i.TableName.SQL()
 }
 
+func (a *AlterIndex) SQL() string {
+	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlternation.SQL()
+}
+
+func (a *AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + a.Name.SQL()
+}
+
+func (a *DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + a.Name.SQL()
+}
+
 func (d *DropIndex) SQL() string {
 	sql := "DROP INDEX "
 	if d.IfExists {

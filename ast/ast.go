@@ -58,6 +58,7 @@ func (CreateView) isStatement()         {}
 func (CreateIndex) isStatement()        {}
 func (CreateRole) isStatement()         {}
 func (AlterTable) isStatement()         {}
+func (AlterIndex) isStatement()         {}
 func (DropTable) isStatement()          {}
 func (DropIndex) isStatement()          {}
 func (DropRole) isStatement()           {}
@@ -225,6 +226,7 @@ func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
 func (CreateIndex) isDDL()        {}
+func (AlterIndex) isDDL()         {}
 func (DropIndex) isDDL()          {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
@@ -291,6 +293,15 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+
+// IndexAlternation represents ALTER INDEX action.
+type IndexAlternation interface {
+	Node
+	isIndexAlternation()
+}
+
+func (AddStoredColumn) isIndexAlternation()  {}
+func (DropStoredColumn) isIndexAlternation() {}
 
 // DML represents data manipulation language in SQL.
 //
@@ -1626,6 +1637,19 @@ type AlterTable struct {
 	TableAlternation TableAlternation
 }
 
+// AlterIndex is ALTER INDEX statement node.
+//
+//	ALTER INDEX {{.Name | sql}} {{.IndexAlternation | sql}}
+type AlterIndex struct {
+	// pos = Alter
+	// end = IndexAlternation.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name             *Ident
+	IndexAlternation IndexAlternation
+}
+
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
 //
 //	ALTER CHANGE STREAM {{.Name | sql}} {{.ChangeStreamAlternation | sql}}
@@ -1937,6 +1961,30 @@ type InterleaveIn struct {
 	Comma token.Pos // position of ","
 
 	TableName *Ident
+}
+
+// AddStoredColumn is ADD STORED COLUMN clause in ALTER INDEX.
+//
+//	ADD STORED COLUMN {{.Name | sql}}
+type AddStoredColumn struct {
+	// pos = Add
+	// end = Name.end
+
+	Add token.Pos // position of "ADD" keyword
+
+	Name *Ident
+}
+
+// DropStoredColumn is DROP STORED COLUMN clause in ALTER INDEX.
+//
+//	DROP STORED COLUMN {{.Name | sql}}
+type DropStoredColumn struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
 }
 
 // DropIndex is DROP INDEX statement node.

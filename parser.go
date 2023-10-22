@@ -1997,6 +1997,8 @@ func (p *Parser) parseDDL() ast.DDL {
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("INDEX"):
+			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseAlterChangeStream(pos)
 		}
@@ -2851,6 +2853,53 @@ func (p *Parser) parseAlterColumn() ast.TableAlternation {
 	}
 }
 
+func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
+	p.expectKeywordLike("INDEX")
+
+	name := p.parseIdent()
+
+	var alternation ast.IndexAlternation
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		alternation = p.parseAddStoredColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		alternation = p.parseDropStoredColumn()
+	default:
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
+	}
+
+	return &ast.AlterIndex{
+		Alter:            pos,
+		Name:             name,
+		IndexAlternation: alternation,
+	}
+}
+
+func (p *Parser) parseAddStoredColumn() ast.IndexAlternation {
+	pos := p.expectKeywordLike("ADD").Pos
+	p.expectKeywordLike("STORED")
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	return &ast.AddStoredColumn{
+		Add:  pos,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseDropStoredColumn() ast.IndexAlternation {
+	pos := p.expectKeywordLike("DROP").Pos
+	p.expectKeywordLike("STORED")
+	p.expectKeywordLike("COLUMN")
+
+	name := p.parseIdent()
+
+	return &ast.DropStoredColumn{
+		Drop: pos,
+		Name: name,
+	}
+}
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()

@@ -1,0 +1,23 @@
+--- alter_index_drop_stored_column.sql
+alter index foo drop stored column bar
+
+--- AST
+&ast.AlterIndex{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  IndexAlternation: &ast.DropStoredColumn{
+    Drop: 16,
+    Name: &ast.Ident{
+      NamePos: 35,
+      NameEnd: 38,
+      Name:    "bar",
+    },
+  },
+}
+
+--- SQL
+ALTER INDEX foo DROP STORED COLUMN bar
