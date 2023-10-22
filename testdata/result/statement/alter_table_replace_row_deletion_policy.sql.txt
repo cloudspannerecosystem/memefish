@@ -9,7 +9,7 @@ alter table foo replace row deletion policy ( older_than ( bar, interval 30 day 
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.ReplaceRowDeletionPolicy{
+  TableAlteration: &ast.ReplaceRowDeletionPolicy{
     Replace:           16,
     RowDeletionPolicy: &ast.RowDeletionPolicy{
       Row:        24,

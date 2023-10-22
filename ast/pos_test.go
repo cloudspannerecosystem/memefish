@@ -6,7 +6,7 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
-func TestTableAlternation_Position(t *testing.T) {
+func TestTableAlteration_Position(t *testing.T) {
 	alterColumnDefaultExpr := AlterColumn{
 		DefaultExpr: &ColumnDefaultExpr{Rparen: 100},
 	}

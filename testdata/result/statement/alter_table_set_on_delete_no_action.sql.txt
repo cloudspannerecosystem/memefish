@@ -8,7 +8,7 @@ alter table foo set on delete no action
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.SetOnDelete{
+  TableAlteration: &ast.SetOnDelete{
     Set:         16,
     OnDeleteEnd: 39,
     OnDelete:    "ON DELETE NO ACTION",

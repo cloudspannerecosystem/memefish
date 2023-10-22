@@ -8,7 +8,7 @@ alter table foo add column baz string(max) not null
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddColumn{
+  TableAlteration: &ast.AddColumn{
     Add:         16,
     IfNotExists: false,
     Column:      &ast.ColumnDef{

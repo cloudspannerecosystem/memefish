@@ -2536,13 +2536,13 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		setpos := p.Token.Pos
 		p.nextToken()
 		if p.Token.Kind == "FOR" {
-			cs.ChangeStreamAlternation = &ast.ChangeStreamSetFor{
+			cs.ChangeStreamAlteration = &ast.ChangeStreamSetFor{
 				Set: setpos,
 				For: p.parseChangeStreamFor(),
 			}
 			return cs
 		} else if p.Token.IsKeywordLike("OPTIONS") {
-			cs.ChangeStreamAlternation = &ast.ChangeStreamSetOptions{
+			cs.ChangeStreamAlteration = &ast.ChangeStreamSetOptions{
 				Set:     setpos,
 				Options: p.parseChangeStreamOptions(),
 			}
@@ -2553,7 +2553,7 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		p.nextToken()
 		p.expect("FOR")
 		allpos := p.expect("ALL").Pos
-		cs.ChangeStreamAlternation = &ast.ChangeStreamDropForAll{
+		cs.ChangeStreamAlteration = &ast.ChangeStreamDropForAll{
 			Drop: droppos,
 			All:  allpos,
 		}
@@ -2683,18 +2683,18 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
 	name := p.parseIdent()
 
-	var alternation ast.TableAlternation
+	var alteration ast.TableAlteration
 	switch {
 	case p.Token.IsKeywordLike("ADD"):
-		alternation = p.parseAlterTableAdd()
+		alteration = p.parseAlterTableAdd()
 	case p.Token.IsKeywordLike("DROP"):
-		alternation = p.parseAlterTableDrop()
+		alteration = p.parseAlterTableDrop()
 	case p.Token.IsKeywordLike("REPLACE"):
-		alternation = p.parseAlterTableReplace()
+		alteration = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
-		alternation = p.parseSetOnDelete()
+		alteration = p.parseSetOnDelete()
 	case p.Token.IsKeywordLike("ALTER"):
-		alternation = p.parseAlterColumn()
+		alteration = p.parseAlterColumn()
 	default:
 		if p.Token.Kind == token.TokenIdent {
 			p.panicfAtToken(&p.Token, "expected pseuso keyword: ADD, ALTER, DROP, but: %s", p.Token.AsString)
@@ -2706,33 +2706,33 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	return &ast.AlterTable{
 		Alter:            pos,
 		Name:             name,
-		TableAlternation: alternation,
+		TableAlteration: alteration,
 	}
 }
 
-func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
+func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 	pos := p.expectKeywordLike("ADD").Pos
 
-	var alternation ast.TableAlternation
+	var alteration ast.TableAlteration
 
 	switch {
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		ifNotExists := p.parseIfNotExists()
 		column := p.parseColumnDef()
-		alternation = &ast.AddColumn{
+		alteration = &ast.AddColumn{
 			Add:         pos,
 			IfNotExists: ifNotExists,
 			Column:      column,
 		}
 	case p.Token.IsKeywordLike("CONSTRAINT"):
-		alternation = &ast.AddTableConstraint{
+		alteration = &ast.AddTableConstraint{
 			Add:             pos,
 			TableConstraint: p.parseConstraint(),
 		}
 	case p.Token.IsKeywordLike("FOREIGN"):
 		fk := p.parseForeignKey()
-		alternation = &ast.AddTableConstraint{
+		alteration = &ast.AddTableConstraint{
 			Add: pos,
 			TableConstraint: &ast.TableConstraint{
 				Constraint: fk,
@@ -2740,7 +2740,7 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 		}
 	case p.Token.IsKeywordLike("CHECK"):
 		c := p.parseCheck()
-		alternation = &ast.AddTableConstraint{
+		alteration = &ast.AddTableConstraint{
 			Add: pos,
 			TableConstraint: &ast.TableConstraint{
 				Constraint: c,
@@ -2749,7 +2749,7 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 	case p.Token.IsKeywordLike("ROW"):
 		rdp := p.parseRowDeletionPolicy()
 
-		alternation = &ast.AddRowDeletionPolicy{
+		alteration = &ast.AddRowDeletionPolicy{
 			Add:               pos,
 			RowDeletionPolicy: rdp,
 		}
@@ -2757,26 +2757,26 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlternation {
 		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, FOREIGN, but: %s", p.Token.AsString)
 	}
 
-	return alternation
+	return alteration
 }
 
-func (p *Parser) parseAlterTableDrop() ast.TableAlternation {
+func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	pos := p.expectKeywordLike("DROP").Pos
 
-	var alternation ast.TableAlternation
+	var alteration ast.TableAlteration
 
 	switch {
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		name := p.parseIdent()
-		alternation = &ast.DropColumn{
+		alteration = &ast.DropColumn{
 			Drop: pos,
 			Name: name,
 		}
 	case p.Token.IsKeywordLike("CONSTRAINT"):
 		p.expectKeywordLike("CONSTRAINT")
 		name := p.parseIdent()
-		alternation = &ast.DropConstraint{
+		alteration = &ast.DropConstraint{
 			Drop: pos,
 			Name: name,
 		}
@@ -2784,7 +2784,7 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlternation {
 		p.expectKeywordLike("ROW")
 		p.expectKeywordLike("DELETION")
 		policyPos := p.expectKeywordLike("POLICY").Pos
-		alternation = &ast.DropRowDeletionPolicy{
+		alteration = &ast.DropRowDeletionPolicy{
 			Drop:   pos,
 			Policy: policyPos,
 		}
@@ -2792,10 +2792,10 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlternation {
 		p.panicfAtToken(&p.Token, "expected pseuso keyword: COLUMN, CONSTRAINT, but: %s", p.Token.AsString)
 	}
 
-	return alternation
+	return alteration
 }
 
-func (p *Parser) parseAlterTableReplace() ast.TableAlternation {
+func (p *Parser) parseAlterTableReplace() ast.TableAlteration {
 	pos := p.expectKeywordLike("REPLACE").Pos
 	rdp := p.parseRowDeletionPolicy()
 
@@ -2816,7 +2816,7 @@ func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
 	}
 }
 
-func (p *Parser) parseAlterColumn() ast.TableAlternation {
+func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
 	p.expectKeywordLike("COLUMN")
 
@@ -2858,12 +2858,12 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 	name := p.parseIdent()
 
-	var alternation ast.IndexAlternation
+	var alteration ast.IndexAlteration
 	switch {
 	case p.Token.IsKeywordLike("ADD"):
-		alternation = p.parseAddStoredColumn()
+		alteration = p.parseAddStoredColumn()
 	case p.Token.IsKeywordLike("DROP"):
-		alternation = p.parseDropStoredColumn()
+		alteration = p.parseDropStoredColumn()
 	default:
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
 	}
@@ -2871,11 +2871,11 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	return &ast.AlterIndex{
 		Alter:            pos,
 		Name:             name,
-		IndexAlternation: alternation,
+		IndexAlteration: alteration,
 	}
 }
 
-func (p *Parser) parseAddStoredColumn() ast.IndexAlternation {
+func (p *Parser) parseAddStoredColumn() ast.IndexAlteration {
 	pos := p.expectKeywordLike("ADD").Pos
 	p.expectKeywordLike("STORED")
 	p.expectKeywordLike("COLUMN")
@@ -2888,7 +2888,7 @@ func (p *Parser) parseAddStoredColumn() ast.IndexAlternation {
 	}
 }
 
-func (p *Parser) parseDropStoredColumn() ast.IndexAlternation {
+func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
 	pos := p.expectKeywordLike("DROP").Pos
 	p.expectKeywordLike("STORED")
 	p.expectKeywordLike("COLUMN")

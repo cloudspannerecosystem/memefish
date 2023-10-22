@@ -8,7 +8,7 @@ alter table foo alter column foo string(256) not null
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AlterColumn{
+  TableAlteration: &ast.AlterColumn{
     Alter: 16,
     Null:  49,
     Name:  &ast.Ident{

@@ -9,7 +9,7 @@ alter table foo add column if not exists baz string(max) not null
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddColumn{
+  TableAlteration: &ast.AddColumn{
     Add:         16,
     IfNotExists: true,
     Column:      &ast.ColumnDef{

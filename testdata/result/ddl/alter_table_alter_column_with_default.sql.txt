@@ -8,7 +8,7 @@ ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
     NameEnd: 19,
     Name:    "actions",
   },
-  TableAlternation: &ast.AlterColumn{
+  TableAlteration: &ast.AlterColumn{
     Alter: 20,
     Null:  56,
     Name:  &ast.Ident{

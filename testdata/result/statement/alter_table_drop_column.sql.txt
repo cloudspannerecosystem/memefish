@@ -9,7 +9,7 @@ alter table foo drop column bar
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.DropColumn{
+  TableAlteration: &ast.DropColumn{
     Drop: 16,
     Name: &ast.Ident{
       NamePos: 28,

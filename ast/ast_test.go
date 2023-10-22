@@ -142,14 +142,14 @@ func TestConstraint(t *testing.T) {
 	Constraint(&Check{}).isConstraint()
 }
 
-func TestTableAlternation(t *testing.T) {
-	TableAlternation(&AddColumn{}).isTableAlternation()
-	TableAlternation(&AddTableConstraint{}).isTableAlternation()
-	TableAlternation(&DropColumn{}).isTableAlternation()
-	TableAlternation(&DropConstraint{}).isTableAlternation()
-	TableAlternation(&SetOnDelete{}).isTableAlternation()
-	TableAlternation(&AlterColumn{}).isTableAlternation()
-	TableAlternation(&AlterColumnSet{}).isTableAlternation()
+func TestTableAlteration(t *testing.T) {
+	TableAlteration(&AddColumn{}).isTableAlteration()
+	TableAlteration(&AddTableConstraint{}).isTableAlteration()
+	TableAlteration(&DropColumn{}).isTableAlteration()
+	TableAlteration(&DropConstraint{}).isTableAlteration()
+	TableAlteration(&SetOnDelete{}).isTableAlteration()
+	TableAlteration(&AlterColumn{}).isTableAlteration()
+	TableAlteration(&AlterColumnSet{}).isTableAlteration()
 }
 
 func TestPrivilege(t *testing.T) {
@@ -172,9 +172,9 @@ func TestSchemaType(t *testing.T) {
 	SchemaType(&ArraySchemaType{}).isSchemaType()
 }
 
-func TestIndexAlternation(t *testing.T) {
-	IndexAlternation(&AddStoredColumn{}).isIndexAlternation()
-	IndexAlternation(&DropStoredColumn{}).isIndexAlternation()
+func TestIndexAlteration(t *testing.T) {
+	IndexAlteration(&AddStoredColumn{}).isIndexAlteration()
+	IndexAlteration(&DropStoredColumn{}).isIndexAlteration()
 }
 
 func TestDML(t *testing.T) {

@@ -8,7 +8,7 @@ ALTER TABLE actions ALTER COLUMN output SET DEFAULT("")
     NameEnd: 19,
     Name:    "actions",
   },
-  TableAlternation: &ast.AlterColumnSet{
+  TableAlteration: &ast.AlterColumnSet{
     Alter: 20,
     Name:  &ast.Ident{
       NamePos: 33,

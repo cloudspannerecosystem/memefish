@@ -9,7 +9,7 @@ alter table foo add constraint cname check (c1 > 0)
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddTableConstraint{
+  TableAlteration: &ast.AddTableConstraint{
     Add:             16,
     TableConstraint: &ast.TableConstraint{
       ConstraintPos: 20,

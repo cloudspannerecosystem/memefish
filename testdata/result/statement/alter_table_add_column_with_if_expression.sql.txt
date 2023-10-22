@@ -8,7 +8,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AddColumn{
+  TableAlteration: &ast.AddColumn{
     Add:         16,
     IfNotExists: false,
     Column:      &ast.ColumnDef{
