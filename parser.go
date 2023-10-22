@@ -2164,16 +2164,28 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 
 	p.expectKeywordLike("SQL")
 	p.expectKeywordLike("SECURITY")
-	p.expectKeywordLike("INVOKER")
+
+	id := p.expect(token.TokenIdent)
+	var securityType ast.SecurityType
+	switch {
+	case id.IsIdent("INVOKER"):
+		securityType = ast.SecurityTypeInvoker
+	case id.IsIdent("DEFINER"):
+		securityType = ast.SecurityTypeDefiner
+	default:
+		p.panicfAtToken(id, "expected identifier: INVOKER, DEFINER, but: %s", id.Raw)
+	}
+
 	p.expect("AS")
 
 	query := p.parseQueryExpr()
 
 	return &ast.CreateView{
-		Create:    pos,
-		Name:      name,
-		OrReplace: orReplace,
-		Query:     query,
+		Create:       pos,
+		Name:         name,
+		OrReplace:    orReplace,
+		SecurityType: securityType,
+		Query:        query,
 	}
 }
 

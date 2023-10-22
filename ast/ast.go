@@ -1599,7 +1599,7 @@ type RowDeletionPolicy struct {
 // CreateView is CREATE VIEW statement node.
 //
 //	CREATE {{if .OrReplace}}OR REPLACE{{end}} VIEW {{.Name | sql}}
-//	SQL SECURITY INVOKER AS
+//	SQL SECURITY {{.SecurityType}} AS
 //	{{.Query | sql}}
 type CreateView struct {
 	// pos = Create
@@ -1607,9 +1607,10 @@ type CreateView struct {
 
 	Create token.Pos
 
-	Name      *Ident
-	OrReplace bool
-	Query     QueryExpr
+	Name         *Ident
+	OrReplace    bool
+	SecurityType SecurityType
+	Query        QueryExpr
 }
 
 // AlterTable is ALTER TABLE statement node.
