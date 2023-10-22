@@ -9,7 +9,7 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
     NameEnd: 38,
     Name:    "change_stream_name",
   },
-  ChangeStreamAlternation: &ast.ChangeStreamSetOptions{
+  ChangeStreamAlteration: &ast.ChangeStreamSetOptions{
     Set:     39,
     Options: &ast.ChangeStreamOptions{
       Options: 43,

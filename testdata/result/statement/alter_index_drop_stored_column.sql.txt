@@ -9,7 +9,7 @@ alter index foo drop stored column bar
     NameEnd: 15,
     Name:    "foo",
   },
-  IndexAlternation: &ast.DropStoredColumn{
+  IndexAlteration: &ast.DropStoredColumn{
     Drop: 16,
     Name: &ast.Ident{
       NamePos: 35,

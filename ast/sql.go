@@ -872,7 +872,7 @@ func (r *RowDeletionPolicy) SQL() string {
 }
 
 func (a *AlterTable) SQL() string {
-	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlternation.SQL()
+	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
 
 func (a *AddColumn) SQL() string {
@@ -1007,7 +1007,7 @@ func (c *ChangeStreamOptions) SQL() string {
 }
 
 func (a *AlterChangeStream) SQL() string {
-	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlternation.SQL()
+	return "ALTER CHANGE STREAM " + a.Name.SQL() + " " + a.ChangeStreamAlteration.SQL()
 }
 
 func (a ChangeStreamSetFor) SQL() string {
@@ -1058,7 +1058,7 @@ func (i *InterleaveIn) SQL() string {
 }
 
 func (a *AlterIndex) SQL() string {
-	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlternation.SQL()
+	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
 }
 
 func (a *AddStoredColumn) SQL() string {

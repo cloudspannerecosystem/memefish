@@ -9,7 +9,7 @@ alter table foo drop row deletion policy
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.DropRowDeletionPolicy{
+  TableAlteration: &ast.DropRowDeletionPolicy{
     Drop:   16,
     Policy: 34,
   },

@@ -8,7 +8,7 @@ alter table foo set on delete cascade
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.SetOnDelete{
+  TableAlteration: &ast.SetOnDelete{
     Set:         16,
     OnDeleteEnd: 37,
     OnDelete:    "ON DELETE CASCADE",

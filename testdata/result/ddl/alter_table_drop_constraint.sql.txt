@@ -9,7 +9,7 @@ alter table foo drop constraint bar
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.DropConstraint{
+  TableAlteration: &ast.DropConstraint{
     Drop: 16,
     Name: &ast.Ident{
       NamePos: 32,

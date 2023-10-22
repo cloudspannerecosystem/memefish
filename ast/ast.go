@@ -245,22 +245,22 @@ type Constraint interface {
 func (ForeignKey) isConstraint() {}
 func (Check) isConstraint()      {}
 
-// TableAlternation represents ALTER TABLE action.
-type TableAlternation interface {
+// TableAlteration represents ALTER TABLE action.
+type TableAlteration interface {
 	Node
-	isTableAlternation()
+	isTableAlteration()
 }
 
-func (AddColumn) isTableAlternation()                {}
-func (AddTableConstraint) isTableAlternation()       {}
-func (AddRowDeletionPolicy) isTableAlternation()     {}
-func (DropColumn) isTableAlternation()               {}
-func (DropConstraint) isTableAlternation()           {}
-func (DropRowDeletionPolicy) isTableAlternation()    {}
-func (ReplaceRowDeletionPolicy) isTableAlternation() {}
-func (SetOnDelete) isTableAlternation()              {}
-func (AlterColumn) isTableAlternation()              {}
-func (AlterColumnSet) isTableAlternation()           {}
+func (AddColumn) isTableAlteration()                {}
+func (AddTableConstraint) isTableAlteration()       {}
+func (AddRowDeletionPolicy) isTableAlteration()     {}
+func (DropColumn) isTableAlteration()               {}
+func (DropConstraint) isTableAlteration()           {}
+func (DropRowDeletionPolicy) isTableAlteration()    {}
+func (ReplaceRowDeletionPolicy) isTableAlteration() {}
+func (SetOnDelete) isTableAlteration()              {}
+func (AlterColumn) isTableAlteration()              {}
+func (AlterColumnSet) isTableAlteration()           {}
 
 // Privilege represents privileges specified by GRANT and REVOKE.
 type Privilege interface {
@@ -294,14 +294,14 @@ func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
 
-// IndexAlternation represents ALTER INDEX action.
-type IndexAlternation interface {
+// IndexAlteration represents ALTER INDEX action.
+type IndexAlteration interface {
 	Node
-	isIndexAlternation()
+	isIndexAlteration()
 }
 
-func (AddStoredColumn) isIndexAlternation()  {}
-func (DropStoredColumn) isIndexAlternation() {}
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
 
 // DML represents data manipulation language in SQL.
 //
@@ -333,15 +333,15 @@ type ChangeStreamFor interface {
 func (ChangeStreamForAll) isChangeStreamFor()    {}
 func (ChangeStreamForTables) isChangeStreamFor() {}
 
-// ChangeStreamAlternation represents ALTER CHANGE STREAM action.
-type ChangeStreamAlternation interface {
+// ChangeStreamAlteration represents ALTER CHANGE STREAM action.
+type ChangeStreamAlteration interface {
 	Node
-	isChangeStreamAlternation()
+	isChangeStreamAlteration()
 }
 
-func (ChangeStreamSetFor) isChangeStreamAlternation()     {}
-func (ChangeStreamDropForAll) isChangeStreamAlternation() {}
-func (ChangeStreamSetOptions) isChangeStreamAlternation() {}
+func (ChangeStreamSetFor) isChangeStreamAlteration()     {}
+func (ChangeStreamDropForAll) isChangeStreamAlteration() {}
+func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // ================================================================================
 //
@@ -1626,41 +1626,41 @@ type CreateView struct {
 
 // AlterTable is ALTER TABLE statement node.
 //
-//	ALTER TABLE {{.Name | sql}} {{.TableAlternation | sql}}
+//	ALTER TABLE {{.Name | sql}} {{.TableAlteration | sql}}
 type AlterTable struct {
 	// pos = Alter
-	// end = TableAlternation.end
+	// end = TableAlteration.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name             *Ident
-	TableAlternation TableAlternation
+	TableAlteration TableAlteration
 }
 
 // AlterIndex is ALTER INDEX statement node.
 //
-//	ALTER INDEX {{.Name | sql}} {{.IndexAlternation | sql}}
+//	ALTER INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
 type AlterIndex struct {
 	// pos = Alter
-	// end = IndexAlternation.end
+	// end = IndexAlteration.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name             *Ident
-	IndexAlternation IndexAlternation
+	IndexAlteration IndexAlteration
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
 //
-//	ALTER CHANGE STREAM {{.Name | sql}} {{.ChangeStreamAlternation | sql}}
+//	ALTER CHANGE STREAM {{.Name | sql}} {{.ChangeStreamAlteration | sql}}
 type AlterChangeStream struct {
 	// pos = Alter
-	// end = ChangeStreamAlternation.end
+	// end = ChangeStreamAlteration.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name                    *Ident
-	ChangeStreamAlternation ChangeStreamAlternation
+	ChangeStreamAlteration ChangeStreamAlteration
 }
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.

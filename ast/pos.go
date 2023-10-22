@@ -601,7 +601,7 @@ func (r *RowDeletionPolicy) End() token.Pos {
 }
 
 func (a *AlterTable) Pos() token.Pos { return a.Alter }
-func (a *AlterTable) End() token.Pos { return a.TableAlternation.End() }
+func (a *AlterTable) End() token.Pos { return a.TableAlteration.End() }
 
 func (a *AddColumn) Pos() token.Pos { return a.Add }
 func (a *AddColumn) End() token.Pos { return a.Column.End() }
@@ -693,7 +693,7 @@ func (i *InterleaveIn) Pos() token.Pos { return i.Comma }
 func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 
 func (a *AlterIndex) Pos() token.Pos { return a.Alter }
-func (a *AlterIndex) End() token.Pos { return a.IndexAlternation.End() }
+func (a *AlterIndex) End() token.Pos { return a.IndexAlteration.End() }
 
 func (a *AddStoredColumn) Pos() token.Pos { return a.Add }
 func (a *AddStoredColumn) End() token.Pos { return a.Name.End() }
@@ -714,7 +714,7 @@ func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
 func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
 func (a *AlterChangeStream) Pos() token.Pos      { return a.Alter }
-func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlternation.End() }
+func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlteration.End() }
 
 func (a *ChangeStreamSetFor) Pos() token.Pos     { return a.Set }
 func (a *ChangeStreamSetFor) End() token.Pos     { return a.For.End() }

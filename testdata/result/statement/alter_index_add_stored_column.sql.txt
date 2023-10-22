@@ -9,7 +9,7 @@ alter index foo add stored column bar
     NameEnd: 15,
     Name:    "foo",
   },
-  IndexAlternation: &ast.AddStoredColumn{
+  IndexAlteration: &ast.AddStoredColumn{
     Add:  16,
     Name: &ast.Ident{
       NamePos: 34,

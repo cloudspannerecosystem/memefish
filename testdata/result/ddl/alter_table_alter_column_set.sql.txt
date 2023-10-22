@@ -8,7 +8,7 @@ alter table foo alter column foo set options(allow_commit_timestamp = true)
     NameEnd: 15,
     Name:    "foo",
   },
-  TableAlternation: &ast.AlterColumnSet{
+  TableAlteration: &ast.AlterColumnSet{
     Alter: 16,
     Name:  &ast.Ident{
       NamePos: 29,
