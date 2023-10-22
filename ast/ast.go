@@ -1966,7 +1966,7 @@ type InterleaveIn struct {
 //
 //	ADD STORED COLUMN {{.Name | sql}}
 type AddStoredColumn struct {
-	// pos = Storing
+	// pos = Add
 	// end = Name.end
 
 	Add token.Pos // position of "ADD" keyword
@@ -1978,7 +1978,7 @@ type AddStoredColumn struct {
 //
 //	DROP STORED COLUMN {{.Name | sql}}
 type DropStoredColumn struct {
-	// pos = Storing
+	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
