@@ -19,7 +19,7 @@
 // Each `Node`s documentation has `pos` and `end` information using the following EBNF.
 //
 //	PosChoice -> PosExpr ("||" PosExpr)*
-//	PosExpr   -> PosAtom (PosOp IntAtom)?
+//	PosExpr   -> PosAtom ("+" IntAtom)?
 //	PosAtom   -> PosVar | NodeExpr "." ("pos" | "end")
 //	NodeExpr  -> NodeAtom | "(" NodeAtom ("??" NodeAtom)* ")"
 //	NodeAtom  -> NodeVar | NodeSliceVar "[" (IntAtom | "$") "]"
@@ -516,7 +516,7 @@ type Alias struct {
 //	AS {{.Alias | sql}}
 type AsAlias struct {
 	// pos = As || Alias.pos
-	// end = Alias.End
+	// end = Alias.end
 
 	As token.Pos // position of "AS" keyword
 
