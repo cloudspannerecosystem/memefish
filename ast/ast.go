@@ -1633,7 +1633,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name             *Ident
+	Name            *Ident
 	TableAlteration TableAlteration
 }
 
@@ -1646,7 +1646,7 @@ type AlterIndex struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name             *Ident
+	Name            *Ident
 	IndexAlteration IndexAlteration
 }
 
@@ -1659,7 +1659,7 @@ type AlterChangeStream struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name                    *Ident
+	Name                   *Ident
 	ChangeStreamAlteration ChangeStreamAlteration
 }
 
@@ -2213,12 +2213,14 @@ type ArraySchemaType struct {
 
 // Insert is INSERT statement node.
 //
-//	INSERT INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT INTO {{.TableName | sql}} {{if .InsertOrType}}OR .InsertOrType{{end}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 type Insert struct {
 	// pos = Insert
 	// end = Input.end
 
 	Insert token.Pos // position of "INSERT" keyword
+
+	InsertOrType InsertOrType
 
 	TableName *Ident
 	Columns   []*Ident

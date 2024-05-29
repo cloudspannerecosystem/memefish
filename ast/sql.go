@@ -1223,7 +1223,11 @@ func (a *ArraySchemaType) SQL() string {
 // ================================================================================
 
 func (i *Insert) SQL() string {
-	sql := "INSERT INTO " + i.TableName.SQL() + " ("
+	sql := "INSERT "
+	if i.InsertOrType != "" {
+		sql += "OR " + string(i.InsertOrType) + " "
+	}
+	sql += "INTO " + i.TableName.SQL() + " ("
 	for i, c := range i.Columns {
 		if i != 0 {
 			sql += ", "
