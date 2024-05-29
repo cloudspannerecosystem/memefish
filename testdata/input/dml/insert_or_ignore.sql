@@ -1,2 +1,2 @@
-INSERT OR UPDATE INTO foo
+INSERT OR IGNORE INTO foo
 (foo, bar) VALUES (1, 2)
