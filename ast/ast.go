@@ -2213,7 +2213,7 @@ type ArraySchemaType struct {
 
 // Insert is INSERT statement node.
 //
-//	INSERT INTO {{.TableName | sql}} {{if .InsertOrType}}OR .InsertOrType{{end}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 type Insert struct {
 	// pos = Insert
 	// end = Input.end
