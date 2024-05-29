@@ -3,8 +3,9 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
 
 --- AST
 &ast.Insert{
-  Insert:    0,
-  TableName: &ast.Ident{
+  Insert:       0,
+  InsertOrType: "",
+  TableName:    &ast.Ident{
     NamePos: 12,
     NameEnd: 15,
     Name:    "foo",

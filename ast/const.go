@@ -122,3 +122,10 @@ const (
 	SecurityTypeInvoker SecurityType = "INVOKER"
 	SecurityTypeDefiner SecurityType = "DEFINER"
 )
+
+type InsertOrType string
+
+const (
+	InsertOrTypeUpdate InsertOrType = "UPDATE"
+	InsertOrTypeIgnore InsertOrType = "IGNORE"
+)

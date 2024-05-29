@@ -1,48 +1,53 @@
---- insert_values_default.sql
-insert foo (foo, bar)
-values (1, default)
+--- insert_or_update.sql
+INSERT OR UPDATE INTO foo
+(foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
   Insert:       0,
-  InsertOrType: "",
+  InsertOrType: "UPDATE",
   TableName:    &ast.Ident{
-    NamePos: 7,
-    NameEnd: 10,
+    NamePos: 22,
+    NameEnd: 25,
     Name:    "foo",
   },
   Columns: []*ast.Ident{
     &ast.Ident{
-      NamePos: 12,
-      NameEnd: 15,
+      NamePos: 27,
+      NameEnd: 30,
       Name:    "foo",
     },
     &ast.Ident{
-      NamePos: 17,
-      NameEnd: 20,
+      NamePos: 32,
+      NameEnd: 35,
       Name:    "bar",
     },
   },
   Input: &ast.ValuesInput{
-    Values: 22,
+    Values: 37,
     Rows:   []*ast.ValuesRow{
       &ast.ValuesRow{
-        Lparen: 29,
-        Rparen: 40,
+        Lparen: 44,
+        Rparen: 49,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Default:    false,
             Expr:       &ast.IntLiteral{
-              ValuePos: 30,
-              ValueEnd: 31,
+              ValuePos: 45,
+              ValueEnd: 46,
               Base:     10,
               Value:    "1",
             },
           },
           &ast.DefaultExpr{
-            DefaultPos: 33,
-            Default:    true,
-            Expr:       nil,
+            DefaultPos: -1,
+            Default:    false,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 48,
+              ValueEnd: 49,
+              Base:     10,
+              Value:    "2",
+            },
           },
         },
       },
@@ -51,4 +56,4 @@ values (1, default)
 }
 
 --- SQL
-INSERT INTO foo (foo, bar) VALUES (1, DEFAULT)
+INSERT OR UPDATE INTO foo (foo, bar) VALUES (1, 2)

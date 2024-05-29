@@ -2704,8 +2704,8 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	}
 
 	return &ast.AlterTable{
-		Alter:            pos,
-		Name:             name,
+		Alter:           pos,
+		Name:            name,
 		TableAlteration: alteration,
 	}
 }
@@ -2869,8 +2869,8 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	}
 
 	return &ast.AlterIndex{
-		Alter:            pos,
-		Name:             name,
+		Alter:           pos,
+		Name:            name,
 		IndexAlteration: alteration,
 	}
 }
@@ -3235,6 +3235,20 @@ func (p *Parser) parseDML() ast.DML {
 }
 
 func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
+	var insertOrType ast.InsertOrType
+	if p.Token.Kind == "OR" {
+		p.nextToken()
+		switch {
+		case p.Token.IsKeywordLike("UPDATE"):
+			insertOrType = ast.InsertOrTypeUpdate
+		case p.Token.Kind == "IGNORE":
+			insertOrType = ast.InsertOrTypeIgnore
+		default:
+			p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
+		}
+		p.nextToken()
+	}
+
 	if p.Token.Kind == "INTO" {
 		p.nextToken()
 	}
@@ -3262,10 +3276,11 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 	}
 
 	return &ast.Insert{
-		Insert:    pos,
-		TableName: name,
-		Columns:   columns,
-		Input:     input,
+		Insert:       pos,
+		InsertOrType: insertOrType,
+		TableName:    name,
+		Columns:      columns,
+		Input:        input,
 	}
 }
 
