@@ -1,6 +1,7 @@
 create table types (
   b bool,
   i int64,
+  f32 float32,
   f float64,
   d date,
   t timestamp,

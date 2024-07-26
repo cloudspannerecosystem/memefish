@@ -713,11 +713,11 @@ func (d *DropRole) End() token.Pos { return d.Name.End() }
 func (d *DropChangeStream) Pos() token.Pos { return d.Drop }
 func (d *DropChangeStream) End() token.Pos { return d.Name.End() }
 
-func (a *AlterChangeStream) Pos() token.Pos      { return a.Alter }
-func (a *AlterChangeStream) End() token.Pos      { return a.ChangeStreamAlteration.End() }
+func (a *AlterChangeStream) Pos() token.Pos { return a.Alter }
+func (a *AlterChangeStream) End() token.Pos { return a.ChangeStreamAlteration.End() }
 
-func (a *ChangeStreamSetFor) Pos() token.Pos     { return a.Set }
-func (a *ChangeStreamSetFor) End() token.Pos     { return a.For.End() }
+func (a *ChangeStreamSetFor) Pos() token.Pos { return a.Set }
+func (a *ChangeStreamSetFor) End() token.Pos { return a.For.End() }
 
 func (a *ChangeStreamDropForAll) Pos() token.Pos { return a.Drop }
 func (a *ChangeStreamDropForAll) End() token.Pos { return a.All + 3 }

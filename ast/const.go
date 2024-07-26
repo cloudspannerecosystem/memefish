@@ -101,6 +101,7 @@ type ScalarTypeName string
 const (
 	BoolTypeName      ScalarTypeName = "BOOL"
 	Int64TypeName     ScalarTypeName = "INT64"
+	Float32TypeName   ScalarTypeName = "FLOAT32"
 	Float64TypeName   ScalarTypeName = "FLOAT64"
 	StringTypeName    ScalarTypeName = "STRING"
 	BytesTypeName     ScalarTypeName = "BYTES"

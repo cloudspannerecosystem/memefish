@@ -2,6 +2,7 @@
 create table types (
   b bool,
   i int64,
+  f32 float32,
   f float64,
   d date,
   t timestamp,
@@ -16,7 +17,7 @@ create table types (
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      212,
+  Rparen:      227,
   IfNotExists: false,
   Name:        &ast.Ident{
     NamePos: 13,
@@ -60,11 +61,27 @@ create table types (
       Null: -1,
       Name: &ast.Ident{
         NamePos: 44,
-        NameEnd: 45,
+        NameEnd: 47,
+        Name:    "f32",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 48,
+        Name:    "FLOAT32",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 59,
+        NameEnd: 60,
         Name:    "f",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 46,
+        NamePos: 61,
         Name:    "FLOAT64",
       },
       NotNull:       false,
@@ -75,29 +92,13 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 57,
-        NameEnd: 58,
+        NamePos: 72,
+        NameEnd: 73,
         Name:    "d",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 59,
+        NamePos: 74,
         Name:    "DATE",
-      },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 67,
-        NameEnd: 68,
-        Name:    "t",
-      },
-      Type: &ast.ScalarSchemaType{
-        NamePos: 69,
-        Name:    "TIMESTAMP",
       },
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
@@ -109,16 +110,32 @@ create table types (
       Name: &ast.Ident{
         NamePos: 82,
         NameEnd: 83,
+        Name:    "t",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 84,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 97,
+        NameEnd: 98,
         Name:    "s",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 84,
-        Rparen:  94,
+        NamePos: 99,
+        Rparen:  109,
         Name:    "STRING",
         Max:     false,
         Size:    &ast.IntLiteral{
-          ValuePos: 91,
-          ValueEnd: 94,
+          ValuePos: 106,
+          ValueEnd: 109,
           Base:     10,
           Value:    "256",
         },
@@ -131,13 +148,13 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 99,
-        NameEnd: 103,
+        NamePos: 114,
+        NameEnd: 118,
         Name:    "smax",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 104,
-        Rparen:  114,
+        NamePos: 119,
+        Rparen:  129,
         Name:    "STRING",
         Max:     true,
         Size:    nil,
@@ -150,18 +167,18 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 119,
-        NameEnd: 121,
+        NamePos: 134,
+        NameEnd: 136,
         Name:    "bs",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 122,
-        Rparen:  131,
+        NamePos: 137,
+        Rparen:  146,
         Name:    "BYTES",
         Max:     false,
         Size:    &ast.IntLiteral{
-          ValuePos: 128,
-          ValueEnd: 131,
+          ValuePos: 143,
+          ValueEnd: 146,
           Base:     10,
           Value:    "256",
         },
@@ -174,13 +191,13 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 136,
-        NameEnd: 141,
+        NamePos: 151,
+        NameEnd: 156,
         Name:    "bsmax",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 142,
-        Rparen:  151,
+        NamePos: 157,
+        Rparen:  166,
         Name:    "BYTES",
         Max:     true,
         Size:    nil,
@@ -193,15 +210,15 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 156,
-        NameEnd: 158,
+        NamePos: 171,
+        NameEnd: 173,
         Name:    "ab",
       },
       Type: &ast.ArraySchemaType{
-        Array: 159,
-        Gt:    170,
+        Array: 174,
+        Gt:    185,
         Item:  &ast.ScalarSchemaType{
-          NamePos: 165,
+          NamePos: 180,
           Name:    "BOOL",
         },
       },
@@ -213,16 +230,16 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 174,
-        NameEnd: 177,
+        NamePos: 189,
+        NameEnd: 192,
         Name:    "abs",
       },
       Type: &ast.ArraySchemaType{
-        Array: 178,
-        Gt:    195,
+        Array: 193,
+        Gt:    210,
         Item:  &ast.SizedSchemaType{
-          NamePos: 184,
-          Rparen:  193,
+          NamePos: 199,
+          Rparen:  208,
           Name:    "BYTES",
           Max:     true,
           Size:    nil,
@@ -239,8 +256,8 @@ create table types (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 211,
-        NameEnd: 212,
+        NamePos: 226,
+        NameEnd: 227,
         Name:    "i",
       },
       Dir: "",
@@ -251,4 +268,4 @@ create table types (
 }
 
 --- SQL
-CREATE TABLE types (b BOOL, i INT64, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>) PRIMARY KEY (i)
+CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>) PRIMARY KEY (i)
