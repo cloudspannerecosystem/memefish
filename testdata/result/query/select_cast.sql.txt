@@ -1,5 +1,5 @@
 --- select_cast.sql
-select cast(1 as INT64), cast((struct(), 1, [2, 3], ["4", "5"]) as struct<struct<>, x int64, y array<int64>, z array<string>>)
+select cast(1 as INT64), cast(0.1 as float32), cast((struct(), 1, [2, 3], ["4", "5"]) as struct<struct<>, x int64, y array<int64>, z array<string>>)
 from x tablesample BERNOULLI (cast(0.1 as float64) percent),
      y tablesample BERNOULLI (cast(1 as int64) rows),
      z tablesample BERNOULLI (cast(@param as int64) rows)
@@ -33,41 +33,56 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
       &ast.ExprSelectItem{
         Expr: &ast.CastExpr{
           Cast:   25,
-          Rparen: 125,
+          Rparen: 44,
+          Expr:   &ast.FloatLiteral{
+            ValuePos: 30,
+            ValueEnd: 33,
+            Value:    "0.1",
+          },
+          Type: &ast.SimpleType{
+            NamePos: 37,
+            Name:    "FLOAT32",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CastExpr{
+          Cast:   47,
+          Rparen: 147,
           Expr:   &ast.StructLiteral{
             Struct: 0,
-            Lparen: 30,
-            Rparen: 62,
+            Lparen: 52,
+            Rparen: 84,
             Fields: []*ast.StructField(nil),
             Values: []ast.Expr{
               &ast.StructLiteral{
-                Struct: 31,
-                Lparen: 37,
-                Rparen: 38,
+                Struct: 53,
+                Lparen: 59,
+                Rparen: 60,
                 Fields: []*ast.StructField(nil),
                 Values: []ast.Expr(nil),
               },
               &ast.IntLiteral{
-                ValuePos: 41,
-                ValueEnd: 42,
+                ValuePos: 63,
+                ValueEnd: 64,
                 Base:     10,
                 Value:    "1",
               },
               &ast.ArrayLiteral{
                 Array:  0,
-                Lbrack: 44,
-                Rbrack: 49,
+                Lbrack: 66,
+                Rbrack: 71,
                 Type:   nil,
                 Values: []ast.Expr{
                   &ast.IntLiteral{
-                    ValuePos: 45,
-                    ValueEnd: 46,
+                    ValuePos: 67,
+                    ValueEnd: 68,
                     Base:     10,
                     Value:    "2",
                   },
                   &ast.IntLiteral{
-                    ValuePos: 48,
-                    ValueEnd: 49,
+                    ValuePos: 70,
+                    ValueEnd: 71,
                     Base:     10,
                     Value:    "3",
                   },
@@ -75,18 +90,18 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               },
               &ast.ArrayLiteral{
                 Array:  0,
-                Lbrack: 52,
-                Rbrack: 61,
+                Lbrack: 74,
+                Rbrack: 83,
                 Type:   nil,
                 Values: []ast.Expr{
                   &ast.StringLiteral{
-                    ValuePos: 53,
-                    ValueEnd: 56,
+                    ValuePos: 75,
+                    ValueEnd: 78,
                     Value:    "4",
                   },
                   &ast.StringLiteral{
-                    ValuePos: 58,
-                    ValueEnd: 61,
+                    ValuePos: 80,
+                    ValueEnd: 83,
                     Value:    "5",
                   },
                 },
@@ -94,54 +109,54 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             },
           },
           Type: &ast.StructType{
-            Struct: 67,
-            Gt:     124,
+            Struct: 89,
+            Gt:     146,
             Fields: []*ast.StructField{
               &ast.StructField{
                 Ident: (*ast.Ident)(nil),
                 Type:  &ast.StructType{
-                  Struct: 74,
-                  Gt:     81,
+                  Struct: 96,
+                  Gt:     103,
                   Fields: []*ast.StructField{},
                 },
               },
               &ast.StructField{
                 Ident: &ast.Ident{
-                  NamePos: 84,
-                  NameEnd: 85,
+                  NamePos: 106,
+                  NameEnd: 107,
                   Name:    "x",
                 },
                 Type: &ast.SimpleType{
-                  NamePos: 86,
+                  NamePos: 108,
                   Name:    "INT64",
                 },
               },
               &ast.StructField{
                 Ident: &ast.Ident{
-                  NamePos: 93,
-                  NameEnd: 94,
+                  NamePos: 115,
+                  NameEnd: 116,
                   Name:    "y",
                 },
                 Type: &ast.ArrayType{
-                  Array: 95,
-                  Gt:    106,
+                  Array: 117,
+                  Gt:    128,
                   Item:  &ast.SimpleType{
-                    NamePos: 101,
+                    NamePos: 123,
                     Name:    "INT64",
                   },
                 },
               },
               &ast.StructField{
                 Ident: &ast.Ident{
-                  NamePos: 109,
-                  NameEnd: 110,
+                  NamePos: 131,
+                  NameEnd: 132,
                   Name:    "z",
                 },
                 Type: &ast.ArrayType{
-                  Array: 111,
-                  Gt:    123,
+                  Array: 133,
+                  Gt:    145,
                   Item:  &ast.SimpleType{
-                    NamePos: 117,
+                    NamePos: 139,
                     Name:    "STRING",
                   },
                 },
@@ -152,7 +167,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
       },
     },
     From: &ast.From{
-      From:   127,
+      From:   149,
       Source: &ast.Join{
         Op:     ",",
         Method: "",
@@ -163,24 +178,24 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           Hint:   (*ast.Hint)(nil),
           Left:   &ast.TableName{
             Table: &ast.Ident{
-              NamePos: 132,
-              NameEnd: 133,
+              NamePos: 154,
+              NameEnd: 155,
               Name:    "x",
             },
             Hint:   (*ast.Hint)(nil),
             As:     (*ast.AsAlias)(nil),
             Sample: &ast.TableSample{
-              TableSample: 134,
+              TableSample: 156,
               Method:      "BERNOULLI",
               Size:        &ast.TableSampleSize{
-                Lparen: 156,
-                Rparen: 185,
+                Lparen: 178,
+                Rparen: 207,
                 Value:  &ast.CastNumValue{
-                  Cast:   157,
-                  Rparen: 176,
+                  Cast:   179,
+                  Rparen: 198,
                   Expr:   &ast.FloatLiteral{
-                    ValuePos: 162,
-                    ValueEnd: 165,
+                    ValuePos: 184,
+                    ValueEnd: 187,
                     Value:    "0.1",
                   },
                   Type: "FLOAT64",
@@ -191,24 +206,24 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           },
           Right: &ast.TableName{
             Table: &ast.Ident{
-              NamePos: 193,
-              NameEnd: 194,
+              NamePos: 215,
+              NameEnd: 216,
               Name:    "y",
             },
             Hint:   (*ast.Hint)(nil),
             As:     (*ast.AsAlias)(nil),
             Sample: &ast.TableSample{
-              TableSample: 195,
+              TableSample: 217,
               Method:      "BERNOULLI",
               Size:        &ast.TableSampleSize{
-                Lparen: 217,
-                Rparen: 239,
+                Lparen: 239,
+                Rparen: 261,
                 Value:  &ast.CastNumValue{
-                  Cast:   218,
-                  Rparen: 233,
+                  Cast:   240,
+                  Rparen: 255,
                   Expr:   &ast.IntLiteral{
-                    ValuePos: 223,
-                    ValueEnd: 224,
+                    ValuePos: 245,
+                    ValueEnd: 246,
                     Base:     10,
                     Value:    "1",
                   },
@@ -222,23 +237,23 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
-            NamePos: 247,
-            NameEnd: 248,
+            NamePos: 269,
+            NameEnd: 270,
             Name:    "z",
           },
           Hint:   (*ast.Hint)(nil),
           As:     (*ast.AsAlias)(nil),
           Sample: &ast.TableSample{
-            TableSample: 249,
+            TableSample: 271,
             Method:      "BERNOULLI",
             Size:        &ast.TableSampleSize{
-              Lparen: 271,
-              Rparen: 298,
+              Lparen: 293,
+              Rparen: 320,
               Value:  &ast.CastNumValue{
-                Cast:   272,
-                Rparen: 292,
+                Cast:   294,
+                Rparen: 314,
                 Expr:   &ast.Param{
-                  Atmark: 277,
+                  Atmark: 299,
                   Name:   "param",
                 },
                 Type: "INT64",
@@ -255,24 +270,24 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
     Having:  (*ast.Having)(nil),
     OrderBy: (*ast.OrderBy)(nil),
     Limit:   &ast.Limit{
-      Limit: 300,
+      Limit: 322,
       Count: &ast.CastIntValue{
-        Cast:   306,
-        Rparen: 321,
+        Cast:   328,
+        Rparen: 343,
         Expr:   &ast.IntLiteral{
-          ValuePos: 311,
-          ValueEnd: 312,
+          ValuePos: 333,
+          ValueEnd: 334,
           Base:     10,
           Value:    "1",
         },
       },
       Offset: &ast.Offset{
-        Offset: 323,
+        Offset: 345,
         Value:  &ast.CastIntValue{
-          Cast:   330,
-          Rparen: 348,
+          Cast:   352,
+          Rparen: 370,
           Expr:   &ast.Param{
-            Atmark: 335,
+            Atmark: 357,
             Name:   "foo",
           },
         },
@@ -282,4 +297,4 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 }
 
 --- SQL
-SELECT CAST(1 AS INT64), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)
+SELECT CAST(1 AS INT64), CAST(0.1 AS FLOAT32), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)

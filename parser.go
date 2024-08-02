@@ -1851,6 +1851,7 @@ func (p *Parser) parseType() ast.Type {
 var simpleTypes = []string{
 	"BOOL",
 	"INT64",
+	"FLOAT32",
 	"FLOAT64",
 	"DATE",
 	"TIMESTAMP",
@@ -3144,6 +3145,7 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 var scalarSchemaTypes = []string{
 	"BOOL",
 	"INT64",
+	"FLOAT32",
 	"FLOAT64",
 	"DATE",
 	"TIMESTAMP",
@@ -3191,7 +3193,7 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 		}
 	}
 
-	panic(p.errorfAtToken(id, "expect ident: %s, %s, but: %s", strings.Join(scalarSchemaTypes, ","), strings.Join(sizedSchemaTypes, ","), id.AsString))
+	panic(p.errorfAtToken(id, "expect ident: %s, %s, but: %s", strings.Join(scalarSchemaTypes, ", "), strings.Join(sizedSchemaTypes, ", "), id.AsString))
 }
 
 func (p *Parser) parseIfNotExists() bool {
