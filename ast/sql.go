@@ -968,6 +968,36 @@ func (c *CreateIndex) SQL() string {
 	return sql
 }
 
+func (c *CreateVectorIndex) SQL() string {
+	sql := "CREATE VECTOR INDEX "
+	if c.IfNotExists {
+		sql += "IF NOT EXISTS "
+	}
+	sql += c.Name.SQL()
+	sql += " ON " + c.TableName.SQL() + " (" + c.ColumnName.SQL() + ") "
+	if c.Where != nil {
+		sql += c.Where.SQL() + " "
+	}
+	sql += c.Options.SQL()
+	return sql
+}
+
+func (v *VectorIndexOptions) SQL() string {
+	sql := "OPTIONS ("
+	for i, o := range v.Records {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += o.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
+func (v *VectorIndexOption) SQL() string {
+	return v.Key.SQL() + "=" + v.Value.SQL()
+}
+
 func (c *CreateChangeStream) SQL() string {
 	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
 	if c.For != nil {
@@ -1071,6 +1101,14 @@ func (a *DropStoredColumn) SQL() string {
 
 func (d *DropIndex) SQL() string {
 	sql := "DROP INDEX "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
+}
+
+func (d *DropVectorIndex) SQL() string {
+	sql := "DROP VECTOR INDEX "
 	if d.IfExists {
 		sql += "IF EXISTS "
 	}

@@ -1,0 +1,57 @@
+--- create_vector_index_where_column_not_null.sql
+CREATE VECTOR INDEX hello_vector_index ON hello(embedding)
+WHERE embedding IS NOT NULL
+OPTIONS(distance_type = 'COSINE')
+--- AST
+&ast.CreateVectorIndex{
+  Create:      0,
+  IfNotExists: false,
+  Name:        &ast.Ident{
+    NamePos: 20,
+    NameEnd: 38,
+    Name:    "hello_vector_index",
+  },
+  TableName: &ast.Ident{
+    NamePos: 42,
+    NameEnd: 47,
+    Name:    "hello",
+  },
+  ColumnName: &ast.Ident{
+    NamePos: 48,
+    NameEnd: 57,
+    Name:    "embedding",
+  },
+  Where: &ast.Where{
+    Where: 59,
+    Expr:  &ast.IsNullExpr{
+      Null: 82,
+      Not:  true,
+      Left: &ast.Ident{
+        NamePos: 65,
+        NameEnd: 74,
+        Name:    "embedding",
+      },
+    },
+  },
+  Options: &ast.VectorIndexOptions{
+    Options: 87,
+    Rparen:  119,
+    Records: []*ast.VectorIndexOption{
+      &ast.VectorIndexOption{
+        Key: &ast.Ident{
+          NamePos: 95,
+          NameEnd: 108,
+          Name:    "distance_type",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 111,
+          ValueEnd: 119,
+          Value:    "COSINE",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE VECTOR INDEX hello_vector_index ON hello (embedding) WHERE embedding IS NOT NULL OPTIONS (distance_type="COSINE")
