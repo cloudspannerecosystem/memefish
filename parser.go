@@ -2493,10 +2493,6 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 	columnName := p.parseIdent()
 	p.expect(")")
 
-	// It only allows `WHERE column_name IS NOT NULL` for now, but we still relax the condition
-	// by reusing the `parseWhere` function for sake of it may be extended more conditions in the future.
-	//
-	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	where := p.tryParseWhere()
 	options := p.parseVectorIndexOptions()
 

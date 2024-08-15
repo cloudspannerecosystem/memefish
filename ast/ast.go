@@ -1850,8 +1850,13 @@ type CreateVectorIndex struct {
 	Name        *Ident
 	TableName   *Ident
 	ColumnName  *Ident
-	Where       *Where // optional
-	Options     *VectorIndexOptions
+
+	// It only allows `WHERE column_name IS NOT NULL` for now, but we still relax the condition
+	// by reusing the `parseWhere` function for sake of it may be extended more conditions in the future.
+	//
+	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
+	Where   *Where // optional
+	Options *VectorIndexOptions
 }
 
 // VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
