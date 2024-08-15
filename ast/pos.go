@@ -664,6 +664,14 @@ func (c *CreateIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (c *CreateVectorIndex) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateVectorIndex) End() token.Pos {
+	return c.Options.Rparen + 1
+}
+
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }
@@ -703,6 +711,9 @@ func (a *DropStoredColumn) End() token.Pos { return a.Name.End() }
 
 func (d *DropIndex) Pos() token.Pos { return d.Drop }
 func (d *DropIndex) End() token.Pos { return d.Name.End() }
+
+func (d *DropVectorIndex) Pos() token.Pos { return d.Drop }
+func (d *DropVectorIndex) End() token.Pos { return d.Name.End() }
 
 func (c *CreateRole) Pos() token.Pos { return c.Create }
 func (c *CreateRole) End() token.Pos { return c.Name.End() }

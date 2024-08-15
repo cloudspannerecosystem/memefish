@@ -1987,6 +1987,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
+		case p.Token.IsKeywordLike("VECTOR"):
+			return p.parseCreateVectorIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2011,6 +2013,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
+		case p.Token.IsKeywordLike("VECTOR"):
+			return p.parseDropVectorIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2452,6 +2456,54 @@ func (p *Parser) parseOnDeleteAction() (onDelete ast.OnDeleteAction, onDeleteEnd
 		p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
 	}
 	return
+}
+
+func (p *Parser) parseVectorIndexOptions() *ast.VectorIndexOptions {
+	pos := p.expectKeywordLike("OPTIONS").Pos
+	p.expect("(")
+	options := &ast.VectorIndexOptions{Options: pos}
+	for {
+		key := p.parseIdent()
+		p.expect("=")
+		value := p.parseExpr()
+		options.Records = append(options.Records, &ast.VectorIndexOption{Key: key, Value: value})
+		if p.Token.Kind == "," {
+			p.nextToken()
+			continue
+		}
+		if p.Token.Kind == ")" {
+			options.Rparen = p.Token.Pos
+			p.nextToken()
+			break
+		}
+		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
+	}
+
+	return options
+}
+
+func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
+	p.expectKeywordLike("VECTOR")
+	p.expectKeywordLike("INDEX")
+	ifNotExists := p.parseIfNotExists()
+	name := p.parseIdent()
+	p.expect("ON")
+	tableName := p.parseIdent()
+	p.expect("(")
+	columnName := p.parseIdent()
+	p.expect(")")
+	where := p.tryParseWhere()
+	options := p.parseVectorIndexOptions()
+
+	return &ast.CreateVectorIndex{
+		Create:      pos,
+		IfNotExists: ifNotExists,
+		Name:        name,
+		TableName:   tableName,
+		ColumnName:  columnName,
+		Where:       where,
+		Options:     options,
+	}
 }
 
 func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
@@ -2917,6 +2969,18 @@ func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropIndex{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+}
+
+func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
+	p.expectKeywordLike("VECTOR")
+	p.expectKeywordLike("INDEX")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	return &ast.DropVectorIndex{
 		Drop:     pos,
 		IfExists: ifExists,
 		Name:     name,

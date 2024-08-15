@@ -1,0 +1,15 @@
+--- drop_vector_index.sql
+DROP VECTOR INDEX hello_vector_index
+--- AST
+&ast.DropVectorIndex{
+  Drop:     0,
+  IfExists: false,
+  Name:     &ast.Ident{
+    NamePos: 18,
+    NameEnd: 36,
+    Name:    "hello_vector_index",
+  },
+}
+
+--- SQL
+DROP VECTOR INDEX hello_vector_index

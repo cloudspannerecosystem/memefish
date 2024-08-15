@@ -1,0 +1,45 @@
+--- create_vector_index.sql
+CREATE VECTOR INDEX IF NOT EXISTS hello_vector_index ON hello(embedding)
+OPTIONS(distance_type = 'COSINE')
+--- AST
+&ast.CreateVectorIndex{
+  Create:      0,
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 34,
+    NameEnd: 52,
+    Name:    "hello_vector_index",
+  },
+  TableName: &ast.Ident{
+    NamePos: 56,
+    NameEnd: 61,
+    Name:    "hello",
+  },
+  ColumnName: &ast.Ident{
+    NamePos: 62,
+    NameEnd: 71,
+    Name:    "embedding",
+  },
+  Where:   (*ast.Where)(nil),
+  Options: &ast.VectorIndexOptions{
+    Options: 73,
+    Rparen:  105,
+    Records: []*ast.VectorIndexOption{
+      &ast.VectorIndexOption{
+        Key: &ast.Ident{
+          NamePos: 81,
+          NameEnd: 94,
+          Name:    "distance_type",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 97,
+          ValueEnd: 105,
+          Value:    "COSINE",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE VECTOR INDEX IF NOT EXISTS hello_vector_index ON hello (embedding) OPTIONS (distance_type="COSINE")

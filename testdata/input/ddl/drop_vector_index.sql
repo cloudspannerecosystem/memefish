@@ -1,0 +1,1 @@
+DROP VECTOR INDEX hello_vector_index

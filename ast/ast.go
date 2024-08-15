@@ -56,11 +56,13 @@ func (CreateTable) isStatement()        {}
 func (CreateSequence) isStatement()     {}
 func (CreateView) isStatement()         {}
 func (CreateIndex) isStatement()        {}
+func (CreateVectorIndex) isStatement()  {}
 func (CreateRole) isStatement()         {}
 func (AlterTable) isStatement()         {}
 func (AlterIndex) isStatement()         {}
 func (DropTable) isStatement()          {}
 func (DropIndex) isStatement()          {}
+func (DropVectorIndex) isStatement()    {}
 func (DropRole) isStatement()           {}
 func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
@@ -226,8 +228,10 @@ func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
 func (CreateIndex) isDDL()        {}
+func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
 func (DropIndex) isDDL()          {}
+func (DropVectorIndex) isDDL()    {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
@@ -1829,6 +1833,51 @@ type CreateIndex struct {
 	InterleaveIn *InterleaveIn // optional
 }
 
+// CreateVectorIndex is CREATE VECTOR INDEX statement node.
+//
+//	CREATE VECTOR INDEX {if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	ON {{.TableName | sql}}({{.ColumnName | sql}})
+//	{{if .Where}}WHERE {{.Where | sql}}{{end}}
+//	{{.Options | sql}}
+
+type CreateVectorIndex struct {
+	// pos = Create
+	// end = Options.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	IfNotExists bool // optional
+	Name        *Ident
+	TableName   *Ident
+	ColumnName  *Ident
+	Where       *Where // optional
+	Options     *VectorIndexOptions
+}
+
+// VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type VectorIndexOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*VectorIndexOption // len(Records) > 0
+}
+
+// VectorIndexOption is OPTIONS record node.
+//
+//	{{.Key | sql}}={{.Expr | sql}}
+type VectorIndexOption struct {
+	// pos = Key.pos
+	// end = Value.end
+
+	Key   *Ident
+	Value Expr
+}
+
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
 //	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
@@ -1991,6 +2040,19 @@ type DropStoredColumn struct {
 //
 //	DROP INDEX {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	IfExists bool
+	Name     *Ident
+}
+
+// DropVectorIndex is DROP VECTOR INDEX statement node.
+//
+//	DROP VECTOR INDEX {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropVectorIndex struct {
 	// pos = Drop
 	// end = Name.end
 
