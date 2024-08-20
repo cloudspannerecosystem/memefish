@@ -1,0 +1,47 @@
+--- alter_sequence.sql
+ALTER SEQUENCE my_sequence SET OPTIONS (skip_range_min=1, skip_range_max=1234567)
+
+--- AST
+&ast.AlterSequence{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 15,
+    NameEnd: 26,
+    Name:    "my_sequence",
+  },
+  Options: &ast.SequenceOptions{
+    Options: 31,
+    Rparen:  80,
+    Records: []*ast.SequenceOption{
+      &ast.SequenceOption{
+        Name: &ast.Ident{
+          NamePos: 40,
+          NameEnd: 54,
+          Name:    "skip_range_min",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 55,
+          ValueEnd: 56,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      &ast.SequenceOption{
+        Name: &ast.Ident{
+          NamePos: 58,
+          NameEnd: 72,
+          Name:    "skip_range_max",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 73,
+          ValueEnd: 80,
+          Base:     10,
+          Value:    "1234567",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER SEQUENCE my_sequence SET OPTIONS (skip_range_min = 1, skip_range_max = 1234567)

@@ -1,5 +1,6 @@
 --- drop_sequence.sql
 DROP SEQUENCE my_sequence
+
 --- AST
 &ast.DropSequence{
   Drop:     0,

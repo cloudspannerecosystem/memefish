@@ -1,5 +1,6 @@
 --- drop_sequence_if_exits.sql
 DROP SEQUENCE IF EXISTS my_sequence
+
 --- AST
 &ast.DropSequence{
   Drop:     0,
