@@ -2015,6 +2015,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseDropVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEQUENCE"):
+			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2982,6 +2984,17 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropVectorIndex{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+}
+
+func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
+	p.expectKeywordLike("SEQUENCE")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,
 		Name:     name,

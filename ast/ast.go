@@ -63,6 +63,7 @@ func (AlterIndex) isStatement()         {}
 func (DropTable) isStatement()          {}
 func (DropIndex) isStatement()          {}
 func (DropVectorIndex) isStatement()    {}
+func (DropSequence) isStatement()       {}
 func (DropRole) isStatement()           {}
 func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
@@ -232,6 +233,7 @@ func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
 func (DropIndex) isDDL()          {}
 func (DropVectorIndex) isDDL()    {}
+func (DropSequence) isDDL()       {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
@@ -2063,6 +2065,17 @@ type DropVectorIndex struct {
 
 	Drop token.Pos // position of "DROP" keyword
 
+	IfExists bool
+	Name     *Ident
+}
+
+// DropSequence is DROP SEQUENCE statement node.
+//
+//	DROP SEQUENCE {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropSequence struct {
+	// pos = Drop
+	// end = Name.end
+	Drop     token.Pos
 	IfExists bool
 	Name     *Ident
 }

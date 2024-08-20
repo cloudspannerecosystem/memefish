@@ -1,0 +1,15 @@
+--- drop_sequence.sql
+DROP SEQUENCE my_sequence
+--- AST
+&ast.DropSequence{
+  Drop:     0,
+  IfExists: false,
+  Name:     &ast.Ident{
+    NamePos: 14,
+    NameEnd: 25,
+    Name:    "my_sequence",
+  },
+}
+
+--- SQL
+DROP SEQUENCE my_sequence

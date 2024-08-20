@@ -1115,6 +1115,14 @@ func (d *DropVectorIndex) SQL() string {
 	return sql + d.Name.SQL()
 }
 
+func (d *DropSequence) SQL() string {
+	sql := "DROP SEQUENCE "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
+}
+
 func (c *CreateRole) SQL() string {
 	return "CREATE ROLE " + c.Name.SQL()
 }

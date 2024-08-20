@@ -715,6 +715,9 @@ func (d *DropIndex) End() token.Pos { return d.Name.End() }
 func (d *DropVectorIndex) Pos() token.Pos { return d.Drop }
 func (d *DropVectorIndex) End() token.Pos { return d.Name.End() }
 
+func (d *DropSequence) Pos() token.Pos { return d.Drop }
+func (d *DropSequence) End() token.Pos { return d.Name.End() }
+
 func (c *CreateRole) Pos() token.Pos { return c.Create }
 func (c *CreateRole) End() token.Pos { return c.Name.End() }
 
