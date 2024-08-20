@@ -2002,6 +2002,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
+		case p.Token.IsKeywordLike("SEQUENCE"):
+			return p.parseAlterSequence(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseAlterChangeStream(pos)
 		}
@@ -2015,6 +2017,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseDropVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEQUENCE"):
+			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2111,14 +2115,10 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
-func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
-	p.expectKeywordLike("SEQUENCE")
-	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
-
+func (p *Parser) parseSequenceOptions(pos token.Pos) *ast.SequenceOptions {
 	p.expectKeywordLike("OPTIONS")
 	p.expect("(")
-	var options []*ast.SequenceOption
+	var records []*ast.SequenceOption
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ")" {
 			break
@@ -2134,7 +2134,7 @@ func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 		default:
 			p.panicfAtToken(&p.Token, "expected token: <int>, <string>, but: %s", p.Token.Kind)
 		}
-		options = append(options, &ast.SequenceOption{
+		records = append(records, &ast.SequenceOption{
 			Name:  optionName,
 			Value: value,
 		})
@@ -2144,14 +2144,25 @@ func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 		p.nextToken()
 
 	}
-	if len(options) == 0 {
+	rparen := p.expect(")").Pos
+	if len(records) == 0 {
 		p.panicfAtToken(&p.Token, "required at least one option")
 	}
+	return &ast.SequenceOptions{
+		Options: pos,
+		Rparen:  rparen,
+		Records: records,
+	}
+}
 
-	rparent := p.expect(")").Pos
+func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
+	p.expectKeywordLike("SEQUENCE")
+	ifNotExists := p.parseIfNotExists()
+	name := p.parseIdent()
+	options := p.parseSequenceOptions(p.Token.Pos)
+
 	return &ast.CreateSequence{
 		Create:      pos,
-		Rparen:      rparent,
 		Name:        name,
 		IfNotExists: ifNotExists,
 		Options:     options,
@@ -2929,6 +2940,19 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	}
 }
 
+func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
+	p.expectKeywordLike("SEQUENCE")
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseSequenceOptions(p.Token.Pos)
+
+	return &ast.AlterSequence{
+		Alter:   pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
 func (p *Parser) parseAddStoredColumn() ast.IndexAlteration {
 	pos := p.expectKeywordLike("ADD").Pos
 	p.expectKeywordLike("STORED")
@@ -2982,6 +3006,17 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropVectorIndex{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+}
+
+func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
+	p.expectKeywordLike("SEQUENCE")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,
 		Name:     name,

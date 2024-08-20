@@ -500,7 +500,7 @@ func (c *CreateSequence) Pos() token.Pos {
 }
 
 func (c *CreateSequence) End() token.Pos {
-	return c.Rparen + 1
+	return c.Options.End()
 }
 
 func (c *CreateView) Pos() token.Pos {
@@ -703,6 +703,9 @@ func (i *InterleaveIn) End() token.Pos { return i.TableName.End() }
 func (a *AlterIndex) Pos() token.Pos { return a.Alter }
 func (a *AlterIndex) End() token.Pos { return a.IndexAlteration.End() }
 
+func (a *AlterSequence) Pos() token.Pos { return a.Alter }
+func (a *AlterSequence) End() token.Pos { return a.Options.End() }
+
 func (a *AddStoredColumn) Pos() token.Pos { return a.Add }
 func (a *AddStoredColumn) End() token.Pos { return a.Name.End() }
 
@@ -714,6 +717,9 @@ func (d *DropIndex) End() token.Pos { return d.Name.End() }
 
 func (d *DropVectorIndex) Pos() token.Pos { return d.Drop }
 func (d *DropVectorIndex) End() token.Pos { return d.Name.End() }
+
+func (d *DropSequence) Pos() token.Pos { return d.Drop }
+func (d *DropSequence) End() token.Pos { return d.Name.End() }
 
 func (c *CreateRole) Pos() token.Pos { return c.Create }
 func (c *CreateRole) End() token.Pos { return c.Name.End() }
@@ -855,3 +861,6 @@ func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
 
 func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
 func (o *SequenceOption) End() token.Pos { return o.Value.End() }
+
+func (o *SequenceOptions) Pos() token.Pos { return o.Options }
+func (o *SequenceOptions) End() token.Pos { return o.Rparen + 1 }

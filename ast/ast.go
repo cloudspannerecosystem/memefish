@@ -60,9 +60,11 @@ func (CreateVectorIndex) isStatement()  {}
 func (CreateRole) isStatement()         {}
 func (AlterTable) isStatement()         {}
 func (AlterIndex) isStatement()         {}
+func (AlterSequence) isStatement()      {}
 func (DropTable) isStatement()          {}
 func (DropIndex) isStatement()          {}
 func (DropVectorIndex) isStatement()    {}
+func (DropSequence) isStatement()       {}
 func (DropRole) isStatement()           {}
 func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
@@ -230,8 +232,10 @@ func (DropTable) isDDL()          {}
 func (CreateIndex) isDDL()        {}
 func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
+func (AlterSequence) isDDL()      {}
 func (DropIndex) isDDL()          {}
 func (DropVectorIndex) isDDL()    {}
+func (DropSequence) isDDL()       {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
@@ -1448,14 +1452,13 @@ type CreateTable struct {
 //	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
 type CreateSequence struct {
 	// pos = Create
-	// end = Rparen + 1
+	// end = Options.end
 
 	Create token.Pos // position of "CREATE" keyword
-	Rparen token.Pos // position of ")" of OPTIONS clause
 
 	Name        *Ident
 	IfNotExists bool
-	Options     []*SequenceOption // len(Options) > 0
+	Options     *SequenceOptions
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1652,6 +1655,17 @@ type AlterIndex struct {
 
 	Name            *Ident
 	IndexAlteration IndexAlteration
+}
+
+// AlterSequence is ALTER SEQUENCE statement node.
+type AlterSequence struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *SequenceOptions
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
@@ -2067,6 +2081,17 @@ type DropVectorIndex struct {
 	Name     *Ident
 }
 
+// DropSequence is DROP SEQUENCE statement node.
+//
+//	DROP SEQUENCE {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropSequence struct {
+	// pos = Drop
+	// end = Name.end
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
 // CreateRole is CREATE ROLE statement node.
 //
 //	CREATE ROLE {{.Name | sql}}
@@ -2391,4 +2416,17 @@ type SequenceOption struct {
 
 	Name  *Ident
 	Value Expr
+}
+
+// SequenceOptions is OPTIONS clause node in CREATE|ALTER SEQUENCE .
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type SequenceOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*SequenceOption // len(Records) > 0
 }

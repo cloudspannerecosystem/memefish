@@ -482,6 +482,18 @@ func (o *SequenceOption) SQL() string {
 	return o.Name.SQL() + " = " + o.Value.SQL()
 }
 
+func (o *SequenceOptions) SQL() string {
+	sql := "OPTIONS ("
+	for i, o := range o.Records {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += o.SQL()
+	}
+	sql += ")"
+	return sql
+}
+
 func (s *ExprArg) SQL() string {
 	return s.Expr.SQL()
 }
@@ -755,15 +767,12 @@ func (c *CreateSequence) SQL() string {
 	if c.IfNotExists {
 		sql += "IF NOT EXISTS "
 	}
-	sql += c.Name.SQL() + " OPTIONS ("
-	for i, o := range c.Options {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += o.SQL()
-	}
-	sql += ")"
+	sql += c.Name.SQL() + " " + c.Options.SQL()
 	return sql
+}
+
+func (c *AlterSequence) SQL() string {
+	return "ALTER SEQUENCE " + c.Name.SQL() + " SET " + c.Options.SQL()
 }
 
 func (c *CreateView) SQL() string {
@@ -1109,6 +1118,14 @@ func (d *DropIndex) SQL() string {
 
 func (d *DropVectorIndex) SQL() string {
 	sql := "DROP VECTOR INDEX "
+	if d.IfExists {
+		sql += "IF EXISTS "
+	}
+	return sql + d.Name.SQL()
+}
+
+func (d *DropSequence) SQL() string {
+	sql := "DROP SEQUENCE "
 	if d.IfExists {
 		sql += "IF EXISTS "
 	}
