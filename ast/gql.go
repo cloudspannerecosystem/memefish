@@ -117,6 +117,38 @@ type GqlPrimitiveQueryStatement interface {
 	Node
 	isGqlPrimitiveQueryStatement()
 }
+
+type GqlMatchStatement struct {
+	Optional     token.Pos
+	Match        token.Pos
+	MatchHint    *Hint
+	GraphPattern *GqlGraphPattern
+}
+
+func (g GqlMatchStatement) Pos() token.Pos {
+	return g.Match
+}
+
+func (g GqlMatchStatement) End() token.Pos {
+	return g.GraphPattern.Pos()
+}
+
+func (g GqlMatchStatement) SQL() string {
+	var sql string
+	if g.Optional >= 0 {
+		sql = "OPTIONAL MATCH"
+	} else {
+		sql = "MATCH"
+	}
+	if g.MatchHint != nil {
+		sql += g.MatchHint.SQL()
+	}
+	sql += " " + g.GraphPattern.SQL()
+	return sql
+}
+
+func (g GqlMatchStatement) isGqlPrimitiveQueryStatement() {}
+
 type GqlReturnStatement struct {
 	Return         token.Pos
 	ReturnItemList []SelectItem
