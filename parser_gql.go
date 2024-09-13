@@ -1,6 +1,7 @@
 package memefish
 
 import (
+	"fmt"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
@@ -69,12 +70,72 @@ func (p *Parser) parseGqlMatchStatement() *ast.GqlMatchStatement {
 	return &ast.GqlMatchStatement{Optional: optionalPos, Match: match, GraphPattern: pattern}
 }
 
-func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
-	return &ast.GqlPatternFilter{
-		GraphPatternVariable: nil, // TODO
-		IsLabelCondition:     nil, // TODO
-		Filter:               nil, // TODO
+func (p *Parser) parseGqlLabelName() *ast.GqlLabelName {
+	if p.Token.Kind == "%" {
+		p.nextToken()
+		return &ast.GqlLabelName{IsPercent: true}
 	}
+	return &ast.GqlLabelName{
+		IsPercent: false,
+		LabelName: p.parseIdent(),
+	}
+}
+
+func (p *Parser) parseGqlLabelExpression() ast.GqlLabelExpression {
+	// TODO
+	/*
+		label_expression:
+		  {
+		    label_name
+		    | or_expression
+		    | and_expression
+		    | not_expression
+		  }
+	*/
+	return p.parseGqlLabelName()
+}
+func (p *Parser) parseGqlIsLabelCondition() *ast.GqlIsLabelCondition {
+
+	pos := p.Token.Pos
+	p.nextToken()
+	labelExpr := p.parseGqlLabelExpression()
+	return &ast.GqlIsLabelCondition{
+		IsOrColon:       pos,
+		LabelExpression: labelExpr,
+	}
+}
+func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
+	var patternVar *ast.Ident
+	if p.Token.Kind == token.TokenIdent {
+		patternVar = p.parseIdent()
+	}
+	var isLabelCondition *ast.GqlIsLabelCondition
+	if p.Token.Kind == ":" || p.Token.Kind == "IS" {
+		isLabelCondition = p.parseGqlIsLabelCondition()
+	}
+
+	filter := p.tryParseGqlPatternFilterFilter()
+	return &ast.GqlPatternFilter{
+		GraphPatternVariable: patternVar,       // TODO
+		IsLabelCondition:     isLabelCondition, // TODO
+		Filter:               filter,           // TODO
+	}
+}
+
+func (p *Parser) lookaheadGqlSubpathPattern() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "(" {
+		return false
+	}
+	p.nextToken()
+	if p.Token.Kind == "(" || p.Token.Kind == "-" || p.Token.Kind == "<" {
+		return true
+	}
+	return false
 }
 
 func (p *Parser) parseGqlNodePattern() *ast.GqlNodePattern {
@@ -87,7 +148,7 @@ func (p *Parser) parseGqlNodePattern() *ast.GqlNodePattern {
 		PatternFilter: filter,
 	}
 }
-func (p *Parser) parseGqlPathTerm() ast.GqlPathTerm {
+func (p *Parser) tryParseGqlPathTerm() ast.GqlPathTerm {
 	// TODO
 	/*
 		path_term:
@@ -97,11 +158,104 @@ func (p *Parser) parseGqlPathTerm() ast.GqlPathTerm {
 		  }
 	*/
 
-	return p.parseGqlNodePattern()
+	if p.lookaheadGqlSubpathPattern() {
+		return p.parseGqlSubPathPattern()
+	}
+	if p.Token.Kind == "(" {
+		return p.parseGqlNodePattern()
+	}
+	if p.Token.Kind == "-" || p.Token.Kind == "<" {
+		return p.parseGqlEdgePattern()
+	}
+	return nil
+}
+
+func (p *Parser) tryParseGqlPathMode() *ast.GqlPathMode {
+	if !p.Token.IsKeywordLike("TRAIL") && !p.Token.IsKeywordLike("WALK") {
+		return nil
+	}
+	var pathMode ast.GqlPathModeEnum
+	if p.Token.IsKeywordLike("TRAIL") {
+		p.nextToken()
+		pathMode = ast.GqlPathModeTrail
+	} else if p.Token.IsKeywordLike("WALK") {
+		p.nextToken()
+		pathMode = ast.GqlPathModeWalk
+	}
+	if p.Token.IsKeywordLike("PATH") || p.Token.IsKeywordLike("PATHS") {
+		p.nextToken()
+	}
+	return &ast.GqlPathMode{
+		Mode: pathMode,
+	}
+
+}
+func (p *Parser) parseGqlSubPathPattern() *ast.GqlSubpathPattern {
+	lparen := p.expect("(").Pos
+	pathMode := p.tryParseGqlPathMode()
+	pattern := p.parseGqlPathPattern()
+	where := p.tryParseWhere()
+	rparen := p.expect(")").Pos
+
+	return &ast.GqlSubpathPattern{
+		LParen:      lparen,
+		RParen:      rparen,
+		PathMode:    pathMode,
+		PathPattern: pattern,
+		WhereClause: where,
+	}
+}
+
+func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
+	//TODO implement
+	switch p.Token.Kind {
+	case "<":
+		p.nextToken()
+		p.expect("-")
+		if p.Token.Kind == "[" {
+			p.nextToken()
+			patternFilter := p.parseGqlPatternFilter()
+			p.expect("]")
+			p.expect("-")
+			p.expect("->")
+			return &ast.GqlFullEdgeLeft{PatternFilter: patternFilter}
+		} else {
+			return &ast.GqlAbbreviatedEdgeLeft{}
+		}
+	case "-":
+		p.nextToken()
+		switch p.Token.Kind {
+		case ">":
+			p.nextToken()
+			return &ast.GqlAbbreviatedEdgeRight{}
+		case "[":
+			p.nextToken()
+			patternFilter := p.parseGqlPatternFilter()
+			p.expect("]")
+			p.expect("-")
+			if p.Token.Kind == ">" {
+				p.nextToken()
+				return &ast.GqlFullEdgeRight{PatternFilter: patternFilter}
+			}
+			return &ast.GqlFullEdgeAny{PatternFilter: patternFilter}
+		default:
+			return &ast.GqlAbbreviatedEdgeAny{}
+		}
+	default:
+		panic(fmt.Sprintf("not implemented kind: %v %v", p.Token.Kind, p.Token.Raw))
+	}
 }
 
 func (p *Parser) parseGqlPathPattern() *ast.GqlPathPattern {
-	list := []ast.GqlPathTerm{p.parseGqlPathTerm()}
+	// TODO list
+	list := []ast.GqlPathTerm{p.tryParseGqlPathTerm()}
+	for p.Token.Kind != ")" && !p.Token.IsKeywordLike("WHERE") {
+		term := p.tryParseGqlPathTerm()
+		if term == nil {
+			break
+		}
+		list = append(list, term)
+	}
 	return &ast.GqlPathPattern{
 		PathTermList: list,
 	}
@@ -113,6 +267,44 @@ func (p *Parser) parseGqlTopLevelPathPattern() *ast.GqlTopLevelPathPattern {
 		PathPattern:                pattern,
 	}
 }
+
+func (p *Parser) parseGqlElementProperty() *ast.GqlElementProperty {
+	ident := p.parseIdent()
+	_ = p.expect(":")
+	expr := p.parseExpr()
+	return &ast.GqlElementProperty{
+		ElementPropertyName:  ident,
+		ElementPropertyValue: expr,
+	}
+}
+func (p *Parser) parseGqlPropertyFilters() *ast.GqlPropertyFilters {
+	lbrace := p.expect("{").Pos
+
+	elementPropertyList := []*ast.GqlElementProperty{p.parseGqlElementProperty()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		elementPropertyList = append(elementPropertyList, p.parseGqlElementProperty())
+	}
+
+	rbrace := p.expect("}").Pos
+	return &ast.GqlPropertyFilters{
+		LBrace:                 lbrace,
+		PropertyFilterElemList: elementPropertyList,
+		RBrace:                 rbrace,
+	}
+}
+
+func (p *Parser) tryParseGqlPatternFilterFilter() ast.GqlPatternFilterFilter {
+	switch {
+	case p.Token.Kind == "WHERE":
+		return p.parseWhere()
+	case p.Token.Kind == "{":
+		return p.parseGqlPropertyFilters()
+	default:
+		return nil
+	}
+}
+
 func (p *Parser) parseGqlGraphPattern() *ast.GqlGraphPattern {
 	patterns := []*ast.GqlTopLevelPathPattern{p.parseGqlTopLevelPathPattern()}
 	for p.Token.Kind == "," {
@@ -120,8 +312,8 @@ func (p *Parser) parseGqlGraphPattern() *ast.GqlGraphPattern {
 		patterns = append(patterns, p.parseGqlTopLevelPathPattern())
 	}
 	return &ast.GqlGraphPattern{
-		PathPatternList:     patterns,
-		OptionalWhereClause: nil, // TODO
+		PathPatternList: patterns,
+		WhereClause:     p.tryParseWhere(), // TODO
 	}
 }
 
