@@ -17,7 +17,7 @@ var logging = flag.Bool("logging", false, "enable log")
 func main() {
 	flag.Parse()
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [-logging] <SQL query>")
+		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml|gql] [-logging] <SQL query>")
 	}
 
 	query := flag.Arg(0)
@@ -43,7 +43,8 @@ func main() {
 	case "ddl":
 		node, err = p.ParseDDL()
 	case "dml":
-		node, err = p.ParseDML()
+	case "gql":
+		node, err = p.ParseGqlStatement()
 	}
 	if err != nil {
 		log.Fatal(err)
