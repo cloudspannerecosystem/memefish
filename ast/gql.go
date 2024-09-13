@@ -61,9 +61,12 @@ func (s *GqlMultiLinearQueryStatement) End() token.Pos {
 }
 
 func (s *GqlMultiLinearQueryStatement) SQL() string {
-	sql := s.GqlLinearQueryStatements[0].SQL()
-	for _, r := range s.GqlLinearQueryStatements[1:] {
-		sql += "\n" + r.SQL()
+	var sql string
+	for i, r := range s.GqlLinearQueryStatements {
+		if i > 0 {
+			sql += "\nNEXT\n"
+		}
+		sql += r.SQL()
 	}
 	return sql
 }
@@ -72,6 +75,7 @@ type GqlLinearQueryStatement interface {
 	Node
 	isGqlLinearQueryStatement()
 }
+
 type GqlSimpleLinearQueryStatement struct {
 	PrimitiveQueryStatementList []GqlPrimitiveQueryStatement
 }
@@ -98,18 +102,78 @@ func (s *GqlSimpleLinearQueryStatement) End() token.Pos {
 
 func (*GqlSimpleLinearQueryStatement) isGqlLinearQueryStatement() {}
 func (s *GqlSimpleLinearQueryStatement) SQL() string {
-	// TODO: list should not be empty
-	if len(s.PrimitiveQueryStatementList) == 0 {
-		return ""
-	}
-	sql := s.PrimitiveQueryStatementList[0].SQL()
-	for _, r := range s.PrimitiveQueryStatementList[1:] {
-		sql += "\n" + r.SQL()
+	var sql string
+	for i, r := range s.PrimitiveQueryStatementList {
+		if i > 0 {
+			sql += "\n"
+		}
+		sql += r.SQL()
 	}
 	return sql
 }
 
-type GqlCompositeLinearQueryStatement struct{}
+type GqlAllOrDistinctEnum int
+
+const (
+	GqlAllOrDistinctImplicitAll = iota
+	GqlAllOrDistinctAll         = iota
+	GqlAllOrDistinctDistinct
+)
+
+type GqlSetOperatorEnum int
+
+const (
+	GqlSetOperatorUnion = iota
+	GqlSetOperatorIntersect
+	GqlSetOperatorExcept
+)
+
+type GqlSimpleLinearQueryStatementWithSetOperator struct {
+	StartPos      token.Pos
+	SetOperator   GqlSetOperatorEnum
+	DistinctOrAll GqlAllOrDistinctEnum
+	Statement     *GqlSimpleLinearQueryStatement
+}
+
+type GqlCompositeLinearQueryStatement struct {
+	HeadSimpleLinearQueryStatement     *GqlSimpleLinearQueryStatement
+	TailSimpleLinearQueryStatementList []*GqlSimpleLinearQueryStatementWithSetOperator
+}
+
+func (s *GqlCompositeLinearQueryStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *GqlCompositeLinearQueryStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *GqlCompositeLinearQueryStatement) SQL() string {
+	var sql string
+	sql += s.HeadSimpleLinearQueryStatement.SQL()
+	for _, s := range s.TailSimpleLinearQueryStatementList {
+		sql += "\n"
+		switch s.SetOperator {
+		case GqlSetOperatorUnion:
+			sql += "UNION"
+		case GqlSetOperatorIntersect:
+			sql += "INTERSECT"
+		case GqlSetOperatorExcept:
+			sql += "INTERSECT"
+		}
+
+		switch s.DistinctOrAll {
+		case GqlAllOrDistinctAll:
+			sql += " " + "ALL"
+		case GqlAllOrDistinctDistinct:
+			sql += " " + "DISTINCT"
+		}
+		sql += "\n" + s.Statement.SQL()
+	}
+	return sql
+}
 
 func (*GqlCompositeLinearQueryStatement) isGqlLinearQueryStatement() {}
 
@@ -149,9 +213,94 @@ func (g GqlMatchStatement) SQL() string {
 
 func (g GqlMatchStatement) isGqlPrimitiveQueryStatement() {}
 
+type GqlLimitAndOffsetClause interface {
+	Node
+	isGqlLimitAndOffsetClause()
+}
+
+// GqlLimitClause is wrapper of Limit for GQL
+type GqlLimitClause struct {
+	Limit *Limit
+}
+
+// GqlOffsetClause is wrapper of Offset for GQL
+type GqlOffsetClause struct {
+	Offset *Offset
+}
+
+func (g GqlOffsetClause) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOffsetClause) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOffsetClause) SQL() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOffsetClause) isGqlLimitAndOffsetClause() {
+	//TODO implement me
+	panic("implement me")
+}
+
+// GqlLimitClauseWithOffset
+type GqlLimitWithOffsetClause struct {
+	Limit  *Limit
+	Offset *Offset
+}
+
+func (g GqlLimitWithOffsetClause) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitWithOffsetClause) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitWithOffsetClause) SQL() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitWithOffsetClause) isGqlLimitAndOffsetClause() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitClause) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitClause) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitClause) SQL() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLimitClause) isGqlLimitAndOffsetClause() {
+	//TODO implement me
+	panic("implement me")
+}
+
 type GqlReturnStatement struct {
-	Return         token.Pos
-	ReturnItemList []SelectItem
+	AllOrDistinct        GqlAllOrDistinctEnum
+	Return               token.Pos
+	ReturnItemList       []SelectItem
+	GroupByClause        *GroupBy
+	OrderByClause        *OrderBy
+	LimitAndOffsetClause GqlLimitAndOffsetClause
 }
 
 func (s *GqlReturnStatement) Pos() token.Pos {
@@ -192,9 +341,12 @@ func (s *GqlLetStatement) End() token.Pos {
 }
 
 func (s *GqlLetStatement) SQL() string {
-	sql := fmt.Sprintf("LET %v", s.LinearGraphVariableList[0].SQL())
-	for _, v := range s.LinearGraphVariableList[1:] {
-		sql += ", " + v.SQL()
+	sql := "LET "
+	for i, v := range s.LinearGraphVariableList {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += v.SQL()
 	}
 	return sql
 }
@@ -204,9 +356,28 @@ func (*GqlReturnStatement) isGqlPrimitiveQueryStatement() {}
 
 func (s *GqlReturnStatement) SQL() string {
 	sql := "RETURN "
-	sql += s.ReturnItemList[0].SQL()
-	for _, r := range s.ReturnItemList[1:] {
-		sql += ", " + r.SQL()
+	switch s.AllOrDistinct {
+	case GqlAllOrDistinctAll:
+		sql += "ALL "
+	case GqlAllOrDistinctDistinct:
+		sql += "DISTINCT "
+	case GqlAllOrDistinctImplicitAll:
+		// empty
+	}
+	for i, r := range s.ReturnItemList {
+		if i > 0 {
+			sql += ", "
+		}
+		sql += r.SQL()
+	}
+	if s.GroupByClause != nil {
+		sql += " " + s.GroupByClause.SQL()
+	}
+	if s.OrderByClause != nil {
+		sql += " " + s.OrderByClause.SQL()
+	}
+	if s.LimitAndOffsetClause != nil {
+		sql += " " + s.LimitAndOffsetClause.SQL()
 	}
 	return sql
 }

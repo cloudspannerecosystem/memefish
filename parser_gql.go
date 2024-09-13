@@ -29,10 +29,54 @@ func (p *Parser) parseGqlGraphClause() *ast.GqlGraphClause {
 }
 
 func (p *Parser) parseGqlLinearQueryStatement() ast.GqlLinearQueryStatement {
-	// TODO process ast.GqlCompositeQueryStatement
-	return p.parseGqlSimpleLinearQueryStatement()
+	stmt := p.parseGqlSimpleLinearQueryStatement()
+	if p.Token.Kind != ("UNION") && p.Token.Kind != ("EXCEPT") && p.Token.Kind != ("DISTINCT") {
+		return stmt
+	}
+	var tail []*ast.GqlSimpleLinearQueryStatementWithSetOperator
+	for p.Token.Kind == ("UNION") || p.Token.Kind == ("EXCEPT") || p.Token.Kind == ("DISTINCT") {
+		tail = append(tail, p.parseGqlSimpleLinearQueryStatementWithSetOperator())
+	}
+	return &ast.GqlCompositeLinearQueryStatement{HeadSimpleLinearQueryStatement: stmt, TailSimpleLinearQueryStatementList: tail}
 }
 
+func (p *Parser) parseGqlSimpleLinearQueryStatementWithSetOperator() *ast.GqlSimpleLinearQueryStatementWithSetOperator {
+	pos := p.Token.Pos
+	var op ast.GqlSetOperatorEnum
+	switch p.Token.Kind {
+	case "UNION":
+		p.nextToken()
+		op = ast.GqlSetOperatorUnion
+	case "INTERSECT":
+		p.nextToken()
+		op = ast.GqlSetOperatorIntersect
+	case "EXCEPT":
+		p.nextToken()
+		op = ast.GqlSetOperatorExcept
+	default:
+		panic("unknown SetOperatorEnum")
+	}
+
+	var allOrDistinct ast.GqlAllOrDistinctEnum
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		allOrDistinct = ast.GqlAllOrDistinctAll
+	case "DISTINCT":
+		p.nextToken()
+		allOrDistinct = ast.GqlAllOrDistinctDistinct
+	default:
+		panic("unknown SetAllOrDistinct")
+	}
+
+	stmt := p.parseGqlSimpleLinearQueryStatement()
+	return &ast.GqlSimpleLinearQueryStatementWithSetOperator{
+		StartPos:      pos,
+		SetOperator:   op,
+		DistinctOrAll: allOrDistinct,
+		Statement:     stmt,
+	}
+}
 func (p *Parser) parseGqlSimpleLinearQueryStatement() *ast.GqlSimpleLinearQueryStatement {
 	var stmts []ast.GqlPrimitiveQueryStatement
 	for stmt := p.tryParseGqlPrimitiveQueryStatement(); stmt != nil; stmt = p.tryParseGqlPrimitiveQueryStatement() {
@@ -212,16 +256,14 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 	case "<":
 		p.nextToken()
 		p.expect("-")
-		if p.Token.Kind == "[" {
-			p.nextToken()
-			patternFilter := p.parseGqlPatternFilter()
-			p.expect("]")
-			p.expect("-")
-			p.expect("->")
-			return &ast.GqlFullEdgeLeft{PatternFilter: patternFilter}
-		} else {
+		if p.Token.Kind != "[" {
 			return &ast.GqlAbbreviatedEdgeLeft{}
 		}
+		p.nextToken()
+		patternFilter := p.parseGqlPatternFilter()
+		p.expect("]")
+		p.expect("-")
+		return &ast.GqlFullEdgeLeft{PatternFilter: patternFilter}
 	case "-":
 		p.nextToken()
 		switch p.Token.Kind {
@@ -319,8 +361,39 @@ func (p *Parser) parseGqlGraphPattern() *ast.GqlGraphPattern {
 
 func (p *Parser) parseGqlReturnStatement() *ast.GqlReturnStatement {
 	ret := p.expectKeywordLike("RETURN").Pos
+	var allOrDistinct ast.GqlAllOrDistinctEnum
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		allOrDistinct = ast.GqlAllOrDistinctAll
+	case "DISTINCT":
+		p.nextToken()
+		allOrDistinct = ast.GqlAllOrDistinctDistinct
+	}
 	returnItems := p.parseSelectResults()
-	return &ast.GqlReturnStatement{Return: ret, ReturnItemList: returnItems}
+	groupBy := p.tryParseGroupBy()
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	offset := p.tryParseOffset()
+	var limitAndOffset ast.GqlLimitAndOffsetClause
+	switch {
+	case limit != nil && offset != nil:
+		limitAndOffset = &ast.GqlLimitWithOffsetClause{
+			Limit:  limit,
+			Offset: offset,
+		}
+	case limit != nil:
+		limitAndOffset = &ast.GqlLimitClause{Limit: limit}
+	case offset != nil:
+		limitAndOffset = &ast.GqlOffsetClause{Offset: offset}
+	default:
+	}
+	return &ast.GqlReturnStatement{Return: ret,
+		AllOrDistinct:        allOrDistinct,
+		GroupByClause:        groupBy,
+		OrderByClause:        orderBy,
+		LimitAndOffsetClause: limitAndOffset,
+		ReturnItemList:       returnItems}
 }
 
 func (p *Parser) parseGqlLinearGraphVariable() *ast.GqlLinearGraphVariable {
@@ -345,7 +418,8 @@ func (p *Parser) parseGqlLetStatement() *ast.GqlLetStatement {
 
 func (p *Parser) parseGqlMultiLinearQueryStatement() *ast.GqlMultiLinearQueryStatement {
 	items := []ast.GqlLinearQueryStatement{p.parseGqlLinearQueryStatement()}
-	for false {
+	for p.Token.IsKeywordLike("NEXT") {
+		p.expectKeywordLike("NEXT")
 		items = append(items, p.parseGqlLinearQueryStatement())
 	}
 
