@@ -824,6 +824,23 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		return p.parseUnnestSuffix(false, expr, unnest, rparen)
 	}
 
+	if p.Token.IsKeywordLike("GRAPH_TABLE") {
+		graphTable := p.expectKeywordLike("GRAPH_TABLE").Pos
+		lparen := p.expect("(").Pos
+		graphName := p.parseIdent()
+		query := p.parseGqlMultiLinearQueryStatement()
+		rparen := p.expect(")").Pos
+		as := p.tryParseAsAlias()
+		return &ast.GraphTableExpr{
+			GraphTable:        graphTable,
+			PropertyGraphName: graphName,
+			Lparen:            lparen,
+			Rparen:            rparen,
+			Query:             query,
+			As:                as,
+		}
+	}
+
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
 		if len(ids) == 1 {

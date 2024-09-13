@@ -734,6 +734,42 @@ type ParenTableExpr struct {
 	Sample *TableSample // optional
 }
 
+type GraphTableExpr struct {
+	// pos = GraphTable.Pos
+	// end = As.end || Rparen + 1
+	GraphTable        token.Pos
+	PropertyGraphName *Ident
+
+	Lparen, Rparen token.Pos // position of "(" and ")"
+
+	Query *GqlMultiLinearQueryStatement
+	As    *AsAlias // optional
+}
+
+func (g GraphTableExpr) Pos() token.Pos {
+	return g.GraphTable
+}
+
+func (g GraphTableExpr) End() token.Pos {
+	if g.As != nil {
+		return g.As.End()
+	}
+	return g.Rparen + 1
+}
+
+func (g GraphTableExpr) SQL() string {
+	sql := "GRAPH_TABLE(\n" +
+		g.PropertyGraphName.SQL() + "\n" +
+		g.Query.SQL() + "\n" +
+		")"
+	if g.As != nil {
+		sql += " " + g.As.SQL()
+	}
+	return sql
+}
+
+func (g GraphTableExpr) isTableExpr() {}
+
 // Join is JOIN expression.
 //
 //	{{.Left | sql}}
