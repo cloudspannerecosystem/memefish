@@ -55,6 +55,27 @@ func (p *Parser) ParseGqlStatement() (stmt ast.Statement, err error) {
 	return
 }
 
+// ParseGqlStatement parses a GQL statement.
+func (p *Parser) ParseGqlPathPattern() (stmt *ast.GqlPathPattern, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = nil
+			if e, ok := r.(*Error); ok {
+				err = e
+			} else {
+				panic(r)
+			}
+		}
+	}()
+
+	p.nextToken()
+	stmt = p.parseGqlPathPattern()
+	if p.Token.Kind != token.TokenEOF {
+		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+	}
+	return
+}
+
 // ParseStatements parses SQL statements list separated by semi-colon.
 func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	defer func() {

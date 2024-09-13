@@ -45,6 +45,8 @@ func main() {
 	case "dml":
 	case "gql":
 		node, err = p.ParseGqlStatement()
+	case "gql_path_pattern":
+		node, err = p.ParseGqlPathPattern()
 	}
 	if err != nil {
 		log.Fatal(err)

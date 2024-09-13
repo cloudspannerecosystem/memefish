@@ -100,6 +100,69 @@ func (p *Parser) tryParseGqlPrimitiveQueryStatement() ast.GqlPrimitiveQueryState
 	}
 }
 
+func (p *Parser) tryParseGqlPathModePathOrPaths() *ast.Ident {
+	switch {
+	case p.Token.IsKeywordLike("PATH"), p.Token.IsKeywordLike("PATHS"):
+		return p.parseIdent()
+	default:
+		return nil
+	}
+}
+func (p *Parser) tryParseGqlPathMode() *ast.GqlPathMode {
+	switch {
+	case p.Token.IsKeywordLike("WALK"):
+		pathModeToken := p.parseIdent()
+		pathOrPathsToken := p.tryParseGqlPathModePathOrPaths()
+		return &ast.GqlPathMode{
+			ModeToken:       pathModeToken,
+			PathOrPathToken: pathOrPathsToken,
+			Mode:            ast.GqlPathModeWalk,
+		}
+
+	case p.Token.IsKeywordLike("TRAIL"):
+		pathModeToken := p.parseIdent()
+		pathOrPathsToken := p.tryParseGqlPathModePathOrPaths()
+		return &ast.GqlPathMode{
+			ModeToken:       pathModeToken,
+			PathOrPathToken: pathOrPathsToken,
+			Mode:            ast.GqlPathModeTrail,
+		}
+	default:
+		return nil
+	}
+}
+func (p *Parser) tryParseGqlPathSearchPrefixOrPathMode() ast.GqlPathSearchPrefixOrPathMode {
+	startPos := p.Token.Pos
+	switch {
+	case p.Token.Kind == "ALL":
+		p.nextToken()
+		return &ast.GqlPathSearchPrefix{
+			StartPos:     startPos,
+			SearchPrefix: ast.GqlPathSearchPrefixAll,
+		}
+	case p.Token.Kind == "ANY":
+		p.nextToken()
+		if p.Token.IsKeywordLike("SHORTEST") {
+			p.nextToken()
+			return &ast.GqlPathSearchPrefix{
+				StartPos:     startPos,
+				SearchPrefix: ast.GqlPathSearchPrefixAnyShortest,
+			}
+		} else {
+			return &ast.GqlPathSearchPrefix{
+				StartPos:     startPos,
+				SearchPrefix: ast.GqlPathSearchPrefixAny,
+			}
+		}
+	default:
+		if pathMode := p.tryParseGqlPathMode(); pathMode != nil {
+			return pathMode
+		}
+		return nil
+	}
+
+}
+
 func (p *Parser) parseGqlMatchStatement() *ast.GqlMatchStatement {
 	var optionalPos token.Pos
 	if p.Token.IsKeywordLike("OPTIONAL") {
@@ -110,8 +173,10 @@ func (p *Parser) parseGqlMatchStatement() *ast.GqlMatchStatement {
 	}
 
 	match := p.expectKeywordLike("MATCH").Pos
+	// var prefixOrMode ast.GqlPathSearchPrefixOrPathMode = nil // p.tryParseGqlPathSearchPrefixOrPathMode()
+	var prefixOrMode ast.GqlPathSearchPrefixOrPathMode = p.tryParseGqlPathSearchPrefixOrPathMode()
 	pattern := p.parseGqlGraphPattern()
-	return &ast.GqlMatchStatement{Optional: optionalPos, Match: match, GraphPattern: pattern}
+	return &ast.GqlMatchStatement{Optional: optionalPos, Match: match, PrefixOrMode: prefixOrMode, GraphPattern: pattern}
 }
 
 func (p *Parser) parseGqlLabelName() *ast.GqlLabelName {
@@ -136,7 +201,50 @@ func (p *Parser) parseGqlLabelExpression() ast.GqlLabelExpression {
 		    | not_expression
 		  }
 	*/
-	return p.parseGqlLabelName()
+	var labelTerm ast.GqlLabelExpression
+	switch {
+	case p.Token.Kind == "!":
+		notPos := p.expect("!").Pos
+		expr := p.parseGqlLabelExpression()
+		labelTerm = &ast.GqlLabelNotExpression{NotPos: notPos, LabelExpression: expr}
+	case p.Token.Kind == "(":
+		lparen := p.expect("(").Pos
+		expr := p.parseGqlLabelExpression()
+		rparen := p.expect(")").Pos
+		labelTerm = &ast.GqlLabelParenExpression{
+			LParen:    lparen,
+			RParen:    rparen,
+			LabelExpr: expr,
+		}
+
+		/*
+			default:
+				p.panicfAtToken(&p.Token, "expected token: '|' or '&', but: %v", p.Token.Kind)
+				return nil // must not be reached
+		*/
+	case p.Token.Kind == token.TokenIdent || p.Token.Kind == "%":
+		labelTerm = p.parseGqlLabelName()
+	default:
+		p.panicfAtToken(&p.Token, `expected token: ",", "(", or "<ident>", but: %v`, p.Token.Kind)
+		return nil
+	}
+	switch {
+	case p.Token.Kind == "|":
+		p.nextToken()
+		right := p.parseGqlLabelExpression()
+		return &ast.GqlLabelOrExpression{
+			Left:  labelTerm,
+			Right: right,
+		}
+	case p.Token.Kind == "&":
+		p.nextToken()
+		right := p.parseGqlLabelExpression()
+		return &ast.GqlLabelAndExpression{
+			Left:  labelTerm,
+			Right: right,
+		}
+	}
+	return labelTerm
 }
 func (p *Parser) parseGqlIsLabelCondition() *ast.GqlIsLabelCondition {
 
@@ -176,7 +284,7 @@ func (p *Parser) lookaheadGqlSubpathPattern() bool {
 		return false
 	}
 	p.nextToken()
-	if p.Token.Kind == "(" || p.Token.Kind == "-" || p.Token.Kind == "<" {
+	if p.Token.Kind == "(" || p.Token.Kind == "-" || p.Token.Kind == "<" || p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") {
 		return true
 	}
 	return false
@@ -192,6 +300,54 @@ func (p *Parser) parseGqlNodePattern() *ast.GqlNodePattern {
 		PatternFilter: filter,
 	}
 }
+
+func (p *Parser) tryParseGqlQuantifier() ast.GqlQuantifier {
+	if p.Token.Kind != "{" {
+		return nil
+	}
+	lbrace := p.expect("{").Pos
+	if p.Token.Kind == "," {
+		upperBound := p.parseIntValue()
+		rbrace := p.expect("}").Pos
+		return &ast.GqlBoundedQuantifier{
+			LBrace:     lbrace,
+			RBrace:     rbrace,
+			UpperBound: upperBound,
+		}
+	}
+	bound := p.parseIntValue()
+	if p.Token.Kind != "," {
+		rbrace := p.expect("}").Pos
+		return &ast.GqlFixedQuantifier{
+			LBrace: lbrace,
+			RBrace: rbrace,
+			Bound:  bound,
+		}
+	}
+	p.expect(",")
+	upperBound := p.parseIntValue()
+	rbrace := p.expect("}").Pos
+
+	return &ast.GqlBoundedQuantifier{
+		LBrace:     lbrace,
+		RBrace:     rbrace,
+		LowerBound: bound,
+		UpperBound: upperBound,
+	}
+}
+
+func (p *Parser) tryParseGqlQuantifiablePathTerm() *ast.GqlQuantifiablePathTerm {
+	pt := p.tryParseGqlPathTerm()
+	if pt == nil {
+		return nil
+	}
+	q := p.tryParseGqlQuantifier()
+	return &ast.GqlQuantifiablePathTerm{
+		PathTerm:   pt,
+		Quantifier: q,
+	}
+}
+
 func (p *Parser) tryParseGqlPathTerm() ast.GqlPathTerm {
 	// TODO
 	/*
@@ -214,26 +370,6 @@ func (p *Parser) tryParseGqlPathTerm() ast.GqlPathTerm {
 	return nil
 }
 
-func (p *Parser) tryParseGqlPathMode() *ast.GqlPathMode {
-	if !p.Token.IsKeywordLike("TRAIL") && !p.Token.IsKeywordLike("WALK") {
-		return nil
-	}
-	var pathMode ast.GqlPathModeEnum
-	if p.Token.IsKeywordLike("TRAIL") {
-		p.nextToken()
-		pathMode = ast.GqlPathModeTrail
-	} else if p.Token.IsKeywordLike("WALK") {
-		p.nextToken()
-		pathMode = ast.GqlPathModeWalk
-	}
-	if p.Token.IsKeywordLike("PATH") || p.Token.IsKeywordLike("PATHS") {
-		p.nextToken()
-	}
-	return &ast.GqlPathMode{
-		Mode: pathMode,
-	}
-
-}
 func (p *Parser) parseGqlSubPathPattern() *ast.GqlSubpathPattern {
 	lparen := p.expect("(").Pos
 	pathMode := p.tryParseGqlPathMode()
@@ -290,9 +426,9 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 
 func (p *Parser) parseGqlPathPattern() *ast.GqlPathPattern {
 	// TODO list
-	list := []ast.GqlPathTerm{p.tryParseGqlPathTerm()}
+	list := []*ast.GqlQuantifiablePathTerm{p.tryParseGqlQuantifiablePathTerm()}
 	for p.Token.Kind != ")" && !p.Token.IsKeywordLike("WHERE") {
-		term := p.tryParseGqlPathTerm()
+		term := p.tryParseGqlQuantifiablePathTerm()
 		if term == nil {
 			break
 		}

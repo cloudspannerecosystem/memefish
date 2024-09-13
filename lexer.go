@@ -162,14 +162,23 @@ func (l *Lexer) consumeToken() {
 		}
 		return
 	case '!':
-		if l.peekIs(1, '=') {
+		switch {
+		case l.peekIs(1, '='):
 			l.skipN(2)
 			l.Token.Kind = "!="
+			return
+		default:
+			l.skip()
+			l.Token.Kind = "!"
 			return
 		}
 	case ':':
 		l.skip()
 		l.Token.Kind = ":"
+		return
+	case '%':
+		l.skip()
+		l.Token.Kind = "%"
 		return
 	case '@':
 		if l.peekOk(1) && char.IsIdentStart(l.peek(1)) {

@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
+	"strings"
 )
 
 type GqlGraphQuery struct {
@@ -61,14 +62,7 @@ func (s *GqlMultiLinearQueryStatement) End() token.Pos {
 }
 
 func (s *GqlMultiLinearQueryStatement) SQL() string {
-	var sql string
-	for i, r := range s.GqlLinearQueryStatements {
-		if i > 0 {
-			sql += "\nNEXT\n"
-		}
-		sql += r.SQL()
-	}
-	return sql
+	return sqlJoin(s.GqlLinearQueryStatements, "\nNEXT\n")
 }
 
 type GqlLinearQueryStatement interface {
@@ -100,16 +94,21 @@ func (s *GqlSimpleLinearQueryStatement) End() token.Pos {
 	return lastEnd(s.PrimitiveQueryStatementList)
 }
 
-func (*GqlSimpleLinearQueryStatement) isGqlLinearQueryStatement() {}
-func (s *GqlSimpleLinearQueryStatement) SQL() string {
-	var sql string
-	for i, r := range s.PrimitiveQueryStatementList {
+func sqlJoin[T Node](elems []T, sep string) string {
+	var b strings.Builder
+	for i, r := range elems {
 		if i > 0 {
-			sql += "\n"
+			b.WriteString(sep)
 		}
-		sql += r.SQL()
+		b.WriteString(r.SQL())
 	}
-	return sql
+	return b.String()
+}
+
+func (*GqlSimpleLinearQueryStatement) isGqlLinearQueryStatement() {}
+
+func (s *GqlSimpleLinearQueryStatement) SQL() string {
+	return sqlJoin(s.PrimitiveQueryStatementList, "\n")
 }
 
 type GqlAllOrDistinctEnum int
@@ -186,6 +185,7 @@ type GqlMatchStatement struct {
 	Optional     token.Pos
 	Match        token.Pos
 	MatchHint    *Hint
+	PrefixOrMode GqlPathSearchPrefixOrPathMode // optional
 	GraphPattern *GqlGraphPattern
 }
 
@@ -206,6 +206,9 @@ func (g GqlMatchStatement) SQL() string {
 	}
 	if g.MatchHint != nil {
 		sql += g.MatchHint.SQL()
+	}
+	if g.PrefixOrMode != nil {
+		sql += " " + g.PrefixOrMode.SQL()
 	}
 	sql += " " + g.GraphPattern.SQL()
 	return sql
@@ -341,14 +344,7 @@ func (s *GqlLetStatement) End() token.Pos {
 }
 
 func (s *GqlLetStatement) SQL() string {
-	sql := "LET "
-	for i, v := range s.LinearGraphVariableList {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	return sql
+	return "LET " + sqlJoin(s.LinearGraphVariableList, ", ")
 }
 func (*GqlLetStatement) isGqlPrimitiveQueryStatement() {}
 
@@ -364,12 +360,9 @@ func (s *GqlReturnStatement) SQL() string {
 	case GqlAllOrDistinctImplicitAll:
 		// empty
 	}
-	for i, r := range s.ReturnItemList {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += r.SQL()
-	}
+
+	sql += sqlJoin(s.ReturnItemList, ", ")
+
 	if s.GroupByClause != nil {
 		sql += " " + s.GroupByClause.SQL()
 	}

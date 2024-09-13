@@ -256,8 +256,31 @@ func (g GqlAbbreviatedEdgeRight) isGqlElementPattern() {}
 
 func (g GqlAbbreviatedEdgeRight) isGqlEdgePattern() {}
 
+type GqlQuantifiablePathTerm struct {
+	PathTerm   GqlPathTerm
+	Quantifier GqlQuantifier // optional
+}
+
+func (g GqlQuantifiablePathTerm) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlQuantifiablePathTerm) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlQuantifiablePathTerm) SQL() string {
+	sql := g.PathTerm.SQL()
+	if g.Quantifier != nil {
+		sql += g.Quantifier.SQL()
+	}
+	return sql
+}
+
 type GqlPathPattern struct {
-	PathTermList []GqlPathTerm
+	PathTermList []*GqlQuantifiablePathTerm
 }
 
 func (g GqlPathPattern) Pos() token.Pos {
@@ -310,15 +333,22 @@ type GqlElementPattern interface {
 	isGqlElementPattern()
 }
 
-type GqlPathModeEnum int
+type gqlPathModeEnum int
 
 const (
-	GqlPathModeWalk GqlPathModeEnum = iota
+	GqlPathModeWalk gqlPathModeEnum = iota
 	GqlPathModeTrail
 )
 
 type GqlPathMode struct {
-	Mode GqlPathModeEnum
+	Mode            gqlPathModeEnum
+	ModeToken       *Ident
+	PathOrPathToken *Ident
+}
+
+func (g *GqlPathMode) isGqlPathSearchPrefixOrPathMode() {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (g *GqlPathMode) Pos() token.Pos {
@@ -340,6 +370,76 @@ func (g *GqlPathMode) SQL() string {
 	default:
 		panic("UNKNOWN GqlPathMode")
 	}
+}
+
+/*
+	type GqlQuantifiedPathPrimary struct {
+		PathPrimary
+	}
+*/
+type GqlQuantifier interface {
+	Node
+	isGqlQuantifier()
+}
+type GqlFixedQuantifier struct {
+	LBrace, RBrace token.Pos
+	Bound          IntValue
+}
+
+func (g GqlFixedQuantifier) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlFixedQuantifier) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlFixedQuantifier) SQL() string {
+	return "{" + g.Bound.SQL() + "}"
+}
+
+func (g GqlFixedQuantifier) isGqlQuantifier() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlBoundedQuantifier struct {
+	LBrace, RBrace token.Pos
+	LowerBound     IntValue // optional
+	UpperBound     IntValue
+}
+
+func (g *GqlBoundedQuantifier) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g *GqlBoundedQuantifier) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+// requires Go 1.20
+func sqlOpt[T interface {
+	Node
+	comparable
+}](node T) string {
+	var zero T
+	if node == zero {
+		return ""
+	}
+	return node.SQL()
+}
+
+func (g *GqlBoundedQuantifier) SQL() string {
+	return fmt.Sprintf("{%v,%v}", sqlOpt(g.LowerBound), g.UpperBound.SQL())
+}
+
+func (g *GqlBoundedQuantifier) isGqlQuantifier() {
+	//TODO implement me
+	panic("implement me")
 }
 
 type GqlSubpathPattern struct {
@@ -484,6 +584,100 @@ type GqlLabelExpression interface {
 	isGqlLabelExpression()
 }
 
+type GqlLabelOrExpression struct {
+	Left, Right GqlLabelExpression
+}
+
+type GqlLabelParenExpression struct {
+	LParen, RParen token.Pos
+	LabelExpr      GqlLabelExpression
+}
+
+func (g GqlLabelParenExpression) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelParenExpression) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelParenExpression) SQL() string {
+	return "(" + g.LabelExpr.SQL() + ")"
+}
+
+func (g GqlLabelParenExpression) isGqlLabelExpression() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelOrExpression) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelOrExpression) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelOrExpression) SQL() string {
+	return g.Left.SQL() + "|" + g.Right.SQL()
+}
+
+func (g GqlLabelOrExpression) isGqlLabelExpression() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlLabelAndExpression struct {
+	Left, Right GqlLabelExpression
+}
+
+func (g GqlLabelAndExpression) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelAndExpression) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelAndExpression) SQL() string {
+	return g.Left.SQL() + "&" + g.Right.SQL()
+}
+
+func (g GqlLabelAndExpression) isGqlLabelExpression() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlLabelNotExpression struct {
+	NotPos          token.Pos
+	LabelExpression GqlLabelExpression
+}
+
+func (g GqlLabelNotExpression) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelNotExpression) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlLabelNotExpression) SQL() string {
+	return "!" + g.LabelExpression.SQL()
+}
+
+func (g GqlLabelNotExpression) isGqlLabelExpression() {
+	//TODO implement me
+	panic("implement me")
+}
+
 type GqlLabelName struct {
 	IsPercent bool
 	LabelName *Ident
@@ -562,4 +756,45 @@ func (g GqlElementProperty) SQL() string {
 	var sql string
 	sql += g.ElementPropertyName.SQL() + ": " + g.ElementPropertyValue.SQL()
 	return sql
+}
+
+type gqlSearchPrefixEnum int
+
+const (
+	GqlPathSearchPrefixAll = iota
+	GqlPathSearchPrefixAny
+	GqlPathSearchPrefixAnyShortest
+)
+
+type GqlPathSearchPrefix struct {
+	StartPos     token.Pos
+	SearchPrefix gqlSearchPrefixEnum
+}
+
+func (p *GqlPathSearchPrefix) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *GqlPathSearchPrefix) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *GqlPathSearchPrefix) SQL() string {
+	switch p.SearchPrefix {
+	case GqlPathSearchPrefixAny:
+		return "ANY"
+	case GqlPathSearchPrefixAnyShortest:
+		return "ANY SHORTEST"
+	case GqlPathSearchPrefixAll:
+		return "ALL"
+	default:
+		panic("invalid GqlPathSearchPrefix")
+	}
+}
+
+func (p *GqlPathSearchPrefix) isGqlPathSearchPrefixOrPathMode() {
+	//TODO implement me
+	panic("implement me")
 }
