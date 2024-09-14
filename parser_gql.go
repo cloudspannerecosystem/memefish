@@ -57,16 +57,9 @@ func (p *Parser) parseGqlSimpleLinearQueryStatementWithSetOperator() *ast.GqlSim
 		panic("unknown SetOperatorEnum")
 	}
 
-	var allOrDistinct ast.GqlAllOrDistinctEnum
-	switch p.Token.Kind {
-	case "ALL":
-		p.nextToken()
-		allOrDistinct = ast.GqlAllOrDistinctAll
-	case "DISTINCT":
-		p.nextToken()
-		allOrDistinct = ast.GqlAllOrDistinctDistinct
-	default:
-		panic("unknown SetAllOrDistinct")
+	allOrDistinct := p.tryParseGqlAllOrDistinctEnum()
+	if allOrDistinct == ast.GqlAllOrDistinctImplicitAll {
+		p.panicfAtToken(&p.Token, `expect "ALL" or "DISTINCT, but: %v`, p.Token.Kind)
 	}
 
 	stmt := p.parseGqlSimpleLinearQueryStatement()
@@ -86,15 +79,182 @@ func (p *Parser) parseGqlSimpleLinearQueryStatement() *ast.GqlSimpleLinearQueryS
 	return &ast.GqlSimpleLinearQueryStatement{PrimitiveQueryStatementList: stmts}
 }
 
-func (p *Parser) tryParseGqlPrimitiveQueryStatement() ast.GqlPrimitiveQueryStatement {
+func (p *Parser) tryParseGqlWithOffsetClause() *ast.GqlWithOffsetClause {
+	if p.Token.Kind != "WITH" {
+		return nil
+	}
+	with := p.expect("WITH").Pos
+	offset := p.expectKeywordLike("OFFSET").Pos
+	var offsetName *ast.Ident
+	if p.Token.Kind == "AS" {
+		p.nextToken()
+		offsetName = p.parseIdent()
+	}
 
+	return &ast.GqlWithOffsetClause{
+		With:       with,
+		Offset:     offset,
+		OffsetName: offsetName,
+	}
+}
+
+func (p *Parser) parseGqlForStatement() *ast.GqlForStatement {
+	forPos := p.expect("FOR").Pos
+	name := p.parseIdent()
+	p.expect("IN")
+	expr := p.parseExpr()
+
+	withOffset := p.tryParseGqlWithOffsetClause()
+
+	return &ast.GqlForStatement{
+		For:              forPos,
+		ElementName:      name,
+		ArrayExpression:  expr,
+		WithOffsetClause: withOffset,
+	}
+}
+
+func (p *Parser) tryParseGqlOrderBySpecificationList() []*ast.GqlOrderBySpecification {
+	var list []*ast.GqlOrderBySpecification
+	for {
+		expr := p.parseExpr()
+		var direction ast.GqlDirection
+		directionPos := p.Token.Pos
+		switch {
+		case p.Token.Kind == "ASC":
+			p.nextToken()
+			direction = ast.GqlSortOrderAsc
+		case p.Token.Kind == "DESC":
+			p.nextToken()
+			direction = ast.GqlSortOrderDesc
+		case p.Token.Kind == "ASCENDING":
+			p.nextToken()
+			direction = ast.GqlSortOrderAscending
+		case p.Token.Kind == "DESCENDING":
+			p.nextToken()
+			direction = ast.GqlSortOrderDescending
+		default:
+			directionPos = token.InvalidPos
+		}
+		list = append(list, &ast.GqlOrderBySpecification{Expr: expr, DirectionPos: directionPos, Direction: direction})
+		if p.Token.Kind != "," {
+			break
+		}
+	}
+	return list
+}
+
+func (p *Parser) parseGqlOrderByStatement() *ast.GqlOrderByStatement {
+	order := p.expect("ORDER").Pos
+	p.expect("BY")
+	spec := p.tryParseGqlOrderBySpecificationList()
+	if spec == nil {
+		p.panicfAtToken(&p.Token, "expect at least one order_by_specification")
+	}
+
+	return &ast.GqlOrderByStatement{
+		Order:                    order,
+		OrderBySpecificationList: spec,
+	}
+}
+
+func (p *Parser) parseGqlLimitStatement() *ast.GqlLimitStatement {
+	limit := p.expect("LIMIT").Pos
+	expr := p.parseIntValue()
+
+	return &ast.GqlLimitStatement{
+		Limit: limit,
+		Count: expr,
+	}
+}
+
+func (p *Parser) parseGqlFilterStatement() *ast.GqlFilterStatement {
+	filter := p.expectKeywordLike("FILTER").Pos
+	where := token.InvalidPos
+	if p.Token.Kind == "WHERE" {
+		where = p.expect("WHERE").Pos
+	}
+	expr := p.parseExpr()
+
+	return &ast.GqlFilterStatement{
+		Filter: filter,
+		Where:  where,
+		Expr:   expr,
+	}
+}
+
+func (p *Parser) parseGqlOffsetStatement() *ast.GqlOffsetStatement {
+	var pos token.Pos
+	var isSkip bool
+	switch {
+	case p.Token.IsKeywordLike("OFFSET"):
+		pos = p.expectKeywordLike("OFFSET").Pos
+	case p.Token.IsKeywordLike("SKIP"):
+		pos = p.expectKeywordLike("SKIP").Pos
+		isSkip = true
+	default:
+		p.panicfAtToken(&p.Token, `expected "OFFSET" or "SKIP", but: %v`, p.Token.Kind)
+	}
+
+	count := p.parseIntValue()
+
+	return &ast.GqlOffsetStatement{
+		Offset: pos,
+		IsSkip: isSkip,
+		Count:  count,
+	}
+}
+
+func (p *Parser) parseGqlReturnItem() ast.GqlReturnItem {
+	if p.Token.Kind == "*" {
+		pos := p.expect("*").Pos
+		return &ast.Star{
+			Star: pos,
+		}
+	}
+
+	expr := p.parseExpr()
+	if p.Token.Kind == "AS" {
+		if as := p.tryParseAsAlias(); as != nil {
+			return &ast.Alias{
+				Expr: expr,
+				As:   as,
+			}
+		}
+	}
+
+	return &ast.ExprSelectItem{
+		Expr: expr,
+	}
+}
+
+func (p *Parser) tryParseAsAliasAsMandatory() *ast.AsAlias {
+	if p.Token.Kind != "AS" {
+		return nil
+	}
+	return p.tryParseAsAlias()
+}
+
+func (p *Parser) tryParseGqlPrimitiveQueryStatement() ast.GqlPrimitiveQueryStatement {
 	switch {
 	case p.Token.IsKeywordLike("RETURN"):
 		return p.parseGqlReturnStatement()
 	case p.Token.IsKeywordLike("LET"):
 		return p.parseGqlLetStatement()
+	case p.Token.IsKeywordLike("FILTER"):
+		return p.parseGqlFilterStatement()
+	case p.Token.Kind == "ORDER":
+		return p.parseGqlOrderByStatement()
+	case p.Token.Kind == "LIMIT":
+		return p.parseGqlLimitStatement()
+	case p.Token.IsKeywordLike("SKIP"), p.Token.IsKeywordLike("OFFSET"):
+		return p.parseGqlOffsetStatement()
+	case p.Token.Kind == "FOR":
+		return p.parseGqlForStatement()
 	case p.Token.IsKeywordLike("OPTIONAL") || p.Token.IsKeywordLike("MATCH"):
 		return p.parseGqlMatchStatement()
+	case p.Token.Kind == "WITH":
+		return p.parseGqlWithStatement()
 	default:
 		return nil
 	}
@@ -173,10 +333,16 @@ func (p *Parser) parseGqlMatchStatement() *ast.GqlMatchStatement {
 	}
 
 	match := p.expectKeywordLike("MATCH").Pos
-	// var prefixOrMode ast.GqlPathSearchPrefixOrPathMode = nil // p.tryParseGqlPathSearchPrefixOrPathMode()
-	var prefixOrMode ast.GqlPathSearchPrefixOrPathMode = p.tryParseGqlPathSearchPrefixOrPathMode()
+	hint := p.tryParseHint()
+	var prefixOrMode = p.tryParseGqlPathSearchPrefixOrPathMode()
 	pattern := p.parseGqlGraphPattern()
-	return &ast.GqlMatchStatement{Optional: optionalPos, Match: match, PrefixOrMode: prefixOrMode, GraphPattern: pattern}
+	return &ast.GqlMatchStatement{
+		Optional:     optionalPos,
+		Match:        match,
+		MatchHint:    hint,
+		PrefixOrMode: prefixOrMode,
+		GraphPattern: pattern,
+	}
 }
 
 func (p *Parser) parseGqlLabelName() *ast.GqlLabelName {
@@ -257,6 +423,7 @@ func (p *Parser) parseGqlIsLabelCondition() *ast.GqlIsLabelCondition {
 	}
 }
 func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
+	hint := p.tryParseHint()
 	var patternVar *ast.Ident
 	if p.Token.Kind == token.TokenIdent {
 		patternVar = p.parseIdent()
@@ -268,6 +435,7 @@ func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
 
 	filter := p.tryParseGqlPatternFilterFilter()
 	return &ast.GqlPatternFilter{
+		Hint:                 hint,
 		GraphPatternVariable: patternVar,       // TODO
 		IsLabelCondition:     isLabelCondition, // TODO
 		Filter:               filter,           // TODO
@@ -337,12 +505,14 @@ func (p *Parser) tryParseGqlQuantifier() ast.GqlQuantifier {
 }
 
 func (p *Parser) tryParseGqlQuantifiablePathTerm() *ast.GqlQuantifiablePathTerm {
+	hint := p.tryParseHint()
 	pt := p.tryParseGqlPathTerm()
 	if pt == nil {
 		return nil
 	}
 	q := p.tryParseGqlQuantifier()
 	return &ast.GqlQuantifiablePathTerm{
+		Hint:       hint,
 		PathTerm:   pt,
 		Quantifier: q,
 	}
@@ -425,7 +595,6 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 }
 
 func (p *Parser) parseGqlPathPattern() *ast.GqlPathPattern {
-	// TODO list
 	list := []*ast.GqlQuantifiablePathTerm{p.tryParseGqlQuantifiablePathTerm()}
 	for p.Token.Kind != ")" && !p.Token.IsKeywordLike("WHERE") {
 		term := p.tryParseGqlQuantifiablePathTerm()
@@ -495,18 +664,22 @@ func (p *Parser) parseGqlGraphPattern() *ast.GqlGraphPattern {
 	}
 }
 
+/*
+***
+GQL statements
+***
+*/
+
+/*
+***
+GQL RETURN statement
+***
+*/
 func (p *Parser) parseGqlReturnStatement() *ast.GqlReturnStatement {
 	ret := p.expectKeywordLike("RETURN").Pos
-	var allOrDistinct ast.GqlAllOrDistinctEnum
-	switch p.Token.Kind {
-	case "ALL":
-		p.nextToken()
-		allOrDistinct = ast.GqlAllOrDistinctAll
-	case "DISTINCT":
-		p.nextToken()
-		allOrDistinct = ast.GqlAllOrDistinctDistinct
-	}
-	returnItems := p.parseSelectResults()
+
+	allOrDistinct := p.tryParseGqlAllOrDistinctEnum()
+	returnItems := p.parseGqlReturnItemList()
 	groupBy := p.tryParseGroupBy()
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
@@ -530,6 +703,44 @@ func (p *Parser) parseGqlReturnStatement() *ast.GqlReturnStatement {
 		OrderByClause:        orderBy,
 		LimitAndOffsetClause: limitAndOffset,
 		ReturnItemList:       returnItems}
+}
+
+func (p *Parser) parseGqlReturnItemList() []ast.GqlReturnItem {
+	var results []ast.GqlReturnItem
+	for {
+		results = append(results, p.parseGqlReturnItem())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+	}
+	return results
+}
+
+func (p *Parser) tryParseGqlAllOrDistinctEnum() ast.GqlAllOrDistinctEnum {
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		return ast.GqlAllOrDistinctAll
+	case "DISTINCT":
+		p.nextToken()
+		return ast.GqlAllOrDistinctDistinct
+	default:
+		return ast.GqlAllOrDistinctImplicitAll
+	}
+}
+
+func (p *Parser) parseGqlWithStatement() *ast.GqlWithStatement {
+	with := p.expect("WITH").Pos
+	allOrDistinct := p.tryParseGqlAllOrDistinctEnum()
+	returnItems := p.parseGqlReturnItemList()
+	groupBy := p.tryParseGroupBy()
+
+	return &ast.GqlWithStatement{
+		With:           with,
+		AllOrDistinct:  allOrDistinct,
+		GroupByClause:  groupBy,
+		ReturnItemList: returnItems}
 }
 
 func (p *Parser) parseGqlLinearGraphVariable() *ast.GqlLinearGraphVariable {

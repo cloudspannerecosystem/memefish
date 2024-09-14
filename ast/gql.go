@@ -199,7 +199,7 @@ func (g GqlMatchStatement) End() token.Pos {
 
 func (g GqlMatchStatement) SQL() string {
 	var sql string
-	if g.Optional >= 0 {
+	if g.Optional != token.InvalidPos {
 		sql = "OPTIONAL MATCH"
 	} else {
 		sql = "MATCH"
@@ -297,12 +297,252 @@ func (g GqlLimitClause) isGqlLimitAndOffsetClause() {
 	panic("implement me")
 }
 
+type GqlFilterStatement struct {
+	Filter token.Pos
+	Where  token.Pos
+	Expr   Expr
+}
+
+func (g *GqlFilterStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g *GqlFilterStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g *GqlFilterStatement) SQL() string {
+	if g.Where != token.InvalidPos {
+		return "FILTER WHERE " + g.Expr.SQL()
+	}
+	return "FILTER " + g.Expr.SQL()
+}
+
+func (g *GqlFilterStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlForStatement struct {
+	For              token.Pos
+	ElementName      *Ident
+	ArrayExpression  Expr
+	WithOffsetClause *GqlWithOffsetClause
+}
+
+func (g GqlForStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlForStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlForStatement) SQL() string {
+	return "FOR " + g.ElementName.SQL() + " IN " + g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
+}
+
+func (g GqlForStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlLimitStatement struct {
+	Limit token.Pos
+	Count IntValue
+}
+
+func (g *GqlLimitStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g *GqlLimitStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g *GqlLimitStatement) SQL() string {
+	return "LIMIT " + g.Count.SQL()
+}
+
+func (g *GqlLimitStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+/* OFFSET/SKIP statement */
+
+// GqlOffsetStatement represents OFFSET statement.
+// It also represents SKIP statement as the synonym.
+type GqlOffsetStatement struct {
+	// pos = Offset.pos
+	// end = Count.end
+	Offset token.Pos
+	IsSkip bool
+	Count  IntValue
+}
+
+func (g GqlOffsetStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOffsetStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOffsetStatement) SQL() string {
+	if g.IsSkip {
+		return "SKIP " + g.Count.SQL()
+	}
+	return "OFFSET " + g.Count.SQL()
+}
+
+func (g GqlOffsetStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlOrderByStatement struct {
+	Order                    token.Pos
+	OrderBySpecificationList []*GqlOrderBySpecification
+}
+
+func (g GqlOrderByStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOrderByStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOrderByStatement) SQL() string {
+	return "ORDER BY " + sqlJoin(g.OrderBySpecificationList, ", ")
+}
+
+func (g GqlOrderByStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlDirection string
+
+const (
+	GqlSortOrderUnspecified = ""
+	GqlSortOrderAsc         = "ASC"
+	GqlSortOrderAscending   = "ASCENDING"
+	GqlSortOrderDesc        = "DESC"
+	GqlSortOrderDescending  = "DESCENDING"
+)
+
+// TODO
+type GqlOrderBySpecification struct {
+	Expr Expr
+	// TODO
+	// CollationSpecification *GqlCollationSpecification
+	DirectionPos token.Pos
+	Direction    GqlDirection
+}
+
+func (g GqlOrderBySpecification) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOrderBySpecification) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlOrderBySpecification) SQL() string {
+	sql := g.Expr.SQL()
+	if g.Direction != GqlSortOrderUnspecified {
+		sql += " " + string(g.Direction)
+	}
+	return sql
+}
+
+type GqlWithStatement struct {
+	With           token.Pos
+	AllOrDistinct  GqlAllOrDistinctEnum
+	ReturnItemList []GqlReturnItem
+	GroupByClause  *GroupBy // optional
+}
+
+func (g GqlWithStatement) Pos() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlWithStatement) End() token.Pos {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (g GqlWithStatement) SQL() string {
+	var allOrDistinctStr string
+	switch g.AllOrDistinct {
+	case GqlAllOrDistinctDistinct:
+		allOrDistinctStr = "DISTINCT "
+	case GqlAllOrDistinctAll:
+		allOrDistinctStr = "ALL "
+	case GqlAllOrDistinctImplicitAll:
+		allOrDistinctStr = ""
+	}
+	return "WITH " + allOrDistinctStr + sqlJoin(g.ReturnItemList, ", ") + sqlOpt(" ", g.GroupByClause, "")
+}
+
+func (g GqlWithStatement) isGqlPrimitiveQueryStatement() {
+	//TODO implement me
+	panic("implement me")
+}
+
+type GqlWithOffsetClause struct {
+	// pos = With.pos
+	// end = OffsetName.end ?? Offset + 6
+	With       token.Pos
+	Offset     token.Pos
+	OffsetName *Ident
+}
+
+func (g *GqlWithOffsetClause) Pos() token.Pos {
+	return g.With
+}
+
+func (g *GqlWithOffsetClause) End() token.Pos {
+	if g.OffsetName != nil {
+		return g.OffsetName.End()
+	}
+	return g.Offset + 6
+}
+
+func (g *GqlWithOffsetClause) SQL() string {
+	return "WITH OFFSET" + sqlOpt(" AS ", g.OffsetName, "")
+}
+
+// GqlReturnItem is similar to SelectItem,
+// but it don't permit DotStar and AsAlias without AS.
+type GqlReturnItem SelectItem
+
 type GqlReturnStatement struct {
-	AllOrDistinct        GqlAllOrDistinctEnum
-	Return               token.Pos
-	ReturnItemList       []SelectItem
-	GroupByClause        *GroupBy
-	OrderByClause        *OrderBy
+	AllOrDistinct  GqlAllOrDistinctEnum
+	Return         token.Pos
+	ReturnItemList []GqlReturnItem
+
+	// Use GoogleSQL GroupBy because it is referenced in docs
+	GroupByClause *GroupBy //optional
+
+	// Use GoogleSQL OrderBy because it is referenced in docs
+	OrderByClause *OrderBy //optional
+
 	LimitAndOffsetClause GqlLimitAndOffsetClause
 }
 
@@ -328,6 +568,9 @@ func (s *GqlLinearGraphVariable) SQL() string {
 }
 
 type GqlLetStatement struct {
+	// pos = Let.pos
+	// end = LinearGraphVariableList[$].end
+
 	Let                     token.Pos
 	LinearGraphVariableList []*GqlLinearGraphVariable
 }
