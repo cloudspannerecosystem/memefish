@@ -109,7 +109,7 @@ func (l *Lexer) consumeToken() {
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '=', '+', '-':
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '=', '+', '-', '%', ':':
 		l.Token.Kind = token.TokenKind([]byte{l.skip()})
 		return
 	case '.':
@@ -172,14 +172,6 @@ func (l *Lexer) consumeToken() {
 			l.Token.Kind = "!"
 			return
 		}
-	case ':':
-		l.skip()
-		l.Token.Kind = ":"
-		return
-	case '%':
-		l.skip()
-		l.Token.Kind = "%"
-		return
 	case '@':
 		if l.peekOk(1) && char.IsIdentStart(l.peek(1)) {
 			i := 1
