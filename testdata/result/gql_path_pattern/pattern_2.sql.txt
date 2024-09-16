@@ -1,0 +1,72 @@
+--- pattern_2.sql
+(p:(Singer|(!Writer&!Producer)))
+--- AST
+&ast.GqlPathPattern{
+  PathTermList: []*ast.GqlQuantifiablePathTerm{
+    &ast.GqlQuantifiablePathTerm{
+      Hint:     (*ast.Hint)(nil),
+      PathTerm: &ast.GqlNodePattern{
+        LParen:        0,
+        RParen:        31,
+        PatternFilter: &ast.GqlPatternFilter{
+          Hint:                 (*ast.Hint)(nil),
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 1,
+            NameEnd: 2,
+            Name:    "p",
+          },
+          IsLabelCondition: &ast.GqlIsLabelCondition{
+            IsOrColon:       2,
+            LabelExpression: &ast.GqlLabelParenExpression{
+              LParen:    3,
+              RParen:    30,
+              LabelExpr: &ast.GqlLabelOrExpression{
+                Left: &ast.GqlLabelName{
+                  IsPercent: false,
+                  LabelName: &ast.Ident{
+                    NamePos: 4,
+                    NameEnd: 10,
+                    Name:    "Singer",
+                  },
+                },
+                Right: &ast.GqlLabelParenExpression{
+                  LParen:    11,
+                  RParen:    29,
+                  LabelExpr: &ast.GqlLabelNotExpression{
+                    NotPos:          12,
+                    LabelExpression: &ast.GqlLabelAndExpression{
+                      Left: &ast.GqlLabelName{
+                        IsPercent: false,
+                        LabelName: &ast.Ident{
+                          NamePos: 13,
+                          NameEnd: 19,
+                          Name:    "Writer",
+                        },
+                      },
+                      Right: &ast.GqlLabelNotExpression{
+                        NotPos:          20,
+                        LabelExpression: &ast.GqlLabelName{
+                          IsPercent: false,
+                          LabelName: &ast.Ident{
+                            NamePos: 21,
+                            NameEnd: 29,
+                            Name:    "Producer",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Filter: nil,
+        },
+      },
+      Quantifier: nil,
+    },
+  },
+}
+
+--- SQL
+(p:(Singer|(!Writer&!Producer)))

@@ -1,0 +1,127 @@
+--- offset_1.sql
+GRAPH FinGraph
+MATCH (p:Person)
+OFFSET 2
+RETURN p.name, p.id
+--- AST
+&ast.GqlGraphQuery{
+  GraphClause: &ast.GqlGraphClause{
+    GqlGraph:             0,
+    GqlPropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+      &ast.GqlSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+          &ast.GqlMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: nil,
+            GraphPattern: &ast.GqlGraphPattern{
+              PathPatternList: []*ast.GqlTopLevelPathPattern{
+                &ast.GqlTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GqlPathPattern{
+                    PathTermList: []*ast.GqlQuantifiablePathTerm{
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlNodePattern{
+                          LParen:        21,
+                          RParen:        30,
+                          PatternFilter: &ast.GqlPatternFilter{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GqlLabelName{
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: (*ast.Where)(nil),
+            },
+          },
+          &ast.GqlOffsetStatement{
+            Offset: 32,
+            IsSkip: false,
+            Count:  &ast.IntLiteral{
+              ValuePos: 39,
+              ValueEnd: 40,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+          &ast.GqlReturnStatement{
+            AllOrDistinct:  0,
+            Return:         41,
+            ReturnItemList: []ast.GqlReturnItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 48,
+                      NameEnd: 49,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 50,
+                      NameEnd: 54,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.ExprSelectItem{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 56,
+                      NameEnd: 57,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 58,
+                      NameEnd: 60,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH (p:Person)
+OFFSET 2
+RETURN p.name, p.id

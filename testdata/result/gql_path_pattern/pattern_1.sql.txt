@@ -1,0 +1,34 @@
+--- pattern_1.sql
+(p:%)
+--- AST
+&ast.GqlPathPattern{
+  PathTermList: []*ast.GqlQuantifiablePathTerm{
+    &ast.GqlQuantifiablePathTerm{
+      Hint:     (*ast.Hint)(nil),
+      PathTerm: &ast.GqlNodePattern{
+        LParen:        0,
+        RParen:        4,
+        PatternFilter: &ast.GqlPatternFilter{
+          Hint:                 (*ast.Hint)(nil),
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 1,
+            NameEnd: 2,
+            Name:    "p",
+          },
+          IsLabelCondition: &ast.GqlIsLabelCondition{
+            IsOrColon:       2,
+            LabelExpression: &ast.GqlLabelName{
+              IsPercent: true,
+              LabelName: (*ast.Ident)(nil),
+            },
+          },
+          Filter: nil,
+        },
+      },
+      Quantifier: nil,
+    },
+  },
+}
+
+--- SQL
+(p:%)

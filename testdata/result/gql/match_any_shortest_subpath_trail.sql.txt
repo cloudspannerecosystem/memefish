@@ -1,0 +1,132 @@
+--- match_any_shortest_subpath_trail.sql
+GRAPH FinGraph
+MATCH ANY SHORTEST (TRAIL ->{1,4})
+RETURN COUNT(1) as num_paths
+--- AST
+&ast.GqlGraphQuery{
+  GraphClause: &ast.GqlGraphClause{
+    GqlGraph:             0,
+    GqlPropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+      &ast.GqlSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+          &ast.GqlMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: &ast.GqlPathSearchPrefix{
+              StartPos:     21,
+              SearchPrefix: 2,
+            },
+            GraphPattern: &ast.GqlGraphPattern{
+              PathPatternList: []*ast.GqlTopLevelPathPattern{
+                &ast.GqlTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GqlPathPattern{
+                    PathTermList: []*ast.GqlQuantifiablePathTerm{
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlSubpathPattern{
+                          LParen:   34,
+                          RParen:   48,
+                          PathMode: &ast.GqlPathMode{
+                            Mode:      1,
+                            ModeToken: &ast.Ident{
+                              NamePos: 35,
+                              NameEnd: 40,
+                              Name:    "TRAIL",
+                            },
+                            PathOrPathToken: (*ast.Ident)(nil),
+                          },
+                          PathPattern: &ast.GqlPathPattern{
+                            PathTermList: []*ast.GqlQuantifiablePathTerm{
+                              &ast.GqlQuantifiablePathTerm{
+                                Hint:     (*ast.Hint)(nil),
+                                PathTerm: &ast.GqlAbbreviatedEdgeRight{
+                                  First: 41,
+                                  Last:  42,
+                                },
+                                Quantifier: &ast.GqlBoundedQuantifier{
+                                  LBrace:     43,
+                                  RBrace:     47,
+                                  LowerBound: &ast.IntLiteral{
+                                    ValuePos: 44,
+                                    ValueEnd: 45,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                  UpperBound: &ast.IntLiteral{
+                                    ValuePos: 46,
+                                    ValueEnd: 47,
+                                    Base:     10,
+                                    Value:    "4",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          WhereClause: (*ast.Where)(nil),
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: (*ast.Where)(nil),
+            },
+          },
+          &ast.GqlReturnStatement{
+            AllOrDistinct:  0,
+            Return:         50,
+            ReturnItemList: []ast.GqlReturnItem{
+              &ast.Alias{
+                Expr: &ast.CallExpr{
+                  Rparen: 64,
+                  Func:   &ast.Ident{
+                    NamePos: 57,
+                    NameEnd: 62,
+                    Name:    "COUNT",
+                  },
+                  Distinct: false,
+                  Args:     []ast.Arg{
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 63,
+                        ValueEnd: 64,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 69,
+                    NameEnd: 78,
+                    Name:    "num_paths",
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH ANY SHORTEST (TRAIL ->{1,4})
+RETURN COUNT(1) AS num_paths

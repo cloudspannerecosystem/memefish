@@ -1,0 +1,270 @@
+--- match_any_shortest.sql
+GRAPH FinGraph
+MATCH ANY SHORTEST (a:Account)-[t:Transfers]->{1, 4} (b:Account)
+WHERE a.is_blocked
+LET total = SUM(t.amount)
+RETURN a.id AS a_id, total, b.id AS b_id
+--- AST
+&ast.GqlGraphQuery{
+  GraphClause: &ast.GqlGraphClause{
+    GqlGraph:             0,
+    GqlPropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+      &ast.GqlSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+          &ast.GqlMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: &ast.GqlPathSearchPrefix{
+              StartPos:     21,
+              SearchPrefix: 2,
+            },
+            GraphPattern: &ast.GqlGraphPattern{
+              PathPatternList: []*ast.GqlTopLevelPathPattern{
+                &ast.GqlTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GqlPathPattern{
+                    PathTermList: []*ast.GqlQuantifiablePathTerm{
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlNodePattern{
+                          LParen:        34,
+                          RParen:        44,
+                          PatternFilter: &ast.GqlPatternFilter{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 35,
+                              NameEnd: 36,
+                              Name:    "a",
+                            },
+                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                              IsOrColon:       36,
+                              LabelExpression: &ast.GqlLabelName{
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 37,
+                                  NameEnd: 44,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlFullEdgeRight{
+                          First:         45,
+                          Last:          60,
+                          PatternFilter: &ast.GqlPatternFilter{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 47,
+                              NameEnd: 48,
+                              Name:    "t",
+                            },
+                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                              IsOrColon:       48,
+                              LabelExpression: &ast.GqlLabelName{
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 49,
+                                  NameEnd: 58,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: &ast.GqlBoundedQuantifier{
+                          LBrace:     61,
+                          RBrace:     66,
+                          LowerBound: &ast.IntLiteral{
+                            ValuePos: 62,
+                            ValueEnd: 63,
+                            Base:     10,
+                            Value:    "1",
+                          },
+                          UpperBound: &ast.IntLiteral{
+                            ValuePos: 65,
+                            ValueEnd: 66,
+                            Base:     10,
+                            Value:    "4",
+                          },
+                        },
+                      },
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlNodePattern{
+                          LParen:        68,
+                          RParen:        78,
+                          PatternFilter: &ast.GqlPatternFilter{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 69,
+                              NameEnd: 70,
+                              Name:    "b",
+                            },
+                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                              IsOrColon:       70,
+                              LabelExpression: &ast.GqlLabelName{
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 71,
+                                  NameEnd: 78,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: &ast.Where{
+                Where: 80,
+                Expr:  &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 86,
+                      NameEnd: 87,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 88,
+                      NameEnd: 98,
+                      Name:    "is_blocked",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GqlLetStatement{
+            Let:                     99,
+            LinearGraphVariableList: []*ast.GqlLinearGraphVariable{
+              &ast.GqlLinearGraphVariable{
+                VariableName: &ast.Ident{
+                  NamePos: 103,
+                  NameEnd: 108,
+                  Name:    "total",
+                },
+                Value: &ast.CallExpr{
+                  Rparen: 123,
+                  Func:   &ast.Ident{
+                    NamePos: 111,
+                    NameEnd: 114,
+                    Name:    "SUM",
+                  },
+                  Distinct: false,
+                  Args:     []ast.Arg{
+                    &ast.ExprArg{
+                      Expr: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 115,
+                            NameEnd: 116,
+                            Name:    "t",
+                          },
+                          &ast.Ident{
+                            NamePos: 117,
+                            NameEnd: 123,
+                            Name:    "amount",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GqlReturnStatement{
+            AllOrDistinct:  0,
+            Return:         125,
+            ReturnItemList: []ast.GqlReturnItem{
+              &ast.Alias{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 132,
+                      NameEnd: 133,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 134,
+                      NameEnd: 136,
+                      Name:    "id",
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 140,
+                    NameEnd: 144,
+                    Name:    "a_id",
+                  },
+                },
+              },
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 146,
+                  NameEnd: 151,
+                  Name:    "total",
+                },
+              },
+              &ast.Alias{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 153,
+                      NameEnd: 154,
+                      Name:    "b",
+                    },
+                    &ast.Ident{
+                      NamePos: 155,
+                      NameEnd: 157,
+                      Name:    "id",
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 161,
+                    NameEnd: 165,
+                    Name:    "b_id",
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH ANY SHORTEST (a:Account)-[t:Transfers]->{1,4}(b:Account) WHERE a.is_blocked
+LET total = SUM(t.amount)
+RETURN a.id AS a_id, total, b.id AS b_id

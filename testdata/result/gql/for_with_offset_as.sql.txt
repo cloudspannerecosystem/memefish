@@ -1,0 +1,139 @@
+--- for_with_offset_as.sql
+GRAPH FinGraph
+MATCH (p:Person)
+FOR element in [] WITH OFFSET AS off
+RETURN p.name, element, off
+--- AST
+&ast.GqlGraphQuery{
+  GraphClause: &ast.GqlGraphClause{
+    GqlGraph:             0,
+    GqlPropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+      &ast.GqlSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+          &ast.GqlMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: nil,
+            GraphPattern: &ast.GqlGraphPattern{
+              PathPatternList: []*ast.GqlTopLevelPathPattern{
+                &ast.GqlTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GqlPathPattern{
+                    PathTermList: []*ast.GqlQuantifiablePathTerm{
+                      &ast.GqlQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GqlNodePattern{
+                          LParen:        21,
+                          RParen:        30,
+                          PatternFilter: &ast.GqlPatternFilter{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GqlLabelName{
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: (*ast.Where)(nil),
+            },
+          },
+          &ast.GqlForStatement{
+            For:         32,
+            ElementName: &ast.Ident{
+              NamePos: 36,
+              NameEnd: 43,
+              Name:    "element",
+            },
+            ArrayExpression: &ast.ArrayLiteral{
+              Array:  0,
+              Lbrack: 47,
+              Rbrack: 48,
+              Type:   nil,
+              Values: []ast.Expr(nil),
+            },
+            WithOffsetClause: &ast.GqlWithOffsetClause{
+              With:       50,
+              Offset:     55,
+              OffsetName: &ast.Ident{
+                NamePos: 65,
+                NameEnd: 68,
+                Name:    "off",
+              },
+            },
+          },
+          &ast.GqlReturnStatement{
+            AllOrDistinct:  0,
+            Return:         69,
+            ReturnItemList: []ast.GqlReturnItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 76,
+                      NameEnd: 77,
+                      Name:    "p",
+                    },
+                    &ast.Ident{
+                      NamePos: 78,
+                      NameEnd: 82,
+                      Name:    "name",
+                    },
+                  },
+                },
+              },
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 84,
+                  NameEnd: 91,
+                  Name:    "element",
+                },
+              },
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 93,
+                  NameEnd: 96,
+                  Name:    "off",
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH (p:Person)
+FOR element IN ARRAY[] WITH OFFSET AS off
+RETURN p.name, element, off
