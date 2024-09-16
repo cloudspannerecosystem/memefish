@@ -258,6 +258,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
+	// GQL queries are first level statements
+	// because it is supported by Cloud Spanner's ExecuteSql API.
+	case p.Token.IsKeywordLike("GRAPH"):
+		return p.parseGqlStatement()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
