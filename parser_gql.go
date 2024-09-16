@@ -558,6 +558,7 @@ func (p *Parser) parseGqlSubPathPattern() *ast.GqlSubpathPattern {
 
 func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 	//TODO implement
+	firstPos := p.Token.Pos
 	switch p.Token.Kind {
 	case "<":
 		p.nextToken()
@@ -574,18 +575,30 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 		p.nextToken()
 		switch p.Token.Kind {
 		case ">":
-			p.nextToken()
-			return &ast.GqlAbbreviatedEdgeRight{}
+			lastPos := p.expect(">").Pos
+			return &ast.GqlAbbreviatedEdgeRight{
+				First: firstPos,
+				Last:  lastPos,
+			}
 		case "[":
 			p.nextToken()
 			patternFilter := p.parseGqlPatternFilter()
 			p.expect("]")
-			p.expect("-")
+			lastHyphenPos := p.expect("-").Pos
 			if p.Token.Kind == ">" {
+				lastPos := p.Token.Pos
 				p.nextToken()
-				return &ast.GqlFullEdgeRight{PatternFilter: patternFilter}
+				return &ast.GqlFullEdgeRight{
+					First:         firstPos,
+					Last:          lastPos,
+					PatternFilter: patternFilter,
+				}
 			}
-			return &ast.GqlFullEdgeAny{PatternFilter: patternFilter}
+			return &ast.GqlFullEdgeAny{
+				First:         firstPos,
+				Last:          lastHyphenPos,
+				PatternFilter: patternFilter,
+			}
 		default:
 			return &ast.GqlAbbreviatedEdgeAny{}
 		}

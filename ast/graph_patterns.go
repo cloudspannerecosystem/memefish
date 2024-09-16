@@ -7,6 +7,8 @@ import (
 )
 
 type GqlGraphPattern struct {
+	// pos = GqlTopLevelPathPattern[0].pos
+	// end = (WhereClause ?? PathPatternList[$]).end
 	PathPatternList []*GqlTopLevelPathPattern
 	WhereClause     *Where // optional
 }
@@ -23,18 +25,12 @@ func (g GqlGraphPattern) End() token.Pos {
 }
 
 func (g GqlGraphPattern) SQL() string {
-	var sql string
-	sql += g.PathPatternList[0].SQL()
-	for _, pp := range g.PathPatternList[1:] {
-		sql += ", " + pp.SQL()
-	}
-	if g.WhereClause != nil {
-		sql += " " + g.WhereClause.SQL()
-	}
-	return sql
+	return sqlJoin(g.PathPatternList, ", ") + sqlOpt(" ", g.WhereClause, "")
 }
 
 type GqlTopLevelPathPattern struct {
+	// pos = (PathSearchPrefixOrPathMode ?? PathPattern).pos
+	// end = PathPattern.end
 	PathSearchPrefixOrPathMode GqlPathSearchPrefixOrPathMode // optional
 	PathPattern                *GqlPathPattern
 }
@@ -51,18 +47,9 @@ func (g GqlTopLevelPathPattern) End() token.Pos {
 }
 
 func (g GqlTopLevelPathPattern) SQL() string {
-	var sql string
-	if g.PathSearchPrefixOrPathMode != nil {
-		sql += g.PathSearchPrefixOrPathMode.SQL() + " "
-	}
-	sql += g.PathPattern.SQL()
-	return sql
+	return sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
 }
 
-// GqlPathSearchPrefixOrPathMode TODO
-/*
-{ path_search_prefix | path_mode }
-*/
 type GqlPathSearchPrefixOrPathMode interface {
 	Node
 	isGqlPathSearchPrefixOrPathMode()
@@ -74,103 +61,79 @@ type GqlEdgePattern interface {
 }
 
 type GqlFullEdgeAny struct {
+	// pos = First.pos
+	// end = Last.pos + 1
+	First, Last   token.Pos
 	PatternFilter *GqlPatternFilter
 }
 
 func (g GqlFullEdgeAny) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.First
 }
 
 func (g GqlFullEdgeAny) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Last + 1
 }
 
 func (g GqlFullEdgeAny) SQL() string {
 	return fmt.Sprintf("-[%v]-", g.PatternFilter.SQL())
 }
 
-func (g GqlFullEdgeAny) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (g GqlFullEdgeAny) isGqlElementPattern() {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (g GqlFullEdgeAny) isGqlEdgePattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeAny) isGqlPathTerm()       {}
+func (g GqlFullEdgeAny) isGqlElementPattern() {}
+func (g GqlFullEdgeAny) isGqlEdgePattern()    {}
 
 type GqlFullEdgeLeft struct {
+	// pos = First
+	// end = Last + 1
+	First         token.Pos // position of "<"
+	Last          token.Pos // position of the last "-"
 	PatternFilter *GqlPatternFilter
 }
 
 func (g GqlFullEdgeLeft) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.First
 }
 
 func (g GqlFullEdgeLeft) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Last + 1
 }
 
 func (g GqlFullEdgeLeft) SQL() string {
 	return fmt.Sprintf("<-[%v]-", g.PatternFilter.SQL())
 }
 
-func (g GqlFullEdgeLeft) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeLeft) isGqlPathTerm() {}
 
-func (g GqlFullEdgeLeft) isGqlElementPattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeLeft) isGqlElementPattern() {}
 
-func (g GqlFullEdgeLeft) isGqlEdgePattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeLeft) isGqlEdgePattern() {}
 
 type GqlFullEdgeRight struct {
+	// pos = First
+	// end = Last + 1
+	First         token.Pos // position of the first "-"
+	Last          token.Pos // position of ">"
 	PatternFilter *GqlPatternFilter
 }
 
 func (g GqlFullEdgeRight) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.First
 }
 
 func (g GqlFullEdgeRight) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Last + 1
 }
 
 func (g GqlFullEdgeRight) SQL() string {
 	return fmt.Sprintf("-[%v]->", g.PatternFilter.SQL())
 }
 
-func (g GqlFullEdgeRight) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeRight) isGqlPathTerm() {}
 
-func (g GqlFullEdgeRight) isGqlElementPattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeRight) isGqlElementPattern() {}
 
-func (g GqlFullEdgeRight) isGqlEdgePattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlFullEdgeRight) isGqlEdgePattern() {}
 
 type GqlAbbreviatedEdgeAny struct{}
 
@@ -234,7 +197,12 @@ func (g GqlAbbreviatedEdgeLeft) isGqlEdgePattern() {
 	panic("implement me")
 }
 
-type GqlAbbreviatedEdgeRight struct{}
+type GqlAbbreviatedEdgeRight struct {
+	// pos = First
+	// end = Last + 1
+	First token.Pos // position of "-"
+	Last  token.Pos // position of ">"
+}
 
 func (g GqlAbbreviatedEdgeRight) Pos() token.Pos {
 	//TODO implement me
@@ -257,6 +225,7 @@ func (g GqlAbbreviatedEdgeRight) isGqlElementPattern() {}
 func (g GqlAbbreviatedEdgeRight) isGqlEdgePattern() {}
 
 type GqlQuantifiablePathTerm struct {
+	Hint       *Hint // optional
 	PathTerm   GqlPathTerm
 	Quantifier GqlQuantifier // optional
 }
@@ -272,7 +241,9 @@ func (g GqlQuantifiablePathTerm) End() token.Pos {
 }
 
 func (g GqlQuantifiablePathTerm) SQL() string {
-	sql := g.PathTerm.SQL()
+	var sql string
+	sql += sqlOpt("", g.Hint, "")
+	sql += g.PathTerm.SQL()
 	if g.Quantifier != nil {
 		sql += g.Quantifier.SQL()
 	}
@@ -406,43 +377,31 @@ func (g GqlFixedQuantifier) isGqlQuantifier() {
 }
 
 type GqlBoundedQuantifier struct {
+	// pos = LBrace
+	// end = RBrace + 1
 	LBrace, RBrace token.Pos
 	LowerBound     IntValue // optional
 	UpperBound     IntValue
 }
 
 func (g *GqlBoundedQuantifier) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.LBrace
 }
 
 func (g *GqlBoundedQuantifier) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
-}
-
-// requires Go 1.20
-func sqlOpt[T interface {
-	Node
-	comparable
-}](node T) string {
-	var zero T
-	if node == zero {
-		return ""
-	}
-	return node.SQL()
+	return g.RBrace + 1
 }
 
 func (g *GqlBoundedQuantifier) SQL() string {
-	return fmt.Sprintf("{%v,%v}", sqlOpt(g.LowerBound), g.UpperBound.SQL())
+	return fmt.Sprintf("{%v,%v}", sqlOpt("", g.LowerBound, ""), g.UpperBound.SQL())
 }
 
 func (g *GqlBoundedQuantifier) isGqlQuantifier() {
-	//TODO implement me
-	panic("implement me")
 }
 
 type GqlSubpathPattern struct {
+	// pos = LParen
+	// end = RParen + 1
 	LParen, RParen token.Pos
 	PathMode       *GqlPathMode
 	PathPattern    *GqlPathPattern
@@ -450,30 +409,22 @@ type GqlSubpathPattern struct {
 }
 
 func (g GqlSubpathPattern) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.LParen
 }
 
 func (g GqlSubpathPattern) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.RParen + 1
 }
 
 func (g GqlSubpathPattern) SQL() string {
-	sql := "("
-	if g.PathMode != nil {
-		sql += g.PathMode.SQL() + " "
-	}
-	sql += g.PathPattern.SQL()
-	if g.WhereClause != nil {
-		sql += " " + g.WhereClause.SQL()
-	}
-	return sql + ")"
+	return "(" +
+		sqlOpt("", g.PathMode, " ") +
+		g.PathPattern.SQL() +
+		sqlOpt(" ", g.WhereClause, "") +
+		")"
 }
 
 func (g GqlSubpathPattern) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
 }
 
 type GqlNodePattern struct {
@@ -511,12 +462,17 @@ edge_pattern:
     abbreviated_edge_right
   }
 */
+/*
 type EdgePattern interface {
 	Node
 	isEdgePattern()
 }
 
+*/
+
 type GqlPatternFilter struct {
+	// Hint is graph element hint which is a table hint.
+	Hint                 *Hint
 	GraphPatternVariable *Ident                 // optional
 	IsLabelCondition     *GqlIsLabelCondition   // optional
 	Filter               GqlPatternFilterFilter // optional
@@ -534,6 +490,7 @@ func (g GqlPatternFilter) End() token.Pos {
 
 func (g GqlPatternFilter) SQL() string {
 	var sql string
+	sql += sqlOpt("", g.Hint, "")
 	if g.GraphPatternVariable != nil {
 		sql += g.GraphPatternVariable.SQL()
 	}
@@ -794,7 +751,4 @@ func (p *GqlPathSearchPrefix) SQL() string {
 	}
 }
 
-func (p *GqlPathSearchPrefix) isGqlPathSearchPrefixOrPathMode() {
-	//TODO implement me
-	panic("implement me")
-}
+func (p *GqlPathSearchPrefix) isGqlPathSearchPrefixOrPathMode() {}

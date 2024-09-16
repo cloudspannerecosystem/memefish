@@ -23,6 +23,8 @@ func TestStatement(t *testing.T) {
 	Statement(&Update{}).isStatement()
 	Statement(&Grant{}).isStatement()
 	Statement(&Revoke{}).isStatement()
+
+	Statement(&GqlGraphQuery{}).isStatement()
 }
 
 func TestQueryExpr(t *testing.T) {
