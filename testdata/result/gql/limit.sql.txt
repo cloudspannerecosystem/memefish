@@ -34,7 +34,7 @@ RETURN source.nick_name
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        36,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -62,7 +62,7 @@ RETURN source.nick_name
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         37,
                           Last:          52,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 39,
@@ -90,7 +90,7 @@ RETURN source.nick_name
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        53,
                           RParen:        73,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 54,

@@ -33,7 +33,7 @@ RETURN n.name, a.id AS blocked_account_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        30,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -79,7 +79,7 @@ RETURN n.name, a.id AS blocked_account_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        47,
                           RParen:        56,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 48,
@@ -107,7 +107,7 @@ RETURN n.name, a.id AS blocked_account_id
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         57,
                           Last:          66,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
                             IsLabelCondition:     &ast.GqlIsLabelCondition{
@@ -131,7 +131,7 @@ RETURN n.name, a.id AS blocked_account_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        67,
                           RParen:        96,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 68,

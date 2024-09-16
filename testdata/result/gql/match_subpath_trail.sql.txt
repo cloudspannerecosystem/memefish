@@ -50,7 +50,7 @@ RETURN COUNT(1) as num_paths
                                 PathTerm: &ast.GqlNodePattern{
                                   LParen:        30,
                                   RParen:        41,
-                                  PatternFilter: &ast.GqlPatternFilter{
+                                  PatternFiller: &ast.GqlPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 31,
@@ -78,7 +78,7 @@ RETURN COUNT(1) as num_paths
                                 PathTerm: &ast.GqlFullEdgeRight{
                                   First:         42,
                                   Last:          58,
-                                  PatternFilter: &ast.GqlPatternFilter{
+                                  PatternFiller: &ast.GqlPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 44,
@@ -115,7 +115,7 @@ RETURN COUNT(1) as num_paths
                                 PathTerm: &ast.GqlNodePattern{
                                   LParen:        62,
                                   RParen:        73,
-                                  PatternFilter: &ast.GqlPatternFilter{
+                                  PatternFiller: &ast.GqlPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 63,
@@ -149,7 +149,7 @@ RETURN COUNT(1) as num_paths
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         78,
                           Last:          94,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 80,
@@ -177,7 +177,7 @@ RETURN COUNT(1) as num_paths
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        95,
                           RParen:        106,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 96,

@@ -565,7 +565,7 @@ type Where struct {
 	Expr Expr
 }
 
-func (w *Where) isGqlPatternFilterFilter() {}
+func (w *Where) isGqlPatternFillerFilter() {}
 
 // GroupBy is GROUP BY clause node.
 //

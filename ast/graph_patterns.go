@@ -6,6 +6,9 @@ import (
 	"strings"
 )
 
+// https://cloud.google.com/spanner/docs/reference/standard-sql/graph-patterns
+
+// GqlGraphPattern represents is the toplevel node of GQL graph patterns.
 type GqlGraphPattern struct {
 	// pos = GqlTopLevelPathPattern[0].pos
 	// end = (WhereClause ?? PathPatternList[$]).end
@@ -28,6 +31,7 @@ func (g GqlGraphPattern) SQL() string {
 	return sqlJoin(g.PathPatternList, ", ") + sqlOpt(" ", g.WhereClause, "")
 }
 
+// GqlTopLevelPathPattern is a PathPattern optionally prefixed by PathSearchPrefixOrPathMode.
 type GqlTopLevelPathPattern struct {
 	// pos = (PathSearchPrefixOrPathMode ?? PathPattern).pos
 	// end = PathPattern.end
@@ -36,10 +40,7 @@ type GqlTopLevelPathPattern struct {
 }
 
 func (g GqlTopLevelPathPattern) Pos() token.Pos {
-	if g.PathSearchPrefixOrPathMode != nil {
-		return g.PathSearchPrefixOrPathMode.Pos()
-	}
-	return g.PathPattern.Pos()
+	return firstValidPos(g.PathSearchPrefixOrPathMode, g.PathPattern)
 }
 
 func (g GqlTopLevelPathPattern) End() token.Pos {
@@ -50,21 +51,34 @@ func (g GqlTopLevelPathPattern) SQL() string {
 	return sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
 }
 
+// GqlPathSearchPrefixOrPathMode represents `{ path_search_prefix | path_mode }`
 type GqlPathSearchPrefixOrPathMode interface {
 	Node
 	isGqlPathSearchPrefixOrPathMode()
 }
 
+// GqlEdgePattern represents edge pattern nodes.
+//
+//	edge_pattern:
+//	 {
+//	   full_edge_any |
+//	   full_edge_left |
+//	   full_edge_right |
+//	   abbreviated_edge_any |
+//	   abbreviated_edge_left |
+//	   abbreviated_edge_right
+//	 }
 type GqlEdgePattern interface {
 	GqlElementPattern
 	isGqlEdgePattern()
 }
 
+// GqlFullEdgeAny is node representing`-[pattern_filler]-` .
 type GqlFullEdgeAny struct {
 	// pos = First.pos
 	// end = Last.pos + 1
 	First, Last   token.Pos
-	PatternFilter *GqlPatternFilter
+	PatternFiller *GqlPatternFiller
 }
 
 func (g GqlFullEdgeAny) Pos() token.Pos {
@@ -76,7 +90,7 @@ func (g GqlFullEdgeAny) End() token.Pos {
 }
 
 func (g GqlFullEdgeAny) SQL() string {
-	return fmt.Sprintf("-[%v]-", g.PatternFilter.SQL())
+	return fmt.Sprintf("-[%v]-", g.PatternFiller.SQL())
 }
 
 func (g GqlFullEdgeAny) isGqlPathTerm()       {}
@@ -88,7 +102,7 @@ type GqlFullEdgeLeft struct {
 	// end = Last + 1
 	First         token.Pos // position of "<"
 	Last          token.Pos // position of the last "-"
-	PatternFilter *GqlPatternFilter
+	PatternFiller *GqlPatternFiller
 }
 
 func (g GqlFullEdgeLeft) Pos() token.Pos {
@@ -100,7 +114,7 @@ func (g GqlFullEdgeLeft) End() token.Pos {
 }
 
 func (g GqlFullEdgeLeft) SQL() string {
-	return fmt.Sprintf("<-[%v]-", g.PatternFilter.SQL())
+	return fmt.Sprintf("<-[%v]-", g.PatternFiller.SQL())
 }
 
 func (g GqlFullEdgeLeft) isGqlPathTerm() {}
@@ -114,7 +128,7 @@ type GqlFullEdgeRight struct {
 	// end = Last + 1
 	First         token.Pos // position of the first "-"
 	Last          token.Pos // position of ">"
-	PatternFilter *GqlPatternFilter
+	PatternFiller *GqlPatternFiller
 }
 
 func (g GqlFullEdgeRight) Pos() token.Pos {
@@ -126,7 +140,7 @@ func (g GqlFullEdgeRight) End() token.Pos {
 }
 
 func (g GqlFullEdgeRight) SQL() string {
-	return fmt.Sprintf("-[%v]->", g.PatternFilter.SQL())
+	return fmt.Sprintf("-[%v]->", g.PatternFiller.SQL())
 }
 
 func (g GqlFullEdgeRight) isGqlPathTerm() {}
@@ -283,7 +297,7 @@ func (g GqlWhereClause) SQL() string {
 	panic("implement me")
 }
 
-func (g GqlWhereClause) isGqlPatternFilterFilter() {}
+func (g GqlWhereClause) isGqlPatternFillerFilter() {}
 
 type GqlElementPattern interface {
 	Node
@@ -416,7 +430,7 @@ func (g GqlSubpathPattern) isGqlPathTerm() {
 
 type GqlNodePattern struct {
 	LParen, RParen token.Pos
-	PatternFilter  *GqlPatternFilter
+	PatternFiller  *GqlPatternFiller
 }
 
 func (g GqlNodePattern) Pos() token.Pos {
@@ -431,7 +445,7 @@ func (g GqlNodePattern) End() token.Pos {
 
 func (g GqlNodePattern) SQL() string {
 	var sql string
-	sql += fmt.Sprintf("(%v)", g.PatternFilter.SQL())
+	sql += fmt.Sprintf("(%v)", g.PatternFiller.SQL())
 	return sql
 }
 
@@ -457,25 +471,25 @@ type EdgePattern interface {
 
 */
 
-type GqlPatternFilter struct {
+type GqlPatternFiller struct {
 	// Hint is graph element hint which is a table hint.
 	Hint                 *Hint
 	GraphPatternVariable *Ident                 // optional
 	IsLabelCondition     *GqlIsLabelCondition   // optional
-	Filter               GqlPatternFilterFilter // optional
+	Filter               GqlPatternFillerFilter // optional
 }
 
-func (g GqlPatternFilter) Pos() token.Pos {
+func (g GqlPatternFiller) Pos() token.Pos {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (g GqlPatternFilter) End() token.Pos {
+func (g GqlPatternFiller) End() token.Pos {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (g GqlPatternFilter) SQL() string {
+func (g GqlPatternFiller) SQL() string {
 	var sql string
 	sql += sqlOpt("", g.Hint, "")
 	if g.GraphPatternVariable != nil {
@@ -644,14 +658,11 @@ func (g GqlLabelName) SQL() string {
 	return g.LabelName.SQL()
 }
 
-func (g GqlLabelName) isGqlLabelExpression() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlLabelName) isGqlLabelExpression() {}
 
-type GqlPatternFilterFilter interface {
+type GqlPatternFillerFilter interface {
 	Node
-	isGqlPatternFilterFilter()
+	isGqlPatternFillerFilter()
 }
 
 type GqlPropertyFilters struct {
@@ -679,7 +690,7 @@ func (g GqlPropertyFilters) SQL() string {
 	return fmt.Sprintf("{%v}", strings.Join(elemSqls, ", "))
 }
 
-func (g GqlPropertyFilters) isGqlPatternFilterFilter() {}
+func (g GqlPropertyFilters) isGqlPatternFillerFilter() {}
 
 type GqlElementProperty struct {
 	ElementPropertyName  *Ident

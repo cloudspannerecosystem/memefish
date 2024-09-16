@@ -32,7 +32,7 @@ RETURN p.name, p.id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        30,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,

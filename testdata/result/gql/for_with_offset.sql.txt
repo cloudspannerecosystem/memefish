@@ -35,7 +35,7 @@ ORDER BY p.name, element, offset
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        30,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -63,7 +63,7 @@ ORDER BY p.name, element, offset
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         31,
                           Last:          41,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 33,
@@ -91,7 +91,7 @@ ORDER BY p.name, element, offset
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        42,
                           RParen:        52,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 43,

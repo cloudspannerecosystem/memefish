@@ -33,7 +33,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        38,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -79,7 +79,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         39,
                           Last:          48,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
                             IsLabelCondition:     &ast.GqlIsLabelCondition{
@@ -103,7 +103,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        49,
                           RParen:        59,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 50,
@@ -166,7 +166,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        92,
                           RParen:        102,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 93,
@@ -194,7 +194,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         103,
                           Last:          118,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 105,
@@ -222,7 +222,7 @@ RETURN oa.id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        119,
                           RParen:        130,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 120,

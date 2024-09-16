@@ -37,7 +37,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        34,
                           RParen:        44,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 35,
@@ -65,7 +65,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         45,
                           Last:          60,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,
@@ -108,7 +108,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        68,
                           RParen:        78,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 69,

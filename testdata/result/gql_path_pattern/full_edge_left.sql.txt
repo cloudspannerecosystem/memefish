@@ -8,7 +8,7 @@
       PathTerm: &ast.GqlFullEdgeLeft{
         First:         2,
         Last:          7,
-        PatternFilter: &ast.GqlPatternFilter{
+        PatternFiller: &ast.GqlPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: &ast.Ident{
             NamePos: 5,

@@ -416,7 +416,7 @@ func (p *Parser) parseGqlIsLabelCondition() *ast.GqlIsLabelCondition {
 		LabelExpression: labelExpr,
 	}
 }
-func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
+func (p *Parser) parseGqlPatternFiller() *ast.GqlPatternFiller {
 	hint := p.tryParseHint()
 	var patternVar *ast.Ident
 	if p.Token.Kind == token.TokenIdent {
@@ -427,8 +427,8 @@ func (p *Parser) parseGqlPatternFilter() *ast.GqlPatternFilter {
 		isLabelCondition = p.parseGqlIsLabelCondition()
 	}
 
-	filter := p.tryParseGqlPatternFilterFilter()
-	return &ast.GqlPatternFilter{
+	filter := p.tryParseGqlPatternFillerFilter()
+	return &ast.GqlPatternFiller{
 		Hint:                 hint,
 		GraphPatternVariable: patternVar,       // TODO
 		IsLabelCondition:     isLabelCondition, // TODO
@@ -454,12 +454,12 @@ func (p *Parser) lookaheadGqlSubpathPattern() bool {
 
 func (p *Parser) parseGqlNodePattern() *ast.GqlNodePattern {
 	lparen := p.expect("(").Pos
-	filter := p.parseGqlPatternFilter()
+	filter := p.parseGqlPatternFiller()
 	rparen := p.expect(")").Pos
 	return &ast.GqlNodePattern{
 		LParen:        lparen,
 		RParen:        rparen,
-		PatternFilter: filter,
+		PatternFiller: filter,
 	}
 }
 
@@ -566,13 +566,13 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 			}
 		}
 		p.nextToken()
-		patternFilter := p.parseGqlPatternFilter()
+		patternFilter := p.parseGqlPatternFiller()
 		p.expect("]")
 		lastPos := p.expect("-").Pos
 		return &ast.GqlFullEdgeLeft{
 			First:         firstPos,
 			Last:          lastPos,
-			PatternFilter: patternFilter,
+			PatternFiller: patternFilter,
 		}
 	case "-":
 		p.nextToken()
@@ -585,7 +585,7 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 			}
 		case "[":
 			p.nextToken()
-			patternFilter := p.parseGqlPatternFilter()
+			patternFiller := p.parseGqlPatternFiller()
 			p.expect("]")
 			lastHyphenPos := p.expect("-").Pos
 			if p.Token.Kind == ">" {
@@ -594,13 +594,13 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 				return &ast.GqlFullEdgeRight{
 					First:         firstPos,
 					Last:          lastPos,
-					PatternFilter: patternFilter,
+					PatternFiller: patternFiller,
 				}
 			}
 			return &ast.GqlFullEdgeAny{
 				First:         firstPos,
 				Last:          lastHyphenPos,
-				PatternFilter: patternFilter,
+				PatternFiller: patternFiller,
 			}
 		default:
 			return &ast.GqlAbbreviatedEdgeAny{Hyphen: firstPos}
@@ -657,7 +657,7 @@ func (p *Parser) parseGqlPropertyFilters() *ast.GqlPropertyFilters {
 	}
 }
 
-func (p *Parser) tryParseGqlPatternFilterFilter() ast.GqlPatternFilterFilter {
+func (p *Parser) tryParseGqlPatternFillerFilter() ast.GqlPatternFillerFilter {
 	switch {
 	case p.Token.Kind == "WHERE":
 		return p.parseWhere()

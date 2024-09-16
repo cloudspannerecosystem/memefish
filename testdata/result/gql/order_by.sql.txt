@@ -34,7 +34,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        41,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -62,7 +62,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         42,
                           Last:          64,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 44,
@@ -90,7 +90,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        65,
                           RParen:        85,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 66,

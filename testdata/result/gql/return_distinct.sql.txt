@@ -32,7 +32,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        21,
                           RParen:        41,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -78,7 +78,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                         PathTerm: &ast.GqlFullEdgeRight{
                           First:         42,
                           Last:          57,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 44,
@@ -121,7 +121,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                         PathTerm: &ast.GqlNodePattern{
                           LParen:        64,
                           RParen:        76,
-                          PatternFilter: &ast.GqlPatternFilter{
+                          PatternFiller: &ast.GqlPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 65,

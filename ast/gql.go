@@ -3,7 +3,6 @@ package ast
 import (
 	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"strings"
 )
 
 type GqlGraphQuery struct {
@@ -78,31 +77,8 @@ func (s *GqlSimpleLinearQueryStatement) Pos() token.Pos {
 	return firstPos(s.PrimitiveQueryStatementList)
 }
 
-func lastElem[T any](s []T) T {
-	return s[len(s)-1]
-}
-
-func firstPos[T Node](s []T) token.Pos {
-	return s[0].Pos()
-}
-
-func lastEnd[T Node](s []T) token.Pos {
-	return lastElem(s).End()
-}
-
 func (s *GqlSimpleLinearQueryStatement) End() token.Pos {
 	return lastEnd(s.PrimitiveQueryStatementList)
-}
-
-func sqlJoin[T Node](elems []T, sep string) string {
-	var b strings.Builder
-	for i, r := range elems {
-		if i > 0 {
-			b.WriteString(sep)
-		}
-		b.WriteString(r.SQL())
-	}
-	return b.String()
 }
 
 func (*GqlSimpleLinearQueryStatement) isGqlLinearQueryStatement() {}

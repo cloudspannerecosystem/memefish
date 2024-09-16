@@ -8,7 +8,7 @@
       PathTerm: &ast.GqlNodePattern{
         LParen:        1,
         RParen:        2,
-        PatternFilter: &ast.GqlPatternFilter{
+        PatternFiller: &ast.GqlPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: (*ast.Ident)(nil),
           IsLabelCondition:     (*ast.GqlIsLabelCondition)(nil),
