@@ -107,6 +107,7 @@ func (TableName) isTableExpr()         {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
+func (*GraphTableExpr) isTableExpr()   {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -748,26 +749,6 @@ type GraphTableExpr struct {
 	Query *GqlMultiLinearQueryStatement
 	As    *AsAlias // optional
 }
-
-func (g GraphTableExpr) Pos() token.Pos {
-	return g.GraphTable
-}
-
-func (g GraphTableExpr) End() token.Pos {
-	if g.As != nil {
-		return g.As.End()
-	}
-	return g.Rparen + 1
-}
-
-func (g GraphTableExpr) SQL() string {
-	return "GRAPH_TABLE(\n" +
-		g.PropertyGraphName.SQL() + "\n" +
-		g.Query.SQL() + "\n" +
-		")" + sqlOpt(" ", g.As, "")
-}
-
-func (g GraphTableExpr) isTableExpr() {}
 
 // Join is JOIN expression.
 //

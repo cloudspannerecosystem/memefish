@@ -361,6 +361,13 @@ func (t *TableSampleSize) SQL() string {
 	return "(" + t.Value.SQL() + " " + string(t.Unit) + ")"
 }
 
+func (g *GraphTableExpr) SQL() string {
+	return "GRAPH_TABLE(\n" +
+		g.PropertyGraphName.SQL() + "\n" +
+		g.Query.SQL() + "\n" +
+		")" + sqlOpt(" ", g.As, "")
+}
+
 // ================================================================================
 //
 // Expr

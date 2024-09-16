@@ -263,6 +263,14 @@ func (t *TableSample) End() token.Pos { return t.Size.End() }
 func (t *TableSampleSize) Pos() token.Pos { return t.Lparen }
 func (t *TableSampleSize) End() token.Pos { return t.Rparen + 1 }
 
+func (g *GraphTableExpr) Pos() token.Pos { return g.GraphTable }
+func (g *GraphTableExpr) End() token.Pos {
+	if g.As != nil {
+		return g.As.End()
+	}
+	return g.Rparen + 1
+}
+
 // ================================================================================
 //
 // Expr
