@@ -382,12 +382,6 @@ func (p *Parser) parseGqlLabelExpression() ast.GqlLabelExpression {
 			RParen:    rparen,
 			LabelExpr: expr,
 		}
-
-		/*
-			default:
-				p.panicfAtToken(&p.Token, "expected token: '|' or '&', but: %v", p.Token.Kind)
-				return nil // must not be reached
-		*/
 	case p.Token.Kind == token.TokenIdent || p.Token.Kind == "%":
 		labelTerm = p.parseGqlLabelName()
 	default:
@@ -557,20 +551,29 @@ func (p *Parser) parseGqlSubPathPattern() *ast.GqlSubpathPattern {
 }
 
 func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
-	//TODO implement
+	// NOTE: Currently, this implementation allows whitespace in any place of "<-["  and "]->".
+	// It is more relaxed syntax than spec.
+	// It will be fixed when we are sure that the modification of lexer is safe.
 	firstPos := p.Token.Pos
 	switch p.Token.Kind {
 	case "<":
 		p.nextToken()
-		p.expect("-")
+		firstHyphenPos := p.expect("-").Pos
 		if p.Token.Kind != "[" {
-			return &ast.GqlAbbreviatedEdgeLeft{}
+			return &ast.GqlAbbreviatedEdgeLeft{
+				First: firstPos,
+				Last:  firstHyphenPos,
+			}
 		}
 		p.nextToken()
 		patternFilter := p.parseGqlPatternFilter()
 		p.expect("]")
-		p.expect("-")
-		return &ast.GqlFullEdgeLeft{PatternFilter: patternFilter}
+		lastPos := p.expect("-").Pos
+		return &ast.GqlFullEdgeLeft{
+			First:         firstPos,
+			Last:          lastPos,
+			PatternFilter: patternFilter,
+		}
 	case "-":
 		p.nextToken()
 		switch p.Token.Kind {
@@ -600,7 +603,7 @@ func (p *Parser) parseGqlEdgePattern() ast.GqlEdgePattern {
 				PatternFilter: patternFilter,
 			}
 		default:
-			return &ast.GqlAbbreviatedEdgeAny{}
+			return &ast.GqlAbbreviatedEdgeAny{Hyphen: firstPos}
 		}
 	default:
 		panic(fmt.Sprintf("not implemented kind: %v %v", p.Token.Kind, p.Token.Raw))

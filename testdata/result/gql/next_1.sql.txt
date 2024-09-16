@@ -203,8 +203,8 @@ RETURN
                       &ast.GqlQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GqlFullEdgeLeft{
-                          First:         0,
-                          Last:          0,
+                          First:         162,
+                          Last:          171,
                           PatternFilter: &ast.GqlPatternFilter{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),

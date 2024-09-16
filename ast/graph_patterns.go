@@ -135,67 +135,54 @@ func (g GqlFullEdgeRight) isGqlElementPattern() {}
 
 func (g GqlFullEdgeRight) isGqlEdgePattern() {}
 
-type GqlAbbreviatedEdgeAny struct{}
+type GqlAbbreviatedEdgeAny struct {
+	// pos = Hyphen
+	// end = Hyphen +1
+	Hyphen token.Pos // position of "-"
+}
 
 func (g GqlAbbreviatedEdgeAny) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Hyphen
 }
 
 func (g GqlAbbreviatedEdgeAny) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Hyphen + 1
 }
 
 func (g GqlAbbreviatedEdgeAny) SQL() string {
 	return "-"
 }
 
-func (g GqlAbbreviatedEdgeAny) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeAny) isGqlPathTerm() {}
 
-func (g GqlAbbreviatedEdgeAny) isGqlElementPattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeAny) isGqlElementPattern() {}
 
-func (g GqlAbbreviatedEdgeAny) isGqlEdgePattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeAny) isGqlEdgePattern() {}
 
-type GqlAbbreviatedEdgeLeft struct{}
+type GqlAbbreviatedEdgeLeft struct {
+	// pos = First
+	// end = Last + 1
+	First token.Pos // position of "<"
+	Last  token.Pos // position of "-"
+}
 
 func (g GqlAbbreviatedEdgeLeft) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.First
 }
 
 func (g GqlAbbreviatedEdgeLeft) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Last + 1
 }
 
 func (g GqlAbbreviatedEdgeLeft) SQL() string {
 	return "<-"
 }
 
-func (g GqlAbbreviatedEdgeLeft) isGqlPathTerm() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeLeft) isGqlPathTerm() {}
 
-func (g GqlAbbreviatedEdgeLeft) isGqlElementPattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeLeft) isGqlElementPattern() {}
 
-func (g GqlAbbreviatedEdgeLeft) isGqlEdgePattern() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g GqlAbbreviatedEdgeLeft) isGqlEdgePattern() {}
 
 type GqlAbbreviatedEdgeRight struct {
 	// pos = First
