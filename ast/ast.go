@@ -734,6 +734,9 @@ type ParenTableExpr struct {
 	Sample *TableSample // optional
 }
 
+// GraphTableExpr is GRAPH_TABLE operator
+//
+//	GRAPH_TABLE({{.PropertyGraphName | sql}} {{.Query | sql}}) {{.As | sqlOpt}}
 type GraphTableExpr struct {
 	// pos = GraphTable.Pos
 	// end = As.end || Rparen + 1
@@ -758,14 +761,10 @@ func (g GraphTableExpr) End() token.Pos {
 }
 
 func (g GraphTableExpr) SQL() string {
-	sql := "GRAPH_TABLE(\n" +
+	return "GRAPH_TABLE(\n" +
 		g.PropertyGraphName.SQL() + "\n" +
 		g.Query.SQL() + "\n" +
-		")"
-	if g.As != nil {
-		sql += " " + g.As.SQL()
-	}
-	return sql
+		")" + sqlOpt(" ", g.As, "")
 }
 
 func (g GraphTableExpr) isTableExpr() {}

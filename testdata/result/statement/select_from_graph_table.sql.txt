@@ -1,0 +1,75 @@
+--- select_from_graph_table.sql
+SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable:        14,
+        PropertyGraphName: &ast.Ident{
+          NamePos: 26,
+          NameEnd: 34,
+          Name:    "FinGraph",
+        },
+        Lparen: 25,
+        Rparen: 48,
+        Query:  &ast.GqlMultiLinearQueryStatement{
+          GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+            &ast.GqlSimpleLinearQueryStatement{
+              PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+                &ast.GqlReturnStatement{
+                  AllOrDistinct:  0,
+                  Return:         35,
+                  ReturnItemList: []ast.GqlReturnItem{
+                    &ast.Alias{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 42,
+                        ValueEnd: 43,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      As: &ast.AsAlias{
+                        As:    -1,
+                        Alias: &ast.Ident{
+                          NamePos: 47,
+                          NameEnd: 48,
+                          Name:    "a",
+                        },
+                      },
+                    },
+                  },
+                  GroupByClause:        (*ast.GroupBy)(nil),
+                  OrderByClause:        (*ast.OrderBy)(nil),
+                  LimitAndOffsetClause: nil,
+                },
+              },
+            },
+          },
+        },
+        As: (*ast.AsAlias)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(
+FinGraph
+RETURN 1 AS a
+)
