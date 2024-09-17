@@ -7,15 +7,15 @@ RETURN source.nick_name
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -44,6 +44,7 @@ RETURN source.nick_name
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       28,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  29,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 29,
@@ -72,6 +73,7 @@ RETURN source.nick_name
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       40,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  41,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 41,
@@ -100,6 +102,7 @@ RETURN source.nick_name
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       65,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  66,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 66,
@@ -153,8 +156,8 @@ RETURN source.nick_name
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         109,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

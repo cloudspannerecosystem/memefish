@@ -25,12 +25,12 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
         Lparen: 25,
         Rparen: 48,
         Query:  &ast.GqlMultiLinearQueryStatement{
-          GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+          LinearQueryStatementList: []ast.GqlLinearQueryStatement{
             &ast.GqlSimpleLinearQueryStatement{
               PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
                 &ast.GqlReturnStatement{
-                  AllOrDistinct:  0,
                   Return:         35,
+                  AllOrDistinct:  0,
                   ReturnItemList: []ast.GqlReturnItem{
                     &ast.Alias{
                       Expr: &ast.IntLiteral{

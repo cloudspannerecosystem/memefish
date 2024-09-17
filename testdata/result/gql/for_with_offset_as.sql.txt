@@ -6,15 +6,15 @@ RETURN p.name, element, off
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -43,6 +43,7 @@ RETURN p.name, element, off
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       23,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  24,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
@@ -88,8 +89,8 @@ RETURN p.name, element, off
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         69,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

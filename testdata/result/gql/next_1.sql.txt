@@ -13,15 +13,15 @@ RETURN
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -46,6 +46,7 @@ RETURN
                             IsLabelCondition:     &ast.GqlIsLabelCondition{
                               IsOrColon:       22,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  23,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 23,
@@ -70,6 +71,7 @@ RETURN
                             IsLabelCondition:     &ast.GqlIsLabelCondition{
                               IsOrColon:       33,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  34,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
@@ -98,6 +100,7 @@ RETURN
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       54,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  55,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 55,
@@ -119,8 +122,8 @@ RETURN
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         64,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -187,6 +190,7 @@ RETURN
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       153,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  154,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 154,
@@ -211,6 +215,7 @@ RETURN
                             IsLabelCondition:     &ast.GqlIsLabelCondition{
                               IsOrColon:       165,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  166,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 166,
@@ -239,6 +244,7 @@ RETURN
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       178,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  179,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 179,
@@ -260,8 +266,8 @@ RETURN
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         187,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

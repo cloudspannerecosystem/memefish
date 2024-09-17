@@ -6,15 +6,15 @@ RETURN src.id AS source_id, dest.id AS destination_id
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -43,6 +43,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       25,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  26,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 26,
@@ -71,6 +72,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       45,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  46,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 46,
@@ -99,6 +101,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       62,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  63,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 63,
@@ -151,8 +154,8 @@ RETURN src.id AS source_id, dest.id AS destination_id
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         98,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

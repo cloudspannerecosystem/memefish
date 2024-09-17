@@ -8,15 +8,15 @@ ORDER BY p.name, element, offset
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -45,6 +45,7 @@ ORDER BY p.name, element, offset
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       23,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  24,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
@@ -73,6 +74,7 @@ ORDER BY p.name, element, offset
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       34,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  35,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 35,
@@ -101,6 +103,7 @@ ORDER BY p.name, element, offset
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       44,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  45,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 45,
@@ -153,8 +156,8 @@ ORDER BY p.name, element, offset
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         96,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

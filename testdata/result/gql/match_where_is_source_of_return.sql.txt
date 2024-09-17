@@ -6,15 +6,15 @@ RETURN a.id AS a_id, b.id AS b_id
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -43,6 +43,7 @@ RETURN a.id AS a_id, b.id AS b_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       23,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  24,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
@@ -71,6 +72,7 @@ RETURN a.id AS a_id, b.id AS b_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       42,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  43,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 43,
@@ -99,6 +101,7 @@ RETURN a.id AS a_id, b.id AS b_id
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       56,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  57,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 57,
@@ -135,8 +138,8 @@ RETURN a.id AS a_id, b.id AS b_id
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         96,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

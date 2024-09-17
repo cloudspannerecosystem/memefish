@@ -18,6 +18,7 @@
           IsLabelCondition: &ast.GqlIsLabelCondition{
             IsOrColon:       2,
             LabelExpression: &ast.GqlLabelName{
+              StartPos:  3,
               IsPercent: true,
               LabelName: (*ast.Ident)(nil),
             },

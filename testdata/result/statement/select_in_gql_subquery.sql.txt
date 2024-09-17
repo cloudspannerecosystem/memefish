@@ -26,15 +26,15 @@ SELECT 'Dana' IN {
             RBrace: 93,
             Query:  &ast.GqlQueryExpr{
               GraphClause: &ast.GqlGraphClause{
-                GqlGraph:             21,
-                GqlPropertyGraphName: &ast.Ident{
+                Graph:             21,
+                PropertyGraphName: &ast.Ident{
                   NamePos: 27,
                   NameEnd: 35,
                   Name:    "FinGraph",
                 },
               },
-              GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-                GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+              MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+                LinearQueryStatementList: []ast.GqlLinearQueryStatement{
                   &ast.GqlSimpleLinearQueryStatement{
                     PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
                       &ast.GqlMatchStatement{
@@ -63,6 +63,7 @@ SELECT 'Dana' IN {
                                         IsLabelCondition: &ast.GqlIsLabelCondition{
                                           IsOrColon:       46,
                                           LabelExpression: &ast.GqlLabelName{
+                                            StartPos:  47,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 47,
@@ -91,6 +92,7 @@ SELECT 'Dana' IN {
                                         IsLabelCondition: &ast.GqlIsLabelCondition{
                                           IsOrColon:       57,
                                           LabelExpression: &ast.GqlLabelName{
+                                            StartPos:  58,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 58,
@@ -119,6 +121,7 @@ SELECT 'Dana' IN {
                                         IsLabelCondition: &ast.GqlIsLabelCondition{
                                           IsOrColon:       67,
                                           LabelExpression: &ast.GqlLabelName{
+                                            StartPos:  68,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 68,
@@ -140,8 +143,8 @@ SELECT 'Dana' IN {
                         },
                       },
                       &ast.GqlReturnStatement{
-                        AllOrDistinct:  0,
                         Return:         79,
+                        AllOrDistinct:  0,
                         ReturnItemList: []ast.GqlReturnItem{
                           &ast.ExprSelectItem{
                             Expr: &ast.Path{

@@ -22,6 +22,7 @@
               RParen:    30,
               LabelExpr: &ast.GqlLabelOrExpression{
                 Left: &ast.GqlLabelName{
+                  StartPos:  4,
                   IsPercent: false,
                   LabelName: &ast.Ident{
                     NamePos: 4,
@@ -33,9 +34,10 @@
                   LParen:    11,
                   RParen:    29,
                   LabelExpr: &ast.GqlLabelNotExpression{
-                    NotPos:          12,
+                    Not:             12,
                     LabelExpression: &ast.GqlLabelAndExpression{
                       Left: &ast.GqlLabelName{
+                        StartPos:  13,
                         IsPercent: false,
                         LabelName: &ast.Ident{
                           NamePos: 13,
@@ -44,8 +46,9 @@
                         },
                       },
                       Right: &ast.GqlLabelNotExpression{
-                        NotPos:          20,
+                        Not:             20,
                         LabelExpression: &ast.GqlLabelName{
+                          StartPos:  21,
                           IsPercent: false,
                           LabelName: &ast.Ident{
                             NamePos: 21,

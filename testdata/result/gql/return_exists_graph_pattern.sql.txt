@@ -6,20 +6,20 @@ RETURN EXISTS {
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         15,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.ExistsGqlSubQuery{
@@ -46,6 +46,7 @@ RETURN EXISTS {
                                   IsLabelCondition: &ast.GqlIsLabelCondition{
                                     IsOrColon:       35,
                                     LabelExpression: &ast.GqlLabelName{
+                                      StartPos:  36,
                                       IsPercent: false,
                                       LabelName: &ast.Ident{
                                         NamePos: 36,
@@ -74,6 +75,7 @@ RETURN EXISTS {
                                   IsLabelCondition: &ast.GqlIsLabelCondition{
                                     IsOrColon:       46,
                                     LabelExpression: &ast.GqlLabelName{
+                                      StartPos:  47,
                                       IsPercent: false,
                                       LabelName: &ast.Ident{
                                         NamePos: 47,
@@ -102,6 +104,7 @@ RETURN EXISTS {
                                   IsLabelCondition: &ast.GqlIsLabelCondition{
                                     IsOrColon:       56,
                                     LabelExpression: &ast.GqlLabelName{
+                                      StartPos:  57,
                                       IsPercent: false,
                                       LabelName: &ast.Ident{
                                         NamePos: 57,

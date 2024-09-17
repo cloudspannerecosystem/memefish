@@ -7,15 +7,15 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -44,6 +44,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       33,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  34,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
@@ -72,6 +73,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       52,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  53,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 53,
@@ -100,6 +102,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             IsLabelCondition: &ast.GqlIsLabelCondition{
                               IsOrColon:       77,
                               LabelExpression: &ast.GqlLabelName{
+                                StartPos:  78,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 78,
@@ -153,8 +156,8 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         125,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

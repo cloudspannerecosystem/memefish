@@ -5,15 +5,15 @@ RETURN COUNT(1) as num_paths
 --- AST
 &ast.GqlGraphQuery{
   GraphClause: &ast.GqlGraphClause{
-    GqlGraph:             0,
-    GqlPropertyGraphName: &ast.Ident{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
       Name:    "FinGraph",
     },
   },
-  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
       &ast.GqlSimpleLinearQueryStatement{
         PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
           &ast.GqlMatchStatement{
@@ -22,6 +22,7 @@ RETURN COUNT(1) as num_paths
             MatchHint:    (*ast.Hint)(nil),
             PrefixOrMode: &ast.GqlPathSearchPrefix{
               StartPos:     21,
+              LastEnd:      33,
               SearchPrefix: 2,
             },
             GraphPattern: &ast.GqlGraphPattern{
@@ -42,7 +43,7 @@ RETURN COUNT(1) as num_paths
                               NameEnd: 40,
                               Name:    "TRAIL",
                             },
-                            PathOrPathToken: (*ast.Ident)(nil),
+                            PathOrPathsToken: (*ast.Ident)(nil),
                           },
                           PathPattern: &ast.GqlPathPattern{
                             PathTermList: []*ast.GqlQuantifiablePathTerm{
@@ -83,8 +84,8 @@ RETURN COUNT(1) as num_paths
             },
           },
           &ast.GqlReturnStatement{
-            AllOrDistinct:  0,
             Return:         50,
+            AllOrDistinct:  0,
             ReturnItemList: []ast.GqlReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{
