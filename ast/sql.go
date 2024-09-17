@@ -1408,3 +1408,248 @@ func (u *UpdateItem) SQL() string {
 	sql += " = " + u.Expr.SQL()
 	return sql
 }
+
+// GQL
+
+func (s *GqlGraphQuery) SQL() string {
+	return s.GraphClause.SQL() + "\n" + s.MultiLinearQueryStatement.SQL()
+}
+
+func (g *GqlQueryExpr) SQL() string {
+	return sqlOpt("", g.GraphClause, "\n") + g.MultiLinearQueryStatement.SQL()
+}
+
+func (s *GqlGraphClause) SQL() string { return "GRAPH " + s.PropertyGraphName.SQL() }
+
+func (s *GqlMultiLinearQueryStatement) SQL() string {
+	return sqlJoin(s.LinearQueryStatementList, "\nNEXT\n")
+}
+
+func (s *GqlSimpleLinearQueryStatement) SQL() string {
+	return sqlJoin(s.PrimitiveQueryStatementList, "\n")
+}
+
+func (s *GqlCompositeLinearQueryStatement) SQL() string {
+	sql := s.HeadSimpleLinearQueryStatement.SQL()
+	if len(s.TailSimpleLinearQueryStatementList) > 0 {
+		sql += "\n" + sqlJoin(s.TailSimpleLinearQueryStatementList, "\n")
+	}
+	return sql
+}
+
+func (g *GqlSimpleLinearQueryStatementWithSetOperator) SQL() string {
+	var sql string
+	switch g.SetOperator {
+	case GqlSetOperatorUnion:
+		sql += "UNION"
+	case GqlSetOperatorIntersect:
+		sql += "INTERSECT"
+	case GqlSetOperatorExcept:
+		sql += "EXCEPT"
+	}
+
+	switch g.DistinctOrAll {
+	case GqlAllOrDistinctAll:
+		sql += " " + "ALL"
+	case GqlAllOrDistinctDistinct:
+		sql += " " + "DISTINCT"
+	default:
+		// no action
+	}
+
+	sql += "\n" + g.Statement.SQL()
+	return sql
+}
+
+func (s *GqlLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " = " + s.Value.SQL() }
+
+// GQL statements
+
+func (g *GqlMatchStatement) SQL() string {
+	var sql string
+	if !g.Optional.Invalid() {
+		sql = "OPTIONAL MATCH"
+	} else {
+		sql = "MATCH"
+	}
+	sql += sqlOpt("", g.MatchHint, "")
+	sql += sqlOpt(" ", g.PrefixOrMode, "")
+	sql += " " + g.GraphPattern.SQL()
+	return sql
+}
+
+func (g *GqlLimitClause) SQL() string { return g.Limit.SQL() }
+
+func (g *GqlOffsetClause) SQL() string { return g.Offset.SQL() }
+
+func (g *GqlLimitWithOffsetClause) SQL() string { return g.Limit.SQL() + " " + g.Offset.SQL() }
+
+func (g *GqlFilterStatement) SQL() string {
+	if g.Where.Invalid() {
+		return "FILTER " + g.Expr.SQL()
+	}
+	return "FILTER WHERE " + g.Expr.SQL()
+}
+
+func (g *GqlForStatement) SQL() string {
+	return "FOR " + g.ElementName.SQL() + " IN " + g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
+}
+
+func (g *GqlWithOffsetClause) SQL() string {
+	return "WITH OFFSET" + sqlOpt(" AS ", g.OffsetName, "")
+}
+
+func (g *GqlLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
+
+func (g *GqlOffsetStatement) SQL() string {
+	if g.IsSkip {
+		return "SKIP " + g.Count.SQL()
+	}
+	return "OFFSET " + g.Count.SQL()
+}
+
+func (g *GqlOrderByStatement) SQL() string {
+	return "ORDER BY " + sqlJoin(g.OrderBySpecificationList, ", ")
+}
+
+func (g *GqlWithStatement) SQL() string {
+	var allOrDistinctStr string
+	switch g.AllOrDistinct {
+	case GqlAllOrDistinctDistinct:
+		allOrDistinctStr = "DISTINCT "
+	case GqlAllOrDistinctAll:
+		allOrDistinctStr = "ALL "
+	case GqlAllOrDistinctImplicitAll:
+		allOrDistinctStr = ""
+	}
+	return "WITH " + allOrDistinctStr +
+		sqlJoin(g.ReturnItemList, ", ") +
+		sqlOpt(" ", g.GroupByClause, "")
+}
+
+func (s *GqlLetStatement) SQL() string { return "LET " + sqlJoin(s.LinearGraphVariableList, ", ") }
+
+func (g *GqlReturnStatement) SQL() string {
+	sql := "RETURN "
+	switch g.AllOrDistinct {
+	case GqlAllOrDistinctAll:
+		sql += "ALL "
+	case GqlAllOrDistinctDistinct:
+		sql += "DISTINCT "
+	case GqlAllOrDistinctImplicitAll:
+		// empty
+	}
+
+	sql += sqlJoin(g.ReturnItemList, ", ") +
+		sqlOpt(" ", g.GroupByClause, "") +
+		sqlOpt(" ", g.OrderByClause, "") +
+		sqlOpt(" ", g.LimitAndOffsetClause, "")
+	return sql
+}
+
+// GQL graph patterns
+
+func (g *GqlGraphPattern) SQL() string {
+	return sqlJoin(g.PathPatternList, ", ") + sqlOpt(" ", g.WhereClause, "")
+}
+
+func (g *GqlTopLevelPathPattern) SQL() string {
+	return sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
+}
+
+func (g *GqlFullEdgeAny) SQL() string { return "-[" + g.PatternFiller.SQL() + "]-" }
+
+func (g *GqlFullEdgeLeft) SQL() string { return "<-[" + g.PatternFiller.SQL() + "]-" }
+
+func (g *GqlFullEdgeRight) SQL() string { return "-[" + g.PatternFiller.SQL() + "]->" }
+
+func (g *GqlAbbreviatedEdgeAny) SQL() string { return "-" }
+
+func (g *GqlAbbreviatedEdgeLeft) SQL() string { return "<-" }
+
+func (g *GqlAbbreviatedEdgeRight) SQL() string { return "->" }
+
+func (g *GqlQuantifiablePathTerm) SQL() string {
+	return sqlOpt("", g.Hint, "") + g.PathTerm.SQL() + sqlOpt("", g.Quantifier, "")
+}
+
+func (g *GqlPathPattern) SQL() string { return sqlJoin(g.PathTermList, "") }
+
+func (g *GqlWhereClause) SQL() string { return "WHERE " + g.BoolExpression.SQL() }
+
+func (g *GqlPathMode) SQL() string {
+	switch g.Mode {
+	case GqlPathModeTrail:
+		return "TRAIL"
+	case GqlPathModeWalk:
+		return "WALK"
+	default:
+		panic("UNKNOWN GqlPathMode")
+	}
+}
+
+func (g *GqlFixedQuantifier) SQL() string { return "{" + g.Bound.SQL() + "}" }
+
+func (g *GqlBoundedQuantifier) SQL() string {
+	return "{" + sqlOpt("", g.LowerBound, "") + "," + g.UpperBound.SQL() + "}"
+}
+
+func (g *GqlSubpathPattern) SQL() string {
+	return "(" +
+		sqlOpt("", g.PathMode, " ") +
+		g.PathPattern.SQL() +
+		sqlOpt(" ", g.WhereClause, "") +
+		")"
+}
+
+func (g *GqlNodePattern) SQL() string { return "(" + g.PatternFiller.SQL() + ")" }
+
+func (g *GqlPatternFiller) SQL() string {
+	sql := sqlOpt("", g.Hint, "") +
+		sqlOpt("", g.GraphPatternVariable, "") +
+		sqlOpt("", g.IsLabelCondition, "")
+
+	if sql == "" {
+		return sqlOpt("", g.Filter, "")
+	}
+
+	return sql + sqlOpt(" ", g.Filter, "")
+}
+
+func (g *GqlIsLabelCondition) SQL() string { return ":" + g.LabelExpression.SQL() }
+
+func (g *GqlLabelParenExpression) SQL() string { return "(" + g.LabelExpr.SQL() + ")" }
+
+func (g *GqlLabelOrExpression) SQL() string { return g.Left.SQL() + "|" + g.Right.SQL() }
+
+func (g *GqlLabelAndExpression) SQL() string { return g.Left.SQL() + "&" + g.Right.SQL() }
+
+func (g *GqlLabelNotExpression) SQL() string { return "!" + g.LabelExpression.SQL() }
+
+func (g *GqlLabelName) SQL() string {
+	if g.IsPercent {
+		return "%"
+	}
+	return g.LabelName.SQL()
+}
+
+func (g *GqlPropertyFilters) SQL() string {
+	return "{" + sqlJoin(g.PropertyFilterElemList, ", ") + "}"
+}
+
+func (g *GqlElementProperty) SQL() string {
+	return g.ElementPropertyName.SQL() + ": " + g.ElementPropertyValue.SQL()
+}
+
+func (p *GqlPathSearchPrefix) SQL() string {
+	switch p.SearchPrefix {
+	case GqlPathSearchPrefixAny:
+		return "ANY"
+	case GqlPathSearchPrefixAnyShortest:
+		return "ANY SHORTEST"
+	case GqlPathSearchPrefixAll:
+		return "ALL"
+	default:
+		panic("invalid GqlPathSearchPrefix")
+	}
+}

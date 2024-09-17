@@ -130,3 +130,44 @@ const (
 	InsertOrTypeUpdate InsertOrType = "UPDATE"
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
+
+type GqlAllOrDistinctEnum int
+
+const (
+	GqlAllOrDistinctImplicitAll GqlAllOrDistinctEnum = iota
+	GqlAllOrDistinctAll                              = iota
+	GqlAllOrDistinctDistinct
+)
+
+type GqlSetOperatorEnum int
+
+const (
+	GqlSetOperatorUnion GqlSetOperatorEnum = iota
+	GqlSetOperatorIntersect
+	GqlSetOperatorExcept
+)
+
+type GqlDirection string
+
+const (
+	GqlSortOrderUnspecified GqlDirection = ""
+	GqlSortOrderAsc         GqlDirection = "ASC"
+	GqlSortOrderAscending   GqlDirection = "ASCENDING"
+	GqlSortOrderDesc        GqlDirection = "DESC"
+	GqlSortOrderDescending  GqlDirection = "DESCENDING"
+)
+
+type GqlPathModeEnum int
+
+const (
+	GqlPathModeWalk GqlPathModeEnum = iota
+	GqlPathModeTrail
+)
+
+type GqlSearchPrefixEnum int
+
+const (
+	GqlPathSearchPrefixAll GqlSearchPrefixEnum = iota
+	GqlPathSearchPrefixAny
+	GqlPathSearchPrefixAnyShortest
+)

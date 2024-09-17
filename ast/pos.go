@@ -896,3 +896,202 @@ func (o *SequenceOption) End() token.Pos { return o.Value.End() }
 
 func (o *SequenceOptions) Pos() token.Pos { return o.Options }
 func (o *SequenceOptions) End() token.Pos { return o.Rparen + 1 }
+
+// GQL
+
+func (g *GqlGraphQuery) Pos() token.Pos { return g.GraphClause.Pos() }
+func (g *GqlGraphQuery) End() token.Pos { return g.MultiLinearQueryStatement.End() }
+
+func (g *GqlQueryExpr) Pos() token.Pos {
+	return firstValidPos(g.GraphClause, g.MultiLinearQueryStatement)
+}
+func (g *GqlQueryExpr) End() token.Pos { return g.MultiLinearQueryStatement.End() }
+
+func (s *GqlGraphClause) Pos() token.Pos { return s.Graph }
+func (s *GqlGraphClause) End() token.Pos { return s.PropertyGraphName.End() }
+
+func (s *GqlMultiLinearQueryStatement) Pos() token.Pos {
+	return firstPos(s.LinearQueryStatementList)
+}
+func (s *GqlMultiLinearQueryStatement) End() token.Pos { return lastEnd(s.LinearQueryStatementList) }
+
+func (s *GqlSimpleLinearQueryStatement) Pos() token.Pos {
+	return firstPos(s.PrimitiveQueryStatementList)
+}
+func (s *GqlSimpleLinearQueryStatement) End() token.Pos {
+	return lastEnd(s.PrimitiveQueryStatementList)
+}
+
+func (s *GqlCompositeLinearQueryStatement) Pos() token.Pos {
+	return s.HeadSimpleLinearQueryStatement.Pos()
+}
+
+func (s *GqlCompositeLinearQueryStatement) End() token.Pos {
+	return lastEnd(s.TailSimpleLinearQueryStatementList)
+}
+
+func (s *GqlLinearGraphVariable) Pos() token.Pos { return s.VariableName.Pos() }
+func (s *GqlLinearGraphVariable) End() token.Pos { return s.Value.End() }
+
+func (g *GqlSimpleLinearQueryStatementWithSetOperator) Pos() token.Pos { return g.StartPos }
+func (g *GqlSimpleLinearQueryStatementWithSetOperator) End() token.Pos { return g.Statement.End() }
+
+// GQL statements
+
+func (g *GqlMatchStatement) Pos() token.Pos {
+	if !g.Optional.Invalid() {
+		return g.Optional
+	} else {
+		return g.Match
+	}
+}
+func (g *GqlMatchStatement) End() token.Pos {
+	return g.GraphPattern.End()
+}
+
+func (g *GqlLimitClause) Pos() token.Pos { return g.Limit.Pos() }
+func (g *GqlLimitClause) End() token.Pos { return g.Limit.End() }
+
+func (g *GqlOffsetClause) Pos() token.Pos { return g.Pos() }
+func (g *GqlOffsetClause) End() token.Pos { return g.End() }
+
+func (g *GqlLimitWithOffsetClause) Pos() token.Pos { return g.Limit.Pos() }
+func (g *GqlLimitWithOffsetClause) End() token.Pos { return g.Offset.End() }
+
+func (g *GqlFilterStatement) Pos() token.Pos { return g.Filter }
+func (g *GqlFilterStatement) End() token.Pos { return g.Expr.End() }
+
+func (g *GqlForStatement) Pos() token.Pos { return g.For }
+func (g *GqlForStatement) End() token.Pos {
+	return firstValidPos(g.WithOffsetClause, g.ArrayExpression)
+}
+
+func (g *GqlWithOffsetClause) Pos() token.Pos { return g.With }
+func (g *GqlWithOffsetClause) End() token.Pos {
+	if g.OffsetName != nil {
+		return g.OffsetName.End()
+	}
+	return g.Offset + 6
+}
+
+func (g *GqlLimitStatement) Pos() token.Pos { return g.Limit }
+func (g *GqlLimitStatement) End() token.Pos { return g.Count.End() }
+
+func (g *GqlOffsetStatement) Pos() token.Pos { return g.Offset }
+func (g *GqlOffsetStatement) End() token.Pos { return g.Count.End() }
+
+func (g *GqlOrderByStatement) Pos() token.Pos { return g.Order }
+func (g *GqlOrderByStatement) End() token.Pos { return lastEnd(g.OrderBySpecificationList) }
+
+func (g *GqlWithStatement) Pos() token.Pos { return g.With }
+func (g *GqlWithStatement) End() token.Pos {
+	return firstValidPos(g.GroupByClause, lastElem(g.ReturnItemList))
+}
+
+func (g *GqlReturnStatement) Pos() token.Pos {
+	return g.Return
+}
+func (g *GqlReturnStatement) End() token.Pos {
+	return firstValidEnd(g.LimitAndOffsetClause, g.OrderByClause, g.GroupByClause, lastElem(g.ReturnItemList))
+}
+
+func (s *GqlLetStatement) Pos() token.Pos { return s.Let }
+func (s *GqlLetStatement) End() token.Pos {
+	if len(s.LinearGraphVariableList) > 0 {
+		return lastEnd(s.LinearGraphVariableList)
+	}
+	return s.Let + 3
+}
+
+// GQL graph patterns
+
+func (g *GqlGraphPattern) Pos() token.Pos { return firstPos(g.PathPatternList) }
+func (g *GqlGraphPattern) End() token.Pos {
+	return firstValidPos(g.WhereClause, lastElem(g.PathPatternList))
+}
+
+func (g *GqlTopLevelPathPattern) Pos() token.Pos {
+	return firstValidPos(g.PathSearchPrefixOrPathMode, g.PathPattern)
+}
+func (g *GqlTopLevelPathPattern) End() token.Pos { return g.PathPattern.End() }
+
+func (g *GqlFullEdgeAny) Pos() token.Pos { return g.First }
+func (g *GqlFullEdgeAny) End() token.Pos { return g.Last + 1 }
+
+func (g *GqlFullEdgeLeft) Pos() token.Pos { return g.First }
+func (g *GqlFullEdgeLeft) End() token.Pos { return g.Last + 1 }
+
+func (g *GqlFullEdgeRight) Pos() token.Pos { return g.First }
+func (g *GqlFullEdgeRight) End() token.Pos { return g.Last + 1 }
+
+func (g *GqlAbbreviatedEdgeAny) Pos() token.Pos { return g.Hyphen }
+func (g *GqlAbbreviatedEdgeAny) End() token.Pos { return g.Hyphen + 1 }
+
+func (g *GqlAbbreviatedEdgeLeft) Pos() token.Pos { return g.First }
+func (g *GqlAbbreviatedEdgeLeft) End() token.Pos { return g.Last + 1 }
+
+func (g *GqlAbbreviatedEdgeRight) Pos() token.Pos { return g.First }
+func (g *GqlAbbreviatedEdgeRight) End() token.Pos { return g.Last + 1 }
+
+func (g *GqlQuantifiablePathTerm) Pos() token.Pos { return firstValidPos(g.Hint, g.PathTerm) }
+func (g *GqlQuantifiablePathTerm) End() token.Pos { return firstValidEnd(g.Quantifier, g.PathTerm) }
+
+func (g *GqlPathPattern) Pos() token.Pos { return firstPos(g.PathTermList) }
+func (g *GqlPathPattern) End() token.Pos { return lastEnd(g.PathTermList) }
+
+func (g *GqlWhereClause) Pos() token.Pos { return g.Where }
+func (g *GqlWhereClause) End() token.Pos { return g.BoolExpression.End() }
+
+func (g *GqlPathMode) Pos() token.Pos { return g.ModeToken.Pos() }
+func (g *GqlPathMode) End() token.Pos { return firstValidEnd(g.PathOrPathsToken, g.ModeToken) }
+
+func (g *GqlFixedQuantifier) Pos() token.Pos { return g.LBrace }
+func (g *GqlFixedQuantifier) End() token.Pos { return g.RBrace + 1 }
+
+func (g *GqlBoundedQuantifier) Pos() token.Pos { return g.LBrace }
+func (g *GqlBoundedQuantifier) End() token.Pos { return g.RBrace + 1 }
+
+func (g *GqlSubpathPattern) Pos() token.Pos { return g.LParen }
+func (g *GqlSubpathPattern) End() token.Pos { return g.RParen + 1 }
+
+func (g *GqlNodePattern) Pos() token.Pos { return g.LParen }
+func (g *GqlNodePattern) End() token.Pos { return g.RParen + 1 }
+
+func (g *GqlPatternFiller) Pos() token.Pos {
+	return firstValidPos(g.Hint, g.GraphPatternVariable, g.IsLabelCondition, g.Filter)
+}
+func (g *GqlPatternFiller) End() token.Pos {
+	return firstValidEnd(g.Filter, g.IsLabelCondition, g.GraphPatternVariable, g.Hint)
+}
+
+func (g *GqlIsLabelCondition) Pos() token.Pos { return g.IsOrColon }
+func (g *GqlIsLabelCondition) End() token.Pos { return g.LabelExpression.End() }
+
+func (g *GqlLabelParenExpression) Pos() token.Pos { return g.LParen }
+func (g *GqlLabelParenExpression) End() token.Pos { return g.RParen + 1 }
+
+func (g *GqlLabelOrExpression) Pos() token.Pos { return g.Left.Pos() }
+func (g *GqlLabelOrExpression) End() token.Pos { return g.Right.End() }
+
+func (g *GqlLabelAndExpression) Pos() token.Pos { return g.Left.Pos() }
+func (g *GqlLabelAndExpression) End() token.Pos { return g.Right.End() }
+
+func (g *GqlLabelNotExpression) Pos() token.Pos { return g.Not }
+func (g *GqlLabelNotExpression) End() token.Pos { return g.LabelExpression.End() }
+
+func (g *GqlLabelName) Pos() token.Pos { return g.StartPos }
+func (g *GqlLabelName) End() token.Pos {
+	if g.IsPercent {
+		return g.StartPos + 1
+	}
+	return g.LabelName.End()
+}
+
+func (g *GqlPropertyFilters) Pos() token.Pos { return g.LBrace }
+func (g *GqlPropertyFilters) End() token.Pos { return g.RBrace + 1 }
+
+func (g *GqlElementProperty) Pos() token.Pos { return g.ElementPropertyName.Pos() }
+func (g *GqlElementProperty) End() token.Pos { return g.ElementPropertyValue.End() }
+
+func (p *GqlPathSearchPrefix) Pos() token.Pos { return p.StartPos }
+func (p *GqlPathSearchPrefix) End() token.Pos { return p.LastEnd + 1 }

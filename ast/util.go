@@ -28,13 +28,21 @@ func lastElem[T any](s []T) T {
 
 func firstValidPos(ns ...Node) token.Pos {
 	for _, n := range ns {
-		if n != nil {
+		if n != nil && n.Pos() != token.InvalidPos {
 			return n.Pos()
 		}
 	}
 	return token.InvalidPos
 }
 
+func firstValidEnd(ns ...Node) token.Pos {
+	for _, n := range ns {
+		if n != nil && n.End() != token.InvalidPos {
+			return n.End()
+		}
+	}
+	return token.InvalidPos
+}
 func firstPos[T Node](s []T) token.Pos {
 	return s[0].Pos()
 }

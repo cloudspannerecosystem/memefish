@@ -16,7 +16,7 @@ func (p *Parser) parseGqlQuery() *ast.GqlGraphQuery {
 	graphClause := p.parseGqlGraphClause()
 	multiQueryStatement := p.parseGqlMultiLinearQueryStatement()
 
-	return &ast.GqlGraphQuery{GraphClause: graphClause, GqlMultiLinearQueryStatement: multiQueryStatement}
+	return &ast.GqlGraphQuery{GraphClause: graphClause, MultiLinearQueryStatement: multiQueryStatement}
 }
 
 func (p *Parser) parseGqlSubQueryInCondition() *ast.GqlSubQueryInCondition {
@@ -33,15 +33,15 @@ func (p *Parser) parseGqlQueryExpr() *ast.GqlQueryExpr {
 	}
 	multiQueryStatement := p.parseGqlMultiLinearQueryStatement()
 
-	return &ast.GqlQueryExpr{GraphClause: graphClause, GqlMultiLinearQueryStatement: multiQueryStatement}
+	return &ast.GqlQueryExpr{GraphClause: graphClause, MultiLinearQueryStatement: multiQueryStatement}
 }
 
 func (p *Parser) parseGqlGraphClause() *ast.GqlGraphClause {
 	graphPos := p.expectKeywordLike("GRAPH").Pos
 	graphName := p.parseIdent()
 	return &ast.GqlGraphClause{
-		GqlGraph:             graphPos,
-		GqlPropertyGraphName: graphName,
+		Graph:             graphPos,
+		PropertyGraphName: graphName,
 	}
 }
 
@@ -291,18 +291,18 @@ func (p *Parser) tryParseGqlPathMode() *ast.GqlPathMode {
 		pathModeToken := p.parseIdent()
 		pathOrPathsToken := p.tryParseGqlPathModePathOrPaths()
 		return &ast.GqlPathMode{
-			ModeToken:       pathModeToken,
-			PathOrPathToken: pathOrPathsToken,
-			Mode:            ast.GqlPathModeWalk,
+			ModeToken:        pathModeToken,
+			PathOrPathsToken: pathOrPathsToken,
+			Mode:             ast.GqlPathModeWalk,
 		}
 
 	case p.Token.IsKeywordLike("TRAIL"):
 		pathModeToken := p.parseIdent()
 		pathOrPathsToken := p.tryParseGqlPathModePathOrPaths()
 		return &ast.GqlPathMode{
-			ModeToken:       pathModeToken,
-			PathOrPathToken: pathOrPathsToken,
-			Mode:            ast.GqlPathModeTrail,
+			ModeToken:        pathModeToken,
+			PathOrPathsToken: pathOrPathsToken,
+			Mode:             ast.GqlPathModeTrail,
 		}
 	default:
 		return nil
@@ -312,22 +312,25 @@ func (p *Parser) tryParseGqlPathSearchPrefixOrPathMode() ast.GqlPathSearchPrefix
 	startPos := p.Token.Pos
 	switch {
 	case p.Token.Kind == "ALL":
-		p.nextToken()
+		end := p.expect("ALL").End
 		return &ast.GqlPathSearchPrefix{
 			StartPos:     startPos,
+			LastEnd:      end,
 			SearchPrefix: ast.GqlPathSearchPrefixAll,
 		}
 	case p.Token.Kind == "ANY":
-		p.nextToken()
+		anyEnd := p.expect("ANY").End
 		if p.Token.IsKeywordLike("SHORTEST") {
-			p.nextToken()
+			shortestEnd := p.expectKeywordLike("SHORTEST").End
 			return &ast.GqlPathSearchPrefix{
 				StartPos:     startPos,
+				LastEnd:      shortestEnd,
 				SearchPrefix: ast.GqlPathSearchPrefixAnyShortest,
 			}
 		} else {
 			return &ast.GqlPathSearchPrefix{
 				StartPos:     startPos,
+				LastEnd:      anyEnd,
 				SearchPrefix: ast.GqlPathSearchPrefixAny,
 			}
 		}
@@ -363,13 +366,20 @@ func (p *Parser) parseGqlMatchStatement() *ast.GqlMatchStatement {
 }
 
 func (p *Parser) parseGqlLabelName() *ast.GqlLabelName {
+	pos := p.Token.Pos
+
 	if p.Token.Kind == "%" {
 		p.nextToken()
-		return &ast.GqlLabelName{IsPercent: true}
+		return &ast.GqlLabelName{
+			StartPos:  pos,
+			IsPercent: true,
+		}
 	}
+
+	ident := p.parseIdent()
 	return &ast.GqlLabelName{
-		IsPercent: false,
-		LabelName: p.parseIdent(),
+		StartPos:  pos,
+		LabelName: ident,
 	}
 }
 
@@ -389,7 +399,7 @@ func (p *Parser) parseGqlLabelExpression() ast.GqlLabelExpression {
 	case p.Token.Kind == "!":
 		notPos := p.expect("!").Pos
 		expr := p.parseGqlLabelExpression()
-		labelTerm = &ast.GqlLabelNotExpression{NotPos: notPos, LabelExpression: expr}
+		labelTerm = &ast.GqlLabelNotExpression{Not: notPos, LabelExpression: expr}
 	case p.Token.Kind == "(":
 		lparen := p.expect("(").Pos
 		expr := p.parseGqlLabelExpression()
@@ -803,5 +813,5 @@ func (p *Parser) parseGqlMultiLinearQueryStatement() *ast.GqlMultiLinearQuerySta
 		items = append(items, p.parseGqlLinearQueryStatement())
 	}
 
-	return &ast.GqlMultiLinearQueryStatement{GqlLinearQueryStatements: items}
+	return &ast.GqlMultiLinearQueryStatement{LinearQueryStatementList: items}
 }
