@@ -43,6 +43,7 @@ func main() {
 	case "ddl":
 		node, err = p.ParseDDL()
 	case "dml":
+		node, err = p.ParseDML()
 	case "gql":
 		node, err = p.ParseGqlStatement()
 	case "gql_path_pattern":
