@@ -4082,13 +4082,6 @@ func (p *Parser) parseGqlReturnItem() ast.GqlReturnItem {
 	}
 }
 
-func (p *Parser) tryParseAsAliasAsMandatory() *ast.AsAlias {
-	if p.Token.Kind != "AS" {
-		return nil
-	}
-	return p.tryParseAsAlias()
-}
-
 func (p *Parser) tryParseGqlPrimitiveQueryStatement() ast.GqlPrimitiveQueryStatement {
 	switch {
 	case p.Token.IsKeywordLike("RETURN"):
