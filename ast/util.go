@@ -5,12 +5,10 @@ import (
 	"strings"
 )
 
-// sqlOpt output:
+// sqlOpt outputs:
 //
 //	when node != nil: left + node.SQL() + right
-//	when node == nil: empty string
-//
-// requires Go 1.20
+//	else            : empty string
 func sqlOpt[T interface {
 	Node
 	comparable
@@ -43,13 +41,21 @@ func firstValidEnd(ns ...Node) token.Pos {
 	}
 	return token.InvalidPos
 }
+
 func firstPos[T Node](s []T) token.Pos {
+	if len(s) == 0 {
+		return token.InvalidPos
+	}
 	return s[0].Pos()
 }
 
 func lastEnd[T Node](s []T) token.Pos {
+	if len(s) == 0 {
+		return token.InvalidPos
+	}
 	return lastElem(s).End()
 }
+
 func sqlJoin[T Node](elems []T, sep string) string {
 	var b strings.Builder
 	for i, r := range elems {
