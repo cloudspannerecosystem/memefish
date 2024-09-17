@@ -1698,10 +1698,28 @@ func (p *Parser) lookaheadGQLGraphPattern() bool {
 
 }
 
+// lookaheadGQLExistsExprMatch checks the next statement is a MATCH statement followed by "}".
+func (p *Parser) lookaheadGQLExistsExprMatch() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if !p.Token.IsKeywordLike("MATCH") {
+		return false
+	}
+	p.parseGQLMatchStatement()
+
+	if p.Token.Kind != "}" {
+		return false
+	}
+	return true
+}
+
 func (p *Parser) parseGQLExistsExpr() ast.GQLExistsExpr {
-	// NOTE: Single MATCH statement pattern is covered by GQLQueryExpr
-	// because there is no check that SimpleLinearQueryStatement is terminated by RETURN statement.
-	if p.lookaheadGQLGraphPattern() {
+	if p.lookaheadGQLExistsExprMatch() {
+		return p.parseGQLMatchStatement()
+	} else if p.lookaheadGQLGraphPattern() {
 		return p.parseGQLGraphPattern()
 	} else {
 		return p.parseGQLQueryExpr()

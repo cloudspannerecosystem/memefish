@@ -496,7 +496,7 @@ func (c *CastNumValue) End() token.Pos { return c.Rparen + 1 }
 // ================================================================================
 
 func (v *ValueGQLSubQuery) Pos() token.Pos { return v.Array }
-func (v *ValueGQLSubQuery) End() token.Pos { return v.Query.End() }
+func (v *ValueGQLSubQuery) End() token.Pos { return v.RBrace + 1 }
 
 func (a *ArrayGQLSubQuery) Pos() token.Pos { return a.Array }
 func (a *ArrayGQLSubQuery) End() token.Pos { return a.RBrace + 1 }

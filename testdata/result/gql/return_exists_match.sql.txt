@@ -26,141 +26,130 @@ RETURN EXISTS {
                 Expr: &ast.ExistsGQLSubQuery{
                   Exists: 22,
                   RBrace: 97,
-                  Query:  &ast.GQLQueryExpr{
-                    GraphClause:               (*ast.GQLGraphClause)(nil),
-                    MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
-                      LinearQueryStatementList: []ast.GQLLinearQueryStatement{
-                        &ast.GQLSimpleLinearQueryStatement{
-                          PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-                            &ast.GQLMatchStatement{
-                              Optional:     -1,
-                              Match:        33,
-                              MatchHint:    (*ast.Hint)(nil),
-                              PrefixOrMode: nil,
-                              GraphPattern: &ast.GQLGraphPattern{
-                                PathPatternList: []*ast.GQLTopLevelPathPattern{
-                                  &ast.GQLTopLevelPathPattern{
-                                    PathSearchPrefixOrPathMode: nil,
-                                    PathPattern:                &ast.GQLPathPattern{
-                                      PathTermList: []*ast.GQLQuantifiablePathTerm{
-                                        &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
-                                          PathTerm: &ast.GQLNodePattern{
-                                            LParen:        39,
-                                            RParen:        48,
-                                            PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
-                                              GraphPatternVariable: &ast.Ident{
-                                                NamePos: 40,
-                                                NameEnd: 41,
-                                                Name:    "p",
-                                              },
-                                              IsLabelCondition: &ast.GQLIsLabelCondition{
-                                                IsOrColon:       41,
-                                                LabelExpression: &ast.GQLLabelName{
-                                                  StartPos:  42,
-                                                  IsPercent: false,
-                                                  LabelName: &ast.Ident{
-                                                    NamePos: 42,
-                                                    NameEnd: 48,
-                                                    Name:    "Person",
-                                                  },
-                                                },
-                                              },
-                                              Filter: nil,
-                                            },
-                                          },
-                                          Quantifier: nil,
-                                        },
-                                        &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
-                                          PathTerm: &ast.GQLFullEdgeRight{
-                                            First:         49,
-                                            Last:          59,
-                                            PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
-                                              GraphPatternVariable: &ast.Ident{
-                                                NamePos: 51,
-                                                NameEnd: 52,
-                                                Name:    "o",
-                                              },
-                                              IsLabelCondition: &ast.GQLIsLabelCondition{
-                                                IsOrColon:       52,
-                                                LabelExpression: &ast.GQLLabelName{
-                                                  StartPos:  53,
-                                                  IsPercent: false,
-                                                  LabelName: &ast.Ident{
-                                                    NamePos: 53,
-                                                    NameEnd: 57,
-                                                    Name:    "Owns",
-                                                  },
-                                                },
-                                              },
-                                              Filter: nil,
-                                            },
-                                          },
-                                          Quantifier: nil,
-                                        },
-                                        &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
-                                          PathTerm: &ast.GQLNodePattern{
-                                            LParen:        60,
-                                            RParen:        70,
-                                            PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
-                                              GraphPatternVariable: &ast.Ident{
-                                                NamePos: 61,
-                                                NameEnd: 62,
-                                                Name:    "a",
-                                              },
-                                              IsLabelCondition: &ast.GQLIsLabelCondition{
-                                                IsOrColon:       62,
-                                                LabelExpression: &ast.GQLLabelName{
-                                                  StartPos:  63,
-                                                  IsPercent: false,
-                                                  LabelName: &ast.Ident{
-                                                    NamePos: 63,
-                                                    NameEnd: 70,
-                                                    Name:    "Account",
-                                                  },
-                                                },
-                                              },
-                                              Filter: nil,
-                                            },
-                                          },
-                                          Quantifier: nil,
+                  Query:  &ast.GQLMatchStatement{
+                    Optional:     -1,
+                    Match:        33,
+                    MatchHint:    (*ast.Hint)(nil),
+                    PrefixOrMode: nil,
+                    GraphPattern: &ast.GQLGraphPattern{
+                      PathPatternList: []*ast.GQLTopLevelPathPattern{
+                        &ast.GQLTopLevelPathPattern{
+                          PathSearchPrefixOrPathMode: nil,
+                          PathPattern:                &ast.GQLPathPattern{
+                            PathTermList: []*ast.GQLQuantifiablePathTerm{
+                              &ast.GQLQuantifiablePathTerm{
+                                Hint:     (*ast.Hint)(nil),
+                                PathTerm: &ast.GQLNodePattern{
+                                  LParen:        39,
+                                  RParen:        48,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    Hint:                 (*ast.Hint)(nil),
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 40,
+                                      NameEnd: 41,
+                                      Name:    "p",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       41,
+                                      LabelExpression: &ast.GQLLabelName{
+                                        StartPos:  42,
+                                        IsPercent: false,
+                                        LabelName: &ast.Ident{
+                                          NamePos: 42,
+                                          NameEnd: 48,
+                                          Name:    "Person",
                                         },
                                       },
                                     },
+                                    Filter: nil,
                                   },
                                 },
-                                WhereClause: &ast.Where{
-                                  Where: 74,
-                                  Expr:  &ast.BinaryExpr{
-                                    Op:   "LIKE",
-                                    Left: &ast.Path{
-                                      Idents: []*ast.Ident{
-                                        &ast.Ident{
-                                          NamePos: 80,
-                                          NameEnd: 81,
-                                          Name:    "p",
-                                        },
-                                        &ast.Ident{
-                                          NamePos: 82,
-                                          NameEnd: 86,
-                                          Name:    "Name",
+                                Quantifier: nil,
+                              },
+                              &ast.GQLQuantifiablePathTerm{
+                                Hint:     (*ast.Hint)(nil),
+                                PathTerm: &ast.GQLFullEdgeRight{
+                                  First:         49,
+                                  Last:          59,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    Hint:                 (*ast.Hint)(nil),
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 51,
+                                      NameEnd: 52,
+                                      Name:    "o",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       52,
+                                      LabelExpression: &ast.GQLLabelName{
+                                        StartPos:  53,
+                                        IsPercent: false,
+                                        LabelName: &ast.Ident{
+                                          NamePos: 53,
+                                          NameEnd: 57,
+                                          Name:    "Owns",
                                         },
                                       },
                                     },
-                                    Right: &ast.StringLiteral{
-                                      ValuePos: 92,
-                                      ValueEnd: 96,
-                                      Value:    "D%",
-                                    },
+                                    Filter: nil,
                                   },
                                 },
+                                Quantifier: nil,
+                              },
+                              &ast.GQLQuantifiablePathTerm{
+                                Hint:     (*ast.Hint)(nil),
+                                PathTerm: &ast.GQLNodePattern{
+                                  LParen:        60,
+                                  RParen:        70,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    Hint:                 (*ast.Hint)(nil),
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 61,
+                                      NameEnd: 62,
+                                      Name:    "a",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       62,
+                                      LabelExpression: &ast.GQLLabelName{
+                                        StartPos:  63,
+                                        IsPercent: false,
+                                        LabelName: &ast.Ident{
+                                          NamePos: 63,
+                                          NameEnd: 70,
+                                          Name:    "Account",
+                                        },
+                                      },
+                                    },
+                                    Filter: nil,
+                                  },
+                                },
+                                Quantifier: nil,
                               },
                             },
+                          },
+                        },
+                      },
+                      WhereClause: &ast.Where{
+                        Where: 74,
+                        Expr:  &ast.BinaryExpr{
+                          Op:   "LIKE",
+                          Left: &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 80,
+                                NameEnd: 81,
+                                Name:    "p",
+                              },
+                              &ast.Ident{
+                                NamePos: 82,
+                                NameEnd: 86,
+                                Name:    "Name",
+                              },
+                            },
+                          },
+                          Right: &ast.StringLiteral{
+                            ValuePos: 92,
+                            ValueEnd: 96,
+                            Value:    "D%",
                           },
                         },
                       },

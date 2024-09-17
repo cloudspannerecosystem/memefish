@@ -1188,7 +1188,7 @@ type ArrayGQLSubQuery struct {
 	// end = RBrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
-	RBrace token.Pos // position of "{" and "}"
+	RBrace token.Pos // position of "}"
 	Query  *GQLQueryExpr
 }
 
@@ -1200,7 +1200,7 @@ type ValueGQLSubQuery struct {
 	// end = RBrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
-	RBrace token.Pos // position of "{" and "}"
+	RBrace token.Pos // position of "}"
 	Query  *GQLQueryExpr
 }
 
@@ -1212,7 +1212,7 @@ type ExistsGQLSubQuery struct {
 	// end = RBrace + 1
 
 	Exists token.Pos // position of "ARRAY" keyword
-	RBrace token.Pos // position of "{" and "}"
+	RBrace token.Pos // "}"
 	Query  GQLExistsExpr
 }
 
