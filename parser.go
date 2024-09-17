@@ -48,7 +48,7 @@ func (p *Parser) ParseGqlStatement() (stmt ast.Statement, err error) {
 	}()
 
 	p.nextToken()
-	stmt = p.parseGqlStatement()
+	stmt = p.parseGqlQuery()
 	if p.Token.Kind != token.TokenEOF {
 		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
 	}
@@ -261,14 +261,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	// GQL queries are first level statements
 	// because it is supported by Cloud Spanner's ExecuteSql API.
 	case p.Token.IsKeywordLike("GRAPH"):
-		return p.parseGqlStatement()
+		return p.parseGqlQuery()
 	}
-
-	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
-}
-
-func (p *Parser) parseGqlStatement() ast.Statement {
-	return p.parseGqlQuery()
 
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
