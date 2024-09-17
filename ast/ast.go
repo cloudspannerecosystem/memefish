@@ -2587,8 +2587,9 @@ func (*GQLCompositeLinearQueryStatement) isGQLLinearQueryStatement() {}
 
 type GQLSimpleLinearQueryStatement struct {
 	// pos = PrimitiveQueryStatementList[0].pos
-	// end = PrimitiveQueryStatementList[$].end
+	// end = PrimitiveQueryStatementList[$].pos
 
+	// It contains at least one GQL statements, and It ends with a RETURN statement.
 	PrimitiveQueryStatementList []GQLPrimitiveQueryStatement
 }
 

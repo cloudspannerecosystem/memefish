@@ -3926,7 +3926,23 @@ func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryS
 		stmts = append(stmts, stmt)
 	}
 
-	return &ast.GQLSimpleLinearQueryStatement{PrimitiveQueryStatementList: stmts}
+	if len(stmts) == 0 {
+		p.panicfAtToken(&p.Token, "expect one or more GQL statements, but: %v", p.Token.Kind)
+	}
+
+	if _, ok := stmts[len(stmts)-1].(*ast.GQLReturnStatement); !ok {
+		p.panicf("the last GQL statement of simple_linear_query_statement must be a RETURN statement")
+	}
+
+	for _, stmt := range stmts[:len(stmts)-1] {
+		if _, ok := stmt.(*ast.GQLReturnStatement); ok {
+			p.panicf("multiple RETURN statements are not permitted in simple_linear_query_statement")
+		}
+	}
+
+	return &ast.GQLSimpleLinearQueryStatement{
+		PrimitiveQueryStatementList: stmts,
+	}
 }
 
 func (p *Parser) tryParseGQLWithOffsetClause() *ast.GQLWithOffsetClause {
