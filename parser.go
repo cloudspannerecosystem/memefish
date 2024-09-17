@@ -1187,9 +1187,33 @@ func (p *Parser) parseComparison() ast.Expr {
 				Not:      not,
 				Right:    false,
 			}
-		default:
-			p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, but: %s", p.Token.Kind)
+		case token.TokenIdent:
+			switch {
+			case p.Token.IsKeywordLike("SOURCE") || p.Token.IsKeywordLike("DESTINATION"):
+				var isSource bool
+				if p.Token.IsKeywordLike("SOURCE") {
+					isSource = true
+				}
+				p.nextToken()
+				if p.Token.Kind == "OF" {
+					p.expect("OF")
+				}
+				edge := p.parseExpr()
+				if isSource {
+					return &ast.IsSourceExpr{
+						Node: expr,
+						Edge: edge,
+						Not:  not,
+					}
+				}
+				return &ast.IsDestinationExpr{
+					Node: expr,
+					Edge: edge,
+					Not:  not,
+				}
+			}
 		}
+		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, SOURCE, DESTINATION, but: %s", p.Token.Kind)
 	default:
 		return expr
 	}
@@ -1214,7 +1238,7 @@ func (p *Parser) parseInCondition() ast.InCondition {
 	}
 
 	if p.Token.Kind == "{" {
-		return p.parseGqlSubquery()
+		return p.parseGqlSubQueryInCondition()
 	}
 	if p.Token.Kind == "(" {
 		lparen := p.Token.Pos

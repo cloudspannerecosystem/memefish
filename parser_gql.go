@@ -19,7 +19,7 @@ func (p *Parser) parseGqlQuery() *ast.GqlGraphQuery {
 	return &ast.GqlGraphQuery{GraphClause: graphClause, GqlMultiLinearQueryStatement: multiQueryStatement}
 }
 
-func (p *Parser) parseGqlSubquery() *ast.GqlSubQueryInCondition {
+func (p *Parser) parseGqlSubQueryInCondition() *ast.GqlSubQueryInCondition {
 	lbrace := p.expect("{").Pos
 	query := p.parseGqlQueryExpr()
 	rbrace := p.expect("}").Pos
