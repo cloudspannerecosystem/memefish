@@ -135,7 +135,7 @@ type GQLAllOrDistinctEnum int
 
 const (
 	GQLAllOrDistinctImplicitAll GQLAllOrDistinctEnum = iota
-	GQLAllOrDistinctAll                              = iota
+	GQLAllOrDistinctAll
 	GQLAllOrDistinctDistinct
 )
 
