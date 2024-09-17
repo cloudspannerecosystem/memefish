@@ -1512,6 +1512,18 @@ func (g *GqlOrderByStatement) SQL() string {
 	return "ORDER BY " + sqlJoin(g.OrderBySpecificationList, ", ")
 }
 
+func (g *GqlOrderBySpecification) SQL() string {
+	sql := g.Expr.SQL() + sqlOpt(" ", g.CollationSpecification, "")
+	if g.Direction != GqlSortOrderUnspecified {
+		sql += " " + string(g.Direction)
+	}
+	return sql
+}
+
+func (g *GqlCollationSpecification) SQL() string {
+	return "COLLATE " + g.Specification.SQL()
+}
+
 func (g *GqlWithStatement) SQL() string {
 	var allOrDistinctStr string
 	switch g.AllOrDistinct {

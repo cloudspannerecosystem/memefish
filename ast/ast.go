@@ -2728,32 +2728,23 @@ type GqlOrderByStatement struct {
 	OrderBySpecificationList []*GqlOrderBySpecification
 }
 
-// TODO
 type GqlOrderBySpecification struct {
 	// pos = Expr.pos
-	// TODO
+	// DirectionPos ?? CollationSpecification.end
 
 	Expr Expr
-	// TODO
-	// CollationSpecification *GqlCollationSpecification
-	DirectionPos token.Pos
-	Direction    GqlDirection
+
+	CollationSpecification *GqlCollationSpecification // optional
+	DirectionPos           token.Pos                  // optional
+	Direction              GqlDirection
 }
 
-func (g *GqlOrderBySpecification) Pos() token.Pos { return g.Expr.Pos() }
+type GqlCollationSpecification struct {
+	// pos = Collate
+	// end = Specification.end
 
-func (g *GqlOrderBySpecification) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (g *GqlOrderBySpecification) SQL() string {
-	sql := g.Expr.SQL()
-	// TODO Collation
-	if g.Direction != GqlSortOrderUnspecified {
-		sql += " " + string(g.Direction)
-	}
-	return sql
+	Collate       token.Pos
+	Specification StringValue
 }
 
 type GqlWithStatement struct {

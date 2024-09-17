@@ -135,6 +135,17 @@ func (p *Parser) tryParseGqlOrderBySpecificationList() []*ast.GqlOrderBySpecific
 	var list []*ast.GqlOrderBySpecification
 	for {
 		expr := p.parseExpr()
+
+		var collateSpec *ast.GqlCollationSpecification
+		if p.Token.Kind == "COLLATE" {
+			collatePos := p.expect("COLLATE").Pos
+			spec := p.parseStringValue()
+			collateSpec = &ast.GqlCollationSpecification{
+				Collate:       collatePos,
+				Specification: spec,
+			}
+		}
+
 		var direction ast.GqlDirection
 		directionPos := p.Token.Pos
 		switch {
@@ -153,7 +164,12 @@ func (p *Parser) tryParseGqlOrderBySpecificationList() []*ast.GqlOrderBySpecific
 		default:
 			directionPos = token.InvalidPos
 		}
-		list = append(list, &ast.GqlOrderBySpecification{Expr: expr, DirectionPos: directionPos, Direction: direction})
+		list = append(list, &ast.GqlOrderBySpecification{
+			Expr:                   expr,
+			DirectionPos:           directionPos,
+			CollationSpecification: collateSpec,
+			Direction:              direction,
+		})
 		if p.Token.Kind != "," {
 			break
 		}

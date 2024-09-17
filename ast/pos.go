@@ -983,6 +983,17 @@ func (g *GqlOffsetStatement) End() token.Pos { return g.Count.End() }
 func (g *GqlOrderByStatement) Pos() token.Pos { return g.Order }
 func (g *GqlOrderByStatement) End() token.Pos { return lastEnd(g.OrderBySpecificationList) }
 
+func (g *GqlOrderBySpecification) Pos() token.Pos { return g.Expr.Pos() }
+func (g *GqlOrderBySpecification) End() token.Pos {
+	if g.DirectionPos != token.InvalidPos {
+		return g.DirectionPos + token.Pos(len(string(g.Direction)))
+	}
+	return firstValidEnd(g.CollationSpecification, g.Expr)
+}
+
+func (g *GqlCollationSpecification) Pos() token.Pos { return g.Collate }
+func (g *GqlCollationSpecification) End() token.Pos { return g.Specification.End() }
+
 func (g *GqlWithStatement) Pos() token.Pos { return g.With }
 func (g *GqlWithStatement) End() token.Pos {
 	return firstValidPos(g.GroupByClause, lastElem(g.ReturnItemList))
