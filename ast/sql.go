@@ -744,6 +744,10 @@ func (v *ValueGqlSubQuery) SQL() string {
 	return "VALUE {\n" + v.Query.SQL() + "\n}"
 }
 
+func (v *ExistsGqlSubQuery) SQL() string {
+	return "EXISTS {\n" + v.Query.SQL() + "\n}"
+}
+
 // ================================================================================
 //
 // DDL

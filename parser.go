@@ -1669,8 +1669,41 @@ func (p *Parser) parseCastExpr() *ast.CastExpr {
 	}
 }
 
-func (p *Parser) parseExistsSubQuery() *ast.ExistsSubQuery {
+func (p *Parser) lookaheadGqlGraphPattern() bool {
+	// path_search_prefix
+	return p.Token.IsKeywordLike("ANY") || p.Token.IsKeywordLike("ALL") || // path_search_prefix
+		p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") || // path_mode
+		// subpath_pattern or node_pattern
+		p.Token.Kind == "(" ||
+		// edge_pattern
+		p.Token.Kind == "<" || p.Token.Kind == "-"
+
+}
+
+func (p *Parser) parseGqlExistsExpr() ast.GqlExistsExpr {
+	// NOTE: Single MATCH statement pattern is covered by GqlQueryExpr
+	// because there is no check that SimpleLinearQueryStatement is terminated by RETURN statement.
+	if p.lookaheadGqlGraphPattern() {
+		return p.parseGqlGraphPattern()
+	} else {
+		return p.parseGqlQueryExpr()
+	}
+}
+
+// parseExistsSubQuery parses EXISTS subquery or EXISTS GQL subquery
+func (p *Parser) parseExistsSubQuery() ast.Expr {
 	exists := p.expect("EXISTS").Pos
+	if p.Token.Kind == "{" {
+		p.expect("{")
+		expr := p.parseGqlExistsExpr()
+		rbrace := p.expect("}").Pos
+		return &ast.ExistsGqlSubQuery{
+			Exists: exists,
+			RBrace: rbrace,
+			Query:  expr,
+		}
+	}
+
 	p.expect("(")
 	query := p.parseQueryExpr()
 	rparen := p.expect(")").Pos

@@ -1,0 +1,230 @@
+--- return_exists_query_expr.sql
+GRAPH FinGraph
+RETURN EXISTS {
+  MATCH (p:Person)-[o:Owns]->(a:Account)
+  WHERE p.Name LIKE 'D%'
+  RETURN p.Name
+  LIMIT 1
+} AS results
+--- AST
+&ast.GqlGraphQuery{
+  GraphClause: &ast.GqlGraphClause{
+    GqlGraph:             0,
+    GqlPropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+    GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+      &ast.GqlSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+          &ast.GqlReturnStatement{
+            AllOrDistinct:  0,
+            Return:         15,
+            ReturnItemList: []ast.GqlReturnItem{
+              &ast.Alias{
+                Expr: &ast.ExistsGqlSubQuery{
+                  Exists: 22,
+                  RBrace: 123,
+                  Query:  &ast.GqlQueryExpr{
+                    GraphClause:                  (*ast.GqlGraphClause)(nil),
+                    GqlMultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
+                      GqlLinearQueryStatements: []ast.GqlLinearQueryStatement{
+                        &ast.GqlSimpleLinearQueryStatement{
+                          PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
+                            &ast.GqlMatchStatement{
+                              Optional:     -1,
+                              Match:        33,
+                              MatchHint:    (*ast.Hint)(nil),
+                              PrefixOrMode: nil,
+                              GraphPattern: &ast.GqlGraphPattern{
+                                PathPatternList: []*ast.GqlTopLevelPathPattern{
+                                  &ast.GqlTopLevelPathPattern{
+                                    PathSearchPrefixOrPathMode: nil,
+                                    PathPattern:                &ast.GqlPathPattern{
+                                      PathTermList: []*ast.GqlQuantifiablePathTerm{
+                                        &ast.GqlQuantifiablePathTerm{
+                                          Hint:     (*ast.Hint)(nil),
+                                          PathTerm: &ast.GqlNodePattern{
+                                            LParen:        39,
+                                            RParen:        48,
+                                            PatternFiller: &ast.GqlPatternFiller{
+                                              Hint:                 (*ast.Hint)(nil),
+                                              GraphPatternVariable: &ast.Ident{
+                                                NamePos: 40,
+                                                NameEnd: 41,
+                                                Name:    "p",
+                                              },
+                                              IsLabelCondition: &ast.GqlIsLabelCondition{
+                                                IsOrColon:       41,
+                                                LabelExpression: &ast.GqlLabelName{
+                                                  IsPercent: false,
+                                                  LabelName: &ast.Ident{
+                                                    NamePos: 42,
+                                                    NameEnd: 48,
+                                                    Name:    "Person",
+                                                  },
+                                                },
+                                              },
+                                              Filter: nil,
+                                            },
+                                          },
+                                          Quantifier: nil,
+                                        },
+                                        &ast.GqlQuantifiablePathTerm{
+                                          Hint:     (*ast.Hint)(nil),
+                                          PathTerm: &ast.GqlFullEdgeRight{
+                                            First:         49,
+                                            Last:          59,
+                                            PatternFiller: &ast.GqlPatternFiller{
+                                              Hint:                 (*ast.Hint)(nil),
+                                              GraphPatternVariable: &ast.Ident{
+                                                NamePos: 51,
+                                                NameEnd: 52,
+                                                Name:    "o",
+                                              },
+                                              IsLabelCondition: &ast.GqlIsLabelCondition{
+                                                IsOrColon:       52,
+                                                LabelExpression: &ast.GqlLabelName{
+                                                  IsPercent: false,
+                                                  LabelName: &ast.Ident{
+                                                    NamePos: 53,
+                                                    NameEnd: 57,
+                                                    Name:    "Owns",
+                                                  },
+                                                },
+                                              },
+                                              Filter: nil,
+                                            },
+                                          },
+                                          Quantifier: nil,
+                                        },
+                                        &ast.GqlQuantifiablePathTerm{
+                                          Hint:     (*ast.Hint)(nil),
+                                          PathTerm: &ast.GqlNodePattern{
+                                            LParen:        60,
+                                            RParen:        70,
+                                            PatternFiller: &ast.GqlPatternFiller{
+                                              Hint:                 (*ast.Hint)(nil),
+                                              GraphPatternVariable: &ast.Ident{
+                                                NamePos: 61,
+                                                NameEnd: 62,
+                                                Name:    "a",
+                                              },
+                                              IsLabelCondition: &ast.GqlIsLabelCondition{
+                                                IsOrColon:       62,
+                                                LabelExpression: &ast.GqlLabelName{
+                                                  IsPercent: false,
+                                                  LabelName: &ast.Ident{
+                                                    NamePos: 63,
+                                                    NameEnd: 70,
+                                                    Name:    "Account",
+                                                  },
+                                                },
+                                              },
+                                              Filter: nil,
+                                            },
+                                          },
+                                          Quantifier: nil,
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                WhereClause: &ast.Where{
+                                  Where: 74,
+                                  Expr:  &ast.BinaryExpr{
+                                    Op:   "LIKE",
+                                    Left: &ast.Path{
+                                      Idents: []*ast.Ident{
+                                        &ast.Ident{
+                                          NamePos: 80,
+                                          NameEnd: 81,
+                                          Name:    "p",
+                                        },
+                                        &ast.Ident{
+                                          NamePos: 82,
+                                          NameEnd: 86,
+                                          Name:    "Name",
+                                        },
+                                      },
+                                    },
+                                    Right: &ast.StringLiteral{
+                                      ValuePos: 92,
+                                      ValueEnd: 96,
+                                      Value:    "D%",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            &ast.GqlReturnStatement{
+                              AllOrDistinct:  0,
+                              Return:         99,
+                              ReturnItemList: []ast.GqlReturnItem{
+                                &ast.ExprSelectItem{
+                                  Expr: &ast.Path{
+                                    Idents: []*ast.Ident{
+                                      &ast.Ident{
+                                        NamePos: 106,
+                                        NameEnd: 107,
+                                        Name:    "p",
+                                      },
+                                      &ast.Ident{
+                                        NamePos: 108,
+                                        NameEnd: 112,
+                                        Name:    "Name",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              GroupByClause:        (*ast.GroupBy)(nil),
+                              OrderByClause:        (*ast.OrderBy)(nil),
+                              LimitAndOffsetClause: &ast.GqlLimitClause{
+                                Limit: &ast.Limit{
+                                  Limit: 115,
+                                  Count: &ast.IntLiteral{
+                                    ValuePos: 121,
+                                    ValueEnd: 122,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                  Offset: (*ast.Offset)(nil),
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 128,
+                    NameEnd: 135,
+                    Name:    "results",
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+RETURN EXISTS {
+MATCH (p:Person)-[o:Owns]->(a:Account) WHERE p.Name LIKE "D%"
+RETURN p.Name LIMIT 1
+} AS results

@@ -124,39 +124,40 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()        {}
-func (UnaryExpr) isExpr()         {}
-func (InExpr) isExpr()            {}
-func (IsNullExpr) isExpr()        {}
-func (IsBoolExpr) isExpr()        {}
-func (BetweenExpr) isExpr()       {}
-func (SelectorExpr) isExpr()      {}
-func (IndexExpr) isExpr()         {}
-func (CallExpr) isExpr()          {}
-func (CountStarExpr) isExpr()     {}
-func (CastExpr) isExpr()          {}
-func (ExtractExpr) isExpr()       {}
-func (CaseExpr) isExpr()          {}
-func (ParenExpr) isExpr()         {}
-func (ScalarSubQuery) isExpr()    {}
-func (ArraySubQuery) isExpr()     {}
-func (ExistsSubQuery) isExpr()    {}
-func (Param) isExpr()             {}
-func (Ident) isExpr()             {}
-func (Path) isExpr()              {}
-func (ArrayLiteral) isExpr()      {}
-func (StructLiteral) isExpr()     {}
-func (NullLiteral) isExpr()       {}
-func (BoolLiteral) isExpr()       {}
-func (IntLiteral) isExpr()        {}
-func (FloatLiteral) isExpr()      {}
-func (StringLiteral) isExpr()     {}
-func (BytesLiteral) isExpr()      {}
-func (DateLiteral) isExpr()       {}
-func (TimestampLiteral) isExpr()  {}
-func (NumericLiteral) isExpr()    {}
-func (*ArrayGqlSubQuery) isExpr() {}
-func (*ValueGqlSubQuery) isExpr() {}
+func (BinaryExpr) isExpr()         {}
+func (UnaryExpr) isExpr()          {}
+func (InExpr) isExpr()             {}
+func (IsNullExpr) isExpr()         {}
+func (IsBoolExpr) isExpr()         {}
+func (BetweenExpr) isExpr()        {}
+func (SelectorExpr) isExpr()       {}
+func (IndexExpr) isExpr()          {}
+func (CallExpr) isExpr()           {}
+func (CountStarExpr) isExpr()      {}
+func (CastExpr) isExpr()           {}
+func (ExtractExpr) isExpr()        {}
+func (CaseExpr) isExpr()           {}
+func (ParenExpr) isExpr()          {}
+func (ScalarSubQuery) isExpr()     {}
+func (ArraySubQuery) isExpr()      {}
+func (ExistsSubQuery) isExpr()     {}
+func (Param) isExpr()              {}
+func (Ident) isExpr()              {}
+func (Path) isExpr()               {}
+func (ArrayLiteral) isExpr()       {}
+func (StructLiteral) isExpr()      {}
+func (NullLiteral) isExpr()        {}
+func (BoolLiteral) isExpr()        {}
+func (IntLiteral) isExpr()         {}
+func (FloatLiteral) isExpr()       {}
+func (StringLiteral) isExpr()      {}
+func (BytesLiteral) isExpr()       {}
+func (DateLiteral) isExpr()        {}
+func (TimestampLiteral) isExpr()   {}
+func (NumericLiteral) isExpr()     {}
+func (*ArrayGqlSubQuery) isExpr()  {}
+func (*ValueGqlSubQuery) isExpr()  {}
+func (*ExistsGqlSubQuery) isExpr() {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -1177,6 +1178,27 @@ type ValueGqlSubQuery struct {
 	RBrace token.Pos // position of "{" and "}"
 	Query  *GqlQueryExpr
 }
+
+// ExistsGqlSubQuery is GQL subquery as EXISTS.
+//
+//	EXISTS{{"{"}}{{.Expr | sql}}{{"}"}}
+type ExistsGqlSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Exists token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // position of "{" and "}"
+	Query  GqlExistsExpr
+}
+
+type GqlExistsExpr interface {
+	Node
+	isGqlExistsExpr()
+}
+
+func (*GqlQueryExpr) isGqlExistsExpr()      {}
+func (*GqlMatchStatement) isGqlExistsExpr() {}
+func (*GqlGraphPattern) isGqlExistsExpr()   {}
 
 // ExistsSubQuery is subquery in EXISTS call.
 //

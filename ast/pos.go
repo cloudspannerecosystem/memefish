@@ -495,6 +495,9 @@ func (v *ValueGqlSubQuery) End() token.Pos { return v.Query.End() }
 func (a *ArrayGqlSubQuery) Pos() token.Pos { return a.Array }
 func (a *ArrayGqlSubQuery) End() token.Pos { return a.RBrace + 1 }
 
+func (e *ExistsGqlSubQuery) Pos() token.Pos { return e.Exists }
+func (e *ExistsGqlSubQuery) End() token.Pos { return e.RBrace + 1 }
+
 // ================================================================================
 //
 // DDL
