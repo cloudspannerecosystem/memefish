@@ -6,8 +6,8 @@ MATCH
   (a:Account)-[e:Transfers]->(c:Account)                     -- path pattern 2
 RETURN c.id
 --- AST
-&ast.GqlGraphQuery{
-  GraphClause: &ast.GqlGraphClause{
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
     Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
@@ -15,36 +15,36 @@ RETURN c.id
       Name:    "FinGraph",
     },
   },
-  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-      &ast.GqlSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-          &ast.GqlMatchStatement{
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
             MatchHint:    (*ast.Hint)(nil),
             PrefixOrMode: nil,
-            GraphPattern: &ast.GqlGraphPattern{
-              PathPatternList: []*ast.GqlTopLevelPathPattern{
-                &ast.GqlTopLevelPathPattern{
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
                   PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GqlPathPattern{
-                    PathTermList: []*ast.GqlQuantifiablePathTerm{
-                      &ast.GqlQuantifiablePathTerm{
+                  PathPattern:                &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlNodePattern{
+                        PathTerm: &ast.GQLNodePattern{
                           LParen:        23,
                           RParen:        40,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 24,
                               NameEnd: 25,
                               Name:    "p",
                             },
-                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       25,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  26,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -54,10 +54,10 @@ RETURN c.id
                                 },
                               },
                             },
-                            Filter: &ast.GqlPropertyFilters{
+                            Filter: &ast.GQLPropertyFilters{
                               LBrace:                 33,
-                              PropertyFilterElemList: []*ast.GqlElementProperty{
-                                &ast.GqlElementProperty{
+                              PropertyFilterElemList: []*ast.GQLElementProperty{
+                                &ast.GQLElementProperty{
                                   ElementPropertyName: &ast.Ident{
                                     NamePos: 34,
                                     NameEnd: 36,
@@ -77,17 +77,17 @@ RETURN c.id
                         },
                         Quantifier: nil,
                       },
-                      &ast.GqlQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlFullEdgeRight{
+                        PathTerm: &ast.GQLFullEdgeRight{
                           First:         41,
                           Last:          50,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
-                            IsLabelCondition:     &ast.GqlIsLabelCondition{
+                            IsLabelCondition:     &ast.GQLIsLabelCondition{
                               IsOrColon:       43,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  44,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -102,21 +102,21 @@ RETURN c.id
                         },
                         Quantifier: nil,
                       },
-                      &ast.GqlQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlNodePattern{
+                        PathTerm: &ast.GQLNodePattern{
                           LParen:        51,
                           RParen:        61,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 52,
                               NameEnd: 53,
                               Name:    "a",
                             },
-                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       53,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  54,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -134,11 +134,11 @@ RETURN c.id
                     },
                   },
                 },
-                &ast.GqlTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
                   PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GqlPathPattern{
-                    PathTermList: []*ast.GqlQuantifiablePathTerm{
-                      &ast.GqlQuantifiablePathTerm{
+                  PathPattern:                &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint: &ast.Hint{
                           Atmark:  102,
                           Rbrace:  159,
@@ -169,19 +169,19 @@ RETURN c.id
                             },
                           },
                         },
-                        PathTerm: &ast.GqlNodePattern{
+                        PathTerm: &ast.GQLNodePattern{
                           LParen:        181,
                           RParen:        191,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 182,
                               NameEnd: 183,
                               Name:    "a",
                             },
-                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       183,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  184,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -196,21 +196,21 @@ RETURN c.id
                         },
                         Quantifier: nil,
                       },
-                      &ast.GqlQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlFullEdgeRight{
+                        PathTerm: &ast.GQLFullEdgeRight{
                           First:         192,
                           Last:          207,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 194,
                               NameEnd: 195,
                               Name:    "e",
                             },
-                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       195,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  196,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -225,21 +225,21 @@ RETURN c.id
                         },
                         Quantifier: nil,
                       },
-                      &ast.GqlQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlNodePattern{
+                        PathTerm: &ast.GQLNodePattern{
                           LParen:        208,
                           RParen:        218,
-                          PatternFiller: &ast.GqlPatternFiller{
+                          PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 209,
                               NameEnd: 210,
                               Name:    "c",
                             },
-                            IsLabelCondition: &ast.GqlIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       210,
-                              LabelExpression: &ast.GqlLabelName{
+                              LabelExpression: &ast.GQLLabelName{
                                 StartPos:  211,
                                 IsPercent: false,
                                 LabelName: &ast.Ident{
@@ -261,10 +261,10 @@ RETURN c.id
               WhereClause: (*ast.Where)(nil),
             },
           },
-          &ast.GqlReturnStatement{
+          &ast.GQLReturnStatement{
             Return:         258,
             AllOrDistinct:  0,
-            ReturnItemList: []ast.GqlReturnItem{
+            ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{
                   Idents: []*ast.Ident{

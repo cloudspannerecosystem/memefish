@@ -1,11 +1,11 @@
 --- abbr_edge_any.sql
  -
 --- AST
-&ast.GqlPathPattern{
-  PathTermList: []*ast.GqlQuantifiablePathTerm{
-    &ast.GqlQuantifiablePathTerm{
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
-      PathTerm: &ast.GqlAbbreviatedEdgeAny{
+      PathTerm: &ast.GQLAbbreviatedEdgeAny{
         Hyphen: 1,
       },
       Quantifier: nil,

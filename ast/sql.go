@@ -418,7 +418,7 @@ func (v *ValuesInCondition) SQL() string {
 	return sql
 }
 
-func (g *GqlSubQueryInCondition) SQL() string {
+func (g *GQLSubQueryInCondition) SQL() string {
 	return "{" + g.Query.SQL() + "}"
 }
 
@@ -758,15 +758,15 @@ func (c *CastNumValue) SQL() string {
 //
 // ================================================================================
 
-func (a *ArrayGqlSubQuery) SQL() string {
+func (a *ArrayGQLSubQuery) SQL() string {
 	return "ARRAY {\n" + a.Query.SQL() + "\n}"
 }
 
-func (v *ValueGqlSubQuery) SQL() string {
+func (v *ValueGQLSubQuery) SQL() string {
 	return "VALUE {\n" + v.Query.SQL() + "\n}"
 }
 
-func (v *ExistsGqlSubQuery) SQL() string {
+func (v *ExistsGQLSubQuery) SQL() string {
 	return "EXISTS {\n" + v.Query.SQL() + "\n}"
 }
 
@@ -1411,25 +1411,25 @@ func (u *UpdateItem) SQL() string {
 
 // GQL
 
-func (s *GqlGraphQuery) SQL() string {
+func (s *GQLGraphQuery) SQL() string {
 	return s.GraphClause.SQL() + "\n" + s.MultiLinearQueryStatement.SQL()
 }
 
-func (g *GqlQueryExpr) SQL() string {
+func (g *GQLQueryExpr) SQL() string {
 	return sqlOpt("", g.GraphClause, "\n") + g.MultiLinearQueryStatement.SQL()
 }
 
-func (s *GqlGraphClause) SQL() string { return "GRAPH " + s.PropertyGraphName.SQL() }
+func (s *GQLGraphClause) SQL() string { return "GRAPH " + s.PropertyGraphName.SQL() }
 
-func (s *GqlMultiLinearQueryStatement) SQL() string {
+func (s *GQLMultiLinearQueryStatement) SQL() string {
 	return sqlJoin(s.LinearQueryStatementList, "\nNEXT\n")
 }
 
-func (s *GqlSimpleLinearQueryStatement) SQL() string {
+func (s *GQLSimpleLinearQueryStatement) SQL() string {
 	return sqlJoin(s.PrimitiveQueryStatementList, "\n")
 }
 
-func (s *GqlCompositeLinearQueryStatement) SQL() string {
+func (s *GQLCompositeLinearQueryStatement) SQL() string {
 	sql := s.HeadSimpleLinearQueryStatement.SQL()
 	if len(s.TailSimpleLinearQueryStatementList) > 0 {
 		sql += "\n" + sqlJoin(s.TailSimpleLinearQueryStatementList, "\n")
@@ -1437,21 +1437,21 @@ func (s *GqlCompositeLinearQueryStatement) SQL() string {
 	return sql
 }
 
-func (g *GqlSimpleLinearQueryStatementWithSetOperator) SQL() string {
+func (g *GQLSimpleLinearQueryStatementWithSetOperator) SQL() string {
 	var sql string
 	switch g.SetOperator {
-	case GqlSetOperatorUnion:
+	case GQLSetOperatorUnion:
 		sql += "UNION"
-	case GqlSetOperatorIntersect:
+	case GQLSetOperatorIntersect:
 		sql += "INTERSECT"
-	case GqlSetOperatorExcept:
+	case GQLSetOperatorExcept:
 		sql += "EXCEPT"
 	}
 
 	switch g.DistinctOrAll {
-	case GqlAllOrDistinctAll:
+	case GQLAllOrDistinctAll:
 		sql += " " + "ALL"
-	case GqlAllOrDistinctDistinct:
+	case GQLAllOrDistinctDistinct:
 		sql += " " + "DISTINCT"
 	default:
 		// no action
@@ -1461,11 +1461,11 @@ func (g *GqlSimpleLinearQueryStatementWithSetOperator) SQL() string {
 	return sql
 }
 
-func (s *GqlLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " = " + s.Value.SQL() }
+func (s *GQLLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " = " + s.Value.SQL() }
 
 // GQL statements
 
-func (g *GqlMatchStatement) SQL() string {
+func (g *GQLMatchStatement) SQL() string {
 	var sql string
 	if !g.Optional.Invalid() {
 		sql = "OPTIONAL MATCH"
@@ -1478,60 +1478,60 @@ func (g *GqlMatchStatement) SQL() string {
 	return sql
 }
 
-func (g *GqlLimitClause) SQL() string { return g.Limit.SQL() }
+func (g *GQLLimitClause) SQL() string { return g.Limit.SQL() }
 
-func (g *GqlOffsetClause) SQL() string { return g.Offset.SQL() }
+func (g *GQLOffsetClause) SQL() string { return g.Offset.SQL() }
 
-func (g *GqlLimitWithOffsetClause) SQL() string { return g.Limit.SQL() + " " + g.Offset.SQL() }
+func (g *GQLLimitWithOffsetClause) SQL() string { return g.Limit.SQL() + " " + g.Offset.SQL() }
 
-func (g *GqlFilterStatement) SQL() string {
+func (g *GQLFilterStatement) SQL() string {
 	if g.Where.Invalid() {
 		return "FILTER " + g.Expr.SQL()
 	}
 	return "FILTER WHERE " + g.Expr.SQL()
 }
 
-func (g *GqlForStatement) SQL() string {
+func (g *GQLForStatement) SQL() string {
 	return "FOR " + g.ElementName.SQL() + " IN " + g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
 }
 
-func (g *GqlWithOffsetClause) SQL() string {
+func (g *GQLWithOffsetClause) SQL() string {
 	return "WITH OFFSET" + sqlOpt(" AS ", g.OffsetName, "")
 }
 
-func (g *GqlLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
+func (g *GQLLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
 
-func (g *GqlOffsetStatement) SQL() string {
+func (g *GQLOffsetStatement) SQL() string {
 	if g.IsSkip {
 		return "SKIP " + g.Count.SQL()
 	}
 	return "OFFSET " + g.Count.SQL()
 }
 
-func (g *GqlOrderByStatement) SQL() string {
+func (g *GQLOrderByStatement) SQL() string {
 	return "ORDER BY " + sqlJoin(g.OrderBySpecificationList, ", ")
 }
 
-func (g *GqlOrderBySpecification) SQL() string {
+func (g *GQLOrderBySpecification) SQL() string {
 	sql := g.Expr.SQL() + sqlOpt(" ", g.CollationSpecification, "")
-	if g.Direction != GqlSortOrderUnspecified {
+	if g.Direction != GQLSortOrderUnspecified {
 		sql += " " + string(g.Direction)
 	}
 	return sql
 }
 
-func (g *GqlCollationSpecification) SQL() string {
+func (g *GQLCollationSpecification) SQL() string {
 	return "COLLATE " + g.Specification.SQL()
 }
 
-func (g *GqlWithStatement) SQL() string {
+func (g *GQLWithStatement) SQL() string {
 	var allOrDistinctStr string
 	switch g.AllOrDistinct {
-	case GqlAllOrDistinctDistinct:
+	case GQLAllOrDistinctDistinct:
 		allOrDistinctStr = "DISTINCT "
-	case GqlAllOrDistinctAll:
+	case GQLAllOrDistinctAll:
 		allOrDistinctStr = "ALL "
-	case GqlAllOrDistinctImplicitAll:
+	case GQLAllOrDistinctImplicitAll:
 		allOrDistinctStr = ""
 	}
 	return "WITH " + allOrDistinctStr +
@@ -1539,16 +1539,16 @@ func (g *GqlWithStatement) SQL() string {
 		sqlOpt(" ", g.GroupByClause, "")
 }
 
-func (s *GqlLetStatement) SQL() string { return "LET " + sqlJoin(s.LinearGraphVariableList, ", ") }
+func (s *GQLLetStatement) SQL() string { return "LET " + sqlJoin(s.LinearGraphVariableList, ", ") }
 
-func (g *GqlReturnStatement) SQL() string {
+func (g *GQLReturnStatement) SQL() string {
 	sql := "RETURN "
 	switch g.AllOrDistinct {
-	case GqlAllOrDistinctAll:
+	case GQLAllOrDistinctAll:
 		sql += "ALL "
-	case GqlAllOrDistinctDistinct:
+	case GQLAllOrDistinctDistinct:
 		sql += "DISTINCT "
-	case GqlAllOrDistinctImplicitAll:
+	case GQLAllOrDistinctImplicitAll:
 		// empty
 	}
 
@@ -1561,52 +1561,52 @@ func (g *GqlReturnStatement) SQL() string {
 
 // GQL graph patterns
 
-func (g *GqlGraphPattern) SQL() string {
+func (g *GQLGraphPattern) SQL() string {
 	return sqlJoin(g.PathPatternList, ", ") + sqlOpt(" ", g.WhereClause, "")
 }
 
-func (g *GqlTopLevelPathPattern) SQL() string {
+func (g *GQLTopLevelPathPattern) SQL() string {
 	return sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
 }
 
-func (g *GqlFullEdgeAny) SQL() string { return "-[" + g.PatternFiller.SQL() + "]-" }
+func (g *GQLFullEdgeAny) SQL() string { return "-[" + g.PatternFiller.SQL() + "]-" }
 
-func (g *GqlFullEdgeLeft) SQL() string { return "<-[" + g.PatternFiller.SQL() + "]-" }
+func (g *GQLFullEdgeLeft) SQL() string { return "<-[" + g.PatternFiller.SQL() + "]-" }
 
-func (g *GqlFullEdgeRight) SQL() string { return "-[" + g.PatternFiller.SQL() + "]->" }
+func (g *GQLFullEdgeRight) SQL() string { return "-[" + g.PatternFiller.SQL() + "]->" }
 
-func (g *GqlAbbreviatedEdgeAny) SQL() string { return "-" }
+func (g *GQLAbbreviatedEdgeAny) SQL() string { return "-" }
 
-func (g *GqlAbbreviatedEdgeLeft) SQL() string { return "<-" }
+func (g *GQLAbbreviatedEdgeLeft) SQL() string { return "<-" }
 
-func (g *GqlAbbreviatedEdgeRight) SQL() string { return "->" }
+func (g *GQLAbbreviatedEdgeRight) SQL() string { return "->" }
 
-func (g *GqlQuantifiablePathTerm) SQL() string {
+func (g *GQLQuantifiablePathTerm) SQL() string {
 	return sqlOpt("", g.Hint, "") + g.PathTerm.SQL() + sqlOpt("", g.Quantifier, "")
 }
 
-func (g *GqlPathPattern) SQL() string { return sqlJoin(g.PathTermList, "") }
+func (g *GQLPathPattern) SQL() string { return sqlJoin(g.PathTermList, "") }
 
-func (g *GqlWhereClause) SQL() string { return "WHERE " + g.BoolExpression.SQL() }
+func (g *GQLWhereClause) SQL() string { return "WHERE " + g.BoolExpression.SQL() }
 
-func (g *GqlPathMode) SQL() string {
+func (g *GQLPathMode) SQL() string {
 	switch g.Mode {
-	case GqlPathModeTrail:
+	case GQLPathModeTrail:
 		return "TRAIL"
-	case GqlPathModeWalk:
+	case GQLPathModeWalk:
 		return "WALK"
 	default:
-		panic("UNKNOWN GqlPathMode")
+		panic("UNKNOWN GQLPathMode")
 	}
 }
 
-func (g *GqlFixedQuantifier) SQL() string { return "{" + g.Bound.SQL() + "}" }
+func (g *GQLFixedQuantifier) SQL() string { return "{" + g.Bound.SQL() + "}" }
 
-func (g *GqlBoundedQuantifier) SQL() string {
+func (g *GQLBoundedQuantifier) SQL() string {
 	return "{" + sqlOpt("", g.LowerBound, "") + "," + g.UpperBound.SQL() + "}"
 }
 
-func (g *GqlSubpathPattern) SQL() string {
+func (g *GQLSubpathPattern) SQL() string {
 	return "(" +
 		sqlOpt("", g.PathMode, " ") +
 		g.PathPattern.SQL() +
@@ -1614,9 +1614,9 @@ func (g *GqlSubpathPattern) SQL() string {
 		")"
 }
 
-func (g *GqlNodePattern) SQL() string { return "(" + g.PatternFiller.SQL() + ")" }
+func (g *GQLNodePattern) SQL() string { return "(" + g.PatternFiller.SQL() + ")" }
 
-func (g *GqlPatternFiller) SQL() string {
+func (g *GQLPatternFiller) SQL() string {
 	sql := sqlOpt("", g.Hint, "") +
 		sqlOpt("", g.GraphPatternVariable, "") +
 		sqlOpt("", g.IsLabelCondition, "")
@@ -1628,40 +1628,40 @@ func (g *GqlPatternFiller) SQL() string {
 	return sql + sqlOpt(" ", g.Filter, "")
 }
 
-func (g *GqlIsLabelCondition) SQL() string { return ":" + g.LabelExpression.SQL() }
+func (g *GQLIsLabelCondition) SQL() string { return ":" + g.LabelExpression.SQL() }
 
-func (g *GqlLabelParenExpression) SQL() string { return "(" + g.LabelExpr.SQL() + ")" }
+func (g *GQLLabelParenExpression) SQL() string { return "(" + g.LabelExpr.SQL() + ")" }
 
-func (g *GqlLabelOrExpression) SQL() string { return g.Left.SQL() + "|" + g.Right.SQL() }
+func (g *GQLLabelOrExpression) SQL() string { return g.Left.SQL() + "|" + g.Right.SQL() }
 
-func (g *GqlLabelAndExpression) SQL() string { return g.Left.SQL() + "&" + g.Right.SQL() }
+func (g *GQLLabelAndExpression) SQL() string { return g.Left.SQL() + "&" + g.Right.SQL() }
 
-func (g *GqlLabelNotExpression) SQL() string { return "!" + g.LabelExpression.SQL() }
+func (g *GQLLabelNotExpression) SQL() string { return "!" + g.LabelExpression.SQL() }
 
-func (g *GqlLabelName) SQL() string {
+func (g *GQLLabelName) SQL() string {
 	if g.IsPercent {
 		return "%"
 	}
 	return g.LabelName.SQL()
 }
 
-func (g *GqlPropertyFilters) SQL() string {
+func (g *GQLPropertyFilters) SQL() string {
 	return "{" + sqlJoin(g.PropertyFilterElemList, ", ") + "}"
 }
 
-func (g *GqlElementProperty) SQL() string {
+func (g *GQLElementProperty) SQL() string {
 	return g.ElementPropertyName.SQL() + ": " + g.ElementPropertyValue.SQL()
 }
 
-func (p *GqlPathSearchPrefix) SQL() string {
+func (p *GQLPathSearchPrefix) SQL() string {
 	switch p.SearchPrefix {
-	case GqlPathSearchPrefixAny:
+	case GQLPathSearchPrefixAny:
 		return "ANY"
-	case GqlPathSearchPrefixAnyShortest:
+	case GQLPathSearchPrefixAnyShortest:
 		return "ANY SHORTEST"
-	case GqlPathSearchPrefixAll:
+	case GQLPathSearchPrefixAll:
 		return "ALL"
 	default:
-		panic("invalid GqlPathSearchPrefix")
+		panic("invalid GQLPathSearchPrefix")
 	}
 }

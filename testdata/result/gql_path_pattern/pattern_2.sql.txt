@@ -1,27 +1,27 @@
 --- pattern_2.sql
 (p:(Singer|(!Writer&!Producer)))
 --- AST
-&ast.GqlPathPattern{
-  PathTermList: []*ast.GqlQuantifiablePathTerm{
-    &ast.GqlQuantifiablePathTerm{
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
-      PathTerm: &ast.GqlNodePattern{
+      PathTerm: &ast.GQLNodePattern{
         LParen:        0,
         RParen:        31,
-        PatternFiller: &ast.GqlPatternFiller{
+        PatternFiller: &ast.GQLPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: &ast.Ident{
             NamePos: 1,
             NameEnd: 2,
             Name:    "p",
           },
-          IsLabelCondition: &ast.GqlIsLabelCondition{
+          IsLabelCondition: &ast.GQLIsLabelCondition{
             IsOrColon:       2,
-            LabelExpression: &ast.GqlLabelParenExpression{
+            LabelExpression: &ast.GQLLabelParenExpression{
               LParen:    3,
               RParen:    30,
-              LabelExpr: &ast.GqlLabelOrExpression{
-                Left: &ast.GqlLabelName{
+              LabelExpr: &ast.GQLLabelOrExpression{
+                Left: &ast.GQLLabelName{
                   StartPos:  4,
                   IsPercent: false,
                   LabelName: &ast.Ident{
@@ -30,13 +30,13 @@
                     Name:    "Singer",
                   },
                 },
-                Right: &ast.GqlLabelParenExpression{
+                Right: &ast.GQLLabelParenExpression{
                   LParen:    11,
                   RParen:    29,
-                  LabelExpr: &ast.GqlLabelNotExpression{
+                  LabelExpr: &ast.GQLLabelNotExpression{
                     Not:             12,
-                    LabelExpression: &ast.GqlLabelAndExpression{
-                      Left: &ast.GqlLabelName{
+                    LabelExpression: &ast.GQLLabelAndExpression{
+                      Left: &ast.GQLLabelName{
                         StartPos:  13,
                         IsPercent: false,
                         LabelName: &ast.Ident{
@@ -45,9 +45,9 @@
                           Name:    "Writer",
                         },
                       },
-                      Right: &ast.GqlLabelNotExpression{
+                      Right: &ast.GQLLabelNotExpression{
                         Not:             20,
-                        LabelExpression: &ast.GqlLabelName{
+                        LabelExpression: &ast.GQLLabelName{
                           StartPos:  21,
                           IsPercent: false,
                           LabelName: &ast.Ident{

@@ -76,7 +76,7 @@ func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
 
 // GRAPH query is top level statement which can be executed by ExecuteSQL API.
-func (*GqlGraphQuery) isStatement() {}
+func (*GQLGraphQuery) isStatement() {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -160,9 +160,9 @@ func (BytesLiteral) isExpr()       {}
 func (DateLiteral) isExpr()        {}
 func (TimestampLiteral) isExpr()   {}
 func (NumericLiteral) isExpr()     {}
-func (*ArrayGqlSubQuery) isExpr()  {}
-func (*ValueGqlSubQuery) isExpr()  {}
-func (*ExistsGqlSubQuery) isExpr() {}
+func (*ArrayGQLSubQuery) isExpr()  {}
+func (*ValueGQLSubQuery) isExpr()  {}
+func (*ExistsGQLSubQuery) isExpr() {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -183,7 +183,7 @@ type InCondition interface {
 func (UnnestInCondition) isInCondition()       {}
 func (SubQueryInCondition) isInCondition()     {}
 func (ValuesInCondition) isInCondition()       {}
-func (*GqlSubQueryInCondition) isInCondition() {}
+func (*GQLSubQueryInCondition) isInCondition() {}
 
 // Type represents type node.
 type Type interface {
@@ -753,7 +753,7 @@ type GraphTableExpr struct {
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	Query *GqlMultiLinearQueryStatement
+	Query *GQLMultiLinearQueryStatement
 	As    *AsAlias // optional
 }
 
@@ -905,16 +905,16 @@ type ValuesInCondition struct {
 	Exprs []Expr // len(Exprs) > 0
 }
 
-// GqlSubQueryInCondition is GQL subquery at IN condition.
+// GQLSubQueryInCondition is GQL subquery at IN condition.
 //
 //	{{"{"}}{{.Query | sql}}}{{"}"}}
-type GqlSubQueryInCondition struct {
+type GQLSubQueryInCondition struct {
 	// pos = LBrace
 	// end = RBrace + 1
 
 	LBrace, RBrace token.Pos // position of "{" and "}"
 
-	Query *GqlQueryExpr
+	Query *GQLQueryExpr
 }
 
 // IsNullExpr is IS NULL expression node.
@@ -1180,50 +1180,50 @@ type ArraySubQuery struct {
 	Query QueryExpr
 }
 
-// ArrayGqlSubQuery is GQL subquery as ARRAY.
+// ArrayGQLSubQuery is GQL subquery as ARRAY.
 //
 //	ARRAY{{"{"}}{{.Query | sql}}{{"}"}}
-type ArrayGqlSubQuery struct {
+type ArrayGQLSubQuery struct {
 	// pos = Array
 	// end = RBrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
 	RBrace token.Pos // position of "{" and "}"
-	Query  *GqlQueryExpr
+	Query  *GQLQueryExpr
 }
 
-// ValueGqlSubQuery is GQL subquery as VALUE.
+// ValueGQLSubQuery is GQL subquery as VALUE.
 //
 //	VALUE{{"{"}}{{.Query | sql}}{{"}"}}
-type ValueGqlSubQuery struct {
+type ValueGQLSubQuery struct {
 	// pos = Array
 	// end = RBrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
 	RBrace token.Pos // position of "{" and "}"
-	Query  *GqlQueryExpr
+	Query  *GQLQueryExpr
 }
 
-// ExistsGqlSubQuery is GQL subquery as EXISTS.
+// ExistsGQLSubQuery is GQL subquery as EXISTS.
 //
 //	EXISTS{{"{"}}{{.Expr | sql}}{{"}"}}
-type ExistsGqlSubQuery struct {
+type ExistsGQLSubQuery struct {
 	// pos = Array
 	// end = RBrace + 1
 
 	Exists token.Pos // position of "ARRAY" keyword
 	RBrace token.Pos // position of "{" and "}"
-	Query  GqlExistsExpr
+	Query  GQLExistsExpr
 }
 
-type GqlExistsExpr interface {
+type GQLExistsExpr interface {
 	Node
-	isGqlExistsExpr()
+	isGQLExistsExpr()
 }
 
-func (*GqlQueryExpr) isGqlExistsExpr()      {}
-func (*GqlMatchStatement) isGqlExistsExpr() {}
-func (*GqlGraphPattern) isGqlExistsExpr()   {}
+func (*GQLQueryExpr) isGQLExistsExpr()      {}
+func (*GQLMatchStatement) isGQLExistsExpr() {}
+func (*GQLGraphPattern) isGQLExistsExpr()   {}
 
 // ExistsSubQuery is subquery in EXISTS call.
 //
@@ -2539,28 +2539,30 @@ type SequenceOptions struct {
 //
 // GQL
 //
+// https://cloud.google.com/spanner/docs/reference/standard-sql/graph-query-statements
+//
 // ================================================================================
 
-// GqlGraphQuery is toplevel node of GRAPH query.
-type GqlGraphQuery struct {
+// GQLGraphQuery is toplevel node of GRAPH query.
+type GQLGraphQuery struct {
 	// pos = (GraphClause ?? MultiLinearQueryStatement).pos
 	// end = MultiLinearQueryStatement.end
 
-	GraphClause               *GqlGraphClause
-	MultiLinearQueryStatement *GqlMultiLinearQueryStatement
+	GraphClause               *GQLGraphClause
+	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
 }
 
-// GqlQueryExpr is similar to GqlGraphQuery,
+// GQLQueryExpr is similar to GQLGraphQuery,
 // but it is appeared in GQL subqueries and it can optionally have GRAPH clause
-type GqlQueryExpr struct {
+type GQLQueryExpr struct {
 	// pos = (GraphClause ?? MultiLinearQueryStatement).pos
 	// end = MultiLinearQueryStatement.end
 
-	GraphClause               *GqlGraphClause // optional
-	MultiLinearQueryStatement *GqlMultiLinearQueryStatement
+	GraphClause               *GQLGraphClause // optional
+	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
 }
 
-type GqlGraphClause struct {
+type GQLGraphClause struct {
 	// pos = Graph
 	// end = PropertyGraphName.end
 
@@ -2568,44 +2570,44 @@ type GqlGraphClause struct {
 	PropertyGraphName *Ident
 }
 
-type GqlMultiLinearQueryStatement struct {
+type GQLMultiLinearQueryStatement struct {
 	// pos = LinearQueryStatementList[0].pos
 	// pos = LinearQueryStatementList[$].end
 
-	LinearQueryStatementList []GqlLinearQueryStatement
+	LinearQueryStatementList []GQLLinearQueryStatement
 }
 
-type GqlLinearQueryStatement interface {
+type GQLLinearQueryStatement interface {
 	Node
-	isGqlLinearQueryStatement()
+	isGQLLinearQueryStatement()
 }
 
-func (*GqlSimpleLinearQueryStatement) isGqlLinearQueryStatement()    {}
-func (*GqlCompositeLinearQueryStatement) isGqlLinearQueryStatement() {}
+func (*GQLSimpleLinearQueryStatement) isGQLLinearQueryStatement()    {}
+func (*GQLCompositeLinearQueryStatement) isGQLLinearQueryStatement() {}
 
-type GqlSimpleLinearQueryStatement struct {
+type GQLSimpleLinearQueryStatement struct {
 	// pos = PrimitiveQueryStatementList[0].pos
 	// end = PrimitiveQueryStatementList[$].end
 
-	PrimitiveQueryStatementList []GqlPrimitiveQueryStatement
+	PrimitiveQueryStatementList []GQLPrimitiveQueryStatement
 }
 
-type GqlSimpleLinearQueryStatementWithSetOperator struct {
+type GQLSimpleLinearQueryStatementWithSetOperator struct {
 	// pos = StartPos
 	// end = Statement.end
 
 	StartPos      token.Pos
-	SetOperator   GqlSetOperatorEnum
-	DistinctOrAll GqlAllOrDistinctEnum
-	Statement     *GqlSimpleLinearQueryStatement
+	SetOperator   GQLSetOperatorEnum
+	DistinctOrAll GQLAllOrDistinctEnum
+	Statement     *GQLSimpleLinearQueryStatement
 }
 
-type GqlCompositeLinearQueryStatement struct {
+type GQLCompositeLinearQueryStatement struct {
 	// pos = HeadSimpleLinearStatement.pos
 	// end = TailSimpleLinearStatement.pos
 
-	HeadSimpleLinearQueryStatement     *GqlSimpleLinearQueryStatement
-	TailSimpleLinearQueryStatementList []*GqlSimpleLinearQueryStatementWithSetOperator
+	HeadSimpleLinearQueryStatement     *GQLSimpleLinearQueryStatement
+	TailSimpleLinearQueryStatementList []*GQLSimpleLinearQueryStatementWithSetOperator
 }
 
 // ================================================================================
@@ -2614,22 +2616,22 @@ type GqlCompositeLinearQueryStatement struct {
 //
 // ================================================================================
 
-type GqlPrimitiveQueryStatement interface {
+type GQLPrimitiveQueryStatement interface {
 	Node
-	isGqlPrimitiveQueryStatement()
+	isGQLPrimitiveQueryStatement()
 }
 
-func (*GqlWithStatement) isGqlPrimitiveQueryStatement()    {}
-func (*GqlOrderByStatement) isGqlPrimitiveQueryStatement() {}
-func (*GqlOffsetStatement) isGqlPrimitiveQueryStatement()  {}
-func (*GqlLimitStatement) isGqlPrimitiveQueryStatement()   {}
-func (*GqlForStatement) isGqlPrimitiveQueryStatement()     {}
-func (*GqlFilterStatement) isGqlPrimitiveQueryStatement()  {}
-func (*GqlMatchStatement) isGqlPrimitiveQueryStatement()   {}
-func (*GqlLetStatement) isGqlPrimitiveQueryStatement()     {}
-func (*GqlReturnStatement) isGqlPrimitiveQueryStatement()  {}
+func (*GQLWithStatement) isGQLPrimitiveQueryStatement()    {}
+func (*GQLOrderByStatement) isGQLPrimitiveQueryStatement() {}
+func (*GQLOffsetStatement) isGQLPrimitiveQueryStatement()  {}
+func (*GQLLimitStatement) isGQLPrimitiveQueryStatement()   {}
+func (*GQLForStatement) isGQLPrimitiveQueryStatement()     {}
+func (*GQLFilterStatement) isGQLPrimitiveQueryStatement()  {}
+func (*GQLMatchStatement) isGQLPrimitiveQueryStatement()   {}
+func (*GQLLetStatement) isGQLPrimitiveQueryStatement()     {}
+func (*GQLReturnStatement) isGQLPrimitiveQueryStatement()  {}
 
-type GqlMatchStatement struct {
+type GQLMatchStatement struct {
 	// pos = (Optional ?? Match)
 	// end = GraphPattern.end
 
@@ -2637,20 +2639,20 @@ type GqlMatchStatement struct {
 	Match    token.Pos
 
 	MatchHint    *Hint                         // optional
-	PrefixOrMode GqlPathSearchPrefixOrPathMode // optional
-	GraphPattern *GqlGraphPattern
+	PrefixOrMode GQLPathSearchPrefixOrPathMode // optional
+	GraphPattern *GQLGraphPattern
 }
 
-type GqlLimitAndOffsetClause interface {
+type GQLLimitAndOffsetClause interface {
 	Node
-	isGqlLimitAndOffsetClause()
+	isGQLLimitAndOffsetClause()
 }
 
-func (g *GqlLimitClause) isGqlLimitAndOffsetClause()           {}
-func (g *GqlOffsetClause) isGqlLimitAndOffsetClause()          {}
-func (g *GqlLimitWithOffsetClause) isGqlLimitAndOffsetClause() {}
+func (g *GQLLimitClause) isGQLLimitAndOffsetClause()           {}
+func (g *GQLOffsetClause) isGQLLimitAndOffsetClause()          {}
+func (g *GQLLimitWithOffsetClause) isGQLLimitAndOffsetClause() {}
 
-type GqlFilterStatement struct {
+type GQLFilterStatement struct {
 	// pos = Filter
 	// end = Expr.end
 
@@ -2659,17 +2661,17 @@ type GqlFilterStatement struct {
 	Expr   Expr
 }
 
-type GqlForStatement struct {
+type GQLForStatement struct {
 	// pos = For
 	// end = (WithOffsetClause ?? ArrayExpression).end
 
 	For              token.Pos
 	ElementName      *Ident
 	ArrayExpression  Expr
-	WithOffsetClause *GqlWithOffsetClause
+	WithOffsetClause *GQLWithOffsetClause
 }
 
-type GqlWithOffsetClause struct {
+type GQLWithOffsetClause struct {
 	// pos = With.pos
 	// end = OffsetName.end ?? Offset + 6
 
@@ -2678,22 +2680,22 @@ type GqlWithOffsetClause struct {
 	OffsetName *Ident
 }
 
-// GqlLimitClause is wrapper of Limit for GQL
-type GqlLimitClause struct {
+// GQLLimitClause is wrapper of Limit for GQL
+type GQLLimitClause struct {
 	// pos = Limit.pos
 	// end = Limit.end
 	Limit *Limit
 }
 
-// GqlOffsetClause is wrapper of Offset for GQL
-type GqlOffsetClause struct {
+// GQLOffsetClause is wrapper of Offset for GQL
+type GQLOffsetClause struct {
 	// pos = Offset.pos
 	// end = Offset.end
 	Offset *Offset
 }
 
-// GqlLimitClauseWithOffset
-type GqlLimitWithOffsetClause struct {
+// GQLLimitClauseWithOffset
+type GQLLimitWithOffsetClause struct {
 	// pos = Limit.pos
 	// end = Offset.end
 
@@ -2701,7 +2703,7 @@ type GqlLimitWithOffsetClause struct {
 	Offset *Offset
 }
 
-type GqlLimitStatement struct {
+type GQLLimitStatement struct {
 	// pos = Limit
 	// end = Count.end
 
@@ -2709,9 +2711,9 @@ type GqlLimitStatement struct {
 	Count IntValue
 }
 
-// GqlOffsetStatement represents OFFSET statement.
+// GQLOffsetStatement represents OFFSET statement.
 // It also represents SKIP statement as the synonym.
-type GqlOffsetStatement struct {
+type GQLOffsetStatement struct {
 	// pos = Offset.pos
 	// end = Count.end
 
@@ -2720,26 +2722,26 @@ type GqlOffsetStatement struct {
 	Count  IntValue
 }
 
-type GqlOrderByStatement struct {
+type GQLOrderByStatement struct {
 	// pos = Order
 	// end = OrderBySpecificationList[$].end
 
 	Order                    token.Pos
-	OrderBySpecificationList []*GqlOrderBySpecification
+	OrderBySpecificationList []*GQLOrderBySpecification
 }
 
-type GqlOrderBySpecification struct {
+type GQLOrderBySpecification struct {
 	// pos = Expr.pos
 	// DirectionPos ?? CollationSpecification.end
 
 	Expr Expr
 
-	CollationSpecification *GqlCollationSpecification // optional
+	CollationSpecification *GQLCollationSpecification // optional
 	DirectionPos           token.Pos                  // optional
-	Direction              GqlDirection
+	Direction              GQLDirection
 }
 
-type GqlCollationSpecification struct {
+type GQLCollationSpecification struct {
 	// pos = Collate
 	// end = Specification.end
 
@@ -2747,25 +2749,25 @@ type GqlCollationSpecification struct {
 	Specification StringValue
 }
 
-type GqlWithStatement struct {
+type GQLWithStatement struct {
 	// pos = With
 	// end = (GroupByClause ?? ReturnItemList[$]).end
 	With           token.Pos
-	AllOrDistinct  GqlAllOrDistinctEnum
-	ReturnItemList []GqlReturnItem
+	AllOrDistinct  GQLAllOrDistinctEnum
+	ReturnItemList []GQLReturnItem
 	GroupByClause  *GroupBy // optional
 }
 
-// GqlReturnItem is similar to SelectItem,
+// GQLReturnItem is similar to SelectItem,
 // but it don't permit DotStar and AsAlias without AS.
-type GqlReturnItem SelectItem
+type GQLReturnItem SelectItem
 
-type GqlReturnStatement struct {
+type GQLReturnStatement struct {
 	// pos = Return.pos
 	// end = (LimitAndOffsetClause ?? OrderByClause ?? GroupByClause ?? ReturnItemList[$]).end
 	Return         token.Pos
-	AllOrDistinct  GqlAllOrDistinctEnum
-	ReturnItemList []GqlReturnItem
+	AllOrDistinct  GQLAllOrDistinctEnum
+	ReturnItemList []GQLReturnItem
 
 	// Use GoogleSQL GroupBy because it is referenced in docs
 	GroupByClause *GroupBy //optional
@@ -2773,21 +2775,21 @@ type GqlReturnStatement struct {
 	// Use GoogleSQL OrderBy because it is referenced in docs
 	OrderByClause *OrderBy //optional
 
-	LimitAndOffsetClause GqlLimitAndOffsetClause // optional
+	LimitAndOffsetClause GQLLimitAndOffsetClause // optional
 }
 
-type GqlLinearGraphVariable struct {
+type GQLLinearGraphVariable struct {
 	VariableName *Ident
 	Value        Expr
 }
 
-type GqlLetStatement struct {
+type GQLLetStatement struct {
 	// pos = Let.pos
 	// end = if len(LinearGraphVariableList) > 0 then LinearGraphVariableList[$].end
 	//       else Let + 3
 
 	Let                     token.Pos
-	LinearGraphVariableList []*GqlLinearGraphVariable
+	LinearGraphVariableList []*GQLLinearGraphVariable
 }
 
 // ================================================================================
@@ -2796,34 +2798,34 @@ type GqlLetStatement struct {
 //
 // ================================================================================
 
-// GqlGraphPattern represents is the toplevel node of GQL graph patterns.
-type GqlGraphPattern struct {
-	// pos = GqlTopLevelPathPattern[0].pos
+// GQLGraphPattern represents is the toplevel node of GQL graph patterns.
+type GQLGraphPattern struct {
+	// pos = GQLTopLevelPathPattern[0].pos
 	// end = (WhereClause ?? PathPatternList[$]).end
 
-	PathPatternList []*GqlTopLevelPathPattern
+	PathPatternList []*GQLTopLevelPathPattern
 	WhereClause     *Where // optional
 }
 
-// GqlTopLevelPathPattern is a PathPattern optionally prefixed by PathSearchPrefixOrPathMode.
-type GqlTopLevelPathPattern struct {
+// GQLTopLevelPathPattern is a PathPattern optionally prefixed by PathSearchPrefixOrPathMode.
+type GQLTopLevelPathPattern struct {
 	// pos = (PathSearchPrefixOrPathMode ?? PathPattern).pos
 	// end = PathPattern.end
 
-	PathSearchPrefixOrPathMode GqlPathSearchPrefixOrPathMode // optional
-	PathPattern                *GqlPathPattern
+	PathSearchPrefixOrPathMode GQLPathSearchPrefixOrPathMode // optional
+	PathPattern                *GQLPathPattern
 }
 
-// GqlPathSearchPrefixOrPathMode represents `{ path_search_prefix | path_mode }`
-type GqlPathSearchPrefixOrPathMode interface {
+// GQLPathSearchPrefixOrPathMode represents `{ path_search_prefix | path_mode }`
+type GQLPathSearchPrefixOrPathMode interface {
 	Node
-	isGqlPathSearchPrefixOrPathMode()
+	isGQLPathSearchPrefixOrPathMode()
 }
 
-func (*GqlPathMode) isGqlPathSearchPrefixOrPathMode()         {}
-func (*GqlPathSearchPrefix) isGqlPathSearchPrefixOrPathMode() {}
+func (*GQLPathMode) isGQLPathSearchPrefixOrPathMode()         {}
+func (*GQLPathSearchPrefix) isGQLPathSearchPrefixOrPathMode() {}
 
-// GqlEdgePattern represents edge pattern nodes.
+// GQLEdgePattern represents edge pattern nodes.
 //
 //	edge_pattern:
 //	 {
@@ -2834,51 +2836,51 @@ func (*GqlPathSearchPrefix) isGqlPathSearchPrefixOrPathMode() {}
 //	   abbreviated_edge_left |
 //	   abbreviated_edge_right
 //	 }
-type GqlEdgePattern interface {
-	GqlElementPattern
-	isGqlEdgePattern()
+type GQLEdgePattern interface {
+	GQLElementPattern
+	isGQLEdgePattern()
 }
 
-func (*GqlAbbreviatedEdgeLeft) isGqlEdgePattern()  {}
-func (*GqlAbbreviatedEdgeAny) isGqlEdgePattern()   {}
-func (*GqlFullEdgeRight) isGqlEdgePattern()        {}
-func (*GqlFullEdgeLeft) isGqlEdgePattern()         {}
-func (*GqlFullEdgeAny) isGqlEdgePattern()          {}
-func (*GqlAbbreviatedEdgeRight) isGqlEdgePattern() {}
+func (*GQLAbbreviatedEdgeLeft) isGQLEdgePattern()  {}
+func (*GQLAbbreviatedEdgeAny) isGQLEdgePattern()   {}
+func (*GQLFullEdgeRight) isGQLEdgePattern()        {}
+func (*GQLFullEdgeLeft) isGQLEdgePattern()         {}
+func (*GQLFullEdgeAny) isGQLEdgePattern()          {}
+func (*GQLAbbreviatedEdgeRight) isGQLEdgePattern() {}
 
-// GqlFullEdgeAny is node representing`-[pattern_filler]-` .
-type GqlFullEdgeAny struct {
+// GQLFullEdgeAny is node representing`-[pattern_filler]-` .
+type GQLFullEdgeAny struct {
 	// pos = First.pos
 	// end = Last.pos + 1
 	First, Last   token.Pos
-	PatternFiller *GqlPatternFiller
+	PatternFiller *GQLPatternFiller
 }
 
-type GqlFullEdgeLeft struct {
+type GQLFullEdgeLeft struct {
 	// pos = First
 	// end = Last + 1
 	First         token.Pos // position of "<"
 	Last          token.Pos // position of the last "-"
-	PatternFiller *GqlPatternFiller
+	PatternFiller *GQLPatternFiller
 }
 
-type GqlFullEdgeRight struct {
+type GQLFullEdgeRight struct {
 	// pos = First
 	// end = Last + 1
 
 	First         token.Pos // position of the first "-"
 	Last          token.Pos // position of ">"
-	PatternFiller *GqlPatternFiller
+	PatternFiller *GQLPatternFiller
 }
 
-type GqlAbbreviatedEdgeAny struct {
+type GQLAbbreviatedEdgeAny struct {
 	// pos = Hyphen
 	// end = Hyphen +1
 
 	Hyphen token.Pos // position of "-"
 }
 
-type GqlAbbreviatedEdgeLeft struct {
+type GQLAbbreviatedEdgeLeft struct {
 	// pos = First
 	// end = Last + 1
 
@@ -2886,7 +2888,7 @@ type GqlAbbreviatedEdgeLeft struct {
 	Last  token.Pos // position of "-"
 }
 
-type GqlAbbreviatedEdgeRight struct {
+type GQLAbbreviatedEdgeRight struct {
 	// pos = First
 	// end = Last + 1
 
@@ -2894,36 +2896,36 @@ type GqlAbbreviatedEdgeRight struct {
 	Last  token.Pos // position of ">"
 }
 
-type GqlQuantifiablePathTerm struct {
+type GQLQuantifiablePathTerm struct {
 	// pos = (Hint ?? PathTerm).pos
 	// end = (Quantifier ?? PathTerm).end
 
 	Hint       *Hint // optional
-	PathTerm   GqlPathTerm
-	Quantifier GqlQuantifier // optional
+	PathTerm   GQLPathTerm
+	Quantifier GQLQuantifier // optional
 }
 
-type GqlPathPattern struct {
+type GQLPathPattern struct {
 	// pos = PathTermList[0].pos
 	// end = PathTermList[$].end
-	PathTermList []*GqlQuantifiablePathTerm
+	PathTermList []*GQLQuantifiablePathTerm
 }
 
-type GqlPathTerm interface {
+type GQLPathTerm interface {
 	Node
-	isGqlPathTerm()
+	isGQLPathTerm()
 }
 
-func (*GqlSubpathPattern) isGqlPathTerm()       {}
-func (*GqlNodePattern) isGqlPathTerm()          {}
-func (*GqlAbbreviatedEdgeRight) isGqlPathTerm() {}
-func (*GqlAbbreviatedEdgeLeft) isGqlPathTerm()  {}
-func (*GqlAbbreviatedEdgeAny) isGqlPathTerm()   {}
-func (*GqlFullEdgeRight) isGqlPathTerm()        {}
-func (*GqlFullEdgeLeft) isGqlPathTerm()         {}
-func (*GqlFullEdgeAny) isGqlPathTerm()          {}
+func (*GQLSubpathPattern) isGQLPathTerm()       {}
+func (*GQLNodePattern) isGQLPathTerm()          {}
+func (*GQLAbbreviatedEdgeRight) isGQLPathTerm() {}
+func (*GQLAbbreviatedEdgeLeft) isGQLPathTerm()  {}
+func (*GQLAbbreviatedEdgeAny) isGQLPathTerm()   {}
+func (*GQLFullEdgeRight) isGQLPathTerm()        {}
+func (*GQLFullEdgeLeft) isGQLPathTerm()         {}
+func (*GQLFullEdgeAny) isGQLPathTerm()          {}
 
-type GqlWhereClause struct {
+type GQLWhereClause struct {
 	// pos = Where
 	// end = BoolExpression.end
 
@@ -2931,42 +2933,42 @@ type GqlWhereClause struct {
 	BoolExpression Expr
 }
 
-type GqlElementPattern interface {
+type GQLElementPattern interface {
 	Node
-	GqlPathTerm
-	isGqlElementPattern()
+	GQLPathTerm
+	isGQLElementPattern()
 }
 
-func (*GqlFullEdgeAny) isGqlElementPattern()          {}
-func (*GqlFullEdgeLeft) isGqlElementPattern()         {}
-func (*GqlFullEdgeRight) isGqlElementPattern()        {}
-func (*GqlAbbreviatedEdgeAny) isGqlElementPattern()   {}
-func (*GqlAbbreviatedEdgeLeft) isGqlElementPattern()  {}
-func (*GqlAbbreviatedEdgeRight) isGqlElementPattern() {}
+func (*GQLFullEdgeAny) isGQLElementPattern()          {}
+func (*GQLFullEdgeLeft) isGQLElementPattern()         {}
+func (*GQLFullEdgeRight) isGQLElementPattern()        {}
+func (*GQLAbbreviatedEdgeAny) isGQLElementPattern()   {}
+func (*GQLAbbreviatedEdgeLeft) isGQLElementPattern()  {}
+func (*GQLAbbreviatedEdgeRight) isGQLElementPattern() {}
 
-type GqlPathMode struct {
+type GQLPathMode struct {
 	// pos = ModeToken.pos
 	// end = (PathOrPathsToken ?? ModeToken).end
 
-	Mode             GqlPathModeEnum
+	Mode             GQLPathModeEnum
 	ModeToken        *Ident
 	PathOrPathsToken *Ident // optional
 }
 
 /*
-	type GqlQuantifiedPathPrimary struct {
+	type GQLQuantifiedPathPrimary struct {
 		PathPrimary
 	}
 */
-type GqlQuantifier interface {
+type GQLQuantifier interface {
 	Node
-	isGqlQuantifier()
+	isGQLQuantifier()
 }
 
-func (g *GqlFixedQuantifier) isGqlQuantifier()   {}
-func (g *GqlBoundedQuantifier) isGqlQuantifier() {}
+func (g *GQLFixedQuantifier) isGQLQuantifier()   {}
+func (g *GQLBoundedQuantifier) isGQLQuantifier() {}
 
-type GqlFixedQuantifier struct {
+type GQLFixedQuantifier struct {
 	// pos = LBrace
 	// end = RBrace + 1
 
@@ -2974,7 +2976,7 @@ type GqlFixedQuantifier struct {
 	Bound          IntValue
 }
 
-type GqlBoundedQuantifier struct {
+type GQLBoundedQuantifier struct {
 	// pos = LBrace
 	// end = RBrace + 1
 	LBrace, RBrace token.Pos
@@ -2982,22 +2984,22 @@ type GqlBoundedQuantifier struct {
 	UpperBound     IntValue
 }
 
-type GqlSubpathPattern struct {
+type GQLSubpathPattern struct {
 	// pos = LParen
 	// end = RParen + 1
 
 	LParen, RParen token.Pos    // position of "(" and ")"
-	PathMode       *GqlPathMode // optional
-	PathPattern    *GqlPathPattern
+	PathMode       *GQLPathMode // optional
+	PathPattern    *GQLPathPattern
 	WhereClause    *Where // optional
 }
 
-type GqlNodePattern struct {
+type GQLNodePattern struct {
 	// pos = LParen
 	// end = RParen + 1
 
 	LParen, RParen token.Pos
-	PatternFiller  *GqlPatternFiller
+	PatternFiller  *GQLPatternFiller
 }
 
 // EdgePattern TODO
@@ -3020,26 +3022,26 @@ type EdgePattern interface {
 
 */
 
-type GqlPatternFiller struct {
+type GQLPatternFiller struct {
 	// pos = (Hint ?? GraphPatternVariable ?? IsLabelCondition ?? Filter).pos
 	// end = (Filter ?? IsLabelCondition ?? GraphPatternVariable ?? Hint).end
 
 	// Hint is graph element hint which is a table hint.
 	Hint                 *Hint                  // optional
 	GraphPatternVariable *Ident                 // optional
-	IsLabelCondition     *GqlIsLabelCondition   // optional
-	Filter               GqlPatternFillerFilter // optional
+	IsLabelCondition     *GQLIsLabelCondition   // optional
+	Filter               GQLPatternFillerFilter // optional
 }
 
-type GqlIsLabelCondition struct {
+type GQLIsLabelCondition struct {
 	// pos = IsOrColon
 	// end = LabelExpression.end
 
 	IsOrColon       token.Pos
-	LabelExpression GqlLabelExpression
+	LabelExpression GQLLabelExpression
 }
 
-// GqlLabelExpression represents
+// GQLLabelExpression represents
 //
 //	label_expression:
 //	{
@@ -3050,48 +3052,48 @@ type GqlIsLabelCondition struct {
 //	}
 //
 // Note: Spanner Graph documentation don't say about paren expression, but there is.
-type GqlLabelExpression interface {
+type GQLLabelExpression interface {
 	Node
-	isGqlLabelExpression()
+	isGQLLabelExpression()
 }
 
-func (g *GqlLabelParenExpression) isGqlLabelExpression() {}
-func (g *GqlLabelOrExpression) isGqlLabelExpression()    {}
-func (g *GqlLabelAndExpression) isGqlLabelExpression()   {}
-func (g *GqlLabelNotExpression) isGqlLabelExpression()   {}
-func (g *GqlLabelName) isGqlLabelExpression()            {}
+func (g *GQLLabelParenExpression) isGQLLabelExpression() {}
+func (g *GQLLabelOrExpression) isGQLLabelExpression()    {}
+func (g *GQLLabelAndExpression) isGQLLabelExpression()   {}
+func (g *GQLLabelNotExpression) isGQLLabelExpression()   {}
+func (g *GQLLabelName) isGQLLabelExpression()            {}
 
-type GqlLabelOrExpression struct {
+type GQLLabelOrExpression struct {
 	// pos = LParen
 	// end = RParen
 
-	Left, Right GqlLabelExpression
+	Left, Right GQLLabelExpression
 }
 
-type GqlLabelParenExpression struct {
+type GQLLabelParenExpression struct {
 	// pos = LParen
 	// end = RParen + 1
 
 	LParen, RParen token.Pos
-	LabelExpr      GqlLabelExpression
+	LabelExpr      GQLLabelExpression
 }
 
-type GqlLabelAndExpression struct {
+type GQLLabelAndExpression struct {
 	// pos = Left.pos
 	// end = Right.end
 
-	Left, Right GqlLabelExpression
+	Left, Right GQLLabelExpression
 }
 
-type GqlLabelNotExpression struct {
+type GQLLabelNotExpression struct {
 	// pos = Not
 	// end = LabelExpression.end
 
 	Not             token.Pos // position of "!"
-	LabelExpression GqlLabelExpression
+	LabelExpression GQLLabelExpression
 }
 
-type GqlLabelName struct {
+type GQLLabelName struct {
 	// pos = StartPos
 	// end = if IsPercent then StartPos + 1
 	//       else LabelName.end
@@ -3101,27 +3103,27 @@ type GqlLabelName struct {
 	LabelName *Ident
 }
 
-// GqlPatternFillerFilter represents
-type GqlPatternFillerFilter interface {
+// GQLPatternFillerFilter represents
+type GQLPatternFillerFilter interface {
 	Node
-	isGqlPatternFillerFilter()
+	isGQLPatternFillerFilter()
 }
 
-func (g *GqlPropertyFilters) isGqlPatternFillerFilter() {}
-func (g *GqlWhereClause) isGqlPatternFillerFilter()     {}
-func (w *Where) isGqlPatternFillerFilter()              {}
+func (g *GQLPropertyFilters) isGQLPatternFillerFilter() {}
+func (g *GQLWhereClause) isGQLPatternFillerFilter()     {}
+func (w *Where) isGQLPatternFillerFilter()              {}
 
-type GqlPropertyFilters struct {
+type GQLPropertyFilters struct {
 	// pos = LBrace
 	// end = RBrace + 1
 
 	LBrace                 token.Pos // position of "{"
-	PropertyFilterElemList []*GqlElementProperty
+	PropertyFilterElemList []*GQLElementProperty
 	RBrace                 token.Pos // position of "}"
 }
 
-// GqlElementProperty represents an element of GqlPropertyFilters.
-type GqlElementProperty struct {
+// GQLElementProperty represents an element of GQLPropertyFilters.
+type GQLElementProperty struct {
 	// pos = ElementPropertyName.pos
 	// end = ElementPropertyValue.pos
 
@@ -3129,14 +3131,14 @@ type GqlElementProperty struct {
 	ElementPropertyValue Expr
 }
 
-// GqlPathSearchPrefix represents
+// GQLPathSearchPrefix represents
 //
 //	`{"ALL" | "ANY" | "ANY SHORTEST"}`.
-type GqlPathSearchPrefix struct {
+type GQLPathSearchPrefix struct {
 	// pos = StartPos
 	// end = LastEnd
 
 	StartPos     token.Pos
 	LastEnd      token.Pos // end of last token
-	SearchPrefix GqlSearchPrefixEnum
+	SearchPrefix GQLSearchPrefixEnum
 }

@@ -7,8 +7,8 @@ RETURN VALUE {
   LIMIT 1
 } AS results
 --- AST
-&ast.GqlGraphQuery{
-  GraphClause: &ast.GqlGraphClause{
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
     Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
@@ -16,50 +16,50 @@ RETURN VALUE {
       Name:    "FinGraph",
     },
   },
-  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-      &ast.GqlSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-          &ast.GqlReturnStatement{
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
             Return:         15,
             AllOrDistinct:  0,
-            ReturnItemList: []ast.GqlReturnItem{
+            ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
-                Expr: &ast.ValueGqlSubQuery{
+                Expr: &ast.ValueGQLSubQuery{
                   Array:  22,
                   RBrace: 101,
-                  Query:  &ast.GqlQueryExpr{
-                    GraphClause:               (*ast.GqlGraphClause)(nil),
-                    MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-                      LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-                        &ast.GqlSimpleLinearQueryStatement{
-                          PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-                            &ast.GqlMatchStatement{
+                  Query:  &ast.GQLQueryExpr{
+                    GraphClause:               (*ast.GQLGraphClause)(nil),
+                    MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+                      LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+                        &ast.GQLSimpleLinearQueryStatement{
+                          PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                            &ast.GQLMatchStatement{
                               Optional:     -1,
                               Match:        32,
                               MatchHint:    (*ast.Hint)(nil),
                               PrefixOrMode: nil,
-                              GraphPattern: &ast.GqlGraphPattern{
-                                PathPatternList: []*ast.GqlTopLevelPathPattern{
-                                  &ast.GqlTopLevelPathPattern{
+                              GraphPattern: &ast.GQLGraphPattern{
+                                PathPatternList: []*ast.GQLTopLevelPathPattern{
+                                  &ast.GQLTopLevelPathPattern{
                                     PathSearchPrefixOrPathMode: nil,
-                                    PathPattern:                &ast.GqlPathPattern{
-                                      PathTermList: []*ast.GqlQuantifiablePathTerm{
-                                        &ast.GqlQuantifiablePathTerm{
+                                    PathPattern:                &ast.GQLPathPattern{
+                                      PathTermList: []*ast.GQLQuantifiablePathTerm{
+                                        &ast.GQLQuantifiablePathTerm{
                                           Hint:     (*ast.Hint)(nil),
-                                          PathTerm: &ast.GqlNodePattern{
+                                          PathTerm: &ast.GQLNodePattern{
                                             LParen:        38,
                                             RParen:        47,
-                                            PatternFiller: &ast.GqlPatternFiller{
+                                            PatternFiller: &ast.GQLPatternFiller{
                                               Hint:                 (*ast.Hint)(nil),
                                               GraphPatternVariable: &ast.Ident{
                                                 NamePos: 39,
                                                 NameEnd: 40,
                                                 Name:    "p",
                                               },
-                                              IsLabelCondition: &ast.GqlIsLabelCondition{
+                                              IsLabelCondition: &ast.GQLIsLabelCondition{
                                                 IsOrColon:       40,
-                                                LabelExpression: &ast.GqlLabelName{
+                                                LabelExpression: &ast.GQLLabelName{
                                                   StartPos:  41,
                                                   IsPercent: false,
                                                   LabelName: &ast.Ident{
@@ -105,10 +105,10 @@ RETURN VALUE {
                                 },
                               },
                             },
-                            &ast.GqlReturnStatement{
+                            &ast.GQLReturnStatement{
                               Return:         77,
                               AllOrDistinct:  0,
-                              ReturnItemList: []ast.GqlReturnItem{
+                              ReturnItemList: []ast.GQLReturnItem{
                                 &ast.ExprSelectItem{
                                   Expr: &ast.Path{
                                     Idents: []*ast.Ident{
@@ -128,7 +128,7 @@ RETURN VALUE {
                               },
                               GroupByClause:        (*ast.GroupBy)(nil),
                               OrderByClause:        (*ast.OrderBy)(nil),
-                              LimitAndOffsetClause: &ast.GqlLimitClause{
+                              LimitAndOffsetClause: &ast.GQLLimitClause{
                                 Limit: &ast.Limit{
                                   Limit: 93,
                                   Count: &ast.IntLiteral{

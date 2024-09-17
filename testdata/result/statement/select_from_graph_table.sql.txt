@@ -24,14 +24,14 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
         },
         Lparen: 25,
         Rparen: 48,
-        Query:  &ast.GqlMultiLinearQueryStatement{
-          LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-            &ast.GqlSimpleLinearQueryStatement{
-              PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-                &ast.GqlReturnStatement{
+        Query:  &ast.GQLMultiLinearQueryStatement{
+          LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturnStatement{
                   Return:         35,
                   AllOrDistinct:  0,
-                  ReturnItemList: []ast.GqlReturnItem{
+                  ReturnItemList: []ast.GQLReturnItem{
                     &ast.Alias{
                       Expr: &ast.IntLiteral{
                         ValuePos: 42,

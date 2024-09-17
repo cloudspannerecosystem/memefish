@@ -1,17 +1,17 @@
 --- node_pattern_unnamed.sql
  ()
 --- AST
-&ast.GqlPathPattern{
-  PathTermList: []*ast.GqlQuantifiablePathTerm{
-    &ast.GqlQuantifiablePathTerm{
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
-      PathTerm: &ast.GqlNodePattern{
+      PathTerm: &ast.GQLNodePattern{
         LParen:        1,
         RParen:        2,
-        PatternFiller: &ast.GqlPatternFiller{
+        PatternFiller: &ast.GQLPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: (*ast.Ident)(nil),
-          IsLabelCondition:     (*ast.GqlIsLabelCondition)(nil),
+          IsLabelCondition:     (*ast.GQLIsLabelCondition)(nil),
           Filter:               nil,
         },
       },

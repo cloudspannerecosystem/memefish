@@ -21,11 +21,11 @@ SELECT 'Dana' IN {
             ValueEnd: 13,
             Value:    "Dana",
           },
-          Right: &ast.GqlSubQueryInCondition{
+          Right: &ast.GQLSubQueryInCondition{
             LBrace: 17,
             RBrace: 93,
-            Query:  &ast.GqlQueryExpr{
-              GraphClause: &ast.GqlGraphClause{
+            Query:  &ast.GQLQueryExpr{
+              GraphClause: &ast.GQLGraphClause{
                 Graph:             21,
                 PropertyGraphName: &ast.Ident{
                   NamePos: 27,
@@ -33,36 +33,36 @@ SELECT 'Dana' IN {
                   Name:    "FinGraph",
                 },
               },
-              MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-                LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-                  &ast.GqlSimpleLinearQueryStatement{
-                    PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-                      &ast.GqlMatchStatement{
+              MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+                LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+                  &ast.GQLSimpleLinearQueryStatement{
+                    PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                      &ast.GQLMatchStatement{
                         Optional:     -1,
                         Match:        38,
                         MatchHint:    (*ast.Hint)(nil),
                         PrefixOrMode: nil,
-                        GraphPattern: &ast.GqlGraphPattern{
-                          PathPatternList: []*ast.GqlTopLevelPathPattern{
-                            &ast.GqlTopLevelPathPattern{
+                        GraphPattern: &ast.GQLGraphPattern{
+                          PathPatternList: []*ast.GQLTopLevelPathPattern{
+                            &ast.GQLTopLevelPathPattern{
                               PathSearchPrefixOrPathMode: nil,
-                              PathPattern:                &ast.GqlPathPattern{
-                                PathTermList: []*ast.GqlQuantifiablePathTerm{
-                                  &ast.GqlQuantifiablePathTerm{
+                              PathPattern:                &ast.GQLPathPattern{
+                                PathTermList: []*ast.GQLQuantifiablePathTerm{
+                                  &ast.GQLQuantifiablePathTerm{
                                     Hint:     (*ast.Hint)(nil),
-                                    PathTerm: &ast.GqlNodePattern{
+                                    PathTerm: &ast.GQLNodePattern{
                                       LParen:        44,
                                       RParen:        53,
-                                      PatternFiller: &ast.GqlPatternFiller{
+                                      PatternFiller: &ast.GQLPatternFiller{
                                         Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 45,
                                           NameEnd: 46,
                                           Name:    "p",
                                         },
-                                        IsLabelCondition: &ast.GqlIsLabelCondition{
+                                        IsLabelCondition: &ast.GQLIsLabelCondition{
                                           IsOrColon:       46,
-                                          LabelExpression: &ast.GqlLabelName{
+                                          LabelExpression: &ast.GQLLabelName{
                                             StartPos:  47,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
@@ -77,21 +77,21 @@ SELECT 'Dana' IN {
                                     },
                                     Quantifier: nil,
                                   },
-                                  &ast.GqlQuantifiablePathTerm{
+                                  &ast.GQLQuantifiablePathTerm{
                                     Hint:     (*ast.Hint)(nil),
-                                    PathTerm: &ast.GqlFullEdgeRight{
+                                    PathTerm: &ast.GQLFullEdgeRight{
                                       First:         54,
                                       Last:          64,
-                                      PatternFiller: &ast.GqlPatternFiller{
+                                      PatternFiller: &ast.GQLPatternFiller{
                                         Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 56,
                                           NameEnd: 57,
                                           Name:    "o",
                                         },
-                                        IsLabelCondition: &ast.GqlIsLabelCondition{
+                                        IsLabelCondition: &ast.GQLIsLabelCondition{
                                           IsOrColon:       57,
-                                          LabelExpression: &ast.GqlLabelName{
+                                          LabelExpression: &ast.GQLLabelName{
                                             StartPos:  58,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
@@ -106,21 +106,21 @@ SELECT 'Dana' IN {
                                     },
                                     Quantifier: nil,
                                   },
-                                  &ast.GqlQuantifiablePathTerm{
+                                  &ast.GQLQuantifiablePathTerm{
                                     Hint:     (*ast.Hint)(nil),
-                                    PathTerm: &ast.GqlNodePattern{
+                                    PathTerm: &ast.GQLNodePattern{
                                       LParen:        65,
                                       RParen:        75,
-                                      PatternFiller: &ast.GqlPatternFiller{
+                                      PatternFiller: &ast.GQLPatternFiller{
                                         Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 66,
                                           NameEnd: 67,
                                           Name:    "a",
                                         },
-                                        IsLabelCondition: &ast.GqlIsLabelCondition{
+                                        IsLabelCondition: &ast.GQLIsLabelCondition{
                                           IsOrColon:       67,
-                                          LabelExpression: &ast.GqlLabelName{
+                                          LabelExpression: &ast.GQLLabelName{
                                             StartPos:  68,
                                             IsPercent: false,
                                             LabelName: &ast.Ident{
@@ -142,10 +142,10 @@ SELECT 'Dana' IN {
                           WhereClause: (*ast.Where)(nil),
                         },
                       },
-                      &ast.GqlReturnStatement{
+                      &ast.GQLReturnStatement{
                         Return:         79,
                         AllOrDistinct:  0,
-                        ReturnItemList: []ast.GqlReturnItem{
+                        ReturnItemList: []ast.GQLReturnItem{
                           &ast.ExprSelectItem{
                             Expr: &ast.Path{
                               Idents: []*ast.Ident{

@@ -3,8 +3,8 @@ GRAPH FinGraph
 MATCH ANY SHORTEST (TRAIL ->{1,4})
 RETURN COUNT(1) as num_paths
 --- AST
-&ast.GqlGraphQuery{
-  GraphClause: &ast.GqlGraphClause{
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
     Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
@@ -12,31 +12,31 @@ RETURN COUNT(1) as num_paths
       Name:    "FinGraph",
     },
   },
-  MultiLinearQueryStatement: &ast.GqlMultiLinearQueryStatement{
-    LinearQueryStatementList: []ast.GqlLinearQueryStatement{
-      &ast.GqlSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GqlPrimitiveQueryStatement{
-          &ast.GqlMatchStatement{
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
             MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: &ast.GqlPathSearchPrefix{
+            PrefixOrMode: &ast.GQLPathSearchPrefix{
               StartPos:     21,
               LastEnd:      33,
               SearchPrefix: 2,
             },
-            GraphPattern: &ast.GqlGraphPattern{
-              PathPatternList: []*ast.GqlTopLevelPathPattern{
-                &ast.GqlTopLevelPathPattern{
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
                   PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GqlPathPattern{
-                    PathTermList: []*ast.GqlQuantifiablePathTerm{
-                      &ast.GqlQuantifiablePathTerm{
+                  PathPattern:                &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
-                        PathTerm: &ast.GqlSubpathPattern{
+                        PathTerm: &ast.GQLSubpathPattern{
                           LParen:   34,
                           RParen:   48,
-                          PathMode: &ast.GqlPathMode{
+                          PathMode: &ast.GQLPathMode{
                             Mode:      1,
                             ModeToken: &ast.Ident{
                               NamePos: 35,
@@ -45,15 +45,15 @@ RETURN COUNT(1) as num_paths
                             },
                             PathOrPathsToken: (*ast.Ident)(nil),
                           },
-                          PathPattern: &ast.GqlPathPattern{
-                            PathTermList: []*ast.GqlQuantifiablePathTerm{
-                              &ast.GqlQuantifiablePathTerm{
+                          PathPattern: &ast.GQLPathPattern{
+                            PathTermList: []*ast.GQLQuantifiablePathTerm{
+                              &ast.GQLQuantifiablePathTerm{
                                 Hint:     (*ast.Hint)(nil),
-                                PathTerm: &ast.GqlAbbreviatedEdgeRight{
+                                PathTerm: &ast.GQLAbbreviatedEdgeRight{
                                   First: 41,
                                   Last:  42,
                                 },
-                                Quantifier: &ast.GqlBoundedQuantifier{
+                                Quantifier: &ast.GQLBoundedQuantifier{
                                   LBrace:     43,
                                   RBrace:     47,
                                   LowerBound: &ast.IntLiteral{
@@ -83,10 +83,10 @@ RETURN COUNT(1) as num_paths
               WhereClause: (*ast.Where)(nil),
             },
           },
-          &ast.GqlReturnStatement{
+          &ast.GQLReturnStatement{
             Return:         50,
             AllOrDistinct:  0,
-            ReturnItemList: []ast.GqlReturnItem{
+            ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{
                   Rparen: 64,

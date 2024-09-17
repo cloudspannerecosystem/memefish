@@ -131,43 +131,43 @@ const (
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
 
-type GqlAllOrDistinctEnum int
+type GQLAllOrDistinctEnum int
 
 const (
-	GqlAllOrDistinctImplicitAll GqlAllOrDistinctEnum = iota
-	GqlAllOrDistinctAll                              = iota
-	GqlAllOrDistinctDistinct
+	GQLAllOrDistinctImplicitAll GQLAllOrDistinctEnum = iota
+	GQLAllOrDistinctAll                              = iota
+	GQLAllOrDistinctDistinct
 )
 
-type GqlSetOperatorEnum int
+type GQLSetOperatorEnum int
 
 const (
-	GqlSetOperatorUnion GqlSetOperatorEnum = iota
-	GqlSetOperatorIntersect
-	GqlSetOperatorExcept
+	GQLSetOperatorUnion GQLSetOperatorEnum = iota
+	GQLSetOperatorIntersect
+	GQLSetOperatorExcept
 )
 
-type GqlDirection string
+type GQLDirection string
 
 const (
-	GqlSortOrderUnspecified GqlDirection = ""
-	GqlSortOrderAsc         GqlDirection = "ASC"
-	GqlSortOrderAscending   GqlDirection = "ASCENDING"
-	GqlSortOrderDesc        GqlDirection = "DESC"
-	GqlSortOrderDescending  GqlDirection = "DESCENDING"
+	GQLSortOrderUnspecified GQLDirection = ""
+	GQLSortOrderAsc         GQLDirection = "ASC"
+	GQLSortOrderAscending   GQLDirection = "ASCENDING"
+	GQLSortOrderDesc        GQLDirection = "DESC"
+	GQLSortOrderDescending  GQLDirection = "DESCENDING"
 )
 
-type GqlPathModeEnum int
+type GQLPathModeEnum int
 
 const (
-	GqlPathModeWalk GqlPathModeEnum = iota
-	GqlPathModeTrail
+	GQLPathModeWalk GQLPathModeEnum = iota
+	GQLPathModeTrail
 )
 
-type GqlSearchPrefixEnum int
+type GQLSearchPrefixEnum int
 
 const (
-	GqlPathSearchPrefixAll GqlSearchPrefixEnum = iota
-	GqlPathSearchPrefixAny
-	GqlPathSearchPrefixAnyShortest
+	GQLPathSearchPrefixAll GQLSearchPrefixEnum = iota
+	GQLPathSearchPrefixAny
+	GQLPathSearchPrefixAnyShortest
 )

@@ -1,17 +1,17 @@
 --- full_edge_right.sql
  -[]->
 --- AST
-&ast.GqlPathPattern{
-  PathTermList: []*ast.GqlQuantifiablePathTerm{
-    &ast.GqlQuantifiablePathTerm{
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
-      PathTerm: &ast.GqlFullEdgeRight{
+      PathTerm: &ast.GQLFullEdgeRight{
         First:         1,
         Last:          5,
-        PatternFiller: &ast.GqlPatternFiller{
+        PatternFiller: &ast.GQLPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: (*ast.Ident)(nil),
-          IsLabelCondition:     (*ast.GqlIsLabelCondition)(nil),
+          IsLabelCondition:     (*ast.GQLIsLabelCondition)(nil),
           Filter:               nil,
         },
       },

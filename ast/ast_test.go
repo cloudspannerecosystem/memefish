@@ -24,7 +24,7 @@ func TestStatement(t *testing.T) {
 	Statement(&Grant{}).isStatement()
 	Statement(&Revoke{}).isStatement()
 
-	Statement(&GqlGraphQuery{}).isStatement()
+	Statement(&GQLGraphQuery{}).isStatement()
 }
 
 func TestQueryExpr(t *testing.T) {
