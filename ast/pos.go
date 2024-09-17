@@ -952,8 +952,8 @@ func (g *GqlMatchStatement) End() token.Pos {
 func (g *GqlLimitClause) Pos() token.Pos { return g.Limit.Pos() }
 func (g *GqlLimitClause) End() token.Pos { return g.Limit.End() }
 
-func (g *GqlOffsetClause) Pos() token.Pos { return g.Pos() }
-func (g *GqlOffsetClause) End() token.Pos { return g.End() }
+func (g *GqlOffsetClause) Pos() token.Pos { return g.Offset.Pos() }
+func (g *GqlOffsetClause) End() token.Pos { return g.Offset.End() }
 
 func (g *GqlLimitWithOffsetClause) Pos() token.Pos { return g.Limit.Pos() }
 func (g *GqlLimitWithOffsetClause) End() token.Pos { return g.Offset.End() }
