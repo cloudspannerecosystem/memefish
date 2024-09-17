@@ -124,37 +124,39 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
+func (BinaryExpr) isExpr()        {}
+func (UnaryExpr) isExpr()         {}
+func (InExpr) isExpr()            {}
+func (IsNullExpr) isExpr()        {}
+func (IsBoolExpr) isExpr()        {}
+func (BetweenExpr) isExpr()       {}
+func (SelectorExpr) isExpr()      {}
+func (IndexExpr) isExpr()         {}
+func (CallExpr) isExpr()          {}
+func (CountStarExpr) isExpr()     {}
+func (CastExpr) isExpr()          {}
+func (ExtractExpr) isExpr()       {}
+func (CaseExpr) isExpr()          {}
+func (ParenExpr) isExpr()         {}
+func (ScalarSubQuery) isExpr()    {}
+func (ArraySubQuery) isExpr()     {}
+func (ExistsSubQuery) isExpr()    {}
+func (Param) isExpr()             {}
+func (Ident) isExpr()             {}
+func (Path) isExpr()              {}
+func (ArrayLiteral) isExpr()      {}
+func (StructLiteral) isExpr()     {}
+func (NullLiteral) isExpr()       {}
+func (BoolLiteral) isExpr()       {}
+func (IntLiteral) isExpr()        {}
+func (FloatLiteral) isExpr()      {}
+func (StringLiteral) isExpr()     {}
+func (BytesLiteral) isExpr()      {}
+func (DateLiteral) isExpr()       {}
+func (TimestampLiteral) isExpr()  {}
+func (NumericLiteral) isExpr()    {}
+func (*ArrayGqlSubQuery) isExpr() {}
+func (*ValueGqlSubQuery) isExpr() {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -172,10 +174,10 @@ type InCondition interface {
 	isInCondition()
 }
 
-func (UnnestInCondition) isInCondition()   {}
-func (SubQueryInCondition) isInCondition() {}
-func (ValuesInCondition) isInCondition()   {}
-func (*GqlSubQuery) isInCondition()        {}
+func (UnnestInCondition) isInCondition()       {}
+func (SubQueryInCondition) isInCondition()     {}
+func (ValuesInCondition) isInCondition()       {}
+func (*GqlSubQueryInCondition) isInCondition() {}
 
 // Type represents type node.
 type Type interface {
@@ -899,10 +901,10 @@ type ValuesInCondition struct {
 	Exprs []Expr // len(Exprs) > 0
 }
 
-// GqlSubQuery is GQL subquery at IN condition.
+// GqlSubQueryInCondition is GQL subquery at IN condition.
 //
 //	{{"{"}}{{.Query | sql}}}{{"}"}}
-type GqlSubQuery struct {
+type GqlSubQueryInCondition struct {
 	// pos = LBrace
 	// end = RBrace + 1
 
@@ -1150,6 +1152,30 @@ type ArraySubQuery struct {
 	Rparen token.Pos // position of ")"
 
 	Query QueryExpr
+}
+
+// ArrayGqlSubQuery is GQL subquery as ARRAY.
+//
+//	ARRAY{{"{"}}{{.Query | sql}}{{"}"}}
+type ArrayGqlSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Array  token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // position of "{" and "}"
+	Query  *GqlQueryExpr
+}
+
+// ValueGqlSubQuery is GQL subquery as VALUE.
+//
+//	VALUE{{"{"}}{{.Query | sql}}{{"}"}}
+type ValueGqlSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Array  token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // position of "{" and "}"
+	Query  *GqlQueryExpr
 }
 
 // ExistsSubQuery is subquery in EXISTS call.

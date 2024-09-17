@@ -418,7 +418,7 @@ func (v *ValuesInCondition) SQL() string {
 	return sql
 }
 
-func (g *GqlSubQuery) SQL() string {
+func (g *GqlSubQueryInCondition) SQL() string {
 	return "{" + g.Query.SQL() + "}"
 }
 
@@ -728,6 +728,20 @@ func (c *CastIntValue) SQL() string {
 
 func (c *CastNumValue) SQL() string {
 	return "CAST(" + c.Expr.SQL() + " AS " + string(c.Type) + ")"
+}
+
+// ================================================================================
+//
+// GQL subquery expressions
+//
+// ================================================================================
+
+func (a *ArrayGqlSubQuery) SQL() string {
+	return "ARRAY {\n" + a.Query.SQL() + "\n}"
+}
+
+func (v *ValueGqlSubQuery) SQL() string {
+	return "VALUE {\n" + v.Query.SQL() + "\n}"
 }
 
 // ================================================================================

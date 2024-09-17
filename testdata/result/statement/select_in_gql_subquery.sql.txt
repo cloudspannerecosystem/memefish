@@ -21,7 +21,7 @@ SELECT 'Dana' IN {
             ValueEnd: 13,
             Value:    "Dana",
           },
-          Right: &ast.GqlSubQuery{
+          Right: &ast.GqlSubQueryInCondition{
             LBrace: 17,
             RBrace: 93,
             Query:  &ast.GqlQueryExpr{

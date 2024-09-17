@@ -30,7 +30,7 @@ RETURN 'Dana' IN {
                     ValueEnd: 28,
                     Value:    "Dana",
                   },
-                  Right: &ast.GqlSubQuery{
+                  Right: &ast.GqlSubQueryInCondition{
                     LBrace: 32,
                     RBrace: 91,
                     Query:  &ast.GqlQueryExpr{

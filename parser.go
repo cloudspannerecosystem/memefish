@@ -1483,6 +1483,16 @@ func (p *Parser) parseLit() ast.Expr {
 	case token.TokenIdent:
 		id := p.Token
 		p.nextToken()
+		if id.IsKeywordLike("VALUE") && p.Token.Kind == "{" {
+			p.nextToken()
+			query := p.parseGqlQueryExpr()
+			rbrace := p.expect("}").Pos
+			return &ast.ValueGqlSubQuery{
+				Array:  id.Pos,
+				RBrace: rbrace,
+				Query:  query,
+			}
+		}
 		switch p.Token.Kind {
 		case "(":
 			return p.parseCall(id)
@@ -1757,6 +1767,17 @@ func (p *Parser) parseArrayLiteralOrSubQuery() ast.Expr {
 		return &ast.ArraySubQuery{
 			Array:  pos,
 			Rparen: rparen,
+			Query:  query,
+		}
+	}
+
+	if p.Token.Kind == "{" {
+		p.nextToken()
+		query := p.parseGqlQueryExpr()
+		rbrace := p.expect("}").Pos
+		return &ast.ArrayGqlSubQuery{
+			Array:  pos,
+			RBrace: rbrace,
 			Query:  query,
 		}
 	}

@@ -295,8 +295,8 @@ func (s *SubQueryInCondition) End() token.Pos { return s.Rparen + 1 }
 func (v *ValuesInCondition) Pos() token.Pos { return v.Lparen }
 func (v *ValuesInCondition) End() token.Pos { return v.Rparen + 1 }
 
-func (g *GqlSubQuery) Pos() token.Pos { return g.LBrace }
-func (g *GqlSubQuery) End() token.Pos { return g.RBrace + 1 }
+func (g *GqlSubQueryInCondition) Pos() token.Pos { return g.LBrace }
+func (g *GqlSubQueryInCondition) End() token.Pos { return g.RBrace + 1 }
 
 func (i *IsNullExpr) Pos() token.Pos { return i.Left.Pos() }
 func (i *IsNullExpr) End() token.Pos { return i.Null + 4 }
@@ -482,6 +482,18 @@ func (c *CastIntValue) End() token.Pos { return c.Rparen + 1 }
 
 func (c *CastNumValue) Pos() token.Pos { return c.Cast }
 func (c *CastNumValue) End() token.Pos { return c.Rparen + 1 }
+
+// ================================================================================
+//
+// GQL subquery expressions
+//
+// ================================================================================
+
+func (v *ValueGqlSubQuery) Pos() token.Pos { return v.Array }
+func (v *ValueGqlSubQuery) End() token.Pos { return v.Query.End() }
+
+func (a *ArrayGqlSubQuery) Pos() token.Pos { return a.Array }
+func (a *ArrayGqlSubQuery) End() token.Pos { return a.RBrace + 1 }
 
 // ================================================================================
 //

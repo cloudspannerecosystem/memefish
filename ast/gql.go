@@ -223,79 +223,67 @@ type GqlLimitAndOffsetClause interface {
 
 // GqlLimitClause is wrapper of Limit for GQL
 type GqlLimitClause struct {
+	// pos = Limit.pos
+	// end = Limit.end
 	Limit *Limit
 }
 
 // GqlOffsetClause is wrapper of Offset for GQL
 type GqlOffsetClause struct {
+	// pos = Offset.pos
+	// end = Offset.end
 	Offset *Offset
 }
 
-func (g GqlOffsetClause) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlOffsetClause) Pos() token.Pos {
+	return g.Pos()
 }
 
-func (g GqlOffsetClause) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlOffsetClause) End() token.Pos {
+	return g.End()
 }
 
-func (g GqlOffsetClause) SQL() string {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlOffsetClause) SQL() string {
+	return g.SQL()
 }
 
-func (g GqlOffsetClause) isGqlLimitAndOffsetClause() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g *GqlOffsetClause) isGqlLimitAndOffsetClause() {}
 
 // GqlLimitClauseWithOffset
 type GqlLimitWithOffsetClause struct {
+	// pos = Limit.pos
+	// end = Offset.end
 	Limit  *Limit
 	Offset *Offset
 }
 
 func (g GqlLimitWithOffsetClause) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Limit.Pos()
 }
 
 func (g GqlLimitWithOffsetClause) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+	return g.Offset.End()
 }
 
-func (g GqlLimitWithOffsetClause) SQL() string {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlLimitWithOffsetClause) SQL() string {
+	return g.Limit.SQL() + " " + g.Offset.SQL()
 }
 
-func (g GqlLimitWithOffsetClause) isGqlLimitAndOffsetClause() {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlLimitWithOffsetClause) isGqlLimitAndOffsetClause() {}
+
+func (g *GqlLimitClause) Pos() token.Pos {
+	return g.Limit.Pos()
 }
 
-func (g GqlLimitClause) Pos() token.Pos {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlLimitClause) End() token.Pos {
+	return g.Limit.End()
 }
 
-func (g GqlLimitClause) End() token.Pos {
-	//TODO implement me
-	panic("implement me")
+func (g *GqlLimitClause) SQL() string {
+	return g.Limit.SQL()
 }
 
-func (g GqlLimitClause) SQL() string {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (g GqlLimitClause) isGqlLimitAndOffsetClause() {
-	//TODO implement me
-	panic("implement me")
-}
+func (g *GqlLimitClause) isGqlLimitAndOffsetClause() {}
 
 type GqlFilterStatement struct {
 	Filter token.Pos
