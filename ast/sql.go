@@ -418,6 +418,10 @@ func (v *ValuesInCondition) SQL() string {
 	return sql
 }
 
+func (g *GqlSubQuery) SQL() string {
+	return "{" + g.Query.SQL() + "}"
+}
+
 func (i *IsNullExpr) SQL() string {
 	p := exprPrec(i)
 	sql := paren(p, i.Left)

@@ -175,6 +175,7 @@ type InCondition interface {
 func (UnnestInCondition) isInCondition()   {}
 func (SubQueryInCondition) isInCondition() {}
 func (ValuesInCondition) isInCondition()   {}
+func (*GqlSubQuery) isInCondition()        {}
 
 // Type represents type node.
 type Type interface {
@@ -896,6 +897,18 @@ type ValuesInCondition struct {
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
 	Exprs []Expr // len(Exprs) > 0
+}
+
+// GqlSubQuery is GQL subquery at IN condition.
+//
+//	{{"{"}}{{.Query | sql}}}{{"}"}}
+type GqlSubQuery struct {
+	// pos = LBrace
+	// end = RBrace + 1
+
+	LBrace, RBrace token.Pos // position of "{" and "}"
+
+	Query *GqlQueryExpr
 }
 
 // IsNullExpr is IS NULL expression node.

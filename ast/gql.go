@@ -5,22 +5,46 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
+// GqlGraphQuery is toplevel node of GRAPH query.
 type GqlGraphQuery struct {
+	// pos = (GraphClause ?? GqlMultiLinearQueryStatement).pos
+	// end = GqlMultiLinearQueryStatement.pos
 	GraphClause                  *GqlGraphClause
 	GqlMultiLinearQueryStatement *GqlMultiLinearQueryStatement
 }
 
-func (g GqlGraphQuery) Pos() token.Pos {
+func (g *GqlGraphQuery) Pos() token.Pos {
 	return g.GraphClause.Pos()
 }
 
-func (g GqlGraphQuery) End() token.Pos {
+func (g *GqlGraphQuery) End() token.Pos {
 	return g.GqlMultiLinearQueryStatement.End()
 }
 
-func (g GqlGraphQuery) isStatement() {}
+func (g *GqlGraphQuery) isStatement() {}
 func (s *GqlGraphQuery) SQL() string {
 	return s.GraphClause.SQL() + "\n" + s.GqlMultiLinearQueryStatement.SQL()
+}
+
+// GqlQueryExpr is similar to GqlGraphQuery,
+// but it is appeared in GQL subqueries and it can optionally have GRAPH clause
+type GqlQueryExpr struct {
+	// pos = (GraphClause ?? GqlMultiLinearQueryStatement).pos
+	// end = GqlMultiLinearQueryStatement.pos
+	GraphClause                  *GqlGraphClause // optional
+	GqlMultiLinearQueryStatement *GqlMultiLinearQueryStatement
+}
+
+func (g *GqlQueryExpr) Pos() token.Pos {
+	return firstValidPos(g.GraphClause, g.GqlMultiLinearQueryStatement)
+}
+
+func (g *GqlQueryExpr) End() token.Pos {
+	return g.GqlMultiLinearQueryStatement.End()
+}
+
+func (g *GqlQueryExpr) SQL() string {
+	return sqlOpt("", g.GraphClause, "\n") + g.GqlMultiLinearQueryStatement.SQL()
 }
 
 type GqlGraphClause struct {

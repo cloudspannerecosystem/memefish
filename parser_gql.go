@@ -19,6 +19,23 @@ func (p *Parser) parseGqlQuery() *ast.GqlGraphQuery {
 	return &ast.GqlGraphQuery{GraphClause: graphClause, GqlMultiLinearQueryStatement: multiQueryStatement}
 }
 
+func (p *Parser) parseGqlSubquery() *ast.GqlSubQuery {
+	lbrace := p.expect("{").Pos
+	query := p.parseGqlQueryExpr()
+	rbrace := p.expect("}").Pos
+
+	return &ast.GqlSubQuery{LBrace: lbrace, RBrace: rbrace, Query: query}
+}
+func (p *Parser) parseGqlQueryExpr() *ast.GqlQueryExpr {
+	var graphClause *ast.GqlGraphClause
+	if p.Token.IsKeywordLike("GRAPH") {
+		graphClause = p.parseGqlGraphClause()
+	}
+	multiQueryStatement := p.parseGqlMultiLinearQueryStatement()
+
+	return &ast.GqlQueryExpr{GraphClause: graphClause, GqlMultiLinearQueryStatement: multiQueryStatement}
+}
+
 func (p *Parser) parseGqlGraphClause() *ast.GqlGraphClause {
 	graphPos := p.expectKeywordLike("GRAPH").Pos
 	graphName := p.parseIdent()

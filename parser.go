@@ -1213,6 +1213,9 @@ func (p *Parser) parseInCondition() ast.InCondition {
 		}
 	}
 
+	if p.Token.Kind == "{" {
+		return p.parseGqlSubquery()
+	}
 	if p.Token.Kind == "(" {
 		lparen := p.Token.Pos
 		p.nextToken()

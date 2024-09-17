@@ -295,6 +295,9 @@ func (s *SubQueryInCondition) End() token.Pos { return s.Rparen + 1 }
 func (v *ValuesInCondition) Pos() token.Pos { return v.Lparen }
 func (v *ValuesInCondition) End() token.Pos { return v.Rparen + 1 }
 
+func (g *GqlSubQuery) Pos() token.Pos { return g.LBrace }
+func (g *GqlSubQuery) End() token.Pos { return g.RBrace + 1 }
+
 func (i *IsNullExpr) Pos() token.Pos { return i.Left.Pos() }
 func (i *IsNullExpr) End() token.Pos { return i.Null + 4 }
 
