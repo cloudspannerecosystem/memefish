@@ -28,7 +28,7 @@ func exprPrec(e Expr) prec {
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
-	case *InExpr, *IsNullExpr, *IsBoolExpr, *BetweenExpr:
+	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsSourceExpr, *IsDestinationExpr, *BetweenExpr:
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
@@ -445,6 +445,28 @@ func (i *IsBoolExpr) SQL() string {
 	} else {
 		sql += "FALSE"
 	}
+	return sql
+}
+
+func (i *IsSourceExpr) SQL() string {
+	p := exprPrec(i)
+	sql := paren(p, i.Node)
+	sql += " IS "
+	if i.Not {
+		sql += "NOT "
+	}
+	sql += "SOURCE OF " + i.Edge.SQL()
+	return sql
+}
+
+func (i *IsDestinationExpr) SQL() string {
+	p := exprPrec(i)
+	sql := paren(p, i.Node)
+	sql += " IS "
+	if i.Not {
+		sql += "NOT "
+	}
+	sql += "DESTINATION OF " + i.Edge.SQL()
 	return sql
 }
 

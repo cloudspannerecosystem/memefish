@@ -313,6 +313,12 @@ func (i *IsBoolExpr) End() token.Pos {
 	}
 }
 
+func (i *IsSourceExpr) Pos() token.Pos { return i.Node.Pos() }
+func (i *IsSourceExpr) End() token.Pos { return i.Edge.End() }
+
+func (i *IsDestinationExpr) Pos() token.Pos { return i.Node.Pos() }
+func (i *IsDestinationExpr) End() token.Pos { return i.Edge.End() }
+
 func (b *BetweenExpr) Pos() token.Pos { return b.Left.Pos() }
 func (b *BetweenExpr) End() token.Pos { return b.RightEnd.End() }
 

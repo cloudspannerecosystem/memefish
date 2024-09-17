@@ -129,6 +129,8 @@ func (UnaryExpr) isExpr()          {}
 func (InExpr) isExpr()             {}
 func (IsNullExpr) isExpr()         {}
 func (IsBoolExpr) isExpr()         {}
+func (IsSourceExpr) isExpr()       {}
+func (IsDestinationExpr) isExpr()  {}
 func (BetweenExpr) isExpr()        {}
 func (SelectorExpr) isExpr()       {}
 func (IndexExpr) isExpr()          {}
@@ -939,6 +941,28 @@ type IsBoolExpr struct {
 	Not   bool
 	Left  Expr
 	Right bool
+}
+
+// IsSourceExpr is IS SOURCE expression node.
+//
+//	{{.Node | sql}} IS {{if .Not}}NOT{{end}} SOURCE OF {{.Edge | sql}}
+type IsSourceExpr struct {
+	// pos = Node.pos
+	// end = Edge.end
+
+	Node, Edge Expr
+	Not        bool
+}
+
+// IsDestinationExpr is IS DESTINATION expression node.
+//
+//	{{.Node | sql}} IS {{if .Not}}NOT{{end}} DESTINATION OF {{.Edge | sql}}
+type IsDestinationExpr struct {
+	// pos = Node.pos
+	// end = Edge.end
+
+	Node, Edge Expr
+	Not        bool
 }
 
 // BetweenExpr is BETWEEN expression node.
