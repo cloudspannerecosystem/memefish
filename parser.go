@@ -1710,10 +1710,7 @@ func (p *Parser) lookaheadGQLExistsExprMatch() bool {
 	}
 	p.parseGQLMatchStatement()
 
-	if p.Token.Kind != "}" {
-		return false
-	}
-	return true
+	return p.Token.Kind == "}"
 }
 
 func (p *Parser) parseGQLExistsExpr() ast.GQLExistsExpr {
