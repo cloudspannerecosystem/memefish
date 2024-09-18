@@ -131,43 +131,44 @@ const (
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
 
-type GQLAllOrDistinctEnum int
+type GQLAllOrDistinctEnum string
 
 const (
-	GQLAllOrDistinctImplicitAll GQLAllOrDistinctEnum = iota
-	GQLAllOrDistinctAll
-	GQLAllOrDistinctDistinct
+	GQLAllOrDistinctImplicitAll GQLAllOrDistinctEnum = ""
+	GQLAllOrDistinctAll         GQLAllOrDistinctEnum = "ALL"
+	GQLAllOrDistinctDistinct    GQLAllOrDistinctEnum = "DISTINCT"
 )
 
-type GQLSetOperatorEnum int
+type GQLSetOperatorEnum string
 
 const (
-	GQLSetOperatorUnion GQLSetOperatorEnum = iota
-	GQLSetOperatorIntersect
-	GQLSetOperatorExcept
+	GQLSetOperatorUnion     GQLSetOperatorEnum = "UNION"
+	GQLSetOperatorIntersect GQLSetOperatorEnum = "INTERSECT"
+	GQLSetOperatorExcept    GQLSetOperatorEnum = "EXCEPT"
 )
 
-type GQLDirection string
+type GQLDirectionEnum string
 
 const (
-	GQLSortOrderUnspecified GQLDirection = ""
-	GQLSortOrderAsc         GQLDirection = "ASC"
-	GQLSortOrderAscending   GQLDirection = "ASCENDING"
-	GQLSortOrderDesc        GQLDirection = "DESC"
-	GQLSortOrderDescending  GQLDirection = "DESCENDING"
+	GQLSortOrderUnspecified GQLDirectionEnum = ""
+	GQLSortOrderAsc         GQLDirectionEnum = "ASC"
+	GQLSortOrderAscending   GQLDirectionEnum = "ASCENDING"
+	GQLSortOrderDesc        GQLDirectionEnum = "DESC"
+	GQLSortOrderDescending  GQLDirectionEnum = "DESCENDING"
 )
 
-type GQLPathModeEnum int
+type GQLPathModeEnum string
 
 const (
-	GQLPathModeWalk GQLPathModeEnum = iota
-	GQLPathModeTrail
+	GQLPathModeUnspecified GQLPathModeEnum = ""
+	GQLPathModeWalk        GQLPathModeEnum = "WALK"
+	GQLPathModeTrail       GQLPathModeEnum = "TRAIL"
 )
 
-type GQLSearchPrefixEnum int
+type GQLSearchPrefixEnum string
 
 const (
-	GQLPathSearchPrefixAll GQLSearchPrefixEnum = iota
-	GQLPathSearchPrefixAny
-	GQLPathSearchPrefixAnyShortest
+	GQLPathSearchPrefixAll         GQLSearchPrefixEnum = "ALL"
+	GQLPathSearchPrefixAny         GQLSearchPrefixEnum = "ANY"
+	GQLPathSearchPrefixAnyShortest GQLSearchPrefixEnum = "ANY SHORTEST"
 )

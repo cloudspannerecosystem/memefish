@@ -3995,7 +3995,7 @@ func (p *Parser) tryParseGQLOrderBySpecificationList() []*ast.GQLOrderBySpecific
 			}
 		}
 
-		var direction ast.GQLDirection
+		var direction ast.GQLDirectionEnum
 		directionPos := p.Token.Pos
 		switch {
 		case p.Token.Kind == "ASC":
