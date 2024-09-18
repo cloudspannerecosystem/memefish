@@ -23,7 +23,7 @@ RETURN COUNT(1) as num_paths
             PrefixOrMode: &ast.GQLPathSearchPrefix{
               StartPos:     21,
               LastEnd:      33,
-              SearchPrefix: 2,
+              SearchPrefix: "ANY SHORTEST",
             },
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
@@ -37,7 +37,7 @@ RETURN COUNT(1) as num_paths
                           LParen:   34,
                           RParen:   48,
                           PathMode: &ast.GQLPathMode{
-                            Mode:      1,
+                            Mode:      "TRAIL",
                             ModeToken: &ast.Ident{
                               NamePos: 35,
                               NameEnd: 40,
@@ -85,7 +85,7 @@ RETURN COUNT(1) as num_paths
           },
           &ast.GQLReturnStatement{
             Return:         50,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{

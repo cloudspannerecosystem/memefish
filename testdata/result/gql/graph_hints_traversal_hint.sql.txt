@@ -263,7 +263,7 @@ RETURN c.id
           },
           &ast.GQLReturnStatement{
             Return:         258,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

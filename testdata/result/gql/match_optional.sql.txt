@@ -183,7 +183,7 @@ RETURN n.name, a.id AS blocked_account_id
           },
           &ast.GQLReturnStatement{
             Return:         98,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

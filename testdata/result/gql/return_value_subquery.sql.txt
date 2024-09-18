@@ -22,7 +22,7 @@ RETURN VALUE {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.ValueGQLSubQuery{
@@ -107,7 +107,7 @@ RETURN VALUE {
                             },
                             &ast.GQLReturnStatement{
                               Return:         77,
-                              AllOrDistinct:  0,
+                              AllOrDistinct:  "",
                               ReturnItemList: []ast.GQLReturnItem{
                                 &ast.ExprSelectItem{
                                   Expr: &ast.Path{

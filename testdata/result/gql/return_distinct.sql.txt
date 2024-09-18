@@ -156,7 +156,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
           },
           &ast.GQLReturnStatement{
             Return:         78,
-            AllOrDistinct:  2,
+            AllOrDistinct:  "DISTINCT",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{

@@ -141,7 +141,7 @@ RETURN a.id AS a_id
           },
           &ast.GQLReturnStatement{
             Return:         90,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

@@ -130,7 +130,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
           },
           &ast.GQLReturnStatement{
             Return:         64,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -274,7 +274,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
           },
           &ast.GQLReturnStatement{
             Return:         187,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{
@@ -361,7 +361,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
             },
             &ast.GQLReturnStatement{
               Return:         314,
-              AllOrDistinct:  0,
+              AllOrDistinct:  "",
               ReturnItemList: []ast.GQLReturnItem{
                 &ast.ExprSelectItem{
                   Expr: &ast.Ident{
@@ -387,13 +387,13 @@ RETURN "Bob" AS owner_name, 100 AS account_id
         TailSimpleLinearQueryStatementList: []*ast.GQLSimpleLinearQueryStatementWithSetOperator{
           &ast.GQLSimpleLinearQueryStatementWithSetOperator{
             StartPos:      344,
-            SetOperator:   0,
-            DistinctOrAll: 1,
+            SetOperator:   "UNION",
+            DistinctOrAll: "ALL",
             Statement:     &ast.GQLSimpleLinearQueryStatement{
               PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturnStatement{
                   Return:         354,
-                  AllOrDistinct:  0,
+                  AllOrDistinct:  "",
                   ReturnItemList: []ast.GQLReturnItem{
                     &ast.Alias{
                       Expr: &ast.StringLiteral{

@@ -158,7 +158,7 @@ RETURN source.nick_name
           },
           &ast.GQLReturnStatement{
             Return:         109,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

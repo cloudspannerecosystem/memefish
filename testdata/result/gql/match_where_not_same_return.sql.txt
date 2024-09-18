@@ -155,7 +155,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
           },
           &ast.GQLReturnStatement{
             Return:         98,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

@@ -94,7 +94,7 @@ GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE 'und:ci' RETURN a.name
           },
           &ast.GQLReturnStatement{
             Return:         65,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

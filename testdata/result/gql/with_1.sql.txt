@@ -116,7 +116,7 @@ RETURN account.id AS account_id, num_incoming_transfers
           },
           &ast.GQLWithStatement{
             With:           64,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -153,7 +153,7 @@ RETURN account.id AS account_id, num_incoming_transfers
           },
           &ast.GQLReturnStatement{
             Return:         130,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

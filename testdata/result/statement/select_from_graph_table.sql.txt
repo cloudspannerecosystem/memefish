@@ -30,7 +30,7 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
               PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturnStatement{
                   Return:         35,
-                  AllOrDistinct:  0,
+                  AllOrDistinct:  "",
                   ReturnItemList: []ast.GQLReturnItem{
                     &ast.Alias{
                       Expr: &ast.IntLiteral{

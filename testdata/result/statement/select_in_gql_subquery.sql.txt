@@ -144,7 +144,7 @@ SELECT 'Dana' IN {
                       },
                       &ast.GQLReturnStatement{
                         Return:         79,
-                        AllOrDistinct:  0,
+                        AllOrDistinct:  "",
                         ReturnItemList: []ast.GQLReturnItem{
                           &ast.ExprSelectItem{
                             Expr: &ast.Path{

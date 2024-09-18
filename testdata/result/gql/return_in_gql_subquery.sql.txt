@@ -20,7 +20,7 @@ RETURN 'Dana' IN {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.InExpr{
@@ -146,7 +146,7 @@ RETURN 'Dana' IN {
                               },
                               &ast.GQLReturnStatement{
                                 Return:         77,
-                                AllOrDistinct:  0,
+                                AllOrDistinct:  "",
                                 ReturnItemList: []ast.GQLReturnItem{
                                   &ast.ExprSelectItem{
                                     Expr: &ast.Path{

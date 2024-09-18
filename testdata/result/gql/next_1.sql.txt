@@ -123,7 +123,7 @@ RETURN
           },
           &ast.GQLReturnStatement{
             Return:         64,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -267,7 +267,7 @@ RETURN
           },
           &ast.GQLReturnStatement{
             Return:         187,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

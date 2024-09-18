@@ -158,7 +158,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

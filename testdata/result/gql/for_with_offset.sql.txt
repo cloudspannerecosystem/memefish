@@ -157,7 +157,7 @@ ORDER BY p.name, element, offset
           },
           &ast.GQLReturnStatement{
             Return:         96,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

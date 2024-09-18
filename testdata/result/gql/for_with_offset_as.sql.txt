@@ -90,7 +90,7 @@ RETURN p.name, element, off
           },
           &ast.GQLReturnStatement{
             Return:         69,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{

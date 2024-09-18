@@ -139,7 +139,7 @@ RETURN a.id AS a_id, b.id AS b_id
           },
           &ast.GQLReturnStatement{
             Return:         101,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{

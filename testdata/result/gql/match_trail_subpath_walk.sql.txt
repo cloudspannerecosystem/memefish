@@ -21,7 +21,7 @@ RETURN COUNT(1) as num_paths
             Match:        15,
             MatchHint:    (*ast.Hint)(nil),
             PrefixOrMode: &ast.GQLPathMode{
-              Mode:      1,
+              Mode:      "TRAIL",
               ModeToken: &ast.Ident{
                 NamePos: 21,
                 NameEnd: 26,
@@ -41,7 +41,7 @@ RETURN COUNT(1) as num_paths
                           LParen:   27,
                           RParen:   77,
                           PathMode: &ast.GQLPathMode{
-                            Mode:      0,
+                            Mode:      "WALK",
                             ModeToken: &ast.Ident{
                               NamePos: 28,
                               NameEnd: 32,
@@ -162,7 +162,7 @@ RETURN COUNT(1) as num_paths
           },
           &ast.GQLReturnStatement{
             Return:         79,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{

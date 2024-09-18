@@ -35,7 +35,7 @@ RETURN COUNT(1) as num_paths
                           LParen:   23,
                           RParen:   74,
                           PathMode: &ast.GQLPathMode{
-                            Mode:      1,
+                            Mode:      "TRAIL",
                             ModeToken: &ast.Ident{
                               NamePos: 24,
                               NameEnd: 29,
@@ -214,7 +214,7 @@ RETURN COUNT(1) as num_paths
           },
           &ast.GQLReturnStatement{
             Return:         108,
-            AllOrDistinct:  0,
+            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.CallExpr{
