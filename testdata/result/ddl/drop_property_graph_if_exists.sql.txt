@@ -1,0 +1,16 @@
+--- drop_property_graph_if_exists.sql
+DROP PROPERTY GRAPH IF EXISTS FinGraph
+
+--- AST
+&ast.DropPropertyGraph{
+  Drop:     0,
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 30,
+    NameEnd: 38,
+    Name:    "FinGraph",
+  },
+}
+
+--- SQL
+DROP PROPERTY GRAPH IF EXISTS FinGraph

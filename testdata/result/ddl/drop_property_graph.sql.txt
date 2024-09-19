@@ -1,0 +1,16 @@
+--- drop_property_graph.sql
+DROP PROPERTY GRAPH FinGraph
+
+--- AST
+&ast.DropPropertyGraph{
+  Drop:     0,
+  IfExists: false,
+  Name:     &ast.Ident{
+    NamePos: 20,
+    NameEnd: 28,
+    Name:    "FinGraph",
+  },
+}
+
+--- SQL
+DROP PROPERTY GRAPH FinGraph
