@@ -3408,18 +3408,27 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 		return nil
 	}
 
+	// element_key
+	var elementKey *ast.PropertyGraphElementKey
 	if key := p.tryExpectKeywordLike("KEY"); key != nil {
 		keyColumns := p.parsePropertyGraphColumnNameList()
-		elementKey := &ast.PropertyGraphElementKey{
+		elementKey = &ast.PropertyGraphElementKey{
 			Key:  key.Pos,
 			Keys: keyColumns,
 		}
-		return &ast.PropertyGraphNodeElementKey{
-			PropertyGraphElementKey: *elementKey,
+
+		// if SOURCE KEY doesn't follow, it is node_element_key.
+		if !p.Token.IsKeywordLike("SOURCE") {
+			return &ast.PropertyGraphNodeElementKey{
+				PropertyGraphElementKey: *elementKey,
+			}
 		}
 
 	}
 
+	// the rest of edge_element_keys
+
+	// source_key
 	source := p.expectKeywordLike("SOURCE").Pos
 	p.expectKeywordLike("KEY")
 	sourceColumns := p.parsePropertyGraphColumnNameList()
@@ -3427,6 +3436,7 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 	sourceReference := p.parseIdent()
 	sourceReferenceColumns := p.tryParsePropertyGraphColumnNameList()
 
+	// destination_key
 	destination := p.expectKeywordLike("DESTINATION").Pos
 	p.expectKeywordLike("KEY")
 	destinationColumns := p.parsePropertyGraphColumnNameList()
@@ -3435,7 +3445,7 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 	destinationReferenceColumns := p.tryParsePropertyGraphColumnNameList()
 
 	return &ast.PropertyGraphEdgeElementKeys{
-		// Element: elementKey,
+		Element: elementKey,
 		Source: &ast.PropertyGraphSourceKey{
 			Source:           source,
 			Keys:             sourceColumns,

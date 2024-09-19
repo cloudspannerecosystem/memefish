@@ -1,0 +1,346 @@
+--- create_or_replace_property_graph_fingraph_verbose.sql
+CREATE OR REPLACE PROPERTY GRAPH FinGraph
+  NODE TABLES (
+    Account AS Account -- element_alias
+      KEY (id) -- element_key in node_element_key in element_keys
+      -- label_and_property_list
+      LABEL DetailedAccount -- LABEL label_name in element_label
+        PROPERTIES (create_time, is_blocked, nick_name AS name) -- derived_property_list
+      DEFAULT LABEL -- DEFAULT LABEL in element_label
+        NO PROPERTIES -- NO PROPERTIES in element_properties
+    ,
+    Person
+      -- no element_keys
+      -- no element_label because of direct element_properties
+      PROPERTIES ARE ALL COLUMNS EXCEPT (city) -- properties_are
+  )
+  EDGE TABLES (
+    PersonOwnAccount AS PersonOwnAccount
+      KEY (id, account_id)
+      SOURCE KEY (id) REFERENCES Person -- source_key without column_name_list
+      DESTINATION KEY (account_id) REFERENCES Account -- destination_key without column_name_list
+      LABEL Owns
+        PROPERTIES ALL COLUMNS,
+    AccountTransferAccount
+      SOURCE KEY (id) REFERENCES Account (id) -- source_key
+      DESTINATION KEY (to_id) REFERENCES Account (id) -- destination_key
+      LABEL Transfers -- LABEL label_name in element_label
+      -- without element_properties
+  )
+--- AST
+&ast.CreatePropertyGraph{
+  Create:      0,
+  OrReplace:   true,
+  IfNotExists: false,
+  Name:        &ast.Ident{
+    NamePos: 33,
+    NameEnd: 41,
+    Name:    "FinGraph",
+  },
+  Content: &ast.PropertyGraphContent{
+    Node:       44,
+    NodeTables: &ast.PropertyGraphElementList{
+      LParen:   56,
+      RParen:   638,
+      Elements: []*ast.PropertyGraphElement{
+        &ast.PropertyGraphElement{
+          Name: &ast.Ident{
+            NamePos: 62,
+            NameEnd: 69,
+            Name:    "Account",
+          },
+          Alias: &ast.Ident{
+            NamePos: 73,
+            NameEnd: 80,
+            Name:    "Account",
+          },
+          Keys: &ast.PropertyGraphNodeElementKey{
+            PropertyGraphElementKey: ast.PropertyGraphElementKey{
+              Key:  104,
+              Keys: &ast.PropertyGraphColumnNameList{
+                LParen:         108,
+                RParen:         111,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 109,
+                    NameEnd: 111,
+                    Name:    "id",
+                  },
+                },
+              },
+            },
+          },
+          Properties: &ast.PropertyGraphLabelAndPropertiesList{
+            LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+              &ast.PropertyGraphLabelAndProperties{
+                Label: &ast.PropertyGraphElementLabelLabelName{
+                  Label: 203,
+                  Name:  &ast.Ident{
+                    NamePos: 209,
+                    NameEnd: 224,
+                    Name:    "DetailedAccount",
+                  },
+                },
+                Properties: &ast.PropertyGraphDerivedPropertyList{
+                  Properties:        270,
+                  RParen:            324,
+                  DerivedProperties: []*ast.PropertyGraphDerivedProperty{
+                    &ast.PropertyGraphDerivedProperty{
+                      Expr: &ast.Ident{
+                        NamePos: 282,
+                        NameEnd: 293,
+                        Name:    "create_time",
+                      },
+                      PropertyName: (*ast.Ident)(nil),
+                    },
+                    &ast.PropertyGraphDerivedProperty{
+                      Expr: &ast.Ident{
+                        NamePos: 295,
+                        NameEnd: 305,
+                        Name:    "is_blocked",
+                      },
+                      PropertyName: (*ast.Ident)(nil),
+                    },
+                    &ast.PropertyGraphDerivedProperty{
+                      Expr: &ast.Ident{
+                        NamePos: 307,
+                        NameEnd: 316,
+                        Name:    "nick_name",
+                      },
+                      PropertyName: &ast.Ident{
+                        NamePos: 320,
+                        NameEnd: 324,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.PropertyGraphLabelAndProperties{
+                Label: &ast.PropertyGraphElementLabelDefaultLabel{
+                  Default: 357,
+                  Label:   365,
+                },
+                Properties: &ast.PropertyGraphNoProperties{
+                  No:         413,
+                  Properties: 416,
+                },
+              },
+            },
+          },
+        },
+        &ast.PropertyGraphElement{
+          Name: &ast.Ident{
+            NamePos: 476,
+            NameEnd: 482,
+            Name:    "Person",
+          },
+          Alias:      (*ast.Ident)(nil),
+          Keys:       nil,
+          Properties: &ast.PropertyGraphPropertiesAre{
+            Properties:    577,
+            Columns:       596,
+            ExceptColumns: &ast.PropertyGraphColumnNameList{
+              LParen:         611,
+              RParen:         616,
+              ColumnNameList: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 612,
+                  NameEnd: 616,
+                  Name:    "city",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    EdgeTables: &ast.PropertyGraphElementList{
+      LParen:   654,
+      RParen:   1207,
+      Elements: []*ast.PropertyGraphElement{
+        &ast.PropertyGraphElement{
+          Name: &ast.Ident{
+            NamePos: 660,
+            NameEnd: 676,
+            Name:    "PersonOwnAccount",
+          },
+          Alias: &ast.Ident{
+            NamePos: 680,
+            NameEnd: 696,
+            Name:    "PersonOwnAccount",
+          },
+          Keys: &ast.PropertyGraphEdgeElementKeys{
+            Element: &ast.PropertyGraphElementKey{
+              Key:  703,
+              Keys: &ast.PropertyGraphColumnNameList{
+                LParen:         707,
+                RParen:         722,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 708,
+                    NameEnd: 710,
+                    Name:    "id",
+                  },
+                  &ast.Ident{
+                    NamePos: 712,
+                    NameEnd: 722,
+                    Name:    "account_id",
+                  },
+                },
+              },
+            },
+            Source: &ast.PropertyGraphSourceKey{
+              Source: 730,
+              Keys:   &ast.PropertyGraphColumnNameList{
+                LParen:         741,
+                RParen:         744,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 742,
+                    NameEnd: 744,
+                    Name:    "id",
+                  },
+                },
+              },
+              ElementReference: &ast.Ident{
+                NamePos: 757,
+                NameEnd: 763,
+                Name:    "Person",
+              },
+              ReferenceColumns: (*ast.PropertyGraphColumnNameList)(nil),
+            },
+            Destination: &ast.PropertyGraphDestinationKey{
+              Destination: 809,
+              Keys:        &ast.PropertyGraphColumnNameList{
+                LParen:         825,
+                RParen:         836,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 826,
+                    NameEnd: 836,
+                    Name:    "account_id",
+                  },
+                },
+              },
+              ElementReference: &ast.Ident{
+                NamePos: 849,
+                NameEnd: 856,
+                Name:    "Account",
+              },
+              ReferenceColumns: (*ast.PropertyGraphColumnNameList)(nil),
+            },
+          },
+          Properties: &ast.PropertyGraphLabelAndPropertiesList{
+            LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+              &ast.PropertyGraphLabelAndProperties{
+                Label: &ast.PropertyGraphElementLabelLabelName{
+                  Label: 907,
+                  Name:  &ast.Ident{
+                    NamePos: 913,
+                    NameEnd: 917,
+                    Name:    "Owns",
+                  },
+                },
+                Properties: &ast.PropertyGraphPropertiesAre{
+                  Properties:    926,
+                  Columns:       941,
+                  ExceptColumns: (*ast.PropertyGraphColumnNameList)(nil),
+                },
+              },
+            },
+          },
+        },
+        &ast.PropertyGraphElement{
+          Name: &ast.Ident{
+            NamePos: 954,
+            NameEnd: 976,
+            Name:    "AccountTransferAccount",
+          },
+          Alias: (*ast.Ident)(nil),
+          Keys:  &ast.PropertyGraphEdgeElementKeys{
+            Element: (*ast.PropertyGraphElementKey)(nil),
+            Source:  &ast.PropertyGraphSourceKey{
+              Source: 983,
+              Keys:   &ast.PropertyGraphColumnNameList{
+                LParen:         994,
+                RParen:         997,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 995,
+                    NameEnd: 997,
+                    Name:    "id",
+                  },
+                },
+              },
+              ElementReference: &ast.Ident{
+                NamePos: 1010,
+                NameEnd: 1017,
+                Name:    "Account",
+              },
+              ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                LParen:         1018,
+                RParen:         1021,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 1019,
+                    NameEnd: 1021,
+                    Name:    "id",
+                  },
+                },
+              },
+            },
+            Destination: &ast.PropertyGraphDestinationKey{
+              Destination: 1043,
+              Keys:        &ast.PropertyGraphColumnNameList{
+                LParen:         1059,
+                RParen:         1065,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 1060,
+                    NameEnd: 1065,
+                    Name:    "to_id",
+                  },
+                },
+              },
+              ElementReference: &ast.Ident{
+                NamePos: 1078,
+                NameEnd: 1085,
+                Name:    "Account",
+              },
+              ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                LParen:         1086,
+                RParen:         1089,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 1087,
+                    NameEnd: 1089,
+                    Name:    "id",
+                  },
+                },
+              },
+            },
+          },
+          Properties: &ast.PropertyGraphLabelAndPropertiesList{
+            LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+              &ast.PropertyGraphLabelAndProperties{
+                Label: &ast.PropertyGraphElementLabelLabelName{
+                  Label: 1116,
+                  Name:  &ast.Ident{
+                    NamePos: 1122,
+                    NameEnd: 1131,
+                    Name:    "Transfers",
+                  },
+                },
+                Properties: nil,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE PROPERTY GRAPH FinGraph NODE TABLES(Account AS Account KEY (id) LABEL DetailedAccount PROPERTIES (create_time, is_blocked, nick_name AS name) DEFAULT LABEL NO PROPERTIES, Person PROPERTIES ARE ALL COLUMNS EXCEPT (city)) EDGE TABLES (PersonOwnAccount AS PersonOwnAccount KEY (id, account_id) SOURCE KEY (id) REFERENCES Person DESTINATION KEY (account_id) REFERENCES Account LABEL Owns PROPERTIES ARE ALL COLUMNS, AccountTransferAccount SOURCE KEY (id) REFERENCES Account (id) DESTINATION KEY (to_id) REFERENCES Account (id) LABEL Transfers)

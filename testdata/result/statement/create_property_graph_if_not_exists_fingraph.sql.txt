@@ -1,5 +1,5 @@
---- create_or_replace_property_graph_fingraph.sql
-CREATE OR REPLACE PROPERTY GRAPH FinGraph
+--- create_property_graph_if_not_exists_fingraph.sql
+CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
   NODE TABLES (
     Account,
     Person
@@ -17,23 +17,23 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
 --- AST
 &ast.CreatePropertyGraph{
   Create:      0,
-  OrReplace:   true,
-  IfNotExists: false,
+  OrReplace:   false,
+  IfNotExists: true,
   Name:        &ast.Ident{
-    NamePos: 33,
-    NameEnd: 41,
+    NamePos: 36,
+    NameEnd: 44,
     Name:    "FinGraph",
   },
   Content: &ast.PropertyGraphContent{
-    Node:       44,
+    Node:       47,
     NodeTables: &ast.PropertyGraphElementList{
-      LParen:   56,
-      RParen:   84,
+      LParen:   59,
+      RParen:   87,
       Elements: []*ast.PropertyGraphElement{
         &ast.PropertyGraphElement{
           Name: &ast.Ident{
-            NamePos: 62,
-            NameEnd: 69,
+            NamePos: 65,
+            NameEnd: 72,
             Name:    "Account",
           },
           Alias:      (*ast.Ident)(nil),
@@ -42,8 +42,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
         },
         &ast.PropertyGraphElement{
           Name: &ast.Ident{
-            NamePos: 75,
-            NameEnd: 81,
+            NamePos: 78,
+            NameEnd: 84,
             Name:    "Person",
           },
           Alias:      (*ast.Ident)(nil),
@@ -53,73 +53,73 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
       },
     },
     EdgeTables: &ast.PropertyGraphElementList{
-      LParen:   100,
-      RParen:   396,
+      LParen:   103,
+      RParen:   399,
       Elements: []*ast.PropertyGraphElement{
         &ast.PropertyGraphElement{
           Name: &ast.Ident{
-            NamePos: 106,
-            NameEnd: 122,
+            NamePos: 109,
+            NameEnd: 125,
             Name:    "PersonOwnAccount",
           },
           Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{
-              Source: 129,
+              Source: 132,
               Keys:   &ast.PropertyGraphColumnNameList{
-                LParen:         140,
-                RParen:         143,
+                LParen:         143,
+                RParen:         146,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 141,
-                    NameEnd: 143,
+                    NamePos: 144,
+                    NameEnd: 146,
                     Name:    "id",
                   },
                 },
               },
               ElementReference: &ast.Ident{
-                NamePos: 156,
-                NameEnd: 162,
+                NamePos: 159,
+                NameEnd: 165,
                 Name:    "Person",
               },
               ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                LParen:         163,
-                RParen:         166,
+                LParen:         166,
+                RParen:         169,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 164,
-                    NameEnd: 166,
+                    NamePos: 167,
+                    NameEnd: 169,
                     Name:    "id",
                   },
                 },
               },
             },
             Destination: &ast.PropertyGraphDestinationKey{
-              Destination: 174,
+              Destination: 177,
               Keys:        &ast.PropertyGraphColumnNameList{
-                LParen:         190,
-                RParen:         201,
+                LParen:         193,
+                RParen:         204,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 191,
-                    NameEnd: 201,
+                    NamePos: 194,
+                    NameEnd: 204,
                     Name:    "account_id",
                   },
                 },
               },
               ElementReference: &ast.Ident{
-                NamePos: 214,
-                NameEnd: 221,
+                NamePos: 217,
+                NameEnd: 224,
                 Name:    "Account",
               },
               ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                LParen:         222,
-                RParen:         225,
+                LParen:         225,
+                RParen:         228,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 223,
-                    NameEnd: 225,
+                    NamePos: 226,
+                    NameEnd: 228,
                     Name:    "id",
                   },
                 },
@@ -130,10 +130,10 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
               &ast.PropertyGraphLabelAndProperties{
                 Label: &ast.PropertyGraphElementLabelLabelName{
-                  Label: 233,
+                  Label: 236,
                   Name:  &ast.Ident{
-                    NamePos: 239,
-                    NameEnd: 243,
+                    NamePos: 242,
+                    NameEnd: 246,
                     Name:    "Owns",
                   },
                 },
@@ -144,68 +144,68 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
         },
         &ast.PropertyGraphElement{
           Name: &ast.Ident{
-            NamePos: 249,
-            NameEnd: 271,
+            NamePos: 252,
+            NameEnd: 274,
             Name:    "AccountTransferAccount",
           },
           Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{
-              Source: 278,
+              Source: 281,
               Keys:   &ast.PropertyGraphColumnNameList{
-                LParen:         289,
-                RParen:         292,
+                LParen:         292,
+                RParen:         295,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 290,
-                    NameEnd: 292,
+                    NamePos: 293,
+                    NameEnd: 295,
                     Name:    "id",
                   },
                 },
               },
               ElementReference: &ast.Ident{
-                NamePos: 305,
-                NameEnd: 312,
+                NamePos: 308,
+                NameEnd: 315,
                 Name:    "Account",
               },
               ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                LParen:         313,
-                RParen:         316,
+                LParen:         316,
+                RParen:         319,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 314,
-                    NameEnd: 316,
+                    NamePos: 317,
+                    NameEnd: 319,
                     Name:    "id",
                   },
                 },
               },
             },
             Destination: &ast.PropertyGraphDestinationKey{
-              Destination: 324,
+              Destination: 327,
               Keys:        &ast.PropertyGraphColumnNameList{
-                LParen:         340,
-                RParen:         346,
+                LParen:         343,
+                RParen:         349,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 341,
-                    NameEnd: 346,
+                    NamePos: 344,
+                    NameEnd: 349,
                     Name:    "to_id",
                   },
                 },
               },
               ElementReference: &ast.Ident{
-                NamePos: 359,
-                NameEnd: 366,
+                NamePos: 362,
+                NameEnd: 369,
                 Name:    "Account",
               },
               ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                LParen:         367,
-                RParen:         370,
+                LParen:         370,
+                RParen:         373,
                 ColumnNameList: []*ast.Ident{
                   &ast.Ident{
-                    NamePos: 368,
-                    NameEnd: 370,
+                    NamePos: 371,
+                    NameEnd: 373,
                     Name:    "id",
                   },
                 },
@@ -216,10 +216,10 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
               &ast.PropertyGraphLabelAndProperties{
                 Label: &ast.PropertyGraphElementLabelLabelName{
-                  Label: 378,
+                  Label: 381,
                   Name:  &ast.Ident{
-                    NamePos: 384,
-                    NameEnd: 393,
+                    NamePos: 387,
+                    NameEnd: 396,
                     Name:    "Transfers",
                   },
                 },
@@ -234,4 +234,4 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
 }
 
 --- SQL
-CREATE OR REPLACE PROPERTY GRAPH FinGraph NODE TABLES(Account, Person) EDGE TABLES (PersonOwnAccount SOURCE KEY (id) REFERENCES Person (id) DESTINATION KEY (account_id) REFERENCES Account (id) LABEL Owns, AccountTransferAccount SOURCE KEY (id) REFERENCES Account (id) DESTINATION KEY (to_id) REFERENCES Account (id) LABEL Transfers)
+CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph NODE TABLES(Account, Person) EDGE TABLES (PersonOwnAccount SOURCE KEY (id) REFERENCES Person (id) DESTINATION KEY (account_id) REFERENCES Account (id) LABEL Owns, AccountTransferAccount SOURCE KEY (id) REFERENCES Account (id) DESTINATION KEY (to_id) REFERENCES Account (id) LABEL Transfers)
