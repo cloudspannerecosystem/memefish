@@ -2309,8 +2309,8 @@ type ArraySchemaType struct {
 
 // CreatePropertyGraph is CREATE PROPERTY GRAPH statement node.
 //
-//		CREATE {{if.OrReplace }}OR REPLACE{{end}} PROPERTY GRAPH {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
-//	 {{.Content | sql}}
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} PROPERTY GRAPH {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	{{.Content | sql}}
 type CreatePropertyGraph struct {
 	// pos = Create
 	// end = Content.end
@@ -2320,27 +2320,6 @@ type CreatePropertyGraph struct {
 	IfNotExists bool
 	Name        *Ident
 	Content     *PropertyGraphContent
-}
-
-func (c *CreatePropertyGraph) Pos() token.Pos {
-	return c.Create
-}
-
-func (c *CreatePropertyGraph) End() token.Pos {
-	return c.Content.End()
-}
-
-func (c *CreatePropertyGraph) SQL() string {
-	sql := "CREATE "
-	if c.OrReplace {
-		sql += "OR REPLACE "
-	}
-	sql += "PROPERTY GRAPH "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " " + c.Content.SQL()
-	return sql
 }
 
 // PropertyGraphContent
@@ -2355,18 +2334,6 @@ type PropertyGraphContent struct {
 	EdgeTables *PropertyGraphElementList //optional
 }
 
-func (p *PropertyGraphContent) Pos() token.Pos {
-	return p.Node
-}
-
-func (p *PropertyGraphContent) End() token.Pos {
-	return firstValidEnd(p.EdgeTables, p.NodeTables)
-}
-
-func (p *PropertyGraphContent) SQL() string {
-	return "NODE TABLES" + p.NodeTables.SQL() + sqlOpt(" EDGE TABLES ", p.EdgeTables, "")
-}
-
 // PropertyGraphElementList
 //
 //	({{.Elements | sqlJoin ", "}})
@@ -2378,44 +2345,17 @@ type PropertyGraphElementList struct {
 	Elements       []*PropertyGraphElement
 }
 
-func (p *PropertyGraphElementList) Pos() token.Pos {
-	return p.LParen
-}
-
-func (p *PropertyGraphElementList) End() token.Pos {
-	return p.RParen + 1
-}
-
-func (p *PropertyGraphElementList) SQL() string {
-	return "(" + sqlJoin(p.Elements, ", ") + ")"
-}
-
 // PropertyGraphElement
 //
-//	{{.Ident | sql}} {{.AsAlias | sqlOpt}} {{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
+//	{{.Ident | sql}} {{if not(.Alias | isnil)}} AS {{.Alias | sql}}{{end}} {{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
 type PropertyGraphElement struct {
 	// pos = Name.pos
 	// end = (Properties ?? Keys ?? Alias ?? Name).end
 
 	Name       *Ident
-	Alias      *AsAlias                 // optional
+	Alias      *Ident                   // optional
 	Keys       PropertyGraphElementKeys // optional
 	Properties PropertyGraphProperties  // optional
-}
-
-func (p *PropertyGraphElement) Pos() token.Pos {
-	return p.Name.Pos()
-}
-
-func (p *PropertyGraphElement) End() token.Pos {
-	return firstValidEnd(p.Properties, p.Keys, p.Alias, p.Name)
-}
-
-func (p *PropertyGraphElement) SQL() string {
-	return p.Name.SQL() +
-		sqlOpt(" ", p.Alias, "") +
-		sqlOpt(" ", p.Keys, "") +
-		sqlOpt(" ", p.Properties, "")
 }
 
 type PropertyGraphProperties interface {
@@ -2423,7 +2363,14 @@ type PropertyGraphProperties interface {
 	isPropertyGraphProperties()
 }
 
-// PropertyGraphLabelAndPropertiesList
+func (*PropertyGraphNoProperties) isPropertyGraphProperties()             {}
+func (*PropertyGraphPropertiesAre) isPropertyGraphProperties()            {}
+func (*PropertyGraphElementLabelLabelName) isPropertyGraphProperties()    {}
+func (*PropertyGraphLabelAndPropertiesList) isPropertyGraphProperties()   {}
+func (*PropertyGraphElementLabelDefaultLabel) isPropertyGraphProperties() {}
+
+// PropertyGraphLabelAndPropertiesList represents whitespace-separated list of PropertyGraphLabelAndProperties.
+// It implements PropertyGraphProperties.
 //
 //	{{.LabelAndProperties | sqlJoin " "}}
 type PropertyGraphLabelAndPropertiesList struct {
@@ -2433,37 +2380,15 @@ type PropertyGraphLabelAndPropertiesList struct {
 	LabelAndProperties []*PropertyGraphLabelAndProperties
 }
 
-func (p *PropertyGraphLabelAndPropertiesList) Pos() token.Pos {
-	return firstPos(p.LabelAndProperties)
-}
-
-func (p *PropertyGraphLabelAndPropertiesList) End() token.Pos {
-	return lastEnd(p.LabelAndProperties)
-}
-
-func (p *PropertyGraphLabelAndPropertiesList) SQL() string {
-	return sqlJoin(p.LabelAndProperties, " ")
-}
-
 // PropertyGraphLabelAndProperties
+//
+//	{{.Label | sql}} {{.Properties | sqlOpt}}
 type PropertyGraphLabelAndProperties struct {
 	// pos = Label.pos
 	// end = (Properties ?? Label).end
 
 	Label      PropertyGraphElementLabel
 	Properties PropertyGraphElementProperties // optional
-}
-
-func (p *PropertyGraphLabelAndProperties) Pos() token.Pos {
-	return p.Label.Pos()
-}
-
-func (p *PropertyGraphLabelAndProperties) End() token.Pos {
-	return firstValidEnd(p.Properties, p.Label)
-}
-
-func (p *PropertyGraphLabelAndProperties) SQL() string {
-	return p.Label.SQL() + sqlOpt(" ", p.Properties, "")
 }
 
 type PropertyGraphElementLabel interface {
@@ -2485,20 +2410,6 @@ type PropertyGraphElementLabelLabelName struct {
 	Name  *Ident
 }
 
-func (*PropertyGraphElementLabelLabelName) isPropertyGraphProperties() {}
-
-func (p *PropertyGraphElementLabelLabelName) Pos() token.Pos {
-	return p.Label
-}
-
-func (p *PropertyGraphElementLabelLabelName) End() token.Pos {
-	return p.Name.End()
-}
-
-func (p *PropertyGraphElementLabelLabelName) SQL() string {
-	return "LABEL " + p.Name.SQL()
-}
-
 // PropertyGraphElementLabelDefaultLabel
 //
 //	DEFAULT LABEL
@@ -2509,22 +2420,6 @@ type PropertyGraphElementLabelDefaultLabel struct {
 	Label   token.Pos
 }
 
-func (*PropertyGraphElementLabelDefaultLabel) isPropertyGraphProperties() {}
-
-func (p *PropertyGraphElementLabelDefaultLabel) Pos() token.Pos {
-	return p.Default
-}
-
-func (p *PropertyGraphElementLabelDefaultLabel) End() token.Pos {
-	return p.Label + 5
-}
-
-func (p *PropertyGraphElementLabelDefaultLabel) SQL() string {
-	return "DEFAULT LABEL"
-}
-
-func (*PropertyGraphLabelAndPropertiesList) isPropertyGraphProperties() {}
-
 type PropertyGraphElementKeys interface {
 	Node
 	isPropertyGraphElementKeys()
@@ -2533,40 +2428,26 @@ type PropertyGraphElementKeys interface {
 func (*PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
 func (*PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
 
-// PropertyGraphNodeElementKey is a wrapper of PropertyGraphElementKey
+// PropertyGraphNodeElementKey is a wrapper of PropertyGraphElementKey to implement PropertyGraphElementKeys
+// without deeper AST hierarchy.
+//
+//	{{.PropertyGraphElementKey | sql}}
 type PropertyGraphNodeElementKey struct {
+	// pos = PropertyGraphElementKey.pos
+	// end = PropertyGraphElementKey.end
+
 	PropertyGraphElementKey
-}
-
-func (p *PropertyGraphNodeElementKey) Pos() token.Pos {
-	return p.PropertyGraphElementKey.Pos()
-}
-
-func (p *PropertyGraphNodeElementKey) End() token.Pos {
-	return p.PropertyGraphElementKey.End()
-}
-
-func (p *PropertyGraphNodeElementKey) SQL() string {
-	return p.PropertyGraphElementKey.SQL()
 }
 
 // PropertyGraphEdgeElementKeys
 //
-//	{{.Element | sql}} {{.Source | sql}} {{.Destination | sql}}
+//	{{.Element | sqlOpt}} {{.Source | sql}} {{.Destination | sql}}
 type PropertyGraphEdgeElementKeys struct {
 	// pos = Element.pos
 	// end = Destination.end
-	Element     *PropertyGraphElementKey
+	Element     *PropertyGraphElementKey // optional
 	Source      *PropertyGraphSourceKey
 	Destination *PropertyGraphDestinationKey
-}
-
-func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos {
-	return p.Element.Pos()
-}
-
-func (p *PropertyGraphEdgeElementKeys) End() token.Pos {
-	return p.Destination.End()
 }
 
 func (p *PropertyGraphEdgeElementKeys) SQL() string {
@@ -2584,18 +2465,6 @@ type PropertyGraphElementKey struct {
 	Keys *PropertyGraphColumnNameList
 }
 
-func (p *PropertyGraphElementKey) Pos() token.Pos {
-	return p.Key
-}
-
-func (p *PropertyGraphElementKey) End() token.Pos {
-	return p.Keys.End()
-}
-
-func (p *PropertyGraphElementKey) SQL() string {
-	return "KEY " + p.Keys.SQL()
-}
-
 // PropertyGraphSourceKey
 //
 //	SOURCE KEY {{.Keys | sql}}
@@ -2608,20 +2477,6 @@ type PropertyGraphSourceKey struct {
 	Keys             *PropertyGraphColumnNameList
 	ElementReference *Ident
 	ReferenceColumns *PropertyGraphColumnNameList // optional
-}
-
-func (p *PropertyGraphSourceKey) Pos() token.Pos {
-	return p.Source
-}
-
-func (p *PropertyGraphSourceKey) End() token.Pos {
-	return firstValidEnd(p.ReferenceColumns, p.ElementReference)
-}
-
-func (p *PropertyGraphSourceKey) SQL() string {
-	return "SOURCE KEY " + p.Keys.SQL() +
-		" REFERENCES " + p.ElementReference.SQL() +
-		sqlOpt(" ", p.ReferenceColumns, "")
 }
 
 // PropertyGraphDestinationKey
@@ -2638,20 +2493,6 @@ type PropertyGraphDestinationKey struct {
 	ReferenceColumns *PropertyGraphColumnNameList // optional
 }
 
-func (p *PropertyGraphDestinationKey) Pos() token.Pos {
-	return p.Destination
-}
-
-func (p *PropertyGraphDestinationKey) End() token.Pos {
-	return firstValidEnd(p.ElementReference, p.ElementReference)
-}
-
-func (p *PropertyGraphDestinationKey) SQL() string {
-	return "DESTINATION KEY " + p.Keys.SQL() +
-		" REFERENCES " + p.ElementReference.SQL() +
-		sqlOpt(" ", p.ReferenceColumns, "")
-}
-
 // PropertyGraphColumnNameList
 //
 //	({{.ColumnNameList | sqlJoin ", "}})
@@ -2662,18 +2503,6 @@ type PropertyGraphColumnNameList struct {
 	ColumnNameList []*Ident
 }
 
-func (p *PropertyGraphColumnNameList) Pos() token.Pos {
-	return p.LParen
-}
-
-func (p *PropertyGraphColumnNameList) End() token.Pos {
-	return p.RParen + 1
-}
-
-func (p *PropertyGraphColumnNameList) SQL() string {
-	return "(" + sqlJoin(p.ColumnNameList, ", ") + ")"
-}
-
 // Element properties definition
 // https://cloud.google.com/spanner/docs/reference/standard-sql/graph-schema-statements#element_table_property_definition
 
@@ -2681,8 +2510,6 @@ type PropertyGraphElementProperties interface {
 	PropertyGraphProperties
 	isPropertyGraphElementProperties()
 }
-
-func (p *PropertyGraphNoProperties) isPropertyGraphElementProperties() {}
 
 // PropertyGraphNoProperties
 //
@@ -2692,20 +2519,6 @@ type PropertyGraphNoProperties struct {
 	// end = Properties + 10 # len("PROPERTIES")
 
 	No, Properties token.Pos // position of "NO" and "PROPERTIES"
-}
-
-func (p *PropertyGraphNoProperties) isPropertyGraphProperties() {}
-
-func (p *PropertyGraphNoProperties) Pos() token.Pos {
-	return p.No
-}
-
-func (p PropertyGraphNoProperties) End() token.Pos {
-	return p.Properties + 10
-}
-
-func (p PropertyGraphNoProperties) SQL() string {
-	return "NO PROPERTIES"
 }
 
 // PropertyGraphPropertiesAre
@@ -2722,21 +2535,8 @@ type PropertyGraphPropertiesAre struct {
 
 }
 
-func (*PropertyGraphPropertiesAre) isPropertyGraphProperties() {}
-
-func (p *PropertyGraphPropertiesAre) Pos() token.Pos {
-	return p.Properties
-}
-
-func (p *PropertyGraphPropertiesAre) End() token.Pos {
-	return p.ExceptColumns.End()
-}
-
-func (p *PropertyGraphPropertiesAre) SQL() string {
-	return "PROPERTIES ARE ALL COLUMNS" + sqlOpt(" EXCEPT ", p.ExceptColumns, "")
-}
-
-func (*PropertyGraphPropertiesAre) isPropertyGraphElementProperties() {}
+func (*PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
+func (*PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
 
 // PropertyGraphDerivedPropertyList
 //
@@ -2754,20 +2554,6 @@ type PropertyGraphDerivedPropertyList struct {
 
 func (*PropertyGraphDerivedPropertyList) isPropertyGraphProperties() {}
 
-func (*PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
-
-func (p *PropertyGraphDerivedPropertyList) Pos() token.Pos {
-	return p.Properties
-}
-
-func (p *PropertyGraphDerivedPropertyList) End() token.Pos {
-	return p.RParen + 1
-}
-
-func (p *PropertyGraphDerivedPropertyList) SQL() string {
-	return "PROPERTIES (" + sqlJoin(p.DerivedProperties, ", ") + ")"
-}
-
 // PropertyGraphDerivedProperty
 //
 //	{{.Expr | sql}}{{if not(.PropertyName | isnil)}} AS {{.PropertyName | sql}}{{end}}
@@ -2777,19 +2563,6 @@ type PropertyGraphDerivedProperty struct {
 
 	Expr         Expr
 	PropertyName *Ident //optional
-}
-
-func (p *PropertyGraphDerivedProperty) Pos() token.Pos {
-	return p.Expr.Pos()
-}
-
-func (p *PropertyGraphDerivedProperty) End() token.Pos {
-	return firstValidEnd(p.PropertyName, p.Expr)
-
-}
-
-func (p *PropertyGraphDerivedProperty) SQL() string {
-	return p.Expr.SQL() + sqlOpt(" AS ", p.PropertyName, "")
 }
 
 // DropPropertyGraph
@@ -2802,23 +2575,6 @@ type DropPropertyGraph struct {
 	Drop     token.Pos
 	IfExists bool
 	Name     *Ident
-}
-
-func (g *DropPropertyGraph) Pos() token.Pos {
-	return g.Drop
-}
-
-func (g *DropPropertyGraph) End() token.Pos {
-	return g.Name.End()
-}
-
-func (g *DropPropertyGraph) SQL() string {
-	sql := "DROP PROPERTY GRAPH "
-	if g.IfExists {
-		sql += "IF EXISTS "
-	}
-	sql += g.Name.SQL()
-	return sql
 }
 
 // ================================================================================

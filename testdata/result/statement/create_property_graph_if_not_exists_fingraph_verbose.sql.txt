@@ -40,13 +40,10 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
             NameEnd: 72,
             Name:    "Account",
           },
-          Alias: &ast.AsAlias{
-            As:    -1,
-            Alias: &ast.Ident{
-              NamePos: 76,
-              NameEnd: 83,
-              Name:    "Account",
-            },
+          Alias: &ast.Ident{
+            NamePos: 76,
+            NameEnd: 83,
+            Name:    "Account",
           },
           Keys:       nil,
           Properties: &ast.PropertyGraphLabelAndPropertiesList{
@@ -100,7 +97,7 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
             NameEnd: 179,
             Name:    "Person",
           },
-          Alias:      (*ast.AsAlias)(nil),
+          Alias:      (*ast.Ident)(nil),
           Keys:       nil,
           Properties: &ast.PropertyGraphLabelAndPropertiesList{
             LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
@@ -134,7 +131,7 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
             NameEnd: 270,
             Name:    "PersonOwnAccount",
           },
-          Alias: (*ast.AsAlias)(nil),
+          Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{
@@ -234,7 +231,7 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
             NameEnd: 453,
             Name:    "AccountTransferAccount",
           },
-          Alias: (*ast.AsAlias)(nil),
+          Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{

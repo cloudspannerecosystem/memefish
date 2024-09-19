@@ -36,7 +36,7 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             NameEnd: 69,
             Name:    "Account",
           },
-          Alias:      (*ast.AsAlias)(nil),
+          Alias:      (*ast.Ident)(nil),
           Keys:       nil,
           Properties: nil,
         },
@@ -46,7 +46,7 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             NameEnd: 81,
             Name:    "Person",
           },
-          Alias:      (*ast.AsAlias)(nil),
+          Alias:      (*ast.Ident)(nil),
           Keys:       nil,
           Properties: nil,
         },
@@ -62,7 +62,7 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             NameEnd: 122,
             Name:    "PersonOwnAccount",
           },
-          Alias: (*ast.AsAlias)(nil),
+          Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{
@@ -148,7 +148,7 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             NameEnd: 271,
             Name:    "AccountTransferAccount",
           },
-          Alias: (*ast.AsAlias)(nil),
+          Alias: (*ast.Ident)(nil),
           Keys:  &ast.PropertyGraphEdgeElementKeys{
             Element: (*ast.PropertyGraphElementKey)(nil),
             Source:  &ast.PropertyGraphSourceKey{

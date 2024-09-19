@@ -798,6 +798,77 @@ func (r *RolePrivilege) End() token.Pos { return r.Names[len(r.Names)-1].End() }
 
 // ================================================================================
 //
+// GQL schema statements
+//
+// ================================================================================
+
+func (c *CreatePropertyGraph) Pos() token.Pos { return c.Create }
+func (c *CreatePropertyGraph) End() token.Pos { return c.Content.End() }
+
+func (p *PropertyGraphContent) Pos() token.Pos { return p.Node }
+func (p *PropertyGraphContent) End() token.Pos { return firstValidEnd(p.EdgeTables, p.NodeTables) }
+
+func (p *PropertyGraphElementList) Pos() token.Pos { return p.LParen }
+func (p *PropertyGraphElementList) End() token.Pos { return p.RParen + 1 }
+
+func (p *PropertyGraphElement) Pos() token.Pos { return p.Name.Pos() }
+func (p *PropertyGraphElement) End() token.Pos {
+	return firstValidEnd(p.Properties, p.Keys, p.Alias, p.Name)
+}
+
+func (p *PropertyGraphLabelAndPropertiesList) Pos() token.Pos { return firstPos(p.LabelAndProperties) }
+func (p *PropertyGraphLabelAndPropertiesList) End() token.Pos { return lastEnd(p.LabelAndProperties) }
+
+func (p *PropertyGraphLabelAndProperties) Pos() token.Pos { return p.Label.Pos() }
+func (p *PropertyGraphLabelAndProperties) End() token.Pos {
+	return firstValidEnd(p.Properties, p.Label)
+}
+
+func (p *PropertyGraphElementLabelLabelName) Pos() token.Pos { return p.Label }
+func (p *PropertyGraphElementLabelLabelName) End() token.Pos { return p.Name.End() }
+
+func (p *PropertyGraphElementLabelDefaultLabel) Pos() token.Pos { return p.Default }
+func (p *PropertyGraphElementLabelDefaultLabel) End() token.Pos { return p.Label + 5 }
+
+func (p *PropertyGraphNodeElementKey) Pos() token.Pos { return p.PropertyGraphElementKey.Pos() }
+func (p *PropertyGraphNodeElementKey) End() token.Pos { return p.PropertyGraphElementKey.End() }
+
+func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos { return p.Element.Pos() }
+func (p *PropertyGraphEdgeElementKeys) End() token.Pos { return p.Destination.End() }
+
+func (p *PropertyGraphElementKey) Pos() token.Pos { return p.Key }
+func (p *PropertyGraphElementKey) End() token.Pos { return p.Keys.End() }
+
+func (p *PropertyGraphSourceKey) Pos() token.Pos { return p.Source }
+func (p *PropertyGraphSourceKey) End() token.Pos {
+	return firstValidEnd(p.ReferenceColumns, p.ElementReference)
+}
+
+func (p *PropertyGraphDestinationKey) Pos() token.Pos { return p.Destination }
+func (p *PropertyGraphDestinationKey) End() token.Pos {
+	return firstValidEnd(p.ElementReference, p.ElementReference)
+}
+
+func (p *PropertyGraphColumnNameList) Pos() token.Pos { return p.LParen }
+func (p *PropertyGraphColumnNameList) End() token.Pos { return p.RParen + 1 }
+
+func (p *PropertyGraphNoProperties) Pos() token.Pos { return p.No }
+func (p *PropertyGraphNoProperties) End() token.Pos { return p.Properties + 10 }
+
+func (p *PropertyGraphPropertiesAre) Pos() token.Pos { return p.Properties }
+func (p *PropertyGraphPropertiesAre) End() token.Pos { return p.ExceptColumns.End() }
+
+func (p *PropertyGraphDerivedPropertyList) Pos() token.Pos { return p.Properties }
+func (p *PropertyGraphDerivedPropertyList) End() token.Pos { return p.RParen + 1 }
+
+func (p *PropertyGraphDerivedProperty) Pos() token.Pos { return p.Expr.Pos() }
+func (p *PropertyGraphDerivedProperty) End() token.Pos { return firstValidEnd(p.PropertyName, p.Expr) }
+
+func (g *DropPropertyGraph) Pos() token.Pos { return g.Drop }
+func (g *DropPropertyGraph) End() token.Pos { return g.Name.End() }
+
+// ================================================================================
+//
 // Types for Schema
 //
 // ================================================================================
