@@ -1280,6 +1280,8 @@ func (p *PropertyGraphElement) SQL() string {
 		sqlOpt(" ", p.Properties, "")
 }
 
+func (p *PropertyGraphSingleProperties) SQL() string { return p.Properties.SQL() }
+
 func (p *PropertyGraphLabelAndPropertiesList) SQL() string {
 	return sqlJoin(p.LabelAndProperties, " ")
 }
@@ -1298,6 +1300,10 @@ func (p *PropertyGraphElementKey) SQL() string {
 	return "KEY " + p.Keys.SQL()
 }
 
+func (p *PropertyGraphEdgeElementKeys) SQL() string {
+	return sqlOpt("", p.Element, " ") + p.Source.SQL() + " " + p.Destination.SQL()
+}
+
 func (p *PropertyGraphSourceKey) SQL() string {
 	return "SOURCE KEY " + p.Keys.SQL() +
 		" REFERENCES " + p.ElementReference.SQL() +
@@ -1313,8 +1319,6 @@ func (p *PropertyGraphDestinationKey) SQL() string {
 func (p *PropertyGraphColumnNameList) SQL() string {
 	return "(" + sqlJoin(p.ColumnNameList, ", ") + ")"
 }
-
-func (*PropertyGraphNoProperties) isPropertyGraphElementProperties() {}
 
 func (p *PropertyGraphNoProperties) SQL() string {
 	return "NO PROPERTIES"

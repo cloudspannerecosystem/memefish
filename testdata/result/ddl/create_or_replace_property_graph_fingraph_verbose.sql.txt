@@ -137,17 +137,19 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
           },
           Alias:      (*ast.Ident)(nil),
           Keys:       nil,
-          Properties: &ast.PropertyGraphPropertiesAre{
-            Properties:    577,
-            Columns:       596,
-            ExceptColumns: &ast.PropertyGraphColumnNameList{
-              LParen:         611,
-              RParen:         616,
-              ColumnNameList: []*ast.Ident{
-                &ast.Ident{
-                  NamePos: 612,
-                  NameEnd: 616,
-                  Name:    "city",
+          Properties: &ast.PropertyGraphSingleProperties{
+            Properties: &ast.PropertyGraphPropertiesAre{
+              Properties:    577,
+              Columns:       596,
+              ExceptColumns: &ast.PropertyGraphColumnNameList{
+                LParen:         611,
+                RParen:         616,
+                ColumnNameList: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 612,
+                    NameEnd: 616,
+                    Name:    "city",
+                  },
                 },
               },
             },

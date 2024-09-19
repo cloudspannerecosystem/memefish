@@ -816,6 +816,9 @@ func (p *PropertyGraphElement) End() token.Pos {
 	return firstValidEnd(p.Properties, p.Keys, p.Alias, p.Name)
 }
 
+func (p *PropertyGraphSingleProperties) Pos() token.Pos { return p.Properties.Pos() }
+func (p *PropertyGraphSingleProperties) End() token.Pos { return p.Properties.End() }
+
 func (p *PropertyGraphLabelAndPropertiesList) Pos() token.Pos { return firstPos(p.LabelAndProperties) }
 func (p *PropertyGraphLabelAndPropertiesList) End() token.Pos { return lastEnd(p.LabelAndProperties) }
 

@@ -3289,7 +3289,7 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 	}
 
 	keys := p.tryParsePropertyGraphElementKeys()
-	properties := p.tryParsePropertyGraphProperties()
+	properties := p.tryParsePropertyGraphLabelsOrProperties()
 
 	return &ast.PropertyGraphElement{
 		Name:       name,
@@ -3396,11 +3396,16 @@ func (p *Parser) parsePropertyGraphElementProperties() ast.PropertyGraphElementP
 	}
 }
 
-func (p *Parser) tryParsePropertyGraphProperties() ast.PropertyGraphProperties {
+func (p *Parser) tryParsePropertyGraphLabelsOrProperties() ast.PropertyGraphLabelsOrProperties {
 	if p.Token.IsKeywordLike("LABEL") || p.Token.Kind == "DEFAULT" {
 		return p.parsePropertyGraphLabelAndPropertiesList()
 	}
-	return p.tryParsePropertyGraphElementProperties()
+	if properties := p.tryParsePropertyGraphElementProperties(); properties != nil {
+		return &ast.PropertyGraphSingleProperties{
+			Properties: properties,
+		}
+	}
+	return nil
 }
 
 func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys {
