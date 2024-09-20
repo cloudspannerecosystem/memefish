@@ -14,6 +14,7 @@ func TestSeparateRawStatements(t *testing.T) {
 		errRe *regexp.Regexp
 		want  []string
 	}{
+		// SeparateRawStatements treats only lexical structures, so the test cases can be invalid statements.
 		{desc: "empty input", input: "", want: []string{""}},
 		{desc: "single statement ", input: `SELECT "123";`, want: []string{`SELECT "123"`}},
 		{desc: "two statement", input: `SELECT "123"; SELECT "456";`, want: []string{`SELECT "123"`, `SELECT "456"`}},
@@ -21,7 +22,11 @@ func TestSeparateRawStatements(t *testing.T) {
 		{desc: "two statement", input: "SELECT 1;\n SELECT 2;\n", want: []string{"SELECT 1", "SELECT 2"}},
 		{desc: "single statement with line comment", input: `SELECT 1//
 `, want: []string{"SELECT 1//\n"}},
+		{desc: "semicolon in line comment", input: "SELECT 1 //;\n + 2", want: []string{"SELECT 1 //;\n + 2"}},
+		{desc: "semicolon in multi-line comment", input: "SELECT 1 /*;\n*/ + 2", want: []string{"SELECT 1 /*;\n*/ + 2"}},
 		{desc: "semicolon in double-quoted string", input: `SELECT "1;2;3";`, want: []string{`SELECT "1;2;3"`}},
+		{desc: "semicolon in single-quoted string", input: `SELECT '1;2;3';`, want: []string{`SELECT '1;2;3'`}},
+		{desc: "semicolon in back-quote", input: "SELECT `1;2;3`;", want: []string{"SELECT `1;2;3`"}},
 		// $` may become a valid token in the future, but it's reasonable to check its current behavior.
 		{desc: "unknown token", input: "SELECT $;", errRe: regexp.MustCompile(`illegal input character: '\$'`)},
 	} {
