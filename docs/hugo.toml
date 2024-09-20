@@ -1,6 +1,6 @@
 theme = "github.com/thingsym/hugo-theme-techdoc"
 
-baseURL = "https://cloudspannerecosystem.github.io/memefish"
+baseURL = "https://cloudspannerecosystem.dev/memefish/"
 title = "méméfish"
 languageCode = "en-US"
 defaultContentLanguage = "en"
