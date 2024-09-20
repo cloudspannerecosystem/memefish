@@ -1,4 +1,0 @@
-[submodule "hugo-whisper-theme"]
-	path = docs/themes/hugo-whisper-theme
-	url = https://github.com/deining/hugo-whisper-theme.git
-	branch = deprecation-warning
