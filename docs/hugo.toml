@@ -5,7 +5,6 @@ title = "méméfish"
 languageCode = "en-US"
 defaultContentLanguage = "en"
 
-paginate = 20
 canonifyurls = true
 
 pygmentsstyle = "bw"
