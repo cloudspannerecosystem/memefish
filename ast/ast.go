@@ -75,6 +75,9 @@ func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
 
+// GRAPH query is top level statement which can be executed by ExecuteSQL API.
+func (*GQLGraphQuery) isStatement() {}
+
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
 	Node
@@ -107,6 +110,7 @@ func (TableName) isTableExpr()         {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
+func (*GraphTableExpr) isTableExpr()   {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -123,37 +127,42 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
+func (BinaryExpr) isExpr()         {}
+func (UnaryExpr) isExpr()          {}
+func (InExpr) isExpr()             {}
+func (IsNullExpr) isExpr()         {}
+func (IsBoolExpr) isExpr()         {}
+func (IsSourceExpr) isExpr()       {}
+func (IsDestinationExpr) isExpr()  {}
+func (BetweenExpr) isExpr()        {}
+func (SelectorExpr) isExpr()       {}
+func (IndexExpr) isExpr()          {}
+func (CallExpr) isExpr()           {}
+func (CountStarExpr) isExpr()      {}
+func (CastExpr) isExpr()           {}
+func (ExtractExpr) isExpr()        {}
+func (CaseExpr) isExpr()           {}
+func (ParenExpr) isExpr()          {}
+func (ScalarSubQuery) isExpr()     {}
+func (ArraySubQuery) isExpr()      {}
+func (ExistsSubQuery) isExpr()     {}
+func (Param) isExpr()              {}
+func (Ident) isExpr()              {}
+func (Path) isExpr()               {}
+func (ArrayLiteral) isExpr()       {}
+func (StructLiteral) isExpr()      {}
+func (NullLiteral) isExpr()        {}
+func (BoolLiteral) isExpr()        {}
+func (IntLiteral) isExpr()         {}
+func (FloatLiteral) isExpr()       {}
+func (StringLiteral) isExpr()      {}
+func (BytesLiteral) isExpr()       {}
+func (DateLiteral) isExpr()        {}
+func (TimestampLiteral) isExpr()   {}
+func (NumericLiteral) isExpr()     {}
+func (*ArrayGQLSubQuery) isExpr()  {}
+func (*ValueGQLSubQuery) isExpr()  {}
+func (*ExistsGQLSubQuery) isExpr() {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -171,9 +180,10 @@ type InCondition interface {
 	isInCondition()
 }
 
-func (UnnestInCondition) isInCondition()   {}
-func (SubQueryInCondition) isInCondition() {}
-func (ValuesInCondition) isInCondition()   {}
+func (UnnestInCondition) isInCondition()       {}
+func (SubQueryInCondition) isInCondition()     {}
+func (ValuesInCondition) isInCondition()       {}
+func (*GQLSubQueryInCondition) isInCondition() {}
 
 // Type represents type node.
 type Type interface {
@@ -732,6 +742,21 @@ type ParenTableExpr struct {
 	Sample *TableSample // optional
 }
 
+// GraphTableExpr is GRAPH_TABLE operator
+//
+//	GRAPH_TABLE({{.PropertyGraphName | sql}} {{.Query | sql}}) {{.As | sqlOpt}}
+type GraphTableExpr struct {
+	// pos = GraphTable.Pos
+	// end = As.end || Rparen + 1
+	GraphTable        token.Pos
+	PropertyGraphName *Ident
+
+	Lparen, Rparen token.Pos // position of "(" and ")"
+
+	Query *GQLMultiLinearQueryStatement
+	As    *AsAlias // optional
+}
+
 // Join is JOIN expression.
 //
 //	{{.Left | sql}}
@@ -880,6 +905,18 @@ type ValuesInCondition struct {
 	Exprs []Expr // len(Exprs) > 0
 }
 
+// GQLSubQueryInCondition is GQL subquery at IN condition.
+//
+//	{{"{"}}{{.Query | sql}}}{{"}"}}
+type GQLSubQueryInCondition struct {
+	// pos = LBrace
+	// end = RBrace + 1
+
+	LBrace, RBrace token.Pos // position of "{" and "}"
+
+	Query *GQLQueryExpr
+}
+
 // IsNullExpr is IS NULL expression node.
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
@@ -905,6 +942,28 @@ type IsBoolExpr struct {
 	Not   bool
 	Left  Expr
 	Right bool
+}
+
+// IsSourceExpr is IS SOURCE expression node.
+//
+//	{{.Node | sql}} IS {{if .Not}}NOT{{end}} SOURCE OF {{.Edge | sql}}
+type IsSourceExpr struct {
+	// pos = Node.pos
+	// end = Edge.end
+
+	Node, Edge Expr
+	Not        bool
+}
+
+// IsDestinationExpr is IS DESTINATION expression node.
+//
+//	{{.Node | sql}} IS {{if .Not}}NOT{{end}} DESTINATION OF {{.Edge | sql}}
+type IsDestinationExpr struct {
+	// pos = Node.pos
+	// end = Edge.end
+
+	Node, Edge Expr
+	Not        bool
 }
 
 // BetweenExpr is BETWEEN expression node.
@@ -1120,6 +1179,51 @@ type ArraySubQuery struct {
 
 	Query QueryExpr
 }
+
+// ArrayGQLSubQuery is GQL subquery as ARRAY.
+//
+//	ARRAY {{"{"}}{{.Query | sql}}{{"}"}}
+type ArrayGQLSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Array  token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // position of "}"
+	Query  *GQLQueryExpr
+}
+
+// ValueGQLSubQuery is GQL subquery as VALUE.
+//
+//	VALUE {{"{"}}{{.Query | sql}}{{"}"}}
+type ValueGQLSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Array  token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // position of "}"
+	Query  *GQLQueryExpr
+}
+
+// ExistsGQLSubQuery is GQL subquery as EXISTS.
+//
+//	EXISTS{{"{"}}{{.Expr | sql}}{{"}"}}
+type ExistsGQLSubQuery struct {
+	// pos = Array
+	// end = RBrace + 1
+
+	Exists token.Pos // position of "ARRAY" keyword
+	RBrace token.Pos // "}"
+	Query  GQLExistsExpr
+}
+
+type GQLExistsExpr interface {
+	Node
+	isGQLExistsExpr()
+}
+
+func (*GQLQueryExpr) isGQLExistsExpr()      {}
+func (*GQLMatchStatement) isGQLExistsExpr() {}
+func (*GQLGraphPattern) isGQLExistsExpr()   {}
 
 // ExistsSubQuery is subquery in EXISTS call.
 //
@@ -2429,4 +2533,746 @@ type SequenceOptions struct {
 	Rparen  token.Pos // position of ")"
 
 	Records []*SequenceOption // len(Records) > 0
+}
+
+// ================================================================================
+//
+// GQL
+//
+// https://cloud.google.com/spanner/docs/reference/standard-sql/graph-query-statements
+//
+// ================================================================================
+
+// GQLGraphQuery is toplevel node of GRAPH query.
+//
+//	{{.Graph | sql}}
+//	{{.MultiLinearQueryStatement | sql}}
+type GQLGraphQuery struct {
+	// pos = (GraphClause ?? MultiLinearQueryStatement).pos
+	// end = MultiLinearQueryStatement.end
+
+	GraphClause               *GQLGraphClause
+	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
+}
+
+// GQLQueryExpr is similar to GQLGraphQuery,
+// but it is appeared in GQL subqueries and it can optionally have GRAPH clause
+//
+//	{{.Graph | sqlOpt}}
+//	{{.MultiLinearQueryStatement | sql}}
+type GQLQueryExpr struct {
+	// pos = (GraphClause ?? MultiLinearQueryStatement).pos
+	// end = MultiLinearQueryStatement.end
+
+	GraphClause               *GQLGraphClause // optional
+	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
+}
+
+// GQLGraphClause represents `GRAPH property_graph_name`.
+//
+//	GRAPH {{.PropertyGraphName | sql}}
+type GQLGraphClause struct {
+	// pos = Graph
+	// end = PropertyGraphName.end
+
+	Graph             token.Pos
+	PropertyGraphName *Ident
+}
+
+// GQLMultiLinearQueryStatement is the body of a GQLGraphClause and GQLQueryExpr.
+// It contains a list of LinearQueryStatementList chained together with the NEXT statement.
+//
+//	{{.LinearQueryStatementList || sqlJoin "\nNEXT\n"}}
+type GQLMultiLinearQueryStatement struct {
+	// pos = LinearQueryStatementList[0].pos
+	// pos = LinearQueryStatementList[$].end
+
+	LinearQueryStatementList []GQLLinearQueryStatement
+}
+
+type GQLLinearQueryStatement interface {
+	Node
+	isGQLLinearQueryStatement()
+}
+
+func (*GQLSimpleLinearQueryStatement) isGQLLinearQueryStatement()    {}
+func (*GQLCompositeLinearQueryStatement) isGQLLinearQueryStatement() {}
+
+// GQLSimpleLinearQueryStatement represents a list of primitive_query_statements that ends with a RETURN statement.
+//
+//	{{.PrimitiveQueryStatementList | sqlJoin "\n"}}
+type GQLSimpleLinearQueryStatement struct {
+	// pos = PrimitiveQueryStatementList[0].pos
+	// end = PrimitiveQueryStatementList[$].end
+
+	// It contains at least one GQL statements, and It ends with a RETURN statement.
+	PrimitiveQueryStatementList []GQLPrimitiveQueryStatement
+}
+
+// GQLSimpleLinearQueryStatementWithSetOperator represents GQLSimpleLinearQueryStatement composited with the set operators.
+//
+// // TODO: {{string(SetOperator)}}
+type GQLSimpleLinearQueryStatementWithSetOperator struct {
+	// pos = StartPos
+	// end = Statement.end
+
+	StartPos      token.Pos
+	SetOperator   GQLSetOperatorEnum
+	DistinctOrAll GQLAllOrDistinctEnum
+	Statement     *GQLSimpleLinearQueryStatement
+}
+
+// GQLCompositeLinearQueryStatement represents a list of GQLSimpleLinearQueryStatement composited with the set operators.
+//
+// {{.HeadSimpleLinearQueryStatement | sql}}
+// {{.TailSimpleLinearQueryStatementList | sqlJoin "\n"}}
+type GQLCompositeLinearQueryStatement struct {
+	// pos = HeadSimpleLinearStatement.pos
+	// end = TailSimpleLinearStatement.pos
+
+	HeadSimpleLinearQueryStatement     *GQLSimpleLinearQueryStatement
+	TailSimpleLinearQueryStatementList []*GQLSimpleLinearQueryStatementWithSetOperator
+}
+
+// ================================================================================
+//
+// GQL statements
+//
+// ================================================================================
+
+type GQLPrimitiveQueryStatement interface {
+	Node
+	isGQLPrimitiveQueryStatement()
+}
+
+func (*GQLWithStatement) isGQLPrimitiveQueryStatement()    {}
+func (*GQLOrderByStatement) isGQLPrimitiveQueryStatement() {}
+func (*GQLOffsetStatement) isGQLPrimitiveQueryStatement()  {}
+func (*GQLLimitStatement) isGQLPrimitiveQueryStatement()   {}
+func (*GQLForStatement) isGQLPrimitiveQueryStatement()     {}
+func (*GQLFilterStatement) isGQLPrimitiveQueryStatement()  {}
+func (*GQLMatchStatement) isGQLPrimitiveQueryStatement()   {}
+func (*GQLLetStatement) isGQLPrimitiveQueryStatement()     {}
+func (*GQLReturnStatement) isGQLPrimitiveQueryStatement()  {}
+
+// GQLMatchStatement represents MATCH statement.
+//
+//	{{if .Optional.Invalid | not}}OPTIONAL {{end-}}
+//	MATCH //	{{.MatchHint | sqlOpt}} //	{{.PrefixOrMode | sqlOpt}} {{.GraphPattern | sql}}
+type GQLMatchStatement struct {
+	// pos = Optional || Match
+	// end = GraphPattern.end
+
+	Optional token.Pos //optional
+	Match    token.Pos
+
+	MatchHint    *Hint                         // optional
+	PrefixOrMode GQLPathSearchPrefixOrPathMode // optional
+	GraphPattern *GQLGraphPattern
+}
+
+type GQLLimitAndOffsetClause interface {
+	Node
+	isGQLLimitAndOffsetClause()
+}
+
+func (g *GQLLimitClause) isGQLLimitAndOffsetClause()           {}
+func (g *GQLOffsetClause) isGQLLimitAndOffsetClause()          {}
+func (g *GQLLimitWithOffsetClause) isGQLLimitAndOffsetClause() {}
+
+// GQLFilterStatement represents `FILTER [WHERE] bool_expression`
+//
+//	FILTER {{if .Where.Invalid | not}}WHERE{{end}} {{.Expr | sql}}
+type GQLFilterStatement struct {
+	// pos = Filter
+	// end = Expr.end
+
+	Filter token.Pos
+	Where  token.Pos
+	Expr   Expr
+}
+
+// GQLForStatement represents GQL FOR statement.
+//
+//	FOR {{.ElementName | sql}} IN {{.ArrayExpression | sqlJoin ", "}} {{.WithOffsetClause | sqlOpt}}
+type GQLForStatement struct {
+	// pos = For
+	// end = (WithOffsetClause ?? ArrayExpression).end
+
+	For              token.Pos
+	ElementName      *Ident
+	ArrayExpression  Expr
+	WithOffsetClause *GQLWithOffsetClause
+}
+
+// GQLWithOffsetClause represents `WITH OFFSET [AS offset_name]` in FOR statement.
+//
+//	WITH OFFSET {{if isnil .OffsetName | not}}AS {{.OffsetName | sql}}{{end}}
+type GQLWithOffsetClause struct {
+	// pos = With.pos
+	// end = OffsetName.end ?? Offset + 6
+
+	With       token.Pos
+	Offset     token.Pos
+	OffsetName *Ident
+}
+
+// GQLLimitClause is wrapper of Limit for GQL
+//
+//	{{.Limit | sql}}
+type GQLLimitClause struct {
+	// pos = Limit.pos
+	// end = Limit.end
+
+	Limit *Limit
+}
+
+// GQLOffsetClause is wrapper of Offset for GQL
+//
+//	{{.Offset | sql}}
+type GQLOffsetClause struct {
+	// pos = Offset.pos
+	// end = Offset.end
+	Offset *Offset
+}
+
+// GQLLimitWithOffsetClause is wrapper of Limit and Offset
+//
+//	{{.Offset | sql}} {{.Offset | sql}}
+type GQLLimitWithOffsetClause struct {
+	// pos = Limit.pos
+	// end = Offset.end
+
+	Limit  *Limit
+	Offset *Offset
+}
+
+// GQLLimitStatement represents LIMIT statement
+//
+//	LIMIT {{.Count | sql}}
+type GQLLimitStatement struct {
+	// pos = Limit
+	// end = Count.end
+
+	Limit token.Pos
+	Count IntValue
+}
+
+// GQLOffsetStatement represents OFFSET statement.
+// It also represents SKIP statement as the synonym.
+//
+// {{if IsSkip}}
+type GQLOffsetStatement struct {
+	// pos = Offset.pos
+	// end = Count.end
+
+	Offset token.Pos
+	IsSkip bool
+	Count  IntValue
+}
+
+// GQLOrderByStatement represents ORDER BY statement.
+//
+//	ORDER BY {{.OrderBySpecificationList | sqlJoin ", "}}
+type GQLOrderByStatement struct {
+	// pos = Order
+	// end = OrderBySpecificationList[$].end
+
+	Order                    token.Pos
+	OrderBySpecificationList []*GQLOrderBySpecification
+}
+
+// GQLOrderBySpecification represents a single sort criterion for an expression in ORDER BY.
+//
+// {{.Expr | sql}} {{.CollationSpecification | sqlOpt}} {{if DirectionPos.Invalid | not}}{{string(Direction)}}{{end}}
+type GQLOrderBySpecification struct {
+	// pos = Expr.pos
+	// DirectionPos ?? CollationSpecification.end
+
+	Expr Expr
+
+	CollationSpecification *GQLCollationSpecification // optional
+	DirectionPos           token.Pos                  // optional
+	Direction              GQLDirectionEnum
+}
+
+// GQLCollationSpecification represents `COLLATE collation_specification`
+//
+//	COLLATE {{.Specification | sql}}
+type GQLCollationSpecification struct {
+	// pos = Collate
+	// end = Specification.end
+
+	Collate       token.Pos
+	Specification StringValue
+}
+
+// GQLWithStatement represents WITH statement.
+//
+//	WITH {{.GQLAllOrDistinctEnum | sql}} {{.ReturnItemList | sqlJoin}} {{.GroupBy | sql}}
+type GQLWithStatement struct {
+	// pos = With
+	// end = (GroupByClause ?? ReturnItemList[$]).end
+	With           token.Pos
+	AllOrDistinct  GQLAllOrDistinctEnum
+	ReturnItemList []GQLReturnItem
+	GroupByClause  *GroupBy // optional
+}
+
+// GQLReturnItem is similar to SelectItem,
+// but it don't permit DotStar and AsAlias without AS.
+type GQLReturnItem SelectItem
+
+// GQLReturnStatement represents RETURN statement.
+//
+//	RETURN {{.AllOrDistinct | sql}} {{.ReturnItemList | sqlJoin}}
+//	{{.GroupByClause | sqlOpt}}
+//	{{.OrderByClause | sqlOpt}}
+//	{{.LimitAntOffsetClause | sqlOpt}}
+type GQLReturnStatement struct {
+	// pos = Return.pos
+	// end = (LimitAndOffsetClause ?? OrderByClause ?? GroupByClause ?? ReturnItemList[$]).end
+
+	Return         token.Pos
+	AllOrDistinct  GQLAllOrDistinctEnum
+	ReturnItemList []GQLReturnItem
+
+	// Use GoogleSQL GroupBy because it is referenced in docs
+	GroupByClause *GroupBy //optional
+
+	// Use GoogleSQL OrderBy because it is referenced in docs
+	OrderByClause *OrderBy //optional
+
+	LimitAndOffsetClause GQLLimitAndOffsetClause // optional
+}
+
+// GQLLinearGraphVariable represents a single `variable_name = value` entry in LET statement.
+//
+//	{{.VariableName | sql}} = {{.Value | sql}}
+type GQLLinearGraphVariable struct {
+	VariableName *Ident
+	Value        Expr
+}
+
+// GQLLetStatement represents LET statement.
+//
+//	LET {{.LinearGraphVariableList | sqlJoin ", "}}
+type GQLLetStatement struct {
+	// pos = Let.pos
+	// end = LinearGraphVariableList[$].end
+
+	Let                     token.Pos
+	LinearGraphVariableList []*GQLLinearGraphVariable // len(LinearGraphVariableList) > 0
+}
+
+// ================================================================================
+//
+// GQL graph patterns
+//
+// ================================================================================
+
+// GQLGraphPattern represents is the toplevel node of GQL graph patterns.
+//
+//	{{.PathPatternList | sqlJoin}} {{.WhereClause | sqlOpt}}
+type GQLGraphPattern struct {
+	// pos = GQLTopLevelPathPattern[0].pos
+	// end = (WhereClause ?? PathPatternList[$]).end
+
+	PathPatternList []*GQLTopLevelPathPattern
+	WhereClause     *Where // optional
+}
+
+// GQLTopLevelPathPattern is a PathPattern optionally prefixed by PathSearchPrefixOrPathMode.
+//
+//	{{.PathSearchPrefixOrPathMode | sqlOpt}} {{.PathPattern | sql}}
+type GQLTopLevelPathPattern struct {
+	// pos = (PathSearchPrefixOrPathMode ?? PathPattern).pos
+	// end = PathPattern.end
+
+	PathSearchPrefixOrPathMode GQLPathSearchPrefixOrPathMode // optional
+	PathPattern                *GQLPathPattern
+}
+
+// GQLPathSearchPrefixOrPathMode represents `{ path_search_prefix | path_mode }`
+type GQLPathSearchPrefixOrPathMode interface {
+	Node
+	isGQLPathSearchPrefixOrPathMode()
+}
+
+func (*GQLPathMode) isGQLPathSearchPrefixOrPathMode()         {}
+func (*GQLPathSearchPrefix) isGQLPathSearchPrefixOrPathMode() {}
+
+// GQLEdgePattern represents edge pattern nodes.
+type GQLEdgePattern interface {
+	GQLElementPattern
+	isGQLEdgePattern()
+}
+
+func (*GQLAbbreviatedEdgeLeft) isGQLEdgePattern()  {}
+func (*GQLAbbreviatedEdgeAny) isGQLEdgePattern()   {}
+func (*GQLFullEdgeRight) isGQLEdgePattern()        {}
+func (*GQLFullEdgeLeft) isGQLEdgePattern()         {}
+func (*GQLFullEdgeAny) isGQLEdgePattern()          {}
+func (*GQLAbbreviatedEdgeRight) isGQLEdgePattern() {}
+
+// GQLFullEdgeAny is node representing`-[pattern_filler]-` .
+//
+//	-[{{.PatternFiller | sql}}]-
+type GQLFullEdgeAny struct {
+	// pos = First.pos
+	// end = Last.pos + 1
+	First, Last   token.Pos
+	PatternFiller *GQLPatternFiller
+}
+
+// GQLFullEdgeLeft represents `<-[pattern_filler]-`
+//
+//	<-[{{.PatternFiller | sql}}]-
+type GQLFullEdgeLeft struct {
+	// pos = First
+	// end = Last + 1
+	First         token.Pos // position of "<"
+	Last          token.Pos // position of the last "-"
+	PatternFiller *GQLPatternFiller
+}
+
+// GQLFullEdgeRight represents “-[pattern_filler]->
+//
+//	-[{{.PatternFiller | sql}}]->
+type GQLFullEdgeRight struct {
+	// pos = First
+	// end = Last + 1
+
+	First         token.Pos // position of the first "-"
+	Last          token.Pos // position of ">"
+	PatternFiller *GQLPatternFiller
+}
+
+// GQLAbbreviatedEdgeAny represents `-`.
+//
+//	-
+type GQLAbbreviatedEdgeAny struct {
+	// pos = Hyphen
+	// end = Hyphen +1
+
+	Hyphen token.Pos // position of "-"
+}
+
+// GQLAbbreviatedEdgeLeft represents `<-`.
+//
+//	<-
+type GQLAbbreviatedEdgeLeft struct {
+	// pos = First
+	// end = Last + 1
+
+	First token.Pos // position of "<"
+	Last  token.Pos // position of "-"
+}
+
+// GQLAbbreviatedEdgeRight represents `->`.
+//
+//	->
+type GQLAbbreviatedEdgeRight struct {
+	// pos = First
+	// end = Last + 1
+
+	First token.Pos // position of "-"
+	Last  token.Pos // position of ">"
+}
+
+// GQLQuantifiablePathTerm represents GQLPathTerm with optional Hint and optional GQLQuantifier..
+// NOTE: This node is not documented in spec, but inferred by [quantified_path_primary] and [graph traversal hints].
+//
+// [graph traversal hints]: https://cloud.google.com/spanner/docs/reference/standard-sql/graph-query-statements#graph_hints
+// [quantified_path_primary] https://cloud.google.com/spanner/docs/reference/standard-sql/graph-patterns#quantified_paths
+//
+//	{{.Hint | sqlOpt}}{{.PathTerm | sql}}{{.Quantifier | sqlOpt}}
+type GQLQuantifiablePathTerm struct {
+	// pos = (Hint ?? PathTerm).pos
+	// end = (Quantifier ?? PathTerm).end
+
+	Hint       *Hint // optional
+	PathTerm   GQLPathTerm
+	Quantifier GQLQuantifier // optional
+}
+
+// GQLPathPattern represents a path pattern that matches paths in a property graph.
+//
+//	{{.PathTermList | sqlJoin ""}}
+type GQLPathPattern struct {
+	// pos = PathTermList[0].pos
+	// end = PathTermList[$].end
+
+	PathTermList []*GQLQuantifiablePathTerm
+}
+
+// GQLPathTerm represents ` { element_pattern | subpath_pattern }`
+type GQLPathTerm interface {
+	Node
+	isGQLPathTerm()
+}
+
+func (*GQLSubpathPattern) isGQLPathTerm()       {}
+func (*GQLNodePattern) isGQLPathTerm()          {}
+func (*GQLAbbreviatedEdgeRight) isGQLPathTerm() {}
+func (*GQLAbbreviatedEdgeLeft) isGQLPathTerm()  {}
+func (*GQLAbbreviatedEdgeAny) isGQLPathTerm()   {}
+func (*GQLFullEdgeRight) isGQLPathTerm()        {}
+func (*GQLFullEdgeLeft) isGQLPathTerm()         {}
+func (*GQLFullEdgeAny) isGQLPathTerm()          {}
+
+// GQLWhereClause represents `WHERE bool_expression` clause.
+//
+//	WHERE {{.BoolExpression | sql}}
+type GQLWhereClause struct {
+	// pos = Where
+	// end = BoolExpression.end
+
+	Where          token.Pos
+	BoolExpression Expr
+}
+
+// GQLElementPattern represents a node pattern or an edge pattern.
+type GQLElementPattern interface {
+	Node
+	GQLPathTerm
+	isGQLElementPattern()
+}
+
+func (*GQLFullEdgeAny) isGQLElementPattern()          {}
+func (*GQLFullEdgeLeft) isGQLElementPattern()         {}
+func (*GQLFullEdgeRight) isGQLElementPattern()        {}
+func (*GQLAbbreviatedEdgeAny) isGQLElementPattern()   {}
+func (*GQLAbbreviatedEdgeLeft) isGQLElementPattern()  {}
+func (*GQLAbbreviatedEdgeRight) isGQLElementPattern() {}
+
+// GQLPathMode represents to include or exclude paths that have repeating edges based on the specified mode.
+//
+//	{{.ModeToken | sql}} {{.PathOrPathsToken | sqlOpt}}
+type GQLPathMode struct {
+	// pos = ModeToken.pos
+	// end = (PathOrPathsToken ?? ModeToken).end
+
+	Mode             GQLPathModeEnum
+	ModeToken        *Ident
+	PathOrPathsToken *Ident // optional
+}
+
+// GQLQuantifier represents `{ fixed_quantifier | bounded_quantifier }`.
+type GQLQuantifier interface {
+	Node
+	isGQLQuantifier()
+}
+
+func (g *GQLFixedQuantifier) isGQLQuantifier()   {}
+func (g *GQLBoundedQuantifier) isGQLQuantifier() {}
+
+// GQLFixedQuantifier represents the exact number of times the path pattern portion must repeat.
+//
+//	{{"{"}}{{.Bound | sql}}{{"}"}}
+type GQLFixedQuantifier struct {
+	// pos = LBrace
+	// end = RBrace + 1
+
+	LBrace, RBrace token.Pos
+	Bound          IntValue
+}
+
+// GQLBoundedQuantifier represents the minimum and maximum number of times the path pattern portion can repeat.
+//
+//	{{"{"}}{{.LowerBound | sqlOpt}}, {{.UpperBound | sql}}{{"}"}}
+type GQLBoundedQuantifier struct {
+	// pos = LBrace
+	// end = RBrace + 1
+
+	LBrace, RBrace token.Pos
+	LowerBound     IntValue // optional
+	UpperBound     IntValue
+}
+
+// GQLSubpathPattern represents a path pattern enclosed in parentheses.
+//
+//	({{.PathMode | sqlOpt}} {{.PathPattern | sql}} {{.WhereClause | sqlOpt}})
+type GQLSubpathPattern struct {
+	// pos = LParen
+	// end = RParen + 1
+
+	LParen, RParen token.Pos    // position of "(" and ")"
+	PathMode       *GQLPathMode // optional
+	PathPattern    *GQLPathPattern
+	WhereClause    *Where // optional
+}
+
+// GQLNodePattern represents a pattern to match nodes in a property graph.
+//
+//	({{.PatternFiller | sql}})
+type GQLNodePattern struct {
+	// pos = LParen
+	// end = RParen + 1
+
+	LParen, RParen token.Pos
+	PatternFiller  *GQLPatternFiller
+}
+
+// EdgePattern TODO
+/*
+edge_pattern:
+  {
+    full_edge_any |
+    full_edge_left |
+    full_edge_right |
+    abbreviated_edge_any |
+    abbreviated_edge_left |
+    abbreviated_edge_right
+  }
+*/
+/*
+type EdgePattern interface {
+	Node
+	isEdgePattern()
+}
+
+*/
+
+// GQLPatternFiller represents specifications on the node or edge pattern that you want to match.
+//
+//	{{.Hint | sqlOpt}}
+//	{{.GraphPatternVariable | sqlOpt}}
+//	{{.IsLabelCondition | sqlOpt}}
+//	{{.Filter | sqlOpt}}
+type GQLPatternFiller struct {
+	// pos = (Hint ?? GraphPatternVariable ?? IsLabelCondition ?? Filter).pos
+	// end = (Filter ?? IsLabelCondition ?? GraphPatternVariable ?? Hint).end
+
+	// Hint is graph element hint which is a table hint.
+	Hint                 *Hint                  // optional
+	GraphPatternVariable *Ident                 // optional
+	IsLabelCondition     *GQLIsLabelCondition   // optional
+	Filter               GQLPatternFillerFilter // optional
+}
+
+// GQLIsLabelCondition represents `{ IS | : } label_expression`.
+// It normalizes `IS` to `:`.
+//
+//	: {{.LabelExpression | sql}}
+type GQLIsLabelCondition struct {
+	// pos = IsOrColon
+	// end = LabelExpression.end
+
+	IsOrColon       token.Pos
+	LabelExpression GQLLabelExpression
+}
+
+// GQLLabelExpression represents the expression for the label.
+// It is formed by combining one or more labels with logical operators (AND, OR, NOT) and parentheses for grouping.
+// See https://cloud.google.com/spanner/docs/reference/standard-sql/graph-patterns#label_expression_definition.
+type GQLLabelExpression interface {
+	Node
+	isGQLLabelExpression()
+}
+
+// Note: Spanner Graph documentation don't say about paren expression, but there is.
+func (g *GQLLabelParenExpression) isGQLLabelExpression() {}
+func (g *GQLLabelOrExpression) isGQLLabelExpression()    {}
+func (g *GQLLabelAndExpression) isGQLLabelExpression()   {}
+func (g *GQLLabelNotExpression) isGQLLabelExpression()   {}
+func (g *GQLLabelName) isGQLLabelExpression()            {}
+
+// GQLLabelAndExpression represents `label_expression|label_expression`.
+//
+//	{{.Left | sql}}|{{.Right | sql}}
+type GQLLabelOrExpression struct {
+	// pos = LParen
+	// end = RParen
+
+	Left, Right GQLLabelExpression
+}
+
+// GQLLabelParenExpression represents `(label_expression)`.
+//
+//	({{.LabelExpr | sql}})
+type GQLLabelParenExpression struct {
+	// pos = LParen
+	// end = RParen + 1
+
+	LParen, RParen token.Pos
+	LabelExpr      GQLLabelExpression
+}
+
+// GQLLabelAndExpression represents `label_expression&label_expression`.
+//
+//	{{.Left | sql}}&{{.Right | sql}}
+type GQLLabelAndExpression struct {
+	// pos = Left.pos
+	// end = Right.end
+
+	Left, Right GQLLabelExpression
+}
+
+// GQLLabelNotExpression represents `!label_expression`.
+//
+//	!{{.LabelExpression | sql}}
+type GQLLabelNotExpression struct {
+	// pos = Not
+	// end = LabelExpression.end
+
+	Not             token.Pos // position of "!"
+	LabelExpression GQLLabelExpression
+}
+
+// GQLLabelName represents the label to match.
+//
+//	{{if .IsPercent}}%{{else}}{{.LabelName | sql}}{{end}}
+type GQLLabelName struct {
+	// pos = StartPos
+	// end = IsPercent ? StartPos + 1 : LabelName.end
+
+	StartPos  token.Pos // position of "%" or LabelName
+	IsPercent bool
+	LabelName *Ident
+}
+
+// GQLPatternFillerFilter represents `{where_clause | property_filters}` in GQLPatternFiller.
+type GQLPatternFillerFilter interface {
+	Node
+	isGQLPatternFillerFilter()
+}
+
+func (g *GQLPropertyFilters) isGQLPatternFillerFilter() {}
+func (g *GQLWhereClause) isGQLPatternFillerFilter()     {}
+func (w *Where) isGQLPatternFillerFilter()              {}
+
+// GQLPropertyFilters represents `{ element_property[, ...] }` in GQLPatternFiller.
+//
+//	{{"{"}}{{.PropertyFilterElemList | sqlJoin ", "}}{{"}"}}
+type GQLPropertyFilters struct {
+	// pos = LBrace
+	// end = RBrace + 1
+
+	LBrace                 token.Pos // position of "{"
+	PropertyFilterElemList []*GQLElementProperty
+	RBrace                 token.Pos // position of "}"
+}
+
+// GQLElementProperty represents an element of GQLPropertyFilters.
+//
+//	{{.ElementPropertyName | sql}}: {{.ElementPropertyValue | sql}}
+type GQLElementProperty struct {
+	// pos = ElementPropertyName.pos
+	// end = ElementPropertyValue.pos
+
+	ElementPropertyName  *Ident
+	ElementPropertyValue Expr
+}
+
+// GQLPathSearchPrefix represents `{"ALL" | "ANY" | "ANY SHORTEST"}`.
+//
+//	{{string(.SearchPrefix)}}
+type GQLPathSearchPrefix struct {
+	// pos = StartPos
+	// end = LastEnd
+
+	StartPos     token.Pos
+	LastEnd      token.Pos // end of last token
+	SearchPrefix GQLSearchPrefixEnum
 }

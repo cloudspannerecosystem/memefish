@@ -1,0 +1,185 @@
+--- let.sql
+GRAPH FinGraph
+MATCH (source:Account)-[e:Transfers]->(destination:Account)
+LET a = source
+RETURN a.id AS a_id
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: nil,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLNodePattern{
+                          LParen:        21,
+                          RParen:        36,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 28,
+                              Name:    "source",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       28,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  29,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 29,
+                                  NameEnd: 36,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLFullEdgeRight{
+                          First:         37,
+                          Last:          52,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 39,
+                              NameEnd: 40,
+                              Name:    "e",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       40,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  41,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 41,
+                                  NameEnd: 50,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLNodePattern{
+                          LParen:        53,
+                          RParen:        73,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 54,
+                              NameEnd: 65,
+                              Name:    "destination",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       65,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  66,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 66,
+                                  NameEnd: 73,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: (*ast.Where)(nil),
+            },
+          },
+          &ast.GQLLetStatement{
+            Let:                     75,
+            LinearGraphVariableList: []*ast.GQLLinearGraphVariable{
+              &ast.GQLLinearGraphVariable{
+                VariableName: &ast.Ident{
+                  NamePos: 79,
+                  NameEnd: 80,
+                  Name:    "a",
+                },
+                Value: &ast.Ident{
+                  NamePos: 83,
+                  NameEnd: 89,
+                  Name:    "source",
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         90,
+            AllOrDistinct:  "",
+            ReturnItemList: []ast.GQLReturnItem{
+              &ast.Alias{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 97,
+                      NameEnd: 98,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 99,
+                      NameEnd: 101,
+                      Name:    "id",
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 105,
+                    NameEnd: 109,
+                    Name:    "a_id",
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH (source:Account)-[e:Transfers]->(destination:Account)
+LET a = source
+RETURN a.id AS a_id

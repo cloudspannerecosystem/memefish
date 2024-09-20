@@ -130,3 +130,45 @@ const (
 	InsertOrTypeUpdate InsertOrType = "UPDATE"
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
+
+type GQLAllOrDistinctEnum string
+
+const (
+	GQLAllOrDistinctImplicitAll GQLAllOrDistinctEnum = ""
+	GQLAllOrDistinctAll         GQLAllOrDistinctEnum = "ALL"
+	GQLAllOrDistinctDistinct    GQLAllOrDistinctEnum = "DISTINCT"
+)
+
+type GQLSetOperatorEnum string
+
+const (
+	GQLSetOperatorUnion     GQLSetOperatorEnum = "UNION"
+	GQLSetOperatorIntersect GQLSetOperatorEnum = "INTERSECT"
+	GQLSetOperatorExcept    GQLSetOperatorEnum = "EXCEPT"
+)
+
+type GQLDirectionEnum string
+
+const (
+	GQLSortOrderUnspecified GQLDirectionEnum = ""
+	GQLSortOrderAsc         GQLDirectionEnum = "ASC"
+	GQLSortOrderAscending   GQLDirectionEnum = "ASCENDING"
+	GQLSortOrderDesc        GQLDirectionEnum = "DESC"
+	GQLSortOrderDescending  GQLDirectionEnum = "DESCENDING"
+)
+
+type GQLPathModeEnum string
+
+const (
+	GQLPathModeUnspecified GQLPathModeEnum = ""
+	GQLPathModeWalk        GQLPathModeEnum = "WALK"
+	GQLPathModeTrail       GQLPathModeEnum = "TRAIL"
+)
+
+type GQLSearchPrefixEnum string
+
+const (
+	GQLPathSearchPrefixAll         GQLSearchPrefixEnum = "ALL"
+	GQLPathSearchPrefixAny         GQLSearchPrefixEnum = "ANY"
+	GQLPathSearchPrefixAnyShortest GQLSearchPrefixEnum = "ANY SHORTEST"
+)

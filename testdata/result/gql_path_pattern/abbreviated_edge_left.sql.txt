@@ -1,0 +1,18 @@
+--- abbreviated_edge_left.sql
+ <-
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      Hint:     (*ast.Hint)(nil),
+      PathTerm: &ast.GQLAbbreviatedEdgeLeft{
+        First: 1,
+        Last:  2,
+      },
+      Quantifier: nil,
+    },
+  },
+}
+
+--- SQL
+<-

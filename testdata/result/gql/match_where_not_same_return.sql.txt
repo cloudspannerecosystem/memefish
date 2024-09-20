@@ -1,0 +1,222 @@
+--- match_where_not_same_return.sql
+GRAPH FinGraph
+MATCH (src:Account)<-[transfer:Transfers]-(dest:Account)
+WHERE NOT SAME(src, dest)
+RETURN src.id AS source_id, dest.id AS destination_id
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    Graph:             0,
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            MatchHint:    (*ast.Hint)(nil),
+            PrefixOrMode: nil,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathSearchPrefixOrPathMode: nil,
+                  PathPattern:                &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLNodePattern{
+                          LParen:        21,
+                          RParen:        33,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 25,
+                              Name:    "src",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       25,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  26,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 26,
+                                  NameEnd: 33,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLFullEdgeLeft{
+                          First:         34,
+                          Last:          56,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 37,
+                              NameEnd: 45,
+                              Name:    "transfer",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       45,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  46,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 46,
+                                  NameEnd: 55,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        Hint:     (*ast.Hint)(nil),
+                        PathTerm: &ast.GQLNodePattern{
+                          LParen:        57,
+                          RParen:        70,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            Hint:                 (*ast.Hint)(nil),
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 58,
+                              NameEnd: 62,
+                              Name:    "dest",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       62,
+                              LabelExpression: &ast.GQLLabelName{
+                                StartPos:  63,
+                                IsPercent: false,
+                                LabelName: &ast.Ident{
+                                  NamePos: 63,
+                                  NameEnd: 70,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: nil,
+                          },
+                        },
+                        Quantifier: nil,
+                      },
+                    },
+                  },
+                },
+              },
+              WhereClause: &ast.Where{
+                Where: 72,
+                Expr:  &ast.UnaryExpr{
+                  OpPos: 78,
+                  Op:    "NOT",
+                  Expr:  &ast.CallExpr{
+                    Rparen: 96,
+                    Func:   &ast.Ident{
+                      NamePos: 82,
+                      NameEnd: 86,
+                      Name:    "SAME",
+                    },
+                    Distinct: false,
+                    Args:     []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 87,
+                          NameEnd: 90,
+                          Name:    "src",
+                        },
+                      },
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 92,
+                          NameEnd: 96,
+                          Name:    "dest",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         98,
+            AllOrDistinct:  "",
+            ReturnItemList: []ast.GQLReturnItem{
+              &ast.Alias{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 105,
+                      NameEnd: 108,
+                      Name:    "src",
+                    },
+                    &ast.Ident{
+                      NamePos: 109,
+                      NameEnd: 111,
+                      Name:    "id",
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 115,
+                    NameEnd: 124,
+                    Name:    "source_id",
+                  },
+                },
+              },
+              &ast.Alias{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 126,
+                      NameEnd: 130,
+                      Name:    "dest",
+                    },
+                    &ast.Ident{
+                      NamePos: 131,
+                      NameEnd: 133,
+                      Name:    "id",
+                    },
+                  },
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 137,
+                    NameEnd: 151,
+                    Name:    "destination_id",
+                  },
+                },
+              },
+            },
+            GroupByClause:        (*ast.GroupBy)(nil),
+            OrderByClause:        (*ast.OrderBy)(nil),
+            LimitAndOffsetClause: nil,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph
+MATCH (src:Account)<-[transfer:Transfers]-(dest:Account) WHERE NOT SAME(src, dest)
+RETURN src.id AS source_id, dest.id AS destination_id
