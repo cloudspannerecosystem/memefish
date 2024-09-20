@@ -40,7 +40,6 @@ func SeparateRawStatements(filepath, s string) ([]string, error) {
 				break
 			}
 			result = append(result, s[firstPos:lex.Token.Pos])
-			firstPos = lex.Token.Pos
 			break
 		}
 	}
