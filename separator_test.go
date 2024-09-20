@@ -16,8 +16,10 @@ func TestSeparateRawStatements(t *testing.T) {
 	}{
 		// SeparateRawStatements treats only lexical structures, so the test cases can be invalid statements.
 		{desc: "empty input", input: "", want: []string{""}},
-		{desc: "single statement ", input: `SELECT "123";`, want: []string{`SELECT "123"`}},
-		{desc: "two statement", input: `SELECT "123"; SELECT "456";`, want: []string{`SELECT "123"`, `SELECT "456"`}},
+		{desc: "single statement ends with semicolon", input: `SELECT "123";`, want: []string{`SELECT "123"`}},
+		{desc: "single statement ends with EOF", input: `SELECT "123"`, want: []string{`SELECT "123"`}},
+		{desc: "two statement ends with semicolon", input: `SELECT "123"; SELECT "456";`, want: []string{`SELECT "123"`, `SELECT "456"`}},
+		{desc: "two statement ends with EOF", input: `SELECT "123"; SELECT "456"`, want: []string{`SELECT "123"`, `SELECT "456"`}},
 		{desc: "second statement is empty", input: `SELECT 1; ;`, want: []string{`SELECT 1`, ``}},
 		{desc: "two statement", input: "SELECT 1;\n SELECT 2;\n", want: []string{"SELECT 1", "SELECT 2"}},
 		{desc: "single statement with line comment", input: `SELECT 1//
