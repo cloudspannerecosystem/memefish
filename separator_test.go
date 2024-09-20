@@ -22,6 +22,7 @@ func TestSeparateRawStatements(t *testing.T) {
 		{desc: "single statement with line comment", input: `SELECT 1//
 `, want: []string{"SELECT 1//\n"}},
 		{desc: "semicolon in double-quoted string", input: `SELECT "1;2;3";`, want: []string{`SELECT "1;2;3"`}},
+		// $` may become a valid token in the future, but it's reasonable to check its current behavior.
 		{desc: "unknown token", input: "SELECT $;", errRe: regexp.MustCompile(`illegal input character: '\$'`)},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
