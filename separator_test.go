@@ -21,7 +21,7 @@ func TestSeparateRawStatements(t *testing.T) {
 		{desc: "two statement ends with semicolon", input: `SELECT "123"; SELECT "456";`, want: []string{`SELECT "123"`, `SELECT "456"`}},
 		{desc: "two statement ends with EOF", input: `SELECT "123"; SELECT "456"`, want: []string{`SELECT "123"`, `SELECT "456"`}},
 		{desc: "second statement is empty", input: `SELECT 1; ;`, want: []string{`SELECT 1`, ``}},
-		{desc: "two statement", input: "SELECT 1;\n SELECT 2;\n", want: []string{"SELECT 1", "SELECT 2"}},
+		{desc: "two statement with new lines", input: "SELECT 1;\n SELECT 2;\n", want: []string{"SELECT 1", "SELECT 2"}},
 		{desc: "single statement with line comment", input: `SELECT 1//
 `, want: []string{"SELECT 1//\n"}},
 		{desc: "semicolon in line comment", input: "SELECT 1 //;\n + 2", want: []string{"SELECT 1 //;\n + 2"}},
