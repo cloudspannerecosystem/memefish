@@ -3448,6 +3448,7 @@ var scalarSchemaTypes = []string{
 	"TIMESTAMP",
 	"NUMERIC",
 	"JSON",
+	"TOKENLIST",
 }
 
 var sizedSchemaTypes = []string{
