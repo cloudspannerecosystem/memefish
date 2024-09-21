@@ -2344,6 +2344,121 @@ type ArraySchemaType struct {
 
 // ================================================================================
 //
+// Search Index DDL
+//
+// ================================================================================
+
+// CreateSearchIndex
+//
+//	CREATE SEARCH INDEX {{.Name | sql}}
+//	ON {{.TableName | sql}}
+//	({{.TokenListPart | sqlJoin ", "}})
+//	{{.Storing | sqlOpt}}
+//	{{if not(.PartitionColumns | isnil)}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Where | sqlOpt}}
+//	{{.Interleave | sqlOpt}}
+//	{{.Options | sqlOpt}}
+type CreateSearchIndex struct {
+	// pos = Create
+	// end = (Options ?? Interleave ?? Where ?? OrderBy ?? PartitionColumns[$] ?? Storing).end || Rparen + 1
+
+	Create token.Pos
+
+	Name             *Ident
+	TableName        *Ident
+	TokenListPart    []*Ident
+	Rparen           token.Pos       // position of ")" after TokenListPart
+	Storing          *Storing        // optional
+	PartitionColumns []*Ident        // optional
+	OrderBy          *OrderBy        // optional
+	Where            *Where          // optional
+	Interleave       *InterleaveIn   //optional
+	Options          *GenericOptions // optional
+}
+
+func (c *CreateSearchIndex) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSearchIndex) End() token.Pos {
+	if e := firstValidEnd(c.Options, c.Interleave, c.Where, c.OrderBy, lastNode(c.PartitionColumns), c.Storing); e != token.InvalidPos {
+		return e
+	}
+	return c.Rparen + 1
+}
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt(" ", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (CreateSearchIndex) isStatement() {}
+func (CreateSearchIndex) isDDL()       {}
+
+// DropSearchIndex
+//
+//	DROP SEARCH INDEX {{.IfExists | strOpt "IF EXISTS "}}{{Name | sql}}
+type DropSearchIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
+func (d *DropSearchIndex) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSearchIndex) End() token.Pos {
+	return d.Name.End()
+}
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (DropSearchIndex) isStatement() {}
+func (DropSearchIndex) isDDL()       {}
+
+// AlterSearchIndex
+//
+//	ALTER INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
+type AlterSearchIndex struct {
+	// pos = Alter
+	// end = IndexAlteration.end
+
+	Alter           token.Pos
+	Name            *Ident
+	IndexAlteration IndexAlteration
+}
+
+func (AlterSearchIndex) isStatement() {}
+
+func (AlterSearchIndex) isDDL() {}
+
+func (a *AlterSearchIndex) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterSearchIndex) End() token.Pos {
+	return a.IndexAlteration.End()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
+}
+
+// ================================================================================
+//
 // DML
 //
 // ================================================================================
