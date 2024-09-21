@@ -2295,6 +2295,11 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	t, notNull, null := p.parseTypeNotNull()
 	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
+	hidden := p.tryExpectKeywordLike("HIDDEN")
+	var hiddenPos token.Pos
+	if hidden != nil {
+		hiddenPos = hidden.Pos
+	}
 	options := p.tryParseColumnDefOptions()
 
 	return &ast.ColumnDef{
@@ -2304,6 +2309,8 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		NotNull:       notNull,
 		DefaultExpr:   defaultExpr,
 		GeneratedExpr: generated,
+		Hidden:        hiddenPos,
+		IsHidden:      hidden != nil,
 		Options:       options,
 	}
 }

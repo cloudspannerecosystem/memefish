@@ -1506,10 +1506,11 @@ type CreateSequence struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultExpr | sqlOpt}}
 //	{{.GeneratedExpr | sqlOpt}}
+//	{{if .Hidden}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = Options.end || Hidden + 6 || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
@@ -1518,7 +1519,9 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
-	Options       *ColumnDefOptions    // optional
+	Hidden        token.Pos            // InvalidPos if not hidden
+	IsHidden      bool
+	Options       *ColumnDefOptions // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
