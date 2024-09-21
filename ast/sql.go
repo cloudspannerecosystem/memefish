@@ -795,6 +795,9 @@ func (c *ColumnDef) SQL() string {
 	if c.GeneratedExpr != nil {
 		sql += " " + c.GeneratedExpr.SQL()
 	}
+	if c.IsHidden {
+		sql += " HIDDEN"
+	}
 	if c.Options != nil {
 		sql += " " + c.Options.SQL()
 	}
