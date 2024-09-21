@@ -28,6 +28,8 @@ alter table foo add column baz string(max) not null
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },

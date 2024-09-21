@@ -11,13 +11,13 @@ create table foo (
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
-  corge timestamp not null default (current_timestamp())
+  corge timestamp not null default (current_timestamp()),
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      573,
+  Rparen:      574,
   IfNotExists: false,
   Name:        &ast.Ident{
     NamePos: 13,
@@ -39,6 +39,8 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -55,6 +57,8 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -79,6 +83,8 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       &ast.ColumnDefOptions{
         Options:              83,
         Rparen:               121,
@@ -107,9 +113,11 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:     150,
-        Stored: 178,
-        Expr:   &ast.CallExpr{
+        As:       150,
+        Stored:   172,
+        Rparen:   170,
+        IsStored: true,
+        Expr:     &ast.CallExpr{
           Rparen: 169,
           Func:   &ast.Ident{
             NamePos: 154,
@@ -136,7 +144,9 @@ create table foo (
           NamedArgs: []*ast.NamedArg(nil),
         },
       },
-      Options: (*ast.ColumnDefOptions)(nil),
+      Hidden:   0,
+      IsHidden: false,
+      Options:  (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -152,6 +162,8 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -182,6 +194,8 @@ create table foo (
         },
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
@@ -369,8 +383,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 565,
-        NameEnd: 568,
+        NamePos: 566,
+        NameEnd: 569,
         Name:    "foo",
       },
       Dir: "",
@@ -378,8 +392,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 570,
-        NameEnd: 573,
+        NamePos: 571,
+        NameEnd: 574,
         Name:    "bar",
       },
       Dir: "",
