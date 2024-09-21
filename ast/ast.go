@@ -935,7 +935,7 @@ type SelectorExpr struct {
 
 // IndexExpr is array item access expression node.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Name | sql}})]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
@@ -2339,7 +2339,7 @@ type PropertyGraphContent struct {
 //	({{.Elements | sqlJoin ", "}})
 type PropertyGraphElementList struct {
 	// pos = LParen
-	// end = RParen + 1
+	// end = Rparen + 1
 
 	LParen, RParen token.Pos
 	Elements       []*PropertyGraphElement
@@ -2552,7 +2552,7 @@ type PropertyGraphPropertiesAre struct {
 // NOTE: In current official syntax, "(" and ")" are missing.
 type PropertyGraphDerivedPropertyList struct {
 	// pos = Properties
-	// end = RParen.end
+	// end = Rparen.end
 
 	Properties        token.Pos                       // position of "PROPERTIES"
 	RParen            token.Pos                       // position of ")"
@@ -2580,6 +2580,115 @@ type DropPropertyGraph struct {
 	Drop     token.Pos
 	IfExists bool
 	Name     *Ident
+}
+
+// CreateSearchIndex
+//
+//	CREATE SEARCH INDEX {{.Name | sql}}
+//	ON {{.TableName | sql}}
+//	({{.TokenListPart | sqlJoin ", "}})
+//	{{.Storing | sqlOpt}}
+//	{{if not(.PartitionColumns | isnil)}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Where | sqlOpt}}
+//	{{.Interleave | sqlOpt}}
+//	{{.Options | sqlOpt}}
+type CreateSearchIndex struct {
+	// pos = Create
+	// end = (Options ?? Interleave ?? Where ?? OrderBy ?? PartitionColumns[$] ?? Storing).end || Rparen + 1
+
+	Create token.Pos
+
+	Name             *Ident
+	TableName        *Ident
+	TokenListPart    []*Ident
+	Rparen           token.Pos       // position of ")" after TokenListPart
+	Storing          *Storing        // optional
+	PartitionColumns []*Ident        // optional
+	OrderBy          *OrderBy        // optional
+	Where            *Where          // optional
+	Interleave       *InterleaveIn   //optional
+	Options          *GenericOptions // optional
+}
+
+func (c *CreateSearchIndex) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSearchIndex) End() token.Pos {
+	if e := firstValidEnd(c.Options, c.Interleave, c.Where, c.OrderBy, lastElem(c.PartitionColumns), c.Storing); e != token.InvalidPos {
+		return e
+	}
+	return c.Rparen + 1
+}
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt(" ", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (CreateSearchIndex) isStatement() {}
+func (CreateSearchIndex) isDDL()       {}
+
+// DropSearchIndex
+//
+//	DROP SEARCH INDEX {{.IfExists | strOpt "IF EXISTS "}}{{Name | sql}}
+type DropSearchIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
+func (d *DropSearchIndex) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSearchIndex) End() token.Pos {
+	return d.Name.End()
+}
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (DropSearchIndex) isStatement() {}
+func (DropSearchIndex) isDDL()       {}
+
+// AlterSearchIndex
+//
+//	ALTER INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
+type AlterSearchIndex struct {
+	// pos = Alter
+	// end = IndexAlteration.end
+
+	Alter           token.Pos
+	Name            *Ident
+	IndexAlteration IndexAlteration
+}
+
+func (AlterSearchIndex) isStatement() {}
+
+func (AlterSearchIndex) isDDL() {}
+
+func (a *AlterSearchIndex) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterSearchIndex) End() token.Pos {
+	return a.IndexAlteration.End()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
 }
 
 // ================================================================================
@@ -2714,4 +2823,52 @@ type SequenceOptions struct {
 	Rparen  token.Pos // position of ")"
 
 	Records []*SequenceOption // len(Records) > 0
+}
+
+// GenericOptions is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type GenericOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*GenericOption // len(Records) > 0
+}
+
+func (g *GenericOptions) Pos() token.Pos {
+	return g.Options
+}
+
+func (g *GenericOptions) End() token.Pos {
+	return g.Rparen + 1
+}
+
+func (g *GenericOptions) SQL() string {
+	return "OPTIONS " + sqlJoin(g.Records, ", ")
+}
+
+// GenericOption is generic option for CREATE statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type GenericOption struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
+func (g *GenericOption) Pos() token.Pos {
+	return g.Name.Pos()
+}
+
+func (g *GenericOption) End() token.Pos {
+	return g.Value.End()
+}
+
+func (g *GenericOption) SQL() string {
+	return g.Name.SQL() + " = " + g.Value.SQL()
 }

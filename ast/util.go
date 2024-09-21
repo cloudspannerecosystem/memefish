@@ -20,6 +20,13 @@ func sqlOpt[T interface {
 	return left + node.SQL() + right
 }
 
+func strOpt(cond bool, s string) string {
+	if cond {
+		return s
+	}
+	return ""
+}
+
 func lastElem[T any](s []T) T {
 	return s[len(s)-1]
 }
