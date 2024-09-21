@@ -14,7 +14,7 @@ func TestSeparateRawStatements(t *testing.T) {
 		errRe *regexp.Regexp
 		want  []string
 	}{
-		// SeparateRawStatements treats only lexical structures, so the test cases can be invalid statements.
+		// SplitRawStatements treats only lexical structures, so the test cases can be invalid statements.
 		{desc: "empty input", input: "", want: []string{""}},
 		{desc: "single statement ends with semicolon", input: `SELECT "123";`, want: []string{`SELECT "123"`}},
 		{desc: "single statement ends with EOF", input: `SELECT "123"`, want: []string{`SELECT "123"`}},
@@ -33,7 +33,7 @@ func TestSeparateRawStatements(t *testing.T) {
 		{desc: "unknown token", input: "SELECT $;", errRe: regexp.MustCompile(`illegal input character: '\$'`)},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-			stmts, err := memefish.SeparateRawStatements("", test.input)
+			stmts, err := memefish.SplitRawStatements("", test.input)
 			if err != nil {
 				if test.errRe == nil {
 					t.Errorf("should success, but %v", err)
