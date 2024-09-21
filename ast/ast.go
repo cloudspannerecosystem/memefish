@@ -934,7 +934,7 @@ type SelectorExpr struct {
 
 // IndexExpr is array item access expression node.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Name | sql}})]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
@@ -2468,4 +2468,52 @@ type SequenceOptions struct {
 	Rparen  token.Pos // position of ")"
 
 	Records []*SequenceOption // len(Records) > 0
+}
+
+// GenericOptions is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type GenericOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*GenericOption // len(Records) > 0
+}
+
+func (g *GenericOptions) Pos() token.Pos {
+	return g.Options
+}
+
+func (g *GenericOptions) End() token.Pos {
+	return g.Rparen + 1
+}
+
+func (g *GenericOptions) SQL() string {
+	return "OPTIONS " + sqlJoin(g.Records, ", ")
+}
+
+// GenericOption is generic option for CREATE statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type GenericOption struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
+func (g *GenericOption) Pos() token.Pos {
+	return g.Name.Pos()
+}
+
+func (g *GenericOption) End() token.Pos {
+	return g.Value.End()
+}
+
+func (g *GenericOption) SQL() string {
+	return g.Name.SQL() + " = " + g.Value.SQL()
 }

@@ -2066,6 +2066,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseCreateVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEARCH"):
+			return p.parseCreateSearchIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2079,6 +2081,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
+		case p.Token.IsKeywordLike("Search"):
+			return p.parseAlterSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseAlterSequence(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2094,6 +2098,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseDropVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEARCH"):
+			return p.parseDropSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("ROLE"):
@@ -2592,6 +2598,103 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 		ColumnName:  columnName,
 		Where:       where,
 		Options:     options,
+	}
+}
+
+func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+	name := p.parseIdent()
+	p.expect("ON")
+	tableName := p.parseIdent()
+	p.expect("(")
+	columnName := parseSeparatedList(p, ",", p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	storing := p.tryParseStoring()
+
+	var partitionColumns []*ast.Ident
+	if p.tryExpect("PARTITION") != nil {
+		p.expect("BY")
+		partitionColumns = parseSeparatedList(p, ",", p.parseIdent)
+	}
+	orderBy := p.tryParseOrderBy()
+	where := p.tryParseWhere()
+	interleave := p.tryParseInterleaveIn()
+	options := p.tryParseGenericOptions()
+
+	return &ast.CreateSearchIndex{
+		Create:           pos,
+		Name:             name,
+		TableName:        tableName,
+		TokenListPart:    columnName,
+		Rparen:           rparen,
+		Storing:          storing,
+		PartitionColumns: partitionColumns,
+		OrderBy:          orderBy,
+		Where:            where,
+		Interleave:       interleave,
+		Options:          options,
+	}
+}
+
+func (p *Parser) tryParseGenericOptions() *ast.GenericOptions {
+	options := p.tryExpectKeywordLike("OPTIONS")
+	if options == nil {
+		return nil
+	}
+	p.expect("(")
+	records := parseSeparatedList(p, ",", func() *ast.GenericOption {
+		name := p.parseIdent()
+		p.expect("=")
+		value := p.parseExpr()
+		return &ast.GenericOption{
+			Name:  name,
+			Value: value,
+		}
+	})
+	rparen := p.expect(")").Pos
+
+	return &ast.GenericOptions{
+		Options: options.Pos,
+		Rparen:  rparen,
+		Records: records,
+	}
+}
+
+func (p *Parser) parseDropSearchIndex(pos token.Pos) *ast.DropSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	return &ast.DropSearchIndex{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+
+}
+
+func (p *Parser) parseAlterSearchIndex(pos token.Pos) *ast.AlterSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+
+	name := p.parseIdent()
+
+	var alteration ast.IndexAlteration
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		alteration = p.parseAddStoredColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		alteration = p.parseDropStoredColumn()
+	default:
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
+	}
+
+	return &ast.AlterSearchIndex{
+		Alter:           pos,
+		Name:            name,
+		IndexAlteration: alteration,
 	}
 }
 
