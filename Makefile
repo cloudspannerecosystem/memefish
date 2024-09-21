@@ -27,7 +27,7 @@ docs:
 	@echo "  (x x) < memefish: docs"
 	@echo "  /|||\\"
 	@echo
-	cd docs && hugo
+	cd docs && hugo mod get -u && hugo
 
 .PHONY: ci
 ci: lint test

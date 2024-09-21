@@ -1,9 +1,9 @@
 ---
-title: README
+title: Home
 ---
 
 <p align="center">
-  <img src="images/memefish.png" width="220px">
+  <img src="images/memefish.svg" width="220px">
 </p>
 
 # méméfish
