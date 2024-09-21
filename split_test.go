@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestSeparateRawStatements(t *testing.T) {
+func TestSplitRawStatements(t *testing.T) {
 	for _, test := range []struct {
 		desc  string
 		input string
