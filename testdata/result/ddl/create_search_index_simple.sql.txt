@@ -1,0 +1,35 @@
+--- create_search_index_simple.sql
+-- no optional clauses
+CREATE SEARCH INDEX AlbumsIndex
+  ON Albums(AlbumTitle_Tokens)
+--- AST
+&ast.CreateSearchIndex{
+  Create: 23,
+  Name:   &ast.Ident{
+    NamePos: 43,
+    NameEnd: 54,
+    Name:    "AlbumsIndex",
+  },
+  TableName: &ast.Ident{
+    NamePos: 60,
+    NameEnd: 66,
+    Name:    "Albums",
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 67,
+      NameEnd: 84,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           84,
+  Storing:          (*ast.Storing)(nil),
+  PartitionColumns: []*ast.Ident(nil),
+  OrderBy:          (*ast.OrderBy)(nil),
+  Where:            (*ast.Where)(nil),
+  Interleave:       (*ast.InterleaveIn)(nil),
+  Options:          (*ast.GenericOptions)(nil),
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens)

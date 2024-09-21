@@ -108,6 +108,7 @@ const (
 	DateTypeName      ScalarTypeName = "DATE"
 	TimestampTypeName ScalarTypeName = "TIMESTAMP"
 	NumericTypeName   ScalarTypeName = "NUMERIC"
+	TokenListTypeName ScalarTypeName = "TOKENLIST"
 )
 
 type OnDeleteAction string
