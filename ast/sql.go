@@ -880,7 +880,7 @@ func (c *ColumnDefaultExpr) SQL() string {
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
-	return "AS (" + g.Expr.SQL() + ") STORED"
+	return "AS (" + g.Expr.SQL() + ")" + strOpt(g.IsStored, " STORED")
 }
 
 func (c *ColumnDefOptions) SQL() string {

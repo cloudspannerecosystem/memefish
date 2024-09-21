@@ -1536,13 +1536,16 @@ type ColumnDefaultExpr struct {
 
 // GeneratedColumnExpr is generated column expression.
 //
-//	AS ({{.Expr | sql}}) STORED
+//	AS ({{.Expr | sql}}) {{if .IsStored}}STORED{{end}}
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored
+	// end = Stored + 6 || Rparen + 1
 
 	As     token.Pos // position of "AS" keyword
-	Stored token.Pos // position of "STORED" keyword
+	Stored token.Pos // position of "STORED" keyword, InvalidPos if not stored
+	Rparen token.Pos // position of ")"
+
+	IsStored bool
 
 	Expr Expr
 }

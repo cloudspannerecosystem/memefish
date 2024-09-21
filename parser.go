@@ -2411,13 +2411,20 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	posAs := p.expect("AS").Pos
 	p.expect("(")
 	expr := p.parseExpr()
-	p.expect(")")
-	posEnd := p.expectKeywordLike("STORED").End
+	rparen := p.expect(")").Pos
+	stored := p.tryExpectKeywordLike("STORED")
+
+	var storedPos token.Pos
+	if stored != nil {
+		storedPos = stored.Pos
+	}
 
 	return &ast.GeneratedColumnExpr{
-		As:     posAs,
-		Stored: posEnd,
-		Expr:   expr,
+		As:       posAs,
+		Stored:   storedPos,
+		Rparen:   rparen,
+		IsStored: stored != nil,
+		Expr:     expr,
 	}
 }
 
