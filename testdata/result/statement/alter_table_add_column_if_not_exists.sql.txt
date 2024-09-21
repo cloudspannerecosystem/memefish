@@ -29,6 +29,8 @@ alter table foo add column if not exists baz string(max) not null
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        0,
+      IsHidden:      false,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
