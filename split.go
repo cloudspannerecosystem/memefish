@@ -27,7 +27,8 @@ func SplitRawStatements(filepath, s string) ([]*RawStatement, error) {
 	var firstPos token.Pos
 	for {
 		if lex.Token.Kind == ";" {
-			result = append(result, &RawStatement{Pos: firstPos,
+			result = append(result, &RawStatement{
+				Pos:       firstPos,
 				End:       lex.Token.Pos,
 				Statement: s[firstPos:lex.Token.Pos],
 			})
@@ -45,7 +46,8 @@ func SplitRawStatements(filepath, s string) ([]*RawStatement, error) {
 
 		if lex.Token.Kind == token.TokenEOF {
 			if lex.Token.Pos != firstPos {
-				result = append(result, &RawStatement{Pos: firstPos,
+				result = append(result, &RawStatement{
+					Pos:       firstPos,
 					End:       lex.Token.Pos,
 					Statement: s[firstPos:lex.Token.Pos],
 				})
@@ -55,7 +57,7 @@ func SplitRawStatements(filepath, s string) ([]*RawStatement, error) {
 	}
 	if len(result) == 0 {
 		return []*RawStatement{
-			{Pos: token.Pos(0), End: token.Pos(0), Statement: ""},
+			{Statement: ""},
 		}, nil
 	}
 	return result, nil
