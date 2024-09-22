@@ -27,6 +27,7 @@ select count(distinct x) from foo
               },
             },
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
       },
     },

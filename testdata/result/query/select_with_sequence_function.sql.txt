@@ -29,6 +29,7 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
               },
             },
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
         As: &ast.AsAlias{
           As:    -1,

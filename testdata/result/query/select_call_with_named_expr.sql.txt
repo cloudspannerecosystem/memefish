@@ -1,0 +1,151 @@
+--- select_call_with_named_expr.sql
+SELECT a.AlbumId, a.Description
+FROM Albums a
+WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_query => TRUE)
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    AsStruct: false,
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 7,
+              NameEnd: 8,
+              Name:    "a",
+            },
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 16,
+              Name:    "AlbumId",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "a",
+            },
+            &ast.Ident{
+              NamePos: 20,
+              NameEnd: 31,
+              Name:    "Description",
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   32,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 37,
+          NameEnd: 43,
+          Name:    "Albums",
+        },
+        Hint: (*ast.Hint)(nil),
+        As:   &ast.AsAlias{
+          As:    44,
+          Alias: &ast.Ident{
+            NamePos: 44,
+            NameEnd: 45,
+            Name:    "a",
+          },
+        },
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where: &ast.Where{
+      Where: 46,
+      Expr:  &ast.BinaryExpr{
+        Op:   "AND",
+        Left: &ast.BinaryExpr{
+          Op:   "=",
+          Left: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 52,
+                NameEnd: 53,
+                Name:    "a",
+              },
+              &ast.Ident{
+                NamePos: 54,
+                NameEnd: 62,
+                Name:    "SingerId",
+              },
+            },
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 65,
+            ValueEnd: 66,
+            Base:     10,
+            Value:    "1",
+          },
+        },
+        Right: &ast.CallExpr{
+          Rparen: 138,
+          Func:   &ast.Ident{
+            NamePos: 71,
+            NameEnd: 77,
+            Name:    "SEARCH",
+          },
+          Distinct: false,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 78,
+                    NameEnd: 79,
+                    Name:    "a",
+                  },
+                  &ast.Ident{
+                    NamePos: 80,
+                    NameEnd: 97,
+                    Name:    "DescriptionTokens",
+                  },
+                },
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 99,
+                ValueEnd: 115,
+                Value:    "classic albums",
+              },
+            },
+          },
+          NamedArgs: []*ast.NamedArg{
+            &ast.NamedArg{
+              Name: &ast.Ident{
+                NamePos: 117,
+                NameEnd: 130,
+                Name:    "enhance_query",
+              },
+              Value: &ast.BoolLiteral{
+                ValuePos: 134,
+                Value:    true,
+              },
+            },
+          },
+        },
+      },
+    },
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT a.AlbumId, a.Description FROM Albums AS a WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, "classic albums", enhance_query => TRUE)
