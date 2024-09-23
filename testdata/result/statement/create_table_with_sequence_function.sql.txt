@@ -50,6 +50,7 @@ CREATE TABLE foo
               },
             },
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),

@@ -328,6 +328,9 @@ func (i *IntervalArg) End() token.Pos {
 func (s *SequenceArg) Pos() token.Pos { return s.Sequence }
 func (s *SequenceArg) End() token.Pos { return s.Expr.End() }
 
+func (n *NamedArg) Pos() token.Pos { return n.Name.Pos() }
+func (n *NamedArg) End() token.Pos { return n.Value.End() }
+
 func (c *CountStarExpr) Pos() token.Pos { return c.Count }
 func (c *CountStarExpr) End() token.Pos { return c.Rparen + 1 }
 

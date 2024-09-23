@@ -474,9 +474,20 @@ func (c *CallExpr) SQL() string {
 		}
 		sql += a.SQL()
 	}
+	if len(c.Args) > 0 && len(c.NamedArgs) > 0 {
+		sql += ", "
+	}
+	for i, v := range c.NamedArgs {
+		if i != 0 {
+			sql += ", "
+		}
+		sql += v.SQL()
+	}
 	sql += ")"
 	return sql
 }
+
+func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
 
 func (o *SequenceOption) SQL() string {
 	return o.Name.SQL() + " = " + o.Value.SQL()

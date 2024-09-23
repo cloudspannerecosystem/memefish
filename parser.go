@@ -1460,7 +1460,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 
 	var args []ast.Arg
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for p.Token.Kind != token.TokenEOF && !p.lookaheadNamedArg() {
 			args = append(args, p.parseArg())
 			if p.Token.Kind != "," {
 				break
@@ -1468,12 +1468,54 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 			p.nextToken()
 		}
 	}
+
+	// https://github.com/google/zetasql/blob/master/docs/functions-reference.md#named-arguments
+	// You cannot specify positional arguments after named arguments.
+	var namedArgs []*ast.NamedArg
+	for {
+		namedArg := p.tryParseNamedArg()
+		if namedArg == nil {
+			break
+		}
+		namedArgs = append(namedArgs, namedArg)
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+	}
+
 	rparen := p.expect(")").Pos
 	return &ast.CallExpr{
-		Rparen:   rparen,
-		Func:     fn,
-		Distinct: distinct,
-		Args:     args,
+		Rparen:    rparen,
+		Func:      fn,
+		Distinct:  distinct,
+		Args:      args,
+		NamedArgs: namedArgs,
+	}
+}
+func (p *Parser) lookaheadNamedArg() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+	p.parseIdent()
+	return p.Token.Kind == "=>"
+}
+
+func (p *Parser) tryParseNamedArg() *ast.NamedArg {
+	if !p.lookaheadNamedArg() {
+		return nil
+	}
+	name := p.parseIdent()
+	p.expect("=>")
+	value := p.parseExpr()
+	return &ast.NamedArg{
+		Name:  name,
+		Value: value,
 	}
 }
 

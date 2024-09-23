@@ -944,16 +944,17 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
+//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sqlJoin ", "}}{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}{{.NamedArgs || sqlJoin ", "}})
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
-	Func     *Ident
-	Distinct bool
-	Args     []Arg
+	Func      *Ident
+	Distinct  bool
+	Args      []Arg
+	NamedArgs []*NamedArg
 }
 
 // ExprArg is argument of the generic function call.
@@ -989,6 +990,17 @@ type SequenceArg struct {
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
 	Expr Expr
+}
+
+// NamedArg represents a name and value pair in named arguments
+//
+//	{{.Name | sql}} => {{.Value | sql}}
+type NamedArg struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
