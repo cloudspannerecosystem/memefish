@@ -434,6 +434,9 @@ func (t *TimestampLiteral) End() token.Pos { return t.Value.End() }
 func (t *NumericLiteral) Pos() token.Pos { return t.Numeric }
 func (t *NumericLiteral) End() token.Pos { return t.Value.End() }
 
+func (t *JSONLiteral) Pos() token.Pos { return t.JSON }
+func (t *JSONLiteral) End() token.Pos { return t.Value.End() }
+
 // ================================================================================
 //
 // Type

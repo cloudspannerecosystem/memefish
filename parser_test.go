@@ -153,6 +153,15 @@ func TestParseDML(t *testing.T) {
 	})
 }
 
+func TestParseExpr(t *testing.T) {
+	inputPath := "./testdata/input/expr"
+	resultPath := "./testdata/result/expr"
+
+	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		return p.ParseExpr()
+	})
+}
+
 func TestParseStatement(t *testing.T) {
 	inputPaths := []string{
 		"./testdata/input/query",

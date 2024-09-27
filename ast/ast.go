@@ -154,6 +154,7 @@ func (BytesLiteral) isExpr()     {}
 func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
 func (NumericLiteral) isExpr()   {}
+func (JSONLiteral) isExpr()      {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -1308,6 +1309,18 @@ type NumericLiteral struct {
 	// end = ValueEnd.end
 
 	Numeric token.Pos // position of "NUMERIC"
+
+	Value *StringLiteral
+}
+
+// JSONLiteral is JSON literal node.
+//
+//	JSON {{.Value | sql}}
+type JSONLiteral struct {
+	// pos = JSON
+	// end = ValueEnd.end
+
+	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
 }
