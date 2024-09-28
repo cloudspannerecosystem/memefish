@@ -41,9 +41,12 @@ lines''',
   TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles",
   TIMESTAMP'2014-09-27',
   TIMESTAMP('2014-09-27'),
+  JSON '1',
+  JSON "[1, 2]",
+  JSON'{}',
   NUMERIC '0',
   NUMERIC "0",
-  true, fals
+  true, false
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
@@ -556,36 +559,65 @@ lines''',
         },
       },
       &ast.ExprSelectItem{
+        Expr: &ast.JSONLiteral{
+          JSON:  708,
+          Value: &ast.StringLiteral{
+            ValuePos: 713,
+            ValueEnd: 716,
+            Value:    "1",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.JSONLiteral{
+          JSON:  720,
+          Value: &ast.StringLiteral{
+            ValuePos: 725,
+            ValueEnd: 733,
+            Value:    "[1, 2]",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.JSONLiteral{
+          JSON:  737,
+          Value: &ast.StringLiteral{
+            ValuePos: 741,
+            ValueEnd: 745,
+            Value:    "{}",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
         Expr: &ast.NumericLiteral{
-          Numeric: 708,
+          Numeric: 749,
           Value:   &ast.StringLiteral{
-            ValuePos: 716,
-            ValueEnd: 719,
+            ValuePos: 757,
+            ValueEnd: 760,
             Value:    "0",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.NumericLiteral{
-          Numeric: 723,
+          Numeric: 764,
           Value:   &ast.StringLiteral{
-            ValuePos: 731,
-            ValueEnd: 734,
+            ValuePos: 772,
+            ValueEnd: 775,
             Value:    "0",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.BoolLiteral{
-          ValuePos: 738,
+          ValuePos: 779,
           Value:    true,
         },
       },
       &ast.ExprSelectItem{
-        Expr: &ast.Ident{
-          NamePos: 744,
-          NameEnd: 748,
-          Name:    "fals",
+        Expr: &ast.BoolLiteral{
+          ValuePos: 785,
+          Value:    false,
         },
       },
     },
@@ -599,4 +631,4 @@ lines''',
 }
 
 --- SQL
-SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, ARRAY[1, 2, 3], ARRAY["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), NUMERIC "0", NUMERIC "0", TRUE, fals
+SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, ARRAY[1, 2, 3], ARRAY["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE

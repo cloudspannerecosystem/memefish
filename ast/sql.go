@@ -681,6 +681,10 @@ func (t *NumericLiteral) SQL() string {
 	return "NUMERIC " + t.Value.SQL()
 }
 
+func (t *JSONLiteral) SQL() string {
+	return "JSON " + t.Value.SQL()
+}
+
 // ================================================================================
 //
 // Type

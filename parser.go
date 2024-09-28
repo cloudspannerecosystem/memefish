@@ -1424,6 +1424,9 @@ func (p *Parser) parseLit() ast.Expr {
 			if id.IsKeywordLike("NUMERIC") {
 				return p.parseNumericLiteral(id)
 			}
+			if id.IsKeywordLike("JSON") {
+				return p.parseJSONLiteral(id)
+			}
 		}
 		return &ast.Ident{
 			NamePos: id.Pos,
@@ -1817,6 +1820,14 @@ func (p *Parser) parseNumericLiteral(id token.Token) *ast.NumericLiteral {
 	return &ast.NumericLiteral{
 		Numeric: id.Pos,
 		Value:   s,
+	}
+}
+
+func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
+	s := p.parseStringLiteral()
+	return &ast.JSONLiteral{
+		JSON:  id.Pos,
+		Value: s,
 	}
 }
 

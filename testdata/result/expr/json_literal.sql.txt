@@ -1,0 +1,14 @@
+--- json_literal.sql
+JSON '{"s": "foo", "n": 42}'
+--- AST
+&ast.JSONLiteral{
+  JSON:  0,
+  Value: &ast.StringLiteral{
+    ValuePos: 5,
+    ValueEnd: 28,
+    Value:    "{\"s\": \"foo\", \"n\": 42}",
+  },
+}
+
+--- SQL
+JSON "{\"s\": \"foo\", \"n\": 42}"
