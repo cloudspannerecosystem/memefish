@@ -102,6 +102,9 @@ func main() {
 
 	for _, node := range nodes {
 		x := string(unicode.ToLower(rune(node.name[0])))
+		if node.posExpr == nil || node.endExpr == nil {
+			log.Fatalf("pos/end is not defined: node %s", node.name)
+		}
 
 		fmt.Fprintln(&buffer)
 		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, node.name)

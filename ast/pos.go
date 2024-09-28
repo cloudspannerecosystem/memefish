@@ -662,6 +662,54 @@ func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
 }
 
+func (n *NewConstructorArg) Pos() token.Pos {
+	return nodePos(wrapNode(n.Expr))
+}
+
+func (n *NewConstructorArg) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(n.Alias), wrapNode(n.Expr)))
+}
+
+func (n *NewConstructor) Pos() token.Pos {
+	return n.New
+}
+
+func (n *NewConstructor) End() token.Pos {
+	return posAdd(n.Rparen, 1)
+}
+
+func (b *BracedNewConstructor) Pos() token.Pos {
+	return b.New
+}
+
+func (b *BracedNewConstructor) End() token.Pos {
+	return nodeEnd(wrapNode(b.Body))
+}
+
+func (b *BracedConstructor) Pos() token.Pos {
+	return b.Lbrace
+}
+
+func (b *BracedConstructor) End() token.Pos {
+	return posAdd(b.Rbrace, 1)
+}
+
+func (b *BracedConstructorField) Pos() token.Pos {
+	return nodePos(wrapNode(b.Name))
+}
+
+func (b *BracedConstructorField) End() token.Pos {
+	return nodeEnd(wrapNode(b.Value))
+}
+
+func (b *BracedConstructorFieldValueExpr) Pos() token.Pos {
+	return b.Colon
+}
+
+func (b *BracedConstructorFieldValueExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.Expr))
+}
+
 func (s *SimpleType) Pos() token.Pos {
 	return s.NamePos
 }

@@ -150,38 +150,41 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
-func (JSONLiteral) isExpr()      {}
+func (BinaryExpr) isExpr()            {}
+func (UnaryExpr) isExpr()             {}
+func (InExpr) isExpr()                {}
+func (IsNullExpr) isExpr()            {}
+func (IsBoolExpr) isExpr()            {}
+func (BetweenExpr) isExpr()           {}
+func (SelectorExpr) isExpr()          {}
+func (IndexExpr) isExpr()             {}
+func (CallExpr) isExpr()              {}
+func (CountStarExpr) isExpr()         {}
+func (CastExpr) isExpr()              {}
+func (ExtractExpr) isExpr()           {}
+func (CaseExpr) isExpr()              {}
+func (ParenExpr) isExpr()             {}
+func (ScalarSubQuery) isExpr()        {}
+func (ArraySubQuery) isExpr()         {}
+func (ExistsSubQuery) isExpr()        {}
+func (Param) isExpr()                 {}
+func (Ident) isExpr()                 {}
+func (Path) isExpr()                  {}
+func (ArrayLiteral) isExpr()          {}
+func (StructLiteral) isExpr()         {}
+func (NullLiteral) isExpr()           {}
+func (BoolLiteral) isExpr()           {}
+func (IntLiteral) isExpr()            {}
+func (FloatLiteral) isExpr()          {}
+func (StringLiteral) isExpr()         {}
+func (BytesLiteral) isExpr()          {}
+func (DateLiteral) isExpr()           {}
+func (TimestampLiteral) isExpr()      {}
+func (NumericLiteral) isExpr()        {}
+func (JSONLiteral) isExpr()           {}
+func (*NewConstructor) isExpr()       {}
+func (*BracedNewConstructor) isExpr() {}
+func (*BracedConstructor) isExpr()    {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -1511,18 +1514,18 @@ type JSONLiteral struct {
 	Value *StringLiteral
 }
 
-// NewConstructorArg
+// NewConstructorArg represents a single argument in NEW constructor.
 //
 //	{{Expr | sql}} {{Alias | sqlOpt}}
 type NewConstructorArg struct {
 	// pos = Expr.pos
-	// (Alias ?? Expr).end
+	// end = (Alias ?? Expr).end
 
 	Expr  Expr
-	Alias *AsAlias // optional, "AS" is required
+	Alias *AsAlias // optional
 }
 
-// NewConstructor
+// NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
 //	NEW {{TypeName | sql}} ({{Args | sqlJoin ", "}})
 type NewConstructor struct {
@@ -1537,49 +1540,21 @@ type NewConstructor struct {
 	Rparen token.Pos
 }
 
-func (n *NewConstructor) Pos() token.Pos {
-	return n.New
-}
-
-func (n *NewConstructor) End() token.Pos {
-	return n.Rparen + 1
-}
-
-func (n *NewConstructor) SQL() string {
-	return "NEW " + n.TypeName.SQL()
-}
-
-func (*NewConstructor) isExpr() {}
-
-// BracedNewConstructor
+// BracedNewConstructor represents NEW operator which creates a protocol buffer using a map constructor.
 //
 //	NEW {{.TypeName | sql}} {{"{"}}{{"}"}}
 type BracedNewConstructor struct {
 	// pos = New
-	// end = Rbrace + 1
+	// end = Body.end
 
-	New      token.Pos
+	New token.Pos
+
 	TypeName *Path
 	Body     *BracedConstructor
 }
 
-func (b *BracedNewConstructor) isExpr() {}
-
-func (b *BracedNewConstructor) Pos() token.Pos {
-	return b.New
-}
-
-func (b *BracedNewConstructor) End() token.Pos {
-	return b.Body.End()
-}
-
-func (b *BracedNewConstructor) SQL() string {
-	return "NEW " + b.TypeName.SQL() + b.Body.SQL()
-}
-
-func (*BracedNewConstructor) isBracedConstructorFieldValue() {}
-
-// BracedConstructor
+// BracedConstructor represents a single map constructor which is used in BracedNewConstructor.
+// Actually, it is a top level Expr in syntax, but it is not permitted semantically in other place.
 //
 //	{{"{"}}{{.Fields | sqlJoin ", "}}{{"}"}}
 type BracedConstructor struct {
@@ -1591,30 +1566,7 @@ type BracedConstructor struct {
 	Fields []*BracedConstructorField
 }
 
-func (*BracedConstructor) isExpr() {}
-
-func (b *BracedConstructor) isBracedConstructorFieldValue() {}
-
-func (b *BracedConstructor) Pos() token.Pos {
-	return b.Lbrace
-}
-
-func (b *BracedConstructor) End() token.Pos {
-	return b.Rbrace + 1
-}
-
-func (b *BracedConstructor) SQL() string {
-	var fieldsStr string
-	for i, field := range b.Fields {
-		if i > 0 {
-			fieldsStr += ", "
-		}
-		fieldsStr += field.SQL()
-	}
-	return "{" + fieldsStr + "}"
-}
-
-// BracedConstructorField
+// BracedConstructorField represents a single field in BracedConstructor.
 //
 //	{{.Name | sql}} {{.Value | sql}}
 type BracedConstructorField struct {
@@ -1625,79 +1577,25 @@ type BracedConstructorField struct {
 	Value BracedConstructorFieldValue
 }
 
-func (b *BracedConstructorField) Pos() token.Pos {
-	return b.Name.Pos()
-}
-
-func (b *BracedConstructorField) End() token.Pos {
-	return b.Value.End()
-}
-
-func (b *BracedConstructorField) SQL() string {
-	return b.Name.SQL() + " " + b.Value.SQL()
-}
-
 type BracedConstructorFieldValue interface {
 	Node
 	isBracedConstructorFieldValue()
 }
 
-// BracedConstructorFieldValueExpr
+func (*BracedConstructor) isBracedConstructorFieldValue()               {}
+func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+
+// BracedConstructorFieldValueExpr represents a field value node.
 //
 //	: {{.Expr | sql}}
 type BracedConstructorFieldValueExpr struct {
-	Colon token.Pos
-	Expr  Expr
-}
-
-func (b *BracedConstructorFieldValueExpr) Pos() token.Pos {
-	return b.Colon
-}
-
-func (b *BracedConstructorFieldValueExpr) End() token.Pos {
-	return b.Expr.End()
-}
-
-func (b *BracedConstructorFieldValueExpr) SQL() string {
-	return ": " + b.Expr.SQL()
-}
-
-func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
-
-// BracedConstructorFieldValueBracedConstructors
-//
-//	: [{{.Constructors | sqlJoin ", "}}]
-type BracedConstructorFieldValueBracedConstructors struct {
 	// pos = Colon
-	// end = Rbrack + 1
+	// end = Expr.end
 
-	Colon        token.Pos
-	Rbrack       token.Pos
-	Constructors []*BracedConstructor
+	Colon token.Pos
+
+	Expr Expr
 }
-
-func (b *BracedConstructorFieldValueBracedConstructors) Pos() token.Pos {
-	return b.Colon
-}
-
-func (b *BracedConstructorFieldValueBracedConstructors) End() token.Pos {
-	return b.Rbrack + 1
-}
-
-func (b *BracedConstructorFieldValueBracedConstructors) SQL() string {
-	var sql string
-	sql += ": ["
-	for i, constructor := range b.Constructors {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += constructor.SQL()
-	}
-	sql += "]"
-	return sql
-}
-
-func (b *BracedConstructorFieldValueBracedConstructors) isBracedConstructorFieldValue() {}
 
 // ================================================================================
 //

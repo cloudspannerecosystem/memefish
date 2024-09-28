@@ -2105,7 +2105,33 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 }
 
 func (p *Parser) parseNewConstructor(newPos token.Pos, path []*ast.Ident) *ast.NewConstructor {
-	return nil
+	p.expect("(")
+
+	var args []*ast.NewConstructorArg
+	for {
+		if p.Token.Kind == ")" {
+			break
+		}
+		expr := p.parseExpr()
+		var alias *ast.AsAlias
+		if p.Token.Kind == "AS" {
+			alias = p.tryParseAsAlias()
+		}
+		args = append(args, &ast.NewConstructorArg{
+			Expr:  expr,
+			Alias: alias,
+		})
+		if p.Token.Kind == "," {
+			p.nextToken()
+		}
+	}
+	rparen := p.expect(")").Pos
+	return &ast.NewConstructor{
+		New:      newPos,
+		TypeName: &ast.Path{Idents: path},
+		Args:     args,
+		Rparen:   rparen,
+	}
 }
 
 func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
@@ -2129,9 +2155,10 @@ func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
 		if p.Token.Kind == "}" {
 			break
 		}
-		if p.Token.Kind == token.TokenIdent {
-			fields = append(fields, p.parseBracedNewConstructorField())
+		if p.Token.Kind != token.TokenIdent {
+			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
 		}
+		fields = append(fields, p.parseBracedNewConstructorField())
 		if p.Token.Kind == "," {
 			p.nextToken()
 		}
