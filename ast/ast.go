@@ -1392,6 +1392,32 @@ type StructField struct {
 	Type  Type
 }
 
+// NamedType is named type node.
+// It is currently PROTO or ENUM.
+// Name is full qualified name, but it can be not to contain ".".
+//
+//	{{.TypeName | sql}}
+type NamedType struct {
+	// pos = Name.pos
+	// end = Name.end
+
+	Name *Path
+}
+
+func (n *NamedType) Pos() token.Pos {
+	return n.Name.Pos()
+}
+
+func (n *NamedType) End() token.Pos {
+	return n.Name.End()
+}
+
+func (n *NamedType) SQL() string {
+	return n.Name.SQL()
+}
+
+func (n NamedType) isType() {}
+
 // ================================================================================
 //
 // Cast for Special Cases

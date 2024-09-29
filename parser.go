@@ -1891,7 +1891,11 @@ func (p *Parser) lookaheadSubQuery() bool {
 func (p *Parser) parseType() ast.Type {
 	switch p.Token.Kind {
 	case token.TokenIdent:
-		return p.parseSimpleType()
+		if p.lookaheadSimpleType() {
+			return p.parseSimpleType()
+		}
+		path := p.parseIdentOrPath()
+		return &ast.NamedType{Name: &ast.Path{Idents: path}}
 	case "ARRAY":
 		return p.parseArrayType()
 	case "STRUCT":
@@ -2016,6 +2020,21 @@ func (p *Parser) parseFieldType() *ast.StructField {
 
 func (p *Parser) lookaheadType() bool {
 	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
+}
+
+func (p *Parser) lookaheadSimpleType() bool {
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
+	id := p.Token
+
+	for _, name := range simpleTypes {
+		if id.IsIdent(name) {
+			return true
+		}
+	}
+	return false
 }
 
 // ================================================================================
