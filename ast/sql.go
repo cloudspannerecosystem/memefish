@@ -116,36 +116,16 @@ func (c *CTE) SQL() string {
 }
 
 func (s *Select) SQL() string {
-	sql := "SELECT "
-	if s.Distinct {
-		sql += "DISTINCT "
-	}
-	if s.AsStruct {
-		sql += "AS STRUCT "
-	}
-	sql += s.Results[0].SQL()
-	for _, r := range s.Results[1:] {
-		sql += ", " + r.SQL()
-	}
-	if s.From != nil {
-		sql += " " + s.From.SQL()
-	}
-	if s.Where != nil {
-		sql += " " + s.Where.SQL()
-	}
-	if s.GroupBy != nil {
-		sql += " " + s.GroupBy.SQL()
-	}
-	if s.Having != nil {
-		sql += " " + s.Having.SQL()
-	}
-	if s.OrderBy != nil {
-		sql += " " + s.OrderBy.SQL()
-	}
-	if s.Limit != nil {
-		sql += " " + s.Limit.SQL()
-	}
-	return sql
+	return "SELECT " +
+		strOpt(s.Distinct, "DISTINCT ") +
+		strOpt(s.AsStruct, "AS STRUCT ") +
+		sqlJoin(s.Results, ", ") +
+		sqlOpt(" ", s.From, "") +
+		sqlOpt(" ", s.Where, "") +
+		sqlOpt(" ", s.GroupBy, "") +
+		sqlOpt(" ", s.Having, "") +
+		sqlOpt(" ", s.OrderBy, "") +
+		sqlOpt(" ", s.Limit, "")
 }
 
 func (c *CompoundQuery) SQL() string {
