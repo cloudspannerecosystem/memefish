@@ -148,6 +148,12 @@ func (s *Select) SQL() string {
 	return sql
 }
 
+func (a *AsStruct) SQL() string { return "AS STRUCT" }
+
+func (a *AsValue) SQL() string { return "AS VALUE" }
+
+func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
+
 func (c *CompoundQuery) SQL() string {
 	op := string(c.Op)
 	if c.Distinct {

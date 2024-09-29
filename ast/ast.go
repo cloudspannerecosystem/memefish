@@ -96,6 +96,16 @@ func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
+// SelectAs represents AS VALUE/STRUCT/typename clause in SELECT clause.
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
+
 // TableExpr represents JOIN operands.
 type TableExpr interface {
 	Node
@@ -443,8 +453,8 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool // deprecated, use As
-	As       SelectAs
+	AsStruct bool         // deprecated, use As
+	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -454,16 +464,7 @@ type Select struct {
 	Limit    *Limit       // optional
 }
 
-type SelectAs interface {
-	Node
-	isSelectAs()
-}
-
-func (AsStruct) isSelectAs()   {}
-func (AsValue) isSelectAs()    {}
-func (AsTypeName) isSelectAs() {}
-
-// AsStruct
+// AsStruct represents AS STRUCT node in SELECT clause.
 //
 //	AS STRUCT
 type AsStruct struct {
@@ -473,19 +474,7 @@ type AsStruct struct {
 	Struct token.Pos
 }
 
-func (a *AsStruct) Pos() token.Pos {
-	return a.As
-}
-
-func (a *AsStruct) End() token.Pos {
-	return a.Struct + 6
-}
-
-func (a *AsStruct) SQL() string {
-	return "AS STRUCT"
-}
-
-// AsValue
+// AsValue represents AS VALUE node in SELECT clause.
 //
 //	AS VALUE
 type AsValue struct {
@@ -496,19 +485,7 @@ type AsValue struct {
 	Value token.Pos
 }
 
-func (a *AsValue) Pos() token.Pos {
-	return a.As
-}
-
-func (a *AsValue) End() token.Pos {
-	return a.Value + 5
-}
-
-func (a *AsValue) SQL() string {
-	return "AS VALUE"
-}
-
-// AsTypeName
+// AsTypeName represents AS typename node in SELECT clause.
 //
 //	AS {{.TypeName | sql}}
 type AsTypeName struct {
@@ -516,18 +493,6 @@ type AsTypeName struct {
 	// end = TypeName.end
 	As       token.Pos
 	TypeName *NamedType
-}
-
-func (a *AsTypeName) Pos() token.Pos {
-	return a.As
-}
-
-func (a *AsTypeName) End() token.Pos {
-	return a.TypeName.End()
-}
-
-func (a *AsTypeName) SQL() string {
-	return "AS " + a.TypeName.SQL()
 }
 
 // CompoundQuery is query statement node compounded by set operators.
