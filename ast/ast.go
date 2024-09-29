@@ -1404,6 +1404,8 @@ type NamedType struct {
 	Name *Path
 }
 
+func (NamedType) isSchemaType() {}
+
 func (n *NamedType) Pos() token.Pos {
 	return n.Name.Pos()
 }
@@ -1416,7 +1418,7 @@ func (n *NamedType) SQL() string {
 	return n.Name.SQL()
 }
 
-func (n NamedType) isType() {}
+func (NamedType) isType() {}
 
 // ================================================================================
 //

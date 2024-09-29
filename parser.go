@@ -1884,9 +1884,13 @@ func (p *Parser) lookaheadSubQuery() bool {
 
 // ================================================================================
 //
-// Type
+// # Type
 //
 // ================================================================================
+func (p *Parser) parseNamedType() *ast.NamedType {
+	path := p.parseIdentOrPath()
+	return &ast.NamedType{Name: &ast.Path{Idents: path}}
+}
 
 func (p *Parser) parseType() ast.Type {
 	switch p.Token.Kind {
@@ -1894,8 +1898,7 @@ func (p *Parser) parseType() ast.Type {
 		if p.lookaheadSimpleType() {
 			return p.parseSimpleType()
 		}
-		path := p.parseIdentOrPath()
-		return &ast.NamedType{Name: &ast.Path{Idents: path}}
+		return p.parseNamedType()
 	case "ARRAY":
 		return p.parseArrayType()
 	case "STRUCT":
@@ -1915,6 +1918,7 @@ var simpleTypes = []string{
 	"NUMERIC",
 	"STRING",
 	"BYTES",
+	"JSON",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
@@ -3298,6 +3302,9 @@ func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
 func (p *Parser) parseSchemaType() ast.SchemaType {
 	switch p.Token.Kind {
 	case token.TokenIdent:
+		if !p.lookaheadSimpleType() {
+			return p.parseNamedType()
+		}
 		return p.parseScalarSchemaType()
 	case "ARRAY":
 		pos := p.expect("ARRAY").Pos
