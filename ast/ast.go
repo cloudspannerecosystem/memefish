@@ -185,6 +185,7 @@ type Type interface {
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
+func (NamedType) isType()  {}
 
 // IntValue represents integer values in SQL.
 type IntValue interface {
@@ -302,6 +303,7 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+func (NamedType) isSchemaType()        {}
 
 // IndexAlteration represents ALTER INDEX action.
 type IndexAlteration interface {
@@ -1403,22 +1405,6 @@ type NamedType struct {
 
 	Name *Path
 }
-
-func (NamedType) isSchemaType() {}
-
-func (n *NamedType) Pos() token.Pos {
-	return n.Name.Pos()
-}
-
-func (n *NamedType) End() token.Pos {
-	return n.Name.End()
-}
-
-func (n *NamedType) SQL() string {
-	return n.Name.SQL()
-}
-
-func (NamedType) isType() {}
 
 // ================================================================================
 //

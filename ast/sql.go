@@ -720,6 +720,10 @@ func (f *StructField) SQL() string {
 	return sql
 }
 
+func (n *NamedType) SQL() string {
+	return n.Name.SQL()
+}
+
 // ================================================================================
 //
 // Cast for Special Cases

@@ -466,6 +466,9 @@ func (f *StructField) End() token.Pos {
 	return f.Type.End()
 }
 
+func (n *NamedType) Pos() token.Pos { return n.Name.Pos() }
+func (n *NamedType) End() token.Pos { return n.Name.End() }
+
 // ================================================================================
 //
 // Cast for Special Cases
