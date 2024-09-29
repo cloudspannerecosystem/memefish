@@ -464,27 +464,11 @@ func (i *IndexExpr) SQL() string {
 }
 
 func (c *CallExpr) SQL() string {
-	sql := c.Func.SQL() + "("
-	if c.Distinct {
-		sql += "DISTINCT "
-	}
-	for i, a := range c.Args {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += a.SQL()
-	}
-	if len(c.Args) > 0 && len(c.NamedArgs) > 0 {
-		sql += ", "
-	}
-	for i, v := range c.NamedArgs {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += ")"
-	return sql
+	return c.Func.SQL() + "(" + strOpt(c.Distinct, "DISTINCT ") +
+		sqlJoin(c.Args, ", ") +
+		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
+		sqlJoin(c.NamedArgs, ", ") +
+		")"
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
