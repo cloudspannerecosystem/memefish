@@ -1896,10 +1896,10 @@ func (p *Parser) parseNamedType() *ast.NamedType {
 func (p *Parser) parseType() ast.Type {
 	switch p.Token.Kind {
 	case token.TokenIdent:
-		if p.lookaheadSimpleType() {
-			return p.parseSimpleType()
+		if !p.lookaheadSimpleType() {
+			return p.parseNamedType()
 		}
-		return p.parseNamedType()
+		return p.parseSimpleType()
 	case "ARRAY":
 		return p.parseArrayType()
 	case "STRUCT":
