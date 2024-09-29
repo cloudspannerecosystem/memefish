@@ -384,6 +384,32 @@ func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 	return p.parseSelect()
 }
 
+func (p *Parser) tryParseSelectAs() ast.SelectAs {
+	if p.Token.Kind != "AS" {
+		return nil
+	}
+	asPos := p.expect("AS").Pos
+	switch {
+	case p.Token.Kind == "STRUCT":
+		structPos := p.expect("STRUCT").Pos
+		return &ast.AsStruct{
+			As:     asPos,
+			Struct: structPos,
+		}
+	case p.Token.IsKeywordLike("VALUE"):
+		valuePos := p.expectKeywordLike("VALUE").Pos
+		return &ast.AsValue{
+			As:    asPos,
+			Value: valuePos,
+		}
+	default:
+		namedType := p.parseNamedType()
+		return &ast.AsTypeName{
+			As:       asPos,
+			TypeName: namedType,
+		}
+	}
+}
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
 	var distinct bool
@@ -391,12 +417,8 @@ func (p *Parser) parseSelect() *ast.Select {
 		p.nextToken()
 		distinct = true
 	}
-	var asStruct bool
-	if p.Token.Kind == "AS" {
-		p.nextToken()
-		p.expect("STRUCT")
-		asStruct = true
-	}
+	selectAs := p.tryParseSelectAs()
+	_, asStruct := selectAs.(*ast.AsStruct)
 
 	results := p.parseSelectResults()
 	from := p.tryParseFrom()
@@ -408,6 +430,7 @@ func (p *Parser) parseSelect() *ast.Select {
 		Select:   sel,
 		Distinct: distinct,
 		AsStruct: asStruct,
+		As:       selectAs,
 		Results:  results,
 		From:     from,
 		Where:    where,

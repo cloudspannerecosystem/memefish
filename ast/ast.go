@@ -428,7 +428,7 @@ type CTE struct {
 //
 //	SELECT
 //	  {{if .Distinct}}DISTINCT{{end}}
-//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
@@ -443,7 +443,8 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool
+	AsStruct bool // deprecated, use As
+	As       SelectAs
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -451,6 +452,82 @@ type Select struct {
 	Having   *Having      // optional
 	OrderBy  *OrderBy     // optional
 	Limit    *Limit       // optional
+}
+
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
+
+// AsStruct
+//
+//	AS STRUCT
+type AsStruct struct {
+	// pos = As
+	// end = Struct + 6
+	As     token.Pos
+	Struct token.Pos
+}
+
+func (a *AsStruct) Pos() token.Pos {
+	return a.As
+}
+
+func (a *AsStruct) End() token.Pos {
+	return a.Struct + 6
+}
+
+func (a *AsStruct) SQL() string {
+	return "AS STRUCT"
+}
+
+// AsValue
+//
+//	AS VALUE
+type AsValue struct {
+	// pos = As
+	// end = Value + 5
+
+	As    token.Pos
+	Value token.Pos
+}
+
+func (a *AsValue) Pos() token.Pos {
+	return a.As
+}
+
+func (a *AsValue) End() token.Pos {
+	return a.Value + 5
+}
+
+func (a *AsValue) SQL() string {
+	return "AS VALUE"
+}
+
+// AsTypeName
+//
+//	AS {{.TypeName | sql}}
+type AsTypeName struct {
+	// pos = As
+	// end = TypeName.end
+	As       token.Pos
+	TypeName *NamedType
+}
+
+func (a *AsTypeName) Pos() token.Pos {
+	return a.As
+}
+
+func (a *AsTypeName) End() token.Pos {
+	return a.TypeName.End()
+}
+
+func (a *AsTypeName) SQL() string {
+	return "AS " + a.TypeName.SQL()
 }
 
 // CompoundQuery is query statement node compounded by set operators.
