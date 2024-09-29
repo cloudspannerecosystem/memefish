@@ -491,6 +491,7 @@ type AsValue struct {
 type AsTypeName struct {
 	// pos = As
 	// end = TypeName.end
+
 	As       token.Pos
 	TypeName *NamedType
 }

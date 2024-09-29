@@ -410,6 +410,7 @@ func (p *Parser) tryParseSelectAs() ast.SelectAs {
 		}
 	}
 }
+
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
 	var distinct bool
