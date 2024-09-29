@@ -10,23 +10,21 @@ CAST('order_number: "123"' AS examples.shipping.`Order`)
     Value:    "order_number: \"123\"",
   },
   Type: &ast.NamedType{
-    Name: &ast.Path{
-      Idents: []*ast.Ident{
-        &ast.Ident{
-          NamePos: 30,
-          NameEnd: 38,
-          Name:    "examples",
-        },
-        &ast.Ident{
-          NamePos: 39,
-          NameEnd: 47,
-          Name:    "shipping",
-        },
-        &ast.Ident{
-          NamePos: 48,
-          NameEnd: 55,
-          Name:    "Order",
-        },
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 38,
+        Name:    "examples",
+      },
+      &ast.Ident{
+        NamePos: 39,
+        NameEnd: 47,
+        Name:    "shipping",
+      },
+      &ast.Ident{
+        NamePos: 48,
+        NameEnd: 55,
+        Name:    "Order",
       },
     },
   },

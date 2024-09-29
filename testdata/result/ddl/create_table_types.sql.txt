@@ -259,18 +259,16 @@ create table types (
         Name:    "p",
       },
       Type: &ast.NamedType{
-        Name: &ast.Path{
-          Idents: []*ast.Ident{
-            &ast.Ident{
-              NamePos: 216,
-              NameEnd: 224,
-              Name:    "examples",
-            },
-            &ast.Ident{
-              NamePos: 225,
-              NameEnd: 234,
-              Name:    "ProtoType",
-            },
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 216,
+            NameEnd: 224,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 225,
+            NameEnd: 234,
+            Name:    "ProtoType",
           },
         },
       },
