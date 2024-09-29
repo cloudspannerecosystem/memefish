@@ -32,4 +32,4 @@
 }
 
 --- SQL
-(SELECT 1)
+(SELECT AS VALUE 1)
