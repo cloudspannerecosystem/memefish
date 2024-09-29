@@ -1396,7 +1396,7 @@ type StructField struct {
 
 // NamedType is named type node.
 // It is currently PROTO or ENUM.
-// Name is full qualified name, but it can be not to contain ".".
+// Name is full qualified name, but it can be len(Name) == 1 if it doesn't contain ".".
 //
 //	{{.Path | sqlJoin "."}}
 type NamedType struct {
