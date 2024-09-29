@@ -358,8 +358,8 @@ func (p *Param) End() token.Pos { return p.Atmark + 1 + token.Pos(len(p.Name)) }
 func (i *Ident) Pos() token.Pos { return i.NamePos }
 func (i *Ident) End() token.Pos { return i.NameEnd }
 
-func (p *Path) Pos() token.Pos { return p.Idents[0].Pos() }
-func (p *Path) End() token.Pos { return p.Idents[len(p.Idents)-1].End() }
+func (p *Path) Pos() token.Pos { return firstPos(p.Idents) }
+func (p *Path) End() token.Pos { return lastEnd(p.Idents) }
 
 func (a *ArrayLiteral) Pos() token.Pos {
 	if !a.Array.Invalid() {
