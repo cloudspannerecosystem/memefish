@@ -15,6 +15,7 @@ SELECT ARRAY(
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
@@ -24,6 +25,7 @@ SELECT ARRAY(
             Select:   16,
             Distinct: false,
             AsStruct: false,
+            As:       nil,
             Results:  []ast.SelectItem{
               &ast.Star{
                 Star: 27,
@@ -38,6 +40,7 @@ SELECT ARRAY(
                   Select:   41,
                   Distinct: false,
                   AsStruct: false,
+                  As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.StructLiteral{

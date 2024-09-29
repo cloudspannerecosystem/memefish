@@ -55,6 +55,7 @@ lines''',
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.StringLiteral{
@@ -390,6 +391,7 @@ lines''',
             Select:   460,
             Distinct: false,
             AsStruct: false,
+            As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.StructLiteral{
@@ -437,6 +439,7 @@ lines''',
             Select:   493,
             Distinct: false,
             AsStruct: false,
+            As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.StructLiteral{

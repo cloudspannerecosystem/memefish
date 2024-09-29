@@ -18,6 +18,7 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
           Select:   15,
           Distinct: false,
           AsStruct: false,
+          As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.Ident{
@@ -58,6 +59,7 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
           Select:   46,
           Distinct: false,
           AsStruct: false,
+          As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.Ident{
@@ -93,6 +95,7 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
     Select:   66,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 73,

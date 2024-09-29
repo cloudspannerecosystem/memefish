@@ -13,6 +13,7 @@ FROM Singers S
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.DotStar{
         Star: 11,

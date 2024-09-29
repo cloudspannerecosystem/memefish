@@ -13,6 +13,7 @@ LIMIT 100
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,

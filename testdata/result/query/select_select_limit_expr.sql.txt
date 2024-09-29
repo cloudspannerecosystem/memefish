@@ -9,6 +9,7 @@ select ((select 1) limit 1 offset 0) + 3
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
@@ -23,6 +24,7 @@ select ((select 1) limit 1 offset 0) + 3
                 Select:   9,
                 Distinct: false,
                 AsStruct: false,
+                As:       nil,
                 Results:  []ast.SelectItem{
                   &ast.ExprSelectItem{
                     Expr: &ast.IntLiteral{

@@ -8,6 +8,7 @@ select count(distinct x) from foo
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
