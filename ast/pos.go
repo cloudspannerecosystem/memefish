@@ -39,25 +39,7 @@ func (c *CTE) End() token.Pos { return c.Rparen + 1 }
 func (s *Select) Pos() token.Pos { return s.Select }
 
 func (s *Select) End() token.Pos {
-	if s.Limit != nil {
-		return s.Limit.End()
-	}
-	if s.OrderBy != nil {
-		return s.OrderBy.End()
-	}
-	if s.Having != nil {
-		return s.Having.End()
-	}
-	if s.GroupBy != nil {
-		return s.GroupBy.End()
-	}
-	if s.Where != nil {
-		return s.Where.End()
-	}
-	if s.From != nil {
-		return s.From.End()
-	}
-	return s.Results[len(s.Results)-1].End()
+	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastElem(s.Results))
 }
 
 func (c *CompoundQuery) Pos() token.Pos {
