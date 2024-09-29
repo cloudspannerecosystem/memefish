@@ -559,11 +559,7 @@ func (i *Ident) SQL() string {
 }
 
 func (p *Path) SQL() string {
-	sql := p.Idents[0].SQL()
-	for _, id := range p.Idents[1:] {
-		sql += "." + id.SQL()
-	}
-	return sql
+	return sqlJoin(p.Idents, ".")
 }
 
 func (a *ArrayLiteral) SQL() string {
