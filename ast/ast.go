@@ -1398,12 +1398,12 @@ type StructField struct {
 // It is currently PROTO or ENUM.
 // Name is full qualified name, but it can be not to contain ".".
 //
-//	{{.TypeName | sql}}
+//	{{.Path | sqlJoin "."}}
 type NamedType struct {
 	// pos = Name.pos
 	// end = Name.end
 
-	Name *Path
+	Path []*Ident // len(Path) > 0
 }
 
 // ================================================================================

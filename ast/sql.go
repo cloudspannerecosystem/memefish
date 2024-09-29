@@ -721,7 +721,14 @@ func (f *StructField) SQL() string {
 }
 
 func (n *NamedType) SQL() string {
-	return n.Name.SQL()
+	var sql string
+	for i, elem := range n.Path {
+		if i > 0 {
+			sql += "."
+		}
+		sql += elem.SQL()
+	}
+	return sql
 }
 
 // ================================================================================
