@@ -1,0 +1,53 @@
+--- value_subquery_select_as_leaf_typename.sql
+(SELECT AS TypeName 1 AS i)
+--- AST
+&ast.ScalarSubQuery{
+  Lparen: 0,
+  Rparen: 26,
+  Query:  &ast.Select{
+    Select:   1,
+    Distinct: false,
+    AsStruct: false,
+    As:       &ast.AsTypeName{
+      As:       8,
+      TypeName: &ast.NamedType{
+        Name: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 11,
+              NameEnd: 19,
+              Name:    "TypeName",
+            },
+          },
+        },
+      },
+    },
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.IntLiteral{
+          ValuePos: 20,
+          ValueEnd: 21,
+          Base:     10,
+          Value:    "1",
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 25,
+            NameEnd: 26,
+            Name:    "i",
+          },
+        },
+      },
+    },
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+(SELECT 1 AS i)
