@@ -1,0 +1,1 @@
+CAST('order_number: "123"' AS examples.shipping.`Order`)
