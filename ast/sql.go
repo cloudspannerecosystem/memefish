@@ -120,8 +120,8 @@ func (s *Select) SQL() string {
 	if s.Distinct {
 		sql += "DISTINCT "
 	}
-	if s.AsStruct {
-		sql += "AS STRUCT "
+	if s.As != nil {
+		sql += s.As.SQL() + " "
 	}
 	sql += s.Results[0].SQL()
 	for _, r := range s.Results[1:] {
