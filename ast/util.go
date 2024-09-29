@@ -24,6 +24,19 @@ func sqlOpt[T interface {
 	return left + node.SQL() + right
 }
 
+// strOpt outputs:
+//
+//	when pred == true: s
+//	else            : empty string
+//
+// This function corresponds to {{if pred}}s{{end}} in ast.go
+func strOpt(pred bool, s string) string {
+	if pred {
+		return s
+	}
+	return ""
+}
+
 // sqlJoin outputs joined string of SQL() of all elems by sep.
 // This function corresponds to sqlJoin in ast.go
 func sqlJoin[T Node](elems []T, sep string) string {
