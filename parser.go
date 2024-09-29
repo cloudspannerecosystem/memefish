@@ -1884,9 +1884,10 @@ func (p *Parser) lookaheadSubQuery() bool {
 
 // ================================================================================
 //
-// # Type
+// Type
 //
 // ================================================================================
+
 func (p *Parser) parseNamedType() *ast.NamedType {
 	path := p.parseIdentOrPath()
 	return &ast.NamedType{Path: path}
