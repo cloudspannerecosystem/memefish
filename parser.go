@@ -2182,8 +2182,7 @@ func (p *Parser) parseBracedNewConstructor(newPos token.Pos, namedType *ast.Name
 
 func (p *Parser) parseNewConstructors() ast.Expr {
 	newPos := p.expect("NEW").Pos
-	path := p.parseIdentOrPath()
-	namedType := &ast.NamedType{Path: path}
+	namedType := p.parseNamedType()
 	switch p.Token.Kind {
 	case "(":
 		return p.parseNewConstructor(newPos, namedType)
