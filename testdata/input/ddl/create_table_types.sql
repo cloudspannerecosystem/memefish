@@ -10,5 +10,6 @@ create table types (
   bs bytes(256),
   bsmax bytes(max),
   ab array<bool>,
-  abs array<bytes(max)>
+  abs array<bytes(max)>,
+  p examples.ProtoType,
 ) primary key (i)

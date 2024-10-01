@@ -185,6 +185,7 @@ type Type interface {
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
+func (NamedType) isType()  {}
 
 // IntValue represents integer values in SQL.
 type IntValue interface {
@@ -302,6 +303,7 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+func (NamedType) isSchemaType()        {}
 
 // IndexAlteration represents ALTER INDEX action.
 type IndexAlteration interface {
@@ -1390,6 +1392,18 @@ type StructField struct {
 
 	Ident *Ident
 	Type  Type
+}
+
+// NamedType is named type node.
+// It is currently PROTO or ENUM.
+// Name is full qualified name, but it can be len(Name) == 1 if it doesn't contain ".".
+//
+//	{{.Path | sqlJoin "."}}
+type NamedType struct {
+	// pos = Name.pos
+	// end = Name.end
+
+	Path []*Ident // len(Path) > 0
 }
 
 // ================================================================================

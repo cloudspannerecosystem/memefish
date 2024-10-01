@@ -720,6 +720,17 @@ func (f *StructField) SQL() string {
 	return sql
 }
 
+func (n *NamedType) SQL() string {
+	var sql string
+	for i, elem := range n.Path {
+		if i > 0 {
+			sql += "."
+		}
+		sql += elem.SQL()
+	}
+	return sql
+}
+
 // ================================================================================
 //
 // Cast for Special Cases
