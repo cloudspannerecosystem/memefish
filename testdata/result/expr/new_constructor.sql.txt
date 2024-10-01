@@ -2,9 +2,9 @@
 NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)
 --- AST
 &ast.NewConstructor{
-  New:      0,
-  TypeName: &ast.Path{
-    Idents: []*ast.Ident{
+  New:  0,
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
       &ast.Ident{
         NamePos: 4,
         NameEnd: 13,

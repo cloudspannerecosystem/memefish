@@ -18,9 +18,9 @@ NEW Universe {
 }
 --- AST
 &ast.BracedNewConstructor{
-  New:      100,
-  TypeName: &ast.Path{
-    Idents: []*ast.Ident{
+  New:  100,
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
       &ast.Ident{
         NamePos: 104,
         NameEnd: 112,
