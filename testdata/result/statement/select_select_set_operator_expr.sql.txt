@@ -11,6 +11,7 @@ select ((select 1) union all (select 2)) + 3,
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
@@ -29,6 +30,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   9,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -56,6 +58,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   30,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -106,6 +109,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   55,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -133,6 +137,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   80,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -183,6 +188,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   105,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -210,6 +216,7 @@ select ((select 1) union all (select 2)) + 3,
                     Select:   127,
                     Distinct: false,
                     AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{

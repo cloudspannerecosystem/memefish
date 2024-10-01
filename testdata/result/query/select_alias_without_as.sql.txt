@@ -9,6 +9,7 @@ select 1 A
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.IntLiteral{

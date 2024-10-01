@@ -13,6 +13,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CastExpr{

@@ -60,6 +60,15 @@ func (s *Select) End() token.Pos {
 	return s.Results[len(s.Results)-1].End()
 }
 
+func (a *AsStruct) Pos() token.Pos { return a.As }
+func (a *AsStruct) End() token.Pos { return a.Struct + 6 }
+
+func (a *AsValue) Pos() token.Pos { return a.As }
+func (a *AsValue) End() token.Pos { return a.Value + 5 }
+
+func (a *AsTypeName) Pos() token.Pos { return a.As }
+func (a *AsTypeName) End() token.Pos { return a.TypeName.End() }
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return c.Queries[0].Pos()
 }

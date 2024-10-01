@@ -1,0 +1,1 @@
+(SELECT AS STRUCT 1 AS i)

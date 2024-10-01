@@ -32,6 +32,7 @@ FROM
     Select:   25,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 34,

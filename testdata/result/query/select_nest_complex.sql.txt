@@ -14,6 +14,7 @@ from (
     Select:   0,
     Distinct: false,
     AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 7,
@@ -49,6 +50,7 @@ from (
                           Select:   23,
                           Distinct: false,
                           AsStruct: false,
+                          As:       nil,
                           Results:  []ast.SelectItem{
                             &ast.Alias{
                               Expr: &ast.IntLiteral{
@@ -81,6 +83,7 @@ from (
                             Select:   45,
                             Distinct: false,
                             AsStruct: false,
+                            As:       nil,
                             Results:  []ast.SelectItem{
                               &ast.ExprSelectItem{
                                 Expr: &ast.IntLiteral{
@@ -115,6 +118,7 @@ from (
                       Select:   72,
                       Distinct: false,
                       AsStruct: false,
+                      As:       nil,
                       Results:  []ast.SelectItem{
                         &ast.ExprSelectItem{
                           Expr: &ast.IntLiteral{
@@ -161,6 +165,7 @@ from (
               Select:   104,
               Distinct: false,
               AsStruct: false,
+              As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Alias{
                   Expr: &ast.IntLiteral{
