@@ -11,13 +11,11 @@
     As:       &ast.AsTypeName{
       As:       8,
       TypeName: &ast.NamedType{
-        Name: &ast.Path{
-          Idents: []*ast.Ident{
-            &ast.Ident{
-              NamePos: 11,
-              NameEnd: 19,
-              Name:    "TypeName",
-            },
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 11,
+            NameEnd: 19,
+            Name:    "TypeName",
           },
         },
       },
