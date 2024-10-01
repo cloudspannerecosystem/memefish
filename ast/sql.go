@@ -116,36 +116,16 @@ func (c *CTE) SQL() string {
 }
 
 func (s *Select) SQL() string {
-	sql := "SELECT "
-	if s.Distinct {
-		sql += "DISTINCT "
-	}
-	if s.AsStruct {
-		sql += "AS STRUCT "
-	}
-	sql += s.Results[0].SQL()
-	for _, r := range s.Results[1:] {
-		sql += ", " + r.SQL()
-	}
-	if s.From != nil {
-		sql += " " + s.From.SQL()
-	}
-	if s.Where != nil {
-		sql += " " + s.Where.SQL()
-	}
-	if s.GroupBy != nil {
-		sql += " " + s.GroupBy.SQL()
-	}
-	if s.Having != nil {
-		sql += " " + s.Having.SQL()
-	}
-	if s.OrderBy != nil {
-		sql += " " + s.OrderBy.SQL()
-	}
-	if s.Limit != nil {
-		sql += " " + s.Limit.SQL()
-	}
-	return sql
+	return "SELECT " +
+		strOpt(s.Distinct, "DISTINCT ") +
+		strOpt(s.AsStruct, "AS STRUCT ") +
+		sqlJoin(s.Results, ", ") +
+		sqlOpt(" ", s.From, "") +
+		sqlOpt(" ", s.Where, "") +
+		sqlOpt(" ", s.GroupBy, "") +
+		sqlOpt(" ", s.Having, "") +
+		sqlOpt(" ", s.OrderBy, "") +
+		sqlOpt(" ", s.Limit, "")
 }
 
 func (c *CompoundQuery) SQL() string {
@@ -464,27 +444,11 @@ func (i *IndexExpr) SQL() string {
 }
 
 func (c *CallExpr) SQL() string {
-	sql := c.Func.SQL() + "("
-	if c.Distinct {
-		sql += "DISTINCT "
-	}
-	for i, a := range c.Args {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += a.SQL()
-	}
-	if len(c.Args) > 0 && len(c.NamedArgs) > 0 {
-		sql += ", "
-	}
-	for i, v := range c.NamedArgs {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += ")"
-	return sql
+	return c.Func.SQL() + "(" + strOpt(c.Distinct, "DISTINCT ") +
+		sqlJoin(c.Args, ", ") +
+		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
+		sqlJoin(c.NamedArgs, ", ") +
+		")"
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
@@ -595,11 +559,7 @@ func (i *Ident) SQL() string {
 }
 
 func (p *Path) SQL() string {
-	sql := p.Idents[0].SQL()
-	for _, id := range p.Idents[1:] {
-		sql += "." + id.SQL()
-	}
-	return sql
+	return sqlJoin(p.Idents, ".")
 }
 
 func (a *ArrayLiteral) SQL() string {
