@@ -1355,13 +1355,13 @@ type NewConstructorArg struct {
 
 // NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
-//	NEW {{TypeName | sql}} ({{Args | sqlJoin ", "}})
+//	NEW {{.Type | sql}} ({{.Args | sqlJoin ", "}})
 type NewConstructor struct {
 	// pos = New
 	// end = Rparen + 1
 
-	New      token.Pos
-	TypeName *Path
+	New  token.Pos
+	Type *NamedType
 
 	Args []*NewConstructorArg
 
@@ -1370,14 +1370,14 @@ type NewConstructor struct {
 
 // BracedNewConstructor represents NEW operator which creates a protocol buffer using a map constructor.
 //
-//	NEW {{.TypeName | sql}} {{"{"}}{{"}"}}
+//	NEW {{.Type | sql}} {{"{"}}{{"}"}}
 type BracedNewConstructor struct {
 	// pos = New
 	// end = Rbrace + 1
 
-	New      token.Pos
-	TypeName *Path
-	Body     *BracedConstructor
+	New  token.Pos
+	Type *NamedType
+	Body *BracedConstructor
 }
 
 // BracedConstructor represents a single map constructor which is used in BracedNewConstructor.

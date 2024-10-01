@@ -694,7 +694,7 @@ func (n *NewConstructorArg) SQL() string {
 
 func (n *NewConstructor) SQL() string {
 	var sql string
-	sql += "NEW " + n.TypeName.SQL() + "("
+	sql += "NEW " + n.Type.SQL() + "("
 	for i, arg := range n.Args {
 		if i > 0 {
 			sql += ", "
@@ -706,7 +706,7 @@ func (n *NewConstructor) SQL() string {
 }
 
 func (b *BracedNewConstructor) SQL() string {
-	return "NEW " + b.TypeName.SQL() + " " + b.Body.SQL()
+	return "NEW " + b.Type.SQL() + " " + b.Body.SQL()
 }
 
 func (b *BracedConstructor) SQL() string {
