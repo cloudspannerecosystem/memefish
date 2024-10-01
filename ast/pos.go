@@ -440,6 +440,29 @@ func (t *NumericLiteral) End() token.Pos { return t.Value.End() }
 func (t *JSONLiteral) Pos() token.Pos { return t.JSON }
 func (t *JSONLiteral) End() token.Pos { return t.Value.End() }
 
+func (n *NewConstructorArg) Pos() token.Pos { return n.Expr.Pos() }
+func (n *NewConstructorArg) End() token.Pos {
+	if n.Alias != nil {
+		return n.Alias.End()
+	}
+	return n.Expr.End()
+}
+
+func (n *NewConstructor) Pos() token.Pos { return n.New }
+func (n *NewConstructor) End() token.Pos { return n.Rparen + 1 }
+
+func (b *BracedNewConstructor) Pos() token.Pos { return b.New }
+func (b *BracedNewConstructor) End() token.Pos { return b.Body.End() }
+
+func (b *BracedConstructor) Pos() token.Pos { return b.Lbrace }
+func (b *BracedConstructor) End() token.Pos { return b.Rbrace + 1 }
+
+func (b *BracedConstructorField) Pos() token.Pos { return b.Name.Pos() }
+func (b *BracedConstructorField) End() token.Pos { return b.Value.End() }
+
+func (b *BracedConstructorFieldValueExpr) Pos() token.Pos { return b.Colon }
+func (b *BracedConstructorFieldValueExpr) End() token.Pos { return b.Expr.End() }
+
 // ================================================================================
 //
 // Type

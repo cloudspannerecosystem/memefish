@@ -1408,6 +1408,11 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseSimpleArrayLiteral()
 	case "(":
 		return p.parseParenExpr()
+	case "NEW":
+		return p.parseNewConstructors()
+	// In parser level, it is a valid ast.Expr, but it is semantically valid only in ast.BracedConstructorFieldExpr.
+	case "{":
+		return p.parseBracedConstructor()
 	case token.TokenIdent:
 		id := p.Token
 		p.nextToken()
@@ -2001,6 +2006,96 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 		gt = p.expect(">").Pos
 	}
 	return
+}
+
+func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
+	p.expect("(")
+
+	var args []*ast.NewConstructorArg
+	for {
+		if p.Token.Kind == ")" {
+			break
+		}
+		expr := p.parseExpr()
+		var alias *ast.AsAlias
+		if p.Token.Kind == "AS" {
+			alias = p.tryParseAsAlias()
+		}
+		args = append(args, &ast.NewConstructorArg{
+			Expr:  expr,
+			Alias: alias,
+		})
+		if p.Token.Kind == "," {
+			p.nextToken()
+		}
+	}
+	rparen := p.expect(")").Pos
+	return &ast.NewConstructor{
+		New:    newPos,
+		Type:   namedType,
+		Args:   args,
+		Rparen: rparen,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
+	name := p.parseIdent()
+	var fieldValue ast.BracedConstructorFieldValue
+	switch p.Token.Kind {
+	case ":":
+		colon := p.expect(":").Pos
+		expr := p.parseExpr()
+		fieldValue = &ast.BracedConstructorFieldValueExpr{Colon: colon, Expr: expr}
+	case "{":
+		fieldValue = p.parseBracedConstructor()
+	}
+	return &ast.BracedConstructorField{Name: name, Value: fieldValue}
+}
+
+func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
+	lbrace := p.expect("{").Pos
+	var fields []*ast.BracedConstructorField
+	for {
+		if p.Token.Kind == "}" {
+			break
+		}
+		if p.Token.Kind != token.TokenIdent {
+			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
+		}
+		fields = append(fields, p.parseBracedNewConstructorField())
+		if p.Token.Kind == "," {
+			p.nextToken()
+		}
+	}
+	rbrace := p.expect("}").Pos
+	return &ast.BracedConstructor{
+		Lbrace: lbrace,
+		Rbrace: rbrace,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.BracedNewConstructor {
+	body := p.parseBracedConstructor()
+	return &ast.BracedNewConstructor{
+		New:  newPos,
+		Type: namedType,
+		Body: body,
+	}
+}
+
+func (p *Parser) parseNewConstructors() ast.Expr {
+	newPos := p.expect("NEW").Pos
+	namedType := p.parseNamedType()
+	switch p.Token.Kind {
+	case "(":
+		return p.parseNewConstructor(newPos, namedType)
+	case "{":
+		return p.parseBracedNewConstructor(newPos, namedType)
+	default:
+		p.panicfAtToken(&p.Token, `expect '{' or '(', but %v`, p.Token.Kind)
+	}
+	return nil
 }
 
 func (p *Parser) parseFieldType() *ast.StructField {
