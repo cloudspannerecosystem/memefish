@@ -1465,7 +1465,9 @@ type GenericOptions struct {
 	Records []*GenericOption // len(Records) > 0
 }
 
-func (o *GenericOptions) Find(name string) (Expr, bool) {
+// Find finds name in Records, and return its value as Expr.
+// The second return value indicates that the name was found in Records.
+func (o *GenericOptions) Find(name string) (expr Expr, found bool) {
 	for _, r := range o.Records {
 		if r.Name.Name != name {
 			continue
@@ -1475,7 +1477,9 @@ func (o *GenericOptions) Find(name string) (Expr, bool) {
 	return nil, false
 }
 
-func (o *GenericOptions) GetBool(name string) (*bool, error) {
+// FindBool finds name in Records, and return its value as *bool.
+// If the value is neither bool nor null, it returns error.
+func (o *GenericOptions) FindBool(name string) (*bool, error) {
 	v, ok := o.Find(name)
 	if !ok {
 		return nil, nil
@@ -2448,11 +2452,11 @@ func (o *SearchIndexOptions) SQL() string {
 }
 
 func (o *SearchIndexOptions) SortOrderSharding() (*bool, error) {
-	return (*GenericOptions)(o).GetBool("sort_order_sharding")
+	return (*GenericOptions)(o).FindBool("sort_order_sharding")
 }
 
 func (o *SearchIndexOptions) DisableAutomaticUIDColumn() (*bool, error) {
-	return (*GenericOptions)(o).GetBool("disable_automatic_uid_column")
+	return (*GenericOptions)(o).FindBool("disable_automatic_uid_column")
 }
 
 // DropSearchIndex represents DROP SEARCH INDEX statement.
@@ -2612,4 +2616,3 @@ type SequenceOptions struct {
 
 	Records []*SequenceOption // len(Records) > 0
 }
-

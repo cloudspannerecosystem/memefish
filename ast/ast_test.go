@@ -263,7 +263,7 @@ func TestGenericOptionsGetBool(t *testing.T) {
 
 	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
-			got, err := tcase.input.GetBool(tcase.name)
+			got, err := tcase.input.FindBool(tcase.name)
 			if tcase.wantErr == "" && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
