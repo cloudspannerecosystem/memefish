@@ -1920,6 +1920,7 @@ var simpleTypes = []string{
 	"STRING",
 	"BYTES",
 	"JSON",
+	"TOKENLIST",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
