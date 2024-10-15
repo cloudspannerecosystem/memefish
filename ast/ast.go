@@ -32,6 +32,7 @@
 package ast
 
 import (
+	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -2373,13 +2374,36 @@ type CreateSearchIndex struct {
 	Name             *Ident
 	TableName        *Ident
 	TokenListPart    []*Ident
-	Rparen           token.Pos       // position of ")" after TokenListPart
-	Storing          *Storing        // optional
-	PartitionColumns []*Ident        // optional
-	OrderBy          *OrderBy        // optional
-	Where            *Where          // optional
-	Interleave       *InterleaveIn   // optional
-	Options          *GenericOptions // optional
+	Rparen           token.Pos           // position of ")" after TokenListPart
+	Storing          *Storing            // optional
+	PartitionColumns []*Ident            // optional
+	OrderBy          *OrderBy            // optional
+	Where            *Where              // optional
+	Interleave       *InterleaveIn       // optional
+	Options          *SearchIndexOptions // optional
+}
+
+// SearchIndexOptions represents OPTIONS for CREATE SEARCH INDEX statement.
+type SearchIndexOptions GenericOptions
+
+func (o *SearchIndexOptions) Pos() token.Pos {
+	return (*GenericOptions)(o).Pos()
+}
+
+func (o *SearchIndexOptions) End() token.Pos {
+	return (*GenericOptions)(o).End()
+}
+
+func (o *SearchIndexOptions) SQL() string {
+	return (*GenericOptions)(o).SQL()
+}
+
+func (o *SearchIndexOptions) SortOrderSharding() (*bool, error) {
+	return (*GenericOptions)(o).GetBool("sort_order_sharding")
+}
+
+func (o *SearchIndexOptions) DisableAutomaticUIDColumn() (*bool, error) {
+	return (*GenericOptions)(o).GetBool("disable_automatic_uid_column")
 }
 
 // DropSearchIndex represents DROP SEARCH INDEX statement.
@@ -2553,17 +2577,10 @@ type GenericOptions struct {
 	Records []*GenericOption // len(Records) > 0
 }
 
-func (g *GenericOptions) Pos() token.Pos {
-	return g.Options
-}
+func (g *GenericOptions) Pos() token.Pos { return g.Options }
+func (g *GenericOptions) End() token.Pos { return g.Rparen + 1 }
 
-func (g *GenericOptions) End() token.Pos {
-	return g.Rparen + 1
-}
-
-func (g *GenericOptions) SQL() string {
-	return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")"
-}
+func (g *GenericOptions) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
 
 // GenericOption is generic option for CREATE statements.
 //
@@ -2576,14 +2593,33 @@ type GenericOption struct {
 	Value Expr
 }
 
-func (g *GenericOption) Pos() token.Pos {
-	return g.Name.Pos()
+func (o *GenericOptions) FindName(name string) (Expr, bool) {
+	for _, r := range o.Records {
+		if r.Name.Name != name {
+			continue
+		}
+		return r.Value, true
+	}
+	return nil, false
 }
 
-func (g *GenericOption) End() token.Pos {
-	return g.Value.End()
+func (o *GenericOptions) GetBool(name string) (*bool, error) {
+	v, ok := o.FindName(name)
+	if !ok {
+		return nil, nil
+	}
+	switch v := v.(type) {
+	case *BoolLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect bool or null, but have unknown type %T", v)
+	}
 }
 
-func (g *GenericOption) SQL() string {
-	return g.Name.SQL() + " = " + g.Value.SQL()
-}
+func (g *GenericOption) Pos() token.Pos { return g.Name.Pos() }
+
+func (g *GenericOption) End() token.Pos { return g.Value.End() }
+
+func (g *GenericOption) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }

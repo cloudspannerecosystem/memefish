@@ -50,7 +50,7 @@ WHERE Genre IS NOT NULL
     },
   },
   Interleave: (*ast.InterleaveIn)(nil),
-  Options:    (*ast.GenericOptions)(nil),
+  Options:    (*ast.SearchIndexOptions)(nil),
 }
 
 --- SQL

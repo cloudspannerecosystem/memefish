@@ -99,7 +99,7 @@ OPTIONS(sort_order_sharding=true)
       Name:    "Singers",
     },
   },
-  Options: &ast.GenericOptions{
+  Options: &ast.SearchIndexOptions{
     Options: 234,
     Rparen:  266,
     Records: []*ast.GenericOption{

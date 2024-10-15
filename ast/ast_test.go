@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"github.com/google/go-cmp/cmp"
 	"testing"
 )
 
@@ -191,4 +192,85 @@ func TestDML(t *testing.T) {
 func TestInsertInput(t *testing.T) {
 	InsertInput(&ValuesInput{}).isInsertInput()
 	InsertInput(&SubQueryInput{}).isInsertInput()
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}
+
+func TestGenericOptionsGetBool(t *testing.T) {
+	tt := []struct {
+		desc    string
+		input   *GenericOptions
+		name    string
+		want    *bool
+		wantErr string
+	}{
+		{
+			desc: "true",
+			input: &GenericOptions{
+				Records: []*GenericOption{
+					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: true}},
+				},
+			},
+			name: "sort_order_sharding",
+			want: ptr(true),
+		},
+		{
+			desc: "false",
+			input: &GenericOptions{
+				Records: []*GenericOption{
+					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: false}},
+				},
+			},
+			name: "sort_order_sharding",
+			want: ptr(false),
+		},
+		{
+			desc: "explicit null",
+			input: &GenericOptions{
+				Records: []*GenericOption{
+					{Name: &Ident{Name: "sort_order_sharding"}, Value: &NullLiteral{}},
+				},
+			},
+			name: "sort_order_sharding",
+			want: nil,
+		},
+		{
+			desc: "implicit null",
+			input: &GenericOptions{
+				Records: []*GenericOption{
+					{Name: &Ident{Name: "disable_automatic_uid_column"}, Value: &BoolLiteral{Value: true}},
+				},
+			},
+			name: "sort_order_sharding",
+			want: nil,
+		},
+		{
+			desc: "invalid value",
+			input: &GenericOptions{
+				Records: []*GenericOption{
+					{Name: &Ident{Name: "sort_order_sharding"}, Value: &StringLiteral{Value: "foo"}},
+				},
+			},
+			name:    "sort_order_sharding",
+			wantErr: "expect bool or null, but have unknown type *ast.StringLiteral",
+		},
+	}
+
+	for _, tcase := range tt {
+		t.Run(tcase.desc, func(t *testing.T) {
+			b, err := tcase.input.GetBool(tcase.name)
+			if tcase.wantErr == "" && err != nil {
+				t.Errorf("should not fail, but: %v", err)
+			}
+			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
+				t.Errorf("should fail, want: %v, got: %v", tcase.wantErr, err)
+			}
+			if diff := cmp.Diff(tcase.want, b); diff != "" {
+				t.Errorf("differ: %v", diff)
+			}
+		})
+	}
+
 }

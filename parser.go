@@ -2635,7 +2635,11 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	orderBy := p.tryParseOrderBy()
 	where := p.tryParseWhere()
 	interleave := p.tryParseInterleaveIn()
-	options := p.tryParseGenericOptions()
+
+	var searchIndexOptions *ast.SearchIndexOptions
+	if options := p.tryParseGenericOptions(); options != nil {
+		searchIndexOptions = (*ast.SearchIndexOptions)(options)
+	}
 
 	return &ast.CreateSearchIndex{
 		Create:           pos,
@@ -2648,7 +2652,7 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 		OrderBy:          orderBy,
 		Where:            where,
 		Interleave:       interleave,
-		Options:          options,
+		Options:          searchIndexOptions,
 	}
 }
 
