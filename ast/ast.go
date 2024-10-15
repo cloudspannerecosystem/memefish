@@ -1348,6 +1348,7 @@ type JSONLiteral struct {
 //
 // ================================================================================
 
+// BracedConstructorFieldValue represents value part of fields in BracedNewConstructor.
 type BracedConstructorFieldValue interface {
 	Node
 	isBracedConstructorFieldValue()
@@ -1361,7 +1362,7 @@ func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 //	{{Expr | sql}} {{Alias | sqlOpt}}
 type NewConstructorArg struct {
 	// pos = Expr.pos
-	// (Alias ?? Expr).end
+	// end = (Alias ?? Expr).end
 
 	Expr  Expr
 	Alias *AsAlias // optional
@@ -1422,6 +1423,9 @@ type BracedConstructorField struct {
 //
 //	: {{.Expr | sql}}
 type BracedConstructorFieldValueExpr struct {
+	// pos = Colon
+	// end = Expr.end
+
 	Colon token.Pos
 	Expr  Expr
 }
