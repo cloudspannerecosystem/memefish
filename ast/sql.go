@@ -1313,10 +1313,9 @@ func (c *CreateSearchIndex) SQL() string {
 		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
 		sqlOpt(" ", c.OrderBy, "") +
 		sqlOpt(" ", c.Where, "") +
-		sqlOpt(" ", c.Interleave, "") +
+		sqlOpt("", c.Interleave, "") +
 		sqlOpt(" ", c.Options, "")
 }
-
 
 func (d *DropSearchIndex) SQL() string {
 	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()

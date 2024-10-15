@@ -2562,7 +2562,7 @@ func (g *GenericOptions) End() token.Pos {
 }
 
 func (g *GenericOptions) SQL() string {
-	return "OPTIONS " + sqlJoin(g.Records, ", ")
+	return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")"
 }
 
 // GenericOption is generic option for CREATE statements.
