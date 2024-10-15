@@ -558,7 +558,7 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	// TODO: It may able to be refactored using Pos arithmetic like InvalidPos + n = InvalidPos.
+	// TODO: It may be able to be refactored using Pos arithmetic like InvalidPos + n = InvalidPos.
 	if c.Options != nil {
 		return c.Options.End()
 	}
