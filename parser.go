@@ -2297,7 +2297,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
 	hidden := p.tryExpectKeywordLike("HIDDEN")
-	var hiddenPos token.Pos
+	hiddenPos := token.InvalidPos
 	if hidden != nil {
 		hiddenPos = hidden.Pos
 	}
@@ -2311,7 +2311,6 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		DefaultExpr:   defaultExpr,
 		GeneratedExpr: generated,
 		Hidden:        hiddenPos,
-		IsHidden:      hidden != nil,
 		Options:       options,
 	}
 }

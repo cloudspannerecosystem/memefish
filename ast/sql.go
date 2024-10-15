@@ -822,23 +822,12 @@ func (c *CreateView) SQL() string {
 }
 
 func (c *ColumnDef) SQL() string {
-	sql := c.Name.SQL() + " " + c.Type.SQL()
-	if c.NotNull {
-		sql += " NOT NULL"
-	}
-	if c.DefaultExpr != nil {
-		sql += " " + c.DefaultExpr.SQL()
-	}
-	if c.GeneratedExpr != nil {
-		sql += " " + c.GeneratedExpr.SQL()
-	}
-	if c.IsHidden {
-		sql += " HIDDEN"
-	}
-	if c.Options != nil {
-		sql += " " + c.Options.SQL()
-	}
-	return sql
+	return c.Name.SQL() + " " + c.Type.SQL() +
+		strOpt(c.NotNull, " NOT NULL") +
+		sqlOpt(" ", c.DefaultExpr, "") +
+		sqlOpt(" ", c.GeneratedExpr, "") +
+		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *TableConstraint) SQL() string {

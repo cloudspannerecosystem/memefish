@@ -1520,8 +1520,7 @@ type ColumnDef struct {
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
 	Hidden        token.Pos            // InvalidPos if not hidden
-	IsHidden      bool
-	Options       *ColumnDefOptions // optional
+	Options       *ColumnDefOptions    // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
