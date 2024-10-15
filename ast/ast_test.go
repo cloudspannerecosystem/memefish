@@ -199,7 +199,7 @@ func ptr[T any](v T) *T {
 }
 
 func TestGenericOptionsGetBool(t *testing.T) {
-	tt := []struct {
+	tcases := []struct {
 		desc    string
 		input   *GenericOptions
 		name    string
@@ -258,16 +258,16 @@ func TestGenericOptionsGetBool(t *testing.T) {
 		},
 	}
 
-	for _, tcase := range tt {
+	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
-			b, err := tcase.input.GetBool(tcase.name)
+			got, err := tcase.input.GetBool(tcase.name)
 			if tcase.wantErr == "" && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
 			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
 				t.Errorf("should fail, want: %v, got: %v", tcase.wantErr, err)
 			}
-			if diff := cmp.Diff(tcase.want, b); diff != "" {
+			if diff := cmp.Diff(tcase.want, got); diff != "" {
 				t.Errorf("differ: %v", diff)
 			}
 		})
