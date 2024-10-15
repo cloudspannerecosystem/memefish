@@ -110,11 +110,10 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:       150,
-        Stored:   172,
-        Rparen:   170,
-        IsStored: true,
-        Expr:     &ast.CallExpr{
+        As:     150,
+        Stored: 172,
+        Rparen: 170,
+        Expr:   &ast.CallExpr{
           Rparen: 169,
           Func:   &ast.Ident{
             NamePos: 154,

@@ -125,11 +125,10 @@ CREATE TABLE Albums (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:       427,
-        Stored:   0,
-        Rparen:   460,
-        IsStored: false,
-        Expr:     &ast.CallExpr{
+        As:     427,
+        Stored: -1,
+        Rparen: 460,
+        Expr:   &ast.CallExpr{
           Rparen: 459,
           Func:   &ast.Ident{
             NamePos: 431,
@@ -166,11 +165,10 @@ CREATE TABLE Albums (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:       518,
-        Stored:   0,
-        Rparen:   545,
-        IsStored: false,
-        Expr:     &ast.CallExpr{
+        As:     518,
+        Stored: -1,
+        Rparen: 545,
+        Expr:   &ast.CallExpr{
           Rparen: 544,
           Func:   &ast.Ident{
             NamePos: 522,

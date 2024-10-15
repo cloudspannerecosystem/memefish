@@ -1607,8 +1607,6 @@ type GeneratedColumnExpr struct {
 	Stored token.Pos // position of "STORED" keyword, InvalidPos if not stored
 	Rparen token.Pos // position of ")"
 
-	IsStored bool
-
 	Expr Expr
 }
 

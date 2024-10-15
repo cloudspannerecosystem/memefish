@@ -579,7 +579,7 @@ func (g *ColumnDefaultExpr) End() token.Pos { return g.Rparen }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
 func (g *GeneratedColumnExpr) End() token.Pos {
-	if g.IsStored {
+	if !g.Stored.Invalid() {
 		return g.Stored + 6
 	}
 	return g.Rparen + 1
