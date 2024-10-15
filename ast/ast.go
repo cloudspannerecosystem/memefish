@@ -1342,6 +1342,20 @@ type JSONLiteral struct {
 	Value *StringLiteral
 }
 
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+type BracedConstructorFieldValue interface {
+	Node
+	isBracedConstructorFieldValue()
+}
+
+func (*BracedConstructor) isBracedConstructorFieldValue()               {}
+func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+
 // NewConstructorArg represents a single argument in NEW constructor.
 //
 //	{{Expr | sql}} {{Alias | sqlOpt}}
@@ -1403,14 +1417,6 @@ type BracedConstructorField struct {
 	Name  *Ident
 	Value BracedConstructorFieldValue
 }
-
-type BracedConstructorFieldValue interface {
-	Node
-	isBracedConstructorFieldValue()
-}
-
-func (*BracedConstructor) isBracedConstructorFieldValue()               {}
-func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 
 // BracedConstructorFieldValueExpr represents a field value node.
 //

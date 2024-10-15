@@ -696,6 +696,12 @@ func (t *JSONLiteral) SQL() string {
 	return "JSON " + t.Value.SQL()
 }
 
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
 func (n *NewConstructorArg) SQL() string {
 	return n.Expr.SQL() + sqlOpt(" ", n.Alias, "")
 }

@@ -467,6 +467,12 @@ func (t *NumericLiteral) End() token.Pos { return t.Value.End() }
 func (t *JSONLiteral) Pos() token.Pos { return t.JSON }
 func (t *JSONLiteral) End() token.Pos { return t.Value.End() }
 
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
 func (n *NewConstructorArg) Pos() token.Pos { return n.Expr.Pos() }
 func (n *NewConstructorArg) End() token.Pos {
 	return firstValidEnd(n.Alias, n.Expr)
