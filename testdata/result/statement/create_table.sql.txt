@@ -11,13 +11,13 @@ create table foo (
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
-  corge timestamp not null default (current_timestamp()),
+  corge timestamp not null default (current_timestamp())
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      574,
+  Rparen:      573,
   IfNotExists: false,
   Name:        &ast.Ident{
     NamePos: 13,
@@ -376,8 +376,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 566,
-        NameEnd: 569,
+        NamePos: 565,
+        NameEnd: 568,
         Name:    "foo",
       },
       Dir: "",
@@ -385,8 +385,8 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 571,
-        NameEnd: 574,
+        NamePos: 570,
+        NameEnd: 573,
         Name:    "bar",
       },
       Dir: "",
