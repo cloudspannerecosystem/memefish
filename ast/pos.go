@@ -49,6 +49,17 @@ func lastEnd[T Node](s []T) token.Pos {
 	return lastNode(s).End()
 }
 
+// firstValid returns the first valid token.Pos in arguments.
+// This function corresponds to PosExpr ("||" PosExpr)* in ast.go
+func firstValid(ps ...token.Pos) token.Pos {
+	for _, p := range ps {
+		if !p.Invalid() {
+			return p
+		}
+	}
+	return token.InvalidPos
+}
+
 // ================================================================================
 //
 // SELECT
@@ -558,20 +569,13 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	// TODO: It may be able to be refactored using Pos arithmetic like InvalidPos + n = InvalidPos.
-	if c.Options != nil {
-		return c.Options.End()
-	}
-	if !c.Hidden.Invalid() {
-		return c.Hidden + 6
-	}
-	if end := firstValidEnd(c.GeneratedExpr, c.DefaultExpr); !end.Invalid() {
-		return end
-	}
-	if !c.Null.Invalid() {
-		return c.Null + 4
-	}
-	return c.Type.End()
+	return firstValid(
+		firstValidEnd(c.Options),
+		c.Hidden.Add(6),
+		firstValidEnd(c.GeneratedExpr, c.DefaultExpr),
+		c.Null.Add(4),
+		c.Type.End(),
+	)
 }
 
 func (g *ColumnDefaultExpr) Pos() token.Pos { return g.Default }
@@ -579,10 +583,7 @@ func (g *ColumnDefaultExpr) End() token.Pos { return g.Rparen }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
 func (g *GeneratedColumnExpr) End() token.Pos {
-	if !g.Stored.Invalid() {
-		return g.Stored + 6
-	}
-	return g.Rparen + 1
+	return firstValid(g.Stored.Add(6), g.Rparen.Add(1))
 }
 
 func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
@@ -875,10 +876,14 @@ func (c *ChangeStreamForTable) End() token.Pos {
 func (c *CreateSearchIndex) Pos() token.Pos { return c.Create }
 
 func (c *CreateSearchIndex) End() token.Pos {
-	if end := firstValidEnd(c.Options, c.Interleave, c.Where, c.OrderBy, lastNode(c.PartitionColumns), c.Storing); end != token.InvalidPos {
-		return end
-	}
-	return c.Rparen + 1
+	return firstValid(
+		firstValidEnd(c.Options,
+			c.Interleave,
+			c.Where,
+			c.OrderBy,
+			lastNode(c.PartitionColumns),
+			c.Storing),
+		c.Rparen.Add(1))
 }
 
 func (o *SearchIndexOptions) Pos() token.Pos { return (*GenericOptions)(o).Pos() }
