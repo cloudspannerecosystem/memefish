@@ -469,10 +469,7 @@ func (t *JSONLiteral) End() token.Pos { return t.Value.End() }
 
 func (n *NewConstructorArg) Pos() token.Pos { return n.Expr.Pos() }
 func (n *NewConstructorArg) End() token.Pos {
-	if n.Alias != nil {
-		return n.Alias.End()
-	}
-	return n.Expr.End()
+	return firstValidEnd(n.Alias, n.Expr)
 }
 
 func (n *NewConstructor) Pos() token.Pos { return n.New }
