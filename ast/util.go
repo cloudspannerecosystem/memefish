@@ -52,6 +52,12 @@ func sqlJoin[T Node](elems []T, sep string) string {
 
 // Helper functions for Pos(), End()
 
+// lastElem returns last element of slice s.
+// This function corresponds to NodeSliceVar[$] in ast.go.
+func lastElem[T any](s []T) T {
+	return s[len(s)-1]
+}
+
 // firstValidEnd returns the first valid Pos() in argument.
 // "valid" means the node is not nil and Pos().Invalid() is not true.
 // This function corresponds to "(n0 ?? n1 ?? ...).End()"
@@ -81,5 +87,5 @@ func lastEnd[T Node](s []T) token.Pos {
 	if len(s) == 0 {
 		return token.InvalidPos
 	}
-	return s[len(s)-1].End()
+	return lastElem(s).End()
 }
