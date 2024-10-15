@@ -552,14 +552,15 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
+	// TODO: It may able to be refactored using Pos arithmetic like InvalidPos + n = InvalidPos.
 	if c.Options != nil {
 		return c.Options.End()
 	}
-	if c.GeneratedExpr != nil {
-		return c.GeneratedExpr.End()
+	if !c.Hidden.Invalid() {
+		return c.Hidden + 6
 	}
-	if c.DefaultExpr != nil {
-		return c.DefaultExpr.End()
+	if end := firstValidEnd(c.GeneratedExpr, c.DefaultExpr); !end.Invalid() {
+		return end
 	}
 	if !c.Null.Invalid() {
 		return c.Null + 4
@@ -858,6 +859,32 @@ func (c *ChangeStreamForTable) End() token.Pos {
 	}
 	return c.Rparen + 1
 }
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) Pos() token.Pos { return c.Create }
+
+func (c *CreateSearchIndex) End() token.Pos {
+	if end := firstValidEnd(c.Options, c.Interleave, c.Where, c.OrderBy, lastNode(c.PartitionColumns), c.Storing); end != token.InvalidPos {
+		return end
+	}
+	return c.Rparen + 1
+}
+
+func (d *DropSearchIndex) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSearchIndex) End() token.Pos {
+	return d.Name.End()
+}
+
+func (a *AlterSearchIndex) Pos() token.Pos { return a.Alter }
+func (a *AlterSearchIndex) End() token.Pos { return a.IndexAlteration.End() }
 
 // ================================================================================
 //

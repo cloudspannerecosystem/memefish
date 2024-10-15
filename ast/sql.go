@@ -1302,6 +1302,32 @@ func (a *ArraySchemaType) SQL() string {
 
 // ================================================================================
 //
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt(" ", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
+}
+
+// ================================================================================
+//
 // DML
 //
 // ================================================================================
