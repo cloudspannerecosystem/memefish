@@ -1,0 +1,52 @@
+theme = "github.com/thingsym/hugo-theme-techdoc"
+
+baseURL = "https://cloudspannerecosystem.dev/memefish/"
+title = "méméfish"
+languageCode = "en-US"
+defaultContentLanguage = "en"
+
+canonifyurls = true
+
+pygmentsstyle = "bw"
+pygmentscodefences = true
+pygmentscodefencesguesssyntax = true
+
+summaryLength = 30
+
+[markup]
+  defaultMarkdownHandler = "goldmark"
+  [markup.goldmark.renderer]
+    unsafe= true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 6
+    ordered = false
+
+[params]
+  description = "Spanner SQL parser for Go"
+  github_repository = "https://github.com/cloudspannerecosystem/memefish"
+  version = ""
+
+  github_doc_repository = "https://github.com/cloudspannerecosystem/memefish"
+  github_doc_repository_branch = "main"
+  github_doc_repository_path = "docs"
+
+  menu_style = "open-menu"
+
+[menu]
+  [[menu.main]]
+    name = "Docs"
+    weight = 1
+    url  = "/"
+  [[menu.main]]
+    name = "GoDoc"
+    weight = 2
+    url = "https://pkg.go.dev/github.com/cloudspannerecosystem/memefish"
+  [[menu.main]]
+    name = "GitHub"
+    weight = 3
+    url = "https://github.com/cloudspannerecosystem/memefish"
+
+[module]
+  [[module.imports]]
+    path = "github.com/thingsym/hugo-theme-techdoc"

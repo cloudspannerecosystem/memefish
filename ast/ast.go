@@ -156,6 +156,7 @@ func (BytesLiteral) isExpr()     {}
 func (DateLiteral) isExpr()      {}
 func (TimestampLiteral) isExpr() {}
 func (NumericLiteral) isExpr()   {}
+func (JSONLiteral) isExpr()      {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -186,6 +187,7 @@ type Type interface {
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
+func (NamedType) isType()  {}
 
 // IntValue represents integer values in SQL.
 type IntValue interface {
@@ -305,6 +307,7 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+func (NamedType) isSchemaType()        {}
 
 // IndexAlteration represents ALTER INDEX action.
 type IndexAlteration interface {
@@ -948,16 +951,17 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
+//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sqlJoin ", "}}{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}{{.NamedArgs || sqlJoin ", "}})
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
-	Func     *Ident
-	Distinct bool
-	Args     []Arg
+	Func      *Ident
+	Distinct  bool
+	Args      []Arg
+	NamedArgs []*NamedArg
 }
 
 // ExprArg is argument of the generic function call.
@@ -993,6 +997,17 @@ type SequenceArg struct {
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
 	Expr Expr
+}
+
+// NamedArg represents a name and value pair in named arguments
+//
+//	{{.Name | sql}} => {{.Value | sql}}
+type NamedArg struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
@@ -1316,6 +1331,18 @@ type NumericLiteral struct {
 	Value *StringLiteral
 }
 
+// JSONLiteral is JSON literal node.
+//
+//	JSON {{.Value | sql}}
+type JSONLiteral struct {
+	// pos = JSON
+	// end = ValueEnd.end
+
+	JSON token.Pos // position of "JSON"
+
+	Value *StringLiteral
+}
+
 // ================================================================================
 //
 // Type
@@ -1369,6 +1396,18 @@ type StructField struct {
 
 	Ident *Ident
 	Type  Type
+}
+
+// NamedType is named type node.
+// It is currently PROTO or ENUM.
+// Name is full qualified name, but it can be len(Name) == 1 if it doesn't contain ".".
+//
+//	{{.Path | sqlJoin "."}}
+type NamedType struct {
+	// pos = Name.pos
+	// end = Name.end
+
+	Path []*Ident // len(Path) > 0
 }
 
 // ================================================================================

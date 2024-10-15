@@ -11,13 +11,14 @@ create table types (
   bs bytes(256),
   bsmax bytes(max),
   ab array<bool>,
-  abs array<bytes(max)>
+  abs array<bytes(max)>,
+  p examples.ProtoType,
 ) primary key (i)
 
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      227,
+  Rparen:      252,
   IfNotExists: false,
   Name:        &ast.Ident{
     NamePos: 13,
@@ -250,14 +251,40 @@ create table types (
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Options:       (*ast.ColumnDefOptions)(nil),
     },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 214,
+        NameEnd: 215,
+        Name:    "p",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 216,
+            NameEnd: 224,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 225,
+            NameEnd: 234,
+            Name:    "ProtoType",
+          },
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Options:       (*ast.ColumnDefOptions)(nil),
+    },
   },
   TableConstraints: []*ast.TableConstraint(nil),
   PrimaryKeys:      []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 226,
-        NameEnd: 227,
+        NamePos: 251,
+        NameEnd: 252,
         Name:    "i",
       },
       Dir: "",
@@ -268,4 +295,4 @@ create table types (
 }
 
 --- SQL
-CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>) PRIMARY KEY (i)
+CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>, p examples.ProtoType) PRIMARY KEY (i)

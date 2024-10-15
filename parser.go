@@ -1424,6 +1424,9 @@ func (p *Parser) parseLit() ast.Expr {
 			if id.IsKeywordLike("NUMERIC") {
 				return p.parseNumericLiteral(id)
 			}
+			if id.IsKeywordLike("JSON") {
+				return p.parseJSONLiteral(id)
+			}
 		}
 		return &ast.Ident{
 			NamePos: id.Pos,
@@ -1460,7 +1463,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 
 	var args []ast.Arg
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
+		for p.Token.Kind != token.TokenEOF && !p.lookaheadNamedArg() {
 			args = append(args, p.parseArg())
 			if p.Token.Kind != "," {
 				break
@@ -1468,12 +1471,54 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 			p.nextToken()
 		}
 	}
+
+	// https://github.com/google/zetasql/blob/master/docs/functions-reference.md#named-arguments
+	// You cannot specify positional arguments after named arguments.
+	var namedArgs []*ast.NamedArg
+	for {
+		namedArg := p.tryParseNamedArg()
+		if namedArg == nil {
+			break
+		}
+		namedArgs = append(namedArgs, namedArg)
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+	}
+
 	rparen := p.expect(")").Pos
 	return &ast.CallExpr{
-		Rparen:   rparen,
-		Func:     fn,
-		Distinct: distinct,
-		Args:     args,
+		Rparen:    rparen,
+		Func:      fn,
+		Distinct:  distinct,
+		Args:      args,
+		NamedArgs: namedArgs,
+	}
+}
+func (p *Parser) lookaheadNamedArg() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+	p.parseIdent()
+	return p.Token.Kind == "=>"
+}
+
+func (p *Parser) tryParseNamedArg() *ast.NamedArg {
+	if !p.lookaheadNamedArg() {
+		return nil
+	}
+	name := p.parseIdent()
+	p.expect("=>")
+	value := p.parseExpr()
+	return &ast.NamedArg{
+		Name:  name,
+		Value: value,
 	}
 }
 
@@ -1778,6 +1823,14 @@ func (p *Parser) parseNumericLiteral(id token.Token) *ast.NumericLiteral {
 	}
 }
 
+func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
+	s := p.parseStringLiteral()
+	return &ast.JSONLiteral{
+		JSON:  id.Pos,
+		Value: s,
+	}
+}
+
 func (p *Parser) lookaheadSubQuery() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
@@ -1835,9 +1888,17 @@ func (p *Parser) lookaheadSubQuery() bool {
 //
 // ================================================================================
 
+func (p *Parser) parseNamedType() *ast.NamedType {
+	path := p.parseIdentOrPath()
+	return &ast.NamedType{Path: path}
+}
+
 func (p *Parser) parseType() ast.Type {
 	switch p.Token.Kind {
 	case token.TokenIdent:
+		if !p.lookaheadSimpleType() {
+			return p.parseNamedType()
+		}
 		return p.parseSimpleType()
 	case "ARRAY":
 		return p.parseArrayType()
@@ -1858,6 +1919,7 @@ var simpleTypes = []string{
 	"NUMERIC",
 	"STRING",
 	"BYTES",
+	"JSON",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
@@ -1963,6 +2025,21 @@ func (p *Parser) parseFieldType() *ast.StructField {
 
 func (p *Parser) lookaheadType() bool {
 	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
+}
+
+func (p *Parser) lookaheadSimpleType() bool {
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
+	id := p.Token
+
+	for _, name := range simpleTypes {
+		if id.IsIdent(name) {
+			return true
+		}
+	}
+	return false
 }
 
 // ================================================================================
@@ -3501,6 +3578,9 @@ func (p *Parser) parseDropPropertyGraph(pos token.Pos) *ast.DropPropertyGraph {
 func (p *Parser) parseSchemaType() ast.SchemaType {
 	switch p.Token.Kind {
 	case token.TokenIdent:
+		if !p.lookaheadSimpleType() {
+			return p.parseNamedType()
+		}
 		return p.parseScalarSchemaType()
 	case "ARRAY":
 		pos := p.expect("ARRAY").Pos
