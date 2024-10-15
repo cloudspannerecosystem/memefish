@@ -3904,6 +3904,20 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 	return id
 }
 
+func (p *Parser) tryExpect(s token.TokenKind) *token.Token {
+	if p.Token.Kind != s {
+		return nil
+	}
+	return p.expect(s)
+}
+
+func (p *Parser) tryExpectKeywordLike(s string) *token.Token {
+	if !p.Token.IsKeywordLike(s) {
+		return nil
+	}
+	return p.expectKeywordLike(s)
+}
+
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, params...),
@@ -3913,4 +3927,32 @@ func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface
 
 func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
 	panic(p.errorfAtToken(tok, msg, params...))
+}
+
+// This function can't be a method because Go haven't yet supported generic methods.
+func parseSeparatedList[T interface {
+	ast.Node
+	comparable
+}](p *Parser, sep token.TokenKind, doParse func() T) []T {
+	var zero T
+
+	first := doParse()
+	if first == zero {
+		return nil
+	}
+
+	list := []T{first}
+	for {
+		if p.Token.Kind != sep {
+			break
+		}
+		p.nextToken()
+
+		elem := doParse()
+		if elem == zero {
+			return list
+		}
+		list = append(list, elem)
+	}
+	return list
 }
