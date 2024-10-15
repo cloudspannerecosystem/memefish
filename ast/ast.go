@@ -1452,6 +1452,55 @@ type CastNumValue struct {
 //
 // ================================================================================
 
+// GenericOptions is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type GenericOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*GenericOption // len(Records) > 0
+}
+
+func (o *GenericOptions) Find(name string) (Expr, bool) {
+	for _, r := range o.Records {
+		if r.Name.Name != name {
+			continue
+		}
+		return r.Value, true
+	}
+	return nil, false
+}
+
+func (o *GenericOptions) GetBool(name string) (*bool, error) {
+	v, ok := o.Find(name)
+	if !ok {
+		return nil, nil
+	}
+	switch v := v.(type) {
+	case *BoolLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect bool or null, but have unknown type %T", v)
+	}
+}
+
+// GenericOption is generic option for CREATE statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type GenericOption struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -2564,62 +2613,3 @@ type SequenceOptions struct {
 	Records []*SequenceOption // len(Records) > 0
 }
 
-// GenericOptions is generic OPTIONS clause node without key and value checking.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type GenericOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*GenericOption // len(Records) > 0
-}
-
-func (g *GenericOptions) Pos() token.Pos { return g.Options }
-func (g *GenericOptions) End() token.Pos { return g.Rparen + 1 }
-
-func (g *GenericOptions) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
-
-// GenericOption is generic option for CREATE statements.
-//
-//	{{.Name | sql}} = {{.Value | sql}}
-type GenericOption struct {
-	// pos = Name.pos
-	// end = Value.end
-
-	Name  *Ident
-	Value Expr
-}
-
-func (o *GenericOptions) FindName(name string) (Expr, bool) {
-	for _, r := range o.Records {
-		if r.Name.Name != name {
-			continue
-		}
-		return r.Value, true
-	}
-	return nil, false
-}
-
-func (o *GenericOptions) GetBool(name string) (*bool, error) {
-	v, ok := o.FindName(name)
-	if !ok {
-		return nil, nil
-	}
-	switch v := v.(type) {
-	case *BoolLiteral:
-		return &v.Value, nil
-	case *NullLiteral:
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("expect bool or null, but have unknown type %T", v)
-	}
-}
-
-func (g *GenericOption) Pos() token.Pos { return g.Name.Pos() }
-
-func (g *GenericOption) End() token.Pos { return g.Value.End() }
-
-func (g *GenericOption) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
