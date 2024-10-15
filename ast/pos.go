@@ -39,7 +39,7 @@ func (c *CTE) End() token.Pos { return c.Rparen + 1 }
 func (s *Select) Pos() token.Pos { return s.Select }
 
 func (s *Select) End() token.Pos {
-	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastElem(s.Results))
+	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, s.Results[len(s.Results)-1])
 }
 
 func (c *CompoundQuery) Pos() token.Pos {
