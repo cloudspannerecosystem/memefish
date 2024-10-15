@@ -6,6 +6,51 @@ import (
 
 // ================================================================================
 //
+// Helper functions for Pos(), End()
+// These functions are intended for use within this file only.
+//
+// ================================================================================
+
+// lastNode returns last element of Node slice.
+// This function corresponds to NodeSliceVar[$] in ast.go.
+func lastNode[T Node](s []T) T {
+	return s[len(s)-1]
+}
+
+// firstValidEnd returns the first valid Pos() in argument.
+// "valid" means the node is not nil and Pos().Invalid() is not true.
+// This function corresponds to "(n0 ?? n1 ?? ...).End()"
+func firstValidEnd(ns ...Node) token.Pos {
+	for _, n := range ns {
+		if n != nil && !n.End().Invalid() {
+			return n.End()
+		}
+	}
+	return token.InvalidPos
+}
+
+// firstPos returns the Pos() of the first node.
+// If argument is an empty slice, this function returns token.InvalidPos.
+// This function corresponds to NodeSliceVar[0].pos in ast.go.
+func firstPos[T Node](s []T) token.Pos {
+	if len(s) == 0 {
+		return token.InvalidPos
+	}
+	return s[0].Pos()
+}
+
+// lastEnd returns the End() of the last node.
+// If argument is an empty slice, this function returns token.InvalidPos.
+// This function corresponds to NodeSliceVar[$].end in ast.go.
+func lastEnd[T Node](s []T) token.Pos {
+	if len(s) == 0 {
+		return token.InvalidPos
+	}
+	return lastNode(s).End()
+}
+
+// ================================================================================
+//
 // SELECT
 //
 // ================================================================================
@@ -39,7 +84,7 @@ func (c *CTE) End() token.Pos { return c.Rparen + 1 }
 func (s *Select) Pos() token.Pos { return s.Select }
 
 func (s *Select) End() token.Pos {
-	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastElem(s.Results))
+	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastNode(s.Results))
 }
 
 func (c *CompoundQuery) Pos() token.Pos {

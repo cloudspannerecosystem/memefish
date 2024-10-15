@@ -2,7 +2,58 @@ package ast
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
+	"strings"
 )
+
+// ================================================================================
+//
+// Helper functions for SQL()
+// These functions are intended for use within this file only.
+//
+// ================================================================================
+
+// sqlOpt outputs:
+//
+//	when node != nil: left + node.SQL() + right
+//	else            : empty string
+//
+// This function corresponds to sqlOpt in ast.go
+func sqlOpt[T interface {
+	Node
+	comparable
+}](left string, node T, right string) string {
+	var zero T
+	if node == zero {
+		return ""
+	}
+	return left + node.SQL() + right
+}
+
+// strOpt outputs:
+//
+//	when pred == true: s
+//	else            : empty string
+//
+// This function corresponds to {{if pred}}s{{end}} in ast.go
+func strOpt(pred bool, s string) string {
+	if pred {
+		return s
+	}
+	return ""
+}
+
+// sqlJoin outputs joined string of SQL() of all elems by sep.
+// This function corresponds to sqlJoin in ast.go
+func sqlJoin[T Node](elems []T, sep string) string {
+	var b strings.Builder
+	for i, r := range elems {
+		if i > 0 {
+			b.WriteString(sep)
+		}
+		b.WriteString(r.SQL())
+	}
+	return b.String()
+}
 
 type prec int
 
