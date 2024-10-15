@@ -2437,18 +2437,6 @@ type CreateSearchIndex struct {
 // SearchIndexOptions represents OPTIONS for CREATE SEARCH INDEX statement.
 type SearchIndexOptions GenericOptions
 
-func (o *SearchIndexOptions) Pos() token.Pos {
-	return (*GenericOptions)(o).Pos()
-}
-
-func (o *SearchIndexOptions) End() token.Pos {
-	return (*GenericOptions)(o).End()
-}
-
-func (o *SearchIndexOptions) SQL() string {
-	return (*GenericOptions)(o).SQL()
-}
-
 func (o *SearchIndexOptions) SortOrderSharding() (*bool, error) {
 	return (*GenericOptions)(o).FindBool("sort_order_sharding")
 }

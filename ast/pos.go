@@ -881,6 +881,9 @@ func (c *CreateSearchIndex) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (o *SearchIndexOptions) Pos() token.Pos { return (*GenericOptions)(o).Pos() }
+func (o *SearchIndexOptions) End() token.Pos { return (*GenericOptions)(o).End() }
+
 func (d *DropSearchIndex) Pos() token.Pos {
 	return d.Drop
 }

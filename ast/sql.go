@@ -1321,6 +1321,8 @@ func (c *CreateSearchIndex) SQL() string {
 		sqlOpt(" ", c.Options, "")
 }
 
+func (o *SearchIndexOptions) SQL() string { return (*GenericOptions)(o).SQL() }
+
 func (d *DropSearchIndex) SQL() string {
 	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
 }
