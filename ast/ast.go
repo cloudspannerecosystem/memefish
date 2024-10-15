@@ -1520,6 +1520,7 @@ type JSONLiteral struct {
 //
 // ================================================================================
 
+// BracedConstructorFieldValue represents value part of fields in BracedNewConstructor.
 type BracedConstructorFieldValue interface {
 	Node
 	isBracedConstructorFieldValue()
