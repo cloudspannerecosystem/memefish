@@ -40,8 +40,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -58,8 +57,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -76,8 +74,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -94,8 +91,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -112,8 +108,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -130,8 +125,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -156,8 +150,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -177,8 +170,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -203,8 +195,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -224,8 +215,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -246,8 +236,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -271,8 +260,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        0,
-      IsHidden:      false,
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
     &ast.ColumnDef{
@@ -299,6 +287,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.ColumnDefOptions)(nil),
     },
   },
