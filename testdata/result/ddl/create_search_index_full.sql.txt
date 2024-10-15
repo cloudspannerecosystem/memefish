@@ -1,5 +1,4 @@
 --- create_search_index_full.sql
--- Should
 CREATE SEARCH INDEX AlbumsIndexFull
 ON Albums(Title_Tokens, Studio_Tokens)
 STORING(Genre)
@@ -10,56 +9,56 @@ WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL
 OPTIONS(sort_order_sharding=true)
 --- AST
 &ast.CreateSearchIndex{
-  Create: 10,
+  Create: 0,
   Name:   &ast.Ident{
-    NamePos: 30,
-    NameEnd: 45,
+    NamePos: 20,
+    NameEnd: 35,
     Name:    "AlbumsIndexFull",
   },
   TableName: &ast.Ident{
-    NamePos: 49,
-    NameEnd: 55,
+    NamePos: 39,
+    NameEnd: 45,
     Name:    "Albums",
   },
   TokenListPart: []*ast.Ident{
     &ast.Ident{
-      NamePos: 56,
-      NameEnd: 68,
+      NamePos: 46,
+      NameEnd: 58,
       Name:    "Title_Tokens",
     },
     &ast.Ident{
-      NamePos: 70,
-      NameEnd: 83,
+      NamePos: 60,
+      NameEnd: 73,
       Name:    "Studio_Tokens",
     },
   },
-  Rparen:  83,
+  Rparen:  73,
   Storing: &ast.Storing{
-    Storing: 85,
-    Rparen:  98,
+    Storing: 75,
+    Rparen:  88,
     Columns: []*ast.Ident{
       &ast.Ident{
-        NamePos: 93,
-        NameEnd: 98,
+        NamePos: 83,
+        NameEnd: 88,
         Name:    "Genre",
       },
     },
   },
   PartitionColumns: []*ast.Ident{
     &ast.Ident{
-      NamePos: 113,
-      NameEnd: 121,
+      NamePos: 103,
+      NameEnd: 111,
       Name:    "SingerId",
     },
   },
   OrderBy: &ast.OrderBy{
-    Order: 122,
+    Order: 112,
     Items: []*ast.OrderByItem{
       &ast.OrderByItem{
-        DirPos: 148,
+        DirPos: 138,
         Expr:   &ast.Ident{
-          NamePos: 131,
-          NameEnd: 147,
+          NamePos: 121,
+          NameEnd: 137,
           Name:    "ReleaseTimestamp",
         },
         Collate: (*ast.Collate)(nil),
@@ -68,49 +67,49 @@ OPTIONS(sort_order_sharding=true)
     },
   },
   Where: &ast.Where{
-    Where: 153,
+    Where: 143,
     Expr:  &ast.BinaryExpr{
       Op:   "AND",
       Left: &ast.IsNullExpr{
-        Null: 172,
+        Null: 162,
         Not:  true,
         Left: &ast.Ident{
-          NamePos: 159,
-          NameEnd: 164,
+          NamePos: 149,
+          NameEnd: 154,
           Name:    "Genre",
         },
       },
       Right: &ast.IsNullExpr{
-        Null: 205,
+        Null: 195,
         Not:  true,
         Left: &ast.Ident{
-          NamePos: 181,
-          NameEnd: 197,
+          NamePos: 171,
+          NameEnd: 187,
           Name:    "ReleaseTimestamp",
         },
       },
     },
   },
   Interleave: &ast.InterleaveIn{
-    Comma:     210,
+    Comma:     200,
     TableName: &ast.Ident{
-      NamePos: 226,
-      NameEnd: 233,
+      NamePos: 216,
+      NameEnd: 223,
       Name:    "Singers",
     },
   },
   Options: &ast.SearchIndexOptions{
-    Options: 234,
-    Rparen:  266,
+    Options: 224,
+    Rparen:  256,
     Records: []*ast.GenericOption{
       &ast.GenericOption{
         Name: &ast.Ident{
-          NamePos: 242,
-          NameEnd: 261,
+          NamePos: 232,
+          NameEnd: 251,
           Name:    "sort_order_sharding",
         },
         Value: &ast.BoolLiteral{
-          ValuePos: 262,
+          ValuePos: 252,
           Value:    true,
         },
       },

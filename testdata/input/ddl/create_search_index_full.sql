@@ -1,4 +1,3 @@
--- Should
 CREATE SEARCH INDEX AlbumsIndexFull
 ON Albums(Title_Tokens, Studio_Tokens)
 STORING(Genre)
