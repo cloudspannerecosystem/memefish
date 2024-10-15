@@ -697,23 +697,11 @@ func (t *JSONLiteral) SQL() string {
 }
 
 func (n *NewConstructorArg) SQL() string {
-	if n.Alias != nil {
-		return n.Expr.SQL() + " " + n.Alias.SQL()
-	}
-	return n.Expr.SQL()
+	return n.Expr.SQL() + sqlOpt(" ", n.Alias, "")
 }
 
 func (n *NewConstructor) SQL() string {
-	var sql string
-	sql += "NEW " + n.Type.SQL() + "("
-	for i, arg := range n.Args {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += arg.SQL()
-	}
-	sql += ")"
-	return sql
+	return "NEW " + n.Type.SQL() + "(" + sqlJoin(n.Args, ", ") + ")"
 }
 
 func (b *BracedNewConstructor) SQL() string {
@@ -721,23 +709,16 @@ func (b *BracedNewConstructor) SQL() string {
 }
 
 func (b *BracedConstructor) SQL() string {
-	var str string
-	str += "{"
-	for i, field := range b.Fields {
-		if i > 0 {
-			str += ", "
-		}
-		str += field.SQL()
-	}
-	str += "}"
-	return str
+	return "{" + sqlJoin(b.Fields, ", ") + "}"
 }
 
 func (b *BracedConstructorField) SQL() string {
-	if _, ok := b.Value.(*BracedConstructorFieldValueExpr); ok {
-		return b.Name.SQL() + b.Value.SQL()
+	if _, ok := b.Value.(*BracedConstructor); ok {
+		// Name {...}
+		return b.Name.SQL() + " " + b.Value.SQL()
 	}
-	return b.Name.SQL() + " " + b.Value.SQL()
+	// Name: value
+	return b.Name.SQL() + b.Value.SQL()
 }
 
 func (b *BracedConstructorFieldValueExpr) SQL() string { return ": " + b.Expr.SQL() }
