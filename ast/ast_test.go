@@ -38,6 +38,12 @@ func TestSelectItem(t *testing.T) {
 	SelectItem(&ExprSelectItem{}).isSelectItem()
 }
 
+func TestSelectAs(t *testing.T) {
+	SelectAs(&AsStruct{}).isSelectAs()
+	SelectAs(&AsValue{}).isSelectAs()
+	SelectAs(&AsTypeName{}).isSelectAs()
+}
+
 func TestTableExpr(t *testing.T) {
 	TableExpr(&Unnest{}).isTableExpr()
 	TableExpr(&TableName{}).isTableExpr()
