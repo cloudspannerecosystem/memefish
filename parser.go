@@ -419,8 +419,6 @@ func (p *Parser) parseSelect() *ast.Select {
 		distinct = true
 	}
 	selectAs := p.tryParseSelectAs()
-	_, asStruct := selectAs.(*ast.AsStruct)
-
 	results := p.parseSelectResults()
 	from := p.tryParseFrom()
 	where := p.tryParseWhere()
@@ -430,7 +428,6 @@ func (p *Parser) parseSelect() *ast.Select {
 	return &ast.Select{
 		Select:   sel,
 		Distinct: distinct,
-		AsStruct: asStruct,
 		As:       selectAs,
 		Results:  results,
 		From:     from,

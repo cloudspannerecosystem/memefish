@@ -453,7 +453,6 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool         // deprecated, use As
 	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
