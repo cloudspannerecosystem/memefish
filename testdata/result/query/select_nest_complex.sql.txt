@@ -13,7 +13,6 @@ from (
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
@@ -49,7 +48,6 @@ from (
                         &ast.Select{
                           Select:   23,
                           Distinct: false,
-                          AsStruct: false,
                           As:       nil,
                           Results:  []ast.SelectItem{
                             &ast.Alias{
@@ -82,7 +80,6 @@ from (
                           Query:  &ast.Select{
                             Select:   45,
                             Distinct: false,
-                            AsStruct: false,
                             As:       nil,
                             Results:  []ast.SelectItem{
                               &ast.ExprSelectItem{
@@ -117,7 +114,6 @@ from (
                     Query:  &ast.Select{
                       Select:   72,
                       Distinct: false,
-                      AsStruct: false,
                       As:       nil,
                       Results:  []ast.SelectItem{
                         &ast.ExprSelectItem{
@@ -164,7 +160,6 @@ from (
             Query:  &ast.Select{
               Select:   104,
               Distinct: false,
-              AsStruct: false,
               As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Alias{

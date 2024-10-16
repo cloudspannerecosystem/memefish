@@ -14,7 +14,6 @@ SELECT ARRAY(
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -24,7 +23,6 @@ SELECT ARRAY(
           Query:  &ast.Select{
             Select:   16,
             Distinct: false,
-            AsStruct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.Star{
@@ -39,7 +37,6 @@ SELECT ARRAY(
                 Query:  &ast.Select{
                   Select:   41,
                   Distinct: false,
-                  AsStruct: false,
                   As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{

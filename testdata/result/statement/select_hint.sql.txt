@@ -38,7 +38,6 @@
   Query: &ast.Select{
     Select:   24,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{

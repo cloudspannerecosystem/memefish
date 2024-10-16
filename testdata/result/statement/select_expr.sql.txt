@@ -36,7 +36,6 @@ select 1 + 2, 1 - 2,
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -331,7 +330,6 @@ select 1 + 2, 1 - 2,
             Query:  &ast.Select{
               Select:   195,
               Distinct: false,
-              AsStruct: false,
               As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Alias{
@@ -755,7 +753,6 @@ select 1 + 2, 1 - 2,
                 &ast.Select{
                   Select:   698,
                   Distinct: false,
-                  AsStruct: false,
                   As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{
@@ -777,7 +774,6 @@ select 1 + 2, 1 - 2,
                 &ast.Select{
                   Select:   717,
                   Distinct: false,
-                  AsStruct: false,
                   As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{
@@ -799,7 +795,6 @@ select 1 + 2, 1 - 2,
                 &ast.Select{
                   Select:   736,
                   Distinct: false,
-                  AsStruct: false,
                   As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{

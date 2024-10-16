@@ -34,7 +34,6 @@ UNION ALL
       &ast.Select{
         Select:   0,
         Distinct: false,
-        AsStruct: false,
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
@@ -70,7 +69,6 @@ UNION ALL
             &ast.Select{
               Select:   36,
               Distinct: false,
-              AsStruct: false,
               As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Star{
@@ -106,7 +104,6 @@ UNION ALL
                   &ast.Select{
                     Select:   83,
                     Distinct: false,
-                    AsStruct: false,
                     As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.Star{
@@ -142,7 +139,6 @@ UNION ALL
                         &ast.Select{
                           Select:   135,
                           Distinct: false,
-                          AsStruct: false,
                           As:       nil,
                           Results:  []ast.SelectItem{
                             &ast.Star{
@@ -178,7 +174,6 @@ UNION ALL
                               &ast.Select{
                                 Select:   198,
                                 Distinct: false,
-                                AsStruct: false,
                                 As:       nil,
                                 Results:  []ast.SelectItem{
                                   &ast.Star{
@@ -214,7 +209,6 @@ UNION ALL
                                     &ast.Select{
                                       Select:   259,
                                       Distinct: false,
-                                      AsStruct: false,
                                       As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{
@@ -243,7 +237,6 @@ UNION ALL
                                     &ast.Select{
                                       Select:   317,
                                       Distinct: false,
-                                      AsStruct: false,
                                       As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{

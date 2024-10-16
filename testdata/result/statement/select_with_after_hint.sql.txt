@@ -35,7 +35,6 @@
         QueryExpr: &ast.Select{
           Select:   28,
           Distinct: false,
-          AsStruct: false,
           As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
@@ -71,7 +70,6 @@
   Query: &ast.Select{
     Select:   48,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{

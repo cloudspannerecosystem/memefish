@@ -17,7 +17,6 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
         QueryExpr: &ast.Select{
           Select:   15,
           Distinct: false,
-          AsStruct: false,
           As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
@@ -58,7 +57,6 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
         QueryExpr: &ast.Select{
           Select:   46,
           Distinct: false,
-          AsStruct: false,
           As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
@@ -94,7 +92,6 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
   Query: &ast.Select{
     Select:   66,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{

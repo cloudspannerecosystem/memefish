@@ -7,7 +7,6 @@ select count(distinct x) from foo
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{

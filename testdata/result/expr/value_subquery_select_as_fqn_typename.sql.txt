@@ -7,7 +7,6 @@
   Query:  &ast.Select{
     Select:   1,
     Distinct: false,
-    AsStruct: false,
     As:       &ast.AsTypeName{
       As:       8,
       TypeName: &ast.NamedType{

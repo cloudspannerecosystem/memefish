@@ -14,7 +14,6 @@ SELECT * FROM Singers
       &ast.Select{
         Select:   0,
         Distinct: false,
-        AsStruct: false,
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
@@ -43,7 +42,6 @@ SELECT * FROM Singers
       &ast.Select{
         Select:   32,
         Distinct: false,
-        AsStruct: false,
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{

@@ -14,7 +14,6 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{

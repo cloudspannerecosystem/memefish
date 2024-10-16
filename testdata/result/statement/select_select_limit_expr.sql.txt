@@ -8,7 +8,6 @@ select ((select 1) limit 1 offset 0) + 3
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -23,7 +22,6 @@ select ((select 1) limit 1 offset 0) + 3
               Query:  &ast.Select{
                 Select:   9,
                 Distinct: false,
-                AsStruct: false,
                 As:       nil,
                 Results:  []ast.SelectItem{
                   &ast.ExprSelectItem{

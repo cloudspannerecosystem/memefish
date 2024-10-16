@@ -7,7 +7,6 @@
   Query:  &ast.Select{
     Select:   1,
     Distinct: false,
-    AsStruct: false,
     As:       &ast.AsValue{
       As:    8,
       Value: 11,
