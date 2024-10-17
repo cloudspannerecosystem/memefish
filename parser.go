@@ -3685,6 +3685,13 @@ func (p *Parser) parseStringValue() ast.StringValue {
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <string>, but: %s", p.Token.Kind))
 }
 
+// parseCommaSeparatedList parses a comma separated list of nodes parsed by `doParse`.
+//
+// `doParse` should be a reference to a method of `Parser`. That is, this function should always be used on a single line, e.g.:
+//
+//	columns := parseCommaSeparatedList(p, p.parseIdent)
+//
+// TODO: create a linter for this.
 func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
 	nodes := []T{doParse()}
 	for p.Token.Kind == "," {
