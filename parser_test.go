@@ -47,14 +47,15 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			b, err := os.ReadFile(filepath.Join(inputPath, in.Name()))
+			inputFilePath := filepath.Join(inputPath, in.Name())
+			b, err := os.ReadFile(inputFilePath)
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
 			}
 
 			p := &memefish.Parser{
 				Lexer: &memefish.Lexer{
-					File: &token.File{FilePath: in.Name(), Buffer: string(b)},
+					File: &token.File{FilePath: inputFilePath, Buffer: string(b)},
 				},
 			}
 

@@ -294,11 +294,7 @@ func (p *Parser) tryParseWith() *ast.With {
 	}
 	pos := p.Token.Pos
 	p.nextToken()
-	ctes := []*ast.CTE{p.parseCTE()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		ctes = append(ctes, p.parseCTE())
-	}
+	ctes := parseCommaSeparatedList(p, p.parseCTE)
 
 	return &ast.With{
 		With: pos,
@@ -522,11 +518,7 @@ func (p *Parser) tryParseGroupBy() *ast.GroupBy {
 	}
 	pos := p.expect("GROUP").Pos
 	p.expect("BY")
-	exprs := []ast.Expr{p.parseExpr()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		exprs = append(exprs, p.parseExpr())
-	}
+	exprs := parseCommaSeparatedList(p, p.parseExpr)
 
 	return &ast.GroupBy{
 		Group: pos,
@@ -573,11 +565,7 @@ func (p *Parser) tryParseOrderBy() *ast.OrderBy {
 	pos := p.expect("ORDER").Pos
 	p.expect("BY")
 
-	items := []*ast.OrderByItem{p.parseOrderByItem()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		items = append(items, p.parseOrderByItem())
-	}
+	items := parseCommaSeparatedList(p, p.parseOrderByItem)
 
 	return &ast.OrderBy{
 		Order: pos,
@@ -882,11 +870,7 @@ func (p *Parser) parseOn() *ast.On {
 func (p *Parser) parseUsing() *ast.Using {
 	using := p.expect("USING").Pos
 	p.expect("(")
-	idents := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		idents = append(idents, p.parseIdent())
-	}
+	idents := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
 	return &ast.Using{
 		Using:  using,
@@ -2339,21 +2323,13 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	p.expectKeywordLike("KEY")
 
 	p.expect("(")
-	columns := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		columns = append(columns, p.parseIdent())
-	}
+	columns := parseCommaSeparatedList(p, p.parseIdent)
 	p.expect(")")
 	p.expectKeywordLike("REFERENCES")
 	refTable := p.parseIdent()
 
 	p.expect("(")
-	refColumns := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		refColumns = append(refColumns, p.parseIdent())
-	}
+	refColumns := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").End
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
@@ -2858,11 +2834,7 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 
 		if p.Token.Kind == "(" {
 			p.nextToken()
-			forTable.Columns = []*ast.Ident{p.parseIdent()}
-			for p.Token.Kind == "," {
-				p.nextToken()
-				forTable.Columns = append(forTable.Columns, p.parseIdent())
-			}
+			forTable.Columns = parseCommaSeparatedList(p, p.parseIdent)
 			forTable.Rparen = p.expect(")").Pos
 		}
 
@@ -2912,11 +2884,7 @@ func (p *Parser) tryParseStoring() *ast.Storing {
 	pos := p.expectKeywordLike("STORING").Pos
 
 	p.expect("(")
-	columns := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		columns = append(columns, p.parseIdent())
-	}
+	columns := parseCommaSeparatedList(p, p.parseIdent)
 
 	rparen := p.expect(")").Pos
 	return &ast.Storing{
@@ -3244,11 +3212,7 @@ func (p *Parser) parseGrant(pos token.Pos) *ast.Grant {
 	privilege := p.parsePrivilege()
 	p.expect("TO")
 	p.expectKeywordLike("ROLE")
-	roles := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		roles = append(roles, p.parseIdent())
-	}
+	roles := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.Grant{
 		Grant:     pos,
 		Privilege: privilege,
@@ -3260,11 +3224,7 @@ func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
 	privilege := p.parsePrivilege()
 	p.expect("FROM")
 	p.expectKeywordLike("ROLE")
-	roles := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		roles = append(roles, p.parseIdent())
-	}
+	roles := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.Revoke{
 		Revoke:    pos,
 		Privilege: privilege,
@@ -3301,11 +3261,7 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 		return nil
 	}
 	p.expectKeywordLike("VIEW")
-	names := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		names = append(names, p.parseIdent())
-	}
+	names := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.SelectPrivilegeOnView{
 		Select: pos,
 		Names:  names,
@@ -3320,11 +3276,7 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	p.expect("ON")
 	p.expectKeywordLike("TABLE")
 	p.expectKeywordLike("FUNCTION")
-	names := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		names = append(names, p.parseIdent())
-	}
+	names := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.ExecutePrivilegeOnTableFunction{
 		Execute: pos,
 		Names:   names,
@@ -3336,11 +3288,7 @@ func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
 		return nil
 	}
 	pos := p.expectKeywordLike("ROLE").Pos
-	names := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		names = append(names, p.parseIdent())
-	}
+	names := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.RolePrivilege{
 		Role:  pos,
 		Names: names,
@@ -3348,20 +3296,12 @@ func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
 }
 
 func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
-	ps := []ast.TablePrivilege{p.parseTablePrivilege()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		ps = append(ps, p.parseTablePrivilege())
-	}
+	privileges := parseCommaSeparatedList(p, p.parseTablePrivilege)
 	p.expect("ON")
 	p.expectKeywordLike("TABLE")
-	names := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		names = append(names, p.parseIdent())
-	}
+	names := parseCommaSeparatedList(p, p.parseIdent)
 	return &ast.PrivilegeOnTable{
-		Privileges: ps,
+		Privileges: privileges,
 		Names:      names,
 	}
 }
@@ -3411,11 +3351,7 @@ func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
 		return nil, token.InvalidPos
 	}
 	p.nextToken()
-	columns := []*ast.Ident{p.parseIdent()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		columns = append(columns, p.parseIdent())
-	}
+	columns := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
 	return columns, rparen
 }
@@ -3590,11 +3526,7 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 func (p *Parser) parseValuesInput() *ast.ValuesInput {
 	pos := p.expectKeywordLike("VALUES").Pos
 
-	rows := []*ast.ValuesRow{p.parseValuesRow()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		rows = append(rows, p.parseValuesRow())
-	}
+	rows := parseCommaSeparatedList(p, p.parseValuesRow)
 
 	return &ast.ValuesInput{
 		Values: pos,
@@ -3670,11 +3602,7 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 
 	p.expect("SET")
 
-	items := []*ast.UpdateItem{p.parseUpdateItem()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		items = append(items, p.parseUpdateItem())
-	}
+	items := parseCommaSeparatedList(p, p.parseUpdateItem)
 
 	where := p.parseWhere()
 
@@ -3876,6 +3804,22 @@ func (p *Parser) parseStringValue() ast.StringValue {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <string>, but: %s", p.Token.Kind))
+}
+
+// parseCommaSeparatedList parses a comma separated list of nodes parsed by `doParse`.
+//
+// `doParse` should be a reference to a method of `Parser`. That is, this function should always be used on a single line, e.g.:
+//
+//	columns := parseCommaSeparatedList(p, p.parseIdent)
+//
+// TODO: create a linter for this.
+func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
+	nodes := []T{doParse()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		nodes = append(nodes, doParse())
+	}
+	return nodes
 }
 
 func (p *Parser) expect(kind token.TokenKind) *token.Token {
