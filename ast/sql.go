@@ -504,22 +504,6 @@ func (c *CallExpr) SQL() string {
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
 
-func (o *SequenceOption) SQL() string {
-	return o.Name.SQL() + " = " + o.Value.SQL()
-}
-
-func (o *SequenceOptions) SQL() string {
-	sql := "OPTIONS ("
-	for i, o := range o.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += o.SQL()
-	}
-	sql += ")"
-	return sql
-}
-
 func (s *ExprArg) SQL() string {
 	return s.Expr.SQL()
 }
@@ -764,7 +748,7 @@ func (c *CastNumValue) SQL() string {
 
 func (g *Options) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
 
-func (g *OptionsDef) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
+func (g *OptionsDef) SQL() string { return g.Name.SQL() + "=" + g.Value.SQL() }
 
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
@@ -885,16 +869,6 @@ func (c *ColumnDefaultExpr) SQL() string {
 
 func (g *GeneratedColumnExpr) SQL() string {
 	return "AS (" + g.Expr.SQL() + ") STORED"
-}
-
-func (c *ColumnDefOptions) SQL() string {
-	sql := "OPTIONS(allow_commit_timestamp = "
-	if c.AllowCommitTimestamp {
-		sql += "true)"
-	} else {
-		sql += "null)"
-	}
-	return sql
 }
 
 func (i *IndexKey) SQL() string {
@@ -1032,31 +1006,10 @@ func (c *CreateVectorIndex) SQL() string {
 	return sql
 }
 
-func (v *VectorIndexOptions) SQL() string {
-	sql := "OPTIONS ("
-	for i, o := range v.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += o.SQL()
-	}
-	sql += ")"
-	return sql
-}
-
-func (v *VectorIndexOption) SQL() string {
-	return v.Key.SQL() + "=" + v.Value.SQL()
-}
-
 func (c *CreateChangeStream) SQL() string {
-	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
-	if c.For != nil {
-		sql += " " + c.For.SQL()
-	}
-	if c.Options != nil {
-		sql += c.Options.SQL()
-	}
-	return sql
+	return "CREATE CHANGE STREAM " + c.Name.SQL() +
+		sqlOpt(" ", c.For, "") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *ChangeStreamForAll) SQL() string {
@@ -1071,18 +1024,6 @@ func (c *ChangeStreamForTables) SQL() string {
 		}
 		sql += table.SQL()
 	}
-	return sql
-}
-
-func (c *ChangeStreamOptions) SQL() string {
-	sql := " OPTIONS ("
-	for i, record := range c.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += record.Key.SQL() + "=" + record.Value.SQL()
-	}
-	sql += ")"
 	return sql
 }
 
