@@ -32,7 +32,10 @@
 package ast
 
 import (
+	"errors"
+	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
+	"strconv"
 )
 
 // Node is base interface of Spanner SQL AST nodes.
@@ -74,6 +77,9 @@ func (Revoke) isStatement()             {}
 func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
+func (CreateSearchIndex) isStatement()  {}
+func (DropSearchIndex) isStatement()    {}
+func (AlterSearchIndex) isStatement()   {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -255,6 +261,9 @@ func (Revoke) isDDL()             {}
 func (CreateChangeStream) isDDL() {}
 func (AlterChangeStream) isDDL()  {}
 func (DropChangeStream) isDDL()   {}
+func (CreateSearchIndex) isDDL()  {}
+func (DropSearchIndex) isDDL()    {}
+func (AlterSearchIndex) isDDL()   {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -976,7 +985,7 @@ type SelectorExpr struct {
 
 // IndexExpr is array item access expression node.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Name | sql}})]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
@@ -1487,6 +1496,109 @@ type CastNumValue struct {
 //
 // ================================================================================
 
+// Options is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type Options struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*OptionsRecord // len(Records) > 0
+}
+
+// Field finds name in Records, and return its value as Expr.
+// The second return value indicates that the name was found in Records.
+// It is not exposed because you can use *Field methods.
+func (o *Options) Field(name string) (expr Expr, found bool) {
+	for _, r := range o.Records {
+		if r.Name.Name != name {
+			continue
+		}
+		return r.Value, true
+	}
+	return nil, false
+}
+
+var FieldNotFound = errors.New("field not found")
+
+// BoolField finds name in records, and return its value as *bool.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have BoolLiteral value, it returns pointer of bool value.
+// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
+func (o *Options) BoolField(name string) (*bool, error) {
+	v, ok := o.Field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *BoolLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect BoolLiteral or NullLiteral, but have unknown type %T", v)
+	}
+}
+
+// IntegerField finds name in records, and return its value as *int64.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have IntegerLiteral value, it returns pointer of int64 value.
+// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
+func (o *Options) IntegerField(name string) (*int64, error) {
+	v, ok := o.Field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *IntLiteral:
+		n, err := strconv.ParseInt(v.Value, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		return &n, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect IntLiteral or NullLiteral, but have unknown type %T", v)
+	}
+}
+
+// StringField finds name in records, and return its value as *string.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have StringLiteral value, it returns pointer of string value.
+// If record have value which is neither NullLiteral nor StringLiteral, it returns error.
+func (o *Options) StringField(name string) (*string, error) {
+	v, ok := o.Field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *StringLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect StringLiteral or NullLiteral, but have unknown type %T", v)
+	}
+}
+
+// OptionsRecord is generic option for CREATE statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type OptionsRecord struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -1548,10 +1660,11 @@ type CreateSequence struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultExpr | sqlOpt}}
 //	{{.GeneratedExpr | sqlOpt}}
+//	{{if not(.Hidden.Invalid())}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = Options.end || Hidden + 6 || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
@@ -1560,6 +1673,7 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
+	Hidden        token.Pos            // InvalidPos if not hidden
 	Options       *ColumnDefOptions    // optional
 }
 
@@ -1578,13 +1692,14 @@ type ColumnDefaultExpr struct {
 
 // GeneratedColumnExpr is generated column expression.
 //
-//	AS ({{.Expr | sql}}) STORED
+//	AS ({{.Expr | sql}}) {{if .IsStored}}STORED{{end}}
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored
+	// end = Stored + 6 || Rparen + 1
 
 	As     token.Pos // position of "AS" keyword
-	Stored token.Pos // position of "STORED" keyword
+	Stored token.Pos // position of "STORED" keyword, InvalidPos if not stored
+	Rparen token.Pos // position of ")"
 
 	Expr Expr
 }
@@ -2376,6 +2491,65 @@ type ArraySchemaType struct {
 	Gt    token.Pos // position of ">"
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+// CreateSearchIndex represents CREATE SEARCH INDEX statement
+//
+//	CREATE SEARCH INDEX {{.Name | sql}}
+//	ON {{.TableName | sql}}
+//	({{.TokenListPart | sqlJoin ", "}})
+//	{{.Storing | sqlOpt}}
+//	{{if not(.PartitionColumns | isnil)}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Where | sqlOpt}}
+//	{{.Interleave | sqlOpt}}
+//	{{.Options | sqlOpt}}
+type CreateSearchIndex struct {
+	// pos = Create
+	// end = (Options ?? Interleave ?? Where ?? OrderBy ?? PartitionColumns[$] ?? Storing).end || Rparen + 1
+
+	Create token.Pos
+
+	Name             *Ident
+	TableName        *Ident
+	TokenListPart    []*Ident
+	Rparen           token.Pos     // position of ")" after TokenListPart
+	Storing          *Storing      // optional
+	PartitionColumns []*Ident      // optional
+	OrderBy          *OrderBy      // optional
+	Where            *Where        // optional
+	Interleave       *InterleaveIn // optional
+	Options          *Options      // optional
+}
+
+// DropSearchIndex represents DROP SEARCH INDEX statement.
+//
+//	DROP SEARCH INDEX {{.IfExists | strOpt "IF EXISTS "}}{{Name | sql}}
+type DropSearchIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
+// AlterSearchIndex represents ALTER SEARCH INDEX statement.
+//
+//	ALTER SEARCH INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
+type AlterSearchIndex struct {
+	// pos = Alter
+	// end = IndexAlteration.end
+
+	Alter           token.Pos
+	Name            *Ident
+	IndexAlteration IndexAlteration
 }
 
 // ================================================================================

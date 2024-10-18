@@ -1925,6 +1925,7 @@ var simpleTypes = []string{
 	"STRING",
 	"BYTES",
 	"JSON",
+	"TOKENLIST",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
@@ -2071,6 +2072,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseCreateVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEARCH"):
+			return p.parseCreateSearchIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2084,6 +2087,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
+		case p.Token.IsKeywordLike("Search"):
+			return p.parseAlterSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseAlterSequence(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2099,6 +2104,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
 			return p.parseDropVectorIndex(pos)
+		case p.Token.IsKeywordLike("SEARCH"):
+			return p.parseDropSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("ROLE"):
@@ -2294,6 +2301,12 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	t, notNull, null := p.parseTypeNotNull()
 	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
+
+	hiddenPos := token.InvalidPos
+	if p.Token.IsKeywordLike("HIDDEN") {
+		hiddenPos = p.expectKeywordLike("HIDDEN").Pos
+	}
+
 	options := p.tryParseColumnDefOptions()
 
 	return &ast.ColumnDef{
@@ -2303,6 +2316,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		NotNull:       notNull,
 		DefaultExpr:   defaultExpr,
 		GeneratedExpr: generated,
+		Hidden:        hiddenPos,
 		Options:       options,
 	}
 }
@@ -2402,12 +2416,18 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	posAs := p.expect("AS").Pos
 	p.expect("(")
 	expr := p.parseExpr()
-	p.expect(")")
-	posEnd := p.expectKeywordLike("STORED").End
+	rparen := p.expect(")").Pos
+
+	storedPos := token.InvalidPos
+	if p.Token.IsKeywordLike("STORED") {
+		stored := p.expectKeywordLike("STORED")
+		storedPos = stored.Pos
+	}
 
 	return &ast.GeneratedColumnExpr{
 		As:     posAs,
-		Stored: posEnd,
+		Stored: storedPos,
+		Rparen: rparen,
 		Expr:   expr,
 	}
 }
@@ -2589,6 +2609,112 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 		ColumnName:  columnName,
 		Where:       where,
 		Options:     options,
+	}
+}
+
+func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+	name := p.parseIdent()
+
+	p.expect("ON")
+	tableName := p.parseIdent()
+
+	p.expect("(")
+	columnName := parseCommaSeparatedList(p, p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	storing := p.tryParseStoring()
+
+	var partitionColumns []*ast.Ident
+	if p.Token.Kind == "PARTITION" {
+		p.nextToken()
+		p.expect("BY")
+		partitionColumns = parseCommaSeparatedList(p, p.parseIdent)
+	}
+
+	orderBy := p.tryParseOrderBy()
+	where := p.tryParseWhere()
+	interleave := p.tryParseInterleaveIn()
+
+	options := p.tryParseOptions()
+
+	return &ast.CreateSearchIndex{
+		Create:           pos,
+		Name:             name,
+		TableName:        tableName,
+		TokenListPart:    columnName,
+		Rparen:           rparen,
+		Storing:          storing,
+		PartitionColumns: partitionColumns,
+		OrderBy:          orderBy,
+		Where:            where,
+		Interleave:       interleave,
+		Options:          options,
+	}
+}
+
+func (p *Parser) tryParseOptions() *ast.Options {
+	if !p.Token.IsKeywordLike("OPTIONS") {
+		return nil
+	}
+
+	optionsPos := p.expectKeywordLike("OPTIONS").Pos
+
+	p.expect("(")
+	records := parseCommaSeparatedList(p, p.parseOptionsRecord)
+	rparen := p.expect(")").Pos
+
+	return &ast.Options{
+		Options: optionsPos,
+		Rparen:  rparen,
+		Records: records,
+	}
+}
+
+func (p *Parser) parseOptionsRecord() *ast.OptionsRecord {
+	name := p.parseIdent()
+	p.expect("=")
+	value := p.parseExpr()
+	return &ast.OptionsRecord{
+		Name:  name,
+		Value: value,
+	}
+}
+
+func (p *Parser) parseDropSearchIndex(pos token.Pos) *ast.DropSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	return &ast.DropSearchIndex{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+
+}
+
+func (p *Parser) parseAlterSearchIndex(pos token.Pos) *ast.AlterSearchIndex {
+	p.expectKeywordLike("SEARCH")
+	p.expectKeywordLike("INDEX")
+
+	name := p.parseIdent()
+
+	var alteration ast.IndexAlteration
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		alteration = p.parseAddStoredColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		alteration = p.parseDropStoredColumn()
+	default:
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
+	}
+
+	return &ast.AlterSearchIndex{
+		Alter:           pos,
+		Name:            name,
+		IndexAlteration: alteration,
 	}
 }
 
@@ -3288,6 +3414,7 @@ var scalarSchemaTypes = []string{
 	"TIMESTAMP",
 	"NUMERIC",
 	"JSON",
+	"TOKENLIST",
 }
 
 var sizedSchemaTypes = []string{
