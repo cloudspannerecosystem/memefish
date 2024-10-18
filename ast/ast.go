@@ -2095,7 +2095,7 @@ type ChangeStreamDropForAll struct {
 	All  token.Pos // position of "ALL" keyword
 }
 
-// ChangeStreamSetOptions is SET OPTIONS node in ALTER CHANGE STREAM //
+// ChangeStreamSetOptions is SET OPTIONS node in ALTER CHANGE STREAM
 //
 //	SET {{.Options | sql}}
 type ChangeStreamSetOptions struct {
