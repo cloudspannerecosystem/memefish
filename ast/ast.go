@@ -96,6 +96,16 @@ func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
+// SelectAs represents AS VALUE/STRUCT/typename clause in SELECT clause.
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
+
 // TableExpr represents JOIN operands.
 type TableExpr interface {
 	Node
@@ -428,7 +438,7 @@ type CTE struct {
 //
 //	SELECT
 //	  {{if .Distinct}}DISTINCT{{end}}
-//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
@@ -443,7 +453,7 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool
+	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -451,6 +461,38 @@ type Select struct {
 	Having   *Having      // optional
 	OrderBy  *OrderBy     // optional
 	Limit    *Limit       // optional
+}
+
+// AsStruct represents AS STRUCT node in SELECT clause.
+//
+//	AS STRUCT
+type AsStruct struct {
+	// pos = As
+	// end = Struct + 6
+	As     token.Pos
+	Struct token.Pos
+}
+
+// AsValue represents AS VALUE node in SELECT clause.
+//
+//	AS VALUE
+type AsValue struct {
+	// pos = As
+	// end = Value + 5
+
+	As    token.Pos
+	Value token.Pos
+}
+
+// AsTypeName represents AS typename node in SELECT clause.
+//
+//	AS {{.TypeName | sql}}
+type AsTypeName struct {
+	// pos = As
+	// end = TypeName.end
+
+	As       token.Pos
+	TypeName *NamedType
 }
 
 // CompoundQuery is query statement node compounded by set operators.

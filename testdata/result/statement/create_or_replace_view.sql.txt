@@ -19,7 +19,7 @@ from singers
   Query:        &ast.Select{
     Select:   59,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.Path{

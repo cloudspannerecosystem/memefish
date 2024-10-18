@@ -15,7 +15,7 @@
         Query:  &ast.Select{
           Select:   1,
           Distinct: false,
-          AsStruct: false,
+          As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
@@ -42,7 +42,7 @@
         Query:  &ast.Select{
           Select:   22,
           Distinct: false,
-          AsStruct: false,
+          As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
@@ -69,7 +69,7 @@
         Query:  &ast.Select{
           Select:   43,
           Distinct: false,
-          AsStruct: false,
+          As:       nil,
           Results:  []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{

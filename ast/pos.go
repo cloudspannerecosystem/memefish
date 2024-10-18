@@ -87,6 +87,15 @@ func (s *Select) End() token.Pos {
 	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastNode(s.Results))
 }
 
+func (a *AsStruct) Pos() token.Pos { return a.As }
+func (a *AsStruct) End() token.Pos { return a.Struct + 6 }
+
+func (a *AsValue) Pos() token.Pos { return a.As }
+func (a *AsValue) End() token.Pos { return a.Value + 5 }
+
+func (a *AsTypeName) Pos() token.Pos { return a.As }
+func (a *AsTypeName) End() token.Pos { return a.TypeName.End() }
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return c.Queries[0].Pos()
 }
