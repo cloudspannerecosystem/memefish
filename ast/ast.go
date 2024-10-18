@@ -35,6 +35,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
+	"strconv"
 )
 
 // Node is base interface of Spanner SQL AST nodes.
@@ -1466,10 +1467,10 @@ type Options struct {
 	Records []*OptionsRecord // len(Records) > 0
 }
 
-// field finds name in Records, and return its value as Expr.
+// Field finds name in Records, and return its value as Expr.
 // The second return value indicates that the name was found in Records.
 // It is not exposed because you can use *Field methods.
-func (o *Options) field(name string) (expr Expr, found bool) {
+func (o *Options) Field(name string) (expr Expr, found bool) {
 	for _, r := range o.Records {
 		if r.Name.Name != name {
 			continue
@@ -1487,7 +1488,7 @@ var FieldNotFound = errors.New("field not found")
 // If record have BoolLiteral value, it returns pointer of bool value.
 // If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
 func (o *Options) BoolField(name string) (*bool, error) {
-	v, ok := o.field(name)
+	v, ok := o.Field(name)
 	if !ok {
 		return nil, FieldNotFound
 	}
@@ -1497,7 +1498,51 @@ func (o *Options) BoolField(name string) (*bool, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect bool or null, but have unknown type %T", v)
+		return nil, fmt.Errorf("expect BoolLiteral or NullLiteral, but have unknown type %T", v)
+	}
+}
+
+// IntegerField finds name in records, and return its value as *int64.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have IntegerLiteral value, it returns pointer of int64 value.
+// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
+func (o *Options) IntegerField(name string) (*int64, error) {
+	v, ok := o.Field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *IntLiteral:
+		n, err := strconv.ParseInt(v.Value, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		return &n, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect IntLiteral or NullLiteral, but have unknown type %T", v)
+	}
+}
+
+// StringField finds name in records, and return its value as *string.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have StringLiteral value, it returns pointer of string value.
+// If record have value which is neither NullLiteral nor StringLiteral, it returns error.
+func (o *Options) StringField(name string) (*string, error) {
+	v, ok := o.Field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *StringLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect StringLiteral or NullLiteral, but have unknown type %T", v)
 	}
 }
 

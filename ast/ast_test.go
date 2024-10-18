@@ -246,8 +246,9 @@ func TestGenericOptionsGetBool(t *testing.T) {
 					{Name: &Ident{Name: "disable_automatic_uid_column"}, Value: &BoolLiteral{Value: true}},
 				},
 			},
-			name: "sort_order_sharding",
-			want: nil,
+			name:    "sort_order_sharding",
+			want:    nil,
+			wantErr: "field not found",
 		},
 		{
 			desc: "invalid value",
