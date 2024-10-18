@@ -2594,10 +2594,12 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	p.expectKeywordLike("SEARCH")
 	p.expectKeywordLike("INDEX")
 	name := p.parseIdent()
+
 	p.expect("ON")
 	tableName := p.parseIdent()
+
 	p.expect("(")
-	columnName := parseSeparatedList(p, ",", p.parseIdent)
+	columnName := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
 
 	storing := p.tryParseStoring()
@@ -3875,32 +3877,4 @@ func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface
 
 func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
 	panic(p.errorfAtToken(tok, msg, params...))
-}
-
-// This function can't be a method because Go haven't yet supported generic methods.
-func parseSeparatedList[T interface {
-	ast.Node
-	comparable
-}](p *Parser, sep token.TokenKind, doParse func() T) []T {
-	var zero T
-
-	first := doParse()
-	if first == zero {
-		return nil
-	}
-
-	list := []T{first}
-	for {
-		if p.Token.Kind != sep {
-			break
-		}
-		p.nextToken()
-
-		elem := doParse()
-		if elem == zero {
-			return list
-		}
-		list = append(list, elem)
-	}
-	return list
 }
