@@ -32,6 +32,8 @@
 package ast
 
 import (
+	"errors"
+	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -1444,6 +1446,65 @@ type CastNumValue struct {
 // DDL
 //
 // ================================================================================
+
+// Options is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type Options struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*OptionsRecord // len(Records) > 0
+}
+
+// field finds name in Records, and return its value as Expr.
+// The second return value indicates that the name was found in Records.
+// It is not exposed because you can use *Field methods.
+func (o *Options) field(name string) (expr Expr, found bool) {
+	for _, r := range o.Records {
+		if r.Name.Name != name {
+			continue
+		}
+		return r.Value, true
+	}
+	return nil, false
+}
+
+var FieldNotFound = errors.New("field not found")
+
+// BoolField finds name in records, and return its value as *bool.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have BoolLiteral value, it returns pointer of bool value.
+// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
+func (o *Options) BoolField(name string) (*bool, error) {
+	v, ok := o.field(name)
+	if !ok {
+		return nil, FieldNotFound
+	}
+	switch v := v.(type) {
+	case *BoolLiteral:
+		return &v.Value, nil
+	case *NullLiteral:
+		return nil, nil
+	default:
+		return nil, fmt.Errorf("expect bool or null, but have unknown type %T", v)
+	}
+}
+
+// OptionsRecord is generic option for CREATE statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type OptionsRecord struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
 
 // CreateDatabase is CREATE DATABASE statement node.
 //
