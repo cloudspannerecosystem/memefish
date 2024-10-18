@@ -2,6 +2,7 @@ package ast
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
+	"strconv"
 	"strings"
 )
 
@@ -748,7 +749,19 @@ func (c *CastNumValue) SQL() string {
 
 func (g *Options) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
 
-func (g *OptionsDef) SQL() string { return g.Name.SQL() + "=" + g.Value.SQL() }
+func (g *OptionsDef) SQL() string {
+	// Lowercase "null", "true", "false" is popular in option values.
+	var valueSql string
+	switch v := g.Value.(type) {
+	case *NullLiteral:
+		valueSql = "null"
+	case *BoolLiteral:
+		valueSql = strconv.FormatBool(v.Value)
+	default:
+		valueSql = g.Value.SQL()
+	}
+	return g.Name.SQL() + " = " + valueSql
+}
 
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
