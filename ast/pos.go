@@ -525,11 +525,11 @@ func (c *CastNumValue) End() token.Pos { return c.Rparen + 1 }
 //
 // ================================================================================
 
-func (g *GenericOptions) Pos() token.Pos { return g.Options }
-func (g *GenericOptions) End() token.Pos { return g.Rparen + 1 }
+func (g *Options) Pos() token.Pos { return g.Options }
+func (g *Options) End() token.Pos { return g.Rparen + 1 }
 
-func (g *GenericOption) Pos() token.Pos { return g.Name.Pos() }
-func (g *GenericOption) End() token.Pos { return g.Value.End() }
+func (g *OptionsRecord) Pos() token.Pos { return g.Name.Pos() }
+func (g *OptionsRecord) End() token.Pos { return g.Value.End() }
 
 func (c *CreateDatabase) Pos() token.Pos { return c.Create }
 func (c *CreateDatabase) End() token.Pos { return c.Name.End() }
@@ -885,9 +885,6 @@ func (c *CreateSearchIndex) End() token.Pos {
 			c.Storing),
 		c.Rparen.Add(1))
 }
-
-func (o *SearchIndexOptions) Pos() token.Pos { return (*GenericOptions)(o).Pos() }
-func (o *SearchIndexOptions) End() token.Pos { return (*GenericOptions)(o).End() }
 
 func (d *DropSearchIndex) Pos() token.Pos {
 	return d.Drop

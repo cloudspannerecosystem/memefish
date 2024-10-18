@@ -204,15 +204,15 @@ func ptr[T any](v T) *T {
 func TestGenericOptionsGetBool(t *testing.T) {
 	tcases := []struct {
 		desc    string
-		input   *GenericOptions
+		input   *Options
 		name    string
 		want    *bool
 		wantErr string
 	}{
 		{
 			desc: "true",
-			input: &GenericOptions{
-				Records: []*GenericOption{
+			input: &Options{
+				Records: []*OptionsRecord{
 					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: true}},
 				},
 			},
@@ -221,8 +221,8 @@ func TestGenericOptionsGetBool(t *testing.T) {
 		},
 		{
 			desc: "false",
-			input: &GenericOptions{
-				Records: []*GenericOption{
+			input: &Options{
+				Records: []*OptionsRecord{
 					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: false}},
 				},
 			},
@@ -231,8 +231,8 @@ func TestGenericOptionsGetBool(t *testing.T) {
 		},
 		{
 			desc: "explicit null",
-			input: &GenericOptions{
-				Records: []*GenericOption{
+			input: &Options{
+				Records: []*OptionsRecord{
 					{Name: &Ident{Name: "sort_order_sharding"}, Value: &NullLiteral{}},
 				},
 			},
@@ -241,8 +241,8 @@ func TestGenericOptionsGetBool(t *testing.T) {
 		},
 		{
 			desc: "implicit null",
-			input: &GenericOptions{
-				Records: []*GenericOption{
+			input: &Options{
+				Records: []*OptionsRecord{
 					{Name: &Ident{Name: "disable_automatic_uid_column"}, Value: &BoolLiteral{Value: true}},
 				},
 			},
@@ -251,8 +251,8 @@ func TestGenericOptionsGetBool(t *testing.T) {
 		},
 		{
 			desc: "invalid value",
-			input: &GenericOptions{
-				Records: []*GenericOption{
+			input: &Options{
+				Records: []*OptionsRecord{
 					{Name: &Ident{Name: "sort_order_sharding"}, Value: &StringLiteral{Value: "foo"}},
 				},
 			},
@@ -263,7 +263,7 @@ func TestGenericOptionsGetBool(t *testing.T) {
 
 	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
-			got, err := tcase.input.FindBool(tcase.name)
+			got, err := tcase.input.BoolField(tcase.name)
 			if tcase.wantErr == "" && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}

@@ -32,6 +32,7 @@
 package ast
 
 import (
+	"errors"
 	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
@@ -1452,22 +1453,23 @@ type CastNumValue struct {
 //
 // ================================================================================
 
-// GenericOptions is generic OPTIONS clause node without key and value checking.
+// Options is generic OPTIONS clause node without key and value checking.
 //
 //	OPTIONS ({{.Records | sqlJoin ","}})
-type GenericOptions struct {
+type Options struct {
 	// pos = Options
 	// end = Rparen + 1
 
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*GenericOption // len(Records) > 0
+	Records []*OptionsRecord // len(Records) > 0
 }
 
-// Find finds name in Records, and return its value as Expr.
+// field finds name in Records, and return its value as Expr.
 // The second return value indicates that the name was found in Records.
-func (o *GenericOptions) Find(name string) (expr Expr, found bool) {
+// It is not exposed because you can use *Field methods.
+func (o *Options) field(name string) (expr Expr, found bool) {
 	for _, r := range o.Records {
 		if r.Name.Name != name {
 			continue
@@ -1477,12 +1479,17 @@ func (o *GenericOptions) Find(name string) (expr Expr, found bool) {
 	return nil, false
 }
 
-// FindBool finds name in Records, and return its value as *bool.
-// If the value is neither bool nor null, it returns error.
-func (o *GenericOptions) FindBool(name string) (*bool, error) {
-	v, ok := o.Find(name)
+var FieldNotFound = errors.New("field not found")
+
+// BoolField finds name in records, and return its value as *bool.
+// If Options doesn't have a record with name, it returns FieldNotFound error.
+// If record have NullLiteral value, it returns nil.
+// If record have BoolLiteral value, it returns pointer of bool value.
+// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
+func (o *Options) BoolField(name string) (*bool, error) {
+	v, ok := o.field(name)
 	if !ok {
-		return nil, nil
+		return nil, FieldNotFound
 	}
 	switch v := v.(type) {
 	case *BoolLiteral:
@@ -1494,10 +1501,10 @@ func (o *GenericOptions) FindBool(name string) (*bool, error) {
 	}
 }
 
-// GenericOption is generic option for CREATE statements.
+// OptionsRecord is generic option for CREATE statements.
 //
 //	{{.Name | sql}} = {{.Value | sql}}
-type GenericOption struct {
+type OptionsRecord struct {
 	// pos = Name.pos
 	// end = Value.end
 
@@ -2425,24 +2432,13 @@ type CreateSearchIndex struct {
 	Name             *Ident
 	TableName        *Ident
 	TokenListPart    []*Ident
-	Rparen           token.Pos           // position of ")" after TokenListPart
-	Storing          *Storing            // optional
-	PartitionColumns []*Ident            // optional
-	OrderBy          *OrderBy            // optional
-	Where            *Where              // optional
-	Interleave       *InterleaveIn       // optional
-	Options          *SearchIndexOptions // optional
-}
-
-// SearchIndexOptions represents OPTIONS for CREATE SEARCH INDEX statement.
-type SearchIndexOptions GenericOptions
-
-func (o *SearchIndexOptions) SortOrderSharding() (*bool, error) {
-	return (*GenericOptions)(o).FindBool("sort_order_sharding")
-}
-
-func (o *SearchIndexOptions) DisableAutomaticUIDColumn() (*bool, error) {
-	return (*GenericOptions)(o).FindBool("disable_automatic_uid_column")
+	Rparen           token.Pos     // position of ")" after TokenListPart
+	Storing          *Storing      // optional
+	PartitionColumns []*Ident      // optional
+	OrderBy          *OrderBy      // optional
+	Where            *Where        // optional
+	Interleave       *InterleaveIn // optional
+	Options          *Options      // optional
 }
 
 // DropSearchIndex represents DROP SEARCH INDEX statement.

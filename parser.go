@@ -2605,16 +2605,13 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	var partitionColumns []*ast.Ident
 	if p.tryExpect("PARTITION") != nil {
 		p.expect("BY")
-		partitionColumns = parseSeparatedList(p, ",", p.parseIdent)
+		partitionColumns = parseCommaSeparatedList(p, p.parseIdent)
 	}
 	orderBy := p.tryParseOrderBy()
 	where := p.tryParseWhere()
 	interleave := p.tryParseInterleaveIn()
 
-	var searchIndexOptions *ast.SearchIndexOptions
-	if options := p.tryParseGenericOptions(); options != nil {
-		searchIndexOptions = (*ast.SearchIndexOptions)(options)
-	}
+	options := p.tryParseOptions()
 
 	return &ast.CreateSearchIndex{
 		Create:           pos,
@@ -2627,31 +2624,35 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 		OrderBy:          orderBy,
 		Where:            where,
 		Interleave:       interleave,
-		Options:          searchIndexOptions,
+		Options:          options,
 	}
 }
 
-func (p *Parser) tryParseGenericOptions() *ast.GenericOptions {
-	options := p.tryExpectKeywordLike("OPTIONS")
-	if options == nil {
+func (p *Parser) tryParseOptions() *ast.Options {
+	if !p.Token.IsKeywordLike("OPTIONS") {
 		return nil
 	}
+
+	optionsPos := p.expectKeywordLike("OPTIONS").Pos
+
 	p.expect("(")
-	records := parseSeparatedList(p, ",", func() *ast.GenericOption {
-		name := p.parseIdent()
-		p.expect("=")
-		value := p.parseExpr()
-		return &ast.GenericOption{
-			Name:  name,
-			Value: value,
-		}
-	})
+	records := parseCommaSeparatedList(p, p.parseOptionsRecord)
 	rparen := p.expect(")").Pos
 
-	return &ast.GenericOptions{
-		Options: options.Pos,
+	return &ast.Options{
+		Options: optionsPos,
 		Rparen:  rparen,
 		Records: records,
+	}
+}
+
+func (p *Parser) parseOptionsRecord() *ast.OptionsRecord {
+	name := p.parseIdent()
+	p.expect("=")
+	value := p.parseExpr()
+	return &ast.OptionsRecord{
+		Name:  name,
+		Value: value,
 	}
 }
 

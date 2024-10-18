@@ -762,9 +762,9 @@ func (c *CastNumValue) SQL() string {
 //
 // ================================================================================
 
-func (g *GenericOptions) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
+func (g *Options) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
 
-func (g *GenericOption) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
+func (g *OptionsRecord) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
 
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
@@ -1320,8 +1320,6 @@ func (c *CreateSearchIndex) SQL() string {
 		sqlOpt("", c.Interleave, "") +
 		sqlOpt(" ", c.Options, "")
 }
-
-func (o *SearchIndexOptions) SQL() string { return (*GenericOptions)(o).SQL() }
 
 func (d *DropSearchIndex) SQL() string {
 	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
