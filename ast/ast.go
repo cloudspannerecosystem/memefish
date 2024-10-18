@@ -1492,7 +1492,7 @@ func (o *Options) BoolField(name string) (*bool, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect BoolLiteral or NullLiteral, but have unknown type %T", v)
+		return nil, fmt.Errorf("expect true, false or null, but got unknown type %T", v)
 	}
 }
 
@@ -1516,7 +1516,7 @@ func (o *Options) IntegerField(name string) (*int64, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect IntLiteral or NullLiteral, but have unknown type %T", v)
+		return nil, fmt.Errorf("expect integer or null, but got unknown type %T", v)
 	}
 }
 
@@ -1536,7 +1536,7 @@ func (o *Options) StringField(name string) (*string, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect StringLiteral or NullLiteral, but have unknown type %T", v)
+		return nil, fmt.Errorf("expect string literal or null, but got unknown type %T", v)
 	}
 }
 

@@ -198,7 +198,7 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func TestGenericOptionsGetBool(t *testing.T) {
+func TestOptions_BoolField(t *testing.T) {
 	tcases := []struct {
 		desc    string
 		input   *Options
@@ -210,52 +210,52 @@ func TestGenericOptionsGetBool(t *testing.T) {
 			desc: "true",
 			input: &Options{
 				Records: []*OptionsRecord{
-					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: true}},
+					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
 				},
 			},
-			name: "sort_order_sharding",
+			name: "bool_option",
 			want: ptr(true),
 		},
 		{
 			desc: "false",
 			input: &Options{
 				Records: []*OptionsRecord{
-					{Name: &Ident{Name: "sort_order_sharding"}, Value: &BoolLiteral{Value: false}},
+					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: false}},
 				},
 			},
-			name: "sort_order_sharding",
+			name: "bool_option",
 			want: ptr(false),
 		},
 		{
 			desc: "explicit null",
 			input: &Options{
 				Records: []*OptionsRecord{
-					{Name: &Ident{Name: "sort_order_sharding"}, Value: &NullLiteral{}},
+					{&Ident{Name: "bool_option"}, &NullLiteral{}},
 				},
 			},
-			name: "sort_order_sharding",
+			name: "bool_option",
 			want: nil,
 		},
 		{
 			desc: "implicit null",
 			input: &Options{
 				Records: []*OptionsRecord{
-					{Name: &Ident{Name: "disable_automatic_uid_column"}, Value: &BoolLiteral{Value: true}},
+					{&Ident{Name: "dummy"}, &BoolLiteral{Value: true}},
 				},
 			},
-			name:    "sort_order_sharding",
+			name:    "bool_option",
 			want:    nil,
 			wantErr: "field not found",
 		},
 		{
-			desc: "invalid value",
+			desc: "invalid type",
 			input: &Options{
 				Records: []*OptionsRecord{
-					{Name: &Ident{Name: "sort_order_sharding"}, Value: &StringLiteral{Value: "foo"}},
+					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
 				},
 			},
-			name:    "sort_order_sharding",
-			wantErr: "expect bool or null, but have unknown type *ast.StringLiteral",
+			name:    "string_option",
+			wantErr: "expect true, false or null, but got unknown type *ast.StringLiteral",
 		},
 	}
 
@@ -265,8 +265,151 @@ func TestGenericOptionsGetBool(t *testing.T) {
 			if tcase.wantErr == "" && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
+			if tcase.wantErr != "" && err == nil {
+				t.Errorf("should fail, but success")
+			}
 			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
-				t.Errorf("should fail, want: %v, got: %v", tcase.wantErr, err)
+				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
+			}
+			if diff := cmp.Diff(tcase.want, got); diff != "" {
+				t.Errorf("differ: %v", diff)
+			}
+		})
+	}
+}
+
+func TestOptions_StringField(t *testing.T) {
+	tcases := []struct {
+		desc    string
+		input   *Options
+		name    string
+		want    *string
+		wantErr string
+	}{
+		{
+			desc: "string",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
+				},
+			},
+			name: "string_option",
+			want: ptr("foo"),
+		},
+		{
+			desc: "explicit null",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "string_option"}, &NullLiteral{}},
+				},
+			},
+			name: "string_option",
+			want: nil,
+		},
+		{
+			desc: "implicit null",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "dummy_option"}, &StringLiteral{Value: "foo"}},
+				},
+			},
+			name:    "string_field",
+			want:    nil,
+			wantErr: "field not found",
+		},
+		{
+			desc: "invalid value",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
+				},
+			},
+			name:    "bool_option",
+			wantErr: "expect string literal or null, but got unknown type *ast.BoolLiteral",
+		},
+	}
+
+	for _, tcase := range tcases {
+		t.Run(tcase.desc, func(t *testing.T) {
+			got, err := tcase.input.StringField(tcase.name)
+			if tcase.wantErr == "" && err != nil {
+				t.Errorf("should not fail, but: %v", err)
+			}
+			if tcase.wantErr != "" && err == nil {
+				t.Errorf("should fail, but success")
+			}
+			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
+				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
+			}
+			if diff := cmp.Diff(tcase.want, got); diff != "" {
+				t.Errorf("differ: %v", diff)
+			}
+		})
+	}
+}
+
+func TestOptions_IntegerField(t *testing.T) {
+	tcases := []struct {
+		desc    string
+		input   *Options
+		name    string
+		want    *int64
+		wantErr string
+	}{
+		{
+			desc: "integer",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "integer_option"}, &IntLiteral{Value: "7"}},
+				},
+			},
+			name: "integer_option",
+			want: ptr(int64(7)),
+		},
+		{
+			desc: "explicit null",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "integer_option"}, &NullLiteral{}},
+				},
+			},
+			name: "integer_option",
+			want: nil,
+		},
+		{
+			desc: "implicit null",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
+				},
+			},
+			name:    "integer_option",
+			want:    nil,
+			wantErr: "field not found",
+		},
+		{
+			desc: "invalid value",
+			input: &Options{
+				Records: []*OptionsRecord{
+					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
+				},
+			},
+			name:    "bool_option",
+			wantErr: "expect integer or null, but got unknown type *ast.BoolLiteral",
+		},
+	}
+
+	for _, tcase := range tcases {
+		t.Run(tcase.desc, func(t *testing.T) {
+			got, err := tcase.input.IntegerField(tcase.name)
+			if tcase.wantErr == "" && err != nil {
+				t.Errorf("should not fail, but: %v", err)
+			}
+			if tcase.wantErr != "" && err == nil {
+				t.Errorf("should fail, but success")
+			}
+			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
+				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
 			}
 			if diff := cmp.Diff(tcase.want, got); diff != "" {
 				t.Errorf("differ: %v", diff)
