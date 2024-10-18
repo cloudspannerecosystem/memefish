@@ -55,12 +55,12 @@ OPTIONS(retention_period = null)
       },
     },
   },
-  Options: &ast.ChangeStreamOptions{
+  Options: &ast.Options{
     Options: 105,
     Rparen:  136,
-    Records: []*ast.ChangeStreamOptionsRecord{
-      &ast.ChangeStreamOptionsRecord{
-        Key: &ast.Ident{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
           NamePos: 113,
           NameEnd: 129,
           Name:    "retention_period",

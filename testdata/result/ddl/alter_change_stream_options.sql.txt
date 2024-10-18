@@ -11,12 +11,12 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
   },
   ChangeStreamAlteration: &ast.ChangeStreamSetOptions{
     Set:     39,
-    Options: &ast.ChangeStreamOptions{
+    Options: &ast.Options{
       Options: 43,
       Rparen:  118,
-      Records: []*ast.ChangeStreamOptionsRecord{
-        &ast.ChangeStreamOptionsRecord{
-          Key: &ast.Ident{
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
             NamePos: 52,
             NameEnd: 68,
             Name:    "retention_period",
@@ -27,8 +27,8 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
             Value:    "1d",
           },
         },
-        &ast.ChangeStreamOptionsRecord{
-          Key: &ast.Ident{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
             NamePos: 77,
             NameEnd: 95,
             Name:    "value_capture_type",
@@ -45,4 +45,4 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
 }
 
 --- SQL
-ALTER CHANGE STREAM change_stream_name SET  OPTIONS (retention_period="1d", value_capture_type="OLD_AND_NEW_VALUES")
+ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period="1d", value_capture_type="OLD_AND_NEW_VALUES")

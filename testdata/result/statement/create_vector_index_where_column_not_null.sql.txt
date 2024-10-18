@@ -33,12 +33,12 @@ OPTIONS(distance_type = 'COSINE')
       },
     },
   },
-  Options: &ast.VectorIndexOptions{
+  Options: &ast.Options{
     Options: 87,
     Rparen:  119,
-    Records: []*ast.VectorIndexOption{
-      &ast.VectorIndexOption{
-        Key: &ast.Ident{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
           NamePos: 95,
           NameEnd: 108,
           Name:    "distance_type",
