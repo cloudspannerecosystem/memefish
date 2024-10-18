@@ -1458,7 +1458,7 @@ type Options struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*OptionsRecord // len(Records) > 0
+	Records []*OptionsDef // len(Records) > 0
 }
 
 // Field finds name in Records, and return its value as Expr.
@@ -1546,10 +1546,10 @@ func (o *Options) StringField(name string) (*string, error) {
 	}
 }
 
-// OptionsRecord is generic option for CREATE statements.
+// OptionsDef is single option definition for DDL statements.
 //
 //	{{.Name | sql}} = {{.Value | sql}}
-type OptionsRecord struct {
+type OptionsDef struct {
 	// pos = Name.pos
 	// end = Value.end
 

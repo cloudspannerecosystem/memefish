@@ -764,7 +764,7 @@ func (c *CastNumValue) SQL() string {
 
 func (g *Options) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
 
-func (g *OptionsRecord) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
+func (g *OptionsDef) SQL() string { return g.Name.SQL() + " = " + g.Value.SQL() }
 
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()

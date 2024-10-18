@@ -210,7 +210,7 @@ func TestOptions_BoolField(t *testing.T) {
 		{
 			desc: "true",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
 				},
 			},
@@ -220,7 +220,7 @@ func TestOptions_BoolField(t *testing.T) {
 		{
 			desc: "false",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: false}},
 				},
 			},
@@ -230,7 +230,7 @@ func TestOptions_BoolField(t *testing.T) {
 		{
 			desc: "explicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "bool_option"}, &NullLiteral{}},
 				},
 			},
@@ -240,7 +240,7 @@ func TestOptions_BoolField(t *testing.T) {
 		{
 			desc: "implicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "dummy"}, &BoolLiteral{Value: true}},
 				},
 			},
@@ -251,7 +251,7 @@ func TestOptions_BoolField(t *testing.T) {
 		{
 			desc: "invalid type",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
 				},
 			},
@@ -290,7 +290,7 @@ func TestOptions_StringField(t *testing.T) {
 		{
 			desc: "string",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
 				},
 			},
@@ -300,7 +300,7 @@ func TestOptions_StringField(t *testing.T) {
 		{
 			desc: "explicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "string_option"}, &NullLiteral{}},
 				},
 			},
@@ -310,7 +310,7 @@ func TestOptions_StringField(t *testing.T) {
 		{
 			desc: "implicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "dummy_option"}, &StringLiteral{Value: "foo"}},
 				},
 			},
@@ -321,7 +321,7 @@ func TestOptions_StringField(t *testing.T) {
 		{
 			desc: "invalid value",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
 				},
 			},
@@ -360,7 +360,7 @@ func TestOptions_IntegerField(t *testing.T) {
 		{
 			desc: "integer",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "integer_option"}, &IntLiteral{Value: "7"}},
 				},
 			},
@@ -370,7 +370,7 @@ func TestOptions_IntegerField(t *testing.T) {
 		{
 			desc: "explicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "integer_option"}, &NullLiteral{}},
 				},
 			},
@@ -380,7 +380,7 @@ func TestOptions_IntegerField(t *testing.T) {
 		{
 			desc: "implicit null",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "string_option"}, &StringLiteral{Value: "foo"}},
 				},
 			},
@@ -391,7 +391,7 @@ func TestOptions_IntegerField(t *testing.T) {
 		{
 			desc: "invalid value",
 			input: &Options{
-				Records: []*OptionsRecord{
+				Records: []*OptionsDef{
 					{&Ident{Name: "bool_option"}, &BoolLiteral{Value: true}},
 				},
 			},
