@@ -37,4 +37,4 @@ alter table foo alter column foo set options(allow_commit_timestamp = true)
 }
 
 --- SQL
-ALTER TABLE foo ALTER COLUMN foo SET OPTIONS (allow_commit_timestamp=TRUE)
+ALTER TABLE foo ALTER COLUMN foo SET OPTIONS (allow_commit_timestamp = true)

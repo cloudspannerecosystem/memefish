@@ -54,4 +54,4 @@ OPTIONS(distance_type = 'COSINE')
 }
 
 --- SQL
-CREATE VECTOR INDEX hello_vector_index ON hello (embedding) WHERE embedding IS NOT NULL OPTIONS (distance_type="COSINE")
+CREATE VECTOR INDEX hello_vector_index ON hello (embedding) WHERE embedding IS NOT NULL OPTIONS (distance_type = "COSINE")
