@@ -2280,11 +2280,12 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	t, notNull, null := p.parseTypeNotNull()
 	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
-	hidden := p.tryExpectKeywordLike("HIDDEN")
+
 	hiddenPos := token.InvalidPos
-	if hidden != nil {
-		hiddenPos = hidden.Pos
+	if p.Token.IsKeywordLike("HIDDEN") {
+		hiddenPos = p.expectKeywordLike("HIDDEN").Pos
 	}
+
 	options := p.tryParseColumnDefOptions()
 
 	return &ast.ColumnDef{
@@ -2395,10 +2396,10 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	p.expect("(")
 	expr := p.parseExpr()
 	rparen := p.expect(")").Pos
-	stored := p.tryExpectKeywordLike("STORED")
 
 	storedPos := token.InvalidPos
-	if stored != nil {
+	if p.Token.IsKeywordLike("STORED") {
+		stored := p.expectKeywordLike("STORED")
 		storedPos = stored.Pos
 	}
 
@@ -2605,10 +2606,12 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	storing := p.tryParseStoring()
 
 	var partitionColumns []*ast.Ident
-	if p.tryExpect("PARTITION") != nil {
+	if p.Token.Kind == "PARTITION" {
+		p.nextToken()
 		p.expect("BY")
 		partitionColumns = parseCommaSeparatedList(p, p.parseIdent)
 	}
+
 	orderBy := p.tryParseOrderBy()
 	where := p.tryParseWhere()
 	interleave := p.tryParseInterleaveIn()
@@ -3852,20 +3855,6 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 		}
 	}
 	return id
-}
-
-func (p *Parser) tryExpect(s token.TokenKind) *token.Token {
-	if p.Token.Kind != s {
-		return nil
-	}
-	return p.expect(s)
-}
-
-func (p *Parser) tryExpectKeywordLike(s string) *token.Token {
-	if !p.Token.IsKeywordLike(s) {
-		return nil
-	}
-	return p.expectKeywordLike(s)
 }
 
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
