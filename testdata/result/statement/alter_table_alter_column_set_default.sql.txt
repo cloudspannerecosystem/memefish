@@ -15,7 +15,7 @@ ALTER TABLE actions ALTER COLUMN output SET DEFAULT("")
       NameEnd: 39,
       Name:    "output",
     },
-    Options:     (*ast.ColumnDefOptions)(nil),
+    Options:     (*ast.Options)(nil),
     DefaultExpr: &ast.ColumnDefaultExpr{
       Default: 44,
       Rparen:  54,

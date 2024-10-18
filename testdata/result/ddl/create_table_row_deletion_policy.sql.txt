@@ -31,7 +31,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -47,7 +47,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -63,7 +63,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints:  []*ast.TableConstraint(nil),

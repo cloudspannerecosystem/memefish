@@ -55,12 +55,12 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
       },
     },
   },
-  Options: &ast.ChangeStreamOptions{
+  Options: &ast.Options{
     Options: 105,
     Rparen:  168,
-    Records: []*ast.ChangeStreamOptionsRecord{
-      &ast.ChangeStreamOptionsRecord{
-        Key: &ast.Ident{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
           NamePos: 113,
           NameEnd: 129,
           Name:    "retention_period",
@@ -71,8 +71,8 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
           Value:    "1d",
         },
       },
-      &ast.ChangeStreamOptionsRecord{
-        Key: &ast.Ident{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
           NamePos: 138,
           NameEnd: 156,
           Name:    "value_capture_type",
@@ -88,4 +88,4 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
 }
 
 --- SQL
-CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2) OPTIONS (retention_period="1d", value_capture_type="NEW_ROW")
+CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table_name2(column1, column2) OPTIONS (retention_period = "1d", value_capture_type = "NEW_ROW")

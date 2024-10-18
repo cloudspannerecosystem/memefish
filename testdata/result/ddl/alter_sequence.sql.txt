@@ -9,11 +9,11 @@ ALTER SEQUENCE my_sequence SET OPTIONS (skip_range_min=1, skip_range_max=1234567
     NameEnd: 26,
     Name:    "my_sequence",
   },
-  Options: &ast.SequenceOptions{
+  Options: &ast.Options{
     Options: 31,
     Rparen:  80,
-    Records: []*ast.SequenceOption{
-      &ast.SequenceOption{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 40,
           NameEnd: 54,
@@ -26,7 +26,7 @@ ALTER SEQUENCE my_sequence SET OPTIONS (skip_range_min=1, skip_range_max=1234567
           Value:    "1",
         },
       },
-      &ast.SequenceOption{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 58,
           NameEnd: 72,

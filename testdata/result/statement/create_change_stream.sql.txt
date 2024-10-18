@@ -10,7 +10,7 @@ CREATE CHANGE STREAM change_stream_name
     Name:    "change_stream_name",
   },
   For:     nil,
-  Options: (*ast.ChangeStreamOptions)(nil),
+  Options: (*ast.Options)(nil),
 }
 
 --- SQL

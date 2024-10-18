@@ -14,11 +14,11 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
     Name:    "MySequence",
   },
   IfNotExists: true,
-  Options:     &ast.SequenceOptions{
+  Options:     &ast.Options{
     Options: 41,
     Rparen:  172,
-    Records: []*ast.SequenceOption{
-      &ast.SequenceOption{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 55,
           NameEnd: 68,
@@ -30,7 +30,7 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
           Value:    "bit_reversed_positive",
         },
       },
-      &ast.SequenceOption{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 98,
           NameEnd: 112,
@@ -43,7 +43,7 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
           Value:    "1",
         },
       },
-      &ast.SequenceOption{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 122,
           NameEnd: 136,
@@ -56,7 +56,7 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
           Value:    "1000",
         },
       },
-      &ast.SequenceOption{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 149,
           NameEnd: 167,
