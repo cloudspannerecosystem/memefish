@@ -1474,7 +1474,13 @@ func (o *Options) Field(name string) (expr Expr, found bool) {
 	return nil, false
 }
 
+// FieldNotFound is returned Options.*Field methods.
+// It can be handled as a non-error.
 var FieldNotFound = errors.New("field not found")
+
+// fieldTypeMismatch is only defined for test.
+// It is intentionally unexported.
+var fieldTypeMismatch = errors.New("type mismatched")
 
 // BoolField finds name in records, and return its value as *bool.
 // If Options doesn't have a record with name, it returns FieldNotFound error.
@@ -1492,7 +1498,7 @@ func (o *Options) BoolField(name string) (*bool, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect true, false or null, but got unknown type %T", v)
+		return nil, fmt.Errorf("expect true, false or null, but got unknown type %T: %w", v, fieldTypeMismatch)
 	}
 }
 
@@ -1516,7 +1522,7 @@ func (o *Options) IntegerField(name string) (*int64, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect integer or null, but got unknown type %T", v)
+		return nil, fmt.Errorf("expect integer or null, but got unknown type %T: %w", v, fieldTypeMismatch)
 	}
 }
 
@@ -1536,7 +1542,7 @@ func (o *Options) StringField(name string) (*string, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect string literal or null, but got unknown type %T", v)
+		return nil, fmt.Errorf("expect string literal or null, but got unknown type %T: %w", v, fieldTypeMismatch)
 	}
 }
 

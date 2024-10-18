@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"errors"
 	"github.com/google/go-cmp/cmp"
 	"testing"
 )
@@ -204,7 +205,7 @@ func TestOptions_BoolField(t *testing.T) {
 		input   *Options
 		name    string
 		want    *bool
-		wantErr string
+		wantErr error
 	}{
 		{
 			desc: "true",
@@ -245,7 +246,7 @@ func TestOptions_BoolField(t *testing.T) {
 			},
 			name:    "bool_option",
 			want:    nil,
-			wantErr: "field not found",
+			wantErr: FieldNotFound,
 		},
 		{
 			desc: "invalid type",
@@ -255,21 +256,21 @@ func TestOptions_BoolField(t *testing.T) {
 				},
 			},
 			name:    "string_option",
-			wantErr: "expect true, false or null, but got unknown type *ast.StringLiteral",
+			wantErr: fieldTypeMismatch,
 		},
 	}
 
 	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
 			got, err := tcase.input.BoolField(tcase.name)
-			if tcase.wantErr == "" && err != nil {
+			if tcase.wantErr == nil && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
-			if tcase.wantErr != "" && err == nil {
+			if tcase.wantErr != nil && err == nil {
 				t.Errorf("should fail, but success")
 			}
-			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
-				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
+			if tcase.wantErr != nil && !errors.Is(err, tcase.wantErr) {
+				t.Errorf("error differ, want: %v, got: %v", tcase.wantErr, err)
 			}
 			if diff := cmp.Diff(tcase.want, got); diff != "" {
 				t.Errorf("differ: %v", diff)
@@ -284,7 +285,7 @@ func TestOptions_StringField(t *testing.T) {
 		input   *Options
 		name    string
 		want    *string
-		wantErr string
+		wantErr error
 	}{
 		{
 			desc: "string",
@@ -315,7 +316,7 @@ func TestOptions_StringField(t *testing.T) {
 			},
 			name:    "string_field",
 			want:    nil,
-			wantErr: "field not found",
+			wantErr: FieldNotFound,
 		},
 		{
 			desc: "invalid value",
@@ -325,21 +326,21 @@ func TestOptions_StringField(t *testing.T) {
 				},
 			},
 			name:    "bool_option",
-			wantErr: "expect string literal or null, but got unknown type *ast.BoolLiteral",
+			wantErr: fieldTypeMismatch,
 		},
 	}
 
 	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
 			got, err := tcase.input.StringField(tcase.name)
-			if tcase.wantErr == "" && err != nil {
+			if tcase.wantErr == nil && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
-			if tcase.wantErr != "" && err == nil {
+			if tcase.wantErr != nil && err == nil {
 				t.Errorf("should fail, but success")
 			}
-			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
-				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
+			if tcase.wantErr != nil && !errors.Is(err, tcase.wantErr) {
+				t.Errorf("error differ, want: %v, got: %v", tcase.wantErr, err)
 			}
 			if diff := cmp.Diff(tcase.want, got); diff != "" {
 				t.Errorf("differ: %v", diff)
@@ -354,7 +355,7 @@ func TestOptions_IntegerField(t *testing.T) {
 		input   *Options
 		name    string
 		want    *int64
-		wantErr string
+		wantErr error
 	}{
 		{
 			desc: "integer",
@@ -385,7 +386,7 @@ func TestOptions_IntegerField(t *testing.T) {
 			},
 			name:    "integer_option",
 			want:    nil,
-			wantErr: "field not found",
+			wantErr: FieldNotFound,
 		},
 		{
 			desc: "invalid value",
@@ -395,21 +396,21 @@ func TestOptions_IntegerField(t *testing.T) {
 				},
 			},
 			name:    "bool_option",
-			wantErr: "expect integer or null, but got unknown type *ast.BoolLiteral",
+			wantErr: fieldTypeMismatch,
 		},
 	}
 
 	for _, tcase := range tcases {
 		t.Run(tcase.desc, func(t *testing.T) {
 			got, err := tcase.input.IntegerField(tcase.name)
-			if tcase.wantErr == "" && err != nil {
+			if tcase.wantErr == nil && err != nil {
 				t.Errorf("should not fail, but: %v", err)
 			}
-			if tcase.wantErr != "" && err == nil {
+			if tcase.wantErr != nil && err == nil {
 				t.Errorf("should fail, but success")
 			}
-			if tcase.wantErr != "" && err.Error() != tcase.wantErr {
-				t.Errorf("error message differ, want: %v, got: %v", tcase.wantErr, err)
+			if tcase.wantErr != nil && !errors.Is(err, tcase.wantErr) {
+				t.Errorf("error differ, want: %v, got: %v", tcase.wantErr, err)
 			}
 			if diff := cmp.Diff(tcase.want, got); diff != "" {
 				t.Errorf("differ: %v", diff)
