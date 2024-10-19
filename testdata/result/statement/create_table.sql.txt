@@ -187,11 +187,11 @@ create table foo (
   },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     182,
-        Rparen:      222,
+        Rparen:      221,
         OnDeleteEnd: -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -216,11 +216,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     226,
-        Rparen:      266,
+        Rparen:      265,
         OnDeleteEnd: 284,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -245,11 +245,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     288,
-        Rparen:      328,
+        Rparen:      327,
         OnDeleteEnd: 348,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -282,7 +282,7 @@ create table foo (
       },
       Constraint: &ast.ForeignKey{
         Foreign:     370,
-        Rparen:      423,
+        Rparen:      422,
         OnDeleteEnd: -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -317,11 +317,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.Check{
         Check:  427,
-        Rparen: 442,
+        Rparen: 441,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
@@ -347,7 +347,7 @@ create table foo (
       },
       Constraint: &ast.Check{
         Check:  463,
-        Rparen: 478,
+        Rparen: 477,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
