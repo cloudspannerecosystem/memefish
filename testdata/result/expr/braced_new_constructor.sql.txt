@@ -56,7 +56,7 @@ NEW Universe {
         Value: &ast.BracedConstructorFieldValueExpr{
           Colon: 146,
           Expr:  &ast.ArrayLiteral{
-            Array:  0,
+            Array:  -1,
             Lbrack: 148,
             Rbrack: 177,
             Type:   nil,
@@ -134,7 +134,7 @@ NEW Universe {
         Value: &ast.BracedConstructorFieldValueExpr{
           Colon: 253,
           Expr:  &ast.ArrayLiteral{
-            Array:  0,
+            Array:  -1,
             Lbrack: 255,
             Rbrack: 332,
             Type:   nil,
@@ -268,4 +268,4 @@ NEW Universe {
 }
 
 --- SQL
-NEW Universe {name: "Sol", closest_planets: ARRAY["Mercury", "Venus", "Earth"], star {radius_miles: 432690, age: 4603000000}, constellations: ARRAY[{name: "Libra", index: 0}, {name: "Scorpio", index: 1}], all_planets: (SELECT planets FROM SolTable)}
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth"], star {radius_miles: 432690, age: 4603000000}, constellations: [{name: "Libra", index: 0}, {name: "Scorpio", index: 1}], all_planets: (SELECT planets FROM SolTable)}
