@@ -26,7 +26,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     48,
-        Stored: 159,
+        Stored: 153,
         Expr:   &ast.CallExpr{
           Rparen: 150,
           Func:   &ast.Ident{

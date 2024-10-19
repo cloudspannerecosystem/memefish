@@ -108,7 +108,7 @@ create table foo (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     150,
-        Stored: 178,
+        Stored: 172,
         Expr:   &ast.CallExpr{
           Rparen: 169,
           Func:   &ast.Ident{

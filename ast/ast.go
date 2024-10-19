@@ -1581,7 +1581,7 @@ type ColumnDefaultExpr struct {
 //	AS ({{.Expr | sql}}) STORED
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored
+	// end = Stored + 6
 
 	As     token.Pos // position of "AS" keyword
 	Stored token.Pos // position of "STORED" keyword

@@ -580,7 +580,7 @@ func (g *ColumnDefaultExpr) Pos() token.Pos { return g.Default }
 func (g *ColumnDefaultExpr) End() token.Pos { return g.Rparen }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
-func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored }
+func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored + 6 }
 
 func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
 func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
