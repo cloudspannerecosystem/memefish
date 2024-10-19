@@ -16,7 +16,7 @@ alter table foo add foreign key (bar) references t2 (t2key1)
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     20,
-        Rparen:      60,
+        Rparen:      59,
         OnDeleteEnd: -1,
         Columns:     []*ast.Ident{
           &ast.Ident{

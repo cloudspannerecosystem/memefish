@@ -1606,6 +1606,9 @@ type ColumnDefOptions struct {
 //
 //	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
 type TableConstraint struct {
+	// pos = ConstraintPos || Constraint.pos
+	// end = Constraint.end
+
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
 	Name       *Ident // optional

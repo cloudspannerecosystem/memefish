@@ -2151,10 +2151,16 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 			constraints = append(constraints, p.parseConstraint())
 		case p.Token.IsKeywordLike("FOREIGN"):
 			fk := p.parseForeignKey()
-			constraints = append(constraints, &ast.TableConstraint{Constraint: fk})
+			constraints = append(constraints, &ast.TableConstraint{
+				ConstraintPos: token.InvalidPos,
+				Constraint:    fk,
+			})
 		case p.Token.IsKeywordLike("CHECK"):
 			c := p.parseCheck()
-			constraints = append(constraints, &ast.TableConstraint{Constraint: c})
+			constraints = append(constraints, &ast.TableConstraint{
+				ConstraintPos: token.InvalidPos,
+				Constraint:    c,
+			})
 		default:
 			columns = append(columns, p.parseColumnDef())
 		}
@@ -2339,7 +2345,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 
 	p.expect("(")
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
-	rparen := p.expect(")").End
+	rparen := p.expect(")").Pos
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
@@ -2358,7 +2364,7 @@ func (p *Parser) parseCheck() *ast.Check {
 	pos := p.expectKeywordLike("CHECK").Pos
 	p.expect("(")
 	expr := p.parseExpr()
-	rparen := p.expect(")").End
+	rparen := p.expect(")").Pos
 	return &ast.Check{
 		Check:  pos,
 		Rparen: rparen,
