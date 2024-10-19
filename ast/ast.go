@@ -1512,7 +1512,7 @@ type CreateTable struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
@@ -1521,7 +1521,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *Options // optional
+	Options     *Options
 }
 
 // ColumnDef is column definition in CREATE TABLE.
