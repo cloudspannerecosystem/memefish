@@ -13,13 +13,13 @@ SELECT
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  0,
+          Array:  -1,
           Lbrack: 9,
           Rbrack: 41,
           Type:   nil,
           Values: []ast.Expr{
             &ast.ArrayLiteral{
-              Array:  0,
+              Array:  -1,
               Lbrack: 10,
               Rbrack: 18,
               Type:   nil,
@@ -45,7 +45,7 @@ SELECT
               },
             },
             &ast.ArrayLiteral{
-              Array:  0,
+              Array:  -1,
               Lbrack: 21,
               Rbrack: 29,
               Type:   nil,
@@ -71,7 +71,7 @@ SELECT
               },
             },
             &ast.ArrayLiteral{
-              Array:  0,
+              Array:  -1,
               Lbrack: 32,
               Rbrack: 40,
               Type:   nil,
@@ -110,4 +110,4 @@ SELECT
 }
 
 --- SQL
-SELECT ARRAY[ARRAY[1, 2, 3], ARRAY[2, 4, 6], ARRAY[3, 6, 9]]
+SELECT [[1, 2, 3], [2, 4, 6], [3, 6, 9]]
