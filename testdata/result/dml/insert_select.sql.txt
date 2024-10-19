@@ -39,7 +39,7 @@ select * from unnest([(1, 2), (3, 4)])
           Rparen:   59,
           Implicit: false,
           Expr:     &ast.ArrayLiteral{
-            Array:  0,
+            Array:  -1,
             Lbrack: 43,
             Rbrack: 58,
             Type:   nil,
@@ -102,4 +102,4 @@ select * from unnest([(1, 2), (3, 4)])
 }
 
 --- SQL
-INSERT INTO foo (foo, bar) SELECT * FROM UNNEST(ARRAY[STRUCT(1, 2), STRUCT(3, 4)])
+INSERT INTO foo (foo, bar) SELECT * FROM UNNEST([STRUCT(1, 2), STRUCT(3, 4)])
