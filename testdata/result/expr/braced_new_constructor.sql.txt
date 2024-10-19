@@ -231,7 +231,7 @@ NEW Universe {
             Query:  &ast.Select{
               Select:   350,
               Distinct: false,
-              AsStruct: false,
+              As:       nil,
               Results:  []ast.SelectItem{
                 &ast.ExprSelectItem{
                   Expr: &ast.Ident{
