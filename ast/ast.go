@@ -1232,14 +1232,14 @@ type Path struct {
 	Idents []*Ident // len(Idents) >= 2
 }
 
-// AraryLiteral is array literal node.
+// ArrayLiteral is array literal node.
 //
-//	ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	{{if not(.Array.Invalid())}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
 
-	Array          token.Pos // position of "ARRAY" keyword
+	Array          token.Pos // position of "ARRAY" keyword, optional
 	Lbrack, Rbrack token.Pos // position of "[" and "]"
 
 	Type   Type // optional
