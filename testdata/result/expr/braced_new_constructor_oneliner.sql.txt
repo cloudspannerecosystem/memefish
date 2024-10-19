@@ -40,7 +40,7 @@ NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
         Value: &ast.BracedConstructorFieldValueExpr{
           Colon: 42,
           Expr:  &ast.ArrayLiteral{
-            Array:  0,
+            Array:  -1,
             Lbrack: 44,
             Rbrack: 73,
             Type:   nil,
@@ -69,4 +69,4 @@ NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
 }
 
 --- SQL
-NEW Universe {name: "Sol", closest_planets: ARRAY["Mercury", "Venus", "Earth"]}
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth"]}
