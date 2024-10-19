@@ -17,7 +17,7 @@ SELECT
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  0,
+          Array:  -1,
           Lbrack: 9,
           Rbrack: 17,
           Type:   nil,
@@ -45,7 +45,7 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  0,
+          Array:  -1,
           Lbrack: 22,
           Rbrack: 37,
           Type:   nil,
@@ -147,4 +147,4 @@ SELECT
 }
 
 --- SQL
-SELECT ARRAY[1, 2, 3], ARRAY["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[]
+SELECT [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[]

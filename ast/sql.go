@@ -620,19 +620,9 @@ func (p *Path) SQL() string {
 }
 
 func (a *ArrayLiteral) SQL() string {
-	sql := "ARRAY"
-	if a.Type != nil {
-		sql += "<" + a.Type.SQL() + ">"
-	}
-	sql += "["
-	for i, v := range a.Values {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += "]"
-	return sql
+	return strOpt(!a.Array.Invalid(), "ARRAY") +
+		sqlOpt("<", a.Type, ">") +
+		"[" + sqlJoin(a.Values, ", ") + "]"
 }
 
 func (s *StructLiteral) SQL() string {

@@ -1759,6 +1759,7 @@ func (p *Parser) parseArrayLiteralOrSubQuery() ast.Expr {
 func (p *Parser) parseSimpleArrayLiteral() *ast.ArrayLiteral {
 	values, lbrack, rbrack := p.parseArrayLiteralBody()
 	return &ast.ArrayLiteral{
+		Array:  token.InvalidPos,
 		Lbrack: lbrack,
 		Rbrack: rbrack,
 		Values: values,
