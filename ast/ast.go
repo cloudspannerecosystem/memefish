@@ -1457,6 +1457,7 @@ type Options struct {
 
 	Records []*OptionsDef // len(Records) > 0
 }
+
 // OptionsDef is single option definition for DDL statements.
 //
 //	{{.Name | sql}} = {{.Value | sql}}
@@ -1520,7 +1521,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *Options
+	Options     *Options // optional
 }
 
 // ColumnDef is column definition in CREATE TABLE.
