@@ -2466,13 +2466,13 @@ func (p *Parser) tryParseOptions() *ast.Options {
 }
 
 func (p *Parser) parseOptions() *ast.Options {
-	optionsPos := p.expectKeywordLike("OPTIONS").Pos
+	pos := p.expectKeywordLike("OPTIONS").Pos
 	p.expect("(")
 	optionsDefs := parseCommaSeparatedList(p, p.parseOptionsDef)
 	rparen := p.expect(")").Pos
 
 	return &ast.Options{
-		Options: optionsPos,
+		Options: pos,
 		Rparen:  rparen,
 		Records: optionsDefs,
 	}
