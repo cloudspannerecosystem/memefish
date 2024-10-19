@@ -70,11 +70,11 @@ func ExampleParseType() {
 }
 func ExampleParseDDL() {
 	sql := heredoc.Doc(`
-					CREATE TABLE foo (
-						x int64,
-						y int64,
-					) PRIMARY KEY (x)
-				`)
+			CREATE TABLE foo (
+				x int64,
+				y int64,
+			) PRIMARY KEY (x)
+		`)
 
 	ddl, err := memefish.ParseDDL("path/to/file.sql", sql)
 	if err != nil {
@@ -89,14 +89,14 @@ func ExampleParseDDL() {
 
 func ExampleParseDDLs() {
 	sql := heredoc.Doc(`
-					CREATE TABLE foo (x int64, y int64) PRIMARY KEY (x);
+			CREATE TABLE foo (x int64, y int64) PRIMARY KEY (x);
 
-					CREATE TABLE bar (
-						x int64, z int64,
-					)
-					PRIMARY KEY (x, z),
-					INTERLEAVE IN PARENT foo;
-				`)
+			CREATE TABLE bar (
+				x int64, z int64,
+			)
+			PRIMARY KEY (x, z),
+			INTERLEAVE IN PARENT foo;
+		`)
 
 	ddls, err := memefish.ParseDDLs("path/to/file.sql", sql)
 	if err != nil {
@@ -114,10 +114,10 @@ func ExampleParseDDLs() {
 
 func ExampleParseDML() {
 	sql := heredoc.Doc(`
-					INSERT INTO foo (x, y)
-					VALUES (1, 2),
-					       (3, 4)
-				`)
+			INSERT INTO foo (x, y)
+			VALUES (1, 2),
+			       (3, 4)
+			`)
 
 	dml, err := memefish.ParseDML("path/to/file.sql", sql)
 	if err != nil {
@@ -132,9 +132,9 @@ func ExampleParseDML() {
 
 func ExampleParseDMLs() {
 	sql := heredoc.Doc(`
-					INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
-					DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;
-				`)
+			INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
+			DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;
+		`)
 
 	dmls, err := memefish.ParseDMLs("path/to/file.sql", sql)
 	if err != nil {
