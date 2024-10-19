@@ -13,7 +13,7 @@ GROUP BY
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{

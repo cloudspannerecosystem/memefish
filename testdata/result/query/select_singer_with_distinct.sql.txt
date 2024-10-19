@@ -12,7 +12,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: true,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 20,

@@ -169,7 +169,7 @@ func (c *CTE) SQL() string {
 func (s *Select) SQL() string {
 	return "SELECT " +
 		strOpt(s.Distinct, "DISTINCT ") +
-		strOpt(s.AsStruct, "AS STRUCT ") +
+		sqlOpt("", s.As, " ") +
 		sqlJoin(s.Results, ", ") +
 		sqlOpt(" ", s.From, "") +
 		sqlOpt(" ", s.Where, "") +
@@ -178,6 +178,12 @@ func (s *Select) SQL() string {
 		sqlOpt(" ", s.OrderBy, "") +
 		sqlOpt(" ", s.Limit, "")
 }
+
+func (a *AsStruct) SQL() string { return "AS STRUCT" }
+
+func (a *AsValue) SQL() string { return "AS VALUE" }
+
+func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
 
 func (c *CompoundQuery) SQL() string {
 	op := string(c.Op)

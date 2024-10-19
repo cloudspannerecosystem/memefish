@@ -18,7 +18,7 @@ ORDER BY
       &ast.Select{
         Select:   0,
         Distinct: false,
-        AsStruct: false,
+        As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
             Star: 7,
@@ -46,7 +46,7 @@ ORDER BY
       &ast.Select{
         Select:   32,
         Distinct: false,
-        AsStruct: false,
+        As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
             Star: 39,

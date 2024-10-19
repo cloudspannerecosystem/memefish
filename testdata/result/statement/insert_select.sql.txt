@@ -26,7 +26,7 @@ select * from unnest([(1, 2), (3, 4)])
     Query: &ast.Select{
       Select:   22,
       Distinct: false,
-      AsStruct: false,
+      As:       nil,
       Results:  []ast.SelectItem{
         &ast.Star{
           Star: 29,
