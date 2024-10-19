@@ -2015,9 +2015,9 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 
 func (p *Parser) parseNewConstructorArg() *ast.NewConstructorArg {
 	expr := p.parseExpr()
-	var alias *ast.AsAlias
 
 	// Whole "AS alias" is optional, but "AS" keyword can't be omitted.
+	var alias *ast.AsAlias
 	if p.Token.Kind == "AS" {
 		alias = p.tryParseAsAlias()
 	}
