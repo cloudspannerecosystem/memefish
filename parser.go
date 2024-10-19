@@ -2104,27 +2104,29 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 	return
 }
 
+func (p *Parser) parseNewConstructorArg() *ast.NewConstructorArg {
+	expr := p.parseExpr()
+	var alias *ast.AsAlias
+
+	// Whole "AS alias" is optional, but "AS" keyword can't be omitted.
+	if p.Token.Kind == "AS" {
+		alias = p.tryParseAsAlias()
+	}
+
+	return &ast.NewConstructorArg{
+		Expr:  expr,
+		Alias: alias,
+	}
+}
 func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
 	p.expect("(")
 
+	// Args can be empty like `NEW pkg.TypeName ()`.
 	var args []*ast.NewConstructorArg
-	for {
-		if p.Token.Kind == ")" {
-			break
-		}
-		expr := p.parseExpr()
-		var alias *ast.AsAlias
-		if p.Token.Kind == "AS" {
-			alias = p.tryParseAsAlias()
-		}
-		args = append(args, &ast.NewConstructorArg{
-			Expr:  expr,
-			Alias: alias,
-		})
-		if p.Token.Kind == "," {
-			p.nextToken()
-		}
+	if p.Token.Kind != ")" {
+		args = parseCommaSeparatedList(p, p.parseNewConstructorArg)
 	}
+
 	rparen := p.expect(")").Pos
 	return &ast.NewConstructor{
 		New:    newPos,
@@ -2150,20 +2152,27 @@ func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
 
 func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
 	lbrace := p.expect("{").Pos
+
+	// Braced constructor permits empty.
 	var fields []*ast.BracedConstructorField
 	for {
 		if p.Token.Kind == "}" {
 			break
 		}
+
 		if p.Token.Kind != token.TokenIdent {
 			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
 		}
 		fields = append(fields, p.parseBracedNewConstructorField())
+
+		// It is an optional comma.
 		if p.Token.Kind == "," {
 			p.nextToken()
 		}
 	}
+
 	rbrace := p.expect("}").Pos
+
 	return &ast.BracedConstructor{
 		Lbrace: lbrace,
 		Rbrace: rbrace,
@@ -2183,6 +2192,7 @@ func (p *Parser) parseBracedNewConstructor(newPos token.Pos, namedType *ast.Name
 func (p *Parser) parseNewConstructors() ast.Expr {
 	newPos := p.expect("NEW").Pos
 	namedType := p.parseNamedType()
+
 	switch p.Token.Kind {
 	case "(":
 		return p.parseNewConstructor(newPos, namedType)
