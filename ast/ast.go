@@ -1234,7 +1234,7 @@ type Path struct {
 
 // ArrayLiteral is array literal node.
 //
-//	{{if not(.Array.Invalid())}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	{{if .Array.Invalid | not}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
