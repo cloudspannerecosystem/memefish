@@ -179,6 +179,24 @@ func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 
+// NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
+type NullHandlingModifier interface {
+	Node
+	isNullHandlingModifier()
+}
+
+func (IgnoreNulls) isNullHandlingModifier()  {}
+func (RespectNulls) isNullHandlingModifier() {}
+
+// HavingModifier represents HAVING clause of aggregate function calls.
+type HavingModifier interface {
+	Node
+	isHavingModifier()
+}
+
+func (HavingMax) isHavingModifier() {}
+func (HavingMin) isHavingModifier() {}
+
 // InCondition is right-side value of IN operator.
 type InCondition interface {
 	Node
@@ -995,17 +1013,26 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sqlJoin ", "}}{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}{{.NamedArgs || sqlJoin ", "}})
+//		{{.Func | sql}}(
+//		{{if .Distinct}}DISTINCT{{end}}
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//	    {{.NullHandling | sqlOpt}}
+//	    {{.Having | sqlOpt}}
+//		)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
-	Func      *Ident
-	Distinct  bool
-	Args      []Arg
-	NamedArgs []*NamedArg
+	Func         *Ident
+	Distinct     bool
+	Args         []Arg
+	NamedArgs    []*NamedArg
+	NullHandling NullHandlingModifier // optional
+	Having       HavingModifier       // optional
 }
 
 // ExprArg is argument of the generic function call.
@@ -1052,6 +1079,50 @@ type NamedArg struct {
 
 	Name  *Ident
 	Value Expr
+}
+
+// IgnoreNulls represents IGNORE NULLS of aggregate function calls.
+//
+//	IGNORE NULLS
+type IgnoreNulls struct {
+	// pos = Ignore
+	// end = Nulls + 5
+
+	Ignore token.Pos
+	Nulls  token.Pos
+}
+
+// RespectNulls represents RESPECT NULLS of aggregate function calls
+//
+//	RESPECT NULLS
+type RespectNulls struct {
+	// pos = Respect
+	// end = Nulls + 5
+
+	Respect token.Pos
+	Nulls   token.Pos
+}
+
+// HavingMax represents HAVING MAX of aggregate function calls.
+//
+//	HAVING MAX {{Expr | sql}}
+type HavingMax struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
+}
+
+// HavingMin represents HAVING MIN of aggregate function calls.
+//
+//	HAVING MIN {{Expr | sql}}
+type HavingMin struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
@@ -1616,7 +1687,7 @@ type GeneratedColumnExpr struct {
 	// end = Stored + 6 || Rparen + 1
 
 	As     token.Pos // position of "AS" keyword
-	Stored token.Pos // position of "STORED" keyword, InvalidPos if not stored
+	Stored token.Pos // position of "STORED" keyword, optional
 	Rparen token.Pos // position of ")"
 
 	Expr Expr

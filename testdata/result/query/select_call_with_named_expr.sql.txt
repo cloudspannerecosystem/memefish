@@ -137,6 +137,8 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
               },
             },
           },
+          NullHandling: nil,
+          Having:       nil,
         },
       },
     },

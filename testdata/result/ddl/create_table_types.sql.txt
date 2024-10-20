@@ -227,7 +227,7 @@ create table types (
       },
       Type: &ast.ArraySchemaType{
         Array: 174,
-        Gt:    185,
+        Gt:    184,
         Item:  &ast.ScalarSchemaType{
           NamePos: 180,
           Name:    "BOOL",
@@ -248,7 +248,7 @@ create table types (
       },
       Type: &ast.ArraySchemaType{
         Array: 193,
-        Gt:    210,
+        Gt:    209,
         Item:  &ast.SizedSchemaType{
           NamePos: 199,
           Rparen:  208,

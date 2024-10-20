@@ -378,6 +378,18 @@ func (s *SequenceArg) End() token.Pos { return s.Expr.End() }
 func (n *NamedArg) Pos() token.Pos { return n.Name.Pos() }
 func (n *NamedArg) End() token.Pos { return n.Value.End() }
 
+func (i *IgnoreNulls) Pos() token.Pos { return i.Ignore }
+func (i *IgnoreNulls) End() token.Pos { return i.Nulls + 5 }
+
+func (r *RespectNulls) Pos() token.Pos { return r.Respect }
+func (r *RespectNulls) End() token.Pos { return r.Nulls + 5 }
+
+func (h *HavingMax) Pos() token.Pos { return h.Having }
+func (h *HavingMax) End() token.Pos { return h.Expr.End() }
+
+func (h *HavingMin) Pos() token.Pos { return h.Having }
+func (h *HavingMin) End() token.Pos { return h.Expr.End() }
+
 func (c *CountStarExpr) Pos() token.Pos { return c.Count }
 func (c *CountStarExpr) End() token.Pos { return c.Rparen + 1 }
 
