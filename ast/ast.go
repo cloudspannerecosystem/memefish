@@ -1558,6 +1558,30 @@ type CastNumValue struct {
 //
 // ================================================================================
 
+// Options is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type Options struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*OptionsDef // len(Records) > 0
+}
+
+// OptionsDef is single option definition for DDL statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type OptionsDef struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -1601,7 +1625,7 @@ type CreateTable struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
@@ -1610,7 +1634,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *SequenceOptions
+	Options     *Options
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1631,7 +1655,7 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
-	Options       *ColumnDefOptions    // optional
+	Options       *Options             // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
@@ -1658,19 +1682,6 @@ type GeneratedColumnExpr struct {
 	Stored token.Pos // position of "STORED" keyword
 
 	Expr Expr
-}
-
-// ColumnDefOption is options for column definition.
-//
-//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
-type ColumnDefOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	AllowCommitTimestamp bool
 }
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
@@ -1820,7 +1831,7 @@ type AlterSequence struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name    *Ident
-	Options *SequenceOptions
+	Options *Options
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
@@ -1958,7 +1969,7 @@ type AlterColumnSet struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name        *Ident
-	Options     *ColumnDefOptions
+	Options     *Options
 	DefaultExpr *ColumnDefaultExpr
 }
 
@@ -2025,20 +2036,7 @@ type CreateVectorIndex struct {
 	//
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
-	Options *VectorIndexOptions
-}
-
-// VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type VectorIndexOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*VectorIndexOption // len(Records) > 0
+	Options *Options
 }
 
 // VectorIndexOption is OPTIONS record node.
@@ -2062,8 +2060,8 @@ type CreateChangeStream struct {
 	Create token.Pos // position of "CREATE" keyword
 
 	Name    *Ident
-	For     ChangeStreamFor      // optional
-	Options *ChangeStreamOptions // optional
+	For     ChangeStreamFor // optional
+	Options *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
@@ -2102,30 +2100,6 @@ type ChangeStreamForTable struct {
 	Columns   []*Ident
 }
 
-// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type ChangeStreamOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*ChangeStreamOptionsRecord // len(Records) > 0
-}
-
-// ChangeStreamOptionsRecord is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type ChangeStreamOptionsRecord struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
-}
-
 // ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
 //	SET FOR {{.For | sql}}
@@ -2158,7 +2132,7 @@ type ChangeStreamSetOptions struct {
 
 	Set token.Pos // position of "SET" keyword
 
-	Options *ChangeStreamOptions
+	Options *Options
 }
 
 // Storing is STORING clause in CREATE INDEX.
@@ -2560,28 +2534,4 @@ type UpdateItem struct {
 
 	Path []*Ident // len(Path) > 0
 	Expr Expr
-}
-
-// SequenceOption is option for CREATE SEQUENCE.
-//
-//	{{.Name | sql}} = {{.Value | sql}}
-type SequenceOption struct {
-	// pos = Name.pos
-	// end = Value.end
-
-	Name  *Ident
-	Value Expr
-}
-
-// SequenceOptions is OPTIONS clause node in CREATE|ALTER SEQUENCE .
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type SequenceOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*SequenceOption // len(Records) > 0
 }

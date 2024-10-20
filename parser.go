@@ -2262,51 +2262,11 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
-func (p *Parser) parseSequenceOptions(pos token.Pos) *ast.SequenceOptions {
-	p.expectKeywordLike("OPTIONS")
-	p.expect("(")
-	var records []*ast.SequenceOption
-	for p.Token.Kind != token.TokenEOF {
-		if p.Token.Kind == ")" {
-			break
-		}
-		optionName := p.parseIdent()
-		p.expect("=")
-		var value ast.Expr
-		switch p.Token.Kind {
-		case token.TokenInt:
-			value = p.parseIntLiteral()
-		case token.TokenString:
-			value = p.parseStringLiteral()
-		default:
-			p.panicfAtToken(&p.Token, "expected token: <int>, <string>, but: %s", p.Token.Kind)
-		}
-		records = append(records, &ast.SequenceOption{
-			Name:  optionName,
-			Value: value,
-		})
-		if p.Token.Kind != "," {
-			break
-		}
-		p.nextToken()
-
-	}
-	rparen := p.expect(")").Pos
-	if len(records) == 0 {
-		p.panicfAtToken(&p.Token, "required at least one option")
-	}
-	return &ast.SequenceOptions{
-		Options: pos,
-		Rparen:  rparen,
-		Records: records,
-	}
-}
-
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
-	options := p.parseSequenceOptions(p.Token.Pos)
+	options := p.parseOptions()
 
 	return &ast.CreateSequence{
 		Create:      pos,
@@ -2359,7 +2319,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	t, notNull, null := p.parseTypeNotNull()
 	defaultExpr := p.tryParseColumnDefaultExpr()
 	generated := p.tryParseGeneratedColumnExpr()
-	options := p.tryParseColumnDefOptions()
+	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
 		Null:          null,
@@ -2477,40 +2437,6 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	}
 }
 
-func (p *Parser) tryParseColumnDefOptions() *ast.ColumnDefOptions {
-	if !p.Token.IsKeywordLike("OPTIONS") {
-		return nil
-	}
-
-	return p.parseColumnDefOptions()
-}
-
-func (p *Parser) parseColumnDefOptions() *ast.ColumnDefOptions {
-	pos := p.expectKeywordLike("OPTIONS").Pos
-
-	p.expect("(")
-	p.expectIdent("allow_commit_timestamp")
-	p.expect("=")
-
-	var allowCommitTimestamp bool
-	switch p.Token.Kind {
-	case "TRUE":
-		allowCommitTimestamp = true
-	case "NULL":
-		allowCommitTimestamp = false
-	default:
-		p.panicfAtToken(&p.Token, "expected token: TRUE, NULL, but: %s", p.Token.Kind)
-	}
-	p.nextToken()
-
-	rparen := p.expect(")").End
-	return &ast.ColumnDefOptions{
-		Options:              pos,
-		Rparen:               rparen,
-		AllowCommitTimestamp: allowCommitTimestamp,
-	}
-}
-
 func (p *Parser) parseIndexKey() *ast.IndexKey {
 	name := p.parseIdent()
 	dir, dirPos := p.tryParseDirection()
@@ -2608,28 +2534,34 @@ func (p *Parser) parseOnDeleteAction() (onDelete ast.OnDeleteAction, onDeleteEnd
 	return
 }
 
-func (p *Parser) parseVectorIndexOptions() *ast.VectorIndexOptions {
+func (p *Parser) parseOptionsDef() *ast.OptionsDef {
+	key := p.parseIdent()
+	p.expect("=")
+	value := p.parseExpr()
+	return &ast.OptionsDef{
+		Name:  key,
+		Value: value,
+	}
+}
+
+func (p *Parser) tryParseOptions() *ast.Options {
+	if !p.Token.IsKeywordLike("OPTIONS") {
+		return nil
+	}
+	return p.parseOptions()
+}
+
+func (p *Parser) parseOptions() *ast.Options {
 	pos := p.expectKeywordLike("OPTIONS").Pos
 	p.expect("(")
-	options := &ast.VectorIndexOptions{Options: pos}
-	for {
-		key := p.parseIdent()
-		p.expect("=")
-		value := p.parseExpr()
-		options.Records = append(options.Records, &ast.VectorIndexOption{Key: key, Value: value})
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		}
-		if p.Token.Kind == ")" {
-			options.Rparen = p.Token.Pos
-			p.nextToken()
-			break
-		}
-		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
-	}
+	optionsDefs := parseCommaSeparatedList(p, p.parseOptionsDef)
+	rparen := p.expect(")").Pos
 
-	return options
+	return &ast.Options{
+		Options: pos,
+		Rparen:  rparen,
+		Records: optionsDefs,
+	}
 }
 
 func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
@@ -2644,7 +2576,7 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 	p.expect(")")
 
 	where := p.tryParseWhere()
-	options := p.parseVectorIndexOptions()
+	options := p.parseOptions()
 
 	return &ast.CreateVectorIndex{
 		Create:      pos,
@@ -2722,7 +2654,7 @@ func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream 
 		cs.For = p.parseChangeStreamFor()
 	}
 	if p.Token.IsKeywordLike("OPTIONS") {
-		cs.Options = p.parseChangeStreamOptions()
+		cs.Options = p.parseOptions()
 	}
 	return cs
 
@@ -2748,7 +2680,7 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 		} else if p.Token.IsKeywordLike("OPTIONS") {
 			cs.ChangeStreamAlteration = &ast.ChangeStreamSetOptions{
 				Set:     setpos,
-				Options: p.parseChangeStreamOptions(),
+				Options: p.parseOptions(),
 			}
 			return cs
 		}
@@ -2813,34 +2745,6 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 	}
 	return cswt
 
-}
-
-// Parse CHANGE STREAM OPTIONS.
-// We parse any expressions in OPTIONS. even if tokens includes unsupported expressions.
-// This is for the key, value which will supported in the future.
-// We don't need to modify this code for them.
-func (p *Parser) parseChangeStreamOptions() *ast.ChangeStreamOptions {
-	pos := p.expectKeywordLike("OPTIONS").Pos
-	p.expect("(")
-	cso := &ast.ChangeStreamOptions{Options: pos}
-	for {
-		key := p.parseIdent()
-		p.expect("=")
-		value := p.parseExpr()
-		cso.Records = append(cso.Records, &ast.ChangeStreamOptionsRecord{Key: key, Value: value})
-		if p.Token.Kind == "," {
-			p.nextToken()
-			continue
-		}
-		if p.Token.Kind == ")" {
-			cso.Rparen = p.Token.Pos
-			p.nextToken()
-			break
-		}
-		p.panicfAtToken(&p.Token, "expected expr or , or ), but: %s", p.Token.AsString)
-	}
-
-	return cso
 }
 
 func (p *Parser) tryParseStoring() *ast.Storing {
@@ -3028,7 +2932,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlteration {
 				DefaultExpr: defaultExpr,
 			}
 		} else {
-			options := p.parseColumnDefOptions()
+			options := p.parseOptions()
 			return &ast.AlterColumnSet{
 				Alter:   pos,
 				Name:    name,
@@ -3075,7 +2979,7 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
 	name := p.parseIdent()
 	p.expect("SET")
-	options := p.parseSequenceOptions(p.Token.Pos)
+	options := p.parseOptions()
 
 	return &ast.AlterSequence{
 		Alter:   pos,

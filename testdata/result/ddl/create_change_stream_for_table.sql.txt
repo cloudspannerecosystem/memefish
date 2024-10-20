@@ -23,7 +23,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name
       },
     },
   },
-  Options: (*ast.ChangeStreamOptions)(nil),
+  Options: (*ast.Options)(nil),
 }
 
 --- SQL
