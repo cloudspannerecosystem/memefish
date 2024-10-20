@@ -1,0 +1,6 @@
+SELECT
+    ARRAY_AGG(inches HAVING MAX year),
+    ARRAY_AGG(inches HAVING MIN year),
+    ARRAY_AGG(inches IGNORE NULLS),
+    ARRAY_AGG(inches RESPECT NULLS),
+    ARRAY_AGG(inches RESPECT NULLS HAVING MAX year),
