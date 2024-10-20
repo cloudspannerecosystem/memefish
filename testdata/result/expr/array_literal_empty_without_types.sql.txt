@@ -1,0 +1,13 @@
+--- array_literal_empty_without_types.sql
+ARRAY[]
+--- AST
+&ast.ArrayLiteral{
+  Array:  0,
+  Lbrack: 5,
+  Rbrack: 6,
+  Type:   nil,
+  Values: []ast.Expr(nil),
+}
+
+--- SQL
+ARRAY[]

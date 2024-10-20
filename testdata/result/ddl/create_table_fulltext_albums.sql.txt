@@ -38,7 +38,7 @@ CREATE TABLE Albums (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: 224,
@@ -55,7 +55,7 @@ CREATE TABLE Albums (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: 281,
@@ -72,7 +72,7 @@ CREATE TABLE Albums (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -92,7 +92,7 @@ CREATE TABLE Albums (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -109,7 +109,7 @@ CREATE TABLE Albums (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -149,7 +149,7 @@ CREATE TABLE Albums (
         },
       },
       Hidden:  462,
-      Options: (*ast.ColumnDefOptions)(nil),
+      Options: (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -189,7 +189,7 @@ CREATE TABLE Albums (
         },
       },
       Hidden:  547,
-      Options: (*ast.ColumnDefOptions)(nil),
+      Options: (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint(nil),

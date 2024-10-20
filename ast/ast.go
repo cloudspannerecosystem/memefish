@@ -32,10 +32,7 @@
 package ast
 
 import (
-	"errors"
-	"fmt"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"strconv"
 )
 
 // Node is base interface of Spanner SQL AST nodes.
@@ -101,6 +98,16 @@ func (Star) isSelectItem()           {}
 func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
+
+// SelectAs represents AS VALUE/STRUCT/typename clause in SELECT clause.
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
 
 // TableExpr represents JOIN operands.
 type TableExpr interface {
@@ -437,7 +444,7 @@ type CTE struct {
 //
 //	SELECT
 //	  {{if .Distinct}}DISTINCT{{end}}
-//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
@@ -452,7 +459,7 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool
+	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -460,6 +467,38 @@ type Select struct {
 	Having   *Having      // optional
 	OrderBy  *OrderBy     // optional
 	Limit    *Limit       // optional
+}
+
+// AsStruct represents AS STRUCT node in SELECT clause.
+//
+//	AS STRUCT
+type AsStruct struct {
+	// pos = As
+	// end = Struct + 6
+	As     token.Pos
+	Struct token.Pos
+}
+
+// AsValue represents AS VALUE node in SELECT clause.
+//
+//	AS VALUE
+type AsValue struct {
+	// pos = As
+	// end = Value + 5
+
+	As    token.Pos
+	Value token.Pos
+}
+
+// AsTypeName represents AS typename node in SELECT clause.
+//
+//	AS {{.TypeName | sql}}
+type AsTypeName struct {
+	// pos = As
+	// end = TypeName.end
+
+	As       token.Pos
+	TypeName *NamedType
 }
 
 // CompoundQuery is query statement node compounded by set operators.
@@ -943,7 +982,7 @@ type SelectorExpr struct {
 
 // IndexExpr is array item access expression node.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Name | sql}})]
+//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
@@ -1199,14 +1238,14 @@ type Path struct {
 	Idents []*Ident // len(Idents) >= 2
 }
 
-// AraryLiteral is array literal node.
+// ArrayLiteral is array literal node.
 //
-//	ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	{{if .Array.Invalid | not}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
 
-	Array          token.Pos // position of "ARRAY" keyword
+	Array          token.Pos // position of "ARRAY" keyword, optional
 	Lbrack, Rbrack token.Pos // position of "[" and "]"
 
 	Type   Type // optional
@@ -1464,92 +1503,13 @@ type Options struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*OptionsRecord // len(Records) > 0
+	Records []*OptionsDef // len(Records) > 0
 }
 
-// Field finds name in Records, and return its value as Expr.
-// The second return value indicates that the name was found in Records.
-// It is not exposed because you can use *Field methods.
-func (o *Options) Field(name string) (expr Expr, found bool) {
-	for _, r := range o.Records {
-		if r.Name.Name != name {
-			continue
-		}
-		return r.Value, true
-	}
-	return nil, false
-}
-
-var FieldNotFound = errors.New("field not found")
-
-// BoolField finds name in records, and return its value as *bool.
-// If Options doesn't have a record with name, it returns FieldNotFound error.
-// If record have NullLiteral value, it returns nil.
-// If record have BoolLiteral value, it returns pointer of bool value.
-// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
-func (o *Options) BoolField(name string) (*bool, error) {
-	v, ok := o.Field(name)
-	if !ok {
-		return nil, FieldNotFound
-	}
-	switch v := v.(type) {
-	case *BoolLiteral:
-		return &v.Value, nil
-	case *NullLiteral:
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("expect BoolLiteral or NullLiteral, but have unknown type %T", v)
-	}
-}
-
-// IntegerField finds name in records, and return its value as *int64.
-// If Options doesn't have a record with name, it returns FieldNotFound error.
-// If record have NullLiteral value, it returns nil.
-// If record have IntegerLiteral value, it returns pointer of int64 value.
-// If record have value which is neither NullLiteral nor BoolLiteral, it returns error.
-func (o *Options) IntegerField(name string) (*int64, error) {
-	v, ok := o.Field(name)
-	if !ok {
-		return nil, FieldNotFound
-	}
-	switch v := v.(type) {
-	case *IntLiteral:
-		n, err := strconv.ParseInt(v.Value, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		return &n, nil
-	case *NullLiteral:
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("expect IntLiteral or NullLiteral, but have unknown type %T", v)
-	}
-}
-
-// StringField finds name in records, and return its value as *string.
-// If Options doesn't have a record with name, it returns FieldNotFound error.
-// If record have NullLiteral value, it returns nil.
-// If record have StringLiteral value, it returns pointer of string value.
-// If record have value which is neither NullLiteral nor StringLiteral, it returns error.
-func (o *Options) StringField(name string) (*string, error) {
-	v, ok := o.Field(name)
-	if !ok {
-		return nil, FieldNotFound
-	}
-	switch v := v.(type) {
-	case *StringLiteral:
-		return &v.Value, nil
-	case *NullLiteral:
-		return nil, nil
-	default:
-		return nil, fmt.Errorf("expect StringLiteral or NullLiteral, but have unknown type %T", v)
-	}
-}
-
-// OptionsRecord is generic option for CREATE statements.
+// OptionsDef is single option definition for DDL statements.
 //
 //	{{.Name | sql}} = {{.Value | sql}}
-type OptionsRecord struct {
+type OptionsDef struct {
 	// pos = Name.pos
 	// end = Value.end
 
@@ -1600,7 +1560,7 @@ type CreateTable struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
@@ -1609,7 +1569,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *SequenceOptions
+	Options     *Options
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1618,7 +1578,7 @@ type CreateSequence struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultExpr | sqlOpt}}
 //	{{.GeneratedExpr | sqlOpt}}
-//	{{if not(.Hidden.Invalid())}}HIDDEN{{end}}
+//	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
@@ -1632,7 +1592,7 @@ type ColumnDef struct {
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
 	Hidden        token.Pos            // InvalidPos if not hidden
-	Options       *ColumnDefOptions    // optional
+	Options       *Options             // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
@@ -1679,6 +1639,9 @@ type ColumnDefOptions struct {
 //
 //	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
 type TableConstraint struct {
+	// pos = ConstraintPos || Constraint.pos
+	// end = Constraint.end
+
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
 	Name       *Ident // optional
@@ -1819,7 +1782,7 @@ type AlterSequence struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name    *Ident
-	Options *SequenceOptions
+	Options *Options
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
@@ -1957,7 +1920,7 @@ type AlterColumnSet struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name        *Ident
-	Options     *ColumnDefOptions
+	Options     *Options
 	DefaultExpr *ColumnDefaultExpr
 }
 
@@ -2024,20 +1987,7 @@ type CreateVectorIndex struct {
 	//
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
-	Options *VectorIndexOptions
-}
-
-// VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type VectorIndexOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*VectorIndexOption // len(Records) > 0
+	Options *Options
 }
 
 // VectorIndexOption is OPTIONS record node.
@@ -2061,8 +2011,8 @@ type CreateChangeStream struct {
 	Create token.Pos // position of "CREATE" keyword
 
 	Name    *Ident
-	For     ChangeStreamFor      // optional
-	Options *ChangeStreamOptions // optional
+	For     ChangeStreamFor // optional
+	Options *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
@@ -2101,30 +2051,6 @@ type ChangeStreamForTable struct {
 	Columns   []*Ident
 }
 
-// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type ChangeStreamOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*ChangeStreamOptionsRecord // len(Records) > 0
-}
-
-// ChangeStreamOptionsRecord is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type ChangeStreamOptionsRecord struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
-}
-
 // ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
 //	SET FOR {{.For | sql}}
@@ -2157,7 +2083,7 @@ type ChangeStreamSetOptions struct {
 
 	Set token.Pos // position of "SET" keyword
 
-	Options *ChangeStreamOptions
+	Options *Options
 }
 
 // Storing is STORING clause in CREATE INDEX.
@@ -2618,28 +2544,4 @@ type UpdateItem struct {
 
 	Path []*Ident // len(Path) > 0
 	Expr Expr
-}
-
-// SequenceOption is option for CREATE SEQUENCE.
-//
-//	{{.Name | sql}} = {{.Value | sql}}
-type SequenceOption struct {
-	// pos = Name.pos
-	// end = Value.end
-
-	Name  *Ident
-	Value Expr
-}
-
-// SequenceOptions is OPTIONS clause node in CREATE|ALTER SEQUENCE .
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type SequenceOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*SequenceOption // len(Records) > 0
 }

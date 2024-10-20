@@ -55,7 +55,7 @@ CREATE TABLE foo
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -75,7 +75,7 @@ CREATE TABLE foo
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -92,7 +92,7 @@ CREATE TABLE foo
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
       Hidden:        -1,
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint(nil),

@@ -16,7 +16,7 @@ alter table foo add check (c1 > 0)
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.Check{
         Check:  20,
-        Rparen: 34,
+        Rparen: 33,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{

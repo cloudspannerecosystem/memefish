@@ -15,14 +15,26 @@ alter table foo alter column foo set options(allow_commit_timestamp = true)
       NameEnd: 32,
       Name:    "foo",
     },
-    Options: &ast.ColumnDefOptions{
-      Options:              37,
-      Rparen:               75,
-      AllowCommitTimestamp: true,
+    Options: &ast.Options{
+      Options: 37,
+      Rparen:  74,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 45,
+            NameEnd: 67,
+            Name:    "allow_commit_timestamp",
+          },
+          Value: &ast.BoolLiteral{
+            ValuePos: 70,
+            Value:    true,
+          },
+        },
+      },
     },
     DefaultExpr: (*ast.ColumnDefaultExpr)(nil),
   },
 }
 
 --- SQL
-ALTER TABLE foo ALTER COLUMN foo SET OPTIONS(allow_commit_timestamp = true)
+ALTER TABLE foo ALTER COLUMN foo SET OPTIONS (allow_commit_timestamp = true)

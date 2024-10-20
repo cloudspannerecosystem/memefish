@@ -113,7 +113,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
         },
       },
       Hidden:  -1,
-      Options: (*ast.ColumnDefOptions)(nil),
+      Options: (*ast.Options)(nil),
     },
   },
 }

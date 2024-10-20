@@ -98,6 +98,15 @@ func (s *Select) End() token.Pos {
 	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastNode(s.Results))
 }
 
+func (a *AsStruct) Pos() token.Pos { return a.As }
+func (a *AsStruct) End() token.Pos { return a.Struct + 6 }
+
+func (a *AsValue) Pos() token.Pos { return a.As }
+func (a *AsValue) End() token.Pos { return a.Value + 5 }
+
+func (a *AsTypeName) Pos() token.Pos { return a.As }
+func (a *AsTypeName) End() token.Pos { return a.TypeName.End() }
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return c.Queries[0].Pos()
 }
@@ -528,8 +537,8 @@ func (c *CastNumValue) End() token.Pos { return c.Rparen + 1 }
 func (g *Options) Pos() token.Pos { return g.Options }
 func (g *Options) End() token.Pos { return g.Rparen + 1 }
 
-func (g *OptionsRecord) Pos() token.Pos { return g.Name.Pos() }
-func (g *OptionsRecord) End() token.Pos { return g.Value.End() }
+func (g *OptionsDef) Pos() token.Pos { return g.Name.Pos() }
+func (g *OptionsDef) End() token.Pos { return g.Value.End() }
 
 func (c *CreateDatabase) Pos() token.Pos { return c.Create }
 func (c *CreateDatabase) End() token.Pos { return c.Name.End() }
@@ -735,9 +744,6 @@ func (c *CreateChangeStream) End() token.Pos {
 	return c.Name.End()
 }
 
-func (c *ChangeStreamOptions) Pos() token.Pos { return c.Options }
-func (c *ChangeStreamOptions) End() token.Pos { return c.Rparen + 1 }
-
 func (c *ChangeStreamForAll) Pos() token.Pos    { return c.For }
 func (c *ChangeStreamForAll) End() token.Pos    { return c.All }
 func (c *ChangeStreamForTables) Pos() token.Pos { return c.For }
@@ -937,9 +943,3 @@ func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
 func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
-
-func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
-func (o *SequenceOption) End() token.Pos { return o.Value.End() }
-
-func (o *SequenceOptions) Pos() token.Pos { return o.Options }
-func (o *SequenceOptions) End() token.Pos { return o.Rparen + 1 }

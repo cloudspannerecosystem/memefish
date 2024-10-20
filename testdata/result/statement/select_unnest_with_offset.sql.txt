@@ -11,7 +11,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -24,7 +24,7 @@ FROM
         Rparen:   32,
         Implicit: false,
         Expr:     &ast.ArrayLiteral{
-          Array:  0,
+          Array:  -1,
           Lbrack: 25,
           Rbrack: 31,
           Type:   nil,
@@ -86,4 +86,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY[1, 2, 3]) @{hint=1} WITH OFFSET
+SELECT * FROM UNNEST([1, 2, 3]) @{hint=1} WITH OFFSET

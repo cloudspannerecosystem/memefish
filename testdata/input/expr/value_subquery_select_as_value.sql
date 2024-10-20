@@ -1,0 +1,1 @@
+(SELECT AS VALUE 1)

@@ -101,8 +101,8 @@ OPTIONS(sort_order_sharding=true)
   Options: &ast.Options{
     Options: 224,
     Rparen:  256,
-    Records: []*ast.OptionsRecord{
-      &ast.OptionsRecord{
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 232,
           NameEnd: 251,
@@ -118,4 +118,4 @@ OPTIONS(sort_order_sharding=true)
 }
 
 --- SQL
-CREATE SEARCH INDEX AlbumsIndexFull ON Albums(Title_Tokens, Studio_Tokens) STORING (Genre) PARTITION BY SingerId ORDER BY ReleaseTimestamp DESC WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL, INTERLEAVE IN Singers OPTIONS (sort_order_sharding = TRUE)
+CREATE SEARCH INDEX AlbumsIndexFull ON Albums(Title_Tokens, Studio_Tokens) STORING (Genre) PARTITION BY SingerId ORDER BY ReleaseTimestamp DESC WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL, INTERLEAVE IN Singers OPTIONS (sort_order_sharding = true)
