@@ -1507,56 +1507,6 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	}
 }
 
-func (p *Parser) tryParseHavingModifier() ast.HavingModifier {
-	if p.Token.Kind != "HAVING" {
-		return nil
-	}
-	having := p.expect("HAVING").Pos
-	switch {
-	case p.Token.IsKeywordLike("MIN"):
-		p.nextToken()
-		expr := p.parseExpr()
-
-		return &ast.HavingMin{
-			Having: having,
-			Expr:   expr,
-		}
-	case p.Token.IsKeywordLike("MAX"):
-		p.nextToken()
-		expr := p.parseExpr()
-
-		return &ast.HavingMax{
-			Having: having,
-			Expr:   expr,
-		}
-	default:
-		panic(p.errorfAtToken(&p.Token, `expect MIN or MAX, but: %v`, p.Token.Kind))
-	}
-}
-
-func (p *Parser) tryParseNullHandlingModifier() ast.NullHandlingModifier {
-	switch p.Token.Kind {
-	case "IGNORE":
-		ignore := p.expect("IGNORE").Pos
-		nulls := p.expect("NULLS").Pos
-
-		return &ast.IgnoreNulls{
-			Ignore: ignore,
-			Nulls:  nulls,
-		}
-	case "RESPECT":
-		respect := p.expect("RESPECT").Pos
-		nulls := p.expect("NULLS").Pos
-
-		return &ast.RespectNulls{
-			Respect: respect,
-			Nulls:   nulls,
-		}
-	default:
-		return nil
-	}
-}
-
 func (p *Parser) lookaheadNamedArg() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
@@ -1627,6 +1577,58 @@ func (p *Parser) parseExprArg() *ast.ExprArg {
 	e := p.parseExpr()
 	return &ast.ExprArg{
 		Expr: e,
+	}
+}
+
+func (p *Parser) tryParseHavingModifier() ast.HavingModifier {
+	if p.Token.Kind != "HAVING" {
+		return nil
+	}
+
+	having := p.expect("HAVING").Pos
+
+	switch {
+	case p.Token.IsKeywordLike("MIN"):
+		p.nextToken()
+		expr := p.parseExpr()
+
+		return &ast.HavingMin{
+			Having: having,
+			Expr:   expr,
+		}
+	case p.Token.IsKeywordLike("MAX"):
+		p.nextToken()
+		expr := p.parseExpr()
+
+		return &ast.HavingMax{
+			Having: having,
+			Expr:   expr,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expect MIN or MAX, but: %v`, p.Token.Kind))
+	}
+}
+
+func (p *Parser) tryParseNullHandlingModifier() ast.NullHandlingModifier {
+	switch p.Token.Kind {
+	case "IGNORE":
+		ignore := p.expect("IGNORE").Pos
+		nulls := p.expect("NULLS").Pos
+
+		return &ast.IgnoreNulls{
+			Ignore: ignore,
+			Nulls:  nulls,
+		}
+	case "RESPECT":
+		respect := p.expect("RESPECT").Pos
+		nulls := p.expect("NULLS").Pos
+
+		return &ast.RespectNulls{
+			Respect: respect,
+			Nulls:   nulls,
+		}
+	default:
+		return nil
 	}
 }
 
