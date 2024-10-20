@@ -689,6 +689,39 @@ func (t *JSONLiteral) SQL() string {
 
 // ================================================================================
 //
+// NEW constructors
+//
+// ================================================================================
+
+func (n *NewConstructorArg) SQL() string {
+	return n.Expr.SQL() + sqlOpt(" ", n.Alias, "")
+}
+
+func (n *NewConstructor) SQL() string {
+	return "NEW " + n.Type.SQL() + "(" + sqlJoin(n.Args, ", ") + ")"
+}
+
+func (b *BracedNewConstructor) SQL() string {
+	return "NEW " + b.Type.SQL() + " " + b.Body.SQL()
+}
+
+func (b *BracedConstructor) SQL() string {
+	return "{" + sqlJoin(b.Fields, ", ") + "}"
+}
+
+func (b *BracedConstructorField) SQL() string {
+	if _, ok := b.Value.(*BracedConstructor); ok {
+		// Name {...}
+		return b.Name.SQL() + " " + b.Value.SQL()
+	}
+	// Name: value
+	return b.Name.SQL() + b.Value.SQL()
+}
+
+func (b *BracedConstructorFieldValueExpr) SQL() string { return ": " + b.Expr.SQL() }
+
+// ================================================================================
+//
 // Type
 //
 // ================================================================================

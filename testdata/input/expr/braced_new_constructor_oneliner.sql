@@ -1,0 +1,1 @@
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
