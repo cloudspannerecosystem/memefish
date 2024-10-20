@@ -2432,56 +2432,6 @@ type ArraySchemaType struct {
 //
 // ================================================================================
 
-// ExprOrDefault is expression or DEFAULT node in UPDATE/INSERT
-type ExprOrDefault interface {
-	Node
-	isExprOrDefault()
-}
-
-// ExprOrDefaultExpr is Expr in UPDATE/INSERT.
-type ExprOrDefaultExpr struct {
-	// pos = Expr.pos
-	// end = Expr.end
-
-	Expr Expr
-}
-
-func (e *ExprOrDefaultExpr) Pos() token.Pos {
-	return e.Expr.Pos()
-}
-
-func (e *ExprOrDefaultExpr) End() token.Pos {
-	return e.Expr.End()
-}
-
-func (e *ExprOrDefaultExpr) SQL() string {
-	return e.Expr.SQL()
-}
-
-func (ExprOrDefaultExpr) isExprOrDefault() {}
-
-// ExprOrDefaultDefault is DEFAULT in UPDATE/INSERT.
-type ExprOrDefaultDefault struct {
-	// pos = Default
-	// end = Default + 7
-
-	Default token.Pos
-}
-
-func (e *ExprOrDefaultDefault) Pos() token.Pos {
-	return e.Default
-}
-
-func (e *ExprOrDefaultDefault) End() token.Pos {
-	return e.Default + 7
-}
-
-func (e *ExprOrDefaultDefault) SQL() string {
-	return "DEFAULT"
-}
-
-func (ExprOrDefaultDefault) isExprOrDefault() {}
-
 // Insert is INSERT statement node.
 //
 //	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}

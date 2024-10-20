@@ -3484,23 +3484,13 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	}
 }
 
-func (p *Parser) parseExprOrDefault() ast.ExprOrDefault {
-	if p.Token.Kind == "DEFAULT" {
-		pos := p.expect("DEFAULT").Pos
-		return &ast.ExprOrDefaultDefault{Default: pos}
-	} else {
-		expr := p.parseExpr()
-		return &ast.ExprOrDefaultExpr{Expr: expr}
-	}
-}
-
 func (p *Parser) parseUpdateItem() *ast.UpdateItem {
 	path := p.parseIdentOrPath()
 	p.expect("=")
 	defaultExpr := p.parseDefaultExpr()
 
 	return &ast.UpdateItem{
-		Path:          path,
+		Path:        path,
 		DefaultExpr: defaultExpr,
 	}
 }
