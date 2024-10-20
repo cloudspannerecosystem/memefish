@@ -1103,6 +1103,7 @@ type RespectNulls struct {
 type HavingMax struct {
 	// pos = Having
 	// end = Expr.end
+
 	Having token.Pos
 	Expr   Expr
 }
