@@ -2424,15 +2424,15 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 		return nil
 	}
 
-	posAs := p.expect("AS").Pos
+	pos := p.expect("AS").Pos
 	p.expect("(")
 	expr := p.parseExpr()
 	p.expect(")")
-	posEnd := p.expectKeywordLike("STORED").End
+	stored := p.expectKeywordLike("STORED").Pos
 
 	return &ast.GeneratedColumnExpr{
-		As:     posAs,
-		Stored: posEnd,
+		As:     pos,
+		Stored: stored,
 		Expr:   expr,
 	}
 }
@@ -3237,7 +3237,7 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 		pos := p.expect("ARRAY").Pos
 		p.expect("<")
 		t := p.parseScalarSchemaType()
-		end := p.expect(">").End
+		end := p.expect(">").Pos
 		return &ast.ArraySchemaType{
 			Array: pos,
 			Gt:    end,
