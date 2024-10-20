@@ -505,10 +505,20 @@ func (c *CallExpr) SQL() string {
 		sqlJoin(c.Args, ", ") +
 		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
 		sqlJoin(c.NamedArgs, ", ") +
+		sqlOpt(" ", c.NullHandling, "") +
+		sqlOpt(" ", c.Having, "") +
 		")"
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
+
+func (i *IgnoreNulls) SQL() string { return "IGNORE NULLS" }
+
+func (r *RespectNulls) SQL() string { return "RESPECT NULLS" }
+
+func (h *HavingMax) SQL() string { return "HAVING MAX " + h.Expr.SQL() }
+
+func (h *HavingMin) SQL() string { return "HAVING MIN " + h.Expr.SQL() }
 
 func (o *SequenceOption) SQL() string {
 	return o.Name.SQL() + " = " + o.Value.SQL()
