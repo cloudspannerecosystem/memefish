@@ -146,6 +146,8 @@ func TestDDL(t *testing.T) {
 	DDL(&DropRole{}).isDDL()
 	DDL(&Grant{}).isDDL()
 	DDL(&Revoke{}).isDDL()
+	DDL(&CreatePropertyGraph{}).isDDL()
+	DDL(&DropPropertyGraph{}).isDDL()
 }
 
 func TestConstraint(t *testing.T) {
@@ -197,4 +199,25 @@ func TestDML(t *testing.T) {
 func TestInsertInput(t *testing.T) {
 	InsertInput(&ValuesInput{}).isInsertInput()
 	InsertInput(&SubQueryInput{}).isInsertInput()
+}
+
+func TestPropertyGraphLabelsOrProperties(t *testing.T) {
+	PropertyGraphLabelsOrProperties(&PropertyGraphSingleProperties{}).isPropertyGraphLabelsOrProperties()
+	PropertyGraphLabelsOrProperties(&PropertyGraphLabelAndPropertiesList{}).isPropertyGraphLabelsOrProperties()
+}
+
+func TestPropertyGraphElementLabel(t *testing.T) {
+	PropertyGraphElementLabel(&PropertyGraphElementLabelLabelName{}).isPropertyGraphElementLabel()
+	PropertyGraphElementLabel(&PropertyGraphElementLabelDefaultLabel{}).isPropertyGraphElementLabel()
+}
+
+func TestPropertyGraphElementKeys(t *testing.T) {
+	PropertyGraphElementKeys(&PropertyGraphNodeElementKey{}).isPropertyGraphElementKeys()
+	PropertyGraphElementKeys(&PropertyGraphEdgeElementKeys{}).isPropertyGraphElementKeys()
+}
+
+func TestPropertyGraphElementProperties(t *testing.T) {
+	PropertyGraphElementProperties(&PropertyGraphNoProperties{}).isPropertyGraphElementProperties()
+	PropertyGraphElementProperties(&PropertyGraphPropertiesAre{}).isPropertyGraphElementProperties()
+	PropertyGraphElementProperties(&PropertyGraphDerivedPropertyList{}).isPropertyGraphElementProperties()
 }
