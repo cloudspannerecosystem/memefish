@@ -2436,9 +2436,49 @@ type ArraySchemaType struct {
 //
 // ================================================================================
 
+// PropertyGraphLabelsOrProperties represents labels with properties or a single properties of node or edge.
+type PropertyGraphLabelsOrProperties interface {
+	Node
+	isPropertyGraphLabelsOrProperties()
+}
+
+func (*PropertyGraphSingleProperties) isPropertyGraphLabelsOrProperties()       {}
+func (*PropertyGraphLabelAndPropertiesList) isPropertyGraphLabelsOrProperties() {}
+
+// PropertyGraphElementLabel represents a element label definition.
+type PropertyGraphElementLabel interface {
+	Node
+	isPropertyGraphElementLabel()
+}
+
+func (*PropertyGraphElementLabelLabelName) isPropertyGraphElementLabel()    {}
+func (*PropertyGraphElementLabelDefaultLabel) isPropertyGraphElementLabel() {}
+
+// PropertyGraphElementKeys represents PropertyGraphNodeElementKey or PropertyGraphEdgeElementKeys.
+type PropertyGraphElementKeys interface {
+	Node
+	isPropertyGraphElementKeys()
+}
+
+func (*PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
+func (*PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
+
+// PropertyGraphElementProperties represents a definition of properties.
+// See https://cloud.google.com/spanner/docs/reference/standard-sql/graph-schema-statements#element_table_property_definition.
+type PropertyGraphElementProperties interface {
+	Node
+	isPropertyGraphElementProperties()
+}
+
+func (*PropertyGraphNoProperties) isPropertyGraphElementProperties()        {}
+func (*PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
+func (*PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
+
 // CreatePropertyGraph is CREATE PROPERTY GRAPH statement node.
 //
-//	CREATE {{if .OrReplace}}OR REPLACE{{end}} PROPERTY GRAPH {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} PROPERTY GRAPH
+//	{{if .IfNotExists}}IF NOT EXISTS{{end}}
+//	{{.Name | sql}}
 //	{{.Content | sql}}
 type CreatePropertyGraph struct {
 	// pos = Create
@@ -2453,30 +2493,48 @@ type CreatePropertyGraph struct {
 
 // PropertyGraphContent represents body of CREATE PROPERTY GRAPH statement.
 //
-//	NODE TABLES {{.NodeTables | sql}} {{if not(.EdgeTables | isnil)}}NODE TABLES {{.EdgeTables | sqlOpt}}{{end}}
+//	NODE TABLES {{.NodeTables | sql}} {{.EdgeTables | sqlOpt}}
 type PropertyGraphContent struct {
-	// pos = Node
+	// pos = NodeTables.pos
 	// end = (EdgeTables ?? NodeTables).end
 
-	Node       token.Pos // position of "NODE"
-	NodeTables *PropertyGraphElementList
-	EdgeTables *PropertyGraphElementList //optional
+	NodeTables *PropertyGraphNodeTables
+	EdgeTables *PropertyGraphEdgeTables //optional
+}
+
+// PropertyGraphNodeTables is NODE TABLES node in CREATE PROPERTY GRAPH statement.
+type PropertyGraphNodeTables struct {
+	// pos = Node
+	// end = Tables.end
+
+	Node   token.Pos
+	Tables *PropertyGraphElementList
+}
+
+// PropertyGraphEdgeTables is EDGE TABLES node in CREATE PROPERTY GRAPH statement.
+type PropertyGraphEdgeTables struct {
+	// pos = Edge
+	// end = Tables.end
+
+	Edge   token.Pos
+	Tables *PropertyGraphElementList
 }
 
 // PropertyGraphElementList represents element list in NODE TABLES or EDGE TABLES.
 //
 //	({{.Elements | sqlJoin ", "}})
 type PropertyGraphElementList struct {
-	// pos = LParen
-	// end = RParen + 1
+	// pos = Lparen
+	// end = Rparen + 1
 
-	LParen, RParen token.Pos
+	Lparen, Rparen token.Pos
 	Elements       []*PropertyGraphElement
 }
 
 // PropertyGraphElement represents a single element in NODE TABLES or EDGE TABLES.
 //
-//	{{.Ident | sql}} {{if not(.Alias | isnil)}} AS {{.Alias | sql}}{{end}} {{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
+//	{{.Name | sql}} {{if .Alias | isnil | not)}}AS {{.Alias | sql}}{{end}}
+//	{{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
 type PropertyGraphElement struct {
 	// pos = Name.pos
 	// end = (Properties ?? Keys ?? Alias ?? Name).end
@@ -2487,22 +2545,13 @@ type PropertyGraphElement struct {
 	Properties PropertyGraphLabelsOrProperties // optional
 }
 
-// PropertyGraphLabelsOrProperties represents labels with properties or a single properties of node or edge.
-type PropertyGraphLabelsOrProperties interface {
-	Node
-	isPropertyGraphLabelsOrProperties()
-}
-
-func (*PropertyGraphSingleProperties) isPropertyGraphLabelsOrProperties()       {}
-func (*PropertyGraphLabelAndPropertiesList) isPropertyGraphLabelsOrProperties() {}
-
 // PropertyGraphSingleProperties is wrapper node for PropertyGraphElementProperties in PropertyGraphElement.
 // It implements PropertyGraphLabelsOrProperties.
 //
 //	{{.Properties | sql}}
 type PropertyGraphSingleProperties struct {
 	// pos = Properties.pos
-	// end = Properties.pos
+	// end = Properties.end
 
 	Properties PropertyGraphElementProperties
 }
@@ -2512,8 +2561,8 @@ type PropertyGraphSingleProperties struct {
 //
 //	{{.LabelAndProperties | sqlJoin " "}}
 type PropertyGraphLabelAndPropertiesList struct {
-	// pos = LabelAndProperties.pos
-	// end = LabelAndProperties.end
+	// pos = LabelAndProperties[0].pos
+	// end = LabelAndProperties[$].end
 
 	LabelAndProperties []*PropertyGraphLabelAndProperties
 }
@@ -2528,15 +2577,6 @@ type PropertyGraphLabelAndProperties struct {
 	Label      PropertyGraphElementLabel
 	Properties PropertyGraphElementProperties // optional
 }
-
-// PropertyGraphElementLabel represents a element label definition.
-type PropertyGraphElementLabel interface {
-	Node
-	isPropertyGraphElementLabel()
-}
-
-func (*PropertyGraphElementLabelLabelName) isPropertyGraphElementLabel()    {}
-func (*PropertyGraphElementLabelDefaultLabel) isPropertyGraphElementLabel() {}
 
 // PropertyGraphElementLabelLabelName represents LABEL label_name node.
 //
@@ -2554,19 +2594,11 @@ type PropertyGraphElementLabelLabelName struct {
 //	DEFAULT LABEL
 type PropertyGraphElementLabelDefaultLabel struct {
 	// pos = Default
-	// end = Label + 5 # len("LABEL")
+	// end = Label + 5
+
 	Default token.Pos
 	Label   token.Pos
 }
-
-// PropertyGraphElementKeys represents PropertyGraphNodeElementKey or PropertyGraphEdgeElementKeys.
-type PropertyGraphElementKeys interface {
-	Node
-	isPropertyGraphElementKeys()
-}
-
-func (*PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
-func (*PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
 
 // PropertyGraphNodeElementKey is a wrapper of PropertyGraphElementKey to implement PropertyGraphElementKeys
 // without deeper AST hierarchy.
@@ -2576,7 +2608,7 @@ type PropertyGraphNodeElementKey struct {
 	// pos = PropertyGraphElementKey.pos
 	// end = PropertyGraphElementKey.end
 
-	PropertyGraphElementKey
+	Key PropertyGraphElementKey
 }
 
 // PropertyGraphEdgeElementKeys represents PropertyGraphSourceKey and PropertyGraphDestinationKey with optional PropertyGraphElementKey.
@@ -2607,7 +2639,7 @@ type PropertyGraphElementKey struct {
 //	REFERENCES {{.ElementReference | sql}} {{.ReferenceColumns | sqlOpt}}
 type PropertyGraphSourceKey struct {
 	// pos = Source
-	// end = (ReferenceColumns[$] ?? ElementReference).end
+	// end = (ReferenceColumns ?? ElementReference).end
 
 	Source           token.Pos
 	Keys             *PropertyGraphColumnNameList
@@ -2621,7 +2653,7 @@ type PropertyGraphSourceKey struct {
 //	REFERENCES {{.ElementReference | sql}} {{.ReferenceColumns | sqlOpt}}
 type PropertyGraphDestinationKey struct {
 	// pos = Destination
-	// end = (ReferenceColumns[$] ?? ElementReference).end
+	// end = (ReferenceColumns ?? ElementReference).end
 
 	Destination      token.Pos
 	Keys             *PropertyGraphColumnNameList
@@ -2639,69 +2671,55 @@ type PropertyGraphColumnNameList struct {
 	ColumnNameList []*Ident
 }
 
-// PropertyGraphElementProperties represents a definition of properties.
-// See https://cloud.google.com/spanner/docs/reference/standard-sql/graph-schema-statements#element_table_property_definition.
-type PropertyGraphElementProperties interface {
-	Node
-	isPropertyGraphElementProperties()
-}
-
-func (*PropertyGraphNoProperties) isPropertyGraphElementProperties()        {}
-func (*PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
-func (*PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
-
 // PropertyGraphNoProperties represents the element doesn't have properties.
 //
 //	NO PROPERTIES
 type PropertyGraphNoProperties struct {
 	// pos = No
-	// end = Properties + 10 # len("PROPERTIES")
+	// end = Properties + 10
 
 	No, Properties token.Pos // position of "NO" and "PROPERTIES"
 }
 
 // PropertyGraphPropertiesAre defines which columns to include as element properties.
 //
-//	PROPERTIES ARE ALL COLUMNS{{if not(.ExceptColumns | isnil)}} EXCEPT {{.ExceptColumns}}{{end}}
+//	PROPERTIES ARE ALL COLUMNS{{if .ExceptColumns | isnil | not}} EXCEPT {{.ExceptColumns | sql}}{{end}}
 type PropertyGraphPropertiesAre struct {
 	// pos = Properties
-	// end = ExceptColumns.end
+	// end = ExceptColumns.end || Columns + 7
 
-	Properties token.Pos // position of "PROPERTIES"
-	Columns    token.Pos // position of "COLUMNS"
-
+	Properties    token.Pos                    // position of "PROPERTIES"
+	Columns       token.Pos                    // position of "COLUMNS"
 	ExceptColumns *PropertyGraphColumnNameList // optional
-
 }
 
 // PropertyGraphDerivedPropertyList represents a list of PropertyGraphDerivedProperty.
+// NOTE: In current syntax reference, "(" and ")" are missing.
 //
 //	PROPERTIES ({{.DerivedProperties | sqlJoin ", "}})
-//
-// NOTE: In current official syntax, "(" and ")" are missing.
 type PropertyGraphDerivedPropertyList struct {
 	// pos = Properties
-	// end = RParen.end
+	// end = Rparen.end
 
 	Properties        token.Pos                       // position of "PROPERTIES"
-	RParen            token.Pos                       // position of ")"
-	DerivedProperties []*PropertyGraphDerivedProperty // len > 0
+	Rparen            token.Pos                       // position of ")"
+	DerivedProperties []*PropertyGraphDerivedProperty // len(DerivedProperties) > 0
 }
 
 // PropertyGraphDerivedProperty represents an expression that defines a property and can optionally reference the input table columns.
 //
-//	{{.Expr | sql}}{{if not(.PropertyName | isnil)}} AS {{.PropertyName | sql}}{{end}}
+//	{{.Expr | sql}} {{if .PropertyName | isnil | not}}AS {{.Alias | sql}}{{end}}
 type PropertyGraphDerivedProperty struct {
 	// pos = Expr.pos
 	// end = (PropertyName ?? Expr).end
 
-	Expr         Expr
-	PropertyName *Ident //optional
+	Expr  Expr
+	Alias *Ident //optional
 }
 
 // DropPropertyGraph is DROP PROPERTY GRAPH statement node.
 //
-//	DROP PROPERTY GRAPH {{if .IfExists}}IF EXISTS{{end}} {{.PropertyGraphName | sql}}
+//	DROP PROPERTY GRAPH {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropPropertyGraph struct {
 	// pos = Drop
 	// end = Name.end

@@ -862,11 +862,17 @@ func (r *RolePrivilege) End() token.Pos { return r.Names[len(r.Names)-1].End() }
 func (c *CreatePropertyGraph) Pos() token.Pos { return c.Create }
 func (c *CreatePropertyGraph) End() token.Pos { return c.Content.End() }
 
-func (p *PropertyGraphContent) Pos() token.Pos { return p.Node }
+func (p *PropertyGraphContent) Pos() token.Pos { return p.NodeTables.Pos() }
 func (p *PropertyGraphContent) End() token.Pos { return firstValidEnd(p.EdgeTables, p.NodeTables) }
 
-func (p *PropertyGraphElementList) Pos() token.Pos { return p.LParen }
-func (p *PropertyGraphElementList) End() token.Pos { return p.RParen + 1 }
+func (p *PropertyGraphNodeTables) Pos() token.Pos { return p.Node }
+func (p *PropertyGraphNodeTables) End() token.Pos { return p.Tables.End() }
+
+func (p *PropertyGraphEdgeTables) Pos() token.Pos { return p.Edge }
+func (p *PropertyGraphEdgeTables) End() token.Pos { return p.Tables.End() }
+
+func (p *PropertyGraphElementList) Pos() token.Pos { return p.Lparen }
+func (p *PropertyGraphElementList) End() token.Pos { return p.Rparen + 1 }
 
 func (p *PropertyGraphElement) Pos() token.Pos { return p.Name.Pos() }
 func (p *PropertyGraphElement) End() token.Pos {
@@ -890,8 +896,8 @@ func (p *PropertyGraphElementLabelLabelName) End() token.Pos { return p.Name.End
 func (p *PropertyGraphElementLabelDefaultLabel) Pos() token.Pos { return p.Default }
 func (p *PropertyGraphElementLabelDefaultLabel) End() token.Pos { return p.Label + 5 }
 
-func (p *PropertyGraphNodeElementKey) Pos() token.Pos { return p.PropertyGraphElementKey.Pos() }
-func (p *PropertyGraphNodeElementKey) End() token.Pos { return p.PropertyGraphElementKey.End() }
+func (p *PropertyGraphNodeElementKey) Pos() token.Pos { return p.Key.Pos() }
+func (p *PropertyGraphNodeElementKey) End() token.Pos { return p.Key.End() }
 
 func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos { return p.Element.Pos() }
 func (p *PropertyGraphEdgeElementKeys) End() token.Pos { return p.Destination.End() }
@@ -906,7 +912,7 @@ func (p *PropertyGraphSourceKey) End() token.Pos {
 
 func (p *PropertyGraphDestinationKey) Pos() token.Pos { return p.Destination }
 func (p *PropertyGraphDestinationKey) End() token.Pos {
-	return firstValidEnd(p.ElementReference, p.ElementReference)
+	return firstValidEnd(p.ReferenceColumns, p.ElementReference)
 }
 
 func (p *PropertyGraphColumnNameList) Pos() token.Pos { return p.LParen }
@@ -916,13 +922,18 @@ func (p *PropertyGraphNoProperties) Pos() token.Pos { return p.No }
 func (p *PropertyGraphNoProperties) End() token.Pos { return p.Properties + 10 }
 
 func (p *PropertyGraphPropertiesAre) Pos() token.Pos { return p.Properties }
-func (p *PropertyGraphPropertiesAre) End() token.Pos { return p.ExceptColumns.End() }
+func (p *PropertyGraphPropertiesAre) End() token.Pos {
+	if p.ExceptColumns != nil {
+		return p.ExceptColumns.End()
+	}
+	return p.Columns + 7
+}
 
 func (p *PropertyGraphDerivedPropertyList) Pos() token.Pos { return p.Properties }
-func (p *PropertyGraphDerivedPropertyList) End() token.Pos { return p.RParen + 1 }
+func (p *PropertyGraphDerivedPropertyList) End() token.Pos { return p.Rparen + 1 }
 
 func (p *PropertyGraphDerivedProperty) Pos() token.Pos { return p.Expr.Pos() }
-func (p *PropertyGraphDerivedProperty) End() token.Pos { return firstValidEnd(p.PropertyName, p.Expr) }
+func (p *PropertyGraphDerivedProperty) End() token.Pos { return firstValidEnd(p.Alias, p.Expr) }
 
 func (g *DropPropertyGraph) Pos() token.Pos { return g.Drop }
 func (g *DropPropertyGraph) End() token.Pos { return g.Name.End() }

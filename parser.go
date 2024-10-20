@@ -3256,16 +3256,23 @@ func (p *Parser) parsePropertyGraphContent() *ast.PropertyGraphContent {
 	node := p.expectKeywordLike("NODE").Pos
 	p.expectKeywordLike("TABLES")
 
-	nodeTables := p.parsePropertyGraphElementList()
+	nodeTables := &ast.PropertyGraphNodeTables{
+		Node:   node,
+		Tables: p.parsePropertyGraphElementList(),
+	}
 
-	var edgeTables *ast.PropertyGraphElementList
-	if p.tryExpectKeywordLike("EDGE") != nil {
+	var edgeTables *ast.PropertyGraphEdgeTables
+	if p.Token.IsKeywordLike("EDGE") {
+		edge := p.expectKeywordLike("EDGE").Pos
 		p.expectKeywordLike("TABLES")
-		edgeTables = p.parsePropertyGraphElementList()
+		tables := p.parsePropertyGraphElementList()
+		edgeTables = &ast.PropertyGraphEdgeTables{
+			Edge:   edge,
+			Tables: tables,
+		}
 	}
 
 	return &ast.PropertyGraphContent{
-		Node:       node,
 		NodeTables: nodeTables,
 		EdgeTables: edgeTables,
 	}
@@ -3273,12 +3280,12 @@ func (p *Parser) parsePropertyGraphContent() *ast.PropertyGraphContent {
 
 func (p *Parser) parsePropertyGraphElementList() *ast.PropertyGraphElementList {
 	lparen := p.expect("(").Pos
-	elements := parseSeparatedList(p, ",", p.parsePropertyGraphElement)
+	elements := parseCommaSeparatedList(p, p.parsePropertyGraphElement)
 	rparen := p.expect(")").Pos
 
 	return &ast.PropertyGraphElementList{
-		LParen:   lparen,
-		RParen:   rparen,
+		Lparen:   lparen,
+		Rparen:   rparen,
 		Elements: elements,
 	}
 
@@ -3287,7 +3294,8 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 	name := p.parseIdent()
 
 	var alias *ast.Ident
-	if p.tryExpect("AS") != nil {
+	if p.Token.Kind == "AS" {
+		p.nextToken()
 		alias = p.parseIdent()
 	}
 
@@ -3305,36 +3313,44 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 // parsePropertyGraphLabelAndPropertiesList parses consecutive ast.PropertyGraphLabelAndProperties,
 // and returns *ast.PropertyGraphLabelAndPropertiesList.
 func (p *Parser) parsePropertyGraphLabelAndPropertiesList() *ast.PropertyGraphLabelAndPropertiesList {
+	// list can be empty
 	var list []*ast.PropertyGraphLabelAndProperties
 	for {
 		if p.Token.Kind != "DEFAULT" && !p.Token.IsKeywordLike("LABEL") {
 			break
 		}
 
-		var elemLabel ast.PropertyGraphElementLabel
-		if def := p.tryExpect("DEFAULT"); def != nil {
-			labelPos := p.expectKeywordLike("LABEL").Pos
-			elemLabel = &ast.PropertyGraphElementLabelDefaultLabel{
-				Default: def.Pos,
-				Label:   labelPos,
-			}
-		} else {
-			label := p.expectKeywordLike("LABEL")
-			name := p.parseIdent()
-			elemLabel = &ast.PropertyGraphElementLabelLabelName{
-				Label: label.Pos,
-				Name:  name,
-			}
-		}
-
+		elemLabel := p.parsePropertyGraphElementLabel()
 		properties := p.tryParsePropertyGraphElementProperties()
+
 		list = append(list, &ast.PropertyGraphLabelAndProperties{
 			Label:      elemLabel,
 			Properties: properties,
 		})
 	}
+
 	return &ast.PropertyGraphLabelAndPropertiesList{
 		LabelAndProperties: list,
+	}
+}
+
+func (p *Parser) parsePropertyGraphElementLabel() ast.PropertyGraphElementLabel {
+	if p.Token.Kind == "DEFAULT" {
+		def := p.expect("DEFAULT").Pos
+		label := p.expectKeywordLike("LABEL").Pos
+
+		return &ast.PropertyGraphElementLabelDefaultLabel{
+			Default: def,
+			Label:   label,
+		}
+	}
+
+	label := p.expectKeywordLike("LABEL").Pos
+	name := p.parseIdent()
+
+	return &ast.PropertyGraphElementLabelLabelName{
+		Label: label,
+		Name:  name,
 	}
 }
 
@@ -3342,6 +3358,7 @@ func (p *Parser) tryParsePropertyGraphElementProperties() ast.PropertyGraphEleme
 	if p.Token.Kind != "NO" && !p.Token.IsKeywordLike("PROPERTIES") {
 		return nil
 	}
+
 	return p.parsePropertyGraphElementProperties()
 }
 
@@ -3350,22 +3367,29 @@ func (p *Parser) parsePropertyGraphElementProperties() ast.PropertyGraphElementP
 		p.panicfAtToken(&p.Token, `expect "NO" or "PROPERTIES", but %v`, p.Token.Kind)
 	}
 
-	if no := p.tryExpect("NO"); no != nil {
+	if p.Token.Kind == "NO" {
+		no := p.expect("NO").Pos
 		properties := p.expectKeywordLike("PROPERTIES").Pos
+
 		return &ast.PropertyGraphNoProperties{
-			No:         no.Pos,
+			No:         no,
 			Properties: properties,
 		}
 	}
 
 	properties := p.expectKeywordLike("PROPERTIES")
 	if p.Token.IsKeywordLike("ARE") || p.Token.Kind == "ALL" {
-		p.tryExpectKeywordLike("ARE")
+		// "ARE" is optional
+		if p.Token.IsKeywordLike("ARE") {
+			p.nextToken()
+		}
+
 		p.expect("ALL")
 		columns := p.expectKeywordLike("COLUMNS").Pos
 
 		var exceptColumns *ast.PropertyGraphColumnNameList
-		if p.tryExpect("EXCEPT") != nil {
+		if p.Token.Kind == "EXCEPT" {
+			p.nextToken()
 			exceptColumns = p.parsePropertyGraphColumnNameList()
 		}
 
@@ -3377,25 +3401,28 @@ func (p *Parser) parsePropertyGraphElementProperties() ast.PropertyGraphElementP
 	}
 
 	p.expect("(")
-	list := parseSeparatedList(p, ",", func() *ast.PropertyGraphDerivedProperty {
-		expr := p.parseExpr()
-
-		var name *ast.Ident
-		if p.tryExpect("AS") != nil {
-			name = p.parseIdent()
-		}
-
-		return &ast.PropertyGraphDerivedProperty{
-			Expr:         expr,
-			PropertyName: name,
-		}
-	})
+	list := parseCommaSeparatedList(p, p.parsePropertyGraphDerivedProperty)
 	rparen := p.expect(")").Pos
 
 	return &ast.PropertyGraphDerivedPropertyList{
-		RParen:            rparen,
+		Rparen:            rparen,
 		Properties:        properties.Pos,
 		DerivedProperties: list,
+	}
+}
+
+func (p *Parser) parsePropertyGraphDerivedProperty() *ast.PropertyGraphDerivedProperty {
+	expr := p.parseExpr()
+
+	var name *ast.Ident
+	if p.Token.Kind == "AS" {
+		p.nextToken()
+		name = p.parseIdent()
+	}
+
+	return &ast.PropertyGraphDerivedProperty{
+		Expr:  expr,
+		Alias: name,
 	}
 }
 
@@ -3403,6 +3430,7 @@ func (p *Parser) tryParsePropertyGraphLabelsOrProperties() ast.PropertyGraphLabe
 	if p.Token.IsKeywordLike("LABEL") || p.Token.Kind == "DEFAULT" {
 		return p.parsePropertyGraphLabelAndPropertiesList()
 	}
+
 	if properties := p.tryParsePropertyGraphElementProperties(); properties != nil {
 		return &ast.PropertyGraphSingleProperties{
 			Properties: properties,
@@ -3418,17 +3446,19 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 
 	// element_key
 	var elementKey *ast.PropertyGraphElementKey
-	if key := p.tryExpectKeywordLike("KEY"); key != nil {
+	if p.Token.IsKeywordLike("KEY") {
+		key := p.expectKeywordLike("KEY").Pos
 		keyColumns := p.parsePropertyGraphColumnNameList()
+
 		elementKey = &ast.PropertyGraphElementKey{
-			Key:  key.Pos,
+			Key:  key,
 			Keys: keyColumns,
 		}
 
 		// if SOURCE KEY doesn't follow, it is node_element_key.
 		if !p.Token.IsKeywordLike("SOURCE") {
 			return &ast.PropertyGraphNodeElementKey{
-				PropertyGraphElementKey: *elementKey,
+				Key: *elementKey,
 			}
 		}
 
@@ -3471,8 +3501,9 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 
 func (p *Parser) parsePropertyGraphColumnNameList() *ast.PropertyGraphColumnNameList {
 	lparen := p.expect("(").Pos
-	list := parseSeparatedList(p, ",", p.parseIdent)
+	list := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
+
 	return &ast.PropertyGraphColumnNameList{
 		LParen:         lparen,
 		RParen:         rparen,
@@ -3494,6 +3525,7 @@ func (p *Parser) parseDropPropertyGraph(pos token.Pos) *ast.DropPropertyGraph {
 	p.expectKeywordLike("GRAPH")
 	ifExists := p.parseIfExists()
 	name := p.parseIdent()
+
 	return &ast.DropPropertyGraph{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3993,48 +4025,6 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 		}
 	}
 	return id
-}
-
-func (p *Parser) tryExpect(s token.TokenKind) *token.Token {
-	if p.Token.Kind != s {
-		return nil
-	}
-	return p.expect(s)
-}
-
-func (p *Parser) tryExpectKeywordLike(s string) *token.Token {
-	if !p.Token.IsKeywordLike(s) {
-		return nil
-	}
-	return p.expectKeywordLike(s)
-}
-
-// This function can't be a method because Go haven't yet supported generic methods.
-func parseSeparatedList[T interface {
-	ast.Node
-	comparable
-}](p *Parser, sep token.TokenKind, doParse func() T) []T {
-	var zero T
-
-	first := doParse()
-	if first == zero {
-		return nil
-	}
-
-	list := []T{first}
-	for {
-		if p.Token.Kind != sep {
-			break
-		}
-		p.nextToken()
-
-		elem := doParse()
-		if elem == zero {
-			return list
-		}
-		list = append(list, elem)
-	}
-	return list
 }
 
 func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {

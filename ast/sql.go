@@ -1254,20 +1254,23 @@ func (r *RolePrivilege) SQL() string {
 // ================================================================================
 
 func (c *CreatePropertyGraph) SQL() string {
-	sql := "CREATE "
-	if c.OrReplace {
-		sql += "OR REPLACE "
-	}
-	sql += "PROPERTY GRAPH "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " " + c.Content.SQL()
-	return sql
+	return "CREATE " +
+		strOpt(c.OrReplace, "OR REPLACE ") +
+		"PROPERTY GRAPH " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " " + c.Content.SQL()
 }
 
 func (p *PropertyGraphContent) SQL() string {
-	return "NODE TABLES" + p.NodeTables.SQL() + sqlOpt(" EDGE TABLES ", p.EdgeTables, "")
+	return p.NodeTables.SQL() + sqlOpt(" ", p.EdgeTables, "")
+}
+
+func (p *PropertyGraphNodeTables) SQL() string {
+	return "NODE TABLES " + p.Tables.SQL()
+}
+
+func (p *PropertyGraphEdgeTables) SQL() string {
+	return "EDGE TABLES " + p.Tables.SQL()
 }
 
 func (p *PropertyGraphElementList) SQL() string {
@@ -1295,15 +1298,14 @@ func (p *PropertyGraphElementLabelLabelName) SQL() string { return "LABEL " + p.
 
 func (p *PropertyGraphElementLabelDefaultLabel) SQL() string { return "DEFAULT LABEL" }
 
-func (p *PropertyGraphNodeElementKey) SQL() string { return p.PropertyGraphElementKey.SQL() }
-
-func (p *PropertyGraphElementKey) SQL() string {
-	return "KEY " + p.Keys.SQL()
-}
+func (p *PropertyGraphNodeElementKey) SQL() string { return p.Key.SQL() }
 
 func (p *PropertyGraphEdgeElementKeys) SQL() string {
-	return sqlOpt("", p.Element, " ") + p.Source.SQL() + " " + p.Destination.SQL()
+	return sqlOpt("", p.Element, " ") +
+		p.Source.SQL() + " " + p.Destination.SQL()
 }
+
+func (p *PropertyGraphElementKey) SQL() string { return "KEY " + p.Keys.SQL() }
 
 func (p *PropertyGraphSourceKey) SQL() string {
 	return "SOURCE KEY " + p.Keys.SQL() +
@@ -1334,16 +1336,13 @@ func (p *PropertyGraphDerivedPropertyList) SQL() string {
 }
 
 func (p *PropertyGraphDerivedProperty) SQL() string {
-	return p.Expr.SQL() + sqlOpt(" AS ", p.PropertyName, "")
+	return p.Expr.SQL() + sqlOpt(" AS ", p.Alias, "")
 }
 
 func (g *DropPropertyGraph) SQL() string {
-	sql := "DROP PROPERTY GRAPH "
-	if g.IfExists {
-		sql += "IF EXISTS "
-	}
-	sql += g.Name.SQL()
-	return sql
+	return "DROP PROPERTY GRAPH " +
+		strOpt(g.IfExists, "IF EXISTS ") +
+		g.Name.SQL()
 }
 
 // ================================================================================
