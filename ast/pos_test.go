@@ -35,7 +35,7 @@ func TestTableAlteration_Position(t *testing.T) {
 		t.Fatalf("Mismatched end postion of the alter column set")
 	}
 	alterColumnSetOptions := AlterColumnSet{
-		Options: &ColumnDefOptions{Rparen: 104},
+		Options: &Options{Rparen: 104},
 	}
 	if alterColumnSetOptions.End() != alterColumnSetOptions.Options.End() {
 		t.Fatalf("Mismatched end postion of the alter column set")
