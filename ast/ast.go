@@ -2527,11 +2527,11 @@ type Update struct {
 
 // UpdateItem is SET clause items in UPDATE.
 //
-//	{{.Path | sqlJoin "."}} = {{.Expr | sql}}
+//	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
 type UpdateItem struct {
 	// pos = Path[0].pos
-	// end = Expr.end
+	// end = DefaultExpr.end
 
-	Path []*Ident // len(Path) > 0
-	Expr Expr
+	Path        []*Ident // len(Path) > 0
+	DefaultExpr *DefaultExpr
 }
