@@ -20,7 +20,7 @@ alter table foo add constraint cname check (c1 > 0)
       },
       Constraint: &ast.Check{
         Check:  37,
-        Rparen: 51,
+        Rparen: 50,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{

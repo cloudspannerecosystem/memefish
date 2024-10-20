@@ -98,6 +98,16 @@ func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
+// SelectAs represents AS VALUE/STRUCT/typename clause in SELECT clause.
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
+
 // TableExpr represents JOIN operands.
 type TableExpr interface {
 	Node
@@ -167,6 +177,24 @@ type Arg interface {
 func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
+
+// NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
+type NullHandlingModifier interface {
+	Node
+	isNullHandlingModifier()
+}
+
+func (IgnoreNulls) isNullHandlingModifier()  {}
+func (RespectNulls) isNullHandlingModifier() {}
+
+// HavingModifier represents HAVING clause of aggregate function calls.
+type HavingModifier interface {
+	Node
+	isHavingModifier()
+}
+
+func (HavingMax) isHavingModifier() {}
+func (HavingMin) isHavingModifier() {}
 
 // InCondition is right-side value of IN operator.
 type InCondition interface {
@@ -432,7 +460,7 @@ type CTE struct {
 //
 //	SELECT
 //	  {{if .Distinct}}DISTINCT{{end}}
-//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
@@ -447,7 +475,7 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool
+	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -455,6 +483,38 @@ type Select struct {
 	Having   *Having      // optional
 	OrderBy  *OrderBy     // optional
 	Limit    *Limit       // optional
+}
+
+// AsStruct represents AS STRUCT node in SELECT clause.
+//
+//	AS STRUCT
+type AsStruct struct {
+	// pos = As
+	// end = Struct + 6
+	As     token.Pos
+	Struct token.Pos
+}
+
+// AsValue represents AS VALUE node in SELECT clause.
+//
+//	AS VALUE
+type AsValue struct {
+	// pos = As
+	// end = Value + 5
+
+	As    token.Pos
+	Value token.Pos
+}
+
+// AsTypeName represents AS typename node in SELECT clause.
+//
+//	AS {{.TypeName | sql}}
+type AsTypeName struct {
+	// pos = As
+	// end = TypeName.end
+
+	As       token.Pos
+	TypeName *NamedType
 }
 
 // CompoundQuery is query statement node compounded by set operators.
@@ -951,17 +1011,26 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sqlJoin ", "}}{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}{{.NamedArgs || sqlJoin ", "}})
+//		{{.Func | sql}}(
+//		{{if .Distinct}}DISTINCT{{end}}
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//	    {{.NullHandling | sqlOpt}}
+//	    {{.Having | sqlOpt}}
+//		)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
-	Func      *Ident
-	Distinct  bool
-	Args      []Arg
-	NamedArgs []*NamedArg
+	Func         *Ident
+	Distinct     bool
+	Args         []Arg
+	NamedArgs    []*NamedArg
+	NullHandling NullHandlingModifier // optional
+	Having       HavingModifier       // optional
 }
 
 // ExprArg is argument of the generic function call.
@@ -1008,6 +1077,50 @@ type NamedArg struct {
 
 	Name  *Ident
 	Value Expr
+}
+
+// IgnoreNulls represents IGNORE NULLS of aggregate function calls.
+//
+//	IGNORE NULLS
+type IgnoreNulls struct {
+	// pos = Ignore
+	// end = Nulls + 5
+
+	Ignore token.Pos
+	Nulls  token.Pos
+}
+
+// RespectNulls represents RESPECT NULLS of aggregate function calls
+//
+//	RESPECT NULLS
+type RespectNulls struct {
+	// pos = Respect
+	// end = Nulls + 5
+
+	Respect token.Pos
+	Nulls   token.Pos
+}
+
+// HavingMax represents HAVING MAX of aggregate function calls.
+//
+//	HAVING MAX {{Expr | sql}}
+type HavingMax struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
+}
+
+// HavingMin represents HAVING MIN of aggregate function calls.
+//
+//	HAVING MIN {{Expr | sql}}
+type HavingMin struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
@@ -1194,14 +1307,14 @@ type Path struct {
 	Idents []*Ident // len(Idents) >= 2
 }
 
-// AraryLiteral is array literal node.
+// ArrayLiteral is array literal node.
 //
-//	ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	{{if .Array.Invalid | not}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
 
-	Array          token.Pos // position of "ARRAY" keyword
+	Array          token.Pos // position of "ARRAY" keyword, optional
 	Lbrack, Rbrack token.Pos // position of "[" and "]"
 
 	Type   Type // optional
@@ -1449,6 +1562,30 @@ type CastNumValue struct {
 //
 // ================================================================================
 
+// Options is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type Options struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*OptionsDef // len(Records) > 0
+}
+
+// OptionsDef is single option definition for DDL statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type OptionsDef struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -1492,7 +1629,7 @@ type CreateTable struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
@@ -1501,7 +1638,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *SequenceOptions
+	Options     *Options
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1522,7 +1659,7 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
-	Options       *ColumnDefOptions    // optional
+	Options       *Options             // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
@@ -1543,7 +1680,7 @@ type ColumnDefaultExpr struct {
 //	AS ({{.Expr | sql}}) STORED
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored
+	// end = Stored + 6
 
 	As     token.Pos // position of "AS" keyword
 	Stored token.Pos // position of "STORED" keyword
@@ -1551,23 +1688,13 @@ type GeneratedColumnExpr struct {
 	Expr Expr
 }
 
-// ColumnDefOption is options for column definition.
-//
-//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
-type ColumnDefOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	AllowCommitTimestamp bool
-}
-
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
 //
 //	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
 type TableConstraint struct {
+	// pos = ConstraintPos || Constraint.pos
+	// end = Constraint.end
+
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
 	Name       *Ident // optional
@@ -1708,7 +1835,7 @@ type AlterSequence struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name    *Ident
-	Options *SequenceOptions
+	Options *Options
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
@@ -1846,7 +1973,7 @@ type AlterColumnSet struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name        *Ident
-	Options     *ColumnDefOptions
+	Options     *Options
 	DefaultExpr *ColumnDefaultExpr
 }
 
@@ -1913,20 +2040,7 @@ type CreateVectorIndex struct {
 	//
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
-	Options *VectorIndexOptions
-}
-
-// VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type VectorIndexOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*VectorIndexOption // len(Records) > 0
+	Options *Options
 }
 
 // VectorIndexOption is OPTIONS record node.
@@ -1950,8 +2064,8 @@ type CreateChangeStream struct {
 	Create token.Pos // position of "CREATE" keyword
 
 	Name    *Ident
-	For     ChangeStreamFor      // optional
-	Options *ChangeStreamOptions // optional
+	For     ChangeStreamFor // optional
+	Options *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
@@ -1990,30 +2104,6 @@ type ChangeStreamForTable struct {
 	Columns   []*Ident
 }
 
-// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type ChangeStreamOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*ChangeStreamOptionsRecord // len(Records) > 0
-}
-
-// ChangeStreamOptionsRecord is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type ChangeStreamOptionsRecord struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
-}
-
 // ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
 //	SET FOR {{.For | sql}}
@@ -2046,7 +2136,7 @@ type ChangeStreamSetOptions struct {
 
 	Set token.Pos // position of "SET" keyword
 
-	Options *ChangeStreamOptions
+	Options *Options
 }
 
 // Storing is STORING clause in CREATE INDEX.
@@ -2729,28 +2819,4 @@ type UpdateItem struct {
 
 	Path []*Ident // len(Path) > 0
 	Expr Expr
-}
-
-// SequenceOption is option for CREATE SEQUENCE.
-//
-//	{{.Name | sql}} = {{.Value | sql}}
-type SequenceOption struct {
-	// pos = Name.pos
-	// end = Value.end
-
-	Name  *Ident
-	Value Expr
-}
-
-// SequenceOptions is OPTIONS clause node in CREATE|ALTER SEQUENCE .
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type SequenceOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*SequenceOption // len(Records) > 0
 }

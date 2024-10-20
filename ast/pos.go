@@ -87,6 +87,15 @@ func (s *Select) End() token.Pos {
 	return firstValidEnd(s.Limit, s.OrderBy, s.Having, s.GroupBy, s.Where, s.From, lastNode(s.Results))
 }
 
+func (a *AsStruct) Pos() token.Pos { return a.As }
+func (a *AsStruct) End() token.Pos { return a.Struct + 6 }
+
+func (a *AsValue) Pos() token.Pos { return a.As }
+func (a *AsValue) End() token.Pos { return a.Value + 5 }
+
+func (a *AsTypeName) Pos() token.Pos { return a.As }
+func (a *AsTypeName) End() token.Pos { return a.TypeName.End() }
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return c.Queries[0].Pos()
 }
@@ -358,6 +367,18 @@ func (s *SequenceArg) End() token.Pos { return s.Expr.End() }
 func (n *NamedArg) Pos() token.Pos { return n.Name.Pos() }
 func (n *NamedArg) End() token.Pos { return n.Value.End() }
 
+func (i *IgnoreNulls) Pos() token.Pos { return i.Ignore }
+func (i *IgnoreNulls) End() token.Pos { return i.Nulls + 5 }
+
+func (r *RespectNulls) Pos() token.Pos { return r.Respect }
+func (r *RespectNulls) End() token.Pos { return r.Nulls + 5 }
+
+func (h *HavingMax) Pos() token.Pos { return h.Having }
+func (h *HavingMax) End() token.Pos { return h.Expr.End() }
+
+func (h *HavingMin) Pos() token.Pos { return h.Having }
+func (h *HavingMin) End() token.Pos { return h.Expr.End() }
+
 func (c *CountStarExpr) Pos() token.Pos { return c.Count }
 func (c *CountStarExpr) End() token.Pos { return c.Rparen + 1 }
 
@@ -514,6 +535,12 @@ func (c *CastNumValue) End() token.Pos { return c.Rparen + 1 }
 //
 // ================================================================================
 
+func (g *Options) Pos() token.Pos { return g.Options }
+func (g *Options) End() token.Pos { return g.Rparen + 1 }
+
+func (g *OptionsDef) Pos() token.Pos { return g.Name.Pos() }
+func (g *OptionsDef) End() token.Pos { return g.Value.End() }
+
 func (c *CreateDatabase) Pos() token.Pos { return c.Create }
 func (c *CreateDatabase) End() token.Pos { return c.Name.End() }
 
@@ -571,10 +598,7 @@ func (g *ColumnDefaultExpr) Pos() token.Pos { return g.Default }
 func (g *ColumnDefaultExpr) End() token.Pos { return g.Rparen }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
-func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored }
-
-func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
-func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
+func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored + 6 }
 
 func (c *TableConstraint) Pos() token.Pos {
 	if c.Name != nil {
@@ -721,9 +745,6 @@ func (c *CreateChangeStream) End() token.Pos {
 	}
 	return c.Name.End()
 }
-
-func (c *ChangeStreamOptions) Pos() token.Pos { return c.Options }
-func (c *ChangeStreamOptions) End() token.Pos { return c.Rparen + 1 }
 
 func (c *ChangeStreamForAll) Pos() token.Pos    { return c.For }
 func (c *ChangeStreamForAll) End() token.Pos    { return c.All }
@@ -968,9 +989,3 @@ func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
 func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
-
-func (o *SequenceOption) Pos() token.Pos { return o.Name.Pos() }
-func (o *SequenceOption) End() token.Pos { return o.Value.End() }
-
-func (o *SequenceOptions) Pos() token.Pos { return o.Options }
-func (o *SequenceOptions) End() token.Pos { return o.Rparen + 1 }

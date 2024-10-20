@@ -1,0 +1,16 @@
+--- array_literal_empty_with_types.sql
+ARRAY<INT64>[]
+--- AST
+&ast.ArrayLiteral{
+  Array:  0,
+  Lbrack: 12,
+  Rbrack: 13,
+  Type:   &ast.SimpleType{
+    NamePos: 6,
+    Name:    "INT64",
+  },
+  Values: []ast.Expr(nil),
+}
+
+--- SQL
+ARRAY<INT64>[]

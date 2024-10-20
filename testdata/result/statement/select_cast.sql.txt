@@ -12,7 +12,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CastExpr{
@@ -69,7 +69,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Value:    "1",
               },
               &ast.ArrayLiteral{
-                Array:  0,
+                Array:  -1,
                 Lbrack: 66,
                 Rbrack: 71,
                 Type:   nil,
@@ -89,7 +89,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 },
               },
               &ast.ArrayLiteral{
-                Array:  0,
+                Array:  -1,
                 Lbrack: 74,
                 Rbrack: 83,
                 Type:   nil,
@@ -297,4 +297,4 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 }
 
 --- SQL
-SELECT CAST(1 AS INT64), CAST(0.1 AS FLOAT32), CAST(STRUCT(STRUCT(), 1, ARRAY[2, 3], ARRAY["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)
+SELECT CAST(1 AS INT64), CAST(0.1 AS FLOAT32), CAST(STRUCT(STRUCT(), 1, [2, 3], ["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)

@@ -8,7 +8,7 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.CallExpr{
@@ -29,7 +29,9 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    -1,

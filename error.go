@@ -18,7 +18,7 @@ func (e *Error) String() string {
 
 func (e *Error) Error() string {
 	var message bytes.Buffer
-	fmt.Fprintf(&message, "syntax error:%s: %s\n", e.Position, e.Message)
+	fmt.Fprintf(&message, "syntax error: %s: %s\n", e.Position, e.Message)
 	if e.Position.Source != "" {
 		fmt.Fprintln(&message)
 		fmt.Fprint(&message, e.Position.Source)

@@ -18,7 +18,7 @@ SELECT
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.DateLiteral{
@@ -48,7 +48,9 @@ SELECT
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -109,7 +111,9 @@ SELECT
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -140,7 +144,9 @@ SELECT
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    -1,
@@ -169,7 +175,9 @@ SELECT
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    -1,

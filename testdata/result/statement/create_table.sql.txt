@@ -39,7 +39,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: 50,
@@ -55,7 +55,7 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: 78,
@@ -79,10 +79,21 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       &ast.ColumnDefOptions{
-        Options:              83,
-        Rparen:               121,
-        AllowCommitTimestamp: false,
+      Options:       &ast.Options{
+        Options: 83,
+        Rparen:  120,
+        Records: []*ast.OptionsDef{
+          &ast.OptionsDef{
+            Name: &ast.Ident{
+              NamePos: 91,
+              NameEnd: 113,
+              Name:    "allow_commit_timestamp",
+            },
+            Value: &ast.NullLiteral{
+              Null: 116,
+            },
+          },
+        },
       },
     },
     &ast.ColumnDef{
@@ -108,7 +119,7 @@ create table foo (
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     150,
-        Stored: 178,
+        Stored: 172,
         Expr:   &ast.CallExpr{
           Rparen: 169,
           Func:   &ast.Ident{
@@ -133,10 +144,12 @@ create table foo (
               },
             },
           },
-          NamedArgs: []*ast.NamedArg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
       },
-      Options: (*ast.ColumnDefOptions)(nil),
+      Options: (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -152,7 +165,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: 515,
@@ -176,22 +189,24 @@ create table foo (
             NameEnd: 546,
             Name:    "current_timestamp",
           },
-          Distinct:  false,
-          Args:      []ast.Arg(nil),
-          NamedArgs: []*ast.NamedArg(nil),
+          Distinct:     false,
+          Args:         []ast.Arg(nil),
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
         },
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     182,
-        Rparen:      222,
+        Rparen:      221,
         OnDeleteEnd: -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -216,11 +231,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     226,
-        Rparen:      266,
+        Rparen:      265,
         OnDeleteEnd: 284,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -245,11 +260,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     288,
-        Rparen:      328,
+        Rparen:      327,
         OnDeleteEnd: 348,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -282,7 +297,7 @@ create table foo (
       },
       Constraint: &ast.ForeignKey{
         Foreign:     370,
-        Rparen:      423,
+        Rparen:      422,
         OnDeleteEnd: -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
@@ -317,11 +332,11 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 0,
+      ConstraintPos: -1,
       Name:          (*ast.Ident)(nil),
       Constraint:    &ast.Check{
         Check:  427,
-        Rparen: 442,
+        Rparen: 441,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
@@ -347,7 +362,7 @@ create table foo (
       },
       Constraint: &ast.Check{
         Check:  463,
-        Rparen: 478,
+        Rparen: 477,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
@@ -390,4 +405,4 @@ create table foo (
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS(allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE, FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION, CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE, FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION, CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)

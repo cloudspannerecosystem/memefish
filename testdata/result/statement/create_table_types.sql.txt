@@ -40,7 +40,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -56,7 +56,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -72,7 +72,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -88,7 +88,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -104,7 +104,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -120,7 +120,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -144,7 +144,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -163,7 +163,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -187,7 +187,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -206,7 +206,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -217,7 +217,7 @@ create table types (
       },
       Type: &ast.ArraySchemaType{
         Array: 174,
-        Gt:    185,
+        Gt:    184,
         Item:  &ast.ScalarSchemaType{
           NamePos: 180,
           Name:    "BOOL",
@@ -226,7 +226,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -237,7 +237,7 @@ create table types (
       },
       Type: &ast.ArraySchemaType{
         Array: 193,
-        Gt:    210,
+        Gt:    209,
         Item:  &ast.SizedSchemaType{
           NamePos: 199,
           Rparen:  208,
@@ -249,7 +249,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
       Null: -1,
@@ -275,7 +275,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint(nil),

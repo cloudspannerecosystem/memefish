@@ -24,7 +24,7 @@ WHERE A.z.a = 2
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
@@ -113,8 +113,11 @@ WHERE A.z.a = 2
           Query:  &ast.Select{
             Select:   70,
             Distinct: false,
-            AsStruct: true,
-            Results:  []ast.SelectItem{
+            As:       &ast.AsStruct{
+              As:     77,
+              Struct: 80,
+            },
+            Results: []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
                   NamePos: 95,
