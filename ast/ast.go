@@ -2512,7 +2512,7 @@ type Delete struct {
 // Update is UPDATE statement.
 //
 //	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
-//	SET {{.Updates | sqlJoin ","}} {{.Where}}
+//	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
 type Update struct {
 	// pos = Update
 	// end = Where.end
