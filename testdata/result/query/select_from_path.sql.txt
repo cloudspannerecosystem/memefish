@@ -2,7 +2,7 @@
 SELECT
   *
 FROM
-  INFORMATION_SCHEMA.TABLES AS t
+  INFORMATION_SCHEMA.TABLES AS t TABLESAMPLE RESERVOIR (10 ROWS)
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
@@ -43,7 +43,21 @@ FROM
           },
         },
         WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
+        Sample:     &ast.TableSample{
+          TableSample: 49,
+          Method:      "RESERVOIR",
+          Size:        &ast.TableSampleSize{
+            Lparen: 71,
+            Rparen: 79,
+            Value:  &ast.IntLiteral{
+              ValuePos: 72,
+              ValueEnd: 74,
+              Base:     10,
+              Value:    "10",
+            },
+            Unit: "ROWS",
+          },
+        },
       },
     },
     Where:   (*ast.Where)(nil),
@@ -55,4 +69,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM INFORMATION_SCHEMA.TABLES AS t
+SELECT * FROM INFORMATION_SCHEMA.TABLES AS t TABLESAMPLE RESERVOIR (10 ROWS)
