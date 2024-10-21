@@ -544,6 +544,9 @@ func (g *OptionsDef) End() token.Pos { return g.Value.End() }
 func (c *CreateDatabase) Pos() token.Pos { return c.Create }
 func (c *CreateDatabase) End() token.Pos { return c.Name.End() }
 
+func (d *AlterDatabase) Pos() token.Pos { return d.Alter }
+func (d *AlterDatabase) End() token.Pos { return d.Options.End() }
+
 func (c *CreateTable) Pos() token.Pos {
 	return c.Create
 }

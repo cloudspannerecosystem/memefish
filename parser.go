@@ -2141,6 +2141,8 @@ func (p *Parser) parseDDL() ast.DDL {
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("DATABASE"):
+			return p.parseAlterDatabase(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
@@ -2189,6 +2191,19 @@ func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 	return &ast.CreateDatabase{
 		Create: pos,
 		Name:   name,
+	}
+}
+
+func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
+	p.expectKeywordLike("DATABASE")
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterDatabase{
+		Alter:   pos,
+		Name:    name,
+		Options: options,
 	}
 }
 
