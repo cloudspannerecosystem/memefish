@@ -555,7 +555,7 @@ func (a *AtTimeZone) SQL() string {
 }
 
 func (c *CastExpr) SQL() string {
-	return "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
+	return strOpt(c.Safe, "SAFE_") + "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
 }
 
 func (c *CaseExpr) SQL() string {

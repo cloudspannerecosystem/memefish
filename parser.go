@@ -1415,6 +1415,10 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseParenExpr()
 	case token.TokenIdent:
 		id := p.Token
+		switch {
+		case id.IsKeywordLike("SAFE_CAST"):
+			return p.parseCastExpr()
+		}
 		p.nextToken()
 		switch p.Token.Kind {
 		case "(":
@@ -1681,7 +1685,19 @@ func (p *Parser) parseCaseElse() *ast.CaseElse {
 }
 
 func (p *Parser) parseCastExpr() *ast.CastExpr {
-	cast := p.expect("CAST").Pos
+	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
+		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
+	}
+
+	var cast token.Pos
+	var safe bool
+	if p.Token.Kind == "CAST" {
+		cast = p.expect("CAST").Pos
+	} else {
+		cast = p.expectKeywordLike("SAFE_CAST").Pos
+		safe = true
+	}
+
 	p.expect("(")
 	e := p.parseExpr()
 	p.expect("AS")
@@ -1690,6 +1706,7 @@ func (p *Parser) parseCastExpr() *ast.CastExpr {
 	return &ast.CastExpr{
 		Cast:   cast,
 		Rparen: rparen,
+		Safe:   safe,
 		Expr:   e,
 		Type:   t,
 	}
