@@ -4,6 +4,7 @@ CAST('order_number: "123"' AS examples.shipping.`Order`)
 &ast.CastExpr{
   Cast:   0,
   Rparen: 55,
+  Safe:   false,
   Expr:   &ast.StringLiteral{
     ValuePos: 5,
     ValueEnd: 26,

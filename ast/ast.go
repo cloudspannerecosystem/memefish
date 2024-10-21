@@ -1159,15 +1159,17 @@ type AtTimeZone struct {
 	Expr Expr
 }
 
-// CastExpr is CAST call expression node.
+// CastExpr is CAST/SAFE_CAST call expression node.
 //
-//	CAST({{.Expr | sql}} AS {{.Type | sql}})
+//	{{if .Safe}}SAFE_{{end}}CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	// pos = Cast
 	// end = Rparen + 1
 
-	Cast   token.Pos // position of "CAST" keyword
+	Cast   token.Pos // position of "CAST" keyword or "SAFE_CAST" pseudo keyword
 	Rparen token.Pos // position of ")"
+
+	Safe bool
 
 	Expr Expr
 	Type Type
