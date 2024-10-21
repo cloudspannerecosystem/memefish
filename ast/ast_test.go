@@ -161,7 +161,13 @@ func TestTableAlteration(t *testing.T) {
 	TableAlteration(&DropConstraint{}).isTableAlteration()
 	TableAlteration(&SetOnDelete{}).isTableAlteration()
 	TableAlteration(&AlterColumn{}).isTableAlteration()
-	TableAlteration(&AlterColumnSet{}).isTableAlteration()
+}
+
+func TestColumnAlteration(t *testing.T) {
+	ColumnAlteration(&AlterColumnType{}).isColumnAlteration()
+	ColumnAlteration(&AlterColumnSetDefault{}).isColumnAlteration()
+	ColumnAlteration(&AlterColumnSetOptions{}).isColumnAlteration()
+	ColumnAlteration(&AlterColumnDropDefault{}).isColumnAlteration()
 }
 
 func TestPrivilege(t *testing.T) {

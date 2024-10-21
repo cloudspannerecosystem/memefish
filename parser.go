@@ -2928,40 +2928,53 @@ func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
 	}
 }
 
+func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
+	switch {
+	case p.Token.Kind == "SET":
+		set := p.expect("SET").Pos
+		if p.Token.Kind == "DEFAULT" {
+			defaultExpr := p.tryParseColumnDefaultExpr()
+			return &ast.AlterColumnSetDefault{
+				Set:         set,
+				DefaultExpr: defaultExpr,
+			}
+		} else {
+			options := p.parseOptions()
+			return &ast.AlterColumnSetOptions{
+				Set:     set,
+				Options: options,
+			}
+		}
+	case p.Token.IsKeywordLike("DROP"):
+		drop := p.expectKeywordLike("DROP").Pos
+		def := p.expect("DEFAULT").Pos
+		return &ast.AlterColumnDropDefault{
+			Drop:    drop,
+			Default: def,
+		}
+	default:
+		t, notNull, null := p.parseTypeNotNull()
+		defaultExpr := p.tryParseColumnDefaultExpr()
+		return &ast.AlterColumnType{
+			Type:        t,
+			Null:        null,
+			NotNull:     notNull,
+			DefaultExpr: defaultExpr,
+		}
+	}
+
+}
 func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
 	p.expectKeywordLike("COLUMN")
 
 	name := p.parseIdent()
 
-	if p.Token.Kind == "SET" {
-		p.nextToken()
-		if p.Token.Kind == "DEFAULT" {
-			defaultExpr := p.tryParseColumnDefaultExpr()
-			return &ast.AlterColumnSet{
-				Alter:       pos,
-				Name:        name,
-				DefaultExpr: defaultExpr,
-			}
-		} else {
-			options := p.parseOptions()
-			return &ast.AlterColumnSet{
-				Alter:   pos,
-				Name:    name,
-				Options: options,
-			}
-		}
-	}
-
-	t, notNull, null := p.parseTypeNotNull()
-	defaultExpr := p.tryParseColumnDefaultExpr()
+	alteration := p.parseColumnAlteration()
 	return &ast.AlterColumn{
-		Alter:       pos,
-		Null:        null,
-		Name:        name,
-		Type:        t,
-		NotNull:     notNull,
-		DefaultExpr: defaultExpr,
+		Alter:      pos,
+		Name:       name,
+		Alteration: alteration,
 	}
 }
 

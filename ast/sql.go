@@ -957,24 +957,20 @@ func (s *SetOnDelete) SQL() string {
 }
 
 func (a *AlterColumn) SQL() string {
-	sql := "ALTER COLUMN " + a.Name.SQL() + " " + a.Type.SQL()
-	if a.NotNull {
-		sql += " NOT NULL"
-	}
-	if a.DefaultExpr != nil {
-		sql += " " + a.DefaultExpr.SQL()
-	}
-	return sql
+	return "ALTER COLUMN " + a.Name.SQL() + " " + a.Alteration.SQL()
 }
 
-func (a *AlterColumnSet) SQL() string {
-	sql := "ALTER COLUMN " + a.Name.SQL() + " SET "
-	if a.Options != nil {
-		return sql + a.Options.SQL()
-	} else {
-		return sql + a.DefaultExpr.SQL()
-	}
+func (a *AlterColumnType) SQL() string {
+	return a.Type.SQL() +
+		strOpt(a.NotNull, " NOT NULL") +
+		sqlOpt(" ", a.DefaultExpr, "")
 }
+
+func (a *AlterColumnSetOptions) SQL() string { return "SET " + a.Options.SQL() }
+
+func (a *AlterColumnSetDefault) SQL() string { return "SET " + a.DefaultExpr.SQL() }
+
+func (a *AlterColumnDropDefault) SQL() string { return "DROP DEFAULT" }
 
 func (d *DropTable) SQL() string {
 	sql := "DROP TABLE "
