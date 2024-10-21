@@ -147,6 +147,9 @@ func TestDDL(t *testing.T) {
 	DDL(&DropRole{}).isDDL()
 	DDL(&Grant{}).isDDL()
 	DDL(&Revoke{}).isDDL()
+	DDL(&CreateSearchIndex{}).isDDL()
+	DDL(&DropSearchIndex{}).isDDL()
+	DDL(&AlterSearchIndex{}).isDDL()
 }
 
 func TestConstraint(t *testing.T) {
