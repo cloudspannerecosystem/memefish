@@ -55,6 +55,7 @@ func (CreateDatabase) isStatement()     {}
 func (CreateTable) isStatement()        {}
 func (CreateSequence) isStatement()     {}
 func (CreateView) isStatement()         {}
+func (DropView) isStatement()           {}
 func (CreateIndex) isStatement()        {}
 func (CreateVectorIndex) isStatement()  {}
 func (CreateRole) isStatement()         {}
@@ -256,6 +257,7 @@ type DDL interface {
 func (CreateDatabase) isDDL()     {}
 func (CreateTable) isDDL()        {}
 func (CreateView) isDDL()         {}
+func (DropView) isDDL()           {}
 func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
@@ -1795,6 +1797,18 @@ type CreateView struct {
 	OrReplace    bool
 	SecurityType SecurityType
 	Query        QueryExpr
+}
+
+// DropView is DROP VIEW statement node.
+//
+//	DROP VIEW {{.Name | sql}}
+type DropView struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	Name *Ident
 }
 
 // AlterTable is ALTER TABLE statement node.

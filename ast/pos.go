@@ -574,6 +574,9 @@ func (c *CreateView) End() token.Pos {
 	return c.Query.End()
 }
 
+func (d *DropView) Pos() token.Pos { return d.Drop }
+func (d *DropView) End() token.Pos { return d.Name.End() }
+
 func (c *ColumnDef) Pos() token.Pos {
 	return c.Name.Pos()
 }

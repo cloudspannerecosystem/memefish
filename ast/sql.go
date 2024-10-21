@@ -828,6 +828,8 @@ func (c *CreateView) SQL() string {
 	return sql
 }
 
+func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
+
 func (c *ColumnDef) SQL() string {
 	sql := c.Name.SQL() + " " + c.Type.SQL()
 	if c.NotNull {

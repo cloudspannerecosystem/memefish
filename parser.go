@@ -2160,6 +2160,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropVectorIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseDropSequence(pos)
+		case p.Token.IsKeywordLike("VIEW"):
+			return p.parseDropView(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2311,6 +2313,16 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 		OrReplace:    orReplace,
 		SecurityType: securityType,
 		Query:        query,
+	}
+}
+
+func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
+	p.expectKeywordLike("VIEW")
+	name := p.parseIdent()
+
+	return &ast.DropView{
+		Drop: pos,
+		Name: name,
 	}
 }
 
