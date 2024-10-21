@@ -1,0 +1,31 @@
+--- alter_statistics.sql
+ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)
+--- AST
+&ast.AlterStatistics{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 17,
+    NameEnd: 42,
+    Name:    "auto_20191128_14_47_22UTC",
+  },
+  Options: &ast.Options{
+    Options: 47,
+    Rparen:  70,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 56,
+          NameEnd: 64,
+          Name:    "allow_gc",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 65,
+          Value:    false,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc = false)
