@@ -810,8 +810,9 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		ids := p.parseIdentOrPath()
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
+		} else {
+			return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 		}
-		return p.parseUnnestSuffix(true, &ast.Path{Idents: ids}, token.InvalidPos, token.InvalidPos)
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
@@ -834,7 +835,6 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen 
 	return p.parseTableExprSuffix(&ast.Unnest{
 		Unnest:     unnest,
 		Rparen:     rparen,
-		Implicit:   implicit,
 		Expr:       expr,
 		Hint:       hint,
 		As:         as,
@@ -865,6 +865,16 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 		Table: id,
 		Hint:  hint,
 		As:    as,
+	})
+}
+
+func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
+	hint := p.tryParseHint()
+	as := p.tryParseAsAlias()
+	return p.parseTableExprSuffix(&ast.PathTableExpr{
+		Path: id,
+		Hint: hint,
+		As:   as,
 	})
 }
 
@@ -906,6 +916,8 @@ func (p *Parser) parseTableExprSuffix(join ast.TableExpr) ast.TableExpr {
 	case *ast.Unnest:
 		j.Sample = sample
 	case *ast.TableName:
+		j.Sample = sample
+	case *ast.PathTableExpr:
 		j.Sample = sample
 	case *ast.SubQueryTableExpr:
 		j.Sample = sample
