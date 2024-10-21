@@ -2989,7 +2989,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
-	name := p.parseIdent()
+	name := p.parseFQN()
 	p.expect("SET")
 	options := p.parseOptions()
 
