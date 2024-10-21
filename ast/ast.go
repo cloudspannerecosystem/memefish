@@ -771,17 +771,17 @@ type TableName struct {
 // PathTableExpr is path expression node in FROM clause.
 // Parser cannot distinguish between `implicit UNNEST` and tables in a named schema.
 // It is the job of a later phase to determine this distinction.
-// Note: We can merge it with TableName.
 //
 //	{{.Path | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
 type PathTableExpr struct {
 	// pos = Path.pos
-	// end = (Sample ?? As ?? Hint ?? Path).end
+	// end = (Sample ?? WithOffset ?? As ?? Hint ?? Path).end
 
-	Path   *Path
-	Hint   *Hint        // optional
-	As     *AsAlias     // optional
-	Sample *TableSample // optional
+	Path       *Path
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 // SubQueryTableExpr is subquery inside JOIN expression.

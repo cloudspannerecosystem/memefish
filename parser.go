@@ -871,10 +871,12 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
+	withOffset := p.tryParseWithOffset()
 	return p.parseTableExprSuffix(&ast.PathTableExpr{
-		Path: id,
-		Hint: hint,
-		As:   as,
+		Path:       id,
+		Hint:       hint,
+		As:         as,
+		WithOffset: withOffset,
 	})
 }
 

@@ -252,7 +252,9 @@ func (t *TableName) End() token.Pos {
 }
 
 func (e *PathTableExpr) Pos() token.Pos { return e.Path.Pos() }
-func (e *PathTableExpr) End() token.Pos { return firstValidEnd(e.Sample, e.As, e.Hint, e.Path) }
+func (e *PathTableExpr) End() token.Pos {
+	return firstValidEnd(e.Sample, e.WithOffset, e.As, e.Hint, e.Path)
+}
 
 func (s *SubQueryTableExpr) Pos() token.Pos {
 	return s.Lparen

@@ -333,6 +333,7 @@ func (e *PathTableExpr) SQL() string {
 	return e.Path.SQL() +
 		sqlOpt("", e.Hint, "") +
 		sqlOpt(" ", e.As, "") +
+		sqlOpt(" ", e.WithOffset, "") +
 		sqlOpt(" ", e.Sample, "")
 }
 
