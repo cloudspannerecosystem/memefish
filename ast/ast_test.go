@@ -136,6 +136,7 @@ func TestDDL(t *testing.T) {
 	DDL(&AlterSequence{}).isDDL()
 	DDL(&DropSequence{}).isDDL()
 	DDL(&CreateView{}).isDDL()
+	DDL(&DropView{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()
 	DDL(&CreateIndex{}).isDDL()
