@@ -17,9 +17,21 @@ func lastNode[T Node](s []T) T {
 	return s[len(s)-1]
 }
 
-// firstValidEnd returns the first valid Pos() in argument.
+// firstValidPos returns the first valid Pos() in argument.
 // "valid" means the node is not nil and Pos().Invalid() is not true.
-// This function corresponds to "(n0 ?? n1 ?? ...).End()"
+// This function corresponds to "(n0 ?? n1 ?? ...).pos"
+func firstValidPos(ns ...Node) token.Pos {
+	for _, n := range ns {
+		if n != nil && !n.Pos().Invalid() {
+			return n.Pos()
+		}
+	}
+	return token.InvalidPos
+}
+
+// firstValidEnd returns the first valid Pos() in argument.
+// "valid" means the node is not nil and End().Invalid() is not true.
+// This function corresponds to "(n0 ?? n1 ?? ...).end"
 func firstValidEnd(ns ...Node) token.Pos {
 	for _, n := range ns {
 		if n != nil && !n.End().Invalid() {

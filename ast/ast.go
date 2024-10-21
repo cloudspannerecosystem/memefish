@@ -1293,6 +1293,29 @@ type Ident struct {
 	Name string
 }
 
+// FQN is dot-chained identifier list for named schema.
+//
+//	{{.Idents | sqlJoin "."}}
+type FQN struct {
+	// pos = (Schema ?? Name).pos
+	// end = Name.end
+
+	Schema *Ident // optional
+	Name   *Ident
+}
+
+func (f *FQN) Pos() token.Pos {
+	return firstValidPos(f.Schema, f.Name)
+}
+
+func (f *FQN) End() token.Pos {
+	return f.Name.End()
+}
+
+func (f *FQN) SQL() string {
+	return sqlOpt("", f.Schema, ".") + f.Name.SQL()
+}
+
 // Path is dot-chained identifier list.
 //
 //	{{.Idents | sqlJoin "."}}
@@ -1615,7 +1638,7 @@ type CreateTable struct {
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
 	IfNotExists       bool
-	Name              *Ident
+	Name              *FQN
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
@@ -1632,7 +1655,7 @@ type CreateSequence struct {
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name        *Ident
+	Name        *FQN
 	IfNotExists bool
 	Options     *Options
 }
@@ -1709,7 +1732,7 @@ type ForeignKey struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	Columns          []*Ident
-	ReferenceTable   *Ident
+	ReferenceTable   *FQN
 	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
 	OnDelete         OnDeleteAction // optional
 }
@@ -1750,7 +1773,7 @@ type Cluster struct {
 	Comma       token.Pos // position of ","
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
-	TableName *Ident
+	TableName *FQN
 	OnDelete  OnDeleteAction // optional
 }
 
@@ -1791,7 +1814,7 @@ type CreateView struct {
 
 	Create token.Pos
 
-	Name         *Ident
+	Name         *FQN
 	OrReplace    bool
 	SecurityType SecurityType
 	Query        QueryExpr
@@ -1806,7 +1829,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *FQN
 	TableAlteration TableAlteration
 }
 
@@ -1983,7 +2006,7 @@ type DropTable struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *FQN
 }
 
 // CreateIndex is CREATE INDEX statement node.
@@ -2006,8 +2029,8 @@ type CreateIndex struct {
 	Unique       bool
 	NullFiltered bool
 	IfNotExists  bool
-	Name         *Ident
-	TableName    *Ident
+	Name         *FQN
+	TableName    *FQN
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
 	InterleaveIn *InterleaveIn // optional
@@ -2194,7 +2217,7 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *FQN
 }
 
 // DropVectorIndex is DROP VECTOR INDEX statement node.
@@ -2216,9 +2239,10 @@ type DropVectorIndex struct {
 type DropSequence struct {
 	// pos = Drop
 	// end = Name.end
+
 	Drop     token.Pos
 	IfExists bool
-	Name     *Ident
+	Name     *FQN
 }
 
 // CreateRole is CREATE ROLE statement node.
