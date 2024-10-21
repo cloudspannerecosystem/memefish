@@ -20,10 +20,13 @@ create table types (
   Create:      0,
   Rparen:      252,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 18,
-    Name:    "types",
+  Name:        &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 13,
+      NameEnd: 18,
+      Name:    "types",
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

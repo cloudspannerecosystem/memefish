@@ -10,15 +10,21 @@ create index foo_bar on foo (
   Unique:       false,
   NullFiltered: false,
   IfNotExists:  false,
-  Name:         &ast.Ident{
-    NamePos: 13,
-    NameEnd: 20,
-    Name:    "foo_bar",
+  Name:         &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 13,
+      NameEnd: 20,
+      Name:    "foo_bar",
+    },
   },
-  TableName: &ast.Ident{
-    NamePos: 24,
-    NameEnd: 27,
-    Name:    "foo",
+  TableName: &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 24,
+      NameEnd: 27,
+      Name:    "foo",
+    },
   },
   Keys: []*ast.IndexKey{
     &ast.IndexKey{

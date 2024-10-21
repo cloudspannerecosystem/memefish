@@ -5,10 +5,13 @@ drop table foo
 &ast.DropTable{
   Drop:     0,
   IfExists: false,
-  Name:     &ast.Ident{
-    NamePos: 11,
-    NameEnd: 14,
-    Name:    "foo",
+  Name:     &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 11,
+      NameEnd: 14,
+      Name:    "foo",
+    },
   },
 }
 

@@ -10,10 +10,13 @@ create table foo (
   Create:      0,
   Rparen:      59,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Name:        &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 13,
+      NameEnd: 16,
+      Name:    "foo",
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
@@ -54,10 +57,13 @@ create table foo (
   Cluster:          &ast.Cluster{
     Comma:       60,
     OnDeleteEnd: -1,
-    TableName:   &ast.Ident{
-      NamePos: 85,
-      NameEnd: 91,
-      Name:    "foobar",
+    TableName:   &ast.FQN{
+      Schema: (*ast.Ident)(nil),
+      Name:   &ast.Ident{
+        NamePos: 85,
+        NameEnd: 91,
+        Name:    "foobar",
+      },
     },
     OnDelete: "",
   },

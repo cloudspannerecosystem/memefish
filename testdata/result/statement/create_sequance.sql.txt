@@ -8,10 +8,13 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
 --- AST
 &ast.CreateSequence{
   Create: 0,
-  Name:   &ast.Ident{
-    NamePos: 30,
-    NameEnd: 40,
-    Name:    "MySequence",
+  Name:   &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 30,
+      NameEnd: 40,
+      Name:    "MySequence",
+    },
   },
   IfNotExists: true,
   Options:     &ast.Options{

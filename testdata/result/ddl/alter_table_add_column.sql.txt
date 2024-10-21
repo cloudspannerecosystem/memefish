@@ -3,10 +3,13 @@ alter table foo add column baz string(max) not null
 --- AST
 &ast.AlterTable{
   Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 15,
-    Name:    "foo",
+  Name:  &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
+    },
   },
   TableAlteration: &ast.AddColumn{
     Add:         16,

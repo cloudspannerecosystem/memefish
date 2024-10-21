@@ -5,10 +5,13 @@ drop index foo_bar
 &ast.DropIndex{
   Drop:     0,
   IfExists: false,
-  Name:     &ast.Ident{
-    NamePos: 11,
-    NameEnd: 18,
-    Name:    "foo_bar",
+  Name:     &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 11,
+      NameEnd: 18,
+      Name:    "foo_bar",
+    },
   },
 }
 

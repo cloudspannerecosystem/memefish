@@ -5,10 +5,13 @@ DROP SEQUENCE IF EXISTS my_sequence
 &ast.DropSequence{
   Drop:     0,
   IfExists: true,
-  Name:     &ast.Ident{
-    NamePos: 24,
-    NameEnd: 35,
-    Name:    "my_sequence",
+  Name:     &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 24,
+      NameEnd: 35,
+      Name:    "my_sequence",
+    },
   },
 }
 

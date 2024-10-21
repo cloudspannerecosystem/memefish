@@ -9,10 +9,13 @@ from singers
 --- AST
 &ast.CreateView{
   Create: 0,
-  Name:   &ast.Ident{
-    NamePos: 12,
-    NameEnd: 23,
-    Name:    "singernames",
+  Name:   &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 12,
+      NameEnd: 23,
+      Name:    "singernames",
+    },
   },
   OrReplace:    false,
   SecurityType: "DEFINER",

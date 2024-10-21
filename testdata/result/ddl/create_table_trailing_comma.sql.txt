@@ -12,10 +12,13 @@ create table foo (
   Create:      0,
   Rparen:      83,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Name:        &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 13,
+      NameEnd: 16,
+      Name:    "foo",
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

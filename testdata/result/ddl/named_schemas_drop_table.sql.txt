@@ -1,0 +1,22 @@
+--- named_schemas_drop_table.sql
+DROP TABLE sch1.ShoppingCarts
+--- AST
+&ast.DropTable{
+  Drop:     0,
+  IfExists: false,
+  Name:     &ast.FQN{
+    Schema: &ast.Ident{
+      NamePos: 11,
+      NameEnd: 15,
+      Name:    "sch1",
+    },
+    Name: &ast.Ident{
+      NamePos: 16,
+      NameEnd: 29,
+      Name:    "ShoppingCarts",
+    },
+  },
+}
+
+--- SQL
+DROP TABLE sch1.ShoppingCarts
