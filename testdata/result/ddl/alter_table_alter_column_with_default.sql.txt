@@ -10,27 +10,29 @@ ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
   },
   TableAlteration: &ast.AlterColumn{
     Alter: 20,
-    Null:  56,
     Name:  &ast.Ident{
       NamePos: 33,
       NameEnd: 39,
       Name:    "output",
     },
-    Type: &ast.SizedSchemaType{
-      NamePos: 40,
-      Rparen:  50,
-      Name:    "STRING",
-      Max:     true,
-      Size:    nil,
-    },
-    NotNull:     true,
-    DefaultExpr: &ast.ColumnDefaultExpr{
-      Default: 61,
-      Rparen:  71,
-      Expr:    &ast.StringLiteral{
-        ValuePos: 69,
-        ValueEnd: 71,
-        Value:    "",
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.SizedSchemaType{
+        NamePos: 40,
+        Rparen:  50,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      Null:        56,
+      NotNull:     true,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 61,
+        Rparen:  71,
+        Expr:    &ast.StringLiteral{
+          ValuePos: 69,
+          ValueEnd: 71,
+          Value:    "",
+        },
       },
     },
   },
