@@ -35,10 +35,9 @@ select * from unnest([(1, 2), (3, 4)])
       From: &ast.From{
         From:   31,
         Source: &ast.Unnest{
-          Unnest:   36,
-          Rparen:   59,
-          Implicit: false,
-          Expr:     &ast.ArrayLiteral{
+          Unnest: 36,
+          Rparen: 59,
+          Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 43,
             Rbrack: 58,
