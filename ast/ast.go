@@ -1981,7 +1981,7 @@ type AlterColumn struct {
 	Alteration ColumnAlteration
 }
 
-// AlterColumnType is ALTER COLUMN column_name data_type node.
+// AlterColumnType is action to change the data type of the column in ALTER COLUMN.
 //
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumnType struct {
