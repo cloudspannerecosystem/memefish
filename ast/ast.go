@@ -75,6 +75,7 @@ func (Revoke) isStatement()             {}
 func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
+func (AlterStatistics) isStatement()    {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -275,6 +276,7 @@ func (Revoke) isDDL()             {}
 func (CreateChangeStream) isDDL() {}
 func (AlterChangeStream) isDDL()  {}
 func (DropChangeStream) isDDL()   {}
+func (AlterStatistics) isDDL()    {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -2391,6 +2393,19 @@ type RolePrivilege struct {
 	Role token.Pos
 
 	Names []*Ident // len(Names) > 0
+}
+
+// AlterStatistics is ALTER STATISTICS statement node.
+//
+//	ALTER STATISTICS {{.Name | sql}} SET {{.Options | sql}}
+type AlterStatistics struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
 }
 
 // ================================================================================
