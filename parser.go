@@ -810,9 +810,8 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		ids := p.parseIdentOrPath()
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
-		} else {
-			return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 		}
+		return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
