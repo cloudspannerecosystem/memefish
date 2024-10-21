@@ -20,10 +20,9 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Unnest{
-        Unnest:   18,
-        Rparen:   32,
-        Implicit: false,
-        Expr:     &ast.ArrayLiteral{
+        Unnest: 18,
+        Rparen: 32,
+        Expr:   &ast.ArrayLiteral{
           Array:  -1,
           Lbrack: 25,
           Rbrack: 31,

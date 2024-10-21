@@ -104,10 +104,9 @@ WHERE A.z.a = 2
     From: &ast.From{
       From:   38,
       Source: &ast.Unnest{
-        Unnest:   45,
-        Rparen:   255,
-        Implicit: false,
-        Expr:     &ast.ArraySubQuery{
+        Unnest: 45,
+        Rparen: 255,
+        Expr:   &ast.ArraySubQuery{
           Array:  57,
           Rparen: 251,
           Query:  &ast.Select{
@@ -143,10 +142,9 @@ WHERE A.z.a = 2
             From: &ast.From{
               From:   125,
               Source: &ast.Unnest{
-                Unnest:   138,
-                Rparen:   245,
-                Implicit: false,
-                Expr:     &ast.ArrayLiteral{
+                Unnest: 138,
+                Rparen: 245,
+                Expr:   &ast.ArrayLiteral{
                   Array:  145,
                   Lbrack: 205,
                   Rbrack: 244,
