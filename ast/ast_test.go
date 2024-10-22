@@ -170,7 +170,6 @@ func TestTableAlteration(t *testing.T) {
 	TableAlteration(&DropConstraint{}).isTableAlteration()
 	TableAlteration(&SetOnDelete{}).isTableAlteration()
 	TableAlteration(&AlterColumn{}).isTableAlteration()
-	TableAlteration(&AlterColumnSet{}).isTableAlteration()
 }
 
 func TestPrivilege(t *testing.T) {

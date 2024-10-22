@@ -309,7 +309,17 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
-func (AlterColumnSet) isTableAlteration()           {}
+
+// ColumnAlteration represents ALTER COLUMN action in ALTER TABLE.
+type ColumnAlteration interface {
+	Node
+	isColumnAlteration()
+}
+
+func (AlterColumnType) isColumnAlteration()        {}
+func (AlterColumnSetOptions) isColumnAlteration()  {}
+func (AlterColumnSetDefault) isColumnAlteration()  {}
+func (AlterColumnDropDefault) isColumnAlteration() {}
 
 // Privilege represents privileges specified by GRANT and REVOKE.
 type Privilege interface {
@@ -1971,31 +1981,61 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//	ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	ALTER COLUMN {{.Name | sql}} {{.Alteration | sql}}
 type AlterColumn struct {
 	// pos = Alter
-	// end = DefaultExpr.end || Null + 4 || Type.end
-	Alter token.Pos // position of "ALTER" keyword
-	Null  token.Pos // position of "NULL"
+	// end = Alteration.end
 
-	Name        *Ident
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name       *Ident
+	Alteration ColumnAlteration
+}
+
+// AlterColumnType is action to change the data type of the column in ALTER COLUMN.
+//
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+type AlterColumnType struct {
+	// pos = Type.pos
+	// end = DefaultExpr.end || NUll + 4 || Type.end
+
 	Type        SchemaType
+	Null        token.Pos // position of "NULL" keyword, optional
 	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr // optional
+}
+
+// AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.
+//
+//	SET {{.Options | sql}}
+type AlterColumnSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
+}
+
+// AlterColumnSetDefault is SET DEFAULT node in ALTER COLUMN.
+//
+//	SET {{.DefaultExpr | sql}}
+type AlterColumnSetDefault struct {
+	// pos = Set
+	// end = DefaultExpr.end
+
+	Set         token.Pos
 	DefaultExpr *ColumnDefaultExpr
 }
 
-// AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
+// AlterColumnDropDefault is DROP DEFAULT node in ALTER COLUMN
 //
-//	ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
-type AlterColumnSet struct {
-	// pos = Alter
-	// end = Name.end || Options.end || DefaultExpr.end
+//	DROP DEFAULT
+type AlterColumnDropDefault struct {
+	// pos = Drop
+	// end = Default + 7
 
-	Alter token.Pos // position of "ALTER" keyword
-
-	Name        *Ident
-	Options     *Options
-	DefaultExpr *ColumnDefaultExpr
+	Drop    token.Pos
+	Default token.Pos
 }
 
 // DropTable is DROP TABLE statement node.
