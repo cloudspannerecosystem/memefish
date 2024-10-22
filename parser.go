@@ -2163,7 +2163,7 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
-		case p.Token.IsKeywordLike("Search"):
+		case p.Token.IsKeywordLike("SEARCH"):
 			return p.parseAlterSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseAlterSequence(pos)
@@ -2178,10 +2178,10 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
-		case p.Token.IsKeywordLike("VECTOR"):
-			return p.parseDropVectorIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
 			return p.parseDropSearchIndex(pos)
+		case p.Token.IsKeywordLike("VECTOR"):
+			return p.parseDropVectorIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("VIEW"):
