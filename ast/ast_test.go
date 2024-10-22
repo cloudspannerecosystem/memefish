@@ -163,13 +163,6 @@ func TestTableAlteration(t *testing.T) {
 	TableAlteration(&AlterColumn{}).isTableAlteration()
 }
 
-func TestColumnAlteration(t *testing.T) {
-	ColumnAlteration(&AlterColumnType{}).isColumnAlteration()
-	ColumnAlteration(&AlterColumnSetDefault{}).isColumnAlteration()
-	ColumnAlteration(&AlterColumnSetOptions{}).isColumnAlteration()
-	ColumnAlteration(&AlterColumnDropDefault{}).isColumnAlteration()
-}
-
 func TestPrivilege(t *testing.T) {
 	Privilege(&PrivilegeOnTable{}).isPrivilege()
 	Privilege(&SelectPrivilegeOnView{}).isPrivilege()
