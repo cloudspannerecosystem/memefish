@@ -60,6 +60,7 @@ func (CreateDatabase) isStatement()     {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
+func (RenameTable) isStatement()        {}
 func (CreateIndex) isStatement()        {}
 func (AlterIndex) isStatement()         {}
 func (DropIndex) isStatement()          {}
@@ -267,6 +268,7 @@ func (CreateDatabase) isDDL()     {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
+func (RenameTable) isDDL()        {}
 func (CreateIndex) isDDL()        {}
 func (AlterIndex) isDDL()         {}
 func (DropIndex) isDDL()          {}
@@ -2049,6 +2051,29 @@ type DropTable struct {
 
 	IfExists bool
 	Name     *Ident
+}
+
+// RenameTable is RENAME TABLE statement node.
+//
+//	RENAME TABLE {{.SrcDests | sqlJoin ", "}}
+type RenameTable struct {
+	// pos = Drop
+	// end = Name.end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	SrcDests []*RenameTableSrcDest // len(SrcDests) > 0
+}
+
+// RenameTableSrcDest is old_table_name TO new_table_name node in RENAME TABLE statement.
+//
+//	{{.Src | sql}} TO {{.Dest | sql}}
+type RenameTableSrcDest struct {
+	// pos = Src.pos
+	// end = Dest.end
+
+	Src  *Ident
+	Dest *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.
