@@ -2697,7 +2697,6 @@ func (p *Parser) parseAlterSearchIndex(pos token.Pos) *ast.AlterSearchIndex {
 	p.expectKeywordLike("INDEX")
 
 	name := p.parseIdent()
-
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterSearchIndex{
@@ -3099,7 +3098,6 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	p.expectKeywordLike("INDEX")
 
 	name := p.parseIdent()
-
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{
