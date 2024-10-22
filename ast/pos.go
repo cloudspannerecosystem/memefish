@@ -666,6 +666,15 @@ func (r *RowDeletionPolicy) End() token.Pos {
 func (a *AlterTable) Pos() token.Pos { return a.Alter }
 func (a *AlterTable) End() token.Pos { return a.TableAlteration.End() }
 
+func (s *AddSynonym) Pos() token.Pos { return s.Add }
+func (s *AddSynonym) End() token.Pos { return s.Name.End() }
+
+func (s *DropSynonym) Pos() token.Pos { return s.Drop }
+func (s *DropSynonym) End() token.Pos { return s.Name.End() }
+
+func (t *RenameTo) Pos() token.Pos { return t.Rename }
+func (t *RenameTo) End() token.Pos { return firstValidEnd(t.AddSynonym, t.Name) }
+
 func (a *AddColumn) Pos() token.Pos { return a.Add }
 func (a *AddColumn) End() token.Pos { return a.Column.End() }
 

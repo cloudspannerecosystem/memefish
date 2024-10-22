@@ -300,6 +300,9 @@ type TableAlteration interface {
 	isTableAlteration()
 }
 
+func (AddSynonym) isTableAlteration()               {}
+func (DropSynonym) isTableAlteration()              {}
+func (RenameTo) isTableAlteration()                 {}
 func (AddColumn) isTableAlteration()                {}
 func (AddTableConstraint) isTableAlteration()       {}
 func (AddRowDeletionPolicy) isTableAlteration()     {}
@@ -1880,6 +1883,42 @@ type AlterChangeStream struct {
 
 	Name                   *Ident
 	ChangeStreamAlteration ChangeStreamAlteration
+}
+
+// AddSynonym is ADD SYNONYM node in ALTER TABLE.
+//
+//	ADD SYNONYM {{.Name | sql}}
+type AddSynonym struct {
+	// pos = Add
+	// end = Name.end
+
+	Add  token.Pos // position of "ADD" pseudo keyword
+	Name *Ident
+}
+
+// DropSynonym is DROP SYNONYM node in ALTER TABLE.
+//
+//	DROP SYNONYM {{.Name | sql}}
+type DropSynonym struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" pseudo keyword
+	Name *Ident
+}
+
+
+// RenameTo is DROP TO node in ALTER TABLE.
+//
+//	RENAME TO {{.Name | sql}}{{if .AddSynonym | isnil | not}}, {{.AddSynonym | sql}}{{end}}
+type RenameTo struct {
+	// pos = Rename
+	// end = (AddSynonym ?? Name).end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Name       *Ident
+	AddSynonym *AddSynonym // optional
 }
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.

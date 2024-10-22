@@ -2818,6 +2818,8 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 		alteration = p.parseAlterTableAdd()
 	case p.Token.IsKeywordLike("DROP"):
 		alteration = p.parseAlterTableDrop()
+	case p.Token.IsKeywordLike("RENAME"):
+		alteration = p.parseAlterTableRename()
 	case p.Token.IsKeywordLike("REPLACE"):
 		alteration = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
@@ -2839,12 +2841,24 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	}
 }
 
+func (p *Parser) parseAddSynonym(add token.Pos) *ast.AddSynonym {
+	p.expectKeywordLike("SYNONYM")
+	name := p.parseIdent()
+
+	return &ast.AddSynonym{
+		Add:  add,
+		Name: name,
+	}
+}
+
 func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 	pos := p.expectKeywordLike("ADD").Pos
 
 	var alteration ast.TableAlteration
 
 	switch {
+	case p.Token.IsKeywordLike("SYNONYM"):
+		alteration = p.parseAddSynonym(pos)
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		ifNotExists := p.parseIfNotExists()
@@ -2895,6 +2909,13 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	var alteration ast.TableAlteration
 
 	switch {
+	case p.Token.IsKeywordLike("SYNONYM"):
+		p.expectKeywordLike("SYNONYM")
+		name := p.parseIdent()
+		alteration = &ast.DropSynonym{
+			Drop: pos,
+			Name: name,
+		}
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		name := p.parseIdent()
@@ -2922,6 +2943,25 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	}
 
 	return alteration
+}
+
+func (p *Parser) parseAlterTableRename() ast.TableAlteration {
+	pos := p.expectKeywordLike("RENAME").Pos
+	p.expect("TO")
+	name := p.parseIdent()
+
+	var addSynonym *ast.AddSynonym
+	if p.Token.Kind == "," {
+		p.nextToken()
+		add := p.expectKeywordLike("ADD").Pos
+		addSynonym = p.parseAddSynonym(add)
+	}
+
+	return &ast.RenameTo{
+		Rename:     pos,
+		Name:       name,
+		AddSynonym: addSynonym,
+	}
 }
 
 func (p *Parser) parseAlterTableReplace() ast.TableAlteration {
