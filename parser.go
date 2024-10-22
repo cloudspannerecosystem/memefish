@@ -3787,6 +3787,7 @@ func (p *Parser) parseRenameTableSrcDest() *ast.RenameTableSrcDest {
 		Dest: dest,
 	}
 }
+
 func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 	p.expectKeywordLike("TABLE")
 	srcDests := parseCommaSeparatedList(p, p.parseRenameTableSrcDest)
