@@ -1415,6 +1415,10 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseParenExpr()
 	case token.TokenIdent:
 		id := p.Token
+		switch {
+		case id.IsKeywordLike("SAFE_CAST"):
+			return p.parseCastExpr()
+		}
 		p.nextToken()
 		switch p.Token.Kind {
 		case "(":
@@ -1681,7 +1685,19 @@ func (p *Parser) parseCaseElse() *ast.CaseElse {
 }
 
 func (p *Parser) parseCastExpr() *ast.CastExpr {
-	cast := p.expect("CAST").Pos
+	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
+		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
+	}
+
+	var cast token.Pos
+	var safe bool
+	if p.Token.Kind == "CAST" {
+		cast = p.expect("CAST").Pos
+	} else {
+		cast = p.expectKeywordLike("SAFE_CAST").Pos
+		safe = true
+	}
+
 	p.expect("(")
 	e := p.parseExpr()
 	p.expect("AS")
@@ -1690,6 +1706,7 @@ func (p *Parser) parseCastExpr() *ast.CastExpr {
 	return &ast.CastExpr{
 		Cast:   cast,
 		Rparen: rparen,
+		Safe:   safe,
 		Expr:   e,
 		Type:   t,
 	}
@@ -2167,6 +2184,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseDropSequence(pos)
+		case p.Token.IsKeywordLike("VIEW"):
+			return p.parseDropView(pos)
 		case p.Token.IsKeywordLike("ROLE"):
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
@@ -2318,6 +2337,16 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 		OrReplace:    orReplace,
 		SecurityType: securityType,
 		Query:        query,
+	}
+}
+
+func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
+	p.expectKeywordLike("VIEW")
+	name := p.parseIdent()
+
+	return &ast.DropView{
+		Drop: pos,
+		Name: name,
 	}
 }
 
@@ -3013,40 +3042,53 @@ func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
 	}
 }
 
+func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
+	switch {
+	case p.Token.Kind == "SET":
+		set := p.expect("SET").Pos
+		if p.Token.Kind == "DEFAULT" {
+			defaultExpr := p.tryParseColumnDefaultExpr()
+			return &ast.AlterColumnSetDefault{
+				Set:         set,
+				DefaultExpr: defaultExpr,
+			}
+		} else {
+			options := p.parseOptions()
+			return &ast.AlterColumnSetOptions{
+				Set:     set,
+				Options: options,
+			}
+		}
+	case p.Token.IsKeywordLike("DROP"):
+		drop := p.expectKeywordLike("DROP").Pos
+		def := p.expect("DEFAULT").Pos
+		return &ast.AlterColumnDropDefault{
+			Drop:    drop,
+			Default: def,
+		}
+	default:
+		t, notNull, null := p.parseTypeNotNull()
+		defaultExpr := p.tryParseColumnDefaultExpr()
+		return &ast.AlterColumnType{
+			Type:        t,
+			Null:        null,
+			NotNull:     notNull,
+			DefaultExpr: defaultExpr,
+		}
+	}
+
+}
 func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
 	p.expectKeywordLike("COLUMN")
 
 	name := p.parseIdent()
 
-	if p.Token.Kind == "SET" {
-		p.nextToken()
-		if p.Token.Kind == "DEFAULT" {
-			defaultExpr := p.tryParseColumnDefaultExpr()
-			return &ast.AlterColumnSet{
-				Alter:       pos,
-				Name:        name,
-				DefaultExpr: defaultExpr,
-			}
-		} else {
-			options := p.parseOptions()
-			return &ast.AlterColumnSet{
-				Alter:   pos,
-				Name:    name,
-				Options: options,
-			}
-		}
-	}
-
-	t, notNull, null := p.parseTypeNotNull()
-	defaultExpr := p.tryParseColumnDefaultExpr()
+	alteration := p.parseColumnAlteration()
 	return &ast.AlterColumn{
-		Alter:       pos,
-		Null:        null,
-		Name:        name,
-		Type:        t,
-		NotNull:     notNull,
-		DefaultExpr: defaultExpr,
+		Alter:      pos,
+		Name:       name,
+		Alteration: alteration,
 	}
 }
 

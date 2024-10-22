@@ -50,33 +50,39 @@ type Statement interface {
 	isStatement()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
 func (CreateTable) isStatement()        {}
-func (CreateSequence) isStatement()     {}
-func (CreateView) isStatement()         {}
-func (CreateIndex) isStatement()        {}
-func (CreateVectorIndex) isStatement()  {}
-func (CreateRole) isStatement()         {}
 func (AlterTable) isStatement()         {}
-func (AlterIndex) isStatement()         {}
-func (AlterSequence) isStatement()      {}
 func (DropTable) isStatement()          {}
+func (CreateIndex) isStatement()        {}
+func (AlterIndex) isStatement()         {}
 func (DropIndex) isStatement()          {}
-func (DropVectorIndex) isStatement()    {}
-func (DropSequence) isStatement()       {}
-func (DropRole) isStatement()           {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
-func (CreateChangeStream) isStatement() {}
-func (AlterChangeStream) isStatement()  {}
-func (DropChangeStream) isStatement()   {}
 func (CreateSearchIndex) isStatement()  {}
 func (DropSearchIndex) isStatement()    {}
 func (AlterSearchIndex) isStatement()   {}
+func (CreateView) isStatement()         {}
+func (DropView) isStatement()           {}
+func (CreateChangeStream) isStatement() {}
+func (AlterChangeStream) isStatement()  {}
+func (DropChangeStream) isStatement()   {}
+func (CreateRole) isStatement()         {}
+func (DropRole) isStatement()           {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
+func (CreateSequence) isStatement()     {}
+func (AlterSequence) isStatement()      {}
+func (DropSequence) isStatement()       {}
+func (CreateVectorIndex) isStatement()  {}
+func (DropVectorIndex) isStatement()    {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -256,29 +262,34 @@ type DDL interface {
 	isDDL()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+
 func (CreateDatabase) isDDL()     {}
 func (CreateTable) isDDL()        {}
-func (CreateView) isDDL()         {}
-func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
 func (CreateIndex) isDDL()        {}
-func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
-func (AlterSequence) isDDL()      {}
 func (DropIndex) isDDL()          {}
-func (DropVectorIndex) isDDL()    {}
-func (DropSequence) isDDL()       {}
+func (CreateView) isDDL()         {}
+func (CreateSearchIndex) isDDL()  {}
+func (DropSearchIndex) isDDL()    {}
+func (AlterSearchIndex) isDDL()   {}
+func (DropView) isDDL()           {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
 func (Revoke) isDDL()             {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
-func (CreateSearchIndex) isDDL()  {}
-func (DropSearchIndex) isDDL()    {}
-func (AlterSearchIndex) isDDL()   {}
+func (CreateSequence) isDDL()     {}
+func (AlterSequence) isDDL()      {}
+func (DropSequence) isDDL()       {}
+func (CreateVectorIndex) isDDL()  {}
+func (DropVectorIndex) isDDL()    {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -304,7 +315,17 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
-func (AlterColumnSet) isTableAlteration()           {}
+
+// ColumnAlteration represents ALTER COLUMN action in ALTER TABLE.
+type ColumnAlteration interface {
+	Node
+	isColumnAlteration()
+}
+
+func (AlterColumnType) isColumnAlteration()        {}
+func (AlterColumnSetOptions) isColumnAlteration()  {}
+func (AlterColumnSetDefault) isColumnAlteration()  {}
+func (AlterColumnDropDefault) isColumnAlteration() {}
 
 // Privilege represents privileges specified by GRANT and REVOKE.
 type Privilege interface {
@@ -1013,14 +1034,14 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//		{{.Func | sql}}(
+//	{{.Func | sql}}(
 //		{{if .Distinct}}DISTINCT{{end}}
 //		{{.Args | sqlJoin ", "}}
 //		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
 //		{{.NamedArgs | sqlJoin ", "}}
-//	    {{.NullHandling | sqlOpt}}
-//	    {{.Having | sqlOpt}}
-//		)
+//		{{.NullHandling | sqlOpt}}
+//		{{.Having | sqlOpt}}
+//	)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
@@ -1163,15 +1184,17 @@ type AtTimeZone struct {
 	Expr Expr
 }
 
-// CastExpr is CAST call expression node.
+// CastExpr is CAST/SAFE_CAST call expression node.
 //
-//	CAST({{.Expr | sql}} AS {{.Type | sql}})
+//	{{if .Safe}}SAFE_{{end}}CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	// pos = Cast
 	// end = Rparen + 1
 
-	Cast   token.Pos // position of "CAST" keyword
+	Cast   token.Pos // position of "CAST" keyword or "SAFE_CAST" pseudo keyword
 	Rparen token.Pos // position of ")"
+
+	Safe bool
 
 	Expr Expr
 	Type Type
@@ -1819,6 +1842,18 @@ type CreateView struct {
 	Query        QueryExpr
 }
 
+// DropView is DROP VIEW statement node.
+//
+//	DROP VIEW {{.Name | sql}}
+type DropView struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	Name *Ident
+}
+
 // AlterTable is ALTER TABLE statement node.
 //
 //	ALTER TABLE {{.Name | sql}} {{.TableAlteration | sql}}
@@ -1968,31 +2003,61 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//	ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	ALTER COLUMN {{.Name | sql}} {{.Alteration | sql}}
 type AlterColumn struct {
 	// pos = Alter
-	// end = DefaultExpr.end || Null + 4 || Type.end
-	Alter token.Pos // position of "ALTER" keyword
-	Null  token.Pos // position of "NULL"
+	// end = Alteration.end
 
-	Name        *Ident
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name       *Ident
+	Alteration ColumnAlteration
+}
+
+// AlterColumnType is action to change the data type of the column in ALTER COLUMN.
+//
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+type AlterColumnType struct {
+	// pos = Type.pos
+	// end = DefaultExpr.end || NUll + 4 || Type.end
+
 	Type        SchemaType
+	Null        token.Pos // position of "NULL" keyword, optional
 	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr // optional
+}
+
+// AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.
+//
+//	SET {{.Options | sql}}
+type AlterColumnSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
+}
+
+// AlterColumnSetDefault is SET DEFAULT node in ALTER COLUMN.
+//
+//	SET {{.DefaultExpr | sql}}
+type AlterColumnSetDefault struct {
+	// pos = Set
+	// end = DefaultExpr.end
+
+	Set         token.Pos
 	DefaultExpr *ColumnDefaultExpr
 }
 
-// AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
+// AlterColumnDropDefault is DROP DEFAULT node in ALTER COLUMN
 //
-//	ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
-type AlterColumnSet struct {
-	// pos = Alter
-	// end = Name.end || Options.end || DefaultExpr.end
+//	DROP DEFAULT
+type AlterColumnDropDefault struct {
+	// pos = Drop
+	// end = Default + 7
 
-	Alter token.Pos // position of "ALTER" keyword
-
-	Name        *Ident
-	Options     *Options
-	DefaultExpr *ColumnDefaultExpr
+	Drop    token.Pos
+	Default token.Pos
 }
 
 // DropTable is DROP TABLE statement node.

@@ -585,6 +585,9 @@ func (c *CreateView) End() token.Pos {
 	return c.Query.End()
 }
 
+func (d *DropView) Pos() token.Pos { return d.Drop }
+func (d *DropView) End() token.Pos { return d.Name.End() }
+
 func (c *ColumnDef) Pos() token.Pos {
 	return c.Name.Pos()
 }
@@ -702,23 +705,30 @@ func (a *AlterColumn) Pos() token.Pos {
 }
 
 func (a *AlterColumn) End() token.Pos {
+	return a.Alteration.End()
+}
+
+func (a *AlterColumnType) Pos() token.Pos { return a.Type.Pos() }
+
+func (a *AlterColumnType) End() token.Pos {
+	// TODO: use firstValid
 	if a.DefaultExpr != nil {
 		return a.DefaultExpr.End()
 	}
-	if !a.Null.Invalid() {
+	if a.NotNull {
 		return a.Null + 4
 	}
 	return a.Type.End()
 }
 
-func (a *AlterColumnSet) Pos() token.Pos { return a.Alter }
+func (a *AlterColumnSetOptions) Pos() token.Pos { return a.Set }
+func (a *AlterColumnSetOptions) End() token.Pos { return a.Options.End() }
 
-func (a *AlterColumnSet) End() token.Pos {
-	if a.Options != nil {
-		return a.Options.End()
-	}
-	return a.DefaultExpr.End()
-}
+func (a *AlterColumnSetDefault) Pos() token.Pos { return a.Set }
+func (a *AlterColumnSetDefault) End() token.Pos { return a.DefaultExpr.End() }
+
+func (a *AlterColumnDropDefault) Pos() token.Pos { return a.Drop }
+func (a *AlterColumnDropDefault) End() token.Pos { return a.Default + 7 }
 
 func (d *DropTable) Pos() token.Pos { return d.Drop }
 func (d *DropTable) End() token.Pos { return d.Name.End() }

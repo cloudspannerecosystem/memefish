@@ -2,8 +2,9 @@ package ast
 
 import (
 	"errors"
-	"github.com/google/go-cmp/cmp"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestOptions_BoolField(t *testing.T) {
@@ -53,7 +54,7 @@ func TestOptions_BoolField(t *testing.T) {
 			},
 			name:    "bool_option",
 			want:    nil,
-			wantErr: FieldNotFound,
+			wantErr: ErrFieldNotFound,
 		},
 		{
 			desc: "invalid type",
@@ -63,7 +64,7 @@ func TestOptions_BoolField(t *testing.T) {
 				},
 			},
 			name:    "string_option",
-			wantErr: fieldTypeMismatch,
+			wantErr: errFieldTypeMismatch,
 		},
 	}
 
@@ -123,7 +124,7 @@ func TestOptions_StringField(t *testing.T) {
 			},
 			name:    "string_field",
 			want:    nil,
-			wantErr: FieldNotFound,
+			wantErr: ErrFieldNotFound,
 		},
 		{
 			desc: "invalid value",
@@ -133,7 +134,7 @@ func TestOptions_StringField(t *testing.T) {
 				},
 			},
 			name:    "bool_option",
-			wantErr: fieldTypeMismatch,
+			wantErr: errFieldTypeMismatch,
 		},
 	}
 
@@ -193,7 +194,7 @@ func TestOptions_IntegerField(t *testing.T) {
 			},
 			name:    "integer_option",
 			want:    nil,
-			wantErr: FieldNotFound,
+			wantErr: ErrFieldNotFound,
 		},
 		{
 			desc: "invalid value",
@@ -203,7 +204,7 @@ func TestOptions_IntegerField(t *testing.T) {
 				},
 			},
 			name:    "bool_option",
-			wantErr: fieldTypeMismatch,
+			wantErr: errFieldTypeMismatch,
 		},
 	}
 

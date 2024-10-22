@@ -1,0 +1,26 @@
+--- alter_table_alter_column_drop_default.sql
+alter table foo alter column foo drop default
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 16,
+    Name:  &ast.Ident{
+      NamePos: 29,
+      NameEnd: 32,
+      Name:    "foo",
+    },
+    Alteration: &ast.AlterColumnDropDefault{
+      Drop:    33,
+      Default: 38,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ALTER COLUMN foo DROP DEFAULT

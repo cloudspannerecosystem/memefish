@@ -1,0 +1,14 @@
+--- drop_view.sql
+DROP VIEW SingersView
+--- AST
+&ast.DropView{
+  Drop: 0,
+  Name: &ast.Ident{
+    NamePos: 10,
+    NameEnd: 21,
+    Name:    "SingersView",
+  },
+}
+
+--- SQL
+DROP VIEW SingersView
