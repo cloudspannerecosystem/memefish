@@ -1009,14 +1009,14 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//		{{.Func | sql}}(
+//	{{.Func | sql}}(
 //		{{if .Distinct}}DISTINCT{{end}}
 //		{{.Args | sqlJoin ", "}}
 //		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
 //		{{.NamedArgs | sqlJoin ", "}}
-//	    {{.NullHandling | sqlOpt}}
-//	    {{.Having | sqlOpt}}
-//		)
+//		{{.NullHandling | sqlOpt}}
+//		{{.Having | sqlOpt}}
+//	)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
