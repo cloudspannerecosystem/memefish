@@ -50,31 +50,36 @@ type Statement interface {
 	isStatement()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
 func (CreateTable) isStatement()        {}
-func (CreateSequence) isStatement()     {}
+func (AlterTable) isStatement()         {}
+func (DropTable) isStatement()          {}
+func (CreateIndex) isStatement()        {}
+func (AlterIndex) isStatement()         {}
+func (DropIndex) isStatement()          {}
 func (CreateView) isStatement()         {}
 func (DropView) isStatement()           {}
-func (CreateIndex) isStatement()        {}
-func (CreateVectorIndex) isStatement()  {}
-func (CreateRole) isStatement()         {}
-func (AlterTable) isStatement()         {}
-func (AlterIndex) isStatement()         {}
-func (AlterSequence) isStatement()      {}
-func (DropTable) isStatement()          {}
-func (DropIndex) isStatement()          {}
-func (DropVectorIndex) isStatement()    {}
-func (DropSequence) isStatement()       {}
-func (DropRole) isStatement()           {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
 func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
+func (CreateRole) isStatement()         {}
+func (DropRole) isStatement()           {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
+func (CreateSequence) isStatement()     {}
+func (AlterSequence) isStatement()      {}
+func (DropSequence) isStatement()       {}
+func (CreateVectorIndex) isStatement()  {}
+func (DropVectorIndex) isStatement()    {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -254,27 +259,31 @@ type DDL interface {
 	isDDL()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+
 func (CreateDatabase) isDDL()     {}
 func (CreateTable) isDDL()        {}
-func (CreateView) isDDL()         {}
-func (DropView) isDDL()           {}
-func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
 func (CreateIndex) isDDL()        {}
-func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
-func (AlterSequence) isDDL()      {}
 func (DropIndex) isDDL()          {}
-func (DropVectorIndex) isDDL()    {}
-func (DropSequence) isDDL()       {}
+func (CreateView) isDDL()         {}
+func (DropView) isDDL()           {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
 func (Revoke) isDDL()             {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
+func (CreateSequence) isDDL()     {}
+func (AlterSequence) isDDL()      {}
+func (DropSequence) isDDL()       {}
+func (CreateVectorIndex) isDDL()  {}
+func (DropVectorIndex) isDDL()    {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
