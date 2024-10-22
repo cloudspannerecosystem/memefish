@@ -328,10 +328,10 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                {}
+func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
 func (RolePrivilege) isPrivilege()                   {}
-func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 
 // TablePrivilege represents privileges on table.
 type TablePrivilege interface {
