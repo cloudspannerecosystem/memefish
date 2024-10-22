@@ -1221,6 +1221,10 @@ func (d *DeletePrivilege) SQL() string {
 	return "DELETE"
 }
 
+func (p *SelectPrivilegeOnChangeStream) SQL() string {
+	return "SELECT ON CHANGE STREAM " + sqlJoin(p.Names, ", ")
+}
+
 func (s *SelectPrivilegeOnView) SQL() string {
 	sql := "SELECT ON VIEW " + s.Names[0].SQL()
 	for _, v := range s.Names[1:] {

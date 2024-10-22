@@ -331,6 +331,7 @@ func (PrivilegeOnTable) isPrivilege()                {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
 func (RolePrivilege) isPrivilege()                   {}
+func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 
 // TablePrivilege represents privileges on table.
 type TablePrivilege interface {
@@ -2406,6 +2407,18 @@ type DeletePrivilege struct {
 	// end = Delete + 6
 
 	Delete token.Pos // position of "DELETE" keyword
+}
+
+// SelectPrivilegeOnChangeStream is SELECT ON CHANGE STREAM privilege node in GRANT and REVOKE.
+//
+//	SELECT ON CHANGE STREAM {{.Names | sqlJoin ", "}}
+type SelectPrivilegeOnChangeStream struct {
+	// pos = Select
+	// end = Names[$].end
+
+	Select token.Pos
+
+	Names []*Ident // len(Names) > 0
 }
 
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
