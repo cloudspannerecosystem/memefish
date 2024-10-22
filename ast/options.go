@@ -23,11 +23,11 @@ func (o *Options) Field(name string) (expr Expr, found bool) {
 
 // FieldNotFound is returned Options.*Field methods.
 // It can be handled as a non-error.
-var FieldNotFound = errors.New("field not found")
+var ErrFieldNotFound = errors.New("field not found")
 
 // fieldTypeMismatch is only defined for test.
 // It is intentionally unexported.
-var fieldTypeMismatch = errors.New("type mismatched")
+var errFieldTypeMismatch = errors.New("type mismatched")
 
 // BoolField finds name in records, and return its value as *bool.
 // If Options doesn't have a record with name, it returns FieldNotFound error.
@@ -37,7 +37,7 @@ var fieldTypeMismatch = errors.New("type mismatched")
 func (o *Options) BoolField(name string) (*bool, error) {
 	v, ok := o.Field(name)
 	if !ok {
-		return nil, FieldNotFound
+		return nil, ErrFieldNotFound
 	}
 	switch v := v.(type) {
 	case *BoolLiteral:
@@ -45,7 +45,7 @@ func (o *Options) BoolField(name string) (*bool, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect true, false or null, but got unknown type %T: %w", v, fieldTypeMismatch)
+		return nil, fmt.Errorf("expect true, false or null, but got unknown type %T: %w", v, errFieldTypeMismatch)
 	}
 }
 
@@ -57,7 +57,7 @@ func (o *Options) BoolField(name string) (*bool, error) {
 func (o *Options) IntegerField(name string) (*int64, error) {
 	v, ok := o.Field(name)
 	if !ok {
-		return nil, FieldNotFound
+		return nil, ErrFieldNotFound
 	}
 	switch v := v.(type) {
 	case *IntLiteral:
@@ -69,7 +69,7 @@ func (o *Options) IntegerField(name string) (*int64, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect integer or null, but got unknown type %T: %w", v, fieldTypeMismatch)
+		return nil, fmt.Errorf("expect integer or null, but got unknown type %T: %w", v, errFieldTypeMismatch)
 	}
 }
 
@@ -81,7 +81,7 @@ func (o *Options) IntegerField(name string) (*int64, error) {
 func (o *Options) StringField(name string) (*string, error) {
 	v, ok := o.Field(name)
 	if !ok {
-		return nil, FieldNotFound
+		return nil, ErrFieldNotFound
 	}
 	switch v := v.(type) {
 	case *StringLiteral:
@@ -89,6 +89,6 @@ func (o *Options) StringField(name string) (*string, error) {
 	case *NullLiteral:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf("expect string literal or null, but got unknown type %T: %w", v, fieldTypeMismatch)
+		return nil, fmt.Errorf("expect string literal or null, but got unknown type %T: %w", v, errFieldTypeMismatch)
 	}
 }
