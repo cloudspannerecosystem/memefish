@@ -2698,20 +2698,23 @@ func (p *Parser) parseAlterSearchIndex(pos token.Pos) *ast.AlterSearchIndex {
 
 	name := p.parseIdent()
 
-	var alteration ast.IndexAlteration
-	switch {
-	case p.Token.IsKeywordLike("ADD"):
-		alteration = p.parseAddStoredColumn()
-	case p.Token.IsKeywordLike("DROP"):
-		alteration = p.parseDropStoredColumn()
-	default:
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
-	}
+	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterSearchIndex{
 		Alter:           pos,
 		Name:            name,
 		IndexAlteration: alteration,
+	}
+}
+
+func (p *Parser) parseIndexAlteration() ast.IndexAlteration {
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		return p.parseAddStoredColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		return p.parseDropStoredColumn()
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
 	}
 }
 
@@ -3097,15 +3100,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 	name := p.parseIdent()
 
-	var alteration ast.IndexAlteration
-	switch {
-	case p.Token.IsKeywordLike("ADD"):
-		alteration = p.parseAddStoredColumn()
-	case p.Token.IsKeywordLike("DROP"):
-		alteration = p.parseDropStoredColumn()
-	default:
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString)
-	}
+	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{
 		Alter:           pos,
