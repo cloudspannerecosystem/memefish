@@ -1907,10 +1907,9 @@ type DropSynonym struct {
 	Name *Ident
 }
 
-
 // RenameTo is DROP TO node in ALTER TABLE.
 //
-//	RENAME TO {{.Name | sql}}{{if .AddSynonym | isnil | not}}, {{.AddSynonym | sql}}{{end}}
+//	RENAME TO {{.Name | sql}}{{if .AddSynonym}}, {{.AddSynonym | sql}}{{end}}
 type RenameTo struct {
 	// pos = Rename
 	// end = (AddSynonym ?? Name).end
