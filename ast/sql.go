@@ -785,7 +785,7 @@ func (c *CreateTable) SQL() string {
 		sqlOpt("", c.RowDeletionPolicy, "")
 }
 
-func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + " )" }
+func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
 	sql := "CREATE SEQUENCE "
