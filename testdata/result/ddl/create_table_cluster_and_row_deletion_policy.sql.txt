@@ -69,6 +69,7 @@ create table foo (
   },
   TableConstraints: []*ast.TableConstraint(nil),
   PrimaryKeys:      []*ast.IndexKey(nil),
+  Synonyms:         []*ast.Synonym(nil),
   Cluster:          &ast.Cluster{
     Comma:       78,
     OnDeleteEnd: -1,
