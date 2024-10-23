@@ -338,7 +338,7 @@ func (b *BinaryExpr) SQL() string {
 
 func (u *UnaryExpr) SQL() string {
 	p := exprPrec(u)
-	return strIfElse(u.Op == OpNot, "NOT ", string(u.Op)) + paren(p, u.Expr)
+	return string(u.Op) + strOpt(u.Op == OpNot, " ") + paren(p, u.Expr)
 }
 
 func (i *InExpr) SQL() string {
