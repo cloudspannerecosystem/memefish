@@ -1653,9 +1653,11 @@ type CreateTable struct {
 //	SYNONYM ({.Name | sql})
 type Synonym struct {
 	// pos = Synonym
-	// end = Name.end
+	// end = Rparen + 1
+
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
-	Rparen  token.Pos
+	Rparen  token.Pos // position of ")"
+
 	Name    *Ident
 }
 

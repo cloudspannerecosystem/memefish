@@ -559,7 +559,7 @@ func (c *CreateTable) End() token.Pos {
 }
 
 func (s *Synonym) Pos() token.Pos { return s.Synonym }
-func (s *Synonym) End() token.Pos { return s.Name.End() }
+func (s *Synonym) End() token.Pos { return s.Rparen + 1 }
 
 func (c *CreateSequence) Pos() token.Pos {
 	return c.Create
