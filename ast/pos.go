@@ -251,6 +251,11 @@ func (t *TableName) End() token.Pos {
 	return t.Table.End()
 }
 
+func (e *PathTableExpr) Pos() token.Pos { return e.Path.Pos() }
+func (e *PathTableExpr) End() token.Pos {
+	return firstValidEnd(e.Sample, e.WithOffset, e.As, e.Hint, e.Path)
+}
+
 func (s *SubQueryTableExpr) Pos() token.Pos {
 	return s.Lparen
 }
@@ -561,6 +566,9 @@ func (c *CreateTable) End() token.Pos {
 	return c.Rparen + 1
 }
 
+func (s *Synonym) Pos() token.Pos { return s.Synonym }
+func (s *Synonym) End() token.Pos { return s.Rparen + 1 }
+
 func (c *CreateSequence) Pos() token.Pos {
 	return c.Create
 }
@@ -669,6 +677,15 @@ func (r *RowDeletionPolicy) End() token.Pos {
 func (a *AlterTable) Pos() token.Pos { return a.Alter }
 func (a *AlterTable) End() token.Pos { return a.TableAlteration.End() }
 
+func (s *AddSynonym) Pos() token.Pos { return s.Add }
+func (s *AddSynonym) End() token.Pos { return s.Name.End() }
+
+func (s *DropSynonym) Pos() token.Pos { return s.Drop }
+func (s *DropSynonym) End() token.Pos { return s.Name.End() }
+
+func (t *RenameTo) Pos() token.Pos { return t.Rename }
+func (t *RenameTo) End() token.Pos { return firstValidEnd(t.AddSynonym, t.Name) }
+
 func (a *AddColumn) Pos() token.Pos { return a.Add }
 func (a *AddColumn) End() token.Pos { return a.Column.End() }
 
@@ -698,23 +715,30 @@ func (a *AlterColumn) Pos() token.Pos {
 }
 
 func (a *AlterColumn) End() token.Pos {
+	return a.Alteration.End()
+}
+
+func (a *AlterColumnType) Pos() token.Pos { return a.Type.Pos() }
+
+func (a *AlterColumnType) End() token.Pos {
+	// TODO: use firstValid
 	if a.DefaultExpr != nil {
 		return a.DefaultExpr.End()
 	}
-	if !a.Null.Invalid() {
+	if a.NotNull {
 		return a.Null + 4
 	}
 	return a.Type.End()
 }
 
-func (a *AlterColumnSet) Pos() token.Pos { return a.Alter }
+func (a *AlterColumnSetOptions) Pos() token.Pos { return a.Set }
+func (a *AlterColumnSetOptions) End() token.Pos { return a.Options.End() }
 
-func (a *AlterColumnSet) End() token.Pos {
-	if a.Options != nil {
-		return a.Options.End()
-	}
-	return a.DefaultExpr.End()
-}
+func (a *AlterColumnSetDefault) Pos() token.Pos { return a.Set }
+func (a *AlterColumnSetDefault) End() token.Pos { return a.DefaultExpr.End() }
+
+func (a *AlterColumnDropDefault) Pos() token.Pos { return a.Drop }
+func (a *AlterColumnDropDefault) End() token.Pos { return a.Default + 7 }
 
 func (d *DropTable) Pos() token.Pos { return d.Drop }
 func (d *DropTable) End() token.Pos { return d.Name.End() }
@@ -920,4 +944,4 @@ func (u *Update) Pos() token.Pos { return u.Update }
 func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
-func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
+func (u *UpdateItem) End() token.Pos { return u.DefaultExpr.End() }

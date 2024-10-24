@@ -8,21 +8,23 @@ ALTER TABLE actions ALTER COLUMN output SET DEFAULT("")
     NameEnd: 19,
     Name:    "actions",
   },
-  TableAlteration: &ast.AlterColumnSet{
+  TableAlteration: &ast.AlterColumn{
     Alter: 20,
     Name:  &ast.Ident{
       NamePos: 33,
       NameEnd: 39,
       Name:    "output",
     },
-    Options:     (*ast.Options)(nil),
-    DefaultExpr: &ast.ColumnDefaultExpr{
-      Default: 44,
-      Rparen:  54,
-      Expr:    &ast.StringLiteral{
-        ValuePos: 52,
-        ValueEnd: 54,
-        Value:    "",
+    Alteration: &ast.AlterColumnSetDefault{
+      Set:         40,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 44,
+        Rparen:  54,
+        Expr:    &ast.StringLiteral{
+          ValuePos: 52,
+          ValueEnd: 54,
+          Value:    "",
+        },
       },
     },
   },
