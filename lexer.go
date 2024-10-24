@@ -109,7 +109,7 @@ func (l *Lexer) consumeToken() {
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '+', '-':
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '+', '-', ':':
 		l.Token.Kind = token.TokenKind([]byte{l.skip()})
 		return
 	case '.':

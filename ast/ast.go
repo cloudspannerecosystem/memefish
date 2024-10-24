@@ -143,38 +143,41 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
-func (JSONLiteral) isExpr()      {}
+func (BinaryExpr) isExpr()           {}
+func (UnaryExpr) isExpr()            {}
+func (InExpr) isExpr()               {}
+func (IsNullExpr) isExpr()           {}
+func (IsBoolExpr) isExpr()           {}
+func (BetweenExpr) isExpr()          {}
+func (SelectorExpr) isExpr()         {}
+func (IndexExpr) isExpr()            {}
+func (CallExpr) isExpr()             {}
+func (CountStarExpr) isExpr()        {}
+func (CastExpr) isExpr()             {}
+func (ExtractExpr) isExpr()          {}
+func (CaseExpr) isExpr()             {}
+func (ParenExpr) isExpr()            {}
+func (ScalarSubQuery) isExpr()       {}
+func (ArraySubQuery) isExpr()        {}
+func (ExistsSubQuery) isExpr()       {}
+func (Param) isExpr()                {}
+func (Ident) isExpr()                {}
+func (Path) isExpr()                 {}
+func (ArrayLiteral) isExpr()         {}
+func (StructLiteral) isExpr()        {}
+func (NullLiteral) isExpr()          {}
+func (BoolLiteral) isExpr()          {}
+func (IntLiteral) isExpr()           {}
+func (FloatLiteral) isExpr()         {}
+func (StringLiteral) isExpr()        {}
+func (BytesLiteral) isExpr()         {}
+func (DateLiteral) isExpr()          {}
+func (TimestampLiteral) isExpr()     {}
+func (NumericLiteral) isExpr()       {}
+func (JSONLiteral) isExpr()          {}
+func (NewConstructor) isExpr()       {}
+func (BracedNewConstructor) isExpr() {}
+func (BracedConstructor) isExpr()    {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -1499,6 +1502,94 @@ type JSONLiteral struct {
 	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
+}
+
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+// BracedConstructorFieldValue represents value part of fields in BracedNewConstructor.
+type BracedConstructorFieldValue interface {
+	Node
+	isBracedConstructorFieldValue()
+}
+
+func (*BracedConstructor) isBracedConstructorFieldValue()               {}
+func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+
+// NewConstructorArg represents a single argument in NEW constructor.
+//
+//	{{Expr | sql}} {{Alias | sqlOpt}}
+type NewConstructorArg struct {
+	// pos = Expr.pos
+	// end = (Alias ?? Expr).end
+
+	Expr  Expr
+	Alias *AsAlias // optional
+}
+
+// NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
+//
+//	NEW {{.Type | sql}} ({{.Args | sqlJoin ", "}})
+type NewConstructor struct {
+	// pos = New
+	// end = Rparen + 1
+
+	New  token.Pos
+	Type *NamedType
+
+	Args []*NewConstructorArg
+
+	Rparen token.Pos
+}
+
+// BracedNewConstructor represents NEW operator which creates a protocol buffer using a map constructor.
+//
+//	NEW {{.Type | sql}} {{"{"}}{{"}"}}
+type BracedNewConstructor struct {
+	// pos = New
+	// end = Rbrace + 1
+
+	New  token.Pos
+	Type *NamedType
+	Body *BracedConstructor
+}
+
+// BracedConstructor represents a single map constructor which is used in BracedNewConstructor.
+// Actually, it is a top level Expr in syntax, but it is not permitted semantically in other place.
+//
+//	{{"{"}}{{.Fields | sqlJoin ", "}}{{"}"}}
+type BracedConstructor struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+
+	Fields []*BracedConstructorField
+}
+
+// BracedConstructorField represents a single field in BracedConstructor.
+//
+//	{{.Name | sql}} {{.Value | sql}}
+type BracedConstructorField struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value BracedConstructorFieldValue
+}
+
+// BracedConstructorFieldValueExpr represents a field value node.
+//
+//	: {{.Expr | sql}}
+type BracedConstructorFieldValueExpr struct {
+	// pos = Colon
+	// end = Expr.end
+
+	Colon token.Pos
+	Expr  Expr
 }
 
 // ================================================================================

@@ -1,0 +1,36 @@
+--- new_constructor_empty.sql
+NEW googlesql.examples.music.Chart()
+
+--- AST
+&ast.NewConstructor{
+  New:  0,
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 4,
+        NameEnd: 13,
+        Name:    "googlesql",
+      },
+      &ast.Ident{
+        NamePos: 14,
+        NameEnd: 22,
+        Name:    "examples",
+      },
+      &ast.Ident{
+        NamePos: 23,
+        NameEnd: 28,
+        Name:    "music",
+      },
+      &ast.Ident{
+        NamePos: 29,
+        NameEnd: 34,
+        Name:    "Chart",
+      },
+    },
+  },
+  Args:   []*ast.NewConstructorArg(nil),
+  Rparen: 35,
+}
+
+--- SQL
+NEW googlesql.examples.music.Chart()

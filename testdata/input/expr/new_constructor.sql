@@ -1,0 +1,1 @@
+NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)

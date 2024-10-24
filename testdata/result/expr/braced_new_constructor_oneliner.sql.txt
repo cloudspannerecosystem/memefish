@@ -1,0 +1,72 @@
+--- braced_new_constructor_oneliner.sql
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
+--- AST
+&ast.BracedNewConstructor{
+  New:  0,
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 4,
+        NameEnd: 12,
+        Name:    "Universe",
+      },
+    },
+  },
+  Body: &ast.BracedConstructor{
+    Lbrace: 13,
+    Rbrace: 74,
+    Fields: []*ast.BracedConstructorField{
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 14,
+          NameEnd: 18,
+          Name:    "name",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 18,
+          Expr:  &ast.StringLiteral{
+            ValuePos: 20,
+            ValueEnd: 25,
+            Value:    "Sol",
+          },
+        },
+      },
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 27,
+          NameEnd: 42,
+          Name:    "closest_planets",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 42,
+          Expr:  &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 44,
+            Rbrack: 73,
+            Type:   nil,
+            Values: []ast.Expr{
+              &ast.StringLiteral{
+                ValuePos: 45,
+                ValueEnd: 54,
+                Value:    "Mercury",
+              },
+              &ast.StringLiteral{
+                ValuePos: 56,
+                ValueEnd: 63,
+                Value:    "Venus",
+              },
+              &ast.StringLiteral{
+                ValuePos: 65,
+                ValueEnd: 72,
+                Value:    "Earth",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth"]}
