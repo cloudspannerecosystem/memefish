@@ -3237,8 +3237,11 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
 		return e
 	}
-	if r := p.tryRolePrivilege(); r != nil {
+	if r := p.tryParseRolePrivilege(); r != nil {
 		return r
+	}
+	if c := p.tryParseSelectPrivilegeOnChangeStream(); c != nil {
+		return c
 	}
 	return p.parsePrivilegeOnTable()
 }
@@ -3281,7 +3284,7 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	}
 }
 
-func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
+func (p *Parser) tryParseRolePrivilege() *ast.RolePrivilege {
 	if !p.Token.IsKeywordLike("ROLE") {
 		return nil
 	}
@@ -3290,6 +3293,31 @@ func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
 	return &ast.RolePrivilege{
 		Role:  pos,
 		Names: names,
+	}
+}
+
+func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnChangeStream {
+	if p.Token.Kind != "SELECT" {
+		return nil
+	}
+	lexer := p.Lexer.Clone()
+	pos := p.expect("SELECT").Pos
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if !p.Token.IsKeywordLike("CHANGE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
+	names := parseCommaSeparatedList(p, p.parseIdent)
+
+	return &ast.SelectPrivilegeOnChangeStream{
+		Select: pos,
+		Names:  names,
 	}
 }
 

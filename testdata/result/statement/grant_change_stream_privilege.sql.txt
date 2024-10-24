@@ -1,0 +1,31 @@
+--- grant_change_stream_privilege.sql
+GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager
+--- AST
+&ast.Grant{
+  Grant:     0,
+  Privilege: &ast.SelectPrivilegeOnChangeStream{
+    Select: 6,
+    Names:  []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 41,
+        Name:    "cs_name_one",
+      },
+      &ast.Ident{
+        NamePos: 43,
+        NameEnd: 54,
+        Name:    "cs_name_two",
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 63,
+      NameEnd: 73,
+      Name:    "hr_manager",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager

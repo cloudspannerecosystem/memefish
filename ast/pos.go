@@ -874,6 +874,9 @@ func (u *UpdatePrivilege) End() token.Pos {
 func (d *DeletePrivilege) Pos() token.Pos { return d.Delete }
 func (d *DeletePrivilege) End() token.Pos { return d.Delete + 6 }
 
+func (p *SelectPrivilegeOnChangeStream) Pos() token.Pos { return p.Select }
+func (p *SelectPrivilegeOnChangeStream) End() token.Pos { return lastEnd(p.Names) }
+
 func (s *SelectPrivilegeOnView) Pos() token.Pos { return s.Select }
 func (s *SelectPrivilegeOnView) End() token.Pos { return s.Names[len(s.Names)-1].End() }
 
