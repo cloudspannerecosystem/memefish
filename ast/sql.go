@@ -767,6 +767,10 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
+func (d *AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
+}
+
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +

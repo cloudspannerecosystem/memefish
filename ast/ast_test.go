@@ -7,6 +7,7 @@ import (
 func TestStatement(t *testing.T) {
 	Statement(&QueryStatement{}).isStatement()
 	Statement(&CreateDatabase{}).isStatement()
+	Statement(&AlterDatabase{}).isStatement()
 	Statement(&CreateTable{}).isStatement()
 	Statement(&AlterTable{}).isStatement()
 	Statement(&DropTable{}).isStatement()
@@ -136,6 +137,7 @@ func TestStringValue(t *testing.T) {
 
 func TestDDL(t *testing.T) {
 	DDL(&CreateDatabase{}).isDDL()
+  DDL(&AlterDatabase{}).isDDL()
 	DDL(&CreateTable{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()

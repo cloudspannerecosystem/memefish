@@ -57,6 +57,7 @@ type Statement interface {
 
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
+func (AlterDatabase) isStatement()      {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
@@ -265,6 +266,7 @@ type DDL interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
 func (CreateDatabase) isDDL()     {}
+func (AlterDatabase) isDDL()      {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
@@ -1634,6 +1636,19 @@ type CreateDatabase struct {
 	Create token.Pos // position of "CREATE" keyword
 
 	Name *Ident
+}
+
+// AlterDatabase is ALTER DATABASE statement node.
+//
+//	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
+type AlterDatabase struct {
+	// pos = Alter
+	// end = Name.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
 }
 
 // CreateTable is CREATE TABLE statement node.
