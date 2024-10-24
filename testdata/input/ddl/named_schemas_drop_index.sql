@@ -1,0 +1,1 @@
+DROP INDEX sch1.indexOnSingers

@@ -2246,7 +2246,7 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parseFQN()
 
 	// This loop allows parsing trailing comma intentionally.
 	// TODO: is this allowed by Spanner really?
@@ -2320,10 +2320,22 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
+func (p *Parser) parseFQN() *ast.FQN {
+	firstToken := p.Token
+	switch path := p.parseIdentOrPath(); len(path) {
+	case 1:
+		return &ast.FQN{Name: path[0]}
+	case 2:
+		return &ast.FQN{Schema: path[0], Name: path[1]}
+	default:
+		panic(p.errorfAtToken(&firstToken, "FQN can't be longer than two level"))
+	}
+}
+
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parseFQN()
 	options := p.parseOptions()
 
 	return &ast.CreateSequence{
@@ -2343,7 +2355,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 	}
 	p.expectKeywordLike("VIEW")
 
-	name := p.parseIdent()
+	name := p.parseFQN()
 
 	p.expectKeywordLike("SQL")
 	p.expectKeywordLike("SECURITY")
@@ -2427,7 +2439,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	columns := parseCommaSeparatedList(p, p.parseIdent)
 	p.expect(")")
 	p.expectKeywordLike("REFERENCES")
-	refTable := p.parseIdent()
+	refTable := p.parseFQN()
 
 	p.expect("(")
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
@@ -2542,7 +2554,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
-	name := p.parseIdent()
+	name := p.parseFQN()
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
@@ -2687,10 +2699,10 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	ifNotExists := p.parseIfNotExists()
 
-	name := p.parseIdent()
+	name := p.parseFQN()
 
 	p.expect("ON")
-	tableName := p.parseIdent()
+	tableName := p.parseFQN()
 
 	p.expect("(")
 	var keys []*ast.IndexKey
@@ -2862,7 +2874,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
-	name := p.parseIdent()
+	name := p.parseFQN()
 
 	var alteration ast.TableAlteration
 	switch {
@@ -3111,7 +3123,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
-	name := p.parseIdent()
+	name := p.parseFQN()
 	p.expect("SET")
 	options := p.parseOptions()
 
@@ -3150,7 +3162,7 @@ func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parseFQN()
 	return &ast.DropTable{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3161,7 +3173,7 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parseFQN()
 	return &ast.DropIndex{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3184,7 +3196,7 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parseFQN()
 	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,
