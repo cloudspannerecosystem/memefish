@@ -1343,10 +1343,5 @@ func (u *Update) SQL() string {
 }
 
 func (u *UpdateItem) SQL() string {
-	sql := u.Path[0].SQL()
-	for _, id := range u.Path[1:] {
-		sql += "." + id.SQL()
-	}
-	sql += " = " + u.Expr.SQL()
-	return sql
+	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }

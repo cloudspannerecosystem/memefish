@@ -929,4 +929,4 @@ func (u *Update) Pos() token.Pos { return u.Update }
 func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
-func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
+func (u *UpdateItem) End() token.Pos { return u.DefaultExpr.End() }

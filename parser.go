@@ -3542,11 +3542,11 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 func (p *Parser) parseUpdateItem() *ast.UpdateItem {
 	path := p.parseIdentOrPath()
 	p.expect("=")
-	expr := p.parseExpr()
+	defaultExpr := p.parseDefaultExpr()
 
 	return &ast.UpdateItem{
-		Path: path,
-		Expr: expr,
+		Path:        path,
+		DefaultExpr: defaultExpr,
 	}
 }
 
