@@ -2057,8 +2057,8 @@ type DropTable struct {
 //
 //	RENAME TABLE {{.Tos | sqlJoin ", "}}
 type RenameTable struct {
-	// pos = Drop
-	// end = Name.end
+	// pos = Rename
+	// end = Tos[$].end
 
 	Rename token.Pos // position of "RENAME" pseudo keyword
 
