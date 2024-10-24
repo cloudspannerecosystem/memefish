@@ -895,6 +895,12 @@ func (a *AlterTable) SQL() string {
 	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
 
+func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }
+
+func (s *DropSynonym) SQL() string { return "DROP SYNONYM " + s.Name.SQL() }
+
+func (t *RenameTo) SQL() string { return "RENAME TO " + t.Name.SQL() + sqlOpt(", ", t.AddSynonym, "") }
+
 func (a *AddColumn) SQL() string {
 	sql := "ADD COLUMN "
 	if a.IfNotExists {

@@ -1,0 +1,23 @@
+--- alter_table_rename_to.sql
+ALTER TABLE Singers RENAME TO SingersNew
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 19,
+    Name:    "Singers",
+  },
+  TableAlteration: &ast.RenameTo{
+    Rename: 20,
+    Name:   &ast.Ident{
+      NamePos: 30,
+      NameEnd: 40,
+      Name:    "SingersNew",
+    },
+    AddSynonym: (*ast.AddSynonym)(nil),
+  },
+}
+
+--- SQL
+ALTER TABLE Singers RENAME TO SingersNew
