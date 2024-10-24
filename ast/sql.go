@@ -300,25 +300,11 @@ func (o *Offset) SQL() string {
 // ================================================================================
 
 func (u *Unnest) SQL() string {
-	var sql string
-	if u.Implicit {
-		sql += u.Expr.SQL()
-	} else {
-		sql += "UNNEST(" + u.Expr.SQL() + ")"
-	}
-	if u.Hint != nil {
-		sql += " " + u.Hint.SQL()
-	}
-	if u.As != nil {
-		sql += " " + u.As.SQL()
-	}
-	if u.WithOffset != nil {
-		sql += " " + u.WithOffset.SQL()
-	}
-	if u.Sample != nil {
-		sql += " " + u.Sample.SQL()
-	}
-	return sql
+	return "UNNEST(" + u.Expr.SQL() + ")" +
+		sqlOpt("", u.Hint, "") +
+		sqlOpt(" ", u.As, "") +
+		sqlOpt(" ", u.WithOffset, "") +
+		sqlOpt(" ", u.Sample, "")
 }
 
 func (w *WithOffset) SQL() string {
@@ -341,6 +327,14 @@ func (t *TableName) SQL() string {
 		sql += " " + t.Sample.SQL()
 	}
 	return sql
+}
+
+func (e *PathTableExpr) SQL() string {
+	return e.Path.SQL() +
+		sqlOpt("", e.Hint, "") +
+		sqlOpt(" ", e.As, "") +
+		sqlOpt(" ", e.WithOffset, "") +
+		sqlOpt(" ", e.Sample, "")
 }
 
 func (s *SubQueryTableExpr) SQL() string {
@@ -773,38 +767,23 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
-func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " ("
-	for i, c := range c.Columns {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += c.SQL()
-	}
-	for _, c := range c.TableConstraints {
-		sql += ", " + c.SQL()
-	}
-	sql += ") "
-	sql += "PRIMARY KEY ("
-	for i, k := range c.PrimaryKeys {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += k.SQL()
-	}
-	sql += ")"
-	if c.Cluster != nil {
-		sql += c.Cluster.SQL()
-	}
-	if c.RowDeletionPolicy != nil {
-		sql += c.RowDeletionPolicy.SQL()
-	}
-	return sql
+func (d *AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }
+
+func (c *CreateTable) SQL() string {
+	return "CREATE TABLE " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " (" +
+		sqlJoin(c.Columns, ", ") + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ", ") +
+		sqlJoin(c.TableConstraints, ", ") + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ", ") +
+		sqlJoin(c.Synonyms, ", ") +
+		") PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		sqlOpt("", c.Cluster, "") +
+		sqlOpt("", c.RowDeletionPolicy, "")
+}
+
+func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
 	sql := "CREATE SEQUENCE "
@@ -912,6 +891,12 @@ func (a *AlterTable) SQL() string {
 	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
 
+func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }
+
+func (s *DropSynonym) SQL() string { return "DROP SYNONYM " + s.Name.SQL() }
+
+func (t *RenameTo) SQL() string { return "RENAME TO " + t.Name.SQL() + sqlOpt(", ", t.AddSynonym, "") }
+
 func (a *AddColumn) SQL() string {
 	sql := "ADD COLUMN "
 	if a.IfNotExists {
@@ -971,6 +956,10 @@ func (d *DropTable) SQL() string {
 	}
 	return sql + d.Name.SQL()
 }
+
+func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.Tos, ", ") }
+
+func (r *RenameTableTo) SQL() string { return r.Old.SQL() + " TO " + r.New.SQL() }
 
 func (c *CreateIndex) SQL() string {
 	sql := "CREATE "
@@ -1213,6 +1202,10 @@ func (d *DeletePrivilege) SQL() string {
 	return "DELETE"
 }
 
+func (p *SelectPrivilegeOnChangeStream) SQL() string {
+	return "SELECT ON CHANGE STREAM " + sqlJoin(p.Names, ", ")
+}
+
 func (s *SelectPrivilegeOnView) SQL() string {
 	sql := "SELECT ON VIEW " + s.Names[0].SQL()
 	for _, v := range s.Names[1:] {
@@ -1235,6 +1228,10 @@ func (r *RolePrivilege) SQL() string {
 		sql += ", " + id.SQL()
 	}
 	return sql
+}
+
+func (s *AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
 }
 
 // ================================================================================
@@ -1366,10 +1363,5 @@ func (u *Update) SQL() string {
 }
 
 func (u *UpdateItem) SQL() string {
-	sql := u.Path[0].SQL()
-	for _, id := range u.Path[1:] {
-		sql += "." + id.SQL()
-	}
-	sql += " = " + u.Expr.SQL()
-	return sql
+	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }

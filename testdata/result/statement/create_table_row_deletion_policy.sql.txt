@@ -71,6 +71,7 @@ create table foo (
   },
   TableConstraints:  []*ast.TableConstraint(nil),
   PrimaryKeys:       []*ast.IndexKey(nil),
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
     Comma:             78,

@@ -407,6 +407,7 @@ create table foo (
       Dir: "",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

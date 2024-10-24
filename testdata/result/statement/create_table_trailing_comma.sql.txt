@@ -74,6 +74,7 @@ create table foo (
       Dir: "DESC",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

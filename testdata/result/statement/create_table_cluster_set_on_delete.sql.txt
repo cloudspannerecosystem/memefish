@@ -45,7 +45,8 @@ create table foo (
       Dir: "",
     },
   },
-  Cluster: &ast.Cluster{
+  Synonyms: []*ast.Synonym(nil),
+  Cluster:  &ast.Cluster{
     Comma:       50,
     OnDeleteEnd: 112,
     TableName:   &ast.Ident{
