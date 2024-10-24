@@ -3778,23 +3778,23 @@ func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface
 }
 
 func (p *Parser) parseRenameTableTo() *ast.RenameTableTo {
-	src := p.parseIdent()
+	old := p.parseIdent()
 	p.expect("TO")
-	dest := p.parseIdent()
+	new := p.parseIdent()
 
 	return &ast.RenameTableTo{
-		Src:  src,
-		Dest: dest,
+		Old: old,
+		New: new,
 	}
 }
 
 func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 	p.expectKeywordLike("TABLE")
-	toList := parseCommaSeparatedList(p, p.parseRenameTableTo)
+	tos := parseCommaSeparatedList(p, p.parseRenameTableTo)
 
 	return &ast.RenameTable{
 		Rename: pos,
-		ToList: toList,
+		Tos:    tos,
 	}
 
 }

@@ -2055,25 +2055,25 @@ type DropTable struct {
 
 // RenameTable is RENAME TABLE statement node.
 //
-//	RENAME TABLE {{.ToList | sqlJoin ", "}}
+//	RENAME TABLE {{.Tos | sqlJoin ", "}}
 type RenameTable struct {
 	// pos = Drop
 	// end = Name.end
 
 	Rename token.Pos // position of "RENAME" pseudo keyword
 
-	ToList []*RenameTableTo // len(ToList) > 0
+	Tos []*RenameTableTo // len(Tos) > 0
 }
 
-// RenameTableTo is src TO dest node in RENAME TABLE statement.
+// RenameTableTo is old TO new node in RENAME TABLE statement.
 //
-//	{{.Src | sql}} TO {{.Dest | sql}}
+//	{{.Old | sql}} TO {{.New | sql}}
 type RenameTableTo struct {
-	// pos = Src.pos
-	// end = Dest.end
+	// pos = Old.pos
+	// end = New.end
 
-	Src  *Ident
-	Dest *Ident
+	Old *Ident
+	New *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.
