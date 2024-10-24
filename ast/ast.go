@@ -2525,7 +2525,7 @@ type ArraySchemaType struct {
 //	ON {{.TableName | sql}}
 //	({{.TokenListPart | sqlJoin ", "}})
 //	{{.Storing | sqlOpt}}
-//	{{if not(.PartitionColumns | isnil)}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{if .PartitionColumns}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
 //	{{.OrderBy | sqlOpt}}
 //	{{.Where | sqlOpt}}
 //	{{.Interleave | sqlOpt}}
