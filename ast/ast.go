@@ -2550,7 +2550,7 @@ type CreateSearchIndex struct {
 
 // DropSearchIndex represents DROP SEARCH INDEX statement.
 //
-//	DROP SEARCH INDEX {{.IfExists | strOpt "IF EXISTS "}}{{Name | sql}}
+//	DROP SEARCH INDEX{{if .IfExists}}IF EXISTS{{end}} {{Name | sql}}
 type DropSearchIndex struct {
 	// pos = Drop
 	// end = Name.end
