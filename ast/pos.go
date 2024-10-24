@@ -743,6 +743,12 @@ func (a *AlterColumnDropDefault) End() token.Pos { return a.Default + 7 }
 func (d *DropTable) Pos() token.Pos { return d.Drop }
 func (d *DropTable) End() token.Pos { return d.Name.End() }
 
+func (r *RenameTable) Pos() token.Pos { return r.Rename }
+func (r *RenameTable) End() token.Pos { return lastEnd(r.Tos) }
+
+func (r *RenameTableTo) Pos() token.Pos { return r.Old.Pos() }
+func (r *RenameTableTo) End() token.Pos { return r.New.End() }
+
 func (c *CreateIndex) Pos() token.Pos {
 	return c.Create
 }

@@ -1,0 +1,1 @@
+RENAME TABLE Singers TO Artists

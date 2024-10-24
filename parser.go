@@ -212,7 +212,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
 		return p.parseQueryStatement()
-	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
+	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
+		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
@@ -2200,6 +2201,9 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropChangeStream(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
+	case p.Token.IsKeywordLike("RENAME"):
+		p.nextToken()
+		return p.parseRenameTable(pos)
 	case p.Token.IsKeywordLike("GRANT"):
 		p.nextToken()
 		return p.parseGrant(pos)
@@ -3885,4 +3889,26 @@ func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface
 
 func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
 	panic(p.errorfAtToken(tok, msg, params...))
+}
+
+func (p *Parser) parseRenameTableTo() *ast.RenameTableTo {
+	old := p.parseIdent()
+	p.expect("TO")
+	new := p.parseIdent()
+
+	return &ast.RenameTableTo{
+		Old: old,
+		New: new,
+	}
+}
+
+func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
+	p.expectKeywordLike("TABLE")
+	tos := parseCommaSeparatedList(p, p.parseRenameTableTo)
+
+	return &ast.RenameTable{
+		Rename: pos,
+		Tos:    tos,
+	}
+
 }
