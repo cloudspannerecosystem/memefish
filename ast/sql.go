@@ -300,25 +300,11 @@ func (o *Offset) SQL() string {
 // ================================================================================
 
 func (u *Unnest) SQL() string {
-	var sql string
-	if u.Implicit {
-		sql += u.Expr.SQL()
-	} else {
-		sql += "UNNEST(" + u.Expr.SQL() + ")"
-	}
-	if u.Hint != nil {
-		sql += " " + u.Hint.SQL()
-	}
-	if u.As != nil {
-		sql += " " + u.As.SQL()
-	}
-	if u.WithOffset != nil {
-		sql += " " + u.WithOffset.SQL()
-	}
-	if u.Sample != nil {
-		sql += " " + u.Sample.SQL()
-	}
-	return sql
+	return "UNNEST(" + u.Expr.SQL() + ")" +
+		sqlOpt("", u.Hint, "") +
+		sqlOpt(" ", u.As, "") +
+		sqlOpt(" ", u.WithOffset, "") +
+		sqlOpt(" ", u.Sample, "")
 }
 
 func (w *WithOffset) SQL() string {
@@ -341,6 +327,14 @@ func (t *TableName) SQL() string {
 		sql += " " + t.Sample.SQL()
 	}
 	return sql
+}
+
+func (e *PathTableExpr) SQL() string {
+	return e.Path.SQL() +
+		sqlOpt("", e.Hint, "") +
+		sqlOpt(" ", e.As, "") +
+		sqlOpt(" ", e.WithOffset, "") +
+		sqlOpt(" ", e.Sample, "")
 }
 
 func (s *SubQueryTableExpr) SQL() string {

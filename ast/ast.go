@@ -120,6 +120,7 @@ type TableExpr interface {
 
 func (Unnest) isTableExpr()            {}
 func (TableName) isTableExpr()         {}
+func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
@@ -744,19 +745,18 @@ type Offset struct {
 
 // Unnest is UNNEST call in FROM clause.
 //
-//	{{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
-//	  {{.Hint | sqlOpt}}
-//	  {{.As | sqlOpt}}
-//	  {{.WithOffset | sqlOpt}}
-//	  {{.Sample | sqlOpt}}
+//	UNNEST({{.Expr | sql}})
+//	{{.Hint | sqlOpt}}
+//	{{.As | sqlOpt}}
+//	{{.WithOffset | sqlOpt}}
+//	{{.Sample | sqlOpt}}
 type Unnest struct {
-	// pos = Unnest || Expr.pos
+	// pos = Unnest
 	// end = (Sample ?? WithOffset ?? As ?? Hint).end || Rparen + 1 || Expr.end
 
 	Unnest token.Pos // position of "UNNEST"
 	Rparen token.Pos // position of ")"
 
-	Implicit   bool
 	Expr       Expr         // Path or Ident when Implicit is true
 	Hint       *Hint        // optional
 	As         *AsAlias     // optional
@@ -787,6 +787,22 @@ type TableName struct {
 	Hint   *Hint        // optional
 	As     *AsAlias     // optional
 	Sample *TableSample // optional
+}
+
+// PathTableExpr is path expression node in FROM clause.
+// Parser cannot distinguish between `implicit UNNEST` and tables in a named schema.
+// It is the job of a later phase to determine this distinction.
+//
+//	{{.Path | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+type PathTableExpr struct {
+	// pos = Path.pos
+	// end = (Sample ?? WithOffset ?? As ?? Hint ?? Path).end
+
+	Path       *Path
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 // SubQueryTableExpr is subquery inside JOIN expression.
