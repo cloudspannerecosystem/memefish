@@ -549,7 +549,7 @@ type CompoundQuery struct {
 
 	Op       SetOp
 	Distinct bool
-	Queries  []QueryExpr // len(List) >= 2
+	Queries  []QueryExpr // len(Queries) >= 2
 	OrderBy  *OrderBy    // optional
 	Limit    *Limit      // optional
 }
