@@ -77,6 +77,7 @@ func (Revoke) isStatement()             {}
 func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
+func (AlterStatistics) isStatement()    {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
 func (Insert) isStatement()             {}
@@ -287,6 +288,7 @@ func (Revoke) isDDL()             {}
 func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
+func (AlterStatistics) isDDL()    {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
 
@@ -2564,6 +2566,19 @@ type RolePrivilege struct {
 	Role token.Pos
 
 	Names []*Ident // len(Names) > 0
+}
+
+// AlterStatistics is ALTER STATISTICS statement node.
+//
+//	ALTER STATISTICS {{.Name | sql}} SET {{.Options | sql}}
+type AlterStatistics struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
 }
 
 // ================================================================================

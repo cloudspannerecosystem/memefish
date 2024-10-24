@@ -1238,6 +1238,10 @@ func (r *RolePrivilege) SQL() string {
 	return sql
 }
 
+func (s *AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
+}
+
 // ================================================================================
 //
 // Types for Schema

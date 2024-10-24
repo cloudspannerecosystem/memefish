@@ -892,6 +892,9 @@ func (e *ExecutePrivilegeOnTableFunction) End() token.Pos { return e.Names[len(e
 func (r *RolePrivilege) Pos() token.Pos { return r.Role }
 func (r *RolePrivilege) End() token.Pos { return r.Names[len(r.Names)-1].End() }
 
+func (s *AlterStatistics) Pos() token.Pos { return s.Alter }
+func (s *AlterStatistics) End() token.Pos { return s.Options.End() }
+
 // ================================================================================
 //
 // Types for Schema

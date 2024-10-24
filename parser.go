@@ -2180,6 +2180,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterSequence(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseAlterChangeStream(pos)
+		case p.Token.IsKeywordLike("STATISTICS"):
+			return p.parseAlterStatistics(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
@@ -3406,6 +3408,19 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseAlterStatistics(pos token.Pos) *ast.AlterStatistics {
+	p.expectKeywordLike("STATISTICS")
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterStatistics{
+		Alter:   pos,
+		Name:    name,
+		Options: options,
+	}
 }
 
 var scalarSchemaTypes = []string{
