@@ -268,8 +268,8 @@ func (o *Offset) SQL() string {
 // ================================================================================
 
 func (u *Unnest) SQL() string {
-	return strIfElse(!u.Implicit, "UNNEST("+u.Expr.SQL()+")", u.Expr.SQL()) +
-		sqlOpt(" ", u.Hint, "") +
+	return "UNNEST(" + u.Expr.SQL() + ")" +
+		sqlOpt("", u.Hint, "") +
 		sqlOpt(" ", u.As, "") +
 		sqlOpt(" ", u.WithOffset, "") +
 		sqlOpt(" ", u.Sample, "")
@@ -284,6 +284,14 @@ func (t *TableName) SQL() string {
 		sqlOpt(" ", t.Hint, "") +
 		sqlOpt(" ", t.As, "") +
 		sqlOpt(" ", t.Sample, "")
+}
+
+func (e *PathTableExpr) SQL() string {
+	return e.Path.SQL() +
+		sqlOpt("", e.Hint, "") +
+		sqlOpt(" ", e.As, "") +
+		sqlOpt(" ", e.WithOffset, "") +
+		sqlOpt(" ", e.Sample, "")
 }
 
 func (s *SubQueryTableExpr) SQL() string {
@@ -604,37 +612,18 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " ("
-	for i, c := range c.Columns {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += c.SQL()
-	}
-	for _, c := range c.TableConstraints {
-		sql += ", " + c.SQL()
-	}
-	sql += ") "
-	sql += "PRIMARY KEY ("
-	for i, k := range c.PrimaryKeys {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += k.SQL()
-	}
-	sql += ")"
-	if c.Cluster != nil {
-		sql += c.Cluster.SQL()
-	}
-	if c.RowDeletionPolicy != nil {
-		sql += c.RowDeletionPolicy.SQL()
-	}
-	return sql
+	return "CREATE TABLE " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " (" +
+		sqlJoin(c.Columns, ", ") + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ", ") +
+		sqlJoin(c.TableConstraints, ", ") + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ", ") +
+		sqlJoin(c.Synonyms, ", ") +
+		") PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		sqlOpt("", c.Cluster, "") +
+		sqlOpt("", c.RowDeletionPolicy, "")
 }
+
+func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
 	return "CREATE SEQUENCE " + strOpt(c.IfNotExists, "IF NOT EXISTS ") +
@@ -971,5 +960,5 @@ func (u *Update) SQL() string {
 }
 
 func (u *UpdateItem) SQL() string {
-	return sqlJoin(u.Path, ".") + " = " + u.Expr.SQL()
+	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }

@@ -251,6 +251,11 @@ func (t *TableName) End() token.Pos {
 	return t.Table.End()
 }
 
+func (e *PathTableExpr) Pos() token.Pos { return e.Path.Pos() }
+func (e *PathTableExpr) End() token.Pos {
+	return firstValidEnd(e.Sample, e.WithOffset, e.As, e.Hint, e.Path)
+}
+
 func (s *SubQueryTableExpr) Pos() token.Pos {
 	return s.Lparen
 }
@@ -557,6 +562,9 @@ func (c *CreateTable) End() token.Pos {
 	}
 	return c.Rparen + 1
 }
+
+func (s *Synonym) Pos() token.Pos { return s.Synonym }
+func (s *Synonym) End() token.Pos { return s.Rparen + 1 }
 
 func (c *CreateSequence) Pos() token.Pos {
 	return c.Create
@@ -924,4 +932,4 @@ func (u *Update) Pos() token.Pos { return u.Update }
 func (u *Update) End() token.Pos { return u.Where.End() }
 
 func (u *UpdateItem) Pos() token.Pos { return u.Path[0].Pos() }
-func (u *UpdateItem) End() token.Pos { return u.Expr.End() }
+func (u *UpdateItem) End() token.Pos { return u.DefaultExpr.End() }

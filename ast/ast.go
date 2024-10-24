@@ -120,6 +120,7 @@ type TableExpr interface {
 
 func (Unnest) isTableExpr()            {}
 func (TableName) isTableExpr()         {}
+func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
@@ -744,19 +745,18 @@ type Offset struct {
 
 // Unnest is UNNEST call in FROM clause.
 //
-//	{{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
-//	  {{.Hint | sqlOpt}}
-//	  {{.As | sqlOpt}}
-//	  {{.WithOffset | sqlOpt}}
-//	  {{.Sample | sqlOpt}}
+//	UNNEST({{.Expr | sql}})
+//	{{.Hint | sqlOpt}}
+//	{{.As | sqlOpt}}
+//	{{.WithOffset | sqlOpt}}
+//	{{.Sample | sqlOpt}}
 type Unnest struct {
-	// pos = Unnest || Expr.pos
+	// pos = Unnest
 	// end = (Sample ?? WithOffset ?? As ?? Hint).end || Rparen + 1 || Expr.end
 
 	Unnest token.Pos // position of "UNNEST"
 	Rparen token.Pos // position of ")"
 
-	Implicit   bool
 	Expr       Expr         // Path or Ident when Implicit is true
 	Hint       *Hint        // optional
 	As         *AsAlias     // optional
@@ -787,6 +787,22 @@ type TableName struct {
 	Hint   *Hint        // optional
 	As     *AsAlias     // optional
 	Sample *TableSample // optional
+}
+
+// PathTableExpr is path expression node in FROM clause.
+// Parser cannot distinguish between `implicit UNNEST` and tables in a named schema.
+// It is the job of a later phase to determine this distinction.
+//
+//	{{.Path | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+type PathTableExpr struct {
+	// pos = Path.pos
+	// end = (Sample ?? WithOffset ?? As ?? Hint ?? Path).end
+
+	Path       *Path
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 // SubQueryTableExpr is subquery inside JOIN expression.
@@ -1620,15 +1636,16 @@ type CreateDatabase struct {
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
-//	  {{.Columns | sqlJoin ","}}
-//	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
+//	  {{.Columns | sqlJoin ","}}{{if and .Columns (or .TableConstrains .Synonym)}},{{end}}
+//	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
+//	  {{.Synonym | sqlJoin ","}}
 //	)
 //	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //
-// Spanner SQL allows to mix `Columns` and `TableConstraints`, however they are
-// separated in AST definition for historical reasons. If you want to get
+// Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
+// however they are separated in AST definition for historical reasons. If you want to get
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
@@ -1642,8 +1659,22 @@ type CreateTable struct {
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
+	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+}
+
+// Synonym is SYNONYM node in CREATE TABLE
+//
+//	SYNONYM ({.Name | sql})
+type Synonym struct {
+	// pos = Synonym
+	// end = Rparen + 1
+
+	Synonym token.Pos // position of "SYNONYM" pseudo keyword
+	Rparen  token.Pos // position of ")"
+
+	Name    *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
@@ -2592,11 +2623,11 @@ type Update struct {
 
 // UpdateItem is SET clause items in UPDATE.
 //
-//	{{.Path | sqlJoin "."}} = {{.Expr | sql}}
+//	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
 type UpdateItem struct {
 	// pos = Path[0].pos
-	// end = Expr.end
+	// end = DefaultExpr.end
 
-	Path []*Ident // len(Path) > 0
-	Expr Expr
+	Path        []*Ident // len(Path) > 0
+	DefaultExpr *DefaultExpr
 }

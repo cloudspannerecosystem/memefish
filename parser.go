@@ -811,7 +811,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
 		}
-		return p.parseUnnestSuffix(true, &ast.Path{Idents: ids}, token.InvalidPos, token.InvalidPos)
+		return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
@@ -834,7 +834,6 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen 
 	return p.parseTableExprSuffix(&ast.Unnest{
 		Unnest:     unnest,
 		Rparen:     rparen,
-		Implicit:   implicit,
 		Expr:       expr,
 		Hint:       hint,
 		As:         as,
@@ -865,6 +864,18 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 		Table: id,
 		Hint:  hint,
 		As:    as,
+	})
+}
+
+func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
+	hint := p.tryParseHint()
+	as := p.tryParseAsAlias()
+	withOffset := p.tryParseWithOffset()
+	return p.parseTableExprSuffix(&ast.PathTableExpr{
+		Path:       id,
+		Hint:       hint,
+		As:         as,
+		WithOffset: withOffset,
 	})
 }
 
@@ -906,6 +917,8 @@ func (p *Parser) parseTableExprSuffix(join ast.TableExpr) ast.TableExpr {
 	case *ast.Unnest:
 		j.Sample = sample
 	case *ast.TableName:
+		j.Sample = sample
+	case *ast.PathTableExpr:
 		j.Sample = sample
 	case *ast.SubQueryTableExpr:
 		j.Sample = sample
@@ -2219,6 +2232,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expect("(")
 	var columns []*ast.ColumnDef
 	var constraints []*ast.TableConstraint
+	var synonyms []*ast.Synonym
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ")" {
 			break
@@ -2238,6 +2252,9 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 				ConstraintPos: token.InvalidPos,
 				Constraint:    c,
 			})
+		case p.Token.IsKeywordLike("SYNONYM"):
+			synonym := p.parseSynonym()
+			synonyms = append(synonyms, synonym)
 		default:
 			columns = append(columns, p.parseColumnDef())
 		}
@@ -2275,6 +2292,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Name:              name,
 		Columns:           columns,
 		TableConstraints:  constraints,
+		Synonyms:          synonyms,
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
@@ -2416,6 +2434,19 @@ func (p *Parser) parseCheck() *ast.Check {
 		Check:  pos,
 		Rparen: rparen,
 		Expr:   expr,
+	}
+}
+
+func (p *Parser) parseSynonym() *ast.Synonym {
+	pos := p.expectKeywordLike("SYNONYM").Pos
+	p.expect("(")
+	name := p.parseIdent()
+	rparen := p.expect(")").Pos
+
+	return &ast.Synonym{
+		Synonym: pos,
+		Rparen:  rparen,
+		Name:    name,
 	}
 }
 
@@ -3529,11 +3560,11 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 func (p *Parser) parseUpdateItem() *ast.UpdateItem {
 	path := p.parseIdentOrPath()
 	p.expect("=")
-	expr := p.parseExpr()
+	defaultExpr := p.parseDefaultExpr()
 
 	return &ast.UpdateItem{
-		Path: path,
-		Expr: expr,
+		Path:        path,
+		DefaultExpr: defaultExpr,
 	}
 }
 

@@ -69,6 +69,7 @@ create table if not exists foo (
       Dir: "",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
