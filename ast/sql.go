@@ -491,7 +491,7 @@ func (a *ArrayLiteral) SQL() string {
 }
 
 func (s *StructLiteral) SQL() string {
-	// TODO: len(s.Fields) > 0 is better than s.Fields != nil, but it need to update current testdata.
+	// Both of `STRUCT()` and `STRUCT<>()` are preserved as is.
 	return "STRUCT" +
 		strOpt(s.Fields != nil, "<"+sqlJoin(s.Fields, ", ")+">") +
 		"(" + sqlJoin(s.Values, ", ") + ")"
