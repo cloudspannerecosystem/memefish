@@ -1,0 +1,22 @@
+--- alter_search_index_drop_stored_column.sql
+ALTER SEARCH INDEX AlbumsIndex DROP STORED COLUMN Genre
+--- AST
+&ast.AlterSearchIndex{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 19,
+    NameEnd: 30,
+    Name:    "AlbumsIndex",
+  },
+  IndexAlteration: &ast.DropStoredColumn{
+    Drop: 31,
+    Name: &ast.Ident{
+      NamePos: 50,
+      NameEnd: 55,
+      Name:    "Genre",
+    },
+  },
+}
+
+--- SQL
+ALTER SEARCH INDEX AlbumsIndex DROP STORED COLUMN Genre

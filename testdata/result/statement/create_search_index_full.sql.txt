@@ -1,0 +1,121 @@
+--- create_search_index_full.sql
+CREATE SEARCH INDEX AlbumsIndexFull
+ON Albums(Title_Tokens, Studio_Tokens)
+STORING(Genre)
+PARTITION BY SingerId
+ORDER BY ReleaseTimestamp DESC
+WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL
+, INTERLEAVE IN Singers
+OPTIONS(sort_order_sharding=true)
+--- AST
+&ast.CreateSearchIndex{
+  Create: 0,
+  Name:   &ast.Ident{
+    NamePos: 20,
+    NameEnd: 35,
+    Name:    "AlbumsIndexFull",
+  },
+  TableName: &ast.Ident{
+    NamePos: 39,
+    NameEnd: 45,
+    Name:    "Albums",
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 46,
+      NameEnd: 58,
+      Name:    "Title_Tokens",
+    },
+    &ast.Ident{
+      NamePos: 60,
+      NameEnd: 73,
+      Name:    "Studio_Tokens",
+    },
+  },
+  Rparen:  73,
+  Storing: &ast.Storing{
+    Storing: 75,
+    Rparen:  88,
+    Columns: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 83,
+        NameEnd: 88,
+        Name:    "Genre",
+      },
+    },
+  },
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 103,
+      NameEnd: 111,
+      Name:    "SingerId",
+    },
+  },
+  OrderBy: &ast.OrderBy{
+    Order: 112,
+    Items: []*ast.OrderByItem{
+      &ast.OrderByItem{
+        DirPos: 138,
+        Expr:   &ast.Ident{
+          NamePos: 121,
+          NameEnd: 137,
+          Name:    "ReleaseTimestamp",
+        },
+        Collate: (*ast.Collate)(nil),
+        Dir:     "DESC",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 143,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.IsNullExpr{
+        Null: 162,
+        Not:  true,
+        Left: &ast.Ident{
+          NamePos: 149,
+          NameEnd: 154,
+          Name:    "Genre",
+        },
+      },
+      Right: &ast.IsNullExpr{
+        Null: 195,
+        Not:  true,
+        Left: &ast.Ident{
+          NamePos: 171,
+          NameEnd: 187,
+          Name:    "ReleaseTimestamp",
+        },
+      },
+    },
+  },
+  Interleave: &ast.InterleaveIn{
+    Comma:     200,
+    TableName: &ast.Ident{
+      NamePos: 216,
+      NameEnd: 223,
+      Name:    "Singers",
+    },
+  },
+  Options: &ast.Options{
+    Options: 224,
+    Rparen:  256,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 232,
+          NameEnd: 251,
+          Name:    "sort_order_sharding",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 252,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndexFull ON Albums(Title_Tokens, Studio_Tokens) STORING (Genre) PARTITION BY SingerId ORDER BY ReleaseTimestamp DESC WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL, INTERLEAVE IN Singers OPTIONS (sort_order_sharding = true)
