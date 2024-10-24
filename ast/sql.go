@@ -980,9 +980,9 @@ func (d *DropTable) SQL() string {
 	return sql + d.Name.SQL()
 }
 
-func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.SrcDests, ", ") }
+func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.ToList, ", ") }
 
-func (r *RenameTableSrcDest) SQL() string { return r.Src.SQL() + " TO " + r.Dest.SQL() }
+func (r *RenameTableTo) SQL() string { return r.Src.SQL() + " TO " + r.Dest.SQL() }
 
 func (c *CreateIndex) SQL() string {
 	sql := "CREATE "
