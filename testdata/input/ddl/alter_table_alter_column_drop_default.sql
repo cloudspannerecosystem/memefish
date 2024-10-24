@@ -1,0 +1,1 @@
+alter table foo alter column foo drop default

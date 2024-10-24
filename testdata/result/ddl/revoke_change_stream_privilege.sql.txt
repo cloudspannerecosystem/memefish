@@ -1,0 +1,31 @@
+--- revoke_change_stream_privilege.sql
+REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager
+--- AST
+&ast.Revoke{
+  Revoke:    0,
+  Privilege: &ast.SelectPrivilegeOnChangeStream{
+    Select: 7,
+    Names:  []*ast.Ident{
+      &ast.Ident{
+        NamePos: 31,
+        NameEnd: 42,
+        Name:    "cs_name_one",
+      },
+      &ast.Ident{
+        NamePos: 44,
+        NameEnd: 55,
+        Name:    "cs_name_two",
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 66,
+      NameEnd: 76,
+      Name:    "hr_manager",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager

@@ -1,0 +1,1 @@
+ALTER TABLE Singers DROP SYNONYM SingersTest

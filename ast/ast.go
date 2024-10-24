@@ -50,32 +50,39 @@ type Statement interface {
 	isStatement()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
+func (AlterDatabase) isStatement()      {}
 func (CreateTable) isStatement()        {}
-func (CreateSequence) isStatement()     {}
+func (AlterTable) isStatement()         {}
+func (DropTable) isStatement()          {}
+func (RenameTable) isStatement()        {}
+func (CreateIndex) isStatement()        {}
+func (AlterIndex) isStatement()         {}
+func (DropIndex) isStatement()          {}
 func (CreateView) isStatement()         {}
 func (DropView) isStatement()           {}
-func (CreateIndex) isStatement()        {}
-func (CreateVectorIndex) isStatement()  {}
-func (CreateRole) isStatement()         {}
-func (AlterTable) isStatement()         {}
-func (AlterIndex) isStatement()         {}
-func (AlterSequence) isStatement()      {}
-func (DropTable) isStatement()          {}
-func (DropIndex) isStatement()          {}
-func (DropVectorIndex) isStatement()    {}
-func (DropSequence) isStatement()       {}
-func (DropRole) isStatement()           {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
 func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
+func (CreateRole) isStatement()         {}
+func (DropRole) isStatement()           {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
+func (CreateSequence) isStatement()     {}
+func (AlterSequence) isStatement()      {}
+func (DropSequence) isStatement()       {}
 func (AlterStatistics) isStatement()    {}
+func (CreateVectorIndex) isStatement()  {}
+func (DropVectorIndex) isStatement()    {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
 
 // QueryExpr represents set operator operands.
 type QueryExpr interface {
@@ -116,6 +123,7 @@ type TableExpr interface {
 
 func (Unnest) isTableExpr()            {}
 func (TableName) isTableExpr()         {}
+func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
@@ -255,28 +263,34 @@ type DDL interface {
 	isDDL()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+
 func (CreateDatabase) isDDL()     {}
+func (AlterDatabase) isDDL()      {}
 func (CreateTable) isDDL()        {}
-func (CreateView) isDDL()         {}
-func (DropView) isDDL()           {}
-func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
+func (RenameTable) isDDL()        {}
 func (CreateIndex) isDDL()        {}
-func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
-func (AlterSequence) isDDL()      {}
 func (DropIndex) isDDL()          {}
-func (DropVectorIndex) isDDL()    {}
-func (DropSequence) isDDL()       {}
+func (CreateView) isDDL()         {}
+func (DropView) isDDL()           {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
 func (Revoke) isDDL()             {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
+func (CreateSequence) isDDL()     {}
+func (AlterSequence) isDDL()      {}
+func (DropSequence) isDDL()       {}
 func (AlterStatistics) isDDL()    {}
+func (CreateVectorIndex) isDDL()  {}
+func (DropVectorIndex) isDDL()    {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -293,6 +307,9 @@ type TableAlteration interface {
 	isTableAlteration()
 }
 
+func (AddSynonym) isTableAlteration()               {}
+func (DropSynonym) isTableAlteration()              {}
+func (RenameTo) isTableAlteration()                 {}
 func (AddColumn) isTableAlteration()                {}
 func (AddTableConstraint) isTableAlteration()       {}
 func (AddRowDeletionPolicy) isTableAlteration()     {}
@@ -302,7 +319,17 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
-func (AlterColumnSet) isTableAlteration()           {}
+
+// ColumnAlteration represents ALTER COLUMN action in ALTER TABLE.
+type ColumnAlteration interface {
+	Node
+	isColumnAlteration()
+}
+
+func (AlterColumnType) isColumnAlteration()        {}
+func (AlterColumnSetOptions) isColumnAlteration()  {}
+func (AlterColumnSetDefault) isColumnAlteration()  {}
+func (AlterColumnDropDefault) isColumnAlteration() {}
 
 // Privilege represents privileges specified by GRANT and REVOKE.
 type Privilege interface {
@@ -311,6 +338,7 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                {}
+func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
 func (RolePrivilege) isPrivilege()                   {}
@@ -528,7 +556,7 @@ type CompoundQuery struct {
 
 	Op       SetOp
 	Distinct bool
-	Queries  []QueryExpr // len(List) >= 2
+	Queries  []QueryExpr // len(Queries) >= 2
 	OrderBy  *OrderBy    // optional
 	Limit    *Limit      // optional
 }
@@ -727,19 +755,18 @@ type Offset struct {
 
 // Unnest is UNNEST call in FROM clause.
 //
-//	{{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
-//	  {{.Hint | sqlOpt}}
-//	  {{.As | sqlOpt}}
-//	  {{.WithOffset | sqlOpt}}
-//	  {{.Sample | sqlOpt}}
+//	UNNEST({{.Expr | sql}})
+//	{{.Hint | sqlOpt}}
+//	{{.As | sqlOpt}}
+//	{{.WithOffset | sqlOpt}}
+//	{{.Sample | sqlOpt}}
 type Unnest struct {
-	// pos = Unnest || Expr.pos
+	// pos = Unnest
 	// end = (Sample ?? WithOffset ?? As ?? Hint).end || Rparen + 1 || Expr.end
 
 	Unnest token.Pos // position of "UNNEST"
 	Rparen token.Pos // position of ")"
 
-	Implicit   bool
 	Expr       Expr         // Path or Ident when Implicit is true
 	Hint       *Hint        // optional
 	As         *AsAlias     // optional
@@ -770,6 +797,22 @@ type TableName struct {
 	Hint   *Hint        // optional
 	As     *AsAlias     // optional
 	Sample *TableSample // optional
+}
+
+// PathTableExpr is path expression node in FROM clause.
+// Parser cannot distinguish between `implicit UNNEST` and tables in a named schema.
+// It is the job of a later phase to determine this distinction.
+//
+//	{{.Path | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+type PathTableExpr struct {
+	// pos = Path.pos
+	// end = (Sample ?? WithOffset ?? As ?? Hint ?? Path).end
+
+	Path       *Path
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 // SubQueryTableExpr is subquery inside JOIN expression.
@@ -1011,14 +1054,14 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//		{{.Func | sql}}(
+//	{{.Func | sql}}(
 //		{{if .Distinct}}DISTINCT{{end}}
 //		{{.Args | sqlJoin ", "}}
 //		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
 //		{{.NamedArgs | sqlJoin ", "}}
-//	    {{.NullHandling | sqlOpt}}
-//	    {{.Having | sqlOpt}}
-//		)
+//		{{.NullHandling | sqlOpt}}
+//		{{.Having | sqlOpt}}
+//	)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
@@ -1161,15 +1204,17 @@ type AtTimeZone struct {
 	Expr Expr
 }
 
-// CastExpr is CAST call expression node.
+// CastExpr is CAST/SAFE_CAST call expression node.
 //
-//	CAST({{.Expr | sql}} AS {{.Type | sql}})
+//	{{if .Safe}}SAFE_{{end}}CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	// pos = Cast
 	// end = Rparen + 1
 
-	Cast   token.Pos // position of "CAST" keyword
+	Cast   token.Pos // position of "CAST" keyword or "SAFE_CAST" pseudo keyword
 	Rparen token.Pos // position of ")"
+
+	Safe bool
 
 	Expr Expr
 	Type Type
@@ -1598,18 +1643,32 @@ type CreateDatabase struct {
 	Name *Ident
 }
 
+// AlterDatabase is ALTER DATABASE statement node.
+//
+//	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
+type AlterDatabase struct {
+	// pos = Alter
+	// end = Name.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
+}
+
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
-//	  {{.Columns | sqlJoin ","}}
-//	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
+//	  {{.Columns | sqlJoin ","}}{{if and .Columns (or .TableConstrains .Synonym)}},{{end}}
+//	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
+//	  {{.Synonym | sqlJoin ","}}
 //	)
 //	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //
-// Spanner SQL allows to mix `Columns` and `TableConstraints`, however they are
-// separated in AST definition for historical reasons. If you want to get
+// Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
+// however they are separated in AST definition for historical reasons. If you want to get
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
@@ -1623,8 +1682,22 @@ type CreateTable struct {
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
+	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+}
+
+// Synonym is SYNONYM node in CREATE TABLE
+//
+//	SYNONYM ({.Name | sql})
+type Synonym struct {
+	// pos = Synonym
+	// end = Rparen + 1
+
+	Synonym token.Pos // position of "SYNONYM" pseudo keyword
+	Rparen  token.Pos // position of ")"
+
+	Name    *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
@@ -1863,6 +1936,41 @@ type AlterChangeStream struct {
 	ChangeStreamAlteration ChangeStreamAlteration
 }
 
+// AddSynonym is ADD SYNONYM node in ALTER TABLE.
+//
+//	ADD SYNONYM {{.Name | sql}}
+type AddSynonym struct {
+	// pos = Add
+	// end = Name.end
+
+	Add  token.Pos // position of "ADD" pseudo keyword
+	Name *Ident
+}
+
+// DropSynonym is DROP SYNONYM node in ALTER TABLE.
+//
+//	DROP SYNONYM {{.Name | sql}}
+type DropSynonym struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" pseudo keyword
+	Name *Ident
+}
+
+// RenameTo is RENAME TO node in ALTER TABLE.
+//
+//	RENAME TO {{.Name | sql}}{{if .AddSynonym}}, {{.AddSynonym | sql}}{{end}}
+type RenameTo struct {
+	// pos = Rename
+	// end = (AddSynonym ?? Name).end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Name       *Ident
+	AddSynonym *AddSynonym // optional
+}
+
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
 //	ADD COLUMN {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
@@ -1962,31 +2070,61 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//	ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	ALTER COLUMN {{.Name | sql}} {{.Alteration | sql}}
 type AlterColumn struct {
 	// pos = Alter
-	// end = DefaultExpr.end || Null + 4 || Type.end
-	Alter token.Pos // position of "ALTER" keyword
-	Null  token.Pos // position of "NULL"
+	// end = Alteration.end
 
-	Name        *Ident
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name       *Ident
+	Alteration ColumnAlteration
+}
+
+// AlterColumnType is action to change the data type of the column in ALTER COLUMN.
+//
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+type AlterColumnType struct {
+	// pos = Type.pos
+	// end = DefaultExpr.end || NUll + 4 || Type.end
+
 	Type        SchemaType
+	Null        token.Pos // position of "NULL" keyword, optional
 	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr // optional
+}
+
+// AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.
+//
+//	SET {{.Options | sql}}
+type AlterColumnSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
+}
+
+// AlterColumnSetDefault is SET DEFAULT node in ALTER COLUMN.
+//
+//	SET {{.DefaultExpr | sql}}
+type AlterColumnSetDefault struct {
+	// pos = Set
+	// end = DefaultExpr.end
+
+	Set         token.Pos
 	DefaultExpr *ColumnDefaultExpr
 }
 
-// AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
+// AlterColumnDropDefault is DROP DEFAULT node in ALTER COLUMN
 //
-//	ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
-type AlterColumnSet struct {
-	// pos = Alter
-	// end = Name.end || Options.end || DefaultExpr.end
+//	DROP DEFAULT
+type AlterColumnDropDefault struct {
+	// pos = Drop
+	// end = Default + 7
 
-	Alter token.Pos // position of "ALTER" keyword
-
-	Name        *Ident
-	Options     *Options
-	DefaultExpr *ColumnDefaultExpr
+	Drop    token.Pos
+	Default token.Pos
 }
 
 // DropTable is DROP TABLE statement node.
@@ -2000,6 +2138,29 @@ type DropTable struct {
 
 	IfExists bool
 	Name     *Ident
+}
+
+// RenameTable is RENAME TABLE statement node.
+//
+//	RENAME TABLE {{.Tos | sqlJoin ", "}}
+type RenameTable struct {
+	// pos = Rename
+	// end = Tos[$].end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Tos []*RenameTableTo // len(Tos) > 0
+}
+
+// RenameTableTo is old TO new node in RENAME TABLE statement.
+//
+//	{{.Old | sql}} TO {{.New | sql}}
+type RenameTableTo struct {
+	// pos = Old.pos
+	// end = New.end
+
+	Old *Ident
+	New *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.
@@ -2359,6 +2520,18 @@ type DeletePrivilege struct {
 	Delete token.Pos // position of "DELETE" keyword
 }
 
+// SelectPrivilegeOnChangeStream is SELECT ON CHANGE STREAM privilege node in GRANT and REVOKE.
+//
+//	SELECT ON CHANGE STREAM {{.Names | sqlJoin ", "}}
+type SelectPrivilegeOnChangeStream struct {
+	// pos = Select
+	// end = Names[$].end
+
+	Select token.Pos
+
+	Names []*Ident // len(Names) > 0
+}
+
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
 //
 //	SELECT ON VIEW {{.Names | sqlJoin ","}}
@@ -2556,11 +2729,11 @@ type Update struct {
 
 // UpdateItem is SET clause items in UPDATE.
 //
-//	{{.Path | sqlJoin "."}} = {{.Expr | sql}}
+//	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
 type UpdateItem struct {
 	// pos = Path[0].pos
-	// end = Expr.end
+	// end = DefaultExpr.end
 
-	Path []*Ident // len(Path) > 0
-	Expr Expr
+	Path        []*Ident // len(Path) > 0
+	DefaultExpr *DefaultExpr
 }

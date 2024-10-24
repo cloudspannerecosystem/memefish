@@ -212,7 +212,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
 		return p.parseQueryStatement()
-	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
+	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
+		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
@@ -811,7 +812,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
 		}
-		return p.parseUnnestSuffix(true, &ast.Path{Idents: ids}, token.InvalidPos, token.InvalidPos)
+		return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
@@ -834,7 +835,6 @@ func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen 
 	return p.parseTableExprSuffix(&ast.Unnest{
 		Unnest:     unnest,
 		Rparen:     rparen,
-		Implicit:   implicit,
 		Expr:       expr,
 		Hint:       hint,
 		As:         as,
@@ -865,6 +865,18 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 		Table: id,
 		Hint:  hint,
 		As:    as,
+	})
+}
+
+func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
+	hint := p.tryParseHint()
+	as := p.tryParseAsAlias()
+	withOffset := p.tryParseWithOffset()
+	return p.parseTableExprSuffix(&ast.PathTableExpr{
+		Path:       id,
+		Hint:       hint,
+		As:         as,
+		WithOffset: withOffset,
 	})
 }
 
@@ -906,6 +918,8 @@ func (p *Parser) parseTableExprSuffix(join ast.TableExpr) ast.TableExpr {
 	case *ast.Unnest:
 		j.Sample = sample
 	case *ast.TableName:
+		j.Sample = sample
+	case *ast.PathTableExpr:
 		j.Sample = sample
 	case *ast.SubQueryTableExpr:
 		j.Sample = sample
@@ -1415,6 +1429,10 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseParenExpr()
 	case token.TokenIdent:
 		id := p.Token
+		switch {
+		case id.IsKeywordLike("SAFE_CAST"):
+			return p.parseCastExpr()
+		}
 		p.nextToken()
 		switch p.Token.Kind {
 		case "(":
@@ -1681,7 +1699,19 @@ func (p *Parser) parseCaseElse() *ast.CaseElse {
 }
 
 func (p *Parser) parseCastExpr() *ast.CastExpr {
-	cast := p.expect("CAST").Pos
+	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
+		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
+	}
+
+	var cast token.Pos
+	var safe bool
+	if p.Token.Kind == "CAST" {
+		cast = p.expect("CAST").Pos
+	} else {
+		cast = p.expectKeywordLike("SAFE_CAST").Pos
+		safe = true
+	}
+
 	p.expect("(")
 	e := p.parseExpr()
 	p.expect("AS")
@@ -1690,6 +1720,7 @@ func (p *Parser) parseCastExpr() *ast.CastExpr {
 	return &ast.CastExpr{
 		Cast:   cast,
 		Rparen: rparen,
+		Safe:   safe,
 		Expr:   e,
 		Type:   t,
 	}
@@ -2141,6 +2172,8 @@ func (p *Parser) parseDDL() ast.DDL {
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("DATABASE"):
+			return p.parseAlterDatabase(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
@@ -2170,6 +2203,9 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropChangeStream(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
+	case p.Token.IsKeywordLike("RENAME"):
+		p.nextToken()
+		return p.parseRenameTable(pos)
 	case p.Token.IsKeywordLike("GRANT"):
 		p.nextToken()
 		return p.parseGrant(pos)
@@ -2194,6 +2230,19 @@ func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 	}
 }
 
+func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
+	p.expectKeywordLike("DATABASE")
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterDatabase{
+		Alter:   pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
@@ -2204,6 +2253,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expect("(")
 	var columns []*ast.ColumnDef
 	var constraints []*ast.TableConstraint
+	var synonyms []*ast.Synonym
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ")" {
 			break
@@ -2223,6 +2273,9 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 				ConstraintPos: token.InvalidPos,
 				Constraint:    c,
 			})
+		case p.Token.IsKeywordLike("SYNONYM"):
+			synonym := p.parseSynonym()
+			synonyms = append(synonyms, synonym)
 		default:
 			columns = append(columns, p.parseColumnDef())
 		}
@@ -2260,6 +2313,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Name:              name,
 		Columns:           columns,
 		TableConstraints:  constraints,
+		Synonyms:          synonyms,
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
@@ -2401,6 +2455,19 @@ func (p *Parser) parseCheck() *ast.Check {
 		Check:  pos,
 		Rparen: rparen,
 		Expr:   expr,
+	}
+}
+
+func (p *Parser) parseSynonym() *ast.Synonym {
+	pos := p.expectKeywordLike("SYNONYM").Pos
+	p.expect("(")
+	name := p.parseIdent()
+	rparen := p.expect(")").Pos
+
+	return &ast.Synonym{
+		Synonym: pos,
+		Rparen:  rparen,
+		Name:    name,
 	}
 }
 
@@ -2803,6 +2870,8 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 		alteration = p.parseAlterTableAdd()
 	case p.Token.IsKeywordLike("DROP"):
 		alteration = p.parseAlterTableDrop()
+	case p.Token.IsKeywordLike("RENAME"):
+		alteration = p.parseAlterTableRename()
 	case p.Token.IsKeywordLike("REPLACE"):
 		alteration = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
@@ -2824,12 +2893,24 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	}
 }
 
+func (p *Parser) parseAddSynonym(add token.Pos) *ast.AddSynonym {
+	p.expectKeywordLike("SYNONYM")
+	name := p.parseIdent()
+
+	return &ast.AddSynonym{
+		Add:  add,
+		Name: name,
+	}
+}
+
 func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 	pos := p.expectKeywordLike("ADD").Pos
 
 	var alteration ast.TableAlteration
 
 	switch {
+	case p.Token.IsKeywordLike("SYNONYM"):
+		alteration = p.parseAddSynonym(pos)
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		ifNotExists := p.parseIfNotExists()
@@ -2880,6 +2961,13 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	var alteration ast.TableAlteration
 
 	switch {
+	case p.Token.IsKeywordLike("SYNONYM"):
+		p.expectKeywordLike("SYNONYM")
+		name := p.parseIdent()
+		alteration = &ast.DropSynonym{
+			Drop: pos,
+			Name: name,
+		}
 	case p.Token.IsKeywordLike("COLUMN"):
 		p.expectKeywordLike("COLUMN")
 		name := p.parseIdent()
@@ -2909,6 +2997,25 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	return alteration
 }
 
+func (p *Parser) parseAlterTableRename() ast.TableAlteration {
+	pos := p.expectKeywordLike("RENAME").Pos
+	p.expect("TO")
+	name := p.parseIdent()
+
+	var addSynonym *ast.AddSynonym
+	if p.Token.Kind == "," {
+		p.nextToken()
+		add := p.expectKeywordLike("ADD").Pos
+		addSynonym = p.parseAddSynonym(add)
+	}
+
+	return &ast.RenameTo{
+		Rename:     pos,
+		Name:       name,
+		AddSynonym: addSynonym,
+	}
+}
+
 func (p *Parser) parseAlterTableReplace() ast.TableAlteration {
 	pos := p.expectKeywordLike("REPLACE").Pos
 	rdp := p.parseRowDeletionPolicy()
@@ -2930,40 +3037,53 @@ func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
 	}
 }
 
+func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
+	switch {
+	case p.Token.Kind == "SET":
+		set := p.expect("SET").Pos
+		if p.Token.Kind == "DEFAULT" {
+			defaultExpr := p.tryParseColumnDefaultExpr()
+			return &ast.AlterColumnSetDefault{
+				Set:         set,
+				DefaultExpr: defaultExpr,
+			}
+		} else {
+			options := p.parseOptions()
+			return &ast.AlterColumnSetOptions{
+				Set:     set,
+				Options: options,
+			}
+		}
+	case p.Token.IsKeywordLike("DROP"):
+		drop := p.expectKeywordLike("DROP").Pos
+		def := p.expect("DEFAULT").Pos
+		return &ast.AlterColumnDropDefault{
+			Drop:    drop,
+			Default: def,
+		}
+	default:
+		t, notNull, null := p.parseTypeNotNull()
+		defaultExpr := p.tryParseColumnDefaultExpr()
+		return &ast.AlterColumnType{
+			Type:        t,
+			Null:        null,
+			NotNull:     notNull,
+			DefaultExpr: defaultExpr,
+		}
+	}
+
+}
 func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
 	p.expectKeywordLike("COLUMN")
 
 	name := p.parseIdent()
 
-	if p.Token.Kind == "SET" {
-		p.nextToken()
-		if p.Token.Kind == "DEFAULT" {
-			defaultExpr := p.tryParseColumnDefaultExpr()
-			return &ast.AlterColumnSet{
-				Alter:       pos,
-				Name:        name,
-				DefaultExpr: defaultExpr,
-			}
-		} else {
-			options := p.parseOptions()
-			return &ast.AlterColumnSet{
-				Alter:   pos,
-				Name:    name,
-				Options: options,
-			}
-		}
-	}
-
-	t, notNull, null := p.parseTypeNotNull()
-	defaultExpr := p.tryParseColumnDefaultExpr()
+	alteration := p.parseColumnAlteration()
 	return &ast.AlterColumn{
-		Alter:       pos,
-		Null:        null,
-		Name:        name,
-		Type:        t,
-		NotNull:     notNull,
-		DefaultExpr: defaultExpr,
+		Alter:      pos,
+		Name:       name,
+		Alteration: alteration,
 	}
 }
 
@@ -3123,8 +3243,11 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
 		return e
 	}
-	if r := p.tryRolePrivilege(); r != nil {
+	if r := p.tryParseRolePrivilege(); r != nil {
 		return r
+	}
+	if c := p.tryParseSelectPrivilegeOnChangeStream(); c != nil {
+		return c
 	}
 	return p.parsePrivilegeOnTable()
 }
@@ -3167,7 +3290,7 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	}
 }
 
-func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
+func (p *Parser) tryParseRolePrivilege() *ast.RolePrivilege {
 	if !p.Token.IsKeywordLike("ROLE") {
 		return nil
 	}
@@ -3176,6 +3299,31 @@ func (p *Parser) tryRolePrivilege() *ast.RolePrivilege {
 	return &ast.RolePrivilege{
 		Role:  pos,
 		Names: names,
+	}
+}
+
+func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnChangeStream {
+	if p.Token.Kind != "SELECT" {
+		return nil
+	}
+	lexer := p.Lexer.Clone()
+	pos := p.expect("SELECT").Pos
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if !p.Token.IsKeywordLike("CHANGE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAM")
+	names := parseCommaSeparatedList(p, p.parseIdent)
+
+	return &ast.SelectPrivilegeOnChangeStream{
+		Select: pos,
+		Names:  names,
 	}
 }
 
@@ -3514,11 +3662,11 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 func (p *Parser) parseUpdateItem() *ast.UpdateItem {
 	path := p.parseIdentOrPath()
 	p.expect("=")
-	expr := p.parseExpr()
+	defaultExpr := p.parseDefaultExpr()
 
 	return &ast.UpdateItem{
-		Path: path,
-		Expr: expr,
+		Path:        path,
+		DefaultExpr: defaultExpr,
 	}
 }
 
@@ -3756,4 +3904,26 @@ func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface
 
 func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
 	panic(p.errorfAtToken(tok, msg, params...))
+}
+
+func (p *Parser) parseRenameTableTo() *ast.RenameTableTo {
+	old := p.parseIdent()
+	p.expect("TO")
+	new := p.parseIdent()
+
+	return &ast.RenameTableTo{
+		Old: old,
+		New: new,
+	}
+}
+
+func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
+	p.expectKeywordLike("TABLE")
+	tos := parseCommaSeparatedList(p, p.parseRenameTableTo)
+
+	return &ast.RenameTable{
+		Rename: pos,
+		Tos:    tos,
+	}
+
 }
