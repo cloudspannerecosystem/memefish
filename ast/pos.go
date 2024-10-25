@@ -49,6 +49,17 @@ func lastEnd[T Node](s []T) token.Pos {
 	return lastNode(s).End()
 }
 
+// firstValid returns the first valid token.Pos in arguments.
+// This function corresponds to PosExpr ("||" PosExpr)* in ast.go
+func firstValid(ps ...token.Pos) token.Pos {
+	for _, p := range ps {
+		if !p.Invalid() {
+			return p
+		}
+	}
+	return token.InvalidPos
+}
+
 // ================================================================================
 //
 // SELECT
@@ -593,26 +604,25 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	if c.Options != nil {
-		return c.Options.End()
-	}
-	if c.GeneratedExpr != nil {
-		return c.GeneratedExpr.End()
-	}
-	if c.DefaultExpr != nil {
-		return c.DefaultExpr.End()
-	}
-	if !c.Null.Invalid() {
-		return c.Null + 4
-	}
-	return c.Type.End()
+	return firstValid(
+		firstValidEnd(c.Options),
+		c.Hidden.Add(6),
+		firstValidEnd(c.GeneratedExpr, c.DefaultExpr),
+		c.Null.Add(4),
+		c.Type.End(),
+	)
 }
 
 func (g *ColumnDefaultExpr) Pos() token.Pos { return g.Default }
 func (g *ColumnDefaultExpr) End() token.Pos { return g.Rparen }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos { return g.As }
-func (g *GeneratedColumnExpr) End() token.Pos { return g.Stored + 6 }
+func (g *GeneratedColumnExpr) End() token.Pos {
+	return firstValid(g.Stored.Add(6), g.Rparen.Add(1))
+}
+
+func (c *ColumnDefOptions) Pos() token.Pos { return c.Options }
+func (c *ColumnDefOptions) End() token.Pos { return c.Rparen + 1 }
 
 func (c *TableConstraint) Pos() token.Pos {
 	if c.Name != nil {
@@ -916,6 +926,36 @@ func (c *ChangeStreamForTable) End() token.Pos {
 	}
 	return c.Rparen + 1
 }
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) Pos() token.Pos { return c.Create }
+
+func (c *CreateSearchIndex) End() token.Pos {
+	return firstValid(
+		firstValidEnd(c.Options,
+			c.Interleave,
+			c.Where,
+			c.OrderBy,
+			lastNode(c.PartitionColumns),
+			c.Storing),
+		c.Rparen.Add(1))
+}
+
+func (d *DropSearchIndex) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSearchIndex) End() token.Pos {
+	return d.Name.End()
+}
+
+func (a *AlterSearchIndex) Pos() token.Pos { return a.Alter }
+func (a *AlterSearchIndex) End() token.Pos { return a.IndexAlteration.End() }
 
 // ================================================================================
 //

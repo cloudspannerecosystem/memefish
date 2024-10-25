@@ -18,6 +18,14 @@ func (p Pos) Invalid() bool {
 	return p < 0
 }
 
+// Add returns Pos + offset, or InvalidPos if Pos.Invalid().
+func (p Pos) Add(offset int) Pos {
+	if p.Invalid() {
+		return InvalidPos
+	}
+	return p + Pos(offset)
+}
+
 // Position is source code position with file path
 // and source code around this position.
 type Position struct {

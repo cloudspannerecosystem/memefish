@@ -109,6 +109,7 @@ const (
 	TimestampTypeName ScalarTypeName = "TIMESTAMP"
 	NumericTypeName   ScalarTypeName = "NUMERIC"
 	JSONTypeName      ScalarTypeName = "JSON"
+	TokenListTypeName ScalarTypeName = "TOKENLIST"
 )
 
 type OnDeleteAction string

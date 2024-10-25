@@ -810,20 +810,12 @@ func (c *CreateView) SQL() string {
 func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
 
 func (c *ColumnDef) SQL() string {
-	sql := c.Name.SQL() + " " + c.Type.SQL()
-	if c.NotNull {
-		sql += " NOT NULL"
-	}
-	if c.DefaultExpr != nil {
-		sql += " " + c.DefaultExpr.SQL()
-	}
-	if c.GeneratedExpr != nil {
-		sql += " " + c.GeneratedExpr.SQL()
-	}
-	if c.Options != nil {
-		sql += " " + c.Options.SQL()
-	}
-	return sql
+	return c.Name.SQL() + " " + c.Type.SQL() +
+		strOpt(c.NotNull, " NOT NULL") +
+		sqlOpt(" ", c.DefaultExpr, "") +
+		sqlOpt(" ", c.GeneratedExpr, "") +
+		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *TableConstraint) SQL() string {
@@ -868,7 +860,7 @@ func (c *ColumnDefaultExpr) SQL() string {
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
-	return "AS (" + g.Expr.SQL() + ") STORED"
+	return "AS (" + g.Expr.SQL() + ")" + strOpt(!g.Stored.Invalid(), " STORED")
 }
 
 func (i *IndexKey) SQL() string {
@@ -1265,6 +1257,31 @@ func (s *SizedSchemaType) SQL() string {
 
 func (a *ArraySchemaType) SQL() string {
 	return "ARRAY<" + a.Item.SQL() + ">"
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt("", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER SEARCH INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
 }
 
 // ================================================================================
