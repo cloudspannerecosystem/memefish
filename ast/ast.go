@@ -58,6 +58,9 @@ type Statement interface {
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
+func (CreateProtoBundle) isStatement()  {}
+func (AlterProtoBundle) isStatement()   {}
+func (DropProtoBundle) isStatement()    {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
@@ -272,6 +275,9 @@ type DDL interface {
 
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
+func (CreateProtoBundle) isDDL()  {}
+func (AlterProtoBundle) isDDL()   {}
+func (DropProtoBundle) isDDL()    {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
@@ -1662,6 +1668,99 @@ type AlterDatabase struct {
 	Options *Options
 }
 
+// ProtoBundleTypes is parenthesized Protocol Buffers type names node IN CREATE/ALTER PROTO BUNDLE statement.
+//
+//	({{.Types | sqlJoin ", "}})
+type ProtoBundleTypes struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Types          []*NamedType
+}
+
+// CreateProtoBundle is CREATE PROTO BUNDLE statement node.
+//
+//	CREATE PROTO BUNDLE {{Types, | sql}}
+type CreateProtoBundle struct {
+	// pos = Create
+	// end = Types.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundle is ALTER PROTO BUNDLE statement node.
+//
+//	ALTER PROTO BUNDLE {{.Alteration | sql}}
+type AlterProtoBundle struct {
+	// pos = Alter
+	// end = Types.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Alteration ProtoBundleAlteration
+}
+
+type ProtoBundleAlteration interface {
+	Node
+	isProtoBundleAlteration()
+}
+
+// AlterProtoBundleInsert is INSERT (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	INSERT {{Types | sql}}
+type AlterProtoBundleInsert struct {
+	// pos = Insert
+	// end = Types.end
+
+	Insert token.Pos
+
+	Types *ProtoBundleTypes
+}
+
+func (a *AlterProtoBundleInsert) isProtoBundleAlteration() {}
+
+// AlterProtoBundleUpdate is UPDATE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	INSERT {{Types | sql}}
+type AlterProtoBundleUpdate struct {
+	// pos = Update
+	// end = Types.end
+
+	Update token.Pos
+
+	Types *ProtoBundleTypes
+}
+
+func (a *AlterProtoBundleUpdate) isProtoBundleAlteration() {}
+
+// AlterProtoBundleDelete is DELETE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	DELETE {{Types | sql}}
+type AlterProtoBundleDelete struct {
+	// pos = Delete
+	// end = Types.end
+
+	Delete token.Pos
+
+	Types *ProtoBundleTypes
+}
+
+func (a *AlterProtoBundleDelete) isProtoBundleAlteration() {}
+
+// DropProtoBundle is DROP PROTO BUNDLE statement node.
+//
+//	DROP PROTO BUNDLE
+type DropProtoBundle struct {
+	// pos = Drop
+	// end = Bundle + 6
+
+	Drop   token.Pos // position of "ALTER" keyword
+	Bundle token.Pos // position of "BUNDLE" pseudo keyword
+}
+
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
@@ -1703,7 +1802,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name    *Ident
+	Name *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
