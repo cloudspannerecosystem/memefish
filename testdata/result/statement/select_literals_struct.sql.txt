@@ -3,10 +3,17 @@ SELECT
   ARRAY(SELECT STRUCT(1, 2, 3)),
   ARRAY(SELECT STRUCT(1, 2, TRUE)),
   ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)),
+  ARRAY(SELECT STRUCT(1 AS X, 2 AS Y, 3 AS Z)),
   ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)),
   ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)),
+  ARRAY(SELECT STRUCT(1 AS X, 2, 3)),
   ARRAY(SELECT (1, 2, 3)),
+  ARRAY(SELECT STRUCT<X INT64>(1)),
+  ARRAY(SELECT STRUCT(1 AS X)),
+  ARRAY(SELECT STRUCT<INT64>(1)),
+  ARRAY(SELECT STRUCT(1)),
   ARRAY(SELECT STRUCT<>()),
+  ARRAY(SELECT STRUCT()),
   EXISTS(SELECT (1, 2))
 
 --- AST
@@ -207,57 +214,55 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  138,
-          Rparen: 187,
+          Rparen: 181,
           Query:  &ast.Select{
             Select:   144,
             Distinct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.TypedStructLiteral{
+                Expr: &ast.TypelessStructLiteral{
                   Struct: 151,
-                  Rparen: 186,
-                  Fields: []*ast.StructField{
-                    &ast.StructField{
-                      Ident: (*ast.Ident)(nil),
-                      Type:  &ast.SimpleType{
-                        NamePos: 158,
-                        Name:    "INT64",
+                  Rparen: 180,
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 158,
+                        ValueEnd: 159,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: &ast.Ident{
+                        NamePos: 163,
+                        NameEnd: 164,
+                        Name:    "X",
                       },
                     },
-                    &ast.StructField{
-                      Ident: (*ast.Ident)(nil),
-                      Type:  &ast.SimpleType{
-                        NamePos: 165,
-                        Name:    "INT64",
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 166,
+                        ValueEnd: 167,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Name: &ast.Ident{
+                        NamePos: 171,
+                        NameEnd: 172,
+                        Name:    "Y",
                       },
                     },
-                    &ast.StructField{
-                      Ident: (*ast.Ident)(nil),
-                      Type:  &ast.SimpleType{
-                        NamePos: 172,
-                        Name:    "INT64",
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 174,
+                        ValueEnd: 175,
+                        Base:     10,
+                        Value:    "3",
                       },
-                    },
-                  },
-                  Values: []ast.Expr{
-                    &ast.IntLiteral{
-                      ValuePos: 179,
-                      ValueEnd: 180,
-                      Base:     10,
-                      Value:    "1",
-                    },
-                    &ast.IntLiteral{
-                      ValuePos: 182,
-                      ValueEnd: 183,
-                      Base:     10,
-                      Value:    "2",
-                    },
-                    &ast.IntLiteral{
-                      ValuePos: 185,
-                      ValueEnd: 186,
-                      Base:     10,
-                      Value:    "3",
+                      Name: &ast.Ident{
+                        NamePos: 179,
+                        NameEnd: 180,
+                        Name:    "Z",
+                      },
                     },
                   },
                 },
@@ -274,60 +279,56 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
-          Array:  192,
-          Rparen: 243,
+          Array:  186,
+          Rparen: 235,
           Query:  &ast.Select{
-            Select:   198,
+            Select:   192,
             Distinct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
-                  Struct: 205,
-                  Rparen: 242,
+                  Struct: 199,
+                  Rparen: 234,
                   Fields: []*ast.StructField{
                     &ast.StructField{
-                      Ident: &ast.Ident{
-                        NamePos: 212,
-                        NameEnd: 213,
-                        Name:    "X",
-                      },
-                      Type: &ast.SimpleType{
-                        NamePos: 214,
+                      Ident: (*ast.Ident)(nil),
+                      Type:  &ast.SimpleType{
+                        NamePos: 206,
                         Name:    "INT64",
                       },
                     },
                     &ast.StructField{
                       Ident: (*ast.Ident)(nil),
                       Type:  &ast.SimpleType{
-                        NamePos: 221,
+                        NamePos: 213,
                         Name:    "INT64",
                       },
                     },
                     &ast.StructField{
                       Ident: (*ast.Ident)(nil),
                       Type:  &ast.SimpleType{
-                        NamePos: 228,
+                        NamePos: 220,
                         Name:    "INT64",
                       },
                     },
                   },
                   Values: []ast.Expr{
                     &ast.IntLiteral{
-                      ValuePos: 235,
-                      ValueEnd: 236,
+                      ValuePos: 227,
+                      ValueEnd: 228,
                       Base:     10,
                       Value:    "1",
                     },
                     &ast.IntLiteral{
-                      ValuePos: 238,
-                      ValueEnd: 239,
+                      ValuePos: 230,
+                      ValueEnd: 231,
                       Base:     10,
                       Value:    "2",
                     },
                     &ast.IntLiteral{
-                      ValuePos: 241,
-                      ValueEnd: 242,
+                      ValuePos: 233,
+                      ValueEnd: 234,
                       Base:     10,
                       Value:    "3",
                     },
@@ -346,33 +347,163 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
-          Array:  248,
-          Rparen: 270,
+          Array:  240,
+          Rparen: 291,
           Query:  &ast.Select{
-            Select:   254,
+            Select:   246,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypedStructLiteral{
+                  Struct: 253,
+                  Rparen: 290,
+                  Fields: []*ast.StructField{
+                    &ast.StructField{
+                      Ident: &ast.Ident{
+                        NamePos: 260,
+                        NameEnd: 261,
+                        Name:    "X",
+                      },
+                      Type: &ast.SimpleType{
+                        NamePos: 262,
+                        Name:    "INT64",
+                      },
+                    },
+                    &ast.StructField{
+                      Ident: (*ast.Ident)(nil),
+                      Type:  &ast.SimpleType{
+                        NamePos: 269,
+                        Name:    "INT64",
+                      },
+                    },
+                    &ast.StructField{
+                      Ident: (*ast.Ident)(nil),
+                      Type:  &ast.SimpleType{
+                        NamePos: 276,
+                        Name:    "INT64",
+                      },
+                    },
+                  },
+                  Values: []ast.Expr{
+                    &ast.IntLiteral{
+                      ValuePos: 283,
+                      ValueEnd: 284,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    &ast.IntLiteral{
+                      ValuePos: 286,
+                      ValueEnd: 287,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                    &ast.IntLiteral{
+                      ValuePos: 289,
+                      ValueEnd: 290,
+                      Base:     10,
+                      Value:    "3",
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  296,
+          Rparen: 329,
+          Query:  &ast.Select{
+            Select:   302,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypelessStructLiteral{
+                  Struct: 309,
+                  Rparen: 328,
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 316,
+                        ValueEnd: 317,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: &ast.Ident{
+                        NamePos: 321,
+                        NameEnd: 322,
+                        Name:    "X",
+                      },
+                    },
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 324,
+                        ValueEnd: 325,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Name: (*ast.Ident)(nil),
+                    },
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 327,
+                        ValueEnd: 328,
+                        Base:     10,
+                        Value:    "3",
+                      },
+                      Name: (*ast.Ident)(nil),
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  334,
+          Rparen: 356,
+          Query:  &ast.Select{
+            Select:   340,
             Distinct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
-                  Lparen: 261,
-                  Rparen: 269,
+                  Lparen: 347,
+                  Rparen: 355,
                   Values: []ast.Expr{
                     &ast.IntLiteral{
-                      ValuePos: 262,
-                      ValueEnd: 263,
+                      ValuePos: 348,
+                      ValueEnd: 349,
                       Base:     10,
                       Value:    "1",
                     },
                     &ast.IntLiteral{
-                      ValuePos: 265,
-                      ValueEnd: 266,
+                      ValuePos: 351,
+                      ValueEnd: 352,
                       Base:     10,
                       Value:    "2",
                     },
                     &ast.IntLiteral{
-                      ValuePos: 268,
-                      ValueEnd: 269,
+                      ValuePos: 354,
+                      ValueEnd: 355,
                       Base:     10,
                       Value:    "3",
                     },
@@ -391,17 +522,181 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
-          Array:  275,
-          Rparen: 298,
+          Array:  361,
+          Rparen: 392,
           Query:  &ast.Select{
-            Select:   281,
+            Select:   367,
             Distinct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
-                  Struct: 288,
-                  Rparen: 297,
+                  Struct: 374,
+                  Rparen: 391,
+                  Fields: []*ast.StructField{
+                    &ast.StructField{
+                      Ident: &ast.Ident{
+                        NamePos: 381,
+                        NameEnd: 382,
+                        Name:    "X",
+                      },
+                      Type: &ast.SimpleType{
+                        NamePos: 383,
+                        Name:    "INT64",
+                      },
+                    },
+                  },
+                  Values: []ast.Expr{
+                    &ast.IntLiteral{
+                      ValuePos: 390,
+                      ValueEnd: 391,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  397,
+          Rparen: 424,
+          Query:  &ast.Select{
+            Select:   403,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypelessStructLiteral{
+                  Struct: 410,
+                  Rparen: 423,
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 417,
+                        ValueEnd: 418,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: &ast.Ident{
+                        NamePos: 422,
+                        NameEnd: 423,
+                        Name:    "X",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  429,
+          Rparen: 458,
+          Query:  &ast.Select{
+            Select:   435,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypedStructLiteral{
+                  Struct: 442,
+                  Rparen: 457,
+                  Fields: []*ast.StructField{
+                    &ast.StructField{
+                      Ident: (*ast.Ident)(nil),
+                      Type:  &ast.SimpleType{
+                        NamePos: 449,
+                        Name:    "INT64",
+                      },
+                    },
+                  },
+                  Values: []ast.Expr{
+                    &ast.IntLiteral{
+                      ValuePos: 456,
+                      ValueEnd: 457,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  463,
+          Rparen: 485,
+          Query:  &ast.Select{
+            Select:   469,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypelessStructLiteral{
+                  Struct: 476,
+                  Rparen: 484,
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 483,
+                        ValueEnd: 484,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: (*ast.Ident)(nil),
+                    },
+                  },
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  490,
+          Rparen: 513,
+          Query:  &ast.Select{
+            Select:   496,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypedStructLiteral{
+                  Struct: 503,
+                  Rparen: 512,
                   Fields: []*ast.StructField{},
                   Values: []ast.Expr(nil),
                 },
@@ -417,29 +712,55 @@ SELECT
         },
       },
       &ast.ExprSelectItem{
+        Expr: &ast.ArraySubQuery{
+          Array:  518,
+          Rparen: 539,
+          Query:  &ast.Select{
+            Select:   524,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.TypelessStructLiteral{
+                  Struct: 531,
+                  Rparen: 538,
+                  Values: []*ast.TypelessStructValue(nil),
+                },
+              },
+            },
+            From:    (*ast.From)(nil),
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+      &ast.ExprSelectItem{
         Expr: &ast.ExistsSubQuery{
-          Exists: 303,
-          Rparen: 323,
+          Exists: 544,
+          Rparen: 564,
           Hint:   (*ast.Hint)(nil),
           Query:  &ast.Select{
-            Select:   310,
+            Select:   551,
             Distinct: false,
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
-                  Lparen: 317,
-                  Rparen: 322,
+                  Lparen: 558,
+                  Rparen: 563,
                   Values: []ast.Expr{
                     &ast.IntLiteral{
-                      ValuePos: 318,
-                      ValueEnd: 319,
+                      ValuePos: 559,
+                      ValueEnd: 560,
                       Base:     10,
                       Value:    "1",
                     },
                     &ast.IntLiteral{
-                      ValuePos: 321,
-                      ValueEnd: 322,
+                      ValuePos: 562,
+                      ValueEnd: 563,
                       Base:     10,
                       Value:    "2",
                     },
@@ -467,4 +788,4 @@ SELECT
 }
 
 --- SQL
-SELECT ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, TRUE)), ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), ARRAY(SELECT STRUCT<>()), EXISTS(SELECT (1, 2))
+SELECT ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, TRUE)), ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)), ARRAY(SELECT STRUCT(1 AS X, 2 AS Y, 3 AS Z)), ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT(1 AS X, 2, 3)), ARRAY(SELECT (1, 2, 3)), ARRAY(SELECT STRUCT<X INT64>(1)), ARRAY(SELECT STRUCT(1 AS X)), ARRAY(SELECT STRUCT<INT64>(1)), ARRAY(SELECT STRUCT(1)), ARRAY(SELECT STRUCT<>()), ARRAY(SELECT STRUCT()), EXISTS(SELECT (1, 2))
