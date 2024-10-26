@@ -574,12 +574,36 @@ func (a *ArrayLiteral) End() token.Pos {
 	return posAdd(a.Rbrack, 1)
 }
 
-func (s *StructLiteral) Pos() token.Pos {
-	return posChoice(s.Struct, s.Lparen)
+func (t *TupleStructLiteral) Pos() token.Pos {
+	return t.Lparen
 }
 
-func (s *StructLiteral) End() token.Pos {
-	return posAdd(s.Rparen, 1)
+func (t *TupleStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypelessStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypelessStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypelessStructValue) Pos() token.Pos {
+	return nodePos(wrapNode(t.Expr))
+}
+
+func (t *TypelessStructValue) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(t.Name), wrapNode(t.Expr)))
+}
+
+func (t *TypedStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypedStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
 }
 
 func (n *NullLiteral) Pos() token.Pos {

@@ -76,7 +76,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -614,27 +614,20 @@ func (a *ArrayLiteral) SQL() string {
 		"[" + sqlJoin(a.Values, ", ") + "]"
 }
 
-func (s *StructLiteral) SQL() string {
-	sql := "STRUCT"
-	if s.Fields != nil {
-		sql += "<"
-		for i, f := range s.Fields {
-			if i != 0 {
-				sql += ", "
-			}
-			sql += f.SQL()
-		}
-		sql += ">"
-	}
-	sql += "("
-	for i, v := range s.Values {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += ")"
-	return sql
+func (s *TupleStructLiteral) SQL() string {
+	return "(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypelessStructLiteral) SQL() string {
+	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypelessStructValue) SQL() string {
+	return s.Expr.SQL() + sqlOpt(" AS ", s.Name, "")
+}
+
+func (s *TypedStructLiteral) SQL() string {
+	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
 }
 
 func (*NullLiteral) SQL() string {

@@ -28,29 +28,36 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypelessStructLiteral{
                   Struct: 22,
-                  Lparen: 28,
                   Rparen: 36,
-                  Fields: []*ast.StructField(nil),
-                  Values: []ast.Expr{
-                    &ast.IntLiteral{
-                      ValuePos: 29,
-                      ValueEnd: 30,
-                      Base:     10,
-                      Value:    "1",
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 29,
+                        ValueEnd: 30,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 32,
-                      ValueEnd: 33,
-                      Base:     10,
-                      Value:    "2",
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 32,
+                        ValueEnd: 33,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 35,
-                      ValueEnd: 36,
-                      Base:     10,
-                      Value:    "3",
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 35,
+                        ValueEnd: 36,
+                        Base:     10,
+                        Value:    "3",
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
                   },
                 },
@@ -75,27 +82,34 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypelessStructLiteral{
                   Struct: 55,
-                  Lparen: 61,
                   Rparen: 72,
-                  Fields: []*ast.StructField(nil),
-                  Values: []ast.Expr{
-                    &ast.IntLiteral{
-                      ValuePos: 62,
-                      ValueEnd: 63,
-                      Base:     10,
-                      Value:    "1",
+                  Values: []*ast.TypelessStructValue{
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 62,
+                        ValueEnd: 63,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 65,
-                      ValueEnd: 66,
-                      Base:     10,
-                      Value:    "2",
+                    &ast.TypelessStructValue{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 65,
+                        ValueEnd: 66,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
-                    &ast.BoolLiteral{
-                      ValuePos: 68,
-                      Value:    true,
+                    &ast.TypelessStructValue{
+                      Expr: &ast.BoolLiteral{
+                        ValuePos: 68,
+                        Value:    true,
+                      },
+                      Name: (*ast.Ident)(nil),
                     },
                   },
                 },
@@ -120,9 +134,8 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypedStructLiteral{
                   Struct: 91,
-                  Lparen: 124,
                   Rparen: 132,
                   Fields: []*ast.StructField{
                     &ast.StructField{
@@ -201,9 +214,8 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypedStructLiteral{
                   Struct: 151,
-                  Lparen: 178,
                   Rparen: 186,
                   Fields: []*ast.StructField{
                     &ast.StructField{
@@ -270,9 +282,8 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypedStructLiteral{
                   Struct: 205,
-                  Lparen: 234,
                   Rparen: 242,
                   Fields: []*ast.StructField{
                     &ast.StructField{
@@ -343,11 +354,9 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
-                  Struct: 0,
+                Expr: &ast.TupleStructLiteral{
                   Lparen: 261,
                   Rparen: 269,
-                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 262,
@@ -390,9 +399,8 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypedStructLiteral{
                   Struct: 288,
-                  Lparen: 296,
                   Rparen: 297,
                   Fields: []*ast.StructField{},
                   Values: []ast.Expr(nil),
@@ -419,11 +427,9 @@ SELECT
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
-                  Struct: 0,
+                Expr: &ast.TupleStructLiteral{
                   Lparen: 317,
                   Rparen: 322,
-                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 318,
@@ -461,4 +467,4 @@ SELECT
 }
 
 --- SQL
-SELECT ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, TRUE)), ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT<>()), EXISTS(SELECT STRUCT(1, 2))
+SELECT ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, TRUE)), ARRAY(SELECT STRUCT<X INT64, Y INT64, Z INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT STRUCT<X INT64, INT64, INT64>(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), ARRAY(SELECT STRUCT<>()), EXISTS(SELECT (1, 2))

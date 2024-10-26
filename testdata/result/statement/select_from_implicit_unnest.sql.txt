@@ -41,9 +41,8 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
             Rbrack: 61,
             Type:   nil,
             Values: []ast.Expr{
-              &ast.StructLiteral{
+              &ast.TypedStructLiteral{
                 Struct: 27,
-                Lparen: 52,
                 Rparen: 60,
                 Fields: []*ast.StructField{
                   &ast.StructField{

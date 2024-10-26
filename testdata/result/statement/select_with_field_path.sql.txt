@@ -212,11 +212,9 @@ WHERE A.z.a = 2
                     },
                   },
                   Values: []ast.Expr{
-                    &ast.StructLiteral{
-                      Struct: 0,
+                    &ast.TupleStructLiteral{
                       Lparen: 206,
                       Rparen: 223,
-                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 207,
@@ -229,11 +227,9 @@ WHERE A.z.a = 2
                           ValueEnd: 215,
                           Value:    "foo",
                         },
-                        &ast.StructLiteral{
-                          Struct: 0,
+                        &ast.TupleStructLiteral{
                           Lparen: 217,
                           Rparen: 222,
-                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 218,
@@ -251,11 +247,9 @@ WHERE A.z.a = 2
                         },
                       },
                     },
-                    &ast.StructLiteral{
-                      Struct: 0,
+                    &ast.TupleStructLiteral{
                       Lparen: 226,
                       Rparen: 243,
-                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 227,
@@ -268,11 +262,9 @@ WHERE A.z.a = 2
                           ValueEnd: 235,
                           Value:    "bar",
                         },
-                        &ast.StructLiteral{
-                          Struct: 0,
+                        &ast.TupleStructLiteral{
                           Lparen: 237,
                           Rparen: 242,
-                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 238,
@@ -357,4 +349,4 @@ WHERE A.z.a = 2
 }
 
 --- SQL
-SELECT A.x, A.y, A.z.a, A.z.b FROM UNNEST(ARRAY(SELECT AS STRUCT x, y, z FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING, z STRUCT<a INT64, b INT64>>>[STRUCT(1, "foo", STRUCT(2, 3)), STRUCT(3, "bar", STRUCT(4, 5))]))) AS A WHERE A.z.a = 2
+SELECT A.x, A.y, A.z.a, A.z.b FROM UNNEST(ARRAY(SELECT AS STRUCT x, y, z FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING, z STRUCT<a INT64, b INT64>>>[(1, "foo", (2, 3)), (3, "bar", (4, 5))]))) AS A WHERE A.z.a = 2
