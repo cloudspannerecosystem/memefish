@@ -146,38 +146,40 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
-func (JSONLiteral) isExpr()      {}
+func (BinaryExpr) isExpr()            {}
+func (UnaryExpr) isExpr()             {}
+func (InExpr) isExpr()                {}
+func (IsNullExpr) isExpr()            {}
+func (IsBoolExpr) isExpr()            {}
+func (BetweenExpr) isExpr()           {}
+func (SelectorExpr) isExpr()          {}
+func (IndexExpr) isExpr()             {}
+func (CallExpr) isExpr()              {}
+func (CountStarExpr) isExpr()         {}
+func (CastExpr) isExpr()              {}
+func (ExtractExpr) isExpr()           {}
+func (CaseExpr) isExpr()              {}
+func (ParenExpr) isExpr()             {}
+func (ScalarSubQuery) isExpr()        {}
+func (ArraySubQuery) isExpr()         {}
+func (ExistsSubQuery) isExpr()        {}
+func (Param) isExpr()                 {}
+func (Ident) isExpr()                 {}
+func (Path) isExpr()                  {}
+func (ArrayLiteral) isExpr()          {}
+func (TupleStructLiteral) isExpr()    {}
+func (TypelessStructLiteral) isExpr() {}
+func (TypedStructLiteral) isExpr()    {}
+func (NullLiteral) isExpr()           {}
+func (BoolLiteral) isExpr()           {}
+func (IntLiteral) isExpr()            {}
+func (FloatLiteral) isExpr()          {}
+func (StringLiteral) isExpr()         {}
+func (BytesLiteral) isExpr()          {}
+func (DateLiteral) isExpr()           {}
+func (TimestampLiteral) isExpr()      {}
+func (NumericLiteral) isExpr()        {}
+func (JSONLiteral) isExpr()           {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -1372,18 +1374,52 @@ type ArrayLiteral struct {
 	Values []Expr
 }
 
-// StructLiteral is struct literal node.
+// TupleStructLiteral is tuple syntax struct literal node.
 //
-//	STRUCT{{if not (isnil .Fields)}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
-type StructLiteral struct {
-	// pos = Struct || Lparen
+//	({{.Values | sqlJoin ","}})
+type TupleStructLiteral struct {
+	// pos = Lparen
 	// end = Rparen + 1
 
-	Struct         token.Pos // position of "STRUCT"
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	// NOTE: Distinguish nil from len(Fields) == 0 case.
-	//       nil means type is not specified, or empty slice means this struct has 0 fields.
+	Values []Expr // len(Values) > 1
+}
+
+// TypelessStructLiteral is typeless struct literal node.
+//
+//	STRUCT({{.Values | sqlJoin ","}})
+type TypelessStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
+	Values []*TypelessStructValue
+}
+
+// TypelessStructValue is value with optional name in typeless struct literal.
+//
+//	{{.Expr | sql}}{{if .Name}} AS {{.Name | sql}}{{end}}
+type TypelessStructValue struct {
+	// pos = Expr.pos
+	// end = (Name ?? Expr).end
+
+	Expr Expr
+	Name *Ident // optional
+}
+
+// TypedStructLiteral is typed struct literal node.
+//
+//	STRUCT<{{.Fields | sqlJoin ","}}>({{.Values | sqlJoin ","}})
+type TypedStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of "(" and ")"
+
 	Fields []*StructField
 	Values []Expr
 }
@@ -1703,7 +1739,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name    *Ident
+	Name *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.

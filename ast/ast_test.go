@@ -87,7 +87,7 @@ func TestExpr(t *testing.T) {
 	Expr(&Ident{}).isExpr()
 	Expr(&Path{}).isExpr()
 	Expr(&ArrayLiteral{}).isExpr()
-	Expr(&StructLiteral{}).isExpr()
+	Expr(&TypedStructLiteral{}).isExpr()
 	Expr(&NullLiteral{}).isExpr()
 	Expr(&BoolLiteral{}).isExpr()
 	Expr(&IntLiteral{}).isExpr()
@@ -137,7 +137,7 @@ func TestStringValue(t *testing.T) {
 
 func TestDDL(t *testing.T) {
 	DDL(&CreateDatabase{}).isDDL()
-  DDL(&AlterDatabase{}).isDDL()
+	DDL(&AlterDatabase{}).isDDL()
 	DDL(&CreateTable{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()

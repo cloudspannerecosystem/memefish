@@ -454,14 +454,19 @@ func (a *ArrayLiteral) End() token.Pos {
 	return a.Rbrack + 1
 }
 
-func (s *StructLiteral) Pos() token.Pos {
-	if !s.Struct.Invalid() {
-		return s.Struct
-	}
-	return s.Lparen
+func (s *TupleStructLiteral) Pos() token.Pos { return s.Lparen }
+func (s *TupleStructLiteral) End() token.Pos {
+	return s.Rparen + 1
 }
 
-func (s *StructLiteral) End() token.Pos {
+func (s *TypelessStructLiteral) Pos() token.Pos { return s.Struct }
+func (s *TypelessStructLiteral) End() token.Pos { return s.Rparen + 1 }
+
+func (t *TypelessStructValue) Pos() token.Pos { return t.Expr.Pos() }
+func (t *TypelessStructValue) End() token.Pos { return firstValidEnd(t.Name, t.Expr) }
+
+func (s *TypedStructLiteral) Pos() token.Pos { return s.Struct }
+func (s *TypedStructLiteral) End() token.Pos {
 	return s.Rparen + 1
 }
 

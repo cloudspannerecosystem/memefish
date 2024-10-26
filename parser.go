@@ -1798,19 +1798,32 @@ func (p *Parser) parseParenExpr() ast.Expr {
 	}
 
 	if p.Token.Kind != "," {
-		p.panicfAtToken(&paren, "cannot parse (...) as expression, struct literal or subquery")
+		p.panicfAtToken(&paren, "cannot parse (...) as expression, typeless struct literal or subquery")
 	}
 
-	values := []ast.Expr{expr}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		values = append(values, p.parseExpr())
-	}
+	p.expect(",")
+
+	values := append([]ast.Expr{expr}, parseCommaSeparatedList(p, p.parseExpr)...)
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+
+	return &ast.TupleStructLiteral{
 		Lparen: paren.Pos,
 		Rparen: rparen,
 		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructField() *ast.TypelessStructValue {
+	expr := p.parseExpr()
+	if p.Token.Kind != "AS" {
+		return &ast.TypelessStructValue{Expr: expr}
+	}
+
+	p.nextToken()
+	ident := p.parseIdent()
+	return &ast.TypelessStructValue{
+		Expr: expr,
+		Name: ident,
 	}
 }
 
@@ -1870,24 +1883,34 @@ func (p *Parser) parseArrayLiteralBody() (values []ast.Expr, lbrack, rbrack toke
 	return
 }
 
-func (p *Parser) parseStructLiteral() *ast.StructLiteral {
+func (p *Parser) parseStructLiteral() ast.Expr {
+	// tuple struct syntax is handled in parseParenExpr.
 	pos := p.expect("STRUCT").Pos
-	fields, _ := p.parseStructTypeFields()
-	lparen := p.expect("(").Pos
-	var values []ast.Expr
-	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
-			values = append(values, p.parseExpr())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
+	fields, gt := p.tryParseStructTypeFields()
+	p.expect("(")
+
+	if gt.Invalid() {
+		// typeless
+		var values []*ast.TypelessStructValue
+		if p.Token.Kind != ")" {
+			values = parseCommaSeparatedList(p, p.parseTypelessStructField)
+		}
+		rparen := p.expect(")").Pos
+		return &ast.TypelessStructLiteral{
+			Struct: pos,
+			Rparen: rparen,
+			Values: values,
 		}
 	}
+
+	// typed
+	var values []ast.Expr
+	if p.Token.Kind != ")" {
+		values = parseCommaSeparatedList(p, p.parseExpr)
+	}
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+	return &ast.TypedStructLiteral{
 		Struct: pos,
-		Lparen: lparen,
 		Rparen: rparen,
 		Fields: fields,
 		Values: values,
@@ -2055,7 +2078,7 @@ func (p *Parser) parseArrayType() *ast.ArrayType {
 
 func (p *Parser) parseStructType() *ast.StructType {
 	pos := p.expect("STRUCT").Pos
-	fields, gt := p.parseStructTypeFields()
+	fields, gt := p.tryParseStructTypeFields()
 	if fields == nil {
 		p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
 	}
@@ -2066,7 +2089,8 @@ func (p *Parser) parseStructType() *ast.StructType {
 	}
 }
 
-func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Pos) {
+func (p *Parser) tryParseStructTypeFields() (fields []*ast.StructField, gt token.Pos) {
+	gt = token.InvalidPos
 	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
 		return
 	}
