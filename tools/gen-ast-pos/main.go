@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"unicode"
 
@@ -102,15 +101,15 @@ func main() {
 	buffer.WriteString(prologue)
 
 	for _, node := range nodes {
-		v := string(unicode.ToLower(rune(node.name[0])))
+		x := string(unicode.ToLower(rune(node.name[0])))
 
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", v, node.name)
-		fmt.Fprintf(&buffer, "\treturn %s\n", posExprToGo(v, node.posExpr))
+		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, node.name)
+		fmt.Fprintf(&buffer, "\treturn %s\n", node.posExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", v, node.name)
-		fmt.Fprintf(&buffer, "\treturn %s\n", posExprToGo(v, node.endExpr))
+		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", x, node.name)
+		fmt.Fprintf(&buffer, "\treturn %s\n", node.endExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 	}
 
@@ -122,85 +121,5 @@ func main() {
 	err = os.WriteFile(*outfile, buffer.Bytes(), 0666)
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-
-func posExprToGo(v string, expr poslang.PosExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Var:
-		return v + "." + e.Name
-	case *poslang.NodePos:
-		return "nodePos(" + nodeExprToGo(v, e.Expr) + ")"
-	case *poslang.NodeEnd:
-		return "nodeEnd(" + nodeExprToGo(v, e.Expr) + ")"
-	case *poslang.PosChoice:
-		ss := make([]string, 0, len(e.Exprs))
-		for _, p := range e.Exprs {
-			ss = append(ss, posExprToGo(v, p))
-		}
-		return "posChoice(" + strings.Join(ss, ", ") + ")"
-	case *poslang.PosAdd:
-		return "posAdd(" + posExprToGo(v, e.Expr) + ", " + intExprToGo(v, e.Value) + ")"
-	default:
-		panic("unsupported")
-	}
-}
-
-func nodeExprToGo(v string, expr poslang.NodeExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Var:
-		return "wrapNode(" + v + "." + e.Name + ")"
-	case *poslang.NodeChoice:
-		ss := make([]string, 0, len(e.Exprs))
-		for _, n := range e.Exprs {
-			ss = append(ss, nodeExprToGo(v, n))
-		}
-		return "nodeChoice(" + strings.Join(ss, ", ") + ")"
-	case *poslang.NodeSliceIndex:
-		return "nodeSliceIndex(" + nodeSliceExprToGo(v, e.Expr) + ", " + intExprToGo(v, e.Index) + ")"
-	case *poslang.NodeSliceLast:
-		return "nodeSliceLast(" + nodeSliceExprToGo(v, e.Expr) + ")"
-	default:
-		panic("unsupported")
-	}
-}
-
-func nodeSliceExprToGo(v string, expr poslang.NodeSliceExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Var:
-		return v + "." + e.Name
-	default:
-		panic("unsupported")
-	}
-}
-
-func intExprToGo(v string, expr poslang.IntExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Len:
-		return "len(" + stringExprToGo(v, e.Expr) + ")"
-	case *poslang.IntLiteral:
-		return strconv.Itoa(e.Value)
-	case *poslang.IfThenElse:
-		return "ifThenElse(" + boolExprToGo(v, e.Cond) + ", " + intExprToGo(v, e.Then) + ", " + intExprToGo(v, e.Else) + ")"
-	default:
-		panic("unsupported")
-	}
-}
-
-func stringExprToGo(v string, expr poslang.StringExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Var:
-		return v + "." + e.Name
-	default:
-		panic("unsupported")
-	}
-}
-
-func boolExprToGo(v string, expr poslang.BoolExpr) string {
-	switch e := expr.(type) {
-	case *poslang.Var:
-		return v + "." + e.Name
-	default:
-		panic("unsupported")
 	}
 }

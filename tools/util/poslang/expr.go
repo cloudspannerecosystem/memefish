@@ -12,8 +12,10 @@
 package poslang
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/cloudspannerecosystem/memefish/token"
 )
@@ -21,7 +23,7 @@ import (
 // node represents the subset interface of ast.Node.
 //
 // Package poslang is used by tools/gen-ast-pos and it is used for generating ast/pos.go.
-// To avoid mutual dependency, we introduce this type here.
+// To avoid a mutual dependency, we introduce this type here.
 type node interface {
 	Pos() token.Pos
 	End() token.Pos
@@ -37,8 +39,8 @@ type node interface {
 //
 // This means an untyped expression and a base interface of all typed expressions.
 type Expr interface {
-	// PosExpr returns the string representation of this expression (i.e. unparse).
-	PosExpr() string
+	// Unparse returns the string representation of this expression.
+	Unparse() string
 }
 
 // Typed expression types has a method EvalXXX.
@@ -48,36 +50,42 @@ type Expr interface {
 type PosExpr interface {
 	Expr
 	EvalPos(x any) token.Pos
+	PosExprToGo(x string) string
 }
 
 // NodeExpr is a POS expression typed with ast.Node.
 type NodeExpr interface {
 	Expr
 	EvalNode(x any) node
+	NodeExprToGo(x string) string
 }
 
 // NodeSliceExpr is a POS expression typed with []ast.Node.
 type NodeSliceExpr interface {
 	Expr
 	EvalNodeSlice(x any) []node
+	NodeSliceExprToGo(x string) string
 }
 
 // IntExpr is a POS expression typed with int.
 type IntExpr interface {
 	Expr
 	EvalInt(x any) int
+	IntExprToGo(x string) string
 }
 
 // BoolExpr is a POS expression typed with bool.
 type BoolExpr interface {
 	Expr
 	EvalBool(x any) bool
+	BoolExprToGo(x string) string
 }
 
 // StringExpr is a POS expression typed with string.
 type StringExpr interface {
 	Expr
 	EvalString(x any) string
+	StringExprToGo(x string) string
 }
 
 // ===========================================
@@ -86,6 +94,7 @@ type StringExpr interface {
 //
 // ===========================================
 
+// fieldOf returns the field value of x with some error checks.
 func fieldOf(x any, name string) reflect.Value {
 	value := reflect.ValueOf(x)
 	if value.Kind() == reflect.Interface {
@@ -114,23 +123,27 @@ type Var struct {
 	Name string
 }
 
-func (v *Var) PosExpr() string {
+func (v *Var) Unparse() string {
 	return v.Name
 }
 
 func (v *Var) EvalPos(x any) token.Pos {
 	field := fieldOf(x, v.Name)
 	if !field.CanInt() {
-		panic("expect Int, but " + field.Kind().String())
+		panic("expect int, but " + field.Kind().String())
 	}
 
 	return token.Pos(field.Int())
 }
 
+func (v *Var) PosExprToGo(x string) string {
+	return fmt.Sprintf("%s.%s", x, v.Name)
+}
+
 func (v *Var) EvalNode(x any) node {
 	field := fieldOf(x, v.Name)
 	if !field.CanInterface() {
-		panic("expect Interface, but " + field.Kind().String())
+		panic("expect interface, but " + field.Kind().String())
 	}
 
 	if field.IsNil() {
@@ -145,10 +158,14 @@ func (v *Var) EvalNode(x any) node {
 	return node
 }
 
+func (v *Var) NodeExprToGo(x string) string {
+	return fmt.Sprintf("wrapNode(%s.%s)", x, v.Name)
+}
+
 func (v *Var) EvalNodeSlice(x any) []node {
 	field := fieldOf(x, v.Name)
 	if field.Kind() != reflect.Slice {
-		panic("expect Slice, but " + field.Kind().String())
+		panic("expect slice, but " + field.Kind().String())
 	}
 
 	if field.IsNil() || field.Len() == 0 {
@@ -160,7 +177,7 @@ func (v *Var) EvalNodeSlice(x any) []node {
 	for i := 0; i < n; i++ {
 		item := field.Index(i)
 		if !(item.IsValid() && item.CanInterface()) {
-			panic("expect Interface, but " + item.Kind().String())
+			panic("expect interface, but " + item.Kind().String())
 		}
 
 		var ok bool
@@ -173,22 +190,34 @@ func (v *Var) EvalNodeSlice(x any) []node {
 	return nodes
 }
 
+func (v *Var) NodeSliceExprToGo(x string) string {
+	return fmt.Sprintf("%s.%s", x, v.Name)
+}
+
 func (v *Var) EvalBool(x any) bool {
 	field := fieldOf(x, v.Name)
 	if field.Kind() != reflect.Bool {
-		panic("expect Bool, but " + field.Kind().String())
+		panic("expect bool, but " + field.Kind().String())
 	}
 
 	return field.Bool()
 }
 
+func (v *Var) BoolExprToGo(x string) string {
+	return fmt.Sprintf("%s.%s", x, v.Name)
+}
+
 func (v *Var) EvalString(x any) string {
 	field := fieldOf(x, v.Name)
 	if field.Kind() != reflect.String {
-		panic("expect String, but " + field.Kind().String())
+		panic("expect string, but " + field.Kind().String())
 	}
 
 	return field.String()
+}
+
+func (v *Var) StringExprToGo(x string) string {
+	return fmt.Sprintf("%s.%s", x, v.Name)
 }
 
 // NodePos represents a "NodeExpr.pos" expression.
@@ -196,8 +225,8 @@ type NodePos struct {
 	Expr NodeExpr
 }
 
-func (p *NodePos) PosExpr() string {
-	return p.Expr.PosExpr() + ".pos"
+func (p *NodePos) Unparse() string {
+	return fmt.Sprintf("%s.pos", p.Expr.Unparse())
 }
 
 func (p *NodePos) EvalPos(x any) token.Pos {
@@ -208,21 +237,29 @@ func (p *NodePos) EvalPos(x any) token.Pos {
 	return node.Pos()
 }
 
+func (p *NodePos) PosExprToGo(x string) string {
+	return fmt.Sprintf("nodePos(%s)", p.Expr.NodeExprToGo(x))
+}
+
 // NodeEnd represents a "NodeExpr.end" expression.
 type NodeEnd struct {
 	Expr NodeExpr
 }
 
-func (e *NodeEnd) PosExpr() string {
-	return e.Expr.PosExpr() + ".end"
+func (e *NodeEnd) Unparse() string {
+	return fmt.Sprintf("%s.end", e.Expr.Unparse())
 }
 
-func (p *NodeEnd) EvalPos(x any) token.Pos {
-	node := p.Expr.EvalNode(x)
+func (e *NodeEnd) EvalPos(x any) token.Pos {
+	node := e.Expr.EvalNode(x)
 	if node == nil {
 		return token.InvalidPos
 	}
 	return node.End()
+}
+
+func (e *NodeEnd) PosExprToGo(x string) string {
+	return fmt.Sprintf("nodeEnd(%s)", e.Expr.NodeExprToGo(x))
 }
 
 // PosChoice represents a "PosExpr1 || PosExpr2 || ..." expression.
@@ -230,12 +267,12 @@ type PosChoice struct {
 	Exprs []PosExpr
 }
 
-func (c *PosChoice) PosExpr() string {
-	s := c.Exprs[0].PosExpr()
-	for _, e := range c.Exprs[1:] {
-		s += " || " + e.PosExpr()
+func (c *PosChoice) Unparse() string {
+	ss := make([]string, 0, len(c.Exprs))
+	for _, e := range c.Exprs {
+		ss = append(ss, e.Unparse())
 	}
-	return s
+	return strings.Join(ss, " || ")
 }
 
 func (c *PosChoice) EvalPos(x any) token.Pos {
@@ -249,14 +286,22 @@ func (c *PosChoice) EvalPos(x any) token.Pos {
 	return token.InvalidPos
 }
 
+func (c *PosChoice) PosExprToGo(x string) string {
+	ss := make([]string, 0, len(c.Exprs))
+	for _, e := range c.Exprs {
+		ss = append(ss, e.PosExprToGo(x))
+	}
+	return fmt.Sprintf("posChoice(%s)", strings.Join(ss, ", "))
+}
+
 // PosAdd represents a "PosExpr + IntExpr" expression.
 type PosAdd struct {
 	Expr  PosExpr
 	Value IntExpr
 }
 
-func (a *PosAdd) PosExpr() string {
-	return a.Expr.PosExpr() + " + " + a.Value.PosExpr()
+func (a *PosAdd) Unparse() string {
+	return fmt.Sprintf("%s + %s", a.Expr.Unparse(), a.Value.Unparse())
 }
 
 func (a *PosAdd) EvalPos(x any) token.Pos {
@@ -269,17 +314,21 @@ func (a *PosAdd) EvalPos(x any) token.Pos {
 	return token.Pos(int(pos) + value)
 }
 
+func (a *PosAdd) PosExprToGo(x string) string {
+	return fmt.Sprintf("posAdd(%s, %s)", a.Expr.PosExprToGo(x), a.Value.IntExprToGo(x))
+}
+
 // NodeChoice represents a "(NodeExpr1 ?? NodeExpr2 ?? ...)" expression.
 type NodeChoice struct {
 	Exprs []NodeExpr
 }
 
-func (c *NodeChoice) PosExpr() string {
-	s := "(" + c.Exprs[0].PosExpr()
-	for _, e := range c.Exprs[1:] {
-		s += " ?? " + e.PosExpr()
+func (c *NodeChoice) Unparse() string {
+	ss := make([]string, 0, len(c.Exprs))
+	for _, e := range c.Exprs {
+		ss = append(ss, e.Unparse())
 	}
-	return s + ")"
+	return fmt.Sprintf("(%s)", strings.Join(ss, " ?? "))
 }
 
 func (c *NodeChoice) EvalNode(x any) node {
@@ -293,14 +342,22 @@ func (c *NodeChoice) EvalNode(x any) node {
 	return nil
 }
 
+func (c *NodeChoice) NodeExprToGo(x string) string {
+	ss := make([]string, 0, len(c.Exprs))
+	for _, e := range c.Exprs {
+		ss = append(ss, e.NodeExprToGo(x))
+	}
+	return fmt.Sprintf("nodeChoice(%s)", strings.Join(ss, ", "))
+}
+
 // NodeSliceIndex represents a "NodeSliceExpr[IntExpr]" expression.
 type NodeSliceIndex struct {
 	Expr  NodeSliceExpr
 	Index IntExpr
 }
 
-func (i *NodeSliceIndex) PosExpr() string {
-	return i.Expr.PosExpr() + "[" + i.Index.PosExpr() + "]"
+func (i *NodeSliceIndex) Unparse() string {
+	return fmt.Sprintf("%s[%s]", i.Expr.Unparse(), i.Index.Unparse())
 }
 
 func (i *NodeSliceIndex) EvalNode(x any) node {
@@ -313,13 +370,17 @@ func (i *NodeSliceIndex) EvalNode(x any) node {
 	return nodes[index]
 }
 
+func (i *NodeSliceIndex) NodeExprToGo(x string) string {
+	return fmt.Sprintf("nodeSliceIndex(%s, %s)", i.Expr.NodeSliceExprToGo(x), i.Index.IntExprToGo(x))
+}
+
 // NodeSliceLast represents a "NodeSliceExpr[$]" expression.
 type NodeSliceLast struct {
 	Expr NodeSliceExpr
 }
 
-func (l *NodeSliceLast) PosExpr() string {
-	return l.Expr.PosExpr() + "[$]"
+func (l *NodeSliceLast) Unparse() string {
+	return fmt.Sprintf("%s[$]", l.Expr.Unparse())
 }
 
 func (l *NodeSliceLast) EvalNode(x any) node {
@@ -331,17 +392,25 @@ func (l *NodeSliceLast) EvalNode(x any) node {
 	return nodes[len(nodes)-1]
 }
 
+func (l *NodeSliceLast) NodeExprToGo(x string) string {
+	return fmt.Sprintf("nodeSliceLast(%s)", l.Expr.NodeSliceExprToGo(x))
+}
+
 // Len represents a "len(StringExpr)" expression.
 type Len struct {
 	Expr StringExpr
 }
 
-func (l *Len) PosExpr() string {
-	return "len(" + l.Expr.PosExpr() + ")"
+func (l *Len) Unparse() string {
+	return fmt.Sprintf("len(%s)", l.Expr.Unparse())
 }
 
 func (l *Len) EvalInt(x any) int {
 	return len(l.Expr.EvalString(x))
+}
+
+func (l *Len) IntExprToGo(x string) string {
+	return fmt.Sprintf("len(%s)", l.Expr.StringExprToGo(x))
 }
 
 // IntLiteral represents an integer literal in a POS expression.
@@ -349,12 +418,16 @@ type IntLiteral struct {
 	Value int
 }
 
-func (i *IntLiteral) PosExpr() string {
+func (i *IntLiteral) Unparse() string {
 	return strconv.Itoa(i.Value)
 }
 
 func (i *IntLiteral) EvalInt(x any) int {
 	return i.Value
+}
+
+func (i *IntLiteral) IntExprToGo(x string) string {
+	return strconv.Itoa(i.Value)
 }
 
 // IfThenElse represents a "(BoolExpr ? IntExpr1 : IntExpr2)" expression.
@@ -363,8 +436,8 @@ type IfThenElse struct {
 	Then, Else IntExpr
 }
 
-func (i *IfThenElse) PosExpr() string {
-	return "(" + i.Cond.PosExpr() + " ? " + i.Then.PosExpr() + " : " + i.Else.PosExpr() + ")"
+func (i *IfThenElse) Unparse() string {
+	return fmt.Sprintf("(%s ? %s : %s)", i.Cond.Unparse(), i.Then.Unparse(), i.Else.Unparse())
 }
 
 func (i *IfThenElse) EvalInt(x any) int {
@@ -373,4 +446,8 @@ func (i *IfThenElse) EvalInt(x any) int {
 	} else {
 		return i.Else.EvalInt(x)
 	}
+}
+
+func (i *IfThenElse) IntExprToGo(x string) string {
+	return fmt.Sprintf("ifThenElse(%s, %s, %s)", i.Cond.BoolExprToGo(x), i.Then.IntExprToGo(x), i.Else.IntExprToGo(x))
 }

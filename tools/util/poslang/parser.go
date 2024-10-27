@@ -79,7 +79,7 @@ func (p *parser) parsePosAtom() PosExpr {
 		return v
 	}
 
-	panic(fmt.Errorf("invalid type expression: %s", expr.PosExpr()))
+	panic(fmt.Errorf("invalid type expression: %s", expr.Unparse()))
 }
 
 func (p *parser) parseNodeExpr() NodeExpr {

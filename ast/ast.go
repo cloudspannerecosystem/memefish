@@ -1707,7 +1707,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name    *Ident
+	Name *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
