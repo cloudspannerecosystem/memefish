@@ -2,24 +2,24 @@
 //
 // The definitions of ASTs are based on the following document.
 //
-//   - <https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language>
-//   - <https://cloud.google.com/spanner/docs/query-syntax>
+//   - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+//   - https://cloud.google.com/spanner/docs/query-syntax
 //
-// Each `Node`'s documentation describes its syntax (SQL representation) in a `text/template`
+// Each Node's documentation describes its syntax (SQL representation) in a text/template
 // fashion with thw following custom functions.
 //
-//   - `sql node`: Returns the SQL representation of `node`.
-//   - `sqlOpt node`: Like `sql node`, but returns the empty string if `node` is `nil`.
-//   - `sqlJoin sep nodes`: Concatenates the SQL representations of `nodes` with `sep`.
-//   - `sqlIdentQuote x`: Quotes the given identifier string if needed.
-//   - `sqlStringQuote s`: Returns the SQL quoted string of `s`.
-//   - `sqlBytesQuote bs`: Returns the SQL quotes bytes of `bs`.
-//   - `isnil v`: Checks whether `v` is `nil` or others.
+//   - sql node: Returns the SQL representation of node.
+//   - sqlOpt node: Like sql node, but returns the empty string if node is nil.
+//   - sqlJoin sep nodes: Concatenates the SQL representations of nodes with sep.
+//   - sqlIdentQuote x: Quotes the given identifier string if needed.
+//   - sqlStringQuote s: Returns the SQL quoted string of s.
+//   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - isnil v: Checks whether v is nil or others.
 //
-// Each `Node`s documentation has `pos` and `end` information using the following EBNF.
+// Each Node's documentation has pos and end information using the following EBNF.
 //
 //	PosChoice -> PosExpr ("||" PosExpr)*
-//	PosExpr   -> PosAtom ("+" IntAtom)?
+//	PosExpr   -> PosAtom ("+" IntAtom)*
 //	PosAtom   -> PosVar | NodeExpr "." ("pos" | "end")
 //	NodeExpr  -> NodeAtom | "(" NodeAtom ("??" NodeAtom)* ")"
 //	NodeAtom  -> NodeVar | NodeSliceVar "[" (IntAtom | "$") "]"
@@ -28,8 +28,12 @@
 //	           | "(" BoolVar "?" IntAtom ":" IntAtom ")"
 //	IntVal    -> "0" | "1" | ...
 //
-//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its `struct` definition.)
+//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
+
+// This file must contain only AST definitions.
+// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
+//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -57,12 +61,17 @@ type Statement interface {
 
 func (QueryStatement) isStatement()     {}
 func (CreateDatabase) isStatement()     {}
+func (AlterDatabase) isStatement()      {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
+func (RenameTable) isStatement()        {}
 func (CreateIndex) isStatement()        {}
 func (AlterIndex) isStatement()         {}
 func (DropIndex) isStatement()          {}
+func (CreateSearchIndex) isStatement()  {}
+func (DropSearchIndex) isStatement()    {}
+func (AlterSearchIndex) isStatement()   {}
 func (CreateView) isStatement()         {}
 func (DropView) isStatement()           {}
 func (CreateChangeStream) isStatement() {}
@@ -75,6 +84,7 @@ func (Revoke) isStatement()             {}
 func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
+func (AlterStatistics) isStatement()    {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
 func (Insert) isStatement()             {}
@@ -265,13 +275,18 @@ type DDL interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
 func (CreateDatabase) isDDL()     {}
+func (AlterDatabase) isDDL()      {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
+func (RenameTable) isDDL()        {}
 func (CreateIndex) isDDL()        {}
 func (AlterIndex) isDDL()         {}
 func (DropIndex) isDDL()          {}
 func (CreateView) isDDL()         {}
+func (CreateSearchIndex) isDDL()  {}
+func (DropSearchIndex) isDDL()    {}
+func (AlterSearchIndex) isDDL()   {}
 func (DropView) isDDL()           {}
 func (CreateChangeStream) isDDL() {}
 func (AlterChangeStream) isDDL()  {}
@@ -283,6 +298,7 @@ func (Revoke) isDDL()             {}
 func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
+func (AlterStatistics) isDDL()    {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
 
@@ -301,6 +317,9 @@ type TableAlteration interface {
 	isTableAlteration()
 }
 
+func (AddSynonym) isTableAlteration()               {}
+func (DropSynonym) isTableAlteration()              {}
+func (RenameTo) isTableAlteration()                 {}
 func (AddColumn) isTableAlteration()                {}
 func (AddTableConstraint) isTableAlteration()       {}
 func (AddRowDeletionPolicy) isTableAlteration()     {}
@@ -329,6 +348,7 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                {}
+func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
 func (RolePrivilege) isPrivilege()                   {}
@@ -412,13 +432,12 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{if .Hint}}{{.Hint | sql}}{{end}}
-//	{{.Expr | sql}}
+//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
-	// pos = (Hint ?? With ?? Expr).pos
-	// end = Expr.end
+	// pos = (Hint ?? With ?? Query).pos
+	// end = Query.end
 
 	Hint  *Hint // optional
 	With  *With // optional
@@ -509,6 +528,7 @@ type Select struct {
 type AsStruct struct {
 	// pos = As
 	// end = Struct + 6
+
 	As     token.Pos
 	Struct token.Pos
 }
@@ -546,17 +566,17 @@ type CompoundQuery struct {
 
 	Op       SetOp
 	Distinct bool
-	Queries  []QueryExpr // len(List) >= 2
+	Queries  []QueryExpr // len(Queries) >= 2
 	OrderBy  *OrderBy    // optional
 	Limit    *Limit      // optional
 }
 
 // SubQuery is subquery statement node.
 //
-//	({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
+//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Query ?? Limit).end || Rparen + 1
+	// end = (Limit ?? OrderBy).end || Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
@@ -984,7 +1004,7 @@ type ValuesInCondition struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
 type IsNullExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = Null + 4
 
 	Null token.Pos // position of "NULL"
@@ -997,7 +1017,7 @@ type IsNullExpr struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = RightPos + (Right ? 4 : 5)
 
 	RightPos token.Pos // position of Right
@@ -1231,7 +1251,7 @@ type CaseExpr struct {
 //
 //	WHEN {{.Cond | sql}} THEN {{.Then | sql}}
 type CaseWhen struct {
-	// pos = Case
+	// pos = When
 	// end = Then.end
 
 	When token.Pos // position of "WHEN" keyword
@@ -1313,7 +1333,7 @@ type ExistsSubQuery struct {
 //	@{{.Name}}
 type Param struct {
 	// pos = Atmark
-	// end = pos + 1 + len(Name)
+	// end = Atmark + 1 + len(Name)
 
 	Atmark token.Pos
 
@@ -1324,8 +1344,8 @@ type Param struct {
 //
 //	{{.Name | sqlIdentQuote}}
 type Ident struct {
-	// pos = IdentPos
-	// end = IdentEnd
+	// pos = NamePos
+	// end = NameEnd
 
 	NamePos, NameEnd token.Pos // position of this name
 
@@ -1337,7 +1357,7 @@ type Ident struct {
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
-	// end = idents[$].end
+	// end = Idents[$].end
 
 	Idents []*Ident // len(Idents) >= 2
 }
@@ -1460,7 +1480,7 @@ type DateLiteral struct {
 //	TIMESTAMP {{.Value | sql}}
 type TimestampLiteral struct {
 	// pos = Timestamp
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Timestamp token.Pos // position of "TIMESTAMP"
 
@@ -1472,7 +1492,7 @@ type TimestampLiteral struct {
 //	NUMERIC {{.Value | sql}}
 type NumericLiteral struct {
 	// pos = Numeric
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Numeric token.Pos // position of "NUMERIC"
 
@@ -1484,7 +1504,7 @@ type NumericLiteral struct {
 //	JSON {{.Value | sql}}
 type JSONLiteral struct {
 	// pos = JSON
-	// end = ValueEnd.end
+	// end = Value.end
 
 	JSON token.Pos // position of "JSON"
 
@@ -1552,8 +1572,8 @@ type StructField struct {
 //
 //	{{.Path | sqlJoin "."}}
 type NamedType struct {
-	// pos = Name.pos
-	// end = Name.end
+	// pos = Path[0].pos
+	// end = Path[$].end
 
 	Path []*Ident // len(Path) > 0
 }
@@ -1633,6 +1653,19 @@ type CreateDatabase struct {
 	Name *Ident
 }
 
+// AlterDatabase is ALTER DATABASE statement node.
+//
+//	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
+type AlterDatabase struct {
+	// pos = Alter
+	// end = Name.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
+}
+
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
@@ -1649,7 +1682,7 @@ type CreateDatabase struct {
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
@@ -1674,7 +1707,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name    *Ident
+	Name *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.
@@ -1697,10 +1730,11 @@ type CreateSequence struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultExpr | sqlOpt}}
 //	{{.GeneratedExpr | sqlOpt}}
+//	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = Options.end || Hidden + 6 || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
@@ -1709,6 +1743,7 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
+	Hidden        token.Pos            // InvalidPos if not hidden
 	Options       *Options             // optional
 }
 
@@ -1727,15 +1762,29 @@ type ColumnDefaultExpr struct {
 
 // GeneratedColumnExpr is generated column expression.
 //
-//	AS ({{.Expr | sql}}) STORED
+//	AS ({{.Expr | sql}}) {{if .IsStored}}STORED{{end}}
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored + 6
+	// end = Stored + 6 || Rparen + 1
 
 	As     token.Pos // position of "AS" keyword
-	Stored token.Pos // position of "STORED" keyword
+	Stored token.Pos // position of "STORED" keyword, optional
+	Rparen token.Pos // position of ")"
 
 	Expr Expr
+}
+
+// ColumnDefOption is options for column definition.
+//
+//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
+type ColumnDefOptions struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	AllowCommitTimestamp bool
 }
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
@@ -1785,7 +1834,7 @@ type Check struct {
 //
 //	{{.Name | sql}} {{.Dir}}
 type IndexKey struct {
-	// pos = Name.Pos
+	// pos = Name.pos
 	// end = DirPos + len(Dir) || Name.end
 
 	DirPos token.Pos // position of Dir
@@ -1913,6 +1962,41 @@ type AlterChangeStream struct {
 	ChangeStreamAlteration ChangeStreamAlteration
 }
 
+// AddSynonym is ADD SYNONYM node in ALTER TABLE.
+//
+//	ADD SYNONYM {{.Name | sql}}
+type AddSynonym struct {
+	// pos = Add
+	// end = Name.end
+
+	Add  token.Pos // position of "ADD" pseudo keyword
+	Name *Ident
+}
+
+// DropSynonym is DROP SYNONYM node in ALTER TABLE.
+//
+//	DROP SYNONYM {{.Name | sql}}
+type DropSynonym struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" pseudo keyword
+	Name *Ident
+}
+
+// RenameTo is RENAME TO node in ALTER TABLE.
+//
+//	RENAME TO {{.Name | sql}}{{if .AddSynonym}}, {{.AddSynonym | sql}}{{end}}
+type RenameTo struct {
+	// pos = Rename
+	// end = (AddSynonym ?? Name).end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Name       *Ident
+	AddSynonym *AddSynonym // optional
+}
+
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
 //
 //	ADD COLUMN {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Column | sql}}
@@ -1931,7 +2015,7 @@ type AddColumn struct {
 //	ADD {{.TableConstraint}}
 type AddTableConstraint struct {
 	// pos = Add
-	// end = Constraint.end
+	// end = TableConstraint.end
 
 	Add token.Pos // position of "ADD" keyword
 
@@ -2028,7 +2112,7 @@ type AlterColumn struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumnType struct {
 	// pos = Type.pos
-	// end = DefaultExpr.end || NUll + 4 || Type.end
+	// end = DefaultExpr.end || Null + 4 || Type.end
 
 	Type        SchemaType
 	Null        token.Pos // position of "NULL" keyword, optional
@@ -2080,6 +2164,29 @@ type DropTable struct {
 
 	IfExists bool
 	Name     *Ident
+}
+
+// RenameTable is RENAME TABLE statement node.
+//
+//	RENAME TABLE {{.Tos | sqlJoin ", "}}
+type RenameTable struct {
+	// pos = Rename
+	// end = Tos[$].end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Tos []*RenameTableTo // len(Tos) > 0
+}
+
+// RenameTableTo is old TO new node in RENAME TABLE statement.
+//
+//	{{.Old | sql}} TO {{.New | sql}}
+type RenameTableTo struct {
+	// pos = Old.pos
+	// end = New.end
+
+	Old *Ident
+	New *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.
@@ -2224,7 +2331,7 @@ type ChangeStreamDropForAll struct {
 //	SET {{.Options | sql}}
 type ChangeStreamSetOptions struct {
 	// pos = Set
-	// end = Options.Rparen + 1
+	// end = Options.end
 
 	Set token.Pos // position of "SET" keyword
 
@@ -2439,12 +2546,24 @@ type DeletePrivilege struct {
 	Delete token.Pos // position of "DELETE" keyword
 }
 
+// SelectPrivilegeOnChangeStream is SELECT ON CHANGE STREAM privilege node in GRANT and REVOKE.
+//
+//	SELECT ON CHANGE STREAM {{.Names | sqlJoin ", "}}
+type SelectPrivilegeOnChangeStream struct {
+	// pos = Select
+	// end = Names[$].end
+
+	Select token.Pos
+
+	Names []*Ident // len(Names) > 0
+}
+
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
 //
 //	SELECT ON VIEW {{.Names | sqlJoin ","}}
 type SelectPrivilegeOnView struct {
 	// pos = Select
-	// end = Name[$].end
+	// end = Names[$].end
 
 	Select token.Pos
 
@@ -2473,6 +2592,19 @@ type RolePrivilege struct {
 	Role token.Pos
 
 	Names []*Ident // len(Names) > 0
+}
+
+// AlterStatistics is ALTER STATISTICS statement node.
+//
+//	ALTER STATISTICS {{.Name | sql}} SET {{.Options | sql}}
+type AlterStatistics struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
 }
 
 // ================================================================================
@@ -2520,6 +2652,65 @@ type ArraySchemaType struct {
 	Gt    token.Pos // position of ">"
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+// CreateSearchIndex represents CREATE SEARCH INDEX statement
+//
+//	CREATE SEARCH INDEX {{.Name | sql}}
+//	ON {{.TableName | sql}}
+//	({{.TokenListPart | sqlJoin ", "}})
+//	{{.Storing | sqlOpt}}
+//	{{if .PartitionColumns}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Where | sqlOpt}}
+//	{{.Interleave | sqlOpt}}
+//	{{.Options | sqlOpt}}
+type CreateSearchIndex struct {
+	// pos = Create
+	// end = (Options ?? Interleave ?? Where ?? OrderBy ?? PartitionColumns[$] ?? Storing).end || Rparen + 1
+
+	Create token.Pos
+
+	Name             *Ident
+	TableName        *Ident
+	TokenListPart    []*Ident
+	Rparen           token.Pos     // position of ")" after TokenListPart
+	Storing          *Storing      // optional
+	PartitionColumns []*Ident      // optional
+	OrderBy          *OrderBy      // optional
+	Where            *Where        // optional
+	Interleave       *InterleaveIn // optional
+	Options          *Options      // optional
+}
+
+// DropSearchIndex represents DROP SEARCH INDEX statement.
+//
+//	DROP SEARCH INDEX{{if .IfExists}}IF EXISTS{{end}} {{Name | sql}}
+type DropSearchIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
+// AlterSearchIndex represents ALTER SEARCH INDEX statement.
+//
+//	ALTER SEARCH INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
+type AlterSearchIndex struct {
+	// pos = Alter
+	// end = IndexAlteration.end
+
+	Alter           token.Pos
+	Name            *Ident
+	IndexAlteration IndexAlteration
 }
 
 // ================================================================================

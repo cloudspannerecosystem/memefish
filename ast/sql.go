@@ -611,6 +611,10 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
+func (d *AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
+}
+
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
@@ -642,11 +646,11 @@ func (c *CreateView) SQL() string {
 func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
 
 func (c *ColumnDef) SQL() string {
-
 	return c.Name.SQL() + " " + c.Type.SQL() +
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultExpr, "") +
 		sqlOpt(" ", c.GeneratedExpr, "") +
+		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
 		sqlOpt(" ", c.Options, "")
 }
 
@@ -670,7 +674,7 @@ func (c *ColumnDefaultExpr) SQL() string {
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
-	return "AS (" + g.Expr.SQL() + ") STORED"
+	return "AS (" + g.Expr.SQL() + ")" + strOpt(!g.Stored.Invalid(), " STORED")
 }
 
 func (i *IndexKey) SQL() string {
@@ -693,6 +697,12 @@ func (r *RowDeletionPolicy) SQL() string {
 func (a *AlterTable) SQL() string {
 	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
+
+func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }
+
+func (s *DropSynonym) SQL() string { return "DROP SYNONYM " + s.Name.SQL() }
+
+func (t *RenameTo) SQL() string { return "RENAME TO " + t.Name.SQL() + sqlOpt(", ", t.AddSynonym, "") }
 
 func (a *AddColumn) SQL() string {
 	return "ADD COLUMN " + strOpt(a.IfNotExists, "IF NOT EXISTS ") + a.Column.SQL()
@@ -745,6 +755,10 @@ func (a *AlterColumnDropDefault) SQL() string { return "DROP DEFAULT" }
 func (d *DropTable) SQL() string {
 	return "DROP TABLE " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
 }
+
+func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.Tos, ", ") }
+
+func (r *RenameTableTo) SQL() string { return r.Old.SQL() + " TO " + r.New.SQL() }
 
 func (c *CreateIndex) SQL() string {
 	return "CREATE " +
@@ -884,6 +898,10 @@ func (d *DeletePrivilege) SQL() string {
 	return "DELETE"
 }
 
+func (p *SelectPrivilegeOnChangeStream) SQL() string {
+	return "SELECT ON CHANGE STREAM " + sqlJoin(p.Names, ", ")
+}
+
 func (s *SelectPrivilegeOnView) SQL() string {
 	return "SELECT ON VIEW " + sqlJoin(s.Names, ", ")
 }
@@ -894,6 +912,10 @@ func (e *ExecutePrivilegeOnTableFunction) SQL() string {
 
 func (r *RolePrivilege) SQL() string {
 	return "ROLE " + sqlJoin(r.Names, ", ")
+}
+
+func (s *AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
 }
 
 // ================================================================================
@@ -913,6 +935,31 @@ func (s *SizedSchemaType) SQL() string {
 
 func (a *ArraySchemaType) SQL() string {
 	return "ARRAY<" + a.Item.SQL() + ">"
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt("", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER SEARCH INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
 }
 
 // ================================================================================
