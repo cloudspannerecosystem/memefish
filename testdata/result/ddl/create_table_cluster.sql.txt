@@ -30,6 +30,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -46,11 +47,13 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint(nil),
   PrimaryKeys:      []*ast.IndexKey(nil),
+  Synonyms:         []*ast.Synonym(nil),
   Cluster:          &ast.Cluster{
     Comma:       60,
     OnDeleteEnd: -1,

@@ -1,0 +1,217 @@
+--- create_table_fulltext_albums.sql
+-- https://cloud.google.com/spanner/docs/full-text-search/search-indexes#search-index-schema-definitions
+CREATE TABLE Albums (
+                        AlbumId STRING(MAX) NOT NULL,
+                        SingerId INT64 NOT NULL,
+                        ReleaseTimestamp INT64 NOT NULL,
+                        AlbumTitle STRING(MAX),
+                        Rating FLOAT64,
+                        AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN,
+                        Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN
+) PRIMARY KEY(AlbumId)
+--- AST
+&ast.CreateTable{
+  Create:      105,
+  Rparen:      575,
+  IfNotExists: false,
+  Name:        &ast.Ident{
+    NamePos: 118,
+    NameEnd: 124,
+    Name:    "Albums",
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 175,
+      Name: &ast.Ident{
+        NamePos: 151,
+        NameEnd: 158,
+        Name:    "AlbumId",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 159,
+        Rparen:  169,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 224,
+      Name: &ast.Ident{
+        NamePos: 205,
+        NameEnd: 213,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 214,
+        Name:    "INT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: 281,
+      Name: &ast.Ident{
+        NamePos: 254,
+        NameEnd: 270,
+        Name:    "ReleaseTimestamp",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 271,
+        Name:    "INT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 311,
+        NameEnd: 321,
+        Name:    "AlbumTitle",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 322,
+        Rparen:  332,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 359,
+        NameEnd: 365,
+        Name:    "Rating",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 366,
+        Name:    "FLOAT64",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 399,
+        NameEnd: 416,
+        Name:    "AlbumTitle_Tokens",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 417,
+        Name:    "TOKENLIST",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: &ast.GeneratedColumnExpr{
+        As:     427,
+        Stored: -1,
+        Rparen: 460,
+        Expr:   &ast.CallExpr{
+          Rparen: 459,
+          Func:   &ast.Ident{
+            NamePos: 431,
+            NameEnd: 448,
+            Name:    "TOKENIZE_FULLTEXT",
+          },
+          Distinct: false,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 449,
+                NameEnd: 459,
+                Name:    "AlbumTitle",
+              },
+            },
+          },
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
+        },
+      },
+      Hidden:  462,
+      Options: (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 494,
+        NameEnd: 507,
+        Name:    "Rating_Tokens",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 508,
+        Name:    "TOKENLIST",
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: &ast.GeneratedColumnExpr{
+        As:     518,
+        Stored: -1,
+        Rparen: 545,
+        Expr:   &ast.CallExpr{
+          Rparen: 544,
+          Func:   &ast.Ident{
+            NamePos: 522,
+            NameEnd: 537,
+            Name:    "TOKENIZE_NUMBER",
+          },
+          Distinct: false,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 538,
+                NameEnd: 544,
+                Name:    "Rating",
+              },
+            },
+          },
+          NamedArgs:    []*ast.NamedArg(nil),
+          NullHandling: nil,
+          Having:       nil,
+        },
+      },
+      Hidden:  547,
+      Options: (*ast.Options)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 568,
+        NameEnd: 575,
+        Name:    "AlbumId",
+      },
+      Dir: "",
+    },
+  },
+  Synonyms:          []*ast.Synonym(nil),
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE Albums (AlbumId STRING(MAX) NOT NULL, SingerId INT64 NOT NULL, ReleaseTimestamp INT64 NOT NULL, AlbumTitle STRING(MAX), Rating FLOAT64, AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN, Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN) PRIMARY KEY (AlbumId)

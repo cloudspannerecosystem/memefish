@@ -1,0 +1,1 @@
+ALTER TABLE Singers RENAME TO SingersNew, ADD SYNONYM Singers

@@ -39,6 +39,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -55,6 +56,7 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -79,6 +81,7 @@ create table foo (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       &ast.Options{
         Options: 83,
         Rparen:  120,
@@ -120,6 +123,7 @@ create table foo (
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 172,
+        Rparen: 170,
         Expr:   &ast.CallExpr{
           Rparen: 169,
           Func:   &ast.Ident{
@@ -149,6 +153,7 @@ create table foo (
           Having:       nil,
         },
       },
+      Hidden:  -1,
       Options: (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -165,6 +170,7 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -197,6 +203,7 @@ create table foo (
         },
       },
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
   },
@@ -400,6 +407,7 @@ create table foo (
       Dir: "",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

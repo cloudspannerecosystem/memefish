@@ -1,0 +1,86 @@
+--- alter_database.sql
+ALTER DATABASE dbname SET OPTIONS (
+    optimizer_version=2,
+    optimizer_statistics_package='auto_20191128_14_47_22UTC',
+    version_retention_period='7d',
+    enable_key_visualizer=true,
+    default_leader='europe-west1'
+  )
+--- AST
+&ast.AlterDatabase{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 15,
+    NameEnd: 21,
+    Name:    "dbname",
+  },
+  Options: &ast.Options{
+    Options: 26,
+    Rparen:  226,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 40,
+          NameEnd: 57,
+          Name:    "optimizer_version",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 58,
+          ValueEnd: 59,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 65,
+          NameEnd: 93,
+          Name:    "optimizer_statistics_package",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 94,
+          ValueEnd: 121,
+          Value:    "auto_20191128_14_47_22UTC",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 127,
+          NameEnd: 151,
+          Name:    "version_retention_period",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 152,
+          ValueEnd: 156,
+          Value:    "7d",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 162,
+          NameEnd: 183,
+          Name:    "enable_key_visualizer",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 184,
+          Value:    true,
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 194,
+          NameEnd: 208,
+          Name:    "default_leader",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 209,
+          ValueEnd: 223,
+          Value:    "europe-west1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER DATABASE dbname SET OPTIONS (optimizer_version = 2, optimizer_statistics_package = "auto_20191128_14_47_22UTC", version_retention_period = "7d", enable_key_visualizer = true, default_leader = "europe-west1")

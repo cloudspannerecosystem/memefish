@@ -1,0 +1,89 @@
+--- create_table_synonyms.sql
+CREATE TABLE Singers (
+    SingerId INT64 NOT NULL,
+    SingerName STRING(1024),
+    SYNONYM (Artists)
+) PRIMARY KEY (SingerId)
+--- AST
+&ast.CreateTable{
+  Create:      0,
+  Rparen:      126,
+  IfNotExists: false,
+  Name:        &ast.Ident{
+    NamePos: 13,
+    NameEnd: 20,
+    Name:    "Singers",
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 46,
+      Name: &ast.Ident{
+        NamePos: 27,
+        NameEnd: 35,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 36,
+        Name:    "INT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 56,
+        NameEnd: 66,
+        Name:    "SingerName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 67,
+        Rparen:  78,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 74,
+          ValueEnd: 78,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 118,
+        NameEnd: 126,
+        Name:    "SingerId",
+      },
+      Dir: "",
+    },
+  },
+  Synonyms: []*ast.Synonym{
+    &ast.Synonym{
+      Synonym: 85,
+      Rparen:  101,
+      Name:    &ast.Ident{
+        NamePos: 94,
+        NameEnd: 101,
+        Name:    "Artists",
+      },
+    },
+  },
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE Singers (SingerId INT64 NOT NULL, SingerName STRING(1024), SYNONYM (Artists)) PRIMARY KEY (SingerId)

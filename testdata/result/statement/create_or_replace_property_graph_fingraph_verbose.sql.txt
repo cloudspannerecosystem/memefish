@@ -56,7 +56,7 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Name:    "Account",
             },
             Keys: &ast.PropertyGraphNodeElementKey{
-              Key: ast.PropertyGraphElementKey{
+              Key: &ast.PropertyGraphElementKey{
                 Key:  104,
                 Keys: &ast.PropertyGraphColumnNameList{
                   LParen:         108,
