@@ -2,24 +2,24 @@
 //
 // The definitions of ASTs are based on the following document.
 //
-//   - <https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language>
-//   - <https://cloud.google.com/spanner/docs/query-syntax>
+//   - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+//   - https://cloud.google.com/spanner/docs/query-syntax
 //
-// Each `Node`'s documentation describes its syntax (SQL representation) in a `text/template`
+// Each Node's documentation describes its syntax (SQL representation) in a text/template
 // fashion with thw following custom functions.
 //
-//   - `sql node`: Returns the SQL representation of `node`.
-//   - `sqlOpt node`: Like `sql node`, but returns the empty string if `node` is `nil`.
-//   - `sqlJoin sep nodes`: Concatenates the SQL representations of `nodes` with `sep`.
-//   - `sqlIdentQuote x`: Quotes the given identifier string if needed.
-//   - `sqlStringQuote s`: Returns the SQL quoted string of `s`.
-//   - `sqlBytesQuote bs`: Returns the SQL quotes bytes of `bs`.
-//   - `isnil v`: Checks whether `v` is `nil` or others.
+//   - sql node: Returns the SQL representation of node.
+//   - sqlOpt node: Like sql node, but returns the empty string if node is nil.
+//   - sqlJoin sep nodes: Concatenates the SQL representations of nodes with sep.
+//   - sqlIdentQuote x: Quotes the given identifier string if needed.
+//   - sqlStringQuote s: Returns the SQL quoted string of s.
+//   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - isnil v: Checks whether v is nil or others.
 //
-// Each `Node`s documentation has `pos` and `end` information using the following EBNF.
+// Each Node's documentation has pos and end information using the following EBNF.
 //
 //	PosChoice -> PosExpr ("||" PosExpr)*
-//	PosExpr   -> PosAtom ("+" IntAtom)?
+//	PosExpr   -> PosAtom ("+" IntAtom)*
 //	PosAtom   -> PosVar | NodeExpr "." ("pos" | "end")
 //	NodeExpr  -> NodeAtom | "(" NodeAtom ("??" NodeAtom)* ")"
 //	NodeAtom  -> NodeVar | NodeSliceVar "[" (IntAtom | "$") "]"
@@ -28,8 +28,12 @@
 //	           | "(" BoolVar "?" IntAtom ":" IntAtom ")"
 //	IntVal    -> "0" | "1" | ...
 //
-//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its `struct` definition.)
+//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
+
+// This file must contain only AST definitions.
+// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
+//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -434,13 +438,12 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{if .Hint}}{{.Hint | sql}}{{end}}
-//	{{.Expr | sql}}
+//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
-	// pos = (Hint ?? With ?? Expr).pos
-	// end = Expr.end
+	// pos = (Hint ?? With ?? Query).pos
+	// end = Query.end
 
 	Hint  *Hint // optional
 	With  *With // optional
@@ -531,6 +534,7 @@ type Select struct {
 type AsStruct struct {
 	// pos = As
 	// end = Struct + 6
+
 	As     token.Pos
 	Struct token.Pos
 }
@@ -575,10 +579,10 @@ type CompoundQuery struct {
 
 // SubQuery is subquery statement node.
 //
-//	({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
+//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Query ?? Limit).end || Rparen + 1
+	// end = (Limit ?? OrderBy).end || Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
@@ -1006,7 +1010,7 @@ type ValuesInCondition struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
 type IsNullExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = Null + 4
 
 	Null token.Pos // position of "NULL"
@@ -1019,7 +1023,7 @@ type IsNullExpr struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = RightPos + (Right ? 4 : 5)
 
 	RightPos token.Pos // position of Right
@@ -1253,7 +1257,7 @@ type CaseExpr struct {
 //
 //	WHEN {{.Cond | sql}} THEN {{.Then | sql}}
 type CaseWhen struct {
-	// pos = Case
+	// pos = When
 	// end = Then.end
 
 	When token.Pos // position of "WHEN" keyword
@@ -1335,7 +1339,7 @@ type ExistsSubQuery struct {
 //	@{{.Name}}
 type Param struct {
 	// pos = Atmark
-	// end = pos + 1 + len(Name)
+	// end = Atmark + 1 + len(Name)
 
 	Atmark token.Pos
 
@@ -1346,8 +1350,8 @@ type Param struct {
 //
 //	{{.Name | sqlIdentQuote}}
 type Ident struct {
-	// pos = IdentPos
-	// end = IdentEnd
+	// pos = NamePos
+	// end = NameEnd
 
 	NamePos, NameEnd token.Pos // position of this name
 
@@ -1359,7 +1363,7 @@ type Ident struct {
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
-	// end = idents[$].end
+	// end = Idents[$].end
 
 	Idents []*Ident // len(Idents) >= 2
 }
@@ -1482,7 +1486,7 @@ type DateLiteral struct {
 //	TIMESTAMP {{.Value | sql}}
 type TimestampLiteral struct {
 	// pos = Timestamp
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Timestamp token.Pos // position of "TIMESTAMP"
 
@@ -1494,7 +1498,7 @@ type TimestampLiteral struct {
 //	NUMERIC {{.Value | sql}}
 type NumericLiteral struct {
 	// pos = Numeric
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Numeric token.Pos // position of "NUMERIC"
 
@@ -1506,7 +1510,7 @@ type NumericLiteral struct {
 //	JSON {{.Value | sql}}
 type JSONLiteral struct {
 	// pos = JSON
-	// end = ValueEnd.end
+	// end = Value.end
 
 	JSON token.Pos // position of "JSON"
 
@@ -1574,8 +1578,8 @@ type StructField struct {
 //
 //	{{.Path | sqlJoin "."}}
 type NamedType struct {
-	// pos = Name.pos
-	// end = Name.end
+	// pos = Path[0].pos
+	// end = Path[$].end
 
 	Path []*Ident // len(Path) > 0
 }
@@ -1783,7 +1787,7 @@ type DropProtoBundle struct {
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
@@ -1935,7 +1939,7 @@ type Check struct {
 //
 //	{{.Name | sql}} {{.Dir}}
 type IndexKey struct {
-	// pos = Name.Pos
+	// pos = Name.pos
 	// end = DirPos + len(Dir) || Name.end
 
 	DirPos token.Pos // position of Dir
@@ -2116,7 +2120,7 @@ type AddColumn struct {
 //	ADD {{.TableConstraint}}
 type AddTableConstraint struct {
 	// pos = Add
-	// end = Constraint.end
+	// end = TableConstraint.end
 
 	Add token.Pos // position of "ADD" keyword
 
@@ -2213,7 +2217,7 @@ type AlterColumn struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
 type AlterColumnType struct {
 	// pos = Type.pos
-	// end = DefaultExpr.end || NUll + 4 || Type.end
+	// end = DefaultExpr.end || Null + 4 || Type.end
 
 	Type        SchemaType
 	Null        token.Pos // position of "NULL" keyword, optional
@@ -2432,7 +2436,7 @@ type ChangeStreamDropForAll struct {
 //	SET {{.Options | sql}}
 type ChangeStreamSetOptions struct {
 	// pos = Set
-	// end = Options.Rparen + 1
+	// end = Options.end
 
 	Set token.Pos // position of "SET" keyword
 
@@ -2664,7 +2668,7 @@ type SelectPrivilegeOnChangeStream struct {
 //	SELECT ON VIEW {{.Names | sqlJoin ","}}
 type SelectPrivilegeOnView struct {
 	// pos = Select
-	// end = Name[$].end
+	// end = Names[$].end
 
 	Select token.Pos
 
