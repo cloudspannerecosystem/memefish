@@ -137,7 +137,7 @@ func TestStringValue(t *testing.T) {
 
 func TestDDL(t *testing.T) {
 	DDL(&CreateDatabase{}).isDDL()
-  DDL(&AlterDatabase{}).isDDL()
+	DDL(&AlterDatabase{}).isDDL()
 	DDL(&CreateTable{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()
