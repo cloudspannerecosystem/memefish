@@ -4,11 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"unicode"
 
+	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -16,15 +18,43 @@ import (
 	"github.com/k0kubun/pp"
 )
 
-var mode = flag.String("mode", "statement", "parsing mode")
-var logging = flag.Bool("logging", false, "enable log")
-var dig = flag.String("dig", "", "digging the result node before printing")
-var pos = flag.String("pos", "", "POS expression")
+var usage = heredoc.Doc(`
+	Usage of tools/parse.go
+
+	A testing tool for parsing Spanner SQL.
+
+	Example:
+
+	  $ go run ./tools/parse/main.go "SELECT 1 AS x"
+	        Show the parse result of "SELECT 1 AS X".
+	  $ go run ./tools/parse/main.go -mode expr "(SELECT 1) + 2"
+	        Parse "(SELECT 1) + 2" on the expression mode.
+	  $ go run ./tools/parse/main.go -pos "Query.end" "SELECT 1 AS x"
+	        Evaluate the POS expression "Query.end" on "SELECT 1 AS x"
+	  $ go run ./tools/parse/main.go -pos "As.end" -dig "Query.Results.0" "SELECT 1 AS x"
+	        Evaluate the POS expression "As.end" on "1 AS x" of "SELECT 1 AS x"
+
+	Options:
+`)
+
+var (
+	mode    = flag.String("mode", "statement", `parsing mode (one of "statement", "query", "expr", "ddl", "dml")`)
+	logging = flag.Bool("logging", false, "enable log (default: false)")
+	dig     = flag.String("dig", "", "digging the result node before printing")
+	pos     = flag.String("pos", "", "POS expression")
+)
 
 func main() {
+	flag.Usage = func() {
+		fmt.Print(usage)
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 	if flag.NArg() < 1 {
-		log.Fatal("usage: ./parse [-mode statement|query|expr|ddl|dml] [-logging] <SQL query>")
+		flag.Usage()
+		os.Exit(1)
+		return
 	}
 
 	query := flag.Arg(0)
@@ -90,12 +120,13 @@ func main() {
 	fmt.Println(node.SQL())
 
 	if *pos != "" {
+		fmt.Println("--- POS")
+
 		expr, err := poslang.Parse(*pos)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Println("--- Pos")
 		fmt.Println(expr.EvalPos(node))
 	}
 }

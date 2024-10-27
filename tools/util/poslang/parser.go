@@ -1,6 +1,7 @@
 package poslang
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"unicode"
@@ -13,6 +14,8 @@ func Parse(source string) (expr PosExpr, err error) {
 			if e, ok := r.(error); ok {
 				expr = nil
 				err = e
+			} else {
+				panic(r)
 			}
 		}
 	}()
@@ -22,7 +25,7 @@ func Parse(source string) (expr PosExpr, err error) {
 	p.skip()
 	expr = p.parsePosChoice()
 	if !p.eof() {
-		panic(fmt.Sprintf("unexpected character: '%c'", p.current()))
+		panic(fmt.Errorf("unexpected character: '%c'", p.current()))
 	}
 
 	return
@@ -69,14 +72,14 @@ func (p *parser) parsePosAtom() PosExpr {
 		} else if x.Name == "end" {
 			return &NodeEnd{Expr: expr}
 		}
-		panic(`expected: "pos", "end"`)
+		panic(errors.New(`expected: "pos", "end"`))
 	}
 
 	if v, ok := expr.(*Var); ok {
 		return v
 	}
 
-	panic("invalid type expression: " + expr.PosExpr())
+	panic(fmt.Errorf("invalid type expression: %s", expr.PosExpr()))
 }
 
 func (p *parser) parseNodeExpr() NodeExpr {
@@ -133,7 +136,7 @@ func (p *parser) parseIntAtom() IntExpr {
 
 	x := p.consumeVar()
 	if x == nil || x.Name != "len" {
-		panic(`expected: "(", <int>, "var"`)
+		panic(errors.New(`expected: "(", <int>, "var"`))
 	}
 
 	p.expect("(")
@@ -146,7 +149,7 @@ func (p *parser) parseIntAtom() IntExpr {
 func (p *parser) parseVar() *Var {
 	x := p.consumeVar()
 	if x == nil {
-		panic("expected: var")
+		panic(errors.New("expected: var"))
 	}
 	return x
 }
@@ -188,7 +191,7 @@ func (p *parser) consumeIntLiteral() *IntLiteral {
 	str := string(p.source[start:p.offset])
 	value, err := strconv.Atoi(str)
 	if err != nil {
-		panic("invalid integer")
+		panic(errors.New("invalid integer"))
 	}
 
 	p.skip()
@@ -217,7 +220,7 @@ func (p *parser) expect(s string) {
 		return
 	}
 
-	panic("expected: \"" + s + "\"")
+	panic(fmt.Errorf("expected: \"%s\"", s))
 }
 
 func (p *parser) skip() {

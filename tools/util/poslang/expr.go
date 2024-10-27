@@ -86,6 +86,27 @@ type StringExpr interface {
 //
 // ===========================================
 
+func fieldOf(x any, name string) reflect.Value {
+	value := reflect.ValueOf(x)
+	if value.Kind() == reflect.Interface {
+		value = value.Elem()
+	}
+	if value.Kind() == reflect.Pointer {
+		value = value.Elem()
+	}
+
+	if !(value.IsValid() && value.Kind() == reflect.Struct) {
+		panic("invalid context")
+	}
+
+	field := value.FieldByName(name)
+	if !field.IsValid() {
+		panic("invalid field: " + name)
+	}
+
+	return field
+}
+
 // Var represents an untyped variable in a POS expression.
 //
 // This type is determined by a context, i.e., on parsing.
@@ -98,50 +119,74 @@ func (v *Var) PosExpr() string {
 }
 
 func (v *Var) EvalPos(x any) token.Pos {
-	value := reflect.ValueOf(x).Elem()
-	field := value.FieldByName(v.Name)
+	field := fieldOf(x, v.Name)
+	if !field.CanInt() {
+		panic("expect Int, but " + field.Kind().String())
+	}
 
 	return token.Pos(field.Int())
 }
 
 func (v *Var) EvalNode(x any) node {
-	value := reflect.ValueOf(x).Elem()
-	field := value.FieldByName(v.Name)
+	field := fieldOf(x, v.Name)
+	if !field.CanInterface() {
+		panic("expect Interface, but " + field.Kind().String())
+	}
+
 	if field.IsNil() {
 		return nil
 	}
 
-	node, _ := field.Interface().(node)
+	node, ok := field.Interface().(node)
+	if !ok {
+		panic("cannot convert the value to an AST node")
+	}
 
 	return node
 }
 
 func (v *Var) EvalNodeSlice(x any) []node {
-	value := reflect.ValueOf(x).Elem()
-	field := value.FieldByName(v.Name)
-	if field.IsNil() {
+	field := fieldOf(x, v.Name)
+	if field.Kind() != reflect.Slice {
+		panic("expect Slice, but " + field.Kind().String())
+	}
+
+	if field.IsNil() || field.Len() == 0 {
 		return nil
 	}
 
 	n := field.Len()
 	nodes := make([]node, n)
 	for i := 0; i < n; i++ {
-		nodes[i], _ = field.Index(i).Interface().(node)
+		item := field.Index(i)
+		if !(item.IsValid() && item.CanInterface()) {
+			panic("expect Interface, but " + item.Kind().String())
+		}
+
+		var ok bool
+		nodes[i], ok = item.Interface().(node)
+		if !ok {
+			panic("cannot convert the value to an AST node")
+		}
 	}
 
 	return nodes
 }
 
 func (v *Var) EvalBool(x any) bool {
-	value := reflect.ValueOf(x).Elem()
-	field := value.FieldByName(v.Name)
+	field := fieldOf(x, v.Name)
+	if field.Kind() != reflect.Bool {
+		panic("expect Bool, but " + field.Kind().String())
+	}
 
 	return field.Bool()
 }
 
 func (v *Var) EvalString(x any) string {
-	value := reflect.ValueOf(x).Elem()
-	field := value.FieldByName(v.Name)
+	field := fieldOf(x, v.Name)
+	if field.Kind() != reflect.String {
+		panic("expect String, but " + field.Kind().String())
+	}
 
 	return field.String()
 }
@@ -156,7 +201,11 @@ func (p *NodePos) PosExpr() string {
 }
 
 func (p *NodePos) EvalPos(x any) token.Pos {
-	return p.Expr.EvalNode(x).Pos()
+	node := p.Expr.EvalNode(x)
+	if node == nil {
+		return token.InvalidPos
+	}
+	return node.Pos()
 }
 
 // NodeEnd represents a "NodeExpr.end" expression.
@@ -256,7 +305,7 @@ func (i *NodeSliceIndex) PosExpr() string {
 
 func (i *NodeSliceIndex) EvalNode(x any) node {
 	nodes := i.Expr.EvalNodeSlice(x)
-	if nodes == nil {
+	if len(nodes) == 0 {
 		return nil
 	}
 
@@ -275,7 +324,7 @@ func (l *NodeSliceLast) PosExpr() string {
 
 func (l *NodeSliceLast) EvalNode(x any) node {
 	nodes := l.Expr.EvalNodeSlice(x)
-	if nodes == nil {
+	if len(nodes) == 0 {
 		return nil
 	}
 
