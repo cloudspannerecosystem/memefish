@@ -11,35 +11,48 @@ import (
 	. "github.com/cloudspannerecosystem/memefish/token"
 )
 
+// Keep same order https://github.com/google/zetasql/blob/master/zetasql/parser/flex_tokenizer.l
 var symbols = []string{
-	".",
-	",",
-	";",
 	"(",
-	")",
-	"{",
-	"}",
 	"[",
+	"{",
+	")",
 	"]",
-	"@",
-	"~",
+	"}",
+	"*",
+	",",
+	"=",
+	"+=",
+	"-=",
+	"!=",
+	"<=",
+	"<<",
+	"=>",
+	"->",
+	"<",
+	">",
+	">=",
+	"||",
+	"|",
+	"^",
+	"&",
 	"+",
 	"-",
-	"*",
 	"/",
-	"&",
-	"^",
-	"|",
-	"||",
-	"=",
-	"<",
-	"<<",
-	"<=",
-	"<>",
-	">",
-	">>",
-	">=",
-	"!=",
+	"~",
+	"?",
+	"!",
+	"%",
+	"|>",
+	"@",
+	"@@",
+	".",
+	":",
+	"\\",
+	";",
+	"$",
+	"<>", // <> is not a valid token in ZetaSQL, but it is a token in memefish
+	">>", // >> is not a valid token in ZetaSQL, but it is a token in memefish.
 }
 
 var lexerTestCases = []struct {
@@ -132,7 +145,6 @@ var lexerWrongTestCase = []struct {
 	pos     Pos
 	message string
 }{
-	{"?", 0, "illegal input character: '?'"},
 	{`"foo`, 0, "unclosed string literal"},
 	{`R"foo`, 1, "unclosed raw string literal"},
 	{"'foo\n", 0, "unclosed string literal: newline appears in non triple-quoted"},
