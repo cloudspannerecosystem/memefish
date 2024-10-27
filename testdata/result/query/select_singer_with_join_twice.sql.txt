@@ -41,7 +41,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    26,
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 26,
                 NameEnd: 27,
@@ -58,7 +58,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    45,
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 45,
                 NameEnd: 46,
@@ -110,7 +110,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    99,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 99,
               NameEnd: 100,
@@ -164,4 +164,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID INNER JOIN Singers C ON A.SingerID = C.SingerID

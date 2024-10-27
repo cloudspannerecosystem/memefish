@@ -38,33 +38,33 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 22,
                   Rparen: 36,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 29,
                         ValueEnd: 30,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 32,
                         ValueEnd: 33,
                         Base:     10,
                         Value:    "2",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 35,
                         ValueEnd: 36,
                         Base:     10,
                         Value:    "3",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },
@@ -92,31 +92,31 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 55,
                   Rparen: 72,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 62,
                         ValueEnd: 63,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 65,
                         ValueEnd: 66,
                         Base:     10,
                         Value:    "2",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.BoolLiteral{
                         ValuePos: 68,
                         Value:    true,
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },
@@ -224,44 +224,53 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 151,
                   Rparen: 180,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 158,
                         ValueEnd: 159,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: &ast.Ident{
-                        NamePos: 163,
-                        NameEnd: 164,
-                        Name:    "X",
+                      As: &ast.AsAlias{
+                        As:    160,
+                        Alias: &ast.Ident{
+                          NamePos: 163,
+                          NameEnd: 164,
+                          Name:    "X",
+                        },
                       },
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 166,
                         ValueEnd: 167,
                         Base:     10,
                         Value:    "2",
                       },
-                      Name: &ast.Ident{
-                        NamePos: 171,
-                        NameEnd: 172,
-                        Name:    "Y",
+                      As: &ast.AsAlias{
+                        As:    168,
+                        Alias: &ast.Ident{
+                          NamePos: 171,
+                          NameEnd: 172,
+                          Name:    "Y",
+                        },
                       },
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 174,
                         ValueEnd: 175,
                         Base:     10,
                         Value:    "3",
                       },
-                      Name: &ast.Ident{
-                        NamePos: 179,
-                        NameEnd: 180,
-                        Name:    "Z",
+                      As: &ast.AsAlias{
+                        As:    176,
+                        Alias: &ast.Ident{
+                          NamePos: 179,
+                          NameEnd: 180,
+                          Name:    "Z",
+                        },
                       },
                     },
                   },
@@ -430,37 +439,40 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 309,
                   Rparen: 328,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 316,
                         ValueEnd: 317,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: &ast.Ident{
-                        NamePos: 321,
-                        NameEnd: 322,
-                        Name:    "X",
+                      As: &ast.AsAlias{
+                        As:    318,
+                        Alias: &ast.Ident{
+                          NamePos: 321,
+                          NameEnd: 322,
+                          Name:    "X",
+                        },
                       },
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 324,
                         ValueEnd: 325,
                         Base:     10,
                         Value:    "2",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 327,
                         ValueEnd: 328,
                         Base:     10,
                         Value:    "3",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },
@@ -579,18 +591,21 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 410,
                   Rparen: 423,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 417,
                         ValueEnd: 418,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: &ast.Ident{
-                        NamePos: 422,
-                        NameEnd: 423,
-                        Name:    "X",
+                      As: &ast.AsAlias{
+                        As:    419,
+                        Alias: &ast.Ident{
+                          NamePos: 422,
+                          NameEnd: 423,
+                          Name:    "X",
+                        },
                       },
                     },
                   },
@@ -661,15 +676,15 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 476,
                   Rparen: 484,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 483,
                         ValueEnd: 484,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },
@@ -724,7 +739,7 @@ SELECT
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 531,
                   Rparen: 538,
-                  Values: []*ast.AsExpr(nil),
+                  Values: []*ast.ExprAsName(nil),
                 },
               },
             },

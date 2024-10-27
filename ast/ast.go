@@ -627,16 +627,12 @@ type Alias struct {
 //
 // It is used in Alias node and some JoinExpr nodes.
 //
-// NOTE: Sometime keyword AS can be omited.
-//
-//	  In this case, it.token.Pos() == it.Alias.token.Pos(), so we can detect this.
-//
-//	AS {{.Alias | sql}}
+//	{{if not .As.Invalid}}AS {{end}}{{.Alias | sql}}
 type AsAlias struct {
 	// pos = As || Alias.pos
 	// end = Alias.end
 
-	As token.Pos // position of "AS" keyword
+	As token.Pos // position of "AS" keyword, optional
 
 	Alias *Ident
 }
@@ -1407,17 +1403,6 @@ type TypedStructLiteral struct {
 	Values []Expr
 }
 
-// AsExpr is value with optional name in typeless struct literal or new constructor.
-//
-//	{{.Expr | sql}} {{if .Name}}AS {{.Name | sql}}{{end}}
-type AsExpr struct {
-	// pos = Expr.pos
-	// end = (Name ?? Expr).end
-
-	Expr Expr
-	Name *Ident // optional
-}
-
 // TypelessStructLiteral is typeless struct literal node.
 //
 //	STRUCT({{.Values | sqlJoin ","}})
@@ -1428,7 +1413,18 @@ type TypelessStructLiteral struct {
 	Struct token.Pos // position of "STRUCT"
 	Rparen token.Pos // position of ")"
 
-	Values []*AsExpr
+	Values []*ExprAsName
+}
+
+// ExprAsName is value with optional name in typeless struct literal or new constructor.
+//
+//	{{.Expr | sql}} {{.As | sqlOpt}}
+type ExprAsName struct {
+	// pos = Expr.pos
+	// end = (As ?? Expr).end
+
+	Expr Expr
+	As   *AsAlias // .As.As must not be invalid, optional
 }
 
 // NullLiteral is just NULL literal.
@@ -1575,7 +1571,7 @@ type NewConstructor struct {
 	New  token.Pos
 	Type *NamedType
 
-	Args []*AsExpr
+	Args []*ExprAsName
 
 	Rparen token.Pos
 }

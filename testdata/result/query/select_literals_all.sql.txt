@@ -395,33 +395,33 @@ lines''',
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
                   Rparen: 481,
-                  Values: []*ast.AsExpr{
-                    &ast.AsExpr{
+                  Values: []*ast.ExprAsName{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 474,
                         ValueEnd: 475,
                         Base:     10,
                         Value:    "1",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 477,
                         ValueEnd: 478,
                         Base:     10,
                         Value:    "2",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
-                    &ast.AsExpr{
+                    &ast.ExprAsName{
                       Expr: &ast.IntLiteral{
                         ValuePos: 480,
                         ValueEnd: 481,
                         Base:     10,
                         Value:    "3",
                       },
-                      Name: (*ast.Ident)(nil),
+                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },

@@ -232,7 +232,7 @@ func (a *Alias) SQL() string {
 }
 
 func (a *AsAlias) SQL() string {
-	return "AS " + a.Alias.SQL()
+	return strOpt(!a.As.Invalid(), "AS ") + a.Alias.SQL()
 }
 
 func (e *ExprSelectItem) SQL() string {
@@ -623,8 +623,8 @@ func (s *TypedStructLiteral) SQL() string {
 	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
 }
 
-func (a *AsExpr) SQL() string {
-	return a.Expr.SQL() + sqlOpt(" AS ", a.Name, "")
+func (e *ExprAsName) SQL() string {
+	return e.Expr.SQL() + sqlOpt(" ", e.As, "")
 }
 
 func (s *TypelessStructLiteral) SQL() string {

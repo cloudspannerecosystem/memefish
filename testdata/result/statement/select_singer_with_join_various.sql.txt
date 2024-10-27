@@ -89,7 +89,7 @@ FROM
                           },
                           Hint: (*ast.Hint)(nil),
                           As:   &ast.AsAlias{
-                            As:    26,
+                            As:    -1,
                             Alias: &ast.Ident{
                               NamePos: 26,
                               NameEnd: 27,
@@ -106,7 +106,7 @@ FROM
                           },
                           Hint: (*ast.Hint)(nil),
                           As:   &ast.AsAlias{
-                            As:    45,
+                            As:    -1,
                             Alias: &ast.Ident{
                               NamePos: 45,
                               NameEnd: 46,
@@ -158,7 +158,7 @@ FROM
                         },
                         Hint: (*ast.Hint)(nil),
                         As:   &ast.AsAlias{
-                          As:    99,
+                          As:    -1,
                           Alias: &ast.Ident{
                             NamePos: 99,
                             NameEnd: 100,
@@ -210,7 +210,7 @@ FROM
                       },
                       Hint: (*ast.Hint)(nil),
                       As:   &ast.AsAlias{
-                        As:    153,
+                        As:    -1,
                         Alias: &ast.Ident{
                           NamePos: 153,
                           NameEnd: 154,
@@ -229,7 +229,7 @@ FROM
                     },
                     Hint: (*ast.Hint)(nil),
                     As:   &ast.AsAlias{
-                      As:    177,
+                      As:    -1,
                       Alias: &ast.Ident{
                         NamePos: 177,
                         NameEnd: 178,
@@ -281,7 +281,7 @@ FROM
                   },
                   Hint: (*ast.Hint)(nil),
                   As:   &ast.AsAlias{
-                    As:    236,
+                    As:    -1,
                     Alias: &ast.Ident{
                       NamePos: 236,
                       NameEnd: 237,
@@ -333,7 +333,7 @@ FROM
                 },
                 Hint: (*ast.Hint)(nil),
                 As:   &ast.AsAlias{
-                  As:    289,
+                  As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 289,
                     NameEnd: 290,
@@ -385,7 +385,7 @@ FROM
               },
               Hint: (*ast.Hint)(nil),
               As:   &ast.AsAlias{
-                As:    348,
+                As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 348,
                   NameEnd: 349,
@@ -437,7 +437,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    402,
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 402,
                 NameEnd: 403,
@@ -489,7 +489,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    462,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 462,
               NameEnd: 463,
@@ -543,4 +543,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID CROSS JOIN Singers AS D FULL OUTER JOIN Singers AS E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers AS F ON A.SingerID = F.SingerID LEFT OUTER JOIN Singers AS G ON A.SingerID = G.SingerID LEFT OUTER JOIN Singers AS H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers AS I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers AS J ON A.SingerID = J.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID INNER JOIN Singers C ON A.SingerID = C.SingerID CROSS JOIN Singers D FULL OUTER JOIN Singers E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers F ON A.SingerID = F.SingerID LEFT OUTER JOIN Singers G ON A.SingerID = G.SingerID LEFT OUTER JOIN Singers H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers J ON A.SingerID = J.SingerID

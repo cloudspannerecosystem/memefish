@@ -27,29 +27,35 @@ NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)
       },
     },
   },
-  Args: []*ast.AsExpr{
-    &ast.AsExpr{
+  Args: []*ast.ExprAsName{
+    &ast.ExprAsName{
       Expr: &ast.Ident{
         NamePos: 35,
         NameEnd: 38,
         Name:    "key",
       },
-      Name: &ast.Ident{
-        NamePos: 42,
-        NameEnd: 46,
-        Name:    "rank",
+      As: &ast.AsAlias{
+        As:    39,
+        Alias: &ast.Ident{
+          NamePos: 42,
+          NameEnd: 46,
+          Name:    "rank",
+        },
       },
     },
-    &ast.AsExpr{
+    &ast.ExprAsName{
       Expr: &ast.Ident{
         NamePos: 48,
         NameEnd: 52,
         Name:    "name",
       },
-      Name: &ast.Ident{
-        NamePos: 56,
-        NameEnd: 66,
-        Name:    "chart_name",
+      As: &ast.AsAlias{
+        As:    53,
+        Alias: &ast.Ident{
+          NamePos: 56,
+          NameEnd: 66,
+          Name:    "chart_name",
+        },
       },
     },
   },

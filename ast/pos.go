@@ -590,20 +590,20 @@ func (t *TypedStructLiteral) End() token.Pos {
 	return posAdd(t.Rparen, 1)
 }
 
-func (a *AsExpr) Pos() token.Pos {
-	return nodePos(wrapNode(a.Expr))
-}
-
-func (a *AsExpr) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(a.Name), wrapNode(a.Expr)))
-}
-
 func (t *TypelessStructLiteral) Pos() token.Pos {
 	return t.Struct
 }
 
 func (t *TypelessStructLiteral) End() token.Pos {
 	return posAdd(t.Rparen, 1)
+}
+
+func (e *ExprAsName) Pos() token.Pos {
+	return nodePos(wrapNode(e.Expr))
+}
+
+func (e *ExprAsName) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(e.As), wrapNode(e.Expr)))
 }
 
 func (n *NullLiteral) Pos() token.Pos {
