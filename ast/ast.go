@@ -1393,30 +1393,6 @@ type TupleStructLiteral struct {
 	Values []Expr // len(Values) > 1
 }
 
-// TypelessStructLiteral is typeless struct literal node.
-//
-//	STRUCT({{.Values | sqlJoin ","}})
-type TypelessStructLiteral struct {
-	// pos = Struct
-	// end = Rparen + 1
-
-	Struct token.Pos // position of "STRUCT"
-	Rparen token.Pos // position of ")"
-
-	Values []*TypelessStructValue
-}
-
-// TypelessStructValue is value with optional name in typeless struct literal.
-//
-//	{{.Expr | sql}}{{if .Name}} AS {{.Name | sql}}{{end}}
-type TypelessStructValue struct {
-	// pos = Expr.pos
-	// end = (Name ?? Expr).end
-
-	Expr Expr
-	Name *Ident // optional
-}
-
 // TypedStructLiteral is typed struct literal node.
 //
 //	STRUCT<{{.Fields | sqlJoin ","}}>({{.Values | sqlJoin ","}})
@@ -1429,6 +1405,30 @@ type TypedStructLiteral struct {
 
 	Fields []*StructField
 	Values []Expr
+}
+
+// AsExpr is value with optional name in typeless struct literal or new constructor.
+//
+//	{{.Expr | sql}} {{if .Name}}AS {{.Name | sql}}{{end}}
+type AsExpr struct {
+	// pos = Expr.pos
+	// end = (Name ?? Expr).end
+
+	Expr Expr
+	Name *Ident // optional
+}
+
+// TypelessStructLiteral is typeless struct literal node.
+//
+//	STRUCT({{.Values | sqlJoin ","}})
+type TypelessStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
+	Values []*AsExpr
 }
 
 // NullLiteral is just NULL literal.
@@ -1565,17 +1565,6 @@ type BracedConstructorFieldValue interface {
 func (*BracedConstructor) isBracedConstructorFieldValue()               {}
 func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 
-// NewConstructorArg represents a single argument in NEW constructor.
-//
-//	{{Expr | sql}} {{Alias | sqlOpt}}
-type NewConstructorArg struct {
-	// pos = Expr.pos
-	// end = (Alias ?? Expr).end
-
-	Expr  Expr
-	Alias *AsAlias // optional
-}
-
 // NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
 //	NEW {{.Type | sql}} ({{.Args | sqlJoin ", "}})
@@ -1586,7 +1575,7 @@ type NewConstructor struct {
 	New  token.Pos
 	Type *NamedType
 
-	Args []*NewConstructorArg
+	Args []*AsExpr
 
 	Rparen token.Pos
 }

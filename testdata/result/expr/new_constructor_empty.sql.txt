@@ -28,7 +28,7 @@ NEW googlesql.examples.music.Chart()
       },
     },
   },
-  Args:   []*ast.NewConstructorArg(nil),
+  Args:   []*ast.AsExpr(nil),
   Rparen: 35,
 }
 

@@ -131,13 +131,13 @@ SELECT ARRAY(
                 Right: &ast.TypelessStructLiteral{
                   Struct: 109,
                   Rparen: 131,
-                  Values: []*ast.TypelessStructValue{
-                    &ast.TypelessStructValue{
+                  Values: []*ast.AsExpr{
+                    &ast.AsExpr{
                       Expr: &ast.TypelessStructLiteral{
                         Struct: 116,
                         Rparen: 130,
-                        Values: []*ast.TypelessStructValue{
-                          &ast.TypelessStructValue{
+                        Values: []*ast.AsExpr{
+                          &ast.AsExpr{
                             Expr: &ast.IntLiteral{
                               ValuePos: 123,
                               ValueEnd: 124,
@@ -146,7 +146,7 @@ SELECT ARRAY(
                             },
                             Name: (*ast.Ident)(nil),
                           },
-                          &ast.TypelessStructValue{
+                          &ast.AsExpr{
                             Expr: &ast.IntLiteral{
                               ValuePos: 126,
                               ValueEnd: 127,
@@ -155,7 +155,7 @@ SELECT ARRAY(
                             },
                             Name: (*ast.Ident)(nil),
                           },
-                          &ast.TypelessStructValue{
+                          &ast.AsExpr{
                             Expr: &ast.IntLiteral{
                               ValuePos: 129,
                               ValueEnd: 130,

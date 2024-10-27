@@ -582,27 +582,27 @@ func (t *TupleStructLiteral) End() token.Pos {
 	return posAdd(t.Rparen, 1)
 }
 
-func (t *TypelessStructLiteral) Pos() token.Pos {
-	return t.Struct
-}
-
-func (t *TypelessStructLiteral) End() token.Pos {
-	return posAdd(t.Rparen, 1)
-}
-
-func (t *TypelessStructValue) Pos() token.Pos {
-	return nodePos(wrapNode(t.Expr))
-}
-
-func (t *TypelessStructValue) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(t.Name), wrapNode(t.Expr)))
-}
-
 func (t *TypedStructLiteral) Pos() token.Pos {
 	return t.Struct
 }
 
 func (t *TypedStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (a *AsExpr) Pos() token.Pos {
+	return nodePos(wrapNode(a.Expr))
+}
+
+func (a *AsExpr) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(a.Name), wrapNode(a.Expr)))
+}
+
+func (t *TypelessStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypelessStructLiteral) End() token.Pos {
 	return posAdd(t.Rparen, 1)
 }
 
@@ -684,14 +684,6 @@ func (j *JSONLiteral) Pos() token.Pos {
 
 func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
-}
-
-func (n *NewConstructorArg) Pos() token.Pos {
-	return nodePos(wrapNode(n.Expr))
-}
-
-func (n *NewConstructorArg) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(n.Alias), wrapNode(n.Expr)))
 }
 
 func (n *NewConstructor) Pos() token.Pos {

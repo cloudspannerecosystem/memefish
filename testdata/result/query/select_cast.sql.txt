@@ -59,7 +59,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               &ast.TypelessStructLiteral{
                 Struct: 53,
                 Rparen: 60,
-                Values: []*ast.TypelessStructValue(nil),
+                Values: []*ast.AsExpr(nil),
               },
               &ast.IntLiteral{
                 ValuePos: 63,
@@ -116,7 +116,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Type:  &ast.StructType{
                   Struct: 96,
                   Gt:     103,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                 },
               },
               &ast.StructField{

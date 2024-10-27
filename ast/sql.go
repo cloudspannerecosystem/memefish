@@ -1,9 +1,10 @@
 package ast
 
 import (
-	"github.com/cloudspannerecosystem/memefish/token"
 	"strconv"
 	"strings"
+
+	"github.com/cloudspannerecosystem/memefish/token"
 )
 
 // ================================================================================
@@ -618,16 +619,16 @@ func (s *TupleStructLiteral) SQL() string {
 	return "(" + sqlJoin(s.Values, ", ") + ")"
 }
 
-func (s *TypelessStructLiteral) SQL() string {
-	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
-}
-
-func (s *TypelessStructValue) SQL() string {
-	return s.Expr.SQL() + sqlOpt(" AS ", s.Name, "")
-}
-
 func (s *TypedStructLiteral) SQL() string {
 	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (a *AsExpr) SQL() string {
+	return a.Expr.SQL() + sqlOpt(" AS ", a.Name, "")
+}
+
+func (s *TypelessStructLiteral) SQL() string {
+	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
 }
 
 func (*NullLiteral) SQL() string {
@@ -679,10 +680,6 @@ func (t *JSONLiteral) SQL() string {
 // NEW constructors
 //
 // ================================================================================
-
-func (n *NewConstructorArg) SQL() string {
-	return n.Expr.SQL() + sqlOpt(" ", n.Alias, "")
-}
 
 func (n *NewConstructor) SQL() string {
 	return "NEW " + n.Type.SQL() + "(" + sqlJoin(n.Args, ", ") + ")"

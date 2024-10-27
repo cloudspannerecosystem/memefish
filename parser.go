@@ -804,7 +804,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		p.expect("(")
 		expr := p.parseExpr()
 		rparen := p.expect(")").Pos
-		return p.parseUnnestSuffix(false, expr, unnest, rparen)
+		return p.parseUnnestSuffix(expr, unnest, rparen)
 	}
 
 	if p.Token.Kind == token.TokenIdent {
@@ -827,7 +827,7 @@ func (p *Parser) parseIdentOrPath() []*ast.Ident {
 	return ids
 }
 
-func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
+func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias()
 	withOffset := p.tryParseWithOffset()
@@ -1818,17 +1818,17 @@ func (p *Parser) parseParenExpr() ast.Expr {
 	}
 }
 
-func (p *Parser) parseTypelessStructField() *ast.TypelessStructValue {
+func (p *Parser) parseAsExpr() *ast.AsExpr {
 	expr := p.parseExpr()
 	if p.Token.Kind != "AS" {
-		return &ast.TypelessStructValue{Expr: expr}
+		return &ast.AsExpr{Expr: expr}
 	}
 
 	p.nextToken()
-	ident := p.parseIdent()
-	return &ast.TypelessStructValue{
+	name := p.parseIdent()
+	return &ast.AsExpr{
 		Expr: expr,
-		Name: ident,
+		Name: name,
 	}
 }
 
@@ -1889,35 +1889,49 @@ func (p *Parser) parseArrayLiteralBody() (values []ast.Expr, lbrack, rbrack toke
 }
 
 func (p *Parser) parseStructLiteral() ast.Expr {
-	// tuple struct syntax is handled in parseParenExpr.
-	pos := p.expect("STRUCT").Pos
-	fields, gt := p.tryParseStructTypeFields()
-	p.expect("(")
+	// Note that tuple struct syntax is handled in parseParenExpr.
 
-	if gt.Invalid() {
-		// typeless
-		var values []*ast.TypelessStructValue
-		if p.Token.Kind != ")" {
-			values = parseCommaSeparatedList(p, p.parseTypelessStructField)
-		}
-		rparen := p.expect(")").Pos
-		return &ast.TypelessStructLiteral{
-			Struct: pos,
-			Rparen: rparen,
-			Values: values,
-		}
+	pos := p.expect("STRUCT").Pos
+	if p.Token.Kind == "<" || p.Token.Kind == "<>" {
+		return p.parseTypedStructLiteral(pos)
 	}
 
-	// typed
+	if p.Token.Kind != "(" {
+		p.panicfAtToken(&p.Token, "expected token: <, <>, ( but: %s", p.Token.Kind)
+	}
+
+	return p.parseTypelessStructLiteral(pos)
+}
+
+func (p *Parser) parseTypedStructLiteral(pos token.Pos) *ast.TypedStructLiteral {
+	fields, _ := p.parseStructTypeFields()
+
+	p.expect("(")
 	var values []ast.Expr
 	if p.Token.Kind != ")" {
 		values = parseCommaSeparatedList(p, p.parseExpr)
 	}
 	rparen := p.expect(")").Pos
+
 	return &ast.TypedStructLiteral{
 		Struct: pos,
 		Rparen: rparen,
 		Fields: fields,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLiteral {
+	p.expect("(")
+	var values []*ast.AsExpr
+	if p.Token.Kind != ")" {
+		values = parseCommaSeparatedList(p, p.parseAsExpr)
+	}
+	rparen := p.expect(")").Pos
+
+	return &ast.TypelessStructLiteral{
+		Struct: pos,
+		Rparen: rparen,
 		Values: values,
 	}
 }
@@ -2083,10 +2097,10 @@ func (p *Parser) parseArrayType() *ast.ArrayType {
 
 func (p *Parser) parseStructType() *ast.StructType {
 	pos := p.expect("STRUCT").Pos
-	fields, gt := p.tryParseStructTypeFields()
-	if fields == nil {
+	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
 		p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
 	}
+	fields, gt := p.parseStructTypeFields()
 	return &ast.StructType{
 		Struct: pos,
 		Gt:     gt,
@@ -2094,29 +2108,20 @@ func (p *Parser) parseStructType() *ast.StructType {
 	}
 }
 
-func (p *Parser) tryParseStructTypeFields() (fields []*ast.StructField, gt token.Pos) {
-	gt = token.InvalidPos
-	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
-		return
-	}
-
-	fields = make([]*ast.StructField, 0)
+func (p *Parser) parseStructTypeFields() ([]*ast.StructField, token.Pos) {
 	if p.Token.Kind == "<>" {
-		gt = p.expect("<>").Pos + 1
-		return
+		gt := p.Token.Pos + 1
+		p.nextToken()
+		return nil, gt
 	}
 
+	var fields []*ast.StructField
 	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
-		for p.Token.Kind != token.TokenEOF {
-			fields = append(fields, p.parseFieldType())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
-		}
+		fields = parseCommaSeparatedList(p, p.parseFieldType)
 	}
 
+	var gt token.Pos
 	if p.Token.Kind == ">>" {
 		p.Token.Kind = ">"
 		p.Token.Raw = ">"
@@ -2125,30 +2130,17 @@ func (p *Parser) tryParseStructTypeFields() (fields []*ast.StructField, gt token
 	} else {
 		gt = p.expect(">").Pos
 	}
-	return
+
+	return fields, gt
 }
 
-func (p *Parser) parseNewConstructorArg() *ast.NewConstructorArg {
-	expr := p.parseExpr()
-
-	// Whole "AS alias" is optional, but "AS" keyword can't be omitted.
-	var alias *ast.AsAlias
-	if p.Token.Kind == "AS" {
-		alias = p.tryParseAsAlias()
-	}
-
-	return &ast.NewConstructorArg{
-		Expr:  expr,
-		Alias: alias,
-	}
-}
 func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
 	p.expect("(")
 
 	// Args can be empty like `NEW pkg.TypeName ()`.
-	var args []*ast.NewConstructorArg
+	var args []*ast.AsExpr
 	if p.Token.Kind != ")" {
-		args = parseCommaSeparatedList(p, p.parseNewConstructorArg)
+		args = parseCommaSeparatedList(p, p.parseAsExpr)
 	}
 
 	rparen := p.expect(")").Pos

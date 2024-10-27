@@ -395,8 +395,8 @@ lines''',
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
                   Rparen: 481,
-                  Values: []*ast.TypelessStructValue{
-                    &ast.TypelessStructValue{
+                  Values: []*ast.AsExpr{
+                    &ast.AsExpr{
                       Expr: &ast.IntLiteral{
                         ValuePos: 474,
                         ValueEnd: 475,
@@ -405,7 +405,7 @@ lines''',
                       },
                       Name: (*ast.Ident)(nil),
                     },
-                    &ast.TypelessStructValue{
+                    &ast.AsExpr{
                       Expr: &ast.IntLiteral{
                         ValuePos: 477,
                         ValueEnd: 478,
@@ -414,7 +414,7 @@ lines''',
                       },
                       Name: (*ast.Ident)(nil),
                     },
-                    &ast.TypelessStructValue{
+                    &ast.AsExpr{
                       Expr: &ast.IntLiteral{
                         ValuePos: 480,
                         ValueEnd: 481,
