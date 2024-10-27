@@ -1418,7 +1418,7 @@ type TypedStructLiteral struct {
 	// end = Rparen + 1
 
 	Struct token.Pos // position of "STRUCT"
-	Rparen token.Pos // position of "(" and ")"
+	Rparen token.Pos // position of ")"
 
 	Fields []*StructField
 	Values []Expr
