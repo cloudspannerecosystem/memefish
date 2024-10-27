@@ -56,6 +56,8 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
 func (QueryStatement) isStatement()     {}
+func (CreateSchema) isStatement()       {}
+func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
 func (CreateTable) isStatement()        {}
@@ -270,6 +272,8 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
+func (CreateSchema) isDDL()       {}
+func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
 func (CreateTable) isDDL()        {}
@@ -1637,6 +1641,30 @@ type OptionsDef struct {
 	Value Expr
 }
 
+// CreateSchema is CREATE SCHEMA statement node.
+//
+//	CREATE SCHEMA {{.Name | sql}}
+type CreateSchema struct {
+	// pos = Create
+	// end = Name.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name *Ident
+}
+
+// DropSchema is DROP SCHEMA statement node.
+//
+//	DROP SCHEMA {{.Name | sql}}
+type DropSchema struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -1703,7 +1731,7 @@ type Synonym struct {
 	Synonym token.Pos // position of "SYNONYM" pseudo keyword
 	Rparen  token.Pos // position of ")"
 
-	Name    *Ident
+	Name *Ident
 }
 
 // CreateSequence is CREATE SEQUENCE statement node.

@@ -767,6 +767,10 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
+func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
+
+func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
+
 func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }

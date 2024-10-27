@@ -557,6 +557,12 @@ func (g *Options) End() token.Pos { return g.Rparen + 1 }
 func (g *OptionsDef) Pos() token.Pos { return g.Name.Pos() }
 func (g *OptionsDef) End() token.Pos { return g.Value.End() }
 
+func (s *CreateSchema) Pos() token.Pos { return s.Create }
+func (s *CreateSchema) End() token.Pos { return s.Name.End() }
+
+func (s *DropSchema) Pos() token.Pos { return s.Drop }
+func (s *DropSchema) End() token.Pos { return s.Name.End() }
+
 func (c *CreateDatabase) Pos() token.Pos { return c.Create }
 func (c *CreateDatabase) End() token.Pos { return c.Name.End() }
 
