@@ -1807,7 +1807,7 @@ func (p *Parser) parseParenExpr() ast.Expr {
 	}
 
 	if p.Token.Kind != "," {
-		p.panicfAtToken(&paren, "cannot parse (...) as expression, typeless struct literal or subquery")
+		p.panicfAtToken(&paren, "cannot parse (...) as expression, tuple struct literal or subquery")
 	}
 
 	p.expect(",")
