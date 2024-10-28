@@ -226,6 +226,24 @@ func (UnnestInCondition) isInCondition()   {}
 func (SubQueryInCondition) isInCondition() {}
 func (ValuesInCondition) isInCondition()   {}
 
+// TypelessStructLiteralArg represents an argument of typeless STRUCT literals.
+type TypelessStructLiteralArg interface {
+	Node
+	isTypelessStructLiteralArg()
+}
+
+func (ExprArg) isTypelessStructLiteralArg() {}
+func (Alias) isTypelessStructLiteralArg()   {}
+
+// NewConstructorArg represents an argument of NEW constructors.
+type NewConstructorArg interface {
+	Node
+	isNewConstructorArg()
+}
+
+func (ExprArg) isNewConstructorArg() {}
+func (Alias) isNewConstructorArg()   {}
+
 // Type represents type node.
 type Type interface {
 	Node
@@ -612,7 +630,10 @@ type DotStar struct {
 	Expr Expr
 }
 
-// Alias is aliased expression by AS clause in SELECT result columns list.
+// Alias is aliased expression by AS clause.
+//
+// Typically, this appears in SELECT result columns list, but this can appear in typeless STRUCT literals
+// and NEW constructors.
 //
 //	{{.Expr | sql}} {{.As | sql}}
 type Alias struct {
@@ -1413,18 +1434,7 @@ type TypelessStructLiteral struct {
 	Struct token.Pos // position of "STRUCT"
 	Rparen token.Pos // position of ")"
 
-	Values []*ExprAsName
-}
-
-// ExprAsName is value with optional name in typeless struct literal or new constructor.
-//
-//	{{.Expr | sql}} {{.As | sqlOpt}}
-type ExprAsName struct {
-	// pos = Expr.pos
-	// end = (As ?? Expr).end
-
-	Expr Expr
-	As   *AsAlias // .As.As must not be invalid, optional
+	Values []TypelessStructLiteralArg
 }
 
 // NullLiteral is just NULL literal.
@@ -1571,7 +1581,7 @@ type NewConstructor struct {
 	New  token.Pos
 	Type *NamedType
 
-	Args []*ExprAsName
+	Args []NewConstructorArg
 
 	Rparen token.Pos
 }

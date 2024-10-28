@@ -598,14 +598,6 @@ func (t *TypelessStructLiteral) End() token.Pos {
 	return posAdd(t.Rparen, 1)
 }
 
-func (e *ExprAsName) Pos() token.Pos {
-	return nodePos(wrapNode(e.Expr))
-}
-
-func (e *ExprAsName) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(e.As), wrapNode(e.Expr)))
-}
-
 func (n *NullLiteral) Pos() token.Pos {
 	return n.Null
 }

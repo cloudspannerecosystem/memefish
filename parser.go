@@ -1913,9 +1913,9 @@ func (p *Parser) parseTypedStructLiteral(pos token.Pos) *ast.TypedStructLiteral 
 
 func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLiteral {
 	p.expect("(")
-	var values []*ast.ExprAsName
+	var values []ast.TypelessStructLiteralArg
 	if p.Token.Kind != ")" {
-		values = parseCommaSeparatedList(p, p.parseExprAsName)
+		values = parseCommaSeparatedList(p, p.parseTypelessStructLiteralArg)
 	}
 	rparen := p.expect(")").Pos
 
@@ -1926,12 +1926,17 @@ func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLi
 	}
 }
 
-func (p *Parser) parseExprAsName() *ast.ExprAsName {
+func (p *Parser) parseTypelessStructLiteralArg() ast.TypelessStructLiteralArg {
 	e := p.parseExpr()
 	as := p.tryParseAsAlias( /* requiredAs */ true)
-	return &ast.ExprAsName{
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
 		Expr: e,
-		As:   as,
 	}
 }
 
@@ -2137,9 +2142,9 @@ func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType)
 	p.expect("(")
 
 	// Args can be empty like `NEW pkg.TypeName ()`.
-	var args []*ast.ExprAsName
+	var args []ast.NewConstructorArg
 	if p.Token.Kind != ")" {
-		args = parseCommaSeparatedList(p, p.parseExprAsName)
+		args = parseCommaSeparatedList(p, p.parseNewConstructorArg)
 	}
 
 	rparen := p.expect(")").Pos
@@ -2148,6 +2153,23 @@ func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType)
 		Type:   namedType,
 		Args:   args,
 		Rparen: rparen,
+	}
+}
+
+func (p *Parser) parseNewConstructorArg() ast.NewConstructorArg {
+	// Currently, this method's contents are the same as `parseTypelessStructLiteralArg`.
+	// It exists as an individual method for future extensibility.
+
+	e := p.parseExpr()
+	as := p.tryParseAsAlias( /* requiredAs */ true)
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
+		Expr: e,
 	}
 }
 

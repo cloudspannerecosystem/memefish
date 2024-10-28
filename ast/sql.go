@@ -623,10 +623,6 @@ func (s *TypedStructLiteral) SQL() string {
 	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
 }
 
-func (e *ExprAsName) SQL() string {
-	return e.Expr.SQL() + sqlOpt(" ", e.As, "")
-}
-
 func (s *TypelessStructLiteral) SQL() string {
 	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
 }

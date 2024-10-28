@@ -131,42 +131,38 @@ SELECT ARRAY(
                 Right: &ast.TypelessStructLiteral{
                   Struct: 109,
                   Rparen: 131,
-                  Values: []*ast.ExprAsName{
-                    &ast.ExprAsName{
+                  Values: []ast.TypelessStructLiteralArg{
+                    &ast.ExprArg{
                       Expr: &ast.TypelessStructLiteral{
                         Struct: 116,
                         Rparen: 130,
-                        Values: []*ast.ExprAsName{
-                          &ast.ExprAsName{
+                        Values: []ast.TypelessStructLiteralArg{
+                          &ast.ExprArg{
                             Expr: &ast.IntLiteral{
                               ValuePos: 123,
                               ValueEnd: 124,
                               Base:     10,
                               Value:    "1",
                             },
-                            As: (*ast.AsAlias)(nil),
                           },
-                          &ast.ExprAsName{
+                          &ast.ExprArg{
                             Expr: &ast.IntLiteral{
                               ValuePos: 126,
                               ValueEnd: 127,
                               Base:     10,
                               Value:    "2",
                             },
-                            As: (*ast.AsAlias)(nil),
                           },
-                          &ast.ExprAsName{
+                          &ast.ExprArg{
                             Expr: &ast.IntLiteral{
                               ValuePos: 129,
                               ValueEnd: 130,
                               Base:     10,
                               Value:    "3",
                             },
-                            As: (*ast.AsAlias)(nil),
                           },
                         },
                       },
-                      As: (*ast.AsAlias)(nil),
                     },
                   },
                 },
