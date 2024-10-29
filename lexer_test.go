@@ -145,6 +145,7 @@ var lexerWrongTestCase = []struct {
 	pos     Pos
 	message string
 }{
+	{"\b", 0, "illegal input character: '\\b'"},
 	{`"foo`, 0, "unclosed string literal"},
 	{`R"foo`, 1, "unclosed raw string literal"},
 	{"'foo\n", 0, "unclosed string literal: newline appears in non triple-quoted"},
