@@ -109,7 +109,9 @@ func (l *Lexer) consumeToken() {
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '+', '-':
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '%', ':',
+		// Belows are not yet used in Spanner.
+		'?', '\\', '$':
 		l.Token.Kind = token.TokenKind([]byte{l.skip()})
 		return
 	case '.':
@@ -151,6 +153,32 @@ func (l *Lexer) consumeToken() {
 			l.Token.Kind = ">"
 		}
 		return
+	case '+':
+		switch {
+		// KW_ADD_ASSIGN in ZetaSQL
+		case l.peekIs(1, '='):
+			l.skipN(2)
+			l.Token.Kind = "+="
+		default:
+			l.skip()
+			l.Token.Kind = "+"
+		}
+		return
+	case '-':
+		switch {
+		// KW_SUB_ASSIGN in ZetaSQL
+		case l.peekIs(1, '='):
+			l.skipN(2)
+			l.Token.Kind = "-="
+		// KW_LAMBDA_ARROW in ZetaSQL
+		case l.peekIs(1, '>'):
+			l.skipN(2)
+			l.Token.Kind = "->"
+		default:
+			l.skip()
+			l.Token.Kind = "-"
+		}
+		return
 	case '=':
 		switch {
 		case l.peekIs(1, '>'):
@@ -163,6 +191,9 @@ func (l *Lexer) consumeToken() {
 		return
 	case '|':
 		switch {
+		case l.peekIs(1, '>'):
+			l.skipN(2)
+			l.Token.Kind = "|>"
 		case l.peekIs(1, '|'):
 			l.skipN(2)
 			l.Token.Kind = "||"
@@ -177,7 +208,16 @@ func (l *Lexer) consumeToken() {
 			l.Token.Kind = "!="
 			return
 		}
+		l.skip()
+		l.Token.Kind = "!"
+		return
 	case '@':
+		// KW_DOUBLE_AT is not yet used in Cloud Spanner, but used in BigQuery.
+		if l.peekIs(1, '@') {
+			l.skipN(2)
+			l.Token.Kind = "@@"
+			return
+		}
 		if l.peekOk(1) && char.IsIdentStart(l.peek(1)) {
 			i := 1
 			for l.peekOk(i) && char.IsIdentPart(l.peek(i)) {
