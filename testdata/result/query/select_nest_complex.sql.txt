@@ -58,7 +58,7 @@ from (
                                 Value:    "1",
                               },
                               As: &ast.AsAlias{
-                                As:    32,
+                                As:    -1,
                                 Alias: &ast.Ident{
                                   NamePos: 32,
                                   NameEnd: 33,
@@ -170,7 +170,7 @@ from (
                     Value:    "1",
                   },
                   As: &ast.AsAlias{
-                    As:    113,
+                    As:    -1,
                     Alias: &ast.Ident{
                       NamePos: 113,
                       NameEnd: 114,
@@ -186,7 +186,7 @@ from (
                     Value:    "2",
                   },
                   As: &ast.AsAlias{
-                    As:    118,
+                    As:    -1,
                     Alias: &ast.Ident{
                       NamePos: 118,
                       NameEnd: 119,
@@ -229,4 +229,4 @@ from (
 }
 
 --- SQL
-SELECT * FROM ((((SELECT 1 AS A UNION ALL (SELECT 2)) UNION DISTINCT (SELECT 1)) LIMIT 1) INNER JOIN (SELECT 1 AS A, 2 AS B) USING (A))
+SELECT * FROM ((((SELECT 1 A UNION ALL (SELECT 2)) UNION DISTINCT (SELECT 1)) LIMIT 1) INNER JOIN (SELECT 1 A, 2 B) USING (A))

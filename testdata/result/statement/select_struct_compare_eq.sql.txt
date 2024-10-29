@@ -40,9 +40,8 @@ SELECT ARRAY(
                   As:       nil,
                   Results:  []ast.SelectItem{
                     &ast.ExprSelectItem{
-                      Expr: &ast.StructLiteral{
+                      Expr: &ast.TypedStructLiteral{
                         Struct: 48,
-                        Lparen: 81,
                         Rparen: 89,
                         Fields: []*ast.StructField{
                           &ast.StructField{
@@ -110,7 +109,7 @@ SELECT ARRAY(
                   Limit:   (*ast.Limit)(nil),
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    92,
                   Alias: &ast.Ident{
                     NamePos: 95,
                     NameEnd: 96,
@@ -129,35 +128,39 @@ SELECT ARRAY(
                   NameEnd: 106,
                   Name:    "S",
                 },
-                Right: &ast.StructLiteral{
+                Right: &ast.TypelessStructLiteral{
                   Struct: 109,
-                  Lparen: 115,
                   Rparen: 131,
-                  Fields: []*ast.StructField(nil),
-                  Values: []ast.Expr{
-                    &ast.StructLiteral{
-                      Struct: 116,
-                      Lparen: 122,
-                      Rparen: 130,
-                      Fields: []*ast.StructField(nil),
-                      Values: []ast.Expr{
-                        &ast.IntLiteral{
-                          ValuePos: 123,
-                          ValueEnd: 124,
-                          Base:     10,
-                          Value:    "1",
-                        },
-                        &ast.IntLiteral{
-                          ValuePos: 126,
-                          ValueEnd: 127,
-                          Base:     10,
-                          Value:    "2",
-                        },
-                        &ast.IntLiteral{
-                          ValuePos: 129,
-                          ValueEnd: 130,
-                          Base:     10,
-                          Value:    "3",
+                  Values: []ast.TypelessStructLiteralArg{
+                    &ast.ExprArg{
+                      Expr: &ast.TypelessStructLiteral{
+                        Struct: 116,
+                        Rparen: 130,
+                        Values: []ast.TypelessStructLiteralArg{
+                          &ast.ExprArg{
+                            Expr: &ast.IntLiteral{
+                              ValuePos: 123,
+                              ValueEnd: 124,
+                              Base:     10,
+                              Value:    "1",
+                            },
+                          },
+                          &ast.ExprArg{
+                            Expr: &ast.IntLiteral{
+                              ValuePos: 126,
+                              ValueEnd: 127,
+                              Base:     10,
+                              Value:    "2",
+                            },
+                          },
+                          &ast.ExprArg{
+                            Expr: &ast.IntLiteral{
+                              ValuePos: 129,
+                              ValueEnd: 130,
+                              Base:     10,
+                              Value:    "3",
+                            },
+                          },
                         },
                       },
                     },

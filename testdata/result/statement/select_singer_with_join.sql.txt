@@ -34,7 +34,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    26,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 26,
               NameEnd: 27,
@@ -51,7 +51,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    56,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 56,
               NameEnd: 57,
@@ -105,4 +105,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID
+SELECT * FROM Singers A LEFT OUTER JOIN Singers B ON A.SingerID = B.SingerID

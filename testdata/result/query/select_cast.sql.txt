@@ -52,18 +52,14 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           Cast:   47,
           Rparen: 147,
           Safe:   false,
-          Expr:   &ast.StructLiteral{
-            Struct: 0,
+          Expr:   &ast.TupleStructLiteral{
             Lparen: 52,
             Rparen: 84,
-            Fields: []*ast.StructField(nil),
             Values: []ast.Expr{
-              &ast.StructLiteral{
+              &ast.TypelessStructLiteral{
                 Struct: 53,
-                Lparen: 59,
                 Rparen: 60,
-                Fields: []*ast.StructField(nil),
-                Values: []ast.Expr(nil),
+                Values: []ast.TypelessStructLiteralArg(nil),
               },
               &ast.IntLiteral{
                 ValuePos: 63,
@@ -120,7 +116,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Type:  &ast.StructType{
                   Struct: 96,
                   Gt:     103,
-                  Fields: []*ast.StructField{},
+                  Fields: []*ast.StructField(nil),
                 },
               },
               &ast.StructField{
@@ -300,4 +296,4 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 }
 
 --- SQL
-SELECT CAST(1 AS INT64), CAST(0.1 AS FLOAT32), CAST(STRUCT(STRUCT(), 1, [2, 3], ["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)
+SELECT CAST(1 AS INT64), CAST(0.1 AS FLOAT32), CAST((STRUCT(), 1, [2, 3], ["4", "5"]) AS STRUCT<STRUCT<>, x INT64, y ARRAY<INT64>, z ARRAY<STRING>>) FROM x TABLESAMPLE BERNOULLI (CAST(0.1 AS FLOAT64) PERCENT), y TABLESAMPLE BERNOULLI (CAST(1 AS INT64) ROWS), z TABLESAMPLE BERNOULLI (CAST(@param AS INT64) ROWS) LIMIT CAST(1 AS INT64) OFFSET CAST(@foo AS INT64)

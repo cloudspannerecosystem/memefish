@@ -41,9 +41,8 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
             Rbrack: 61,
             Type:   nil,
             Values: []ast.Expr{
-              &ast.StructLiteral{
+              &ast.TypedStructLiteral{
                 Struct: 27,
-                Lparen: 52,
                 Rparen: 60,
                 Fields: []*ast.StructField{
                   &ast.StructField{
@@ -82,7 +81,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    -1,
+            As:    64,
             Alias: &ast.Ident{
               NamePos: 67,
               NameEnd: 68,
@@ -109,7 +108,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    -1,
+            As:    81,
             Alias: &ast.Ident{
               NamePos: 84,
               NameEnd: 85,
@@ -120,7 +119,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
             With:   86,
             Offset: 91,
             As:     &ast.AsAlias{
-              As:    -1,
+              As:    98,
               Alias: &ast.Ident{
                 NamePos: 101,
                 NameEnd: 104,

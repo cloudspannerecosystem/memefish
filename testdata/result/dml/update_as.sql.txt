@@ -9,7 +9,7 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
     Name:    "foo",
   },
   As: &ast.AsAlias{
-    As:    -1,
+    As:    11,
     Alias: &ast.Ident{
       NamePos: 14,
       NameEnd: 15,
