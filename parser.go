@@ -458,7 +458,7 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	}
 
 	expr := p.parseExpr()
-	if as := p.tryParseAsAlias(false); as != nil {
+	if as := p.tryParseAsAlias(withOptionalAs); as != nil {
 		return &ast.Alias{
 			Expr: expr,
 			As:   as,
@@ -479,7 +479,14 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	}
 }
 
-func (p *Parser) tryParseAsAlias(requiredAs bool) *ast.AsAlias {
+type withAs bool
+
+const (
+	withRequiredAs withAs = true
+	withOptionalAs withAs = false
+)
+
+func (p *Parser) tryParseAsAlias(requiredAs withAs) *ast.AsAlias {
 	pos := p.Token.Pos
 
 	if p.Token.Kind == "AS" {
@@ -781,7 +788,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
-		as := p.tryParseAsAlias(false)
+		as := p.tryParseAsAlias(withOptionalAs)
 		return p.parseTableExprSuffix(&ast.SubQueryTableExpr{
 			Lparen: lparen,
 			Rparen: rparen,
@@ -833,7 +840,7 @@ func (p *Parser) parseIdentOrPath() []*ast.Ident {
 
 func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 
 	return p.parseTableExprSuffix(&ast.Unnest{
@@ -853,7 +860,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 	with := p.expect("WITH").Pos
 	offset := p.expectKeywordLike("OFFSET").Pos
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	return &ast.WithOffset{
 		With:   with,
@@ -864,7 +871,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 	return p.parseTableExprSuffix(&ast.TableName{
 		Table: id,
 		Hint:  hint,
@@ -874,7 +881,7 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 
 func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 	return p.parseTableExprSuffix(&ast.PathTableExpr{
 		Path:       id,
@@ -1928,7 +1935,7 @@ func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLi
 
 func (p *Parser) parseTypelessStructLiteralArg() ast.TypelessStructLiteralArg {
 	e := p.parseExpr()
-	as := p.tryParseAsAlias(true)
+	as := p.tryParseAsAlias(withRequiredAs)
 	if as != nil {
 		return &ast.Alias{
 			Expr: e,
@@ -2161,7 +2168,7 @@ func (p *Parser) parseNewConstructorArg() ast.NewConstructorArg {
 	// It exists as an individual method for future extensibility.
 
 	e := p.parseExpr()
-	as := p.tryParseAsAlias(true)
+	as := p.tryParseAsAlias(withRequiredAs)
 	if as != nil {
 		return &ast.Alias{
 			Expr: e,
@@ -3862,7 +3869,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	}
 
 	name := p.parseIdent()
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
 
 	return &ast.Delete{
@@ -3875,7 +3882,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 
 func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	name := p.parseIdent()
-	as := p.tryParseAsAlias(false)
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("SET")
 
