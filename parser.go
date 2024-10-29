@@ -2299,6 +2299,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.Kind == "CREATE":
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
 		case p.Token.IsKeywordLike("TABLE"):
@@ -2341,6 +2343,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.IsKeywordLike("DROP"):
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseDropSchema(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
@@ -2375,6 +2379,24 @@ func (p *Parser) parseDDL() ast.DDL {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
+}
+
+func (p *Parser) parseCreateSchema(pos token.Pos) *ast.CreateSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.CreateSchema{
+		Create: pos,
+		Name:   name,
+	}
+}
+
+func (p *Parser) parseDropSchema(pos token.Pos) *ast.DropSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.DropSchema{
+		Drop: pos,
+		Name: name,
+	}
 }
 
 func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {

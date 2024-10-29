@@ -790,6 +790,22 @@ func (o *OptionsDef) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
 }
 
+func (c *CreateSchema) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSchema) End() token.Pos {
+	return nodeEnd(wrapNode(c.Name))
+}
+
+func (d *DropSchema) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSchema) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (c *CreateDatabase) Pos() token.Pos {
 	return c.Create
 }
