@@ -20,7 +20,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -48,7 +48,7 @@ FROM
               },
               Hint: (*ast.Hint)(nil),
               As:   &ast.AsAlias{
-                As:    26,
+                As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 26,
                   NameEnd: 27,
@@ -65,7 +65,7 @@ FROM
               },
               Hint: (*ast.Hint)(nil),
               As:   &ast.AsAlias{
-                As:    50,
+                As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 50,
                   NameEnd: 51,
@@ -117,7 +117,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    103,
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 103,
                 NameEnd: 104,
@@ -169,7 +169,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    155,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 155,
               NameEnd: 156,
@@ -223,4 +223,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singer AS C ON B.SingerID = C.SingerID INNER JOIN Singer AS D ON C.SingerID = D.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID INNER JOIN Singer C ON B.SingerID = C.SingerID INNER JOIN Singer D ON C.SingerID = D.SingerID

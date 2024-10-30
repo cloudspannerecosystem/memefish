@@ -11,7 +11,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -20,11 +20,10 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Unnest{
-        Unnest:   18,
-        Rparen:   32,
-        Implicit: false,
-        Expr:     &ast.ArrayLiteral{
-          Array:  0,
+        Unnest: 18,
+        Rparen: 32,
+        Expr:   &ast.ArrayLiteral{
+          Array:  -1,
           Lbrack: 25,
           Rbrack: 31,
           Type:   nil,
@@ -51,7 +50,7 @@ FROM
         },
         Hint: (*ast.Hint)(nil),
         As:   &ast.AsAlias{
-          As:    34,
+          As:    -1,
           Alias: &ast.Ident{
             NamePos: 34,
             NameEnd: 39,
@@ -62,7 +61,7 @@ FROM
           With:   40,
           Offset: 45,
           As:     &ast.AsAlias{
-            As:    52,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 52,
               NameEnd: 55,
@@ -82,4 +81,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY[1, 2, 3]) AS value WITH OFFSET AS num
+SELECT * FROM UNNEST([1, 2, 3]) value WITH OFFSET num

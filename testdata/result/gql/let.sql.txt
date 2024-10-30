@@ -61,7 +61,7 @@ RETURN a.id AS a_id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         37,
-                          Last:          52,
+                          Last:          51,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -159,7 +159,7 @@ RETURN a.id AS a_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    102,
                   Alias: &ast.Ident{
                     NamePos: 105,
                     NameEnd: 109,

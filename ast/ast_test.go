@@ -7,23 +7,32 @@ import (
 func TestStatement(t *testing.T) {
 	Statement(&QueryStatement{}).isStatement()
 	Statement(&CreateDatabase{}).isStatement()
+	Statement(&AlterDatabase{}).isStatement()
 	Statement(&CreateTable{}).isStatement()
-	Statement(&CreateView{}).isStatement()
-	Statement(&CreateIndex{}).isStatement()
-	Statement(&CreateSequence{}).isStatement()
-	Statement(&CreateRole{}).isStatement()
 	Statement(&AlterTable{}).isStatement()
-	Statement(&AlterIndex{}).isStatement()
 	Statement(&DropTable{}).isStatement()
+	Statement(&CreateIndex{}).isStatement()
+	Statement(&AlterIndex{}).isStatement()
 	Statement(&DropIndex{}).isStatement()
-	Statement(&DropVectorIndex{}).isStatement()
+	Statement(&CreateView{}).isStatement()
+	Statement(&DropView{}).isStatement()
+	Statement(&CreateChangeStream{}).isStatement()
+	Statement(&AlterChangeStream{}).isStatement()
+	Statement(&DropChangeStream{}).isStatement()
+	Statement(&CreateRole{}).isStatement()
 	Statement(&DropRole{}).isStatement()
+	Statement(&Grant{}).isStatement()
+	Statement(&Revoke{}).isStatement()
+	Statement(&CreateSequence{}).isStatement()
+	Statement(&AlterSequence{}).isStatement()
+	Statement(&DropSequence{}).isStatement()
+	Statement(&CreateVectorIndex{}).isStatement()
+	Statement(&DropVectorIndex{}).isStatement()
 	Statement(&Insert{}).isStatement()
 	Statement(&Delete{}).isStatement()
 	Statement(&Update{}).isStatement()
 	Statement(&Grant{}).isStatement()
 	Statement(&Revoke{}).isStatement()
-
 	Statement(&GQLGraphQuery{}).isStatement()
 }
 
@@ -38,6 +47,12 @@ func TestSelectItem(t *testing.T) {
 	SelectItem(&DotStar{}).isSelectItem()
 	SelectItem(&Alias{}).isSelectItem()
 	SelectItem(&ExprSelectItem{}).isSelectItem()
+}
+
+func TestSelectAs(t *testing.T) {
+	SelectAs(&AsStruct{}).isSelectAs()
+	SelectAs(&AsValue{}).isSelectAs()
+	SelectAs(&AsTypeName{}).isSelectAs()
 }
 
 func TestTableExpr(t *testing.T) {
@@ -75,7 +90,7 @@ func TestExpr(t *testing.T) {
 	Expr(&Ident{}).isExpr()
 	Expr(&Path{}).isExpr()
 	Expr(&ArrayLiteral{}).isExpr()
-	Expr(&StructLiteral{}).isExpr()
+	Expr(&TypedStructLiteral{}).isExpr()
 	Expr(&NullLiteral{}).isExpr()
 	Expr(&BoolLiteral{}).isExpr()
 	Expr(&IntLiteral{}).isExpr()
@@ -125,23 +140,30 @@ func TestStringValue(t *testing.T) {
 
 func TestDDL(t *testing.T) {
 	DDL(&CreateDatabase{}).isDDL()
+	DDL(&AlterDatabase{}).isDDL()
 	DDL(&CreateTable{}).isDDL()
-	DDL(&CreateIndex{}).isDDL()
-	DDL(&CreateVectorIndex{}).isDDL()
-	DDL(&CreateSequence{}).isDDL()
-	DDL(&AlterSequence{}).isDDL()
-	DDL(&DropSequence{}).isDDL()
-	DDL(&CreateView{}).isDDL()
 	DDL(&AlterTable{}).isDDL()
 	DDL(&DropTable{}).isDDL()
 	DDL(&CreateIndex{}).isDDL()
 	DDL(&AlterIndex{}).isDDL()
 	DDL(&DropIndex{}).isDDL()
-	DDL(&DropVectorIndex{}).isDDL()
+	DDL(&CreateSearchIndex{}).isDDL()
+	DDL(&DropSearchIndex{}).isDDL()
+	DDL(&AlterSearchIndex{}).isDDL()
+	DDL(&CreateView{}).isDDL()
+	DDL(&DropView{}).isDDL()
+	DDL(&CreateChangeStream{}).isDDL()
+	DDL(&AlterChangeStream{}).isDDL()
+	DDL(&DropChangeStream{}).isDDL()
 	DDL(&CreateRole{}).isDDL()
 	DDL(&DropRole{}).isDDL()
 	DDL(&Grant{}).isDDL()
 	DDL(&Revoke{}).isDDL()
+	DDL(&CreateSequence{}).isDDL()
+	DDL(&AlterSequence{}).isDDL()
+	DDL(&DropSequence{}).isDDL()
+	DDL(&CreateVectorIndex{}).isDDL()
+	DDL(&DropVectorIndex{}).isDDL()
 }
 
 func TestConstraint(t *testing.T) {
@@ -156,7 +178,6 @@ func TestTableAlteration(t *testing.T) {
 	TableAlteration(&DropConstraint{}).isTableAlteration()
 	TableAlteration(&SetOnDelete{}).isTableAlteration()
 	TableAlteration(&AlterColumn{}).isTableAlteration()
-	TableAlteration(&AlterColumnSet{}).isTableAlteration()
 }
 
 func TestPrivilege(t *testing.T) {

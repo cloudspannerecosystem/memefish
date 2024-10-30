@@ -63,7 +63,7 @@ ORDER BY p.name, element, offset
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         31,
-                          Last:          41,
+                          Last:          40,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -132,7 +132,7 @@ ORDER BY p.name, element, offset
               Name:    "element",
             },
             ArrayExpression: &ast.ArrayLiteral{
-              Array:  0,
+              Array:  -1,
               Lbrack: 69,
               Rbrack: 82,
               Type:   nil,
@@ -182,7 +182,7 @@ ORDER BY p.name, element, offset
                   Name:    "element",
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    119,
                   Alias: &ast.Ident{
                     NamePos: 122,
                     NameEnd: 132,
@@ -254,5 +254,5 @@ ORDER BY p.name, element, offset
 --- SQL
 GRAPH FinGraph
 MATCH (p:Person)-[o:Owns]->(a:Account)
-FOR element IN ARRAY["all", "some"] WITH OFFSET
+FOR element IN ["all", "some"] WITH OFFSET
 RETURN p.name, element AS alert_type, offset ORDER BY p.name, element, offset

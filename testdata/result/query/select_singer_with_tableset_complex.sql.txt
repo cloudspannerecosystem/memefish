@@ -34,7 +34,7 @@ UNION ALL
       &ast.Select{
         Select:   0,
         Distinct: false,
-        AsStruct: false,
+        As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
             Star: 7,
@@ -69,7 +69,7 @@ UNION ALL
             &ast.Select{
               Select:   36,
               Distinct: false,
-              AsStruct: false,
+              As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Star{
                   Star: 43,
@@ -104,7 +104,7 @@ UNION ALL
                   &ast.Select{
                     Select:   83,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.Star{
                         Star: 90,
@@ -139,7 +139,7 @@ UNION ALL
                         &ast.Select{
                           Select:   135,
                           Distinct: false,
-                          AsStruct: false,
+                          As:       nil,
                           Results:  []ast.SelectItem{
                             &ast.Star{
                               Star: 142,
@@ -174,7 +174,7 @@ UNION ALL
                               &ast.Select{
                                 Select:   198,
                                 Distinct: false,
-                                AsStruct: false,
+                                As:       nil,
                                 Results:  []ast.SelectItem{
                                   &ast.Star{
                                     Star: 205,
@@ -209,7 +209,7 @@ UNION ALL
                                     &ast.Select{
                                       Select:   259,
                                       Distinct: false,
-                                      AsStruct: false,
+                                      As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{
                                           Star: 266,
@@ -237,7 +237,7 @@ UNION ALL
                                     &ast.Select{
                                       Select:   317,
                                       Distinct: false,
-                                      AsStruct: false,
+                                      As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{
                                           Star: 324,

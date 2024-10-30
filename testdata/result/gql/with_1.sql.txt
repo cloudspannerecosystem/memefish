@@ -57,7 +57,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         31,
-                          Last:          45,
+                          Last:          44,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
@@ -131,7 +131,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                   Rparen: 85,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    87,
                   Alias: &ast.Ident{
                     NamePos: 90,
                     NameEnd: 112,
@@ -171,7 +171,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    148,
                   Alias: &ast.Ident{
                     NamePos: 151,
                     NameEnd: 161,

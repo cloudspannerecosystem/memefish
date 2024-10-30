@@ -157,7 +157,7 @@ RETURN a.id AS a_id, b.id AS b_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    108,
                   Alias: &ast.Ident{
                     NamePos: 111,
                     NameEnd: 115,
@@ -181,7 +181,7 @@ RETURN a.id AS a_id, b.id AS b_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    122,
                   Alias: &ast.Ident{
                     NamePos: 125,
                     NameEnd: 129,

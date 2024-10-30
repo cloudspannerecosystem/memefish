@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -47,14 +46,15 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 
-			b, err := os.ReadFile(filepath.Join(inputPath, in.Name()))
+			inputFilePath := filepath.Join(inputPath, in.Name())
+			b, err := os.ReadFile(inputFilePath)
 			if err != nil {
 				t.Fatalf("error on reading input file: %v", err)
 			}
 
 			p := &memefish.Parser{
 				Lexer: &memefish.Lexer{
-					File: &token.File{FilePath: in.Name(), Buffer: string(b)},
+					File: &token.File{FilePath: inputFilePath, Buffer: string(b)},
 				},
 			}
 
@@ -171,6 +171,15 @@ func TestParseDML(t *testing.T) {
 	})
 }
 
+func TestParseExpr(t *testing.T) {
+	inputPath := "./testdata/input/expr"
+	resultPath := "./testdata/result/expr"
+
+	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		return p.ParseExpr()
+	})
+}
+
 func TestParseStatement(t *testing.T) {
 	inputPaths := []string{
 		"./testdata/input/query",
@@ -184,149 +193,4 @@ func TestParseStatement(t *testing.T) {
 			return p.ParseStatement()
 		})
 	}
-}
-
-func ExampleParser_ParseStatements() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{Buffer: "SELECT 1; INSERT foo (x, y) VALUES (1, 2)"},
-		},
-	}
-
-	stmts, err := p.ParseStatements()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, stmt := range stmts {
-		fmt.Printf("%s;\n", stmt.SQL())
-	}
-
-	// Output:
-	// SELECT 1;
-	// INSERT INTO foo (x, y) VALUES (1, 2);
-}
-
-func ExampleParser_ParseQuery() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{Buffer: "SELECT * FROM foo"},
-		},
-	}
-
-	stmt, err := p.ParseQuery()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(stmt.SQL())
-
-	// Output:
-	// SELECT * FROM foo
-}
-
-func ExampleParser_ParseDDL() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{
-				Buffer: heredoc.Doc(`
-					CREATE TABLE foo (
-						x int64,
-						y int64,
-					) PRIMARY KEY (x)
-				`),
-			},
-		},
-	}
-
-	ddl, err := p.ParseDDL()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(ddl.SQL())
-
-	// Output:
-	// CREATE TABLE foo (x INT64, y INT64) PRIMARY KEY (x)
-}
-
-func ExampleParser_ParseDDLs() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{
-				Buffer: heredoc.Doc(`
-					CREATE TABLE foo (x int64, y int64) PRIMARY KEY (x);
-
-					CREATE TABLE bar (
-						x int64, z int64,
-					)
-					PRIMARY KEY (x, z),
-					INTERLEAVE IN PARENT foo;
-				`),
-			},
-		},
-	}
-
-	ddls, err := p.ParseDDLs()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, ddl := range ddls {
-		fmt.Printf("%s;\n", ddl.SQL())
-	}
-
-	// Output:
-	// CREATE TABLE foo (x INT64, y INT64) PRIMARY KEY (x);
-	// CREATE TABLE bar (x INT64, z INT64) PRIMARY KEY (x, z), INTERLEAVE IN PARENT foo;
-}
-
-func ExampleParser_ParseDML() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{
-				Buffer: heredoc.Doc(`
-					INSERT INTO foo (x, y)
-					VALUES (1, 2),
-					       (3, 4)
-				`),
-			},
-		},
-	}
-
-	dml, err := p.ParseDML()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(dml.SQL())
-
-	// Output:
-	// INSERT INTO foo (x, y) VALUES (1, 2), (3, 4)
-}
-
-func ExampleParser_ParseDMLs() {
-	p := &memefish.Parser{
-		Lexer: &memefish.Lexer{
-			File: &token.File{
-				Buffer: heredoc.Doc(`
-					INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
-					DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;
-				`),
-			},
-		},
-	}
-
-	dmls, err := p.ParseDMLs()
-	if err != nil {
-		panic(err)
-	}
-
-	for _, dml := range dmls {
-		fmt.Printf("%s;\n", dml.SQL())
-	}
-
-	// Output:
-	// INSERT INTO foo (x, y) VALUES (1, 2), (3, 4);
-	// DELETE FROM foo WHERE foo.x = 1 AND foo.y = 2;
 }

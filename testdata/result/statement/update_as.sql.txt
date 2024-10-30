@@ -9,7 +9,7 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
     Name:    "foo",
   },
   As: &ast.AsAlias{
-    As:    -1,
+    As:    11,
     Alias: &ast.Ident{
       NamePos: 14,
       NameEnd: 15,
@@ -30,27 +30,31 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
           Name:    "foo",
         },
       },
-      Expr: &ast.BinaryExpr{
-        Op:   "+",
-        Left: &ast.Path{
-          Idents: []*ast.Ident{
-            &ast.Ident{
-              NamePos: 28,
-              NameEnd: 29,
-              Name:    "F",
-            },
-            &ast.Ident{
-              NamePos: 30,
-              NameEnd: 33,
-              Name:    "bar",
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Default:    false,
+        Expr:       &ast.BinaryExpr{
+          Op:   "+",
+          Left: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 28,
+                NameEnd: 29,
+                Name:    "F",
+              },
+              &ast.Ident{
+                NamePos: 30,
+                NameEnd: 33,
+                Name:    "bar",
+              },
             },
           },
-        },
-        Right: &ast.IntLiteral{
-          ValuePos: 36,
-          ValueEnd: 37,
-          Base:     10,
-          Value:    "1",
+          Right: &ast.IntLiteral{
+            ValuePos: 36,
+            ValueEnd: 37,
+            Base:     10,
+            Value:    "1",
+          },
         },
       },
     },

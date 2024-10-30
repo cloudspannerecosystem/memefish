@@ -66,7 +66,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         45,
-                          Last:          60,
+                          Last:          59,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -193,6 +193,9 @@ RETURN a.id AS a_id, total, b.id AS b_id
                       },
                     },
                   },
+                  NamedArgs:    []*ast.NamedArg(nil),
+                  NullHandling: nil,
+                  Having:       nil,
                 },
               },
             },
@@ -217,7 +220,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    137,
                   Alias: &ast.Ident{
                     NamePos: 140,
                     NameEnd: 144,
@@ -248,7 +251,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    158,
                   Alias: &ast.Ident{
                     NamePos: 161,
                     NameEnd: 165,

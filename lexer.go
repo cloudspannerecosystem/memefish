@@ -109,7 +109,9 @@ func (l *Lexer) consumeToken() {
 	}
 
 	switch l.peek(0) {
-	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '=', '+', '-', '%', ':':
+	case '(', ')', '{', '}', ';', ',', '[', ']', '~', '*', '/', '&', '^', '%', ':',
+		// Belows are not yet used in Spanner.
+		'?', '\\', '$':
 		l.Token.Kind = token.TokenKind([]byte{l.skip()})
 		return
 	case '.':
@@ -151,8 +153,47 @@ func (l *Lexer) consumeToken() {
 			l.Token.Kind = ">"
 		}
 		return
+	case '+':
+		switch {
+		// KW_ADD_ASSIGN in ZetaSQL
+		case l.peekIs(1, '='):
+			l.skipN(2)
+			l.Token.Kind = "+="
+		default:
+			l.skip()
+			l.Token.Kind = "+"
+		}
+		return
+	case '-':
+		switch {
+		// KW_SUB_ASSIGN in ZetaSQL
+		case l.peekIs(1, '='):
+			l.skipN(2)
+			l.Token.Kind = "-="
+		// KW_LAMBDA_ARROW in ZetaSQL
+		case l.peekIs(1, '>'):
+			l.skipN(2)
+			l.Token.Kind = "->"
+		default:
+			l.skip()
+			l.Token.Kind = "-"
+		}
+		return
+	case '=':
+		switch {
+		case l.peekIs(1, '>'):
+			l.skipN(2)
+			l.Token.Kind = "=>"
+		default:
+			l.skip()
+			l.Token.Kind = "="
+		}
+		return
 	case '|':
 		switch {
+		case l.peekIs(1, '>'):
+			l.skipN(2)
+			l.Token.Kind = "|>"
 		case l.peekIs(1, '|'):
 			l.skipN(2)
 			l.Token.Kind = "||"
@@ -172,7 +213,16 @@ func (l *Lexer) consumeToken() {
 			l.Token.Kind = "!"
 			return
 		}
+		l.skip()
+		l.Token.Kind = "!"
+		return
 	case '@':
+		// KW_DOUBLE_AT is not yet used in Cloud Spanner, but used in BigQuery.
+		if l.peekIs(1, '@') {
+			l.skipN(2)
+			l.Token.Kind = "@@"
+			return
+		}
 		if l.peekOk(1) && char.IsIdentStart(l.peek(1)) {
 			i := 1
 			for l.peekOk(i) && char.IsIdentPart(l.peek(i)) {
@@ -373,7 +423,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 	for l.peekOk(i) {
 		if l.slice(i, i+len(q)) == q {
 			if len(content) == 0 && name == "identifier" {
-				l.panicf("invalid empty identifier")
+				l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i+len(q)), "invalid empty identifier")
 			}
 			l.skipN(i + len(q))
 			return string(content)
@@ -383,7 +433,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 		if c == '\\' {
 			i++
 			if !l.peekOk(i) {
-				l.panicf("invalid escape sequence: \\<eof>")
+				l.panicfAtPosition(token.Pos(l.pos+i-1), token.Pos(l.pos+i), "invalid escape sequence: \\<eof>")
 			}
 
 			c := l.peek(i)
@@ -412,18 +462,20 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 			case '\\', '?', '"', '\'', '`':
 				content = append(content, c)
 			case 'x', 'X':
-				if !(l.peekOk(i+1) && char.IsHexDigit(l.peek(i)) && char.IsHexDigit(l.peek(i+1))) {
-					l.panicf("invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
+				for j := 0; j < 2; j++ {
+					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
+					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+2), 16, 8)
 				if err != nil {
-					l.panicf("invalid escape sequence: %v", err)
+					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			case 'u', 'U':
 				if !unicode {
-					l.panicf("invalid escape sequence: \\%c is not allowed in %s", c, name)
+					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i), "invalid escape sequence: \\%c is not allowed in %s", c, name)
 				}
 				size := 4
 				if c == 'U' {
@@ -431,46 +483,48 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 				}
 				for j := 0; j < size; j++ {
 					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
-						l.panicf("invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+size), 16, 32)
 				if err != nil {
-					l.panicf("invalid escape sequence: %v", err)
+					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+size), "invalid escape sequence: %v", err)
 				}
 				if 0xD800 <= u && u <= 0xDFFF || 0x10FFFF < u {
-					l.panicf("invalid escape sequence: invalid code point: U+%04X", u)
+					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+size), "invalid escape sequence: invalid code point: U+%04X", u)
 				}
 				var buf [utf8.MaxRune]byte
 				n := utf8.EncodeRune(buf[:], rune(u))
 				content = append(content, buf[:n]...)
 				i += size
 			case '0', '1', '2', '3':
-				if !(l.peekOk(i+1) && char.IsOctalDigit(l.peek(i)) && char.IsOctalDigit(l.peek(i+1))) {
-					l.panicf("invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
+				for j := 0; j < 2; j++ {
+					if !(l.peekOk(i+j) && char.IsOctalDigit(l.peek(i+j))) {
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
+					}
 				}
 				u, err := strconv.ParseUint(l.slice(i-1, i+2), 8, 8)
 				if err != nil {
-					l.panicf("invalid escape sequence: %v", err)
+					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			default:
-				l.panicf("invalid escape sequence: \\%c", c)
+				l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i), "invalid escape sequence: \\%c", c)
 			}
 
 			continue
 		}
 
 		if c == '\n' && len(q) != 3 {
-			l.panicf("unclosed %s: newline appears in non triple-quoted", name)
+			l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i+1), "unclosed %s: newline appears in non triple-quoted", name)
 		}
 
 		content = append(content, c)
 		i++
 	}
 
-	panic(l.errorf("unclosed %s", name))
+	panic(l.errorfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i), "unclosed %s", name))
 }
 
 func (l *Lexer) skipSpaces() {
@@ -498,6 +552,7 @@ func (l *Lexer) skipComment() {
 }
 
 func (l *Lexer) skipCommentUntil(end string, mustEnd bool) {
+	pos := token.Pos(l.pos)
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
 			l.skipN(len(end))
@@ -506,8 +561,7 @@ func (l *Lexer) skipCommentUntil(end string, mustEnd bool) {
 		l.skip()
 	}
 	if mustEnd {
-		// TODO: improve error position
-		l.panicf("unclosed comment")
+		l.panicfAtPosition(pos, token.Pos(l.pos), "unclosed comment")
 	}
 }
 
@@ -551,6 +605,17 @@ func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
 	}
 }
 
+func (l *Lexer) errorfAtPosition(pos, end token.Pos, msg string, param ...interface{}) *Error {
+	return &Error{
+		Message:  fmt.Sprintf(msg, param...),
+		Position: l.Position(pos, end),
+	}
+}
+
 func (l *Lexer) panicf(msg string, param ...interface{}) {
 	panic(l.errorf(msg, param...))
+}
+
+func (l *Lexer) panicfAtPosition(pos, end token.Pos, msg string, param ...interface{}) {
+	panic(l.errorfAtPosition(pos, end, msg, param...))
 }

@@ -26,7 +26,7 @@ select * from unnest([(1, 2), (3, 4)])
     Query: &ast.Select{
       Select:   22,
       Distinct: false,
-      AsStruct: false,
+      As:       nil,
       Results:  []ast.SelectItem{
         &ast.Star{
           Star: 29,
@@ -35,20 +35,17 @@ select * from unnest([(1, 2), (3, 4)])
       From: &ast.From{
         From:   31,
         Source: &ast.Unnest{
-          Unnest:   36,
-          Rparen:   59,
-          Implicit: false,
-          Expr:     &ast.ArrayLiteral{
-            Array:  0,
+          Unnest: 36,
+          Rparen: 59,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
             Lbrack: 43,
             Rbrack: 58,
             Type:   nil,
             Values: []ast.Expr{
-              &ast.StructLiteral{
-                Struct: 0,
+              &ast.TupleStructLiteral{
                 Lparen: 44,
                 Rparen: 49,
-                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 45,
@@ -64,11 +61,9 @@ select * from unnest([(1, 2), (3, 4)])
                   },
                 },
               },
-              &ast.StructLiteral{
-                Struct: 0,
+              &ast.TupleStructLiteral{
                 Lparen: 52,
                 Rparen: 57,
-                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 53,
@@ -102,4 +97,4 @@ select * from unnest([(1, 2), (3, 4)])
 }
 
 --- SQL
-INSERT INTO foo (foo, bar) SELECT * FROM UNNEST(ARRAY[STRUCT(1, 2), STRUCT(3, 4)])
+INSERT INTO foo (foo, bar) SELECT * FROM UNNEST([(1, 2), (3, 4)])

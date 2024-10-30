@@ -7,7 +7,7 @@
       Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLFullEdgeRight{
         First:         1,
-        Last:          5,
+        Last:          4,
         PatternFiller: &ast.GQLPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: (*ast.Ident)(nil),

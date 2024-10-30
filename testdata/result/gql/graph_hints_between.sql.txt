@@ -81,7 +81,7 @@ RETURN oa.id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         41,
-                          Last:          51,
+                          Last:          50,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -164,7 +164,7 @@ RETURN oa.id
                                 Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   First:         95,
-                                  Last:          110,
+                                  Last:          109,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{

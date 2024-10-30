@@ -11,7 +11,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -44,7 +44,7 @@ FROM
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    63,
           Alias: &ast.Ident{
             NamePos: 66,
             NameEnd: 67,

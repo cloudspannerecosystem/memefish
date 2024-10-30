@@ -148,6 +148,9 @@ RETURN src.id AS source_id, dest.id AS destination_id
                         },
                       },
                     },
+                    NamedArgs:    []*ast.NamedArg(nil),
+                    NullHandling: nil,
+                    Having:       nil,
                   },
                 },
               },
@@ -173,7 +176,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    112,
                   Alias: &ast.Ident{
                     NamePos: 115,
                     NameEnd: 124,
@@ -197,7 +200,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    134,
                   Alias: &ast.Ident{
                     NamePos: 137,
                     NameEnd: 151,

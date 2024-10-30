@@ -11,7 +11,7 @@ SELECT 'Dana' IN {
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.InExpr{
@@ -81,7 +81,7 @@ SELECT 'Dana' IN {
                                     Hint:     (*ast.Hint)(nil),
                                     PathTerm: &ast.GQLFullEdgeRight{
                                       First:         54,
-                                      Last:          64,
+                                      Last:          63,
                                       PatternFiller: &ast.GQLPatternFiller{
                                         Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
@@ -175,7 +175,7 @@ SELECT 'Dana' IN {
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    95,
           Alias: &ast.Ident{
             NamePos: 98,
             NameEnd: 105,

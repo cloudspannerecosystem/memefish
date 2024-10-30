@@ -12,7 +12,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -34,11 +34,8 @@ FROM
           As:     (*ast.AsAlias)(nil),
           Sample: (*ast.TableSample)(nil),
         },
-        Right: &ast.Unnest{
-          Unnest:   -1,
-          Rparen:   -1,
-          Implicit: true,
-          Expr:     &ast.Path{
+        Right: &ast.PathTableExpr{
+          Path: &ast.Path{
             Idents: []*ast.Ident{
               &ast.Ident{
                 NamePos: 34,

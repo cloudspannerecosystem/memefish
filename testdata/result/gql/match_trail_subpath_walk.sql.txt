@@ -84,7 +84,7 @@ RETURN COUNT(1) as num_paths
                                 Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   First:         45,
-                                  Last:          61,
+                                  Last:          60,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
@@ -183,9 +183,12 @@ RETURN COUNT(1) as num_paths
                       },
                     },
                   },
+                  NamedArgs:    []*ast.NamedArg(nil),
+                  NullHandling: nil,
+                  Having:       nil,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    95,
                   Alias: &ast.Ident{
                     NamePos: 98,
                     NameEnd: 107,

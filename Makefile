@@ -1,5 +1,5 @@
 .PHONY: test
-test:
+test: gen
 	@echo
 	@echo "  (x x) < memefish: test"
 	@echo "  /|||\\"
@@ -14,12 +14,24 @@ test:
 	@go build -o /dev/null ./examples/... ./tools/...
 
 .PHONY: lint
-lint: bin/golangci-lint
+lint: gen bin/golangci-lint
 	@echo
 	@echo "  (x x) < memefish: lint"
 	@echo "  /|||\\"
 	@echo
 	bin/golangci-lint run ./...
+
+.PHONY: gen
+gen:
+	@echo
+	@echo "  (x x) < memefish: gen"
+	@echo "  /|||\\"
+	@echo
+	go generate ./...
+
+.PHONY: check-gen
+check-gen: gen
+	git diff --exit-code
 
 .PHONY: docs
 docs:
@@ -27,13 +39,13 @@ docs:
 	@echo "  (x x) < memefish: docs"
 	@echo "  /|||\\"
 	@echo
-	cd docs && hugo
+	cd docs && hugo mod get -u && hugo
 
 .PHONY: ci
-ci: lint test
+ci: check-gen lint test
 
 .PHONY: fmt
-fmt:
+fmt: gen
 	go fmt ./...
 
 .PHONY: update-result

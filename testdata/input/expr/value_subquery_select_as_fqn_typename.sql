@@ -1,0 +1,1 @@
+(SELECT AS example.TypeName 1 AS i)

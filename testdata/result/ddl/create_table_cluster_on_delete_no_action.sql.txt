@@ -29,7 +29,8 @@ create table foo (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Options:       (*ast.ColumnDefOptions)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
     },
   },
   TableConstraints: []*ast.TableConstraint(nil),
@@ -44,7 +45,8 @@ create table foo (
       Dir: "",
     },
   },
-  Cluster: &ast.Cluster{
+  Synonyms: []*ast.Synonym(nil),
+  Cluster:  &ast.Cluster{
     Comma:       51,
     OnDeleteEnd: 115,
     TableName:   &ast.Ident{

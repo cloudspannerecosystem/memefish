@@ -8,7 +8,7 @@ select 1 A
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.IntLiteral{
@@ -18,7 +18,7 @@ select 1 A
           Value:    "1",
         },
         As: &ast.AsAlias{
-          As:    9,
+          As:    -1,
           Alias: &ast.Ident{
             NamePos: 9,
             NameEnd: 10,
@@ -37,4 +37,4 @@ select 1 A
 }
 
 --- SQL
-SELECT 1 AS A
+SELECT 1 A

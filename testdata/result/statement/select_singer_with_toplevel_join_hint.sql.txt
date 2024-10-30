@@ -31,7 +31,7 @@ FROM
   Query: &ast.Select{
     Select:   25,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 34,
@@ -51,7 +51,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    51,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 51,
               NameEnd: 52,
@@ -68,7 +68,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    81,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 81,
               NameEnd: 82,
@@ -122,4 +122,4 @@ FROM
 }
 
 --- SQL
-@{FORCE_JOIN_ORDER=TRUE} SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B ON A.SingerID = B.SingerID
+@{FORCE_JOIN_ORDER=TRUE} SELECT * FROM Singers A LEFT OUTER JOIN Singers B ON A.SingerID = B.SingerID

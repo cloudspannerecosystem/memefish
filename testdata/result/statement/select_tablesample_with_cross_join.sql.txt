@@ -14,7 +14,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -34,7 +34,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    26,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 26,
               NameEnd: 27,
@@ -51,7 +51,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    51,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 51,
               NameEnd: 52,
@@ -86,4 +86,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A CROSS JOIN Singers AS B TABLESAMPLE BERNOULLI (90 PERCENT)
+SELECT * FROM Singers A CROSS JOIN Singers B TABLESAMPLE BERNOULLI (90 PERCENT)

@@ -51,7 +51,7 @@ RETURN COUNT(1) as num_paths
                                 Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLAbbreviatedEdgeRight{
                                   First: 41,
-                                  Last:  42,
+                                  Last:  41,
                                 },
                                 Quantifier: &ast.GQLBoundedQuantifier{
                                   LBrace:     43,
@@ -106,9 +106,12 @@ RETURN COUNT(1) as num_paths
                       },
                     },
                   },
+                  NamedArgs:    []*ast.NamedArg(nil),
+                  NullHandling: nil,
+                  Having:       nil,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    66,
                   Alias: &ast.Ident{
                     NamePos: 69,
                     NameEnd: 78,

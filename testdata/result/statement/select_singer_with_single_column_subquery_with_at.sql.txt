@@ -11,7 +11,7 @@ SELECT (
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.ScalarSubQuery{
@@ -20,7 +20,7 @@ SELECT (
           Query:  &ast.Select{
             Select:   11,
             Distinct: false,
-            AsStruct: false,
+            As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -60,7 +60,7 @@ SELECT (
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    55,
           Alias: &ast.Ident{
             NamePos: 58,
             NameEnd: 60,

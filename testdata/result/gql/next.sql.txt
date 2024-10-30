@@ -71,7 +71,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         31,
-                          Last:          45,
+                          Last:          44,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
@@ -145,7 +145,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                   Rparen: 87,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    89,
                   Alias: &ast.Ident{
                     NamePos: 92,
                     NameEnd: 114,
@@ -292,7 +292,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    207,
                   Alias: &ast.Ident{
                     NamePos: 210,
                     NameEnd: 220,
@@ -316,7 +316,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    233,
                   Alias: &ast.Ident{
                     NamePos: 236,
                     NameEnd: 246,
@@ -402,7 +402,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                         Value:    "Bob",
                       },
                       As: &ast.AsAlias{
-                        As:    -1,
+                        As:    367,
                         Alias: &ast.Ident{
                           NamePos: 370,
                           NameEnd: 380,
@@ -418,7 +418,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                         Value:    "100",
                       },
                       As: &ast.AsAlias{
-                        As:    -1,
+                        As:    386,
                         Alias: &ast.Ident{
                           NamePos: 389,
                           NameEnd: 399,

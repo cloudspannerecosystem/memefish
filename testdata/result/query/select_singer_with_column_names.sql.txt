@@ -14,7 +14,7 @@ FROM Singers
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.Ident{
@@ -23,7 +23,7 @@ FROM Singers
           Name:    "SingerId",
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    18,
           Alias: &ast.Ident{
             NamePos: 21,
             NameEnd: 23,

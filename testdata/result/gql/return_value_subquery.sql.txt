@@ -148,7 +148,7 @@ RETURN VALUE {
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    103,
                   Alias: &ast.Ident{
                     NamePos: 106,
                     NameEnd: 113,

@@ -7,7 +7,7 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 7,
@@ -40,7 +40,7 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
                         Value:    "1",
                       },
                       As: &ast.AsAlias{
-                        As:    -1,
+                        As:    44,
                         Alias: &ast.Ident{
                           NamePos: 47,
                           NameEnd: 48,

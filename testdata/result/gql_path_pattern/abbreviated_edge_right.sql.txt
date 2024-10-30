@@ -7,7 +7,7 @@
       Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLAbbreviatedEdgeRight{
         First: 1,
-        Last:  2,
+        Last:  1,
       },
       Quantifier: nil,
     },

@@ -78,7 +78,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         42,
-                          Last:          57,
+                          Last:          56,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -176,9 +176,12 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                       },
                     },
                   },
+                  NamedArgs:    []*ast.NamedArg(nil),
+                  NullHandling: nil,
+                  Having:       nil,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    110,
                   Alias: &ast.Ident{
                     NamePos: 113,
                     NameEnd: 117,
@@ -202,7 +205,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    126,
                   Alias: &ast.Ident{
                     NamePos: 129,
                     NameEnd: 151,

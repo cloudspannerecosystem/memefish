@@ -13,7 +13,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -37,7 +37,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    -1,
+              As:    26,
               Alias: &ast.Ident{
                 NamePos: 29,
                 NameEnd: 30,
@@ -68,7 +68,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    -1,
+              As:    75,
               Alias: &ast.Ident{
                 NamePos: 78,
                 NameEnd: 79,
@@ -100,7 +100,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    -1,
+            As:    127,
             Alias: &ast.Ident{
               NamePos: 130,
               NameEnd: 131,

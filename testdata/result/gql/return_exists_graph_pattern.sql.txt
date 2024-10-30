@@ -64,7 +64,7 @@ RETURN EXISTS {
                               Hint:     (*ast.Hint)(nil),
                               PathTerm: &ast.GQLFullEdgeRight{
                                 First:         43,
-                                Last:          53,
+                                Last:          52,
                                 PatternFiller: &ast.GQLPatternFiller{
                                   Hint:                 (*ast.Hint)(nil),
                                   GraphPatternVariable: &ast.Ident{
@@ -150,7 +150,7 @@ RETURN EXISTS {
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    91,
                   Alias: &ast.Ident{
                     NamePos: 94,
                     NameEnd: 101,

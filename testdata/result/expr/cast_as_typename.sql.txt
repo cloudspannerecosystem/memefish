@@ -1,0 +1,35 @@
+--- cast_as_typename.sql
+CAST('order_number: "123"' AS examples.shipping.`Order`)
+--- AST
+&ast.CastExpr{
+  Cast:   0,
+  Rparen: 55,
+  Safe:   false,
+  Expr:   &ast.StringLiteral{
+    ValuePos: 5,
+    ValueEnd: 26,
+    Value:    "order_number: \"123\"",
+  },
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 38,
+        Name:    "examples",
+      },
+      &ast.Ident{
+        NamePos: 39,
+        NameEnd: 47,
+        Name:    "shipping",
+      },
+      &ast.Ident{
+        NamePos: 48,
+        NameEnd: 55,
+        Name:    "Order",
+      },
+    },
+  },
+}
+
+--- SQL
+CAST("order_number: \"123\"" AS examples.shipping.`Order`)

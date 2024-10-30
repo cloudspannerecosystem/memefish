@@ -108,7 +108,7 @@ RETURN n.name, a.id AS blocked_account_id
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         57,
-                          Last:          66,
+                          Last:          65,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
@@ -217,7 +217,7 @@ RETURN n.name, a.id AS blocked_account_id
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    118,
                   Alias: &ast.Ident{
                     NamePos: 121,
                     NameEnd: 139,

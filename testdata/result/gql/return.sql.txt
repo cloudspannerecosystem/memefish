@@ -63,7 +63,7 @@ ORDER BY num_incoming_transfers DESC
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         31,
-                          Last:          45,
+                          Last:          44,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
@@ -137,7 +137,7 @@ ORDER BY num_incoming_transfers DESC
                   Rparen: 87,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    89,
                   Alias: &ast.Ident{
                     NamePos: 92,
                     NameEnd: 114,
@@ -284,7 +284,7 @@ ORDER BY num_incoming_transfers DESC
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    205,
                   Alias: &ast.Ident{
                     NamePos: 208,
                     NameEnd: 218,

@@ -83,7 +83,7 @@ RETURN 'Dana' IN {
                                             Hint:     (*ast.Hint)(nil),
                                             PathTerm: &ast.GQLFullEdgeRight{
                                               First:         52,
-                                              Last:          62,
+                                              Last:          61,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 Hint:                 (*ast.Hint)(nil),
                                                 GraphPatternVariable: &ast.Ident{
@@ -177,7 +177,7 @@ RETURN 'Dana' IN {
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    93,
                   Alias: &ast.Ident{
                     NamePos: 96,
                     NameEnd: 103,

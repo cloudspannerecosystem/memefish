@@ -23,7 +23,7 @@ FROM
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
         Star: 9,
@@ -122,7 +122,7 @@ FROM
                 },
                 Hint: (*ast.Hint)(nil),
                 As:   &ast.AsAlias{
-                  As:    26,
+                  As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 26,
                     NameEnd: 27,
@@ -139,7 +139,7 @@ FROM
                 },
                 Hint: (*ast.Hint)(nil),
                 As:   &ast.AsAlias{
-                  As:    80,
+                  As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 80,
                     NameEnd: 81,
@@ -191,7 +191,7 @@ FROM
               },
               Hint: (*ast.Hint)(nil),
               As:   &ast.AsAlias{
-                As:    150,
+                As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 150,
                   NameEnd: 151,
@@ -243,7 +243,7 @@ FROM
             },
             Hint: (*ast.Hint)(nil),
             As:   &ast.AsAlias{
-              As:    221,
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 221,
                 NameEnd: 222,
@@ -295,7 +295,7 @@ FROM
           },
           Hint: (*ast.Hint)(nil),
           As:   &ast.AsAlias{
-            As:    291,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 291,
               NameEnd: 292,
@@ -349,4 +349,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM Singers AS A LEFT OUTER JOIN @{FORCE_JOIN_ORDER=TRUE} Singers AS B ON A.SingerID = B.SingerID INNER JOIN @{JOIN_TYPE=HASH_JOIN} Singers AS C ON A.SingerID = C.SingerID INNER JOIN @{JOIN_TYPE=APPLY_JOIN} Singers AS D ON A.SingerID = D.SingerID INNER JOIN @{JOIN_TYPE=LOOP_JOIN} Singers AS E ON A.SingerID = E.SingerID
+SELECT * FROM Singers A LEFT OUTER JOIN @{FORCE_JOIN_ORDER=TRUE} Singers B ON A.SingerID = B.SingerID INNER JOIN @{JOIN_TYPE=HASH_JOIN} Singers C ON A.SingerID = C.SingerID INNER JOIN @{JOIN_TYPE=APPLY_JOIN} Singers D ON A.SingerID = D.SingerID INNER JOIN @{JOIN_TYPE=LOOP_JOIN} Singers E ON A.SingerID = E.SingerID

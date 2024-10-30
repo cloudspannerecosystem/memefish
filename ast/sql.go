@@ -1,8 +1,61 @@
 package ast
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/cloudspannerecosystem/memefish/token"
 )
+
+// ================================================================================
+//
+// Helper functions for SQL()
+// These functions are intended for use within this file only.
+//
+// ================================================================================
+
+// sqlOpt outputs:
+//
+//	when node != nil: left + node.SQL() + right
+//	else            : empty string
+//
+// This function corresponds to sqlOpt in ast.go
+func sqlOpt[T interface {
+	Node
+	comparable
+}](left string, node T, right string) string {
+	var zero T
+	if node == zero {
+		return ""
+	}
+	return left + node.SQL() + right
+}
+
+// strOpt outputs:
+//
+//	when pred == true: s
+//	else            : empty string
+//
+// This function corresponds to {{if pred}}s{{end}} in ast.go
+func strOpt(pred bool, s string) string {
+	if pred {
+		return s
+	}
+	return ""
+}
+
+// sqlJoin outputs joined string of SQL() of all elems by sep.
+// This function corresponds to sqlJoin in ast.go
+func sqlJoin[T Node](elems []T, sep string) string {
+	var b strings.Builder
+	for i, r := range elems {
+		if i > 0 {
+			b.WriteString(sep)
+		}
+		b.WriteString(r.SQL())
+	}
+	return b.String()
+}
 
 type prec int
 
@@ -24,7 +77,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -116,37 +169,23 @@ func (c *CTE) SQL() string {
 }
 
 func (s *Select) SQL() string {
-	sql := "SELECT "
-	if s.Distinct {
-		sql += "DISTINCT "
-	}
-	if s.AsStruct {
-		sql += "AS STRUCT "
-	}
-	sql += s.Results[0].SQL()
-	for _, r := range s.Results[1:] {
-		sql += ", " + r.SQL()
-	}
-	if s.From != nil {
-		sql += " " + s.From.SQL()
-	}
-	if s.Where != nil {
-		sql += " " + s.Where.SQL()
-	}
-	if s.GroupBy != nil {
-		sql += " " + s.GroupBy.SQL()
-	}
-	if s.Having != nil {
-		sql += " " + s.Having.SQL()
-	}
-	if s.OrderBy != nil {
-		sql += " " + s.OrderBy.SQL()
-	}
-	if s.Limit != nil {
-		sql += " " + s.Limit.SQL()
-	}
-	return sql
+	return "SELECT " +
+		strOpt(s.Distinct, "DISTINCT ") +
+		sqlOpt("", s.As, " ") +
+		sqlJoin(s.Results, ", ") +
+		sqlOpt(" ", s.From, "") +
+		sqlOpt(" ", s.Where, "") +
+		sqlOpt(" ", s.GroupBy, "") +
+		sqlOpt(" ", s.Having, "") +
+		sqlOpt(" ", s.OrderBy, "") +
+		sqlOpt(" ", s.Limit, "")
 }
+
+func (a *AsStruct) SQL() string { return "AS STRUCT" }
+
+func (a *AsValue) SQL() string { return "AS VALUE" }
+
+func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
 
 func (c *CompoundQuery) SQL() string {
 	op := string(c.Op)
@@ -193,7 +232,7 @@ func (a *Alias) SQL() string {
 }
 
 func (a *AsAlias) SQL() string {
-	return "AS " + a.Alias.SQL()
+	return strOpt(!a.As.Invalid(), "AS ") + a.Alias.SQL()
 }
 
 func (e *ExprSelectItem) SQL() string {
@@ -262,25 +301,11 @@ func (o *Offset) SQL() string {
 // ================================================================================
 
 func (u *Unnest) SQL() string {
-	var sql string
-	if u.Implicit {
-		sql += u.Expr.SQL()
-	} else {
-		sql += "UNNEST(" + u.Expr.SQL() + ")"
-	}
-	if u.Hint != nil {
-		sql += " " + u.Hint.SQL()
-	}
-	if u.As != nil {
-		sql += " " + u.As.SQL()
-	}
-	if u.WithOffset != nil {
-		sql += " " + u.WithOffset.SQL()
-	}
-	if u.Sample != nil {
-		sql += " " + u.Sample.SQL()
-	}
-	return sql
+	return "UNNEST(" + u.Expr.SQL() + ")" +
+		sqlOpt("", u.Hint, "") +
+		sqlOpt(" ", u.As, "") +
+		sqlOpt(" ", u.WithOffset, "") +
+		sqlOpt(" ", u.Sample, "")
 }
 
 func (w *WithOffset) SQL() string {
@@ -303,6 +328,14 @@ func (t *TableName) SQL() string {
 		sql += " " + t.Sample.SQL()
 	}
 	return sql
+}
+
+func (e *PathTableExpr) SQL() string {
+	return e.Path.SQL() +
+		sqlOpt("", e.Hint, "") +
+		sqlOpt(" ", e.As, "") +
+		sqlOpt(" ", e.WithOffset, "") +
+		sqlOpt(" ", e.Sample, "")
 }
 
 func (s *SubQueryTableExpr) SQL() string {
@@ -497,35 +530,24 @@ func (i *IndexExpr) SQL() string {
 }
 
 func (c *CallExpr) SQL() string {
-	sql := c.Func.SQL() + "("
-	if c.Distinct {
-		sql += "DISTINCT "
-	}
-	for i, a := range c.Args {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += a.SQL()
-	}
-	sql += ")"
-	return sql
+	return c.Func.SQL() + "(" + strOpt(c.Distinct, "DISTINCT ") +
+		sqlJoin(c.Args, ", ") +
+		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
+		sqlJoin(c.NamedArgs, ", ") +
+		sqlOpt(" ", c.NullHandling, "") +
+		sqlOpt(" ", c.Having, "") +
+		")"
 }
 
-func (o *SequenceOption) SQL() string {
-	return o.Name.SQL() + " = " + o.Value.SQL()
-}
+func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
 
-func (o *SequenceOptions) SQL() string {
-	sql := "OPTIONS ("
-	for i, o := range o.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += o.SQL()
-	}
-	sql += ")"
-	return sql
-}
+func (i *IgnoreNulls) SQL() string { return "IGNORE NULLS" }
+
+func (r *RespectNulls) SQL() string { return "RESPECT NULLS" }
+
+func (h *HavingMax) SQL() string { return "HAVING MAX " + h.Expr.SQL() }
+
+func (h *HavingMin) SQL() string { return "HAVING MIN " + h.Expr.SQL() }
 
 func (s *ExprArg) SQL() string {
 	return s.Expr.SQL()
@@ -561,7 +583,7 @@ func (a *AtTimeZone) SQL() string {
 }
 
 func (c *CastExpr) SQL() string {
-	return "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
+	return strOpt(c.Safe, "SAFE_") + "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
 }
 
 func (c *CaseExpr) SQL() string {
@@ -617,50 +639,25 @@ func (i *Ident) SQL() string {
 }
 
 func (p *Path) SQL() string {
-	sql := p.Idents[0].SQL()
-	for _, id := range p.Idents[1:] {
-		sql += "." + id.SQL()
-	}
-	return sql
+	return sqlJoin(p.Idents, ".")
 }
 
 func (a *ArrayLiteral) SQL() string {
-	sql := "ARRAY"
-	if a.Type != nil {
-		sql += "<" + a.Type.SQL() + ">"
-	}
-	sql += "["
-	for i, v := range a.Values {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += "]"
-	return sql
+	return strOpt(!a.Array.Invalid(), "ARRAY") +
+		sqlOpt("<", a.Type, ">") +
+		"[" + sqlJoin(a.Values, ", ") + "]"
 }
 
-func (s *StructLiteral) SQL() string {
-	sql := "STRUCT"
-	if s.Fields != nil {
-		sql += "<"
-		for i, f := range s.Fields {
-			if i != 0 {
-				sql += ", "
-			}
-			sql += f.SQL()
-		}
-		sql += ">"
-	}
-	sql += "("
-	for i, v := range s.Values {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += ")"
-	return sql
+func (s *TupleStructLiteral) SQL() string {
+	return "(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypedStructLiteral) SQL() string {
+	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypelessStructLiteral) SQL() string {
+	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
 }
 
 func (*NullLiteral) SQL() string {
@@ -703,6 +700,39 @@ func (t *NumericLiteral) SQL() string {
 	return "NUMERIC " + t.Value.SQL()
 }
 
+func (t *JSONLiteral) SQL() string {
+	return "JSON " + t.Value.SQL()
+}
+
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+func (n *NewConstructor) SQL() string {
+	return "NEW " + n.Type.SQL() + "(" + sqlJoin(n.Args, ", ") + ")"
+}
+
+func (b *BracedNewConstructor) SQL() string {
+	return "NEW " + b.Type.SQL() + " " + b.Body.SQL()
+}
+
+func (b *BracedConstructor) SQL() string {
+	return "{" + sqlJoin(b.Fields, ", ") + "}"
+}
+
+func (b *BracedConstructorField) SQL() string {
+	if _, ok := b.Value.(*BracedConstructor); ok {
+		// Name {...}
+		return b.Name.SQL() + " " + b.Value.SQL()
+	}
+	// Name: value
+	return b.Name.SQL() + b.Value.SQL()
+}
+
+func (b *BracedConstructorFieldValueExpr) SQL() string { return ": " + b.Expr.SQL() }
+
 // ================================================================================
 //
 // Type
@@ -735,6 +765,17 @@ func (f *StructField) SQL() string {
 		sql += f.Ident.SQL() + " "
 	}
 	sql += f.Type.SQL()
+	return sql
+}
+
+func (n *NamedType) SQL() string {
+	var sql string
+	for i, elem := range n.Path {
+		if i > 0 {
+			sql += "."
+		}
+		sql += elem.SQL()
+	}
 	return sql
 }
 
@@ -776,42 +817,47 @@ func (v *ExistsGQLSubQuery) SQL() string {
 //
 // ================================================================================
 
+func (g *Options) SQL() string { return "OPTIONS (" + sqlJoin(g.Records, ", ") + ")" }
+
+func (g *OptionsDef) SQL() string {
+	// Lowercase "null", "true", "false" is popular in option values.
+	var valueSql string
+	switch v := g.Value.(type) {
+	case *NullLiteral:
+		valueSql = "null"
+	case *BoolLiteral:
+		valueSql = strconv.FormatBool(v.Value)
+	default:
+		valueSql = g.Value.SQL()
+	}
+	return g.Name.SQL() + " = " + valueSql
+}
+
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
-func (c *CreateTable) SQL() string {
-	sql := "CREATE TABLE "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " ("
-	for i, c := range c.Columns {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += c.SQL()
-	}
-	for _, c := range c.TableConstraints {
-		sql += ", " + c.SQL()
-	}
-	sql += ") "
-	sql += "PRIMARY KEY ("
-	for i, k := range c.PrimaryKeys {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += k.SQL()
-	}
-	sql += ")"
-	if c.Cluster != nil {
-		sql += c.Cluster.SQL()
-	}
-	if c.RowDeletionPolicy != nil {
-		sql += c.RowDeletionPolicy.SQL()
-	}
-	return sql
+func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
+
+func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
+
+func (d *AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }
+
+func (c *CreateTable) SQL() string {
+	return "CREATE TABLE " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " (" +
+		sqlJoin(c.Columns, ", ") + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ", ") +
+		sqlJoin(c.TableConstraints, ", ") + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ", ") +
+		sqlJoin(c.Synonyms, ", ") +
+		") PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		sqlOpt("", c.Cluster, "") +
+		sqlOpt("", c.RowDeletionPolicy, "")
+}
+
+func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
 	sql := "CREATE SEQUENCE "
@@ -835,21 +881,15 @@ func (c *CreateView) SQL() string {
 	return sql
 }
 
+func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
+
 func (c *ColumnDef) SQL() string {
-	sql := c.Name.SQL() + " " + c.Type.SQL()
-	if c.NotNull {
-		sql += " NOT NULL"
-	}
-	if c.DefaultExpr != nil {
-		sql += " " + c.DefaultExpr.SQL()
-	}
-	if c.GeneratedExpr != nil {
-		sql += " " + c.GeneratedExpr.SQL()
-	}
-	if c.Options != nil {
-		sql += " " + c.Options.SQL()
-	}
-	return sql
+	return c.Name.SQL() + " " + c.Type.SQL() +
+		strOpt(c.NotNull, " NOT NULL") +
+		sqlOpt(" ", c.DefaultExpr, "") +
+		sqlOpt(" ", c.GeneratedExpr, "") +
+		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *TableConstraint) SQL() string {
@@ -894,17 +934,7 @@ func (c *ColumnDefaultExpr) SQL() string {
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
-	return "AS (" + g.Expr.SQL() + ") STORED"
-}
-
-func (c *ColumnDefOptions) SQL() string {
-	sql := "OPTIONS(allow_commit_timestamp = "
-	if c.AllowCommitTimestamp {
-		sql += "true)"
-	} else {
-		sql += "null)"
-	}
-	return sql
+	return "AS (" + g.Expr.SQL() + ")" + strOpt(!g.Stored.Invalid(), " STORED")
 }
 
 func (i *IndexKey) SQL() string {
@@ -934,6 +964,12 @@ func (r *RowDeletionPolicy) SQL() string {
 func (a *AlterTable) SQL() string {
 	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
+
+func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }
+
+func (s *DropSynonym) SQL() string { return "DROP SYNONYM " + s.Name.SQL() }
+
+func (t *RenameTo) SQL() string { return "RENAME TO " + t.Name.SQL() + sqlOpt(", ", t.AddSynonym, "") }
 
 func (a *AddColumn) SQL() string {
 	sql := "ADD COLUMN "
@@ -972,24 +1008,20 @@ func (s *SetOnDelete) SQL() string {
 }
 
 func (a *AlterColumn) SQL() string {
-	sql := "ALTER COLUMN " + a.Name.SQL() + " " + a.Type.SQL()
-	if a.NotNull {
-		sql += " NOT NULL"
-	}
-	if a.DefaultExpr != nil {
-		sql += " " + a.DefaultExpr.SQL()
-	}
-	return sql
+	return "ALTER COLUMN " + a.Name.SQL() + " " + a.Alteration.SQL()
 }
 
-func (a *AlterColumnSet) SQL() string {
-	sql := "ALTER COLUMN " + a.Name.SQL() + " SET "
-	if a.Options != nil {
-		return sql + a.Options.SQL()
-	} else {
-		return sql + a.DefaultExpr.SQL()
-	}
+func (a *AlterColumnType) SQL() string {
+	return a.Type.SQL() +
+		strOpt(a.NotNull, " NOT NULL") +
+		sqlOpt(" ", a.DefaultExpr, "")
 }
+
+func (a *AlterColumnSetOptions) SQL() string { return "SET " + a.Options.SQL() }
+
+func (a *AlterColumnSetDefault) SQL() string { return "SET " + a.DefaultExpr.SQL() }
+
+func (a *AlterColumnDropDefault) SQL() string { return "DROP DEFAULT" }
 
 func (d *DropTable) SQL() string {
 	sql := "DROP TABLE "
@@ -998,6 +1030,10 @@ func (d *DropTable) SQL() string {
 	}
 	return sql + d.Name.SQL()
 }
+
+func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.Tos, ", ") }
+
+func (r *RenameTableTo) SQL() string { return r.Old.SQL() + " TO " + r.New.SQL() }
 
 func (c *CreateIndex) SQL() string {
 	sql := "CREATE "
@@ -1042,31 +1078,10 @@ func (c *CreateVectorIndex) SQL() string {
 	return sql
 }
 
-func (v *VectorIndexOptions) SQL() string {
-	sql := "OPTIONS ("
-	for i, o := range v.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += o.SQL()
-	}
-	sql += ")"
-	return sql
-}
-
-func (v *VectorIndexOption) SQL() string {
-	return v.Key.SQL() + "=" + v.Value.SQL()
-}
-
 func (c *CreateChangeStream) SQL() string {
-	sql := "CREATE CHANGE STREAM " + c.Name.SQL()
-	if c.For != nil {
-		sql += " " + c.For.SQL()
-	}
-	if c.Options != nil {
-		sql += c.Options.SQL()
-	}
-	return sql
+	return "CREATE CHANGE STREAM " + c.Name.SQL() +
+		sqlOpt(" ", c.For, "") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *ChangeStreamForAll) SQL() string {
@@ -1081,18 +1096,6 @@ func (c *ChangeStreamForTables) SQL() string {
 		}
 		sql += table.SQL()
 	}
-	return sql
-}
-
-func (c *ChangeStreamOptions) SQL() string {
-	sql := " OPTIONS ("
-	for i, record := range c.Records {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += record.Key.SQL() + "=" + record.Value.SQL()
-	}
-	sql += ")"
 	return sql
 }
 
@@ -1273,6 +1276,10 @@ func (d *DeletePrivilege) SQL() string {
 	return "DELETE"
 }
 
+func (p *SelectPrivilegeOnChangeStream) SQL() string {
+	return "SELECT ON CHANGE STREAM " + sqlJoin(p.Names, ", ")
+}
+
 func (s *SelectPrivilegeOnView) SQL() string {
 	sql := "SELECT ON VIEW " + s.Names[0].SQL()
 	for _, v := range s.Names[1:] {
@@ -1295,6 +1302,10 @@ func (r *RolePrivilege) SQL() string {
 		sql += ", " + id.SQL()
 	}
 	return sql
+}
+
+func (s *AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
 }
 
 // ================================================================================
@@ -1320,6 +1331,31 @@ func (s *SizedSchemaType) SQL() string {
 
 func (a *ArraySchemaType) SQL() string {
 	return "ARRAY<" + a.Item.SQL() + ">"
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+func (c *CreateSearchIndex) SQL() string {
+	return "CREATE SEARCH INDEX " + c.Name.SQL() + " ON " + c.TableName.SQL() +
+		"(" + sqlJoin(c.TokenListPart, ", ") + ")" +
+		sqlOpt(" ", c.Storing, "") +
+		strOpt(len(c.PartitionColumns) > 0, " PARTITION BY "+sqlJoin(c.PartitionColumns, ", ")) +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Where, "") +
+		sqlOpt("", c.Interleave, "") +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (d *DropSearchIndex) SQL() string {
+	return "DROP SEARCH INDEX " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (a *AlterSearchIndex) SQL() string {
+	return "ALTER SEARCH INDEX " + a.Name.SQL() + " " + a.IndexAlteration.SQL()
 }
 
 // ================================================================================
@@ -1401,12 +1437,7 @@ func (u *Update) SQL() string {
 }
 
 func (u *UpdateItem) SQL() string {
-	sql := u.Path[0].SQL()
-	for _, id := range u.Path[1:] {
-		sql += "." + id.SQL()
-	}
-	sql += " = " + u.Expr.SQL()
-	return sql
+	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }
 
 // GQL

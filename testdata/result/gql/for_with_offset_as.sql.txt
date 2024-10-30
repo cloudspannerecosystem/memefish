@@ -72,7 +72,7 @@ RETURN p.name, element, off
               Name:    "element",
             },
             ArrayExpression: &ast.ArrayLiteral{
-              Array:  0,
+              Array:  -1,
               Lbrack: 47,
               Rbrack: 48,
               Type:   nil,
@@ -136,5 +136,5 @@ RETURN p.name, element, off
 --- SQL
 GRAPH FinGraph
 MATCH (p:Person)
-FOR element IN ARRAY[] WITH OFFSET AS off
+FOR element IN [] WITH OFFSET AS off
 RETURN p.name, element, off

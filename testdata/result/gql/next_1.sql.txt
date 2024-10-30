@@ -64,7 +64,7 @@ RETURN
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         31,
-                          Last:          45,
+                          Last:          44,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),
@@ -138,7 +138,7 @@ RETURN
                   Rparen: 87,
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    89,
                   Alias: &ast.Ident{
                     NamePos: 92,
                     NameEnd: 114,
@@ -285,7 +285,7 @@ RETURN
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    207,
                   Alias: &ast.Ident{
                     NamePos: 210,
                     NameEnd: 220,
@@ -309,7 +309,7 @@ RETURN
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    233,
                   Alias: &ast.Ident{
                     NamePos: 236,
                     NameEnd: 246,

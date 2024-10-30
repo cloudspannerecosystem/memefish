@@ -62,7 +62,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           First:         42,
-                          Last:          64,
+                          Last:          63,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -176,7 +176,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    147,
                   Alias: &ast.Ident{
                     NamePos: 150,
                     NameEnd: 160,
@@ -200,7 +200,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                   },
                 },
                 As: &ast.AsAlias{
-                  As:    -1,
+                  As:    178,
                   Alias: &ast.Ident{
                     NamePos: 181,
                     NameEnd: 196,

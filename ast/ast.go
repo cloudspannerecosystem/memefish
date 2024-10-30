@@ -2,24 +2,24 @@
 //
 // The definitions of ASTs are based on the following document.
 //
-//   - <https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language>
-//   - <https://cloud.google.com/spanner/docs/query-syntax>
+//   - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+//   - https://cloud.google.com/spanner/docs/query-syntax
 //
-// Each `Node`'s documentation describes its syntax (SQL representation) in a `text/template`
+// Each Node's documentation describes its syntax (SQL representation) in a text/template
 // fashion with thw following custom functions.
 //
-//   - `sql node`: Returns the SQL representation of `node`.
-//   - `sqlOpt node`: Like `sql node`, but returns the empty string if `node` is `nil`.
-//   - `sqlJoin sep nodes`: Concatenates the SQL representations of `nodes` with `sep`.
-//   - `sqlIdentQuote x`: Quotes the given identifier string if needed.
-//   - `sqlStringQuote s`: Returns the SQL quoted string of `s`.
-//   - `sqlBytesQuote bs`: Returns the SQL quotes bytes of `bs`.
-//   - `isnil v`: Checks whether `v` is `nil` or others.
+//   - sql node: Returns the SQL representation of node.
+//   - sqlOpt node: Like sql node, but returns the empty string if node is nil.
+//   - sqlJoin sep nodes: Concatenates the SQL representations of nodes with sep.
+//   - sqlIdentQuote x: Quotes the given identifier string if needed.
+//   - sqlStringQuote s: Returns the SQL quoted string of s.
+//   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - isnil v: Checks whether v is nil or others.
 //
-// Each `Node`s documentation has `pos` and `end` information using the following EBNF.
+// Each Node's documentation has pos and end information using the following EBNF.
 //
 //	PosChoice -> PosExpr ("||" PosExpr)*
-//	PosExpr   -> PosAtom ("+" IntAtom)?
+//	PosExpr   -> PosAtom ("+" IntAtom)*
 //	PosAtom   -> PosVar | NodeExpr "." ("pos" | "end")
 //	NodeExpr  -> NodeAtom | "(" NodeAtom ("??" NodeAtom)* ")"
 //	NodeAtom  -> NodeVar | NodeSliceVar "[" (IntAtom | "$") "]"
@@ -28,8 +28,12 @@
 //	           | "(" BoolVar "?" IntAtom ":" IntAtom ")"
 //	IntVal    -> "0" | "1" | ...
 //
-//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its `struct` definition.)
+//	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
+
+// This file must contain only AST definitions.
+// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
+//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -50,30 +54,44 @@ type Statement interface {
 	isStatement()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
 func (QueryStatement) isStatement()     {}
+func (CreateSchema) isStatement()       {}
+func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
+func (AlterDatabase) isStatement()      {}
 func (CreateTable) isStatement()        {}
-func (CreateSequence) isStatement()     {}
-func (CreateView) isStatement()         {}
-func (CreateIndex) isStatement()        {}
-func (CreateVectorIndex) isStatement()  {}
-func (CreateRole) isStatement()         {}
 func (AlterTable) isStatement()         {}
-func (AlterIndex) isStatement()         {}
-func (AlterSequence) isStatement()      {}
 func (DropTable) isStatement()          {}
+func (RenameTable) isStatement()        {}
+func (CreateIndex) isStatement()        {}
+func (AlterIndex) isStatement()         {}
 func (DropIndex) isStatement()          {}
-func (DropVectorIndex) isStatement()    {}
-func (DropSequence) isStatement()       {}
-func (DropRole) isStatement()           {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
+func (CreateSearchIndex) isStatement()  {}
+func (DropSearchIndex) isStatement()    {}
+func (AlterSearchIndex) isStatement()   {}
+func (CreateView) isStatement()         {}
+func (DropView) isStatement()           {}
 func (CreateChangeStream) isStatement() {}
 func (AlterChangeStream) isStatement()  {}
 func (DropChangeStream) isStatement()   {}
+func (CreateRole) isStatement()         {}
+func (DropRole) isStatement()           {}
+func (Grant) isStatement()              {}
+func (Revoke) isStatement()             {}
+func (CreateSequence) isStatement()     {}
+func (AlterSequence) isStatement()      {}
+func (DropSequence) isStatement()       {}
+func (AlterStatistics) isStatement()    {}
+func (CreateVectorIndex) isStatement()  {}
+func (DropVectorIndex) isStatement()    {}
+func (Insert) isStatement()             {}
+func (Delete) isStatement()             {}
+func (Update) isStatement()             {}
 
 // GRAPH query is top level statement which can be executed by ExecuteSQL API.
 func (*GQLGraphQuery) isStatement() {}
@@ -99,6 +117,16 @@ func (DotStar) isSelectItem()        {}
 func (Alias) isSelectItem()          {}
 func (ExprSelectItem) isSelectItem() {}
 
+// SelectAs represents AS VALUE/STRUCT/typename clause in SELECT clause.
+type SelectAs interface {
+	Node
+	isSelectAs()
+}
+
+func (AsStruct) isSelectAs()   {}
+func (AsValue) isSelectAs()    {}
+func (AsTypeName) isSelectAs() {}
+
 // TableExpr represents JOIN operands.
 type TableExpr interface {
 	Node
@@ -107,6 +135,7 @@ type TableExpr interface {
 
 func (Unnest) isTableExpr()            {}
 func (TableName) isTableExpr()         {}
+func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
@@ -127,42 +156,48 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()         {}
-func (UnaryExpr) isExpr()          {}
-func (InExpr) isExpr()             {}
-func (IsNullExpr) isExpr()         {}
-func (IsBoolExpr) isExpr()         {}
-func (IsSourceExpr) isExpr()       {}
-func (IsDestinationExpr) isExpr()  {}
-func (BetweenExpr) isExpr()        {}
-func (SelectorExpr) isExpr()       {}
-func (IndexExpr) isExpr()          {}
-func (CallExpr) isExpr()           {}
-func (CountStarExpr) isExpr()      {}
-func (CastExpr) isExpr()           {}
-func (ExtractExpr) isExpr()        {}
-func (CaseExpr) isExpr()           {}
-func (ParenExpr) isExpr()          {}
-func (ScalarSubQuery) isExpr()     {}
-func (ArraySubQuery) isExpr()      {}
-func (ExistsSubQuery) isExpr()     {}
-func (Param) isExpr()              {}
-func (Ident) isExpr()              {}
-func (Path) isExpr()               {}
-func (ArrayLiteral) isExpr()       {}
-func (StructLiteral) isExpr()      {}
-func (NullLiteral) isExpr()        {}
-func (BoolLiteral) isExpr()        {}
-func (IntLiteral) isExpr()         {}
-func (FloatLiteral) isExpr()       {}
-func (StringLiteral) isExpr()      {}
-func (BytesLiteral) isExpr()       {}
-func (DateLiteral) isExpr()        {}
-func (TimestampLiteral) isExpr()   {}
-func (NumericLiteral) isExpr()     {}
-func (*ArrayGQLSubQuery) isExpr()  {}
-func (*ValueGQLSubQuery) isExpr()  {}
-func (*ExistsGQLSubQuery) isExpr() {}
+func (BinaryExpr) isExpr()            {}
+func (UnaryExpr) isExpr()             {}
+func (InExpr) isExpr()                {}
+func (IsNullExpr) isExpr()            {}
+func (IsBoolExpr) isExpr()            {}
+func (IsSourceExpr) isExpr()          {}
+func (IsDestinationExpr) isExpr()     {}
+func (BetweenExpr) isExpr()           {}
+func (SelectorExpr) isExpr()          {}
+func (IndexExpr) isExpr()             {}
+func (CallExpr) isExpr()              {}
+func (CountStarExpr) isExpr()         {}
+func (CastExpr) isExpr()              {}
+func (ExtractExpr) isExpr()           {}
+func (CaseExpr) isExpr()              {}
+func (ParenExpr) isExpr()             {}
+func (ScalarSubQuery) isExpr()        {}
+func (ArraySubQuery) isExpr()         {}
+func (ExistsSubQuery) isExpr()        {}
+func (Param) isExpr()                 {}
+func (Ident) isExpr()                 {}
+func (Path) isExpr()                  {}
+func (ArrayLiteral) isExpr()          {}
+func (TupleStructLiteral) isExpr()    {}
+func (TypelessStructLiteral) isExpr() {}
+func (TypedStructLiteral) isExpr()    {}
+func (NullLiteral) isExpr()           {}
+func (BoolLiteral) isExpr()           {}
+func (IntLiteral) isExpr()            {}
+func (FloatLiteral) isExpr()          {}
+func (StringLiteral) isExpr()         {}
+func (BytesLiteral) isExpr()          {}
+func (DateLiteral) isExpr()           {}
+func (TimestampLiteral) isExpr()      {}
+func (NumericLiteral) isExpr()        {}
+func (JSONLiteral) isExpr()           {}
+func (NewConstructor) isExpr()        {}
+func (BracedNewConstructor) isExpr()  {}
+func (BracedConstructor) isExpr()     {}
+func (ArrayGQLSubQuery) isExpr()      {}
+func (ValueGQLSubQuery) isExpr()      {}
+func (ExistsGQLSubQuery) isExpr()     {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -173,6 +208,24 @@ type Arg interface {
 func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
+
+// NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
+type NullHandlingModifier interface {
+	Node
+	isNullHandlingModifier()
+}
+
+func (IgnoreNulls) isNullHandlingModifier()  {}
+func (RespectNulls) isNullHandlingModifier() {}
+
+// HavingModifier represents HAVING clause of aggregate function calls.
+type HavingModifier interface {
+	Node
+	isHavingModifier()
+}
+
+func (HavingMax) isHavingModifier() {}
+func (HavingMin) isHavingModifier() {}
 
 // InCondition is right-side value of IN operator.
 type InCondition interface {
@@ -185,6 +238,24 @@ func (SubQueryInCondition) isInCondition()     {}
 func (ValuesInCondition) isInCondition()       {}
 func (*GQLSubQueryInCondition) isInCondition() {}
 
+// TypelessStructLiteralArg represents an argument of typeless STRUCT literals.
+type TypelessStructLiteralArg interface {
+	Node
+	isTypelessStructLiteralArg()
+}
+
+func (ExprArg) isTypelessStructLiteralArg() {}
+func (Alias) isTypelessStructLiteralArg()   {}
+
+// NewConstructorArg represents an argument of NEW constructors.
+type NewConstructorArg interface {
+	Node
+	isNewConstructorArg()
+}
+
+func (ExprArg) isNewConstructorArg() {}
+func (Alias) isNewConstructorArg()   {}
+
 // Type represents type node.
 type Type interface {
 	Node
@@ -194,6 +265,7 @@ type Type interface {
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
+func (NamedType) isType()  {}
 
 // IntValue represents integer values in SQL.
 type IntValue interface {
@@ -233,26 +305,39 @@ type DDL interface {
 	isDDL()
 }
 
+// The order of this list follows the official documentation:
+//
+// - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
+
+func (CreateSchema) isDDL()       {}
+func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
+func (AlterDatabase) isDDL()      {}
 func (CreateTable) isDDL()        {}
-func (CreateView) isDDL()         {}
-func (CreateSequence) isDDL()     {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
+func (RenameTable) isDDL()        {}
 func (CreateIndex) isDDL()        {}
-func (CreateVectorIndex) isDDL()  {}
 func (AlterIndex) isDDL()         {}
-func (AlterSequence) isDDL()      {}
 func (DropIndex) isDDL()          {}
-func (DropVectorIndex) isDDL()    {}
-func (DropSequence) isDDL()       {}
+func (CreateView) isDDL()         {}
+func (CreateSearchIndex) isDDL()  {}
+func (DropSearchIndex) isDDL()    {}
+func (AlterSearchIndex) isDDL()   {}
+func (DropView) isDDL()           {}
+func (CreateChangeStream) isDDL() {}
+func (AlterChangeStream) isDDL()  {}
+func (DropChangeStream) isDDL()   {}
 func (CreateRole) isDDL()         {}
 func (DropRole) isDDL()           {}
 func (Grant) isDDL()              {}
 func (Revoke) isDDL()             {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
+func (CreateSequence) isDDL()     {}
+func (AlterSequence) isDDL()      {}
+func (DropSequence) isDDL()       {}
+func (AlterStatistics) isDDL()    {}
+func (CreateVectorIndex) isDDL()  {}
+func (DropVectorIndex) isDDL()    {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -269,6 +354,9 @@ type TableAlteration interface {
 	isTableAlteration()
 }
 
+func (AddSynonym) isTableAlteration()               {}
+func (DropSynonym) isTableAlteration()              {}
+func (RenameTo) isTableAlteration()                 {}
 func (AddColumn) isTableAlteration()                {}
 func (AddTableConstraint) isTableAlteration()       {}
 func (AddRowDeletionPolicy) isTableAlteration()     {}
@@ -278,7 +366,17 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
-func (AlterColumnSet) isTableAlteration()           {}
+
+// ColumnAlteration represents ALTER COLUMN action in ALTER TABLE.
+type ColumnAlteration interface {
+	Node
+	isColumnAlteration()
+}
+
+func (AlterColumnType) isColumnAlteration()        {}
+func (AlterColumnSetOptions) isColumnAlteration()  {}
+func (AlterColumnSetDefault) isColumnAlteration()  {}
+func (AlterColumnDropDefault) isColumnAlteration() {}
 
 // Privilege represents privileges specified by GRANT and REVOKE.
 type Privilege interface {
@@ -287,6 +385,7 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                {}
+func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
 func (RolePrivilege) isPrivilege()                   {}
@@ -311,6 +410,7 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+func (NamedType) isSchemaType()        {}
 
 // IndexAlteration represents ALTER INDEX action.
 type IndexAlteration interface {
@@ -369,13 +469,12 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{if .Hint}}{{.Hint | sql}}{{end}}
-//	{{.Expr | sql}}
+//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type QueryStatement struct {
-	// pos = (Hint ?? With ?? Expr).pos
-	// end = Expr.end
+	// pos = (Hint ?? With ?? Query).pos
+	// end = Query.end
 
 	Hint  *Hint // optional
 	With  *With // optional
@@ -435,7 +534,7 @@ type CTE struct {
 //
 //	SELECT
 //	  {{if .Distinct}}DISTINCT{{end}}
-//	  {{if .AsStruct}}AS STRUCT{{end}}
+//	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
@@ -450,7 +549,7 @@ type Select struct {
 	Select token.Pos // position of "select" keyword
 
 	Distinct bool
-	AsStruct bool
+	As       SelectAs     // optional
 	Results  []SelectItem // len(Results) > 0
 	From     *From        // optional
 	Where    *Where       // optional
@@ -458,6 +557,39 @@ type Select struct {
 	Having   *Having      // optional
 	OrderBy  *OrderBy     // optional
 	Limit    *Limit       // optional
+}
+
+// AsStruct represents AS STRUCT node in SELECT clause.
+//
+//	AS STRUCT
+type AsStruct struct {
+	// pos = As
+	// end = Struct + 6
+
+	As     token.Pos
+	Struct token.Pos
+}
+
+// AsValue represents AS VALUE node in SELECT clause.
+//
+//	AS VALUE
+type AsValue struct {
+	// pos = As
+	// end = Value + 5
+
+	As    token.Pos
+	Value token.Pos
+}
+
+// AsTypeName represents AS typename node in SELECT clause.
+//
+//	AS {{.TypeName | sql}}
+type AsTypeName struct {
+	// pos = As
+	// end = TypeName.end
+
+	As       token.Pos
+	TypeName *NamedType
 }
 
 // CompoundQuery is query statement node compounded by set operators.
@@ -471,17 +603,17 @@ type CompoundQuery struct {
 
 	Op       SetOp
 	Distinct bool
-	Queries  []QueryExpr // len(List) >= 2
+	Queries  []QueryExpr // len(Queries) >= 2
 	OrderBy  *OrderBy    // optional
 	Limit    *Limit      // optional
 }
 
 // SubQuery is subquery statement node.
 //
-//	({{.Expr | sql}} {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}})
+//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Query ?? Limit).end || Rparen + 1
+	// end = (Limit ?? OrderBy).end || Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
@@ -512,7 +644,10 @@ type DotStar struct {
 	Expr Expr
 }
 
-// Alias is aliased expression by AS clause in SELECT result columns list.
+// Alias is aliased expression by AS clause.
+//
+// Typically, this appears in SELECT result columns list, but this can appear in typeless STRUCT literals
+// and NEW constructors.
 //
 //	{{.Expr | sql}} {{.As | sql}}
 type Alias struct {
@@ -527,16 +662,12 @@ type Alias struct {
 //
 // It is used in Alias node and some JoinExpr nodes.
 //
-// NOTE: Sometime keyword AS can be omited.
-//
-//	  In this case, it.token.Pos() == it.Alias.token.Pos(), so we can detect this.
-//
-//	AS {{.Alias | sql}}
+//	{{if not .As.Invalid}}AS {{end}}{{.Alias | sql}}
 type AsAlias struct {
 	// pos = As || Alias.pos
 	// end = Alias.end
 
-	As token.Pos // position of "AS" keyword
+	As token.Pos // position of "AS" keyword, optional
 
 	Alias *Ident
 }
@@ -670,19 +801,18 @@ type Offset struct {
 
 // Unnest is UNNEST call in FROM clause.
 //
-//	{{if .Implicit}}{{.Expr | sql}}{{else}}UNNEST({{.Expr | sql}}){{end}}
-//	  {{.Hint | sqlOpt}}
-//	  {{.As | sqlOpt}}
-//	  {{.WithOffset | sqlOpt}}
-//	  {{.Sample | sqlOpt}}
+//	UNNEST({{.Expr | sql}})
+//	{{.Hint | sqlOpt}}
+//	{{.As | sqlOpt}}
+//	{{.WithOffset | sqlOpt}}
+//	{{.Sample | sqlOpt}}
 type Unnest struct {
-	// pos = Unnest || Expr.pos
+	// pos = Unnest
 	// end = (Sample ?? WithOffset ?? As ?? Hint).end || Rparen + 1 || Expr.end
 
 	Unnest token.Pos // position of "UNNEST"
 	Rparen token.Pos // position of ")"
 
-	Implicit   bool
 	Expr       Expr         // Path or Ident when Implicit is true
 	Hint       *Hint        // optional
 	As         *AsAlias     // optional
@@ -713,6 +843,22 @@ type TableName struct {
 	Hint   *Hint        // optional
 	As     *AsAlias     // optional
 	Sample *TableSample // optional
+}
+
+// PathTableExpr is path expression node in FROM clause.
+// Parser cannot distinguish between `implicit UNNEST` and tables in a named schema.
+// It is the job of a later phase to determine this distinction.
+//
+//	{{.Path | sql}} {{.Hint | sqlOpt}} {{.As | sqlOpt}} {{.Sample | sqlOpt}}
+type PathTableExpr struct {
+	// pos = Path.pos
+	// end = (Sample ?? WithOffset ?? As ?? Hint ?? Path).end
+
+	Path       *Path
+	Hint       *Hint        // optional
+	As         *AsAlias     // optional
+	WithOffset *WithOffset  // optional
+	Sample     *TableSample // optional
 }
 
 // SubQueryTableExpr is subquery inside JOIN expression.
@@ -746,8 +892,9 @@ type ParenTableExpr struct {
 //
 //	GRAPH_TABLE({{.PropertyGraphName | sql}} {{.Query | sql}}) {{.As | sqlOpt}}
 type GraphTableExpr struct {
-	// pos = GraphTable.Pos
+	// pos = GraphTable
 	// end = As.end || Rparen + 1
+
 	GraphTable        token.Pos
 	PropertyGraphName *Ident
 
@@ -921,7 +1068,7 @@ type GQLSubQueryInCondition struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} NULL
 type IsNullExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = Null + 4
 
 	Null token.Pos // position of "NULL"
@@ -934,7 +1081,7 @@ type IsNullExpr struct {
 //
 //	{{.Left | sql}} IS {{if .Not}}NOT{{end}} {{if .Right}}TRUE{{else}}FALSE{{end}}
 type IsBoolExpr struct {
-	// pos = Expr.pos
+	// pos = Left.pos
 	// end = RightPos + (Right ? 4 : 5)
 
 	RightPos token.Pos // position of Right
@@ -1003,16 +1150,26 @@ type IndexExpr struct {
 
 // CallExpr is function call expression node.
 //
-//	{{.Func | sql}}({{if .Distinct}}DISTINCT{{end}} {{.Args | sql}})
+//	{{.Func | sql}}(
+//		{{if .Distinct}}DISTINCT{{end}}
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//		{{.NullHandling | sqlOpt}}
+//		{{.Having | sqlOpt}}
+//	)
 type CallExpr struct {
 	// pos = Func.pos
 	// end = Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
-	Func     *Ident
-	Distinct bool
-	Args     []Arg
+	Func         *Ident
+	Distinct     bool
+	Args         []Arg
+	NamedArgs    []*NamedArg
+	NullHandling NullHandlingModifier // optional
+	Having       HavingModifier       // optional
 }
 
 // ExprArg is argument of the generic function call.
@@ -1048,6 +1205,61 @@ type SequenceArg struct {
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
 	Expr Expr
+}
+
+// NamedArg represents a name and value pair in named arguments
+//
+//	{{.Name | sql}} => {{.Value | sql}}
+type NamedArg struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
+// IgnoreNulls represents IGNORE NULLS of aggregate function calls.
+//
+//	IGNORE NULLS
+type IgnoreNulls struct {
+	// pos = Ignore
+	// end = Nulls + 5
+
+	Ignore token.Pos
+	Nulls  token.Pos
+}
+
+// RespectNulls represents RESPECT NULLS of aggregate function calls
+//
+//	RESPECT NULLS
+type RespectNulls struct {
+	// pos = Respect
+	// end = Nulls + 5
+
+	Respect token.Pos
+	Nulls   token.Pos
+}
+
+// HavingMax represents HAVING MAX of aggregate function calls.
+//
+//	HAVING MAX {{Expr | sql}}
+type HavingMax struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
+}
+
+// HavingMin represents HAVING MIN of aggregate function calls.
+//
+//	HAVING MIN {{Expr | sql}}
+type HavingMin struct {
+	// pos = Having
+	// end = Expr.end
+
+	Having token.Pos
+	Expr   Expr
 }
 
 // CountStarExpr is node just for COUNT(*).
@@ -1088,15 +1300,17 @@ type AtTimeZone struct {
 	Expr Expr
 }
 
-// CastExpr is CAST call expression node.
+// CastExpr is CAST/SAFE_CAST call expression node.
 //
-//	CAST({{.Expr | sql}} AS {{.Type | sql}})
+//	{{if .Safe}}SAFE_{{end}}CAST({{.Expr | sql}} AS {{.Type | sql}})
 type CastExpr struct {
 	// pos = Cast
 	// end = Rparen + 1
 
-	Cast   token.Pos // position of "CAST" keyword
+	Cast   token.Pos // position of "CAST" keyword or "SAFE_CAST" pseudo keyword
 	Rparen token.Pos // position of ")"
+
+	Safe bool
 
 	Expr Expr
 	Type Type
@@ -1123,7 +1337,7 @@ type CaseExpr struct {
 //
 //	WHEN {{.Cond | sql}} THEN {{.Then | sql}}
 type CaseWhen struct {
-	// pos = Case
+	// pos = When
 	// end = Then.end
 
 	When token.Pos // position of "WHEN" keyword
@@ -1208,10 +1422,10 @@ type ValueGQLSubQuery struct {
 //
 //	EXISTS{{"{"}}{{.Expr | sql}}{{"}"}}
 type ExistsGQLSubQuery struct {
-	// pos = Array
+	// pos = Exists
 	// end = RBrace + 1
 
-	Exists token.Pos // position of "ARRAY" keyword
+	Exists token.Pos // position of "EXISTS" keyword
 	RBrace token.Pos // "}"
 	Query  GQLExistsExpr
 }
@@ -1250,7 +1464,7 @@ type ExistsSubQuery struct {
 //	@{{.Name}}
 type Param struct {
 	// pos = Atmark
-	// end = pos + 1 + len(Name)
+	// end = Atmark + 1 + len(Name)
 
 	Atmark token.Pos
 
@@ -1261,8 +1475,8 @@ type Param struct {
 //
 //	{{.Name | sqlIdentQuote}}
 type Ident struct {
-	// pos = IdentPos
-	// end = IdentEnd
+	// pos = NamePos
+	// end = NameEnd
 
 	NamePos, NameEnd token.Pos // position of this name
 
@@ -1274,39 +1488,62 @@ type Ident struct {
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
-	// end = idents[$].end
+	// end = Idents[$].end
 
 	Idents []*Ident // len(Idents) >= 2
 }
 
-// AraryLiteral is array literal node.
+// ArrayLiteral is array literal node.
 //
-//	ARRAY{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
+//	{{if .Array.Invalid | not}}ARRAY{{end}}{{if .Type}}<{{.Type | sql}}>{{end}}[{{.Values | sqlJoin ","}}]
 type ArrayLiteral struct {
 	// pos = Array || Lbrack
 	// end = Rbrack + 1
 
-	Array          token.Pos // position of "ARRAY" keyword
+	Array          token.Pos // position of "ARRAY" keyword, optional
 	Lbrack, Rbrack token.Pos // position of "[" and "]"
 
 	Type   Type // optional
 	Values []Expr
 }
 
-// StructLiteral is struct literal node.
+// TupleStructLiteral is tuple syntax struct literal node.
 //
-//	STRUCT{{if not (isnil .Fields)}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
-type StructLiteral struct {
-	// pos = Struct || Lparen
+//	({{.Values | sqlJoin ","}})
+type TupleStructLiteral struct {
+	// pos = Lparen
 	// end = Rparen + 1
 
-	Struct         token.Pos // position of "STRUCT"
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	// NOTE: Distinguish nil from len(Fields) == 0 case.
-	//       nil means type is not specified, or empty slice means this struct has 0 fields.
+	Values []Expr // len(Values) > 1
+}
+
+// TypedStructLiteral is typed struct literal node.
+//
+//	STRUCT<{{.Fields | sqlJoin ","}}>({{.Values | sqlJoin ","}})
+type TypedStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
 	Fields []*StructField
 	Values []Expr
+}
+
+// TypelessStructLiteral is typeless struct literal node.
+//
+//	STRUCT({{.Values | sqlJoin ","}})
+type TypelessStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
+	Values []TypelessStructLiteralArg
 }
 
 // NullLiteral is just NULL literal.
@@ -1397,7 +1634,7 @@ type DateLiteral struct {
 //	TIMESTAMP {{.Value | sql}}
 type TimestampLiteral struct {
 	// pos = Timestamp
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Timestamp token.Pos // position of "TIMESTAMP"
 
@@ -1409,11 +1646,102 @@ type TimestampLiteral struct {
 //	NUMERIC {{.Value | sql}}
 type NumericLiteral struct {
 	// pos = Numeric
-	// end = ValueEnd.end
+	// end = Value.end
 
 	Numeric token.Pos // position of "NUMERIC"
 
 	Value *StringLiteral
+}
+
+// JSONLiteral is JSON literal node.
+//
+//	JSON {{.Value | sql}}
+type JSONLiteral struct {
+	// pos = JSON
+	// end = Value.end
+
+	JSON token.Pos // position of "JSON"
+
+	Value *StringLiteral
+}
+
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+// BracedConstructorFieldValue represents value part of fields in BracedNewConstructor.
+type BracedConstructorFieldValue interface {
+	Node
+	isBracedConstructorFieldValue()
+}
+
+func (*BracedConstructor) isBracedConstructorFieldValue()               {}
+func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+
+// NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
+//
+//	NEW {{.Type | sql}} ({{.Args | sqlJoin ", "}})
+type NewConstructor struct {
+	// pos = New
+	// end = Rparen + 1
+
+	New  token.Pos
+	Type *NamedType
+
+	Args []NewConstructorArg
+
+	Rparen token.Pos
+}
+
+// BracedNewConstructor represents NEW operator which creates a protocol buffer using a map constructor.
+//
+//	NEW {{.Type | sql}} {{"{"}}{{"}"}}
+type BracedNewConstructor struct {
+	// pos = New
+	// end = Body.end
+
+	New token.Pos
+
+	Type *NamedType
+	Body *BracedConstructor
+}
+
+// BracedConstructor represents a single map constructor which is used in BracedNewConstructor.
+// Actually, it is a top level Expr in syntax, but it is not permitted semantically in other place.
+//
+//	{{"{"}}{{.Fields | sqlJoin ", "}}{{"}"}}
+type BracedConstructor struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+
+	Fields []*BracedConstructorField
+}
+
+// BracedConstructorField represents a single field in BracedConstructor.
+//
+//	{{.Name | sql}} {{.Value | sql}}
+type BracedConstructorField struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value BracedConstructorFieldValue
+}
+
+// BracedConstructorFieldValueExpr represents a field value node.
+//
+//	: {{.Expr | sql}}
+type BracedConstructorFieldValueExpr struct {
+	// pos = Colon
+	// end = Expr.end
+
+	Colon token.Pos
+
+	Expr Expr
 }
 
 // ================================================================================
@@ -1471,6 +1799,18 @@ type StructField struct {
 	Type  Type
 }
 
+// NamedType is named type node.
+// It is currently PROTO or ENUM.
+// Name is full qualified name, but it can be len(Name) == 1 if it doesn't contain ".".
+//
+//	{{.Path | sqlJoin "."}}
+type NamedType struct {
+	// pos = Path[0].pos
+	// end = Path[$].end
+
+	Path []*Ident // len(Path) > 0
+}
+
 // ================================================================================
 //
 // Cast for Special Cases
@@ -1510,6 +1850,54 @@ type CastNumValue struct {
 //
 // ================================================================================
 
+// Options is generic OPTIONS clause node without key and value checking.
+//
+//	OPTIONS ({{.Records | sqlJoin ","}})
+type Options struct {
+	// pos = Options
+	// end = Rparen + 1
+
+	Options token.Pos // position of "OPTIONS" keyword
+	Rparen  token.Pos // position of ")"
+
+	Records []*OptionsDef // len(Records) > 0
+}
+
+// OptionsDef is single option definition for DDL statements.
+//
+//	{{.Name | sql}} = {{.Value | sql}}
+type OptionsDef struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
+// CreateSchema is CREATE SCHEMA statement node.
+//
+//	CREATE SCHEMA {{.Name | sql}}
+type CreateSchema struct {
+	// pos = Create
+	// end = Name.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name *Ident
+}
+
+// DropSchema is DROP SCHEMA statement node.
+//
+//	DROP SCHEMA {{.Name | sql}}
+type DropSchema struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
+}
+
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -1522,22 +1910,36 @@ type CreateDatabase struct {
 	Name *Ident
 }
 
+// AlterDatabase is ALTER DATABASE statement node.
+//
+//	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
+type AlterDatabase struct {
+	// pos = Alter
+	// end = Name.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
+}
+
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
-//	  {{.Columns | sqlJoin ","}}
-//	  {{if and .Columns .TableConstrains}},{{end}}{{.TableConstraints | sqlJoin ","}}
+//	  {{.Columns | sqlJoin ","}}{{if and .Columns (or .TableConstrains .Synonym)}},{{end}}
+//	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
+//	  {{.Synonym | sqlJoin ","}}
 //	)
 //	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //
-// Spanner SQL allows to mix `Columns` and `TableConstraints`, however they are
-// separated in AST definition for historical reasons. If you want to get
+// Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
+// however they are separated in AST definition for historical reasons. If you want to get
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = CreateRowDeletionPolicy.end || Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
@@ -1547,13 +1949,27 @@ type CreateTable struct {
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
+	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 }
 
+// Synonym is SYNONYM node in CREATE TABLE
+//
+//	SYNONYM ({.Name | sql})
+type Synonym struct {
+	// pos = Synonym
+	// end = Rparen + 1
+
+	Synonym token.Pos // position of "SYNONYM" pseudo keyword
+	Rparen  token.Pos // position of ")"
+
+	Name *Ident
+}
+
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} OPTIONS ({{.Options | sqlJoin ","}})
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
@@ -1562,7 +1978,7 @@ type CreateSequence struct {
 
 	Name        *Ident
 	IfNotExists bool
-	Options     *SequenceOptions
+	Options     *Options
 }
 
 // ColumnDef is column definition in CREATE TABLE.
@@ -1571,10 +1987,11 @@ type CreateSequence struct {
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultExpr | sqlOpt}}
 //	{{.GeneratedExpr | sqlOpt}}
+//	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = Options.end || Hidden + 6 || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
@@ -1583,7 +2000,8 @@ type ColumnDef struct {
 	NotNull       bool
 	DefaultExpr   *ColumnDefaultExpr   // optional
 	GeneratedExpr *GeneratedColumnExpr // optional
-	Options       *ColumnDefOptions    // optional
+	Hidden        token.Pos            // InvalidPos if not hidden
+	Options       *Options             // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
@@ -1601,13 +2019,14 @@ type ColumnDefaultExpr struct {
 
 // GeneratedColumnExpr is generated column expression.
 //
-//	AS ({{.Expr | sql}}) STORED
+//	AS ({{.Expr | sql}}) {{if .IsStored}}STORED{{end}}
 type GeneratedColumnExpr struct {
 	// pos = As
-	// end = Stored
+	// end = Stored + 6 || Rparen + 1
 
 	As     token.Pos // position of "AS" keyword
-	Stored token.Pos // position of "STORED" keyword
+	Stored token.Pos // position of "STORED" keyword, optional
+	Rparen token.Pos // position of ")"
 
 	Expr Expr
 }
@@ -1629,6 +2048,9 @@ type ColumnDefOptions struct {
 //
 //	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
 type TableConstraint struct {
+	// pos = ConstraintPos || Constraint.pos
+	// end = Constraint.end
+
 	ConstraintPos token.Pos // position of "CONSTRAINT" keyword when Name presents
 
 	Name       *Ident // optional
@@ -1669,7 +2091,7 @@ type Check struct {
 //
 //	{{.Name | sql}} {{.Dir}}
 type IndexKey struct {
-	// pos = Name.Pos
+	// pos = Name.pos
 	// end = DirPos + len(Dir) || Name.end
 
 	DirPos token.Pos // position of Dir
@@ -1735,6 +2157,18 @@ type CreateView struct {
 	Query        QueryExpr
 }
 
+// DropView is DROP VIEW statement node.
+//
+//	DROP VIEW {{.Name | sql}}
+type DropView struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	Name *Ident
+}
+
 // AlterTable is ALTER TABLE statement node.
 //
 //	ALTER TABLE {{.Name | sql}} {{.TableAlteration | sql}}
@@ -1769,7 +2203,7 @@ type AlterSequence struct {
 	Alter token.Pos // position of "ALTER" keyword
 
 	Name    *Ident
-	Options *SequenceOptions
+	Options *Options
 }
 
 // AlterChangeStream is ALTER CHANGE STREAM statement node.
@@ -1783,6 +2217,41 @@ type AlterChangeStream struct {
 
 	Name                   *Ident
 	ChangeStreamAlteration ChangeStreamAlteration
+}
+
+// AddSynonym is ADD SYNONYM node in ALTER TABLE.
+//
+//	ADD SYNONYM {{.Name | sql}}
+type AddSynonym struct {
+	// pos = Add
+	// end = Name.end
+
+	Add  token.Pos // position of "ADD" pseudo keyword
+	Name *Ident
+}
+
+// DropSynonym is DROP SYNONYM node in ALTER TABLE.
+//
+//	DROP SYNONYM {{.Name | sql}}
+type DropSynonym struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" pseudo keyword
+	Name *Ident
+}
+
+// RenameTo is RENAME TO node in ALTER TABLE.
+//
+//	RENAME TO {{.Name | sql}}{{if .AddSynonym}}, {{.AddSynonym | sql}}{{end}}
+type RenameTo struct {
+	// pos = Rename
+	// end = (AddSynonym ?? Name).end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Name       *Ident
+	AddSynonym *AddSynonym // optional
 }
 
 // AddColumn is ADD COLUMN clause in ALTER TABLE.
@@ -1803,7 +2272,7 @@ type AddColumn struct {
 //	ADD {{.TableConstraint}}
 type AddTableConstraint struct {
 	// pos = Add
-	// end = Constraint.end
+	// end = TableConstraint.end
 
 	Add token.Pos // position of "ADD" keyword
 
@@ -1884,31 +2353,61 @@ type SetOnDelete struct {
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.
 //
-//	ALTER COLUMN {{.Name | sql}} {{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	ALTER COLUMN {{.Name | sql}} {{.Alteration | sql}}
 type AlterColumn struct {
 	// pos = Alter
-	// end = DefaultExpr.end || Null + 4 || Type.end
-	Alter token.Pos // position of "ALTER" keyword
-	Null  token.Pos // position of "NULL"
+	// end = Alteration.end
 
-	Name        *Ident
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name       *Ident
+	Alteration ColumnAlteration
+}
+
+// AlterColumnType is action to change the data type of the column in ALTER COLUMN.
+//
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+type AlterColumnType struct {
+	// pos = Type.pos
+	// end = DefaultExpr.end || Null + 4 || Type.end
+
 	Type        SchemaType
+	Null        token.Pos // position of "NULL" keyword, optional
 	NotNull     bool
+	DefaultExpr *ColumnDefaultExpr // optional
+}
+
+// AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.
+//
+//	SET {{.Options | sql}}
+type AlterColumnSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
+}
+
+// AlterColumnSetDefault is SET DEFAULT node in ALTER COLUMN.
+//
+//	SET {{.DefaultExpr | sql}}
+type AlterColumnSetDefault struct {
+	// pos = Set
+	// end = DefaultExpr.end
+
+	Set         token.Pos
 	DefaultExpr *ColumnDefaultExpr
 }
 
-// AlterColumnSet is ALTER COLUMN SET clause in ALTER TABLE.
+// AlterColumnDropDefault is DROP DEFAULT node in ALTER COLUMN
 //
-//	ALTER COLUMN {{.Name | sql}} SET {{if .Options}}{{.Options | sql}}{{else}}{{.DefaultExpr | sql}}{{end}}
-type AlterColumnSet struct {
-	// pos = Alter
-	// end = Name.end || Options.end || DefaultExpr.end
+//	DROP DEFAULT
+type AlterColumnDropDefault struct {
+	// pos = Drop
+	// end = Default + 7
 
-	Alter token.Pos // position of "ALTER" keyword
-
-	Name        *Ident
-	Options     *ColumnDefOptions
-	DefaultExpr *ColumnDefaultExpr
+	Drop    token.Pos
+	Default token.Pos
 }
 
 // DropTable is DROP TABLE statement node.
@@ -1922,6 +2421,29 @@ type DropTable struct {
 
 	IfExists bool
 	Name     *Ident
+}
+
+// RenameTable is RENAME TABLE statement node.
+//
+//	RENAME TABLE {{.Tos | sqlJoin ", "}}
+type RenameTable struct {
+	// pos = Rename
+	// end = Tos[$].end
+
+	Rename token.Pos // position of "RENAME" pseudo keyword
+
+	Tos []*RenameTableTo // len(Tos) > 0
+}
+
+// RenameTableTo is old TO new node in RENAME TABLE statement.
+//
+//	{{.Old | sql}} TO {{.New | sql}}
+type RenameTableTo struct {
+	// pos = Old.pos
+	// end = New.end
+
+	Old *Ident
+	New *Ident
 }
 
 // CreateIndex is CREATE INDEX statement node.
@@ -1974,20 +2496,7 @@ type CreateVectorIndex struct {
 	//
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
-	Options *VectorIndexOptions
-}
-
-// VectorIndexOptions is OPTIONS clause node in CREATE VECTOR INDEX.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type VectorIndexOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*VectorIndexOption // len(Records) > 0
+	Options *Options
 }
 
 // VectorIndexOption is OPTIONS record node.
@@ -2011,8 +2520,8 @@ type CreateChangeStream struct {
 	Create token.Pos // position of "CREATE" keyword
 
 	Name    *Ident
-	For     ChangeStreamFor      // optional
-	Options *ChangeStreamOptions // optional
+	For     ChangeStreamFor // optional
+	Options *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM
@@ -2051,30 +2560,6 @@ type ChangeStreamForTable struct {
 	Columns   []*Ident
 }
 
-// ChangeStreamOptions is OPTIONS clause node in CREATE CHANGE STREAM.
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type ChangeStreamOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*ChangeStreamOptionsRecord // len(Records) > 0
-}
-
-// ChangeStreamOptionsRecord is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type ChangeStreamOptionsRecord struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
-}
-
 // ChangeStreamSetFor is SET FOR tables node in ALTER CHANGE STREAM
 //
 //	SET FOR {{.For | sql}}
@@ -2103,11 +2588,11 @@ type ChangeStreamDropForAll struct {
 //	SET {{.Options | sql}}
 type ChangeStreamSetOptions struct {
 	// pos = Set
-	// end = Options.Rparen + 1
+	// end = Options.end
 
 	Set token.Pos // position of "SET" keyword
 
-	Options *ChangeStreamOptions
+	Options *Options
 }
 
 // Storing is STORING clause in CREATE INDEX.
@@ -2191,6 +2676,7 @@ type DropVectorIndex struct {
 type DropSequence struct {
 	// pos = Drop
 	// end = Name.end
+
 	Drop     token.Pos
 	IfExists bool
 	Name     *Ident
@@ -2318,12 +2804,24 @@ type DeletePrivilege struct {
 	Delete token.Pos // position of "DELETE" keyword
 }
 
+// SelectPrivilegeOnChangeStream is SELECT ON CHANGE STREAM privilege node in GRANT and REVOKE.
+//
+//	SELECT ON CHANGE STREAM {{.Names | sqlJoin ", "}}
+type SelectPrivilegeOnChangeStream struct {
+	// pos = Select
+	// end = Names[$].end
+
+	Select token.Pos
+
+	Names []*Ident // len(Names) > 0
+}
+
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
 //
 //	SELECT ON VIEW {{.Names | sqlJoin ","}}
 type SelectPrivilegeOnView struct {
 	// pos = Select
-	// end = Name[$].end
+	// end = Names[$].end
 
 	Select token.Pos
 
@@ -2352,6 +2850,19 @@ type RolePrivilege struct {
 	Role token.Pos
 
 	Names []*Ident // len(Names) > 0
+}
+
+// AlterStatistics is ALTER STATISTICS statement node.
+//
+//	ALTER STATISTICS {{.Name | sql}} SET {{.Options | sql}}
+type AlterStatistics struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
 }
 
 // ================================================================================
@@ -2399,6 +2910,65 @@ type ArraySchemaType struct {
 	Gt    token.Pos // position of ">"
 
 	Item SchemaType // ScalarSchemaType or SizedSchemaType
+}
+
+// ================================================================================
+//
+// Search Index DDL
+//
+// ================================================================================
+
+// CreateSearchIndex represents CREATE SEARCH INDEX statement
+//
+//	CREATE SEARCH INDEX {{.Name | sql}}
+//	ON {{.TableName | sql}}
+//	({{.TokenListPart | sqlJoin ", "}})
+//	{{.Storing | sqlOpt}}
+//	{{if .PartitionColumns}}PARTITION BY {{.PartitionColumns  | sqlJoin ", "}}{{end}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Where | sqlOpt}}
+//	{{.Interleave | sqlOpt}}
+//	{{.Options | sqlOpt}}
+type CreateSearchIndex struct {
+	// pos = Create
+	// end = (Options ?? Interleave ?? Where ?? OrderBy ?? PartitionColumns[$] ?? Storing).end || Rparen + 1
+
+	Create token.Pos
+
+	Name             *Ident
+	TableName        *Ident
+	TokenListPart    []*Ident
+	Rparen           token.Pos     // position of ")" after TokenListPart
+	Storing          *Storing      // optional
+	PartitionColumns []*Ident      // optional
+	OrderBy          *OrderBy      // optional
+	Where            *Where        // optional
+	Interleave       *InterleaveIn // optional
+	Options          *Options      // optional
+}
+
+// DropSearchIndex represents DROP SEARCH INDEX statement.
+//
+//	DROP SEARCH INDEX{{if .IfExists}}IF EXISTS{{end}} {{Name | sql}}
+type DropSearchIndex struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Ident
+}
+
+// AlterSearchIndex represents ALTER SEARCH INDEX statement.
+//
+//	ALTER SEARCH INDEX {{.Name | sql}} {{.IndexAlteration | sql}}
+type AlterSearchIndex struct {
+	// pos = Alter
+	// end = IndexAlteration.end
+
+	Alter           token.Pos
+	Name            *Ident
+	IndexAlteration IndexAlteration
 }
 
 // ================================================================================
@@ -2502,37 +3072,13 @@ type Update struct {
 
 // UpdateItem is SET clause items in UPDATE.
 //
-//	{{.Path | sqlJoin "."}} = {{.Expr | sql}}
+//	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
 type UpdateItem struct {
 	// pos = Path[0].pos
-	// end = Expr.end
+	// end = DefaultExpr.end
 
-	Path []*Ident // len(Path) > 0
-	Expr Expr
-}
-
-// SequenceOption is option for CREATE SEQUENCE.
-//
-//	{{.Name | sql}} = {{.Value | sql}}
-type SequenceOption struct {
-	// pos = Name.pos
-	// end = Value.end
-
-	Name  *Ident
-	Value Expr
-}
-
-// SequenceOptions is OPTIONS clause node in CREATE|ALTER SEQUENCE .
-//
-//	OPTIONS ({{.Records | sqlJoin ","}})
-type SequenceOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	Records []*SequenceOption // len(Records) > 0
+	Path        []*Ident // len(Path) > 0
+	DefaultExpr *DefaultExpr
 }
 
 // ================================================================================
@@ -2585,7 +3131,7 @@ type GQLGraphClause struct {
 //	{{.LinearQueryStatementList || sqlJoin "\nNEXT\n"}}
 type GQLMultiLinearQueryStatement struct {
 	// pos = LinearQueryStatementList[0].pos
-	// pos = LinearQueryStatementList[$].end
+	// end = LinearQueryStatementList[$].end
 
 	LinearQueryStatementList []GQLLinearQueryStatement
 }
@@ -2627,8 +3173,8 @@ type GQLSimpleLinearQueryStatementWithSetOperator struct {
 // {{.HeadSimpleLinearQueryStatement | sql}}
 // {{.TailSimpleLinearQueryStatementList | sqlJoin "\n"}}
 type GQLCompositeLinearQueryStatement struct {
-	// pos = HeadSimpleLinearStatement.pos
-	// end = TailSimpleLinearStatement.pos
+	// pos = HeadSimpleLinearQueryStatement.pos
+	// end = TailSimpleLinearQueryStatementList[$].end
 
 	HeadSimpleLinearQueryStatement     *GQLSimpleLinearQueryStatement
 	TailSimpleLinearQueryStatementList []*GQLSimpleLinearQueryStatementWithSetOperator
@@ -2709,8 +3255,8 @@ type GQLForStatement struct {
 //
 //	WITH OFFSET {{if isnil .OffsetName | not}}AS {{.OffsetName | sql}}{{end}}
 type GQLWithOffsetClause struct {
-	// pos = With.pos
-	// end = OffsetName.end ?? Offset + 6
+	// pos = With
+	// end = OffsetName.end || Offset + 6
 
 	With       token.Pos
 	Offset     token.Pos
@@ -2763,7 +3309,7 @@ type GQLLimitStatement struct {
 //
 // {{if IsSkip}}
 type GQLOffsetStatement struct {
-	// pos = Offset.pos
+	// pos = Offset
 	// end = Count.end
 
 	Offset token.Pos
@@ -2787,7 +3333,7 @@ type GQLOrderByStatement struct {
 // {{.Expr | sql}} {{.CollationSpecification | sqlOpt}} {{if DirectionPos.Invalid | not}}{{string(Direction)}}{{end}}
 type GQLOrderBySpecification struct {
 	// pos = Expr.pos
-	// DirectionPos ?? CollationSpecification.end
+	// end = DirectionPos || CollationSpecification.end
 
 	Expr Expr
 
@@ -2813,6 +3359,7 @@ type GQLCollationSpecification struct {
 type GQLWithStatement struct {
 	// pos = With
 	// end = (GroupByClause ?? ReturnItemList[$]).end
+
 	With           token.Pos
 	AllOrDistinct  GQLAllOrDistinctEnum
 	ReturnItemList []GQLReturnItem
@@ -2830,10 +3377,10 @@ type GQLReturnItem SelectItem
 //	{{.OrderByClause | sqlOpt}}
 //	{{.LimitAntOffsetClause | sqlOpt}}
 type GQLReturnStatement struct {
-	// pos = Return.pos
+	// pos = Return
 	// end = (LimitAndOffsetClause ?? OrderByClause ?? GroupByClause ?? ReturnItemList[$]).end
 
-	Return         token.Pos
+	Return         token.Pos // position of "RETURN" keyword
 	AllOrDistinct  GQLAllOrDistinctEnum
 	ReturnItemList []GQLReturnItem
 
@@ -2850,6 +3397,9 @@ type GQLReturnStatement struct {
 //
 //	{{.VariableName | sql}} = {{.Value | sql}}
 type GQLLinearGraphVariable struct {
+	// pos = VariableName.pos
+	// end = Value.end
+
 	VariableName *Ident
 	Value        Expr
 }
@@ -2858,7 +3408,7 @@ type GQLLinearGraphVariable struct {
 //
 //	LET {{.LinearGraphVariableList | sqlJoin ", "}}
 type GQLLetStatement struct {
-	// pos = Let.pos
+	// pos = Let
 	// end = LinearGraphVariableList[$].end
 
 	Let                     token.Pos
@@ -2875,7 +3425,7 @@ type GQLLetStatement struct {
 //
 //	{{.PathPatternList | sqlJoin}} {{.WhereClause | sqlOpt}}
 type GQLGraphPattern struct {
-	// pos = GQLTopLevelPathPattern[0].pos
+	// pos = PathPatternList[0].pos
 	// end = (WhereClause ?? PathPatternList[$]).end
 
 	PathPatternList []*GQLTopLevelPathPattern
@@ -2919,8 +3469,9 @@ func (*GQLAbbreviatedEdgeRight) isGQLEdgePattern() {}
 //
 //	-[{{.PatternFiller | sql}}]-
 type GQLFullEdgeAny struct {
-	// pos = First.pos
-	// end = Last.pos + 1
+	// pos = First
+	// end = Last + 1
+
 	First, Last   token.Pos
 	PatternFiller *GQLPatternFiller
 }
@@ -2931,6 +3482,7 @@ type GQLFullEdgeAny struct {
 type GQLFullEdgeLeft struct {
 	// pos = First
 	// end = Last + 1
+
 	First         token.Pos // position of "<"
 	Last          token.Pos // position of the last "-"
 	PatternFiller *GQLPatternFiller
@@ -3182,8 +3734,8 @@ func (g *GQLLabelName) isGQLLabelExpression()            {}
 //
 //	{{.Left | sql}}|{{.Right | sql}}
 type GQLLabelOrExpression struct {
-	// pos = LParen
-	// end = RParen
+	// pos = Left.pos
+	// end = Right.end
 
 	Left, Right GQLLabelExpression
 }
@@ -3225,11 +3777,11 @@ type GQLLabelNotExpression struct {
 //	{{if .IsPercent}}%{{else}}{{.LabelName | sql}}{{end}}
 type GQLLabelName struct {
 	// pos = StartPos
-	// end = IsPercent ? StartPos + 1 : LabelName.end
+	// end = LabelName.end || StartPos + 1
 
 	StartPos  token.Pos // position of "%" or LabelName
 	IsPercent bool
-	LabelName *Ident
+	LabelName *Ident // optional
 }
 
 // GQLPatternFillerFilter represents `{where_clause | property_filters}` in GQLPatternFiller.

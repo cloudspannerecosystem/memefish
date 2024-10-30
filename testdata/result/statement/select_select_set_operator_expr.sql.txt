@@ -10,7 +10,7 @@ select ((select 1) union all (select 2)) + 3,
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
-    AsStruct: false,
+    As:       nil,
     Results:  []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
@@ -28,7 +28,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   9,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -55,7 +55,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   30,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -105,7 +105,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   55,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -132,7 +132,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   80,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -182,7 +182,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   105,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
@@ -209,7 +209,7 @@ select ((select 1) union all (select 2)) + 3,
                   Query:  &ast.Select{
                     Select:   127,
                     Distinct: false,
-                    AsStruct: false,
+                    As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{

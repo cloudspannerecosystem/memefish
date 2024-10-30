@@ -1,0 +1,1 @@
+SAFE_CAST("apple" AS INT64)
