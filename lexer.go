@@ -203,14 +203,9 @@ func (l *Lexer) consumeToken() {
 		}
 		return
 	case '!':
-		switch {
-		case l.peekIs(1, '='):
+		if l.peekIs(1, '=') {
 			l.skipN(2)
 			l.Token.Kind = "!="
-			return
-		default:
-			l.skip()
-			l.Token.Kind = "!"
 			return
 		}
 		l.skip()
