@@ -1,0 +1,47 @@
+--- bad_insert.sql
+insert foo (foo, bar, baz)
+vales (1, 2, 3),
+      (4, 5, 6)
+--- Error
+syntax error: testdata/input/dml/bad_insert.sql:2:1: expected beginning of simple query "(", SELECT, FROM, but: "vales"
+
+  2:  vales (1, 2, 3),
+      ^~~~~
+
+
+--- AST
+&ast.Insert{
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
+    },
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 25,
+      Name:    "baz",
+    },
+  },
+  Input: &ast.SubQueryInput{
+    Query: &ast.BadNode{
+      NodePos: 27,
+      NodeEnd: 59,
+      Raw:     "vales (1, 2, 3),\n      (4, 5, 6)",
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar, baz) vales (1, 2, 3),
+      (4, 5, 6)

@@ -1,0 +1,20 @@
+--- bad_select_order.sql
+select 1 order x asc
+
+--- Error
+syntax error: testdata/input/query/bad_select_order.sql:1:16: expected token: BY, but: <ident>
+
+  1:  select 1 order x asc
+                     ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadNode{
+    NodeEnd: 20,
+    Raw:     "select 1 order x asc",
+  },
+}
+
+--- SQL
+select 1 order x asc

@@ -57,9 +57,6 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			}
 
 			node, err := parse(p)
-			if err != nil {
-				log.Fatalf("error on parsing input file: %v", err)
-			}
 
 			pprinter := pp.New()
 			pprinter.SetColoringEnabled(false)
@@ -70,6 +67,12 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintf(&buf, "--- %s\n", in.Name())
 			fmt.Fprint(&buf, string(b))
 			fmt.Fprintln(&buf)
+
+			if err != nil {
+				fmt.Fprintln(&buf, "--- Error")
+				fmt.Fprint(&buf, err)
+				fmt.Fprintln(&buf)
+			}
 
 			fmt.Fprintf(&buf, "--- AST\n")
 			_, _ = pprinter.Fprintln(&buf, node)
@@ -115,10 +118,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				},
 			}
 
-			node1, err := parse(p1)
-			if err != nil {
-				log.Fatalf("error on parsing unparsed SQL: %v", err)
-			}
+			node1, _ := parse(p1)
 
 			s2 := node1.SQL()
 			if s1 != s2 {
