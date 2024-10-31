@@ -8,6 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"github.com/cloudspannerecosystem/memefish/token"
 	. "github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -248,6 +249,26 @@ func TestLexerWrong(t *testing.T) {
 				}
 			} else {
 				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+func TestLexerWrongNoError(t *testing.T) {
+	for _, tc := range lexerWrongTestCase {
+		t.Run(fmt.Sprintf("testcase/%q", tc.source), func(t *testing.T) {
+			l := &Lexer{
+				File: &File{FilePath: "[test]", Buffer: tc.source},
+			}
+			hasBad := false
+			for l.Token.Kind != TokenEOF {
+				l.nextToken(true)
+				if l.Token.Kind == token.TokenBad {
+					hasBad = true
+				}
+			}
+			if !hasBad {
+				t.Errorf("expected <bad>")
 			}
 		})
 	}

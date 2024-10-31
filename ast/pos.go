@@ -6,6 +6,14 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
+func (b *BadNode) Pos() token.Pos {
+	return b.NodePos
+}
+
+func (b *BadNode) End() token.Pos {
+	return b.NodeEnd
+}
+
 func (q *QueryStatement) Pos() token.Pos {
 	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
 }

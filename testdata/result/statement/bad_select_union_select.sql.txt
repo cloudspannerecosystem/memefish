@@ -1,0 +1,71 @@
+--- bad_select_union_select.sql
+select union all select
+--- Error
+syntax error: testdata/input/query/bad_select_union_select.sql:1:8: unexpected token: UNION
+
+  1:  select union all select
+             ^~~~~
+
+
+syntax error: testdata/input/query/bad_select_union_select.sql:1:24: unexpected token: <eof>
+
+  1:  select union all select
+                             ^
+
+
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.CompoundQuery{
+    Op:       "UNION",
+    Distinct: false,
+    Queries:  []ast.QueryExpr{
+      &ast.Select{
+        Select:   0,
+        Distinct: false,
+        As:       nil,
+        Results:  []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.BadNode{
+              NodePos: 7,
+              NodeEnd: 7,
+              Raw:     "",
+            },
+          },
+        },
+        From:    (*ast.From)(nil),
+        Where:   (*ast.Where)(nil),
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
+      },
+      &ast.Select{
+        Select:   17,
+        Distinct: false,
+        As:       nil,
+        Results:  []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.BadNode{
+              NodePos: 23,
+              NodeEnd: 23,
+              Raw:     "",
+            },
+          },
+        },
+        From:    (*ast.From)(nil),
+        Where:   (*ast.Where)(nil),
+        GroupBy: (*ast.GroupBy)(nil),
+        Having:  (*ast.Having)(nil),
+        OrderBy: (*ast.OrderBy)(nil),
+        Limit:   (*ast.Limit)(nil),
+      },
+    },
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT  UNION ALL SELECT 

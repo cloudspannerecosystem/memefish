@@ -1,0 +1,45 @@
+--- bad_alter_table_add_column.sql
+alter table foo add column baz string(max) null
+--- Error
+syntax error: testdata/input/ddl/bad_alter_table_add_column.sql:1:44: expected token: <eof>, but: NULL
+
+  1:  alter table foo add column baz string(max) null
+                                                 ^~~~
+
+
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Ident{
+    NamePos: 12,
+    NameEnd: 15,
+    Name:    "foo",
+  },
+  TableAlteration: &ast.AddColumn{
+    Add:         16,
+    IfNotExists: false,
+    Column:      &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 27,
+        NameEnd: 30,
+        Name:    "baz",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 31,
+        Rparen:  41,
+        Name:    "STRING",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ADD COLUMN baz STRING(MAX)

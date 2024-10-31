@@ -1,0 +1,41 @@
+--- bad_typed_struct.sql
+STRUCT<1>(2 +)
+
+--- Error
+syntax error: testdata/input/expr/bad_typed_struct.sql:1:8: expected token: <ident>, ARRAY, STRUCT, but: <int>
+
+  1:  STRUCT<1>(2 +)
+             ^
+
+
+syntax error: testdata/input/expr/bad_typed_struct.sql:1:14: unexpected token: )
+
+  1:  STRUCT<1>(2 +)
+                   ^
+
+
+--- AST
+&ast.TypedStructLiteral{
+  Struct: 0,
+  Rparen: 13,
+  Fields: []*ast.StructField{
+    &ast.StructField{
+      Ident: (*ast.Ident)(nil),
+      Type:  &ast.BadNode{
+        NodePos: 7,
+        NodeEnd: 8,
+        Raw:     "1",
+      },
+    },
+  },
+  Values: []ast.Expr{
+    &ast.BadNode{
+      NodePos: 10,
+      NodeEnd: 13,
+      Raw:     "2 +",
+    },
+  },
+}
+
+--- SQL
+STRUCT<1>(2 +)
