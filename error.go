@@ -10,7 +10,7 @@ import (
 type ErrorList []*Error
 
 func (list ErrorList) String() string {
-	return list.String()
+	return list.Error()
 }
 
 func (list ErrorList) Error() string {
