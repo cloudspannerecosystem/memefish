@@ -36,6 +36,7 @@ type TokenComment struct {
 type TokenKind string
 
 const (
+	TokenBad    TokenKind = "<bad>"
 	TokenEOF    TokenKind = "<eof>"
 	TokenIdent  TokenKind = "<ident>"
 	TokenParam  TokenKind = "<param>"
