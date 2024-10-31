@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/k0kubun/pp/v3"
@@ -41,6 +42,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 
 	for _, in := range inputs {
 		in := in
+		bad := strings.HasPrefix(in.Name(), "bad_")
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 
@@ -69,9 +71,17 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			if err != nil {
-				fmt.Fprintln(&buf, "--- Error")
-				fmt.Fprint(&buf, err)
-				fmt.Fprintln(&buf)
+				if bad {
+					fmt.Fprintln(&buf, "--- Error")
+					fmt.Fprint(&buf, err)
+					fmt.Fprintln(&buf)
+				} else {
+					t.Errorf("unexpected error: %v", err)
+				}
+			} else {
+				if bad {
+					t.Errorf("error is expected, but parsing succeeded")
+				}
 			}
 
 			fmt.Fprintf(&buf, "--- AST\n")
