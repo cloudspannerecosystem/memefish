@@ -512,7 +512,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 		}
 
 		if c == '\n' && len(q) != 3 {
-			l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i+1), "unclosed %s: newline appears in non triple-quoted", name)
+			l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i), "unclosed %s: newline appears in non triple-quoted", name)
 		}
 
 		content = append(content, c)
