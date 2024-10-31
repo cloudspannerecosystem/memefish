@@ -80,6 +80,7 @@ func main() {
 			e := m[1]
 			expr, err := poslang.Parse(e)
 			if err != nil {
+				log.Printf("Error at node %s, pos = %s", nodes[len(nodes)-1].name, e)
 				log.Fatal(err)
 			}
 			nodes[len(nodes)-1].posExpr = expr
@@ -90,6 +91,7 @@ func main() {
 			e := m[1]
 			expr, err := poslang.Parse(e)
 			if err != nil {
+				log.Printf("Error at node %s, end = %s", nodes[len(nodes)-1].name, e)
 				log.Fatal(err)
 			}
 			nodes[len(nodes)-1].endExpr = expr
