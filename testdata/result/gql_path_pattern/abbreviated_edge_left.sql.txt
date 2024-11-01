@@ -6,8 +6,8 @@
     &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLAbbreviatedEdgeLeft{
-        First: 1,
-        Last:  2,
+        Lt:     1,
+        Hyphen: 2,
       },
       Quantifier: nil,
     },

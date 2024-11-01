@@ -80,8 +80,8 @@ SELECT 'Dana' IN {
                                   &ast.GQLQuantifiablePathTerm{
                                     Hint:     (*ast.Hint)(nil),
                                     PathTerm: &ast.GQLFullEdgeRight{
-                                      First:         54,
-                                      Last:          63,
+                                      Hyphen:        54,
+                                      Gt:            63,
                                       PatternFiller: &ast.GQLPatternFiller{
                                         Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{

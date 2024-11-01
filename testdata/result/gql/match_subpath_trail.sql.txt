@@ -77,8 +77,8 @@ RETURN COUNT(1) as num_paths
                               &ast.GQLQuantifiablePathTerm{
                                 Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLFullEdgeRight{
-                                  First:         42,
-                                  Last:          57,
+                                  Hyphen:        42,
+                                  Gt:            57,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
@@ -150,8 +150,8 @@ RETURN COUNT(1) as num_paths
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         78,
-                          Last:          93,
+                          Hyphen:        78,
+                          Gt:            93,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{

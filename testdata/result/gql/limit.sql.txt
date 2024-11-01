@@ -61,8 +61,8 @@ RETURN source.nick_name
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         37,
-                          Last:          51,
+                          Hyphen:        37,
+                          Gt:            51,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{

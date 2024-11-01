@@ -6,8 +6,8 @@
     &ast.GQLQuantifiablePathTerm{
       Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLFullEdgeRight{
-        First:         1,
-        Last:          4,
+        Hyphen:        1,
+        Gt:            4,
         PatternFiller: &ast.GQLPatternFiller{
           Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: (*ast.Ident)(nil),

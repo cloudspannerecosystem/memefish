@@ -60,8 +60,8 @@ RETURN a.id AS a_id, b.id AS b_id
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeAny{
-                          First:         32,
-                          Last:          53,
+                          FirstHyphen:   32,
+                          LastHyphen:    53,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{

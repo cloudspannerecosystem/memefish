@@ -80,8 +80,8 @@ RETURN oa.id
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         41,
-                          Last:          50,
+                          Hyphen:        41,
+                          Gt:            50,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -163,8 +163,8 @@ RETURN oa.id
                               &ast.GQLQuantifiablePathTerm{
                                 Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLFullEdgeRight{
-                                  First:         95,
-                                  Last:          109,
+                                  Hyphen:        95,
+                                  Gt:            109,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{

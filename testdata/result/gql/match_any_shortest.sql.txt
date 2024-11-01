@@ -65,8 +65,8 @@ RETURN a.id AS a_id, total, b.id AS b_id
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         45,
-                          Last:          59,
+                          Hyphen:        45,
+                          Gt:            59,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{

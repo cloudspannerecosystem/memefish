@@ -56,8 +56,8 @@ RETURN account.id AS account_id, num_incoming_transfers
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         31,
-                          Last:          44,
+                          Hyphen:        31,
+                          Gt:            44,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),

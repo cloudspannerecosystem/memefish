@@ -77,8 +77,8 @@ RETURN EXISTS {
                                         &ast.GQLQuantifiablePathTerm{
                                           Hint:     (*ast.Hint)(nil),
                                           PathTerm: &ast.GQLFullEdgeRight{
-                                            First:         49,
-                                            Last:          58,
+                                            Hyphen:        49,
+                                            Gt:            58,
                                             PatternFiller: &ast.GQLPatternFiller{
                                               Hint:                 (*ast.Hint)(nil),
                                               GraphPatternVariable: &ast.Ident{

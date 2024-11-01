@@ -107,8 +107,8 @@ RETURN n.name, a.id AS blocked_account_id
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         57,
-                          Last:          65,
+                          Hyphen:        57,
+                          Gt:            65,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: (*ast.Ident)(nil),

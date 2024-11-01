@@ -62,8 +62,8 @@ ORDER BY p.name, element, offset
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         31,
-                          Last:          40,
+                          Hyphen:        31,
+                          Gt:            40,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
@@ -152,7 +152,7 @@ ORDER BY p.name, element, offset
             WithOffsetClause: &ast.GQLWithOffsetClause{
               With:       84,
               Offset:     89,
-              OffsetName: (*ast.Ident)(nil),
+              OffsetName: (*ast.AsAlias)(nil),
             },
           },
           &ast.GQLReturnStatement{

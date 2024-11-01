@@ -82,8 +82,8 @@ RETURN 'Dana' IN {
                                           &ast.GQLQuantifiablePathTerm{
                                             Hint:     (*ast.Hint)(nil),
                                             PathTerm: &ast.GQLFullEdgeRight{
-                                              First:         52,
-                                              Last:          61,
+                                              Hyphen:        52,
+                                              Gt:            61,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 Hint:                 (*ast.Hint)(nil),
                                                 GraphPatternVariable: &ast.Ident{

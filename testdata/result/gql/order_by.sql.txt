@@ -61,8 +61,8 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                       &ast.GQLQuantifiablePathTerm{
                         Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
-                          First:         42,
-                          Last:          63,
+                          Hyphen:        42,
+                          Gt:            63,
                           PatternFiller: &ast.GQLPatternFiller{
                             Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{

@@ -81,10 +81,13 @@ RETURN p.name, element, off
             WithOffsetClause: &ast.GQLWithOffsetClause{
               With:       50,
               Offset:     55,
-              OffsetName: &ast.Ident{
-                NamePos: 65,
-                NameEnd: 68,
-                Name:    "off",
+              OffsetName: &ast.AsAlias{
+                As:    62,
+                Alias: &ast.Ident{
+                  NamePos: 65,
+                  NameEnd: 68,
+                  Name:    "off",
+                },
               },
             },
           },
