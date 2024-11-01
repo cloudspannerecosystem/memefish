@@ -1865,7 +1865,7 @@ type Synonym struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.NamePath | sql}} }} {{.Options | sql}}
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
