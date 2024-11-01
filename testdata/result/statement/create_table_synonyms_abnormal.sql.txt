@@ -1,0 +1,103 @@
+--- create_table_synonyms_abnormal.sql
+-- It is still valid CREATE TABLE statement.
+CREATE TABLE Singers (
+    SYNONYM (Ignored),
+    SingerId INT64 NOT NULL,
+    SingerName STRING(1024),
+    SYNONYM (Artists)
+) PRIMARY KEY (SingerId)
+--- AST
+&ast.CreateTable{
+  Create:      45,
+  Rparen:      194,
+  IfNotExists: false,
+  Name:        &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 58,
+      NameEnd: 65,
+      Name:    "Singers",
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 114,
+      Name: &ast.Ident{
+        NamePos: 95,
+        NameEnd: 103,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 104,
+        Name:    "INT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 124,
+        NameEnd: 134,
+        Name:    "SingerName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 135,
+        Rparen:  146,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 142,
+          ValueEnd: 146,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 186,
+        NameEnd: 194,
+        Name:    "SingerId",
+      },
+      Dir: "",
+    },
+  },
+  Synonyms: []*ast.Synonym{
+    &ast.Synonym{
+      Synonym: 72,
+      Rparen:  88,
+      Name:    &ast.Ident{
+        NamePos: 81,
+        NameEnd: 88,
+        Name:    "Ignored",
+      },
+    },
+    &ast.Synonym{
+      Synonym: 153,
+      Rparen:  169,
+      Name:    &ast.Ident{
+        NamePos: 162,
+        NameEnd: 169,
+        Name:    "Artists",
+      },
+    },
+  },
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE Singers (SingerId INT64 NOT NULL, SingerName STRING(1024), SYNONYM (Ignored), SYNONYM (Artists)) PRIMARY KEY (SingerId)

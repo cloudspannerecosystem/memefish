@@ -28,7 +28,7 @@
           Value:    "1",
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    22,
           Alias: &ast.Ident{
             NamePos: 25,
             NameEnd: 26,

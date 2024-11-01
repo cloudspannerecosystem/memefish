@@ -54,7 +54,7 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
         },
         Hint: (*ast.Hint)(nil),
         As:   &ast.AsAlias{
-          As:    44,
+          As:    -1,
           Alias: &ast.Ident{
             NamePos: 44,
             NameEnd: 45,
@@ -150,4 +150,4 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
 }
 
 --- SQL
-SELECT a.AlbumId, a.Description FROM Albums AS a WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, "classic albums", enhance_query => TRUE)
+SELECT a.AlbumId, a.Description FROM Albums a WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, "classic albums", enhance_query => TRUE)

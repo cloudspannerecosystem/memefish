@@ -44,7 +44,7 @@ FROM
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    63,
           Alias: &ast.Ident{
             NamePos: 66,
             NameEnd: 67,

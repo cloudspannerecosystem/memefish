@@ -60,7 +60,7 @@ SELECT (
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    55,
           Alias: &ast.Ident{
             NamePos: 58,
             NameEnd: 60,

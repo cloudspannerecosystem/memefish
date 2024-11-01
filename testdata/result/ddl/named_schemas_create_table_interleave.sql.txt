@@ -37,6 +37,7 @@ CREATE TABLE sch1.Albums (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -53,6 +54,7 @@ CREATE TABLE sch1.Albums (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -72,6 +74,7 @@ CREATE TABLE sch1.Albums (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
   },
@@ -96,7 +99,8 @@ CREATE TABLE sch1.Albums (
       Dir: "",
     },
   },
-  Cluster: &ast.Cluster{
+  Synonyms: []*ast.Synonym(nil),
+  Cluster:  &ast.Cluster{
     Comma:       138,
     OnDeleteEnd: 193,
     TableName:   &ast.FQN{

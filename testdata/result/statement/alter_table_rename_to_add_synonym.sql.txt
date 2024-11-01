@@ -1,0 +1,33 @@
+--- alter_table_rename_to_add_synonym.sql
+ALTER TABLE Singers RENAME TO SingersNew, ADD SYNONYM Singers
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 12,
+      NameEnd: 19,
+      Name:    "Singers",
+    },
+  },
+  TableAlteration: &ast.RenameTo{
+    Rename: 20,
+    Name:   &ast.Ident{
+      NamePos: 30,
+      NameEnd: 40,
+      Name:    "SingersNew",
+    },
+    AddSynonym: &ast.AddSynonym{
+      Add:  42,
+      Name: &ast.Ident{
+        NamePos: 54,
+        NameEnd: 61,
+        Name:    "Singers",
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Singers RENAME TO SingersNew, ADD SYNONYM Singers

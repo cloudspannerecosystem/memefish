@@ -392,29 +392,33 @@ lines''',
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
-                  Lparen: 473,
                   Rparen: 481,
-                  Fields: []*ast.StructField(nil),
-                  Values: []ast.Expr{
-                    &ast.IntLiteral{
-                      ValuePos: 474,
-                      ValueEnd: 475,
-                      Base:     10,
-                      Value:    "1",
+                  Values: []ast.TypelessStructLiteralArg{
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 474,
+                        ValueEnd: 475,
+                        Base:     10,
+                        Value:    "1",
+                      },
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 477,
-                      ValueEnd: 478,
-                      Base:     10,
-                      Value:    "2",
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 477,
+                        ValueEnd: 478,
+                        Base:     10,
+                        Value:    "2",
+                      },
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 480,
-                      ValueEnd: 481,
-                      Base:     10,
-                      Value:    "3",
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 480,
+                        ValueEnd: 481,
+                        Base:     10,
+                        Value:    "3",
+                      },
                     },
                   },
                 },
@@ -439,11 +443,9 @@ lines''',
             As:       nil,
             Results:  []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
-                  Struct: 0,
+                Expr: &ast.TupleStructLiteral{
                   Lparen: 500,
                   Rparen: 508,
-                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 501,
@@ -635,4 +637,4 @@ lines''',
 }
 
 --- SQL
-SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE
+SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE

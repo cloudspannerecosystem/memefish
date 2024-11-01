@@ -43,6 +43,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -59,6 +60,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -75,6 +77,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -91,6 +94,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -107,6 +111,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -123,6 +128,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -147,6 +153,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -166,6 +173,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -190,6 +198,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -209,6 +218,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -229,6 +239,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -252,6 +263,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -278,6 +290,7 @@ create table types (
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
   },
@@ -293,6 +306,7 @@ create table types (
       Dir: "",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

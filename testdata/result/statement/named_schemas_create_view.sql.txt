@@ -92,14 +92,15 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
         },
         Hint: (*ast.Hint)(nil),
         As:   &ast.AsAlias{
-          As:    -1,
+          As:    118,
           Alias: &ast.Ident{
             NamePos: 121,
             NameEnd: 122,
             Name:    "s",
           },
         },
-        Sample: (*ast.TableSample)(nil),
+        WithOffset: (*ast.WithOffset)(nil),
+        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{

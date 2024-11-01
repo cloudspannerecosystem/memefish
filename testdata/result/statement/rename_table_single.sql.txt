@@ -1,0 +1,23 @@
+--- rename_table_single.sql
+RENAME TABLE Singers TO Artists
+--- AST
+&ast.RenameTable{
+  Rename: 0,
+  Tos:    []*ast.RenameTableTo{
+    &ast.RenameTableTo{
+      Old: &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "Singers",
+      },
+      New: &ast.Ident{
+        NamePos: 24,
+        NameEnd: 31,
+        Name:    "Artists",
+      },
+    },
+  },
+}
+
+--- SQL
+RENAME TABLE Singers TO Artists

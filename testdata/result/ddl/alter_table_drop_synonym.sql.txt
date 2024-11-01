@@ -1,0 +1,25 @@
+--- alter_table_drop_synonym.sql
+ALTER TABLE Singers DROP SYNONYM SingersTest
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.FQN{
+    Schema: (*ast.Ident)(nil),
+    Name:   &ast.Ident{
+      NamePos: 12,
+      NameEnd: 19,
+      Name:    "Singers",
+    },
+  },
+  TableAlteration: &ast.DropSynonym{
+    Drop: 20,
+    Name: &ast.Ident{
+      NamePos: 33,
+      NameEnd: 44,
+      Name:    "SingersTest",
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Singers DROP SYNONYM SingersTest

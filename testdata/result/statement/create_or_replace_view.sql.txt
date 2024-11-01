@@ -40,7 +40,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    87,
           Alias: &ast.Ident{
             NamePos: 90,
             NameEnd: 98,
@@ -89,7 +89,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    149,
           Alias: &ast.Ident{
             NamePos: 152,
             NameEnd: 156,

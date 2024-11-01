@@ -38,6 +38,7 @@ CREATE TABLE sch1.ShoppingCarts (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -54,6 +55,7 @@ CREATE TABLE sch1.ShoppingCarts (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
     &ast.ColumnDef{
@@ -73,6 +75,7 @@ CREATE TABLE sch1.ShoppingCarts (
       NotNull:       true,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
   },
@@ -139,6 +142,7 @@ CREATE TABLE sch1.ShoppingCarts (
       Dir: "",
     },
   },
+  Synonyms:          []*ast.Synonym(nil),
   Cluster:           (*ast.Cluster)(nil),
   RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }

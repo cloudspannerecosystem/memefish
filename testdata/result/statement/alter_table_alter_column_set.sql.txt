@@ -11,31 +11,33 @@ alter table foo alter column foo set options(allow_commit_timestamp = true)
       Name:    "foo",
     },
   },
-  TableAlteration: &ast.AlterColumnSet{
+  TableAlteration: &ast.AlterColumn{
     Alter: 16,
     Name:  &ast.Ident{
       NamePos: 29,
       NameEnd: 32,
       Name:    "foo",
     },
-    Options: &ast.Options{
-      Options: 37,
-      Rparen:  74,
-      Records: []*ast.OptionsDef{
-        &ast.OptionsDef{
-          Name: &ast.Ident{
-            NamePos: 45,
-            NameEnd: 67,
-            Name:    "allow_commit_timestamp",
-          },
-          Value: &ast.BoolLiteral{
-            ValuePos: 70,
-            Value:    true,
+    Alteration: &ast.AlterColumnSetOptions{
+      Set:     33,
+      Options: &ast.Options{
+        Options: 37,
+        Rparen:  74,
+        Records: []*ast.OptionsDef{
+          &ast.OptionsDef{
+            Name: &ast.Ident{
+              NamePos: 45,
+              NameEnd: 67,
+              Name:    "allow_commit_timestamp",
+            },
+            Value: &ast.BoolLiteral{
+              ValuePos: 70,
+              Value:    true,
+            },
           },
         },
       },
     },
-    DefaultExpr: (*ast.ColumnDefaultExpr)(nil),
   },
 }
 
