@@ -11,16 +11,18 @@ CREATE TABLE sch1.ShoppingCarts (
   Create:      0,
   Rparen:      296,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: &ast.Ident{
-      NamePos: 13,
-      NameEnd: 17,
-      Name:    "sch1",
-    },
-    Name: &ast.Ident{
-      NamePos: 18,
-      NameEnd: 31,
-      Name:    "ShoppingCarts",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 31,
+        Name:    "ShoppingCarts",
+      },
     },
   },
   Columns: []*ast.ColumnDef{
@@ -103,16 +105,18 @@ CREATE TABLE sch1.ShoppingCarts (
             Name:    "CustomerName",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: &ast.Ident{
-            NamePos: 216,
-            NameEnd: 220,
-            Name:    "sch1",
-          },
-          Name: &ast.Ident{
-            NamePos: 221,
-            NameEnd: 230,
-            Name:    "Customers",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 216,
+              NameEnd: 220,
+              Name:    "sch1",
+            },
+            &ast.Ident{
+              NamePos: 221,
+              NameEnd: 230,
+              Name:    "Customers",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{

@@ -5,12 +5,13 @@ CREATE VIEW Dummy SQL SECURITY INVOKER AS (SELECT 1)
 --- AST
 &ast.CreateView{
   Create: 95,
-  Name:   &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 107,
-      NameEnd: 112,
-      Name:    "Dummy",
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 107,
+        NameEnd: 112,
+        Name:    "Dummy",
+      },
     },
   },
   OrReplace:    false,

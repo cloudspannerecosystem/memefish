@@ -5,16 +5,18 @@ CREATE SEQUENCE sch1.sequence OPTIONS (
 --- AST
 &ast.CreateSequence{
   Create: 0,
-  Name:   &ast.FQN{
-    Schema: &ast.Ident{
-      NamePos: 16,
-      NameEnd: 20,
-      Name:    "sch1",
-    },
-    Name: &ast.Ident{
-      NamePos: 21,
-      NameEnd: 29,
-      Name:    "sequence",
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 20,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 29,
+        Name:    "sequence",
+      },
     },
   },
   IfNotExists: false,

@@ -5,16 +5,18 @@ CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
   Create:      0,
   Rparen:      53,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: &ast.Ident{
-      NamePos: 13,
-      NameEnd: 20,
-      Name:    "ORDER",
-    },
-    Name: &ast.Ident{
-      NamePos: 21,
-      NameEnd: 28,
-      Name:    "ORDER",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "ORDER",
+      },
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 28,
+        Name:    "ORDER",
+      },
     },
   },
   Columns: []*ast.ColumnDef{

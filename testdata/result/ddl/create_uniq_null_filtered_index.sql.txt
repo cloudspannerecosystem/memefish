@@ -8,20 +8,22 @@ create unique null_filtered index foo_bar on foo (foo)
   Unique:       true,
   NullFiltered: true,
   IfNotExists:  false,
-  Name:         &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 34,
-      NameEnd: 41,
-      Name:    "foo_bar",
+  Name:         &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 34,
+        NameEnd: 41,
+        Name:    "foo_bar",
+      },
     },
   },
-  TableName: &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 45,
-      NameEnd: 48,
-      Name:    "foo",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 45,
+        NameEnd: 48,
+        Name:    "foo",
+      },
     },
   },
   Keys: []*ast.IndexKey{

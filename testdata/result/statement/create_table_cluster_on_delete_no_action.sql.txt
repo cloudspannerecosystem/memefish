@@ -9,12 +9,13 @@ create table foo (
   Create:      0,
   Rparen:      50,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 13,
-      NameEnd: 16,
-      Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
     },
   },
   Columns: []*ast.ColumnDef{
@@ -52,12 +53,13 @@ create table foo (
   Cluster:  &ast.Cluster{
     Comma:       51,
     OnDeleteEnd: 115,
-    TableName:   &ast.FQN{
-      Schema: (*ast.Ident)(nil),
-      Name:   &ast.Ident{
-        NamePos: 76,
-        NameEnd: 82,
-        Name:    "foobar",
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 76,
+          NameEnd: 82,
+          Name:    "foobar",
+        },
       },
     },
     OnDelete: "ON DELETE NO ACTION",

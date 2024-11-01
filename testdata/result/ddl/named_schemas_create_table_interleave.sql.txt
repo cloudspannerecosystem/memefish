@@ -10,16 +10,18 @@ CREATE TABLE sch1.Albums (
   Create:      0,
   Rparen:      137,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: &ast.Ident{
-      NamePos: 13,
-      NameEnd: 17,
-      Name:    "sch1",
-    },
-    Name: &ast.Ident{
-      NamePos: 18,
-      NameEnd: 24,
-      Name:    "Albums",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 24,
+        Name:    "Albums",
+      },
     },
   },
   Columns: []*ast.ColumnDef{
@@ -103,16 +105,18 @@ CREATE TABLE sch1.Albums (
   Cluster:  &ast.Cluster{
     Comma:       138,
     OnDeleteEnd: 193,
-    TableName:   &ast.FQN{
-      Schema: &ast.Ident{
-        NamePos: 163,
-        NameEnd: 167,
-        Name:    "sch1",
-      },
-      Name: &ast.Ident{
-        NamePos: 168,
-        NameEnd: 175,
-        Name:    "Singers",
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 163,
+          NameEnd: 167,
+          Name:    "sch1",
+        },
+        &ast.Ident{
+          NamePos: 168,
+          NameEnd: 175,
+          Name:    "Singers",
+        },
       },
     },
     OnDelete: "ON DELETE CASCADE",

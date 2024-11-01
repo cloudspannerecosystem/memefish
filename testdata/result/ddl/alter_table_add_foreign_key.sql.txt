@@ -4,12 +4,13 @@ alter table foo add foreign key (bar) references t2 (t2key1)
 --- AST
 &ast.AlterTable{
   Alter: 0,
-  Name:  &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 12,
-      NameEnd: 15,
-      Name:    "foo",
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
     },
   },
   TableAlteration: &ast.AddTableConstraint{
@@ -28,12 +29,13 @@ alter table foo add foreign key (bar) references t2 (t2key1)
             Name:    "bar",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: (*ast.Ident)(nil),
-          Name:   &ast.Ident{
-            NamePos: 49,
-            NameEnd: 51,
-            Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 49,
+              NameEnd: 51,
+              Name:    "t2",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{

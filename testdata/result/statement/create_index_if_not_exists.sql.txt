@@ -8,20 +8,22 @@ create index if not exists foo_bar on foo (bar)
   Unique:       false,
   NullFiltered: false,
   IfNotExists:  true,
-  Name:         &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 27,
-      NameEnd: 34,
-      Name:    "foo_bar",
+  Name:         &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 34,
+        Name:    "foo_bar",
+      },
     },
   },
-  TableName: &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 38,
-      NameEnd: 41,
-      Name:    "foo",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 38,
+        NameEnd: 41,
+        Name:    "foo",
+      },
     },
   },
   Keys: []*ast.IndexKey{

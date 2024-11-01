@@ -3,12 +3,13 @@ ALTER TABLE Singers DROP SYNONYM SingersTest
 --- AST
 &ast.AlterTable{
   Alter: 0,
-  Name:  &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 12,
-      NameEnd: 19,
-      Name:    "Singers",
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "Singers",
+      },
     },
   },
   TableAlteration: &ast.DropSynonym{

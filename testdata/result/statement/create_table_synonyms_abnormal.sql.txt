@@ -11,12 +11,13 @@ CREATE TABLE Singers (
   Create:      45,
   Rparen:      194,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 58,
-      NameEnd: 65,
-      Name:    "Singers",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 58,
+        NameEnd: 65,
+        Name:    "Singers",
+      },
     },
   },
   Columns: []*ast.ColumnDef{

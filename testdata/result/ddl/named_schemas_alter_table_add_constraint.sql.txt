@@ -4,16 +4,18 @@ ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN K
 --- AST
 &ast.AlterTable{
   Alter: 0,
-  Name:  &ast.FQN{
-    Schema: &ast.Ident{
-      NamePos: 12,
-      NameEnd: 16,
-      Name:    "sch1",
-    },
-    Name: &ast.Ident{
-      NamePos: 17,
-      NameEnd: 30,
-      Name:    "ShoppingCarts",
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 16,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 30,
+        Name:    "ShoppingCarts",
+      },
     },
   },
   TableAlteration: &ast.AddTableConstraint{
@@ -41,16 +43,18 @@ ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN K
             Name:    "CustomerName",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: &ast.Ident{
-            NamePos: 124,
-            NameEnd: 128,
-            Name:    "sch1",
-          },
-          Name: &ast.Ident{
-            NamePos: 129,
-            NameEnd: 138,
-            Name:    "Customers",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 124,
+              NameEnd: 128,
+              Name:    "sch1",
+            },
+            &ast.Ident{
+              NamePos: 129,
+              NameEnd: 138,
+              Name:    "Customers",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{

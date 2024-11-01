@@ -19,12 +19,13 @@ create table foo (
   Create:      0,
   Rparen:      573,
   IfNotExists: false,
-  Name:        &ast.FQN{
-    Schema: (*ast.Ident)(nil),
-    Name:   &ast.Ident{
-      NamePos: 13,
-      NameEnd: 16,
-      Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
     },
   },
   Columns: []*ast.ColumnDef{
@@ -225,12 +226,13 @@ create table foo (
             Name:    "foo",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: (*ast.Ident)(nil),
-          Name:   &ast.Ident{
-            NamePos: 211,
-            NameEnd: 213,
-            Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 211,
+              NameEnd: 213,
+              Name:    "t2",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{
@@ -257,12 +259,13 @@ create table foo (
             Name:    "bar",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: (*ast.Ident)(nil),
-          Name:   &ast.Ident{
-            NamePos: 255,
-            NameEnd: 257,
-            Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 255,
+              NameEnd: 257,
+              Name:    "t2",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{
@@ -289,12 +292,13 @@ create table foo (
             Name:    "baz",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: (*ast.Ident)(nil),
-          Name:   &ast.Ident{
-            NamePos: 317,
-            NameEnd: 319,
-            Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 317,
+              NameEnd: 319,
+              Name:    "t2",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{
@@ -330,12 +334,13 @@ create table foo (
             Name:    "bar",
           },
         },
-        ReferenceTable: &ast.FQN{
-          Schema: (*ast.Ident)(nil),
-          Name:   &ast.Ident{
-            NamePos: 404,
-            NameEnd: 406,
-            Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 404,
+              NameEnd: 406,
+              Name:    "t2",
+            },
           },
         },
         ReferenceColumns: []*ast.Ident{
