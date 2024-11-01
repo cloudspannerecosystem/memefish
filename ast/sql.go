@@ -1509,26 +1509,24 @@ func (g *GQLMatchStatement) SQL() string {
 	return sql
 }
 
+func (g *GQLFilterStatement) SQL() string {
+	return "FILTER " + strOpt(!g.Where.Invalid(), "WHERE ") + g.Expr.SQL()
+}
+
+func (g *GQLForStatement) SQL() string {
+	return "FOR " + g.ElementName.SQL() + " IN " +
+		g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
+}
+
+func (g *GQLWithOffsetClause) SQL() string {
+	return "WITH OFFSET" + sqlOpt(" ", g.OffsetName, "")
+}
+
 func (g *GQLLimitClause) SQL() string { return g.Limit.SQL() }
 
 func (g *GQLOffsetClause) SQL() string { return g.Offset.SQL() }
 
 func (g *GQLLimitWithOffsetClause) SQL() string { return g.Limit.SQL() + " " + g.Offset.SQL() }
-
-func (g *GQLFilterStatement) SQL() string {
-	if g.Where.Invalid() {
-		return "FILTER " + g.Expr.SQL()
-	}
-	return "FILTER WHERE " + g.Expr.SQL()
-}
-
-func (g *GQLForStatement) SQL() string {
-	return "FOR " + g.ElementName.SQL() + " IN " + g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
-}
-
-func (g *GQLWithOffsetClause) SQL() string {
-	return "WITH OFFSET" + sqlOpt(" AS ", g.OffsetName, "")
-}
 
 func (g *GQLLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
 

@@ -1759,27 +1759,27 @@ func (g *GQLTopLevelPathPattern) End() token.Pos {
 }
 
 func (g *GQLFullEdgeAny) Pos() token.Pos {
-	return g.First
+	return g.FirstHyphen
 }
 
 func (g *GQLFullEdgeAny) End() token.Pos {
-	return posAdd(g.Last, 1)
+	return posAdd(g.LastHyphen, 1)
 }
 
 func (g *GQLFullEdgeLeft) Pos() token.Pos {
-	return g.First
+	return g.Lt
 }
 
 func (g *GQLFullEdgeLeft) End() token.Pos {
-	return posAdd(g.Last, 1)
+	return posAdd(g.Hyphen, 1)
 }
 
 func (g *GQLFullEdgeRight) Pos() token.Pos {
-	return g.First
+	return g.Hyphen
 }
 
 func (g *GQLFullEdgeRight) End() token.Pos {
-	return posAdd(g.Last, 1)
+	return posAdd(g.Gt, 1)
 }
 
 func (g *GQLAbbreviatedEdgeAny) Pos() token.Pos {
@@ -1791,19 +1791,19 @@ func (g *GQLAbbreviatedEdgeAny) End() token.Pos {
 }
 
 func (g *GQLAbbreviatedEdgeLeft) Pos() token.Pos {
-	return g.First
+	return g.Lt
 }
 
 func (g *GQLAbbreviatedEdgeLeft) End() token.Pos {
-	return posAdd(g.Last, 1)
+	return posAdd(g.Hyphen, 1)
 }
 
 func (g *GQLAbbreviatedEdgeRight) Pos() token.Pos {
-	return g.First
+	return g.Hyphen
 }
 
 func (g *GQLAbbreviatedEdgeRight) End() token.Pos {
-	return posAdd(g.Last, 1)
+	return posAdd(g.Gt, 1)
 }
 
 func (g *GQLQuantifiablePathTerm) Pos() token.Pos {
@@ -1939,7 +1939,7 @@ func (g *GQLElementProperty) Pos() token.Pos {
 }
 
 func (g *GQLElementProperty) End() token.Pos {
-	return nodePos(wrapNode(g.ElementPropertyValue))
+	return nodeEnd(wrapNode(g.ElementPropertyValue))
 }
 
 func (g *GQLPathSearchPrefix) Pos() token.Pos {

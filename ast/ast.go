@@ -3203,13 +3203,13 @@ func (*GQLReturnStatement) isGQLPrimitiveQueryStatement()  {}
 
 // GQLMatchStatement represents MATCH statement.
 //
-//	{{if .Optional.Invalid | not}}OPTIONAL {{end-}}
-//	MATCH //	{{.MatchHint | sqlOpt}} //	{{.PrefixOrMode | sqlOpt}} {{.GraphPattern | sql}}
+//	{{if not .Optional.Invalid}}OPTIONAL{{end}}
+//	MATCH {{.MatchHint | sqlOpt}} {{.PrefixOrMode | sqlOpt}} {{.GraphPattern | sql}}
 type GQLMatchStatement struct {
 	// pos = Optional || Match
 	// end = GraphPattern.end
 
-	Optional token.Pos //optional
+	Optional token.Pos // optional
 	Match    token.Pos
 
 	MatchHint    *Hint                         // optional
@@ -3240,7 +3240,7 @@ type GQLFilterStatement struct {
 
 // GQLForStatement represents GQL FOR statement.
 //
-//	FOR {{.ElementName | sql}} IN {{.ArrayExpression | sqlJoin ", "}} {{.WithOffsetClause | sqlOpt}}
+//	FOR {{.ElementName | sql}} IN {{.ArrayExpression | sql}} {{.WithOffsetClause | sqlOpt}}
 type GQLForStatement struct {
 	// pos = For
 	// end = (WithOffsetClause ?? ArrayExpression).end
@@ -3251,16 +3251,16 @@ type GQLForStatement struct {
 	WithOffsetClause *GQLWithOffsetClause
 }
 
-// GQLWithOffsetClause represents `WITH OFFSET [AS offset_name]` in FOR statement.
+// GQLWithOffsetClause represents WITH OFFSET [AS offset_name] in FOR statement.
 //
-//	WITH OFFSET {{if isnil .OffsetName | not}}AS {{.OffsetName | sql}}{{end}}
+//	WITH OFFSET {{.OffsetName | sqlOpt}}
 type GQLWithOffsetClause struct {
 	// pos = With
 	// end = OffsetName.end || Offset + 6
 
 	With       token.Pos
 	Offset     token.Pos
-	OffsetName *Ident
+	OffsetName *AsAlias // optional
 }
 
 // GQLLimitClause is wrapper of Limit for GQL
@@ -3279,6 +3279,7 @@ type GQLLimitClause struct {
 type GQLOffsetClause struct {
 	// pos = Offset.pos
 	// end = Offset.end
+
 	Offset *Offset
 }
 
@@ -3307,7 +3308,7 @@ type GQLLimitStatement struct {
 // GQLOffsetStatement represents OFFSET statement.
 // It also represents SKIP statement as the synonym.
 //
-// {{if IsSkip}}
+//	{{if IsSkip}}SKIP{{else}}OFFSET{{end}} {{.Count | sql}}
 type GQLOffsetStatement struct {
 	// pos = Offset
 	// end = Count.end
@@ -3356,6 +3357,8 @@ type GQLCollationSpecification struct {
 // GQLWithStatement represents WITH statement.
 //
 //	WITH {{.GQLAllOrDistinctEnum | sql}} {{.ReturnItemList | sqlJoin}} {{.GroupBy | sql}}
+//
+// TODO: Refactor
 type GQLWithStatement struct {
 	// pos = With
 	// end = (GroupByClause ?? ReturnItemList[$]).end
@@ -3469,10 +3472,11 @@ func (*GQLAbbreviatedEdgeRight) isGQLEdgePattern() {}
 //
 //	-[{{.PatternFiller | sql}}]-
 type GQLFullEdgeAny struct {
-	// pos = First
-	// end = Last + 1
+	// pos = FirstHyphen
+	// end = LastHyphen + 1
 
-	First, Last   token.Pos
+	FirstHyphen, LastHyphen token.Pos // position of "-"
+
 	PatternFiller *GQLPatternFiller
 }
 
@@ -3480,11 +3484,12 @@ type GQLFullEdgeAny struct {
 //
 //	<-[{{.PatternFiller | sql}}]-
 type GQLFullEdgeLeft struct {
-	// pos = First
-	// end = Last + 1
+	// pos = Lt
+	// end = Hyphen + 1
 
-	First         token.Pos // position of "<"
-	Last          token.Pos // position of the last "-"
+	Lt     token.Pos // position of "<"
+	Hyphen token.Pos // position of the last "-"
+
 	PatternFiller *GQLPatternFiller
 }
 
@@ -3492,11 +3497,12 @@ type GQLFullEdgeLeft struct {
 //
 //	-[{{.PatternFiller | sql}}]->
 type GQLFullEdgeRight struct {
-	// pos = First
-	// end = Last + 1
+	// pos = Hyphen
+	// end = Gt + 1
 
-	First         token.Pos // position of the first "-"
-	Last          token.Pos // position of ">"
+	Hyphen token.Pos // position of the first "-"
+	Gt     token.Pos // position of ">"
+
 	PatternFiller *GQLPatternFiller
 }
 
@@ -3514,22 +3520,22 @@ type GQLAbbreviatedEdgeAny struct {
 //
 //	<-
 type GQLAbbreviatedEdgeLeft struct {
-	// pos = First
-	// end = Last + 1
+	// pos = Lt
+	// end = Hyphen + 1
 
-	First token.Pos // position of "<"
-	Last  token.Pos // position of "-"
+	Lt     token.Pos // position of "<"
+	Hyphen token.Pos // position of "-"
 }
 
 // GQLAbbreviatedEdgeRight represents `->`.
 //
 //	->
 type GQLAbbreviatedEdgeRight struct {
-	// pos = First
-	// end = Last + 1
+	// pos = Hyphen
+	// end = Gt + 1
 
-	First token.Pos // position of "-"
-	Last  token.Pos // position of ">"
+	Hyphen token.Pos // position of "-"
+	Gt     token.Pos // position of ">"
 }
 
 // GQLQuantifiablePathTerm represents GQLPathTerm with optional Hint and optional GQLQuantifier..
@@ -3558,7 +3564,7 @@ type GQLPathPattern struct {
 	PathTermList []*GQLQuantifiablePathTerm
 }
 
-// GQLPathTerm represents ` { element_pattern | subpath_pattern }`
+// GQLPathTerm represents `{ element_pattern | subpath_pattern }`
 type GQLPathTerm interface {
 	Node
 	isGQLPathTerm()
@@ -3730,7 +3736,7 @@ func (g *GQLLabelAndExpression) isGQLLabelExpression()   {}
 func (g *GQLLabelNotExpression) isGQLLabelExpression()   {}
 func (g *GQLLabelName) isGQLLabelExpression()            {}
 
-// GQLLabelAndExpression represents `label_expression|label_expression`.
+// GQLLabelOrExpression represents `label_expression|label_expression`.
 //
 //	{{.Left | sql}}|{{.Right | sql}}
 type GQLLabelOrExpression struct {
@@ -3779,6 +3785,8 @@ type GQLLabelName struct {
 	// pos = StartPos
 	// end = LabelName.end || StartPos + 1
 
+	// TODO: Make it interaface
+
 	StartPos  token.Pos // position of "%" or LabelName
 	IsPercent bool
 	LabelName *Ident // optional
@@ -3811,7 +3819,7 @@ type GQLPropertyFilters struct {
 //	{{.ElementPropertyName | sql}}: {{.ElementPropertyValue | sql}}
 type GQLElementProperty struct {
 	// pos = ElementPropertyName.pos
-	// end = ElementPropertyValue.pos
+	// end = ElementPropertyValue.end
 
 	ElementPropertyName  *Ident
 	ElementPropertyValue Expr
@@ -3820,6 +3828,8 @@ type GQLElementProperty struct {
 // GQLPathSearchPrefix represents `{"ALL" | "ANY" | "ANY SHORTEST"}`.
 //
 //	{{string(.SearchPrefix)}}
+//
+// TODO: Make it interface
 type GQLPathSearchPrefix struct {
 	// pos = StartPos
 	// end = LastEnd

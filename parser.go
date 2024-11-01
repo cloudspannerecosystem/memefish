@@ -4383,11 +4383,7 @@ func (p *Parser) tryParseGQLWithOffsetClause() *ast.GQLWithOffsetClause {
 	}
 	with := p.expect("WITH").Pos
 	offset := p.expectKeywordLike("OFFSET").Pos
-	var offsetName *ast.Ident
-	if p.Token.Kind == "AS" {
-		p.nextToken()
-		offsetName = p.parseIdent()
-	}
+	offsetName := p.tryParseAsAlias(withRequiredAs)
 
 	return &ast.GQLWithOffsetClause{
 		With:       with,
@@ -4574,6 +4570,7 @@ func (p *Parser) tryParseGQLPathModePathOrPaths() *ast.Ident {
 		return nil
 	}
 }
+
 func (p *Parser) tryParseGQLPathMode() *ast.GQLPathMode {
 	switch {
 	case p.Token.IsKeywordLike("WALK"):
@@ -4877,8 +4874,8 @@ func (p *Parser) parseGQLEdgePattern() ast.GQLEdgePattern {
 		firstHyphenPos := p.expect("-").Pos
 		if p.Token.Kind != "[" {
 			return &ast.GQLAbbreviatedEdgeLeft{
-				First: firstPos,
-				Last:  firstHyphenPos,
+				Lt:     firstPos,
+				Hyphen: firstHyphenPos,
 			}
 		}
 		p.nextToken()
@@ -4886,15 +4883,15 @@ func (p *Parser) parseGQLEdgePattern() ast.GQLEdgePattern {
 		p.expect("]")
 		lastPos := p.expect("-").Pos
 		return &ast.GQLFullEdgeLeft{
-			First:         firstPos,
-			Last:          lastPos,
+			Lt:            firstPos,
+			Hyphen:        lastPos,
 			PatternFiller: patternFilter,
 		}
 	case "->":
 		lastPos := p.expect("->").Pos
 		return &ast.GQLAbbreviatedEdgeRight{
-			First: firstPos,
-			Last:  lastPos,
+			Hyphen: firstPos,
+			Gt:     lastPos,
 		}
 	case "-":
 		p.nextToken()
@@ -4908,15 +4905,15 @@ func (p *Parser) parseGQLEdgePattern() ast.GQLEdgePattern {
 				lastPos := p.Token.Pos
 				p.nextToken()
 				return &ast.GQLFullEdgeRight{
-					First:         firstPos,
-					Last:          lastPos,
+					Hyphen:        firstPos,
+					Gt:            lastPos,
 					PatternFiller: patternFiller,
 				}
 			case "-":
 				lastPos := p.expect("-").Pos
 				return &ast.GQLFullEdgeAny{
-					First:         firstPos,
-					Last:          lastPos,
+					FirstHyphen:   firstPos,
+					LastHyphen:    lastPos,
 					PatternFiller: patternFiller,
 				}
 			default:
