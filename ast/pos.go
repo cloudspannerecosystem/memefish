@@ -558,14 +558,6 @@ func (i *Ident) End() token.Pos {
 	return i.NameEnd
 }
 
-func (f *FQN) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(f.Schema), wrapNode(f.Name)))
-}
-
-func (f *FQN) End() token.Pos {
-	return nodeEnd(wrapNode(f.Name))
-}
-
 func (p *Path) Pos() token.Pos {
 	return nodePos(nodeSliceIndex(p.Idents, 0))
 }

@@ -1378,29 +1378,15 @@ type Ident struct {
 	Name string
 }
 
-// FQN is dot-chained identifier list for named schema.
-//
-//	{{.Idents | sqlJoin "."}}
-type FQN struct {
-	// pos = (Schema ?? Name).pos
-	// end = Name.end
-
-	Schema *Ident // optional
-	Name   *Ident
-}
-
-func (f *FQN) SQL() string {
-	return sqlOpt("", f.Schema, ".") + f.Name.SQL()
-}
-
 // Path is dot-chained identifier list.
+// It can be simple name without dot.
 //
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
 	// end = Idents[$].end
 
-	Idents []*Ident // len(Idents) >= 2
+	Idents []*Ident // len(Idents) > 0
 }
 
 // ArrayLiteral is array literal node.
@@ -1855,7 +1841,7 @@ type CreateTable struct {
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
 	IfNotExists       bool
-	Name              *FQN
+	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
@@ -1879,14 +1865,14 @@ type Synonym struct {
 
 // CreateSequence is CREATE SEQUENCE statement node.
 //
-//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} }} {{.Options | sql}}
+//	CREATE SEQUENCE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.NamePath | sql}} }} {{.Options | sql}}
 type CreateSequence struct {
 	// pos = Create
 	// end = Options.end
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name        *FQN
+	Name        *Path
 	IfNotExists bool
 	Options     *Options
 }
@@ -1979,7 +1965,7 @@ type ForeignKey struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	Columns          []*Ident
-	ReferenceTable   *FQN
+	ReferenceTable   *Path
 	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
 	OnDelete         OnDeleteAction // optional
 }
@@ -2020,7 +2006,7 @@ type Cluster struct {
 	Comma       token.Pos // position of ","
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
-	TableName *FQN
+	TableName *Path
 	OnDelete  OnDeleteAction // optional
 }
 
@@ -2061,7 +2047,7 @@ type CreateView struct {
 
 	Create token.Pos
 
-	Name         *FQN
+	Name         *Path
 	OrReplace    bool
 	SecurityType SecurityType
 	Query        QueryExpr
@@ -2088,7 +2074,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *FQN
+	Name            *Path
 	TableAlteration TableAlteration
 }
 
@@ -2112,7 +2098,7 @@ type AlterSequence struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *FQN
+	Name    *Path
 	Options *Options
 }
 
@@ -2330,7 +2316,7 @@ type DropTable struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *FQN
+	Name     *Path
 }
 
 // RenameTable is RENAME TABLE statement node.
@@ -2376,8 +2362,8 @@ type CreateIndex struct {
 	Unique       bool
 	NullFiltered bool
 	IfNotExists  bool
-	Name         *FQN
-	TableName    *FQN
+	Name         *Path
+	TableName    *Path
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
 	InterleaveIn *InterleaveIn // optional
@@ -2564,7 +2550,7 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *FQN
+	Name     *Path
 }
 
 // DropVectorIndex is DROP VECTOR INDEX statement node.
@@ -2589,7 +2575,7 @@ type DropSequence struct {
 
 	Drop     token.Pos
 	IfExists bool
-	Name     *FQN
+	Name     *Path
 }
 
 // CreateRole is CREATE ROLE statement node.
