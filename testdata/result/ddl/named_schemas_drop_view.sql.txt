@@ -1,49 +1,23 @@
 --- named_schemas_drop_view.sql
--- TODO: CREATE VIEW not yet supported, this file is placeholder.
--- DROP VIEW sch1.SingerView
-CREATE VIEW Dummy SQL SECURITY INVOKER AS (SELECT 1)
+DROP VIEW sch1.SingerView
 --- AST
-&ast.CreateView{
-  Create: 95,
-  Name:   &ast.Path{
+&ast.DropView{
+  Drop: 0,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
-        NamePos: 107,
-        NameEnd: 112,
-        Name:    "Dummy",
+        NamePos: 10,
+        NameEnd: 14,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 25,
+        Name:    "SingerView",
       },
     },
-  },
-  OrReplace:    false,
-  SecurityType: "INVOKER",
-  Query:        &ast.SubQuery{
-    Lparen: 137,
-    Rparen: 146,
-    Query:  &ast.Select{
-      Select:   138,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
-        &ast.ExprSelectItem{
-          Expr: &ast.IntLiteral{
-            ValuePos: 145,
-            ValueEnd: 146,
-            Base:     10,
-            Value:    "1",
-          },
-        },
-      },
-      From:    (*ast.From)(nil),
-      Where:   (*ast.Where)(nil),
-      GroupBy: (*ast.GroupBy)(nil),
-      Having:  (*ast.Having)(nil),
-      OrderBy: (*ast.OrderBy)(nil),
-      Limit:   (*ast.Limit)(nil),
-    },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-CREATE VIEW Dummy SQL SECURITY INVOKER AS (SELECT 1)
+DROP VIEW sch1.SingerView

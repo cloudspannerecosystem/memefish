@@ -2557,7 +2557,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 
 func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	p.expectKeywordLike("VIEW")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropView{
 		Drop: pos,

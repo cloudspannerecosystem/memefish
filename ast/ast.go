@@ -2062,7 +2062,7 @@ type DropView struct {
 
 	Drop token.Pos
 
-	Name *Ident
+	Name *Path
 }
 
 // AlterTable is ALTER TABLE statement node.
