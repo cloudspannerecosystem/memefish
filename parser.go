@@ -3365,7 +3365,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlteration {
 func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	p.expectKeywordLike("INDEX")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{

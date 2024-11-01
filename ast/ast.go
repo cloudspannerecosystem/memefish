@@ -2087,7 +2087,7 @@ type AlterIndex struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *Path
 	IndexAlteration IndexAlteration
 }
 
