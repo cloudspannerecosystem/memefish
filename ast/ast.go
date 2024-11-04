@@ -1379,13 +1379,14 @@ type Ident struct {
 }
 
 // Path is dot-chained identifier list.
+// It can be simple name without dot.
 //
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
 	// end = Idents[$].end
 
-	Idents []*Ident // len(Idents) >= 2
+	Idents []*Ident // len(Idents) > 0
 }
 
 // ArrayLiteral is array literal node.
@@ -1840,7 +1841,7 @@ type CreateTable struct {
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
 	IfNotExists       bool
-	Name              *Ident
+	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
@@ -1871,7 +1872,7 @@ type CreateSequence struct {
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name        *Ident
+	Name        *Path
 	IfNotExists bool
 	Options     *Options
 }
@@ -1964,7 +1965,7 @@ type ForeignKey struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	Columns          []*Ident
-	ReferenceTable   *Ident
+	ReferenceTable   *Path
 	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
 	OnDelete         OnDeleteAction // optional
 }
@@ -2005,7 +2006,7 @@ type Cluster struct {
 	Comma       token.Pos // position of ","
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
-	TableName *Ident
+	TableName *Path
 	OnDelete  OnDeleteAction // optional
 }
 
@@ -2046,7 +2047,7 @@ type CreateView struct {
 
 	Create token.Pos
 
-	Name         *Ident
+	Name         *Path
 	OrReplace    bool
 	SecurityType SecurityType
 	Query        QueryExpr
@@ -2061,7 +2062,7 @@ type DropView struct {
 
 	Drop token.Pos
 
-	Name *Ident
+	Name *Path
 }
 
 // AlterTable is ALTER TABLE statement node.
@@ -2073,7 +2074,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *Path
 	TableAlteration TableAlteration
 }
 
@@ -2086,7 +2087,7 @@ type AlterIndex struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *Path
 	IndexAlteration IndexAlteration
 }
 
@@ -2097,7 +2098,7 @@ type AlterSequence struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Ident
+	Name    *Path
 	Options *Options
 }
 
@@ -2315,7 +2316,7 @@ type DropTable struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // RenameTable is RENAME TABLE statement node.
@@ -2361,8 +2362,8 @@ type CreateIndex struct {
 	Unique       bool
 	NullFiltered bool
 	IfNotExists  bool
-	Name         *Ident
-	TableName    *Ident
+	Name         *Path
+	TableName    *Path
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
 	InterleaveIn *InterleaveIn // optional
@@ -2549,7 +2550,7 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // DropVectorIndex is DROP VECTOR INDEX statement node.
@@ -2571,9 +2572,10 @@ type DropVectorIndex struct {
 type DropSequence struct {
 	// pos = Drop
 	// end = Name.end
+
 	Drop     token.Pos
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // CreateRole is CREATE ROLE statement node.

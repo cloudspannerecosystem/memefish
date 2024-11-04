@@ -4,10 +4,14 @@ alter table foo add row deletion policy ( older_than ( bar, interval 30 day ))
 --- AST
 &ast.AlterTable{
   Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 15,
-    Name:    "foo",
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
   },
   TableAlteration: &ast.AddRowDeletionPolicy{
     Add:               16,

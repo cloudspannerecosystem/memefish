@@ -9,10 +9,14 @@ create table foo (
   Create:      0,
   Rparen:      49,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
@@ -49,10 +53,14 @@ create table foo (
   Cluster:  &ast.Cluster{
     Comma:       50,
     OnDeleteEnd: 112,
-    TableName:   &ast.Ident{
-      NamePos: 75,
-      NameEnd: 81,
-      Name:    "foobar",
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 75,
+          NameEnd: 81,
+          Name:    "foobar",
+        },
+      },
     },
     OnDelete: "ON DELETE CASCADE",
   },

@@ -2424,7 +2424,7 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	// This loop allows parsing trailing comma intentionally.
 	// TODO: is this allowed by Spanner really?
@@ -2498,10 +2498,15 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
+func (p *Parser) parsePath() *ast.Path {
+	path := p.parseIdentOrPath()
+	return &ast.Path{Idents: path}
+}
+
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	options := p.parseOptions()
 
 	return &ast.CreateSequence{
@@ -2521,7 +2526,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 	}
 	p.expectKeywordLike("VIEW")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expectKeywordLike("SQL")
 	p.expectKeywordLike("SECURITY")
@@ -2552,7 +2557,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 
 func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	p.expectKeywordLike("VIEW")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropView{
 		Drop: pos,
@@ -2612,7 +2617,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	columns := parseCommaSeparatedList(p, p.parseIdent)
 	p.expect(")")
 	p.expectKeywordLike("REFERENCES")
-	refTable := p.parseIdent()
+	refTable := p.parsePath()
 
 	p.expect("(")
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
@@ -2732,7 +2737,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
@@ -2957,10 +2962,10 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	ifNotExists := p.parseIfNotExists()
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("ON")
-	tableName := p.parseIdent()
+	tableName := p.parsePath()
 
 	p.expect("(")
 	var keys []*ast.IndexKey
@@ -3132,7 +3137,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alteration ast.TableAlteration
 	switch {
@@ -3360,7 +3365,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlteration {
 func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	p.expectKeywordLike("INDEX")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{
@@ -3372,7 +3377,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
-	name := p.parseIdent()
+	name := p.parsePath()
 	p.expect("SET")
 	options := p.parseOptions()
 
@@ -3411,7 +3416,7 @@ func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropTable{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3422,7 +3427,7 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropIndex{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3445,7 +3450,7 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,

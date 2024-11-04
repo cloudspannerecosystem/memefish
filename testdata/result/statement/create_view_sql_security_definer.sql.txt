@@ -9,10 +9,14 @@ from singers
 --- AST
 &ast.CreateView{
   Create: 0,
-  Name:   &ast.Ident{
-    NamePos: 12,
-    NameEnd: 23,
-    Name:    "singernames",
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 23,
+        Name:    "singernames",
+      },
+    },
   },
   OrReplace:    false,
   SecurityType: "DEFINER",
