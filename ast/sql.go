@@ -1256,6 +1256,7 @@ func (r *RolePrivilege) SQL() string {
 func (s *AlterStatistics) SQL() string {
 	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
 }
+func (a *Analyze) SQL() string { return "ANALYZE" }
 
 // ================================================================================
 //

@@ -87,6 +87,7 @@ func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
 func (AlterStatistics) isStatement()    {}
+func (Analyze) isStatement()            {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
 func (Insert) isStatement()             {}
@@ -326,6 +327,7 @@ func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
 func (AlterStatistics) isDDL()    {}
+func (Analyze) isDDL()            {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
 
@@ -2759,6 +2761,16 @@ type AlterStatistics struct {
 
 	Name    *Ident
 	Options *Options
+}
+
+// Analyze is ANALYZE statement node.
+//
+//	ANALYZE
+type Analyze struct {
+	// pos = Analyze
+	// end = Analyze + 7
+
+	Analyze token.Pos // position of "ANALYZE" keyword
 }
 
 // ================================================================================

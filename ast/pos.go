@@ -1390,6 +1390,14 @@ func (a *AlterStatistics) End() token.Pos {
 	return nodeEnd(wrapNode(a.Options))
 }
 
+func (a *Analyze) Pos() token.Pos {
+	return a.Analyze
+}
+
+func (a *Analyze) End() token.Pos {
+	return posAdd(a.Analyze, 7)
+}
+
 func (s *ScalarSchemaType) Pos() token.Pos {
 	return s.NamePos
 }
