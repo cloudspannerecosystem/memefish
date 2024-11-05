@@ -2303,6 +2303,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
+		case p.Token.IsKeywordLike("PLACEMENT"):
+			return p.parseCreatePlacement(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
@@ -2402,6 +2404,7 @@ func (p *Parser) parseDropSchema(pos token.Pos) *ast.DropSchema {
 func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 	p.expectKeywordLike("DATABASE")
 	name := p.parseIdent()
+
 	return &ast.CreateDatabase{
 		Create: pos,
 		Name:   name,
@@ -2416,6 +2419,18 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 
 	return &ast.AlterDatabase{
 		Alter:   pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
+func (p *Parser) parseCreatePlacement(pos token.Pos) *ast.CreatePlacement {
+	p.expectKeywordLike("PLACEMENT")
+	name := p.parseIdent()
+	options := p.parseOptions()
+
+	return &ast.CreatePlacement{
+		Create:  pos,
 		Name:    name,
 		Options: options,
 	}

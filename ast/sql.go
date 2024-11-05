@@ -794,6 +794,10 @@ func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }
 
+func (c *CreatePlacement) SQL() string {
+	return "CREATE PLACEMENT " + c.Name.SQL() + sqlOpt(" ", c.Options, " ")
+}
+
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +

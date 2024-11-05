@@ -822,6 +822,14 @@ func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Name))
 }
 
+func (c *CreatePlacement) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreatePlacement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
+}
+
 func (c *CreateTable) Pos() token.Pos {
 	return c.Create
 }
