@@ -77,15 +77,22 @@ func main() {
 		node, err = p.ParseQuery()
 	case "expr":
 		node, err = p.ParseExpr()
+	case "type":
+		node, err = p.ParseType()
 	case "ddl":
 		node, err = p.ParseDDL()
 	case "dml":
 		node, err = p.ParseDML()
-	}
-	if err != nil {
-		log.Fatal(err)
+	default:
+		log.Fatalf("unknown mode: %s", *mode)
 	}
 	logf("finish parsing successfully")
+
+	if err != nil {
+		fmt.Println("--- Error")
+		fmt.Print(err)
+		fmt.Println()
+	}
 
 	if *dig != "" {
 		value := reflect.ValueOf(node)
