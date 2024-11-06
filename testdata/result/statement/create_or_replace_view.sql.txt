@@ -9,10 +9,14 @@ from singers
 --- AST
 &ast.CreateView{
   Create: 0,
-  Name:   &ast.Ident{
-    NamePos: 23,
-    NameEnd: 34,
-    Name:    "singernames",
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 23,
+        NameEnd: 34,
+        Name:    "singernames",
+      },
+    },
   },
   OrReplace:    true,
   SecurityType: "INVOKER",
@@ -37,7 +41,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    87,
           Alias: &ast.Ident{
             NamePos: 90,
             NameEnd: 98,
@@ -86,7 +90,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    149,
           Alias: &ast.Ident{
             NamePos: 152,
             NameEnd: 156,

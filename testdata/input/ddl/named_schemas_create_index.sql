@@ -1,0 +1,1 @@
+CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)

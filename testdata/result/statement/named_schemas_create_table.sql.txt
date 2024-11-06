@@ -1,0 +1,134 @@
+--- named_schemas_create_table.sql
+CREATE TABLE sch1.Singers (
+    SingerId INT64 NOT NULL,
+    FirstName STRING(1024),
+    LastName STRING(1024),
+    SingerInfo BYTES(MAX),
+) PRIMARY KEY(SingerId)
+--- AST
+&ast.CreateTable{
+  Create:      0,
+  Rparen:      161,
+  IfNotExists: false,
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 25,
+        Name:    "Singers",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 51,
+      Name: &ast.Ident{
+        NamePos: 32,
+        NameEnd: 40,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 41,
+        Name:    "INT64",
+      },
+      NotNull:       true,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 61,
+        NameEnd: 70,
+        Name:    "FirstName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 71,
+        Rparen:  82,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 78,
+          ValueEnd: 82,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 89,
+        NameEnd: 97,
+        Name:    "LastName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 98,
+        Rparen:  109,
+        Name:    "STRING",
+        Max:     false,
+        Size:    &ast.IntLiteral{
+          ValuePos: 105,
+          ValueEnd: 109,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 116,
+        NameEnd: 126,
+        Name:    "SingerInfo",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 127,
+        Rparen:  136,
+        Name:    "BYTES",
+        Max:     true,
+        Size:    nil,
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
+  },
+  TableConstraints: []*ast.TableConstraint(nil),
+  PrimaryKeys:      []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 153,
+        NameEnd: 161,
+        Name:    "SingerId",
+      },
+      Dir: "",
+    },
+  },
+  Synonyms:          []*ast.Synonym(nil),
+  Cluster:           (*ast.Cluster)(nil),
+  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
+}
+
+--- SQL
+CREATE TABLE sch1.Singers (SingerId INT64 NOT NULL, FirstName STRING(1024), LastName STRING(1024), SingerInfo BYTES(MAX)) PRIMARY KEY (SingerId)

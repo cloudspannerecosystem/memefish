@@ -60,6 +60,8 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
 func (QueryStatement) isStatement()     {}
+func (CreateSchema) isStatement()       {}
+func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
 func (CreateProtoBundle) isStatement()  {}
@@ -153,38 +155,43 @@ type Expr interface {
 	isExpr()
 }
 
-func (BinaryExpr) isExpr()       {}
-func (UnaryExpr) isExpr()        {}
-func (InExpr) isExpr()           {}
-func (IsNullExpr) isExpr()       {}
-func (IsBoolExpr) isExpr()       {}
-func (BetweenExpr) isExpr()      {}
-func (SelectorExpr) isExpr()     {}
-func (IndexExpr) isExpr()        {}
-func (CallExpr) isExpr()         {}
-func (CountStarExpr) isExpr()    {}
-func (CastExpr) isExpr()         {}
-func (ExtractExpr) isExpr()      {}
-func (CaseExpr) isExpr()         {}
-func (ParenExpr) isExpr()        {}
-func (ScalarSubQuery) isExpr()   {}
-func (ArraySubQuery) isExpr()    {}
-func (ExistsSubQuery) isExpr()   {}
-func (Param) isExpr()            {}
-func (Ident) isExpr()            {}
-func (Path) isExpr()             {}
-func (ArrayLiteral) isExpr()     {}
-func (StructLiteral) isExpr()    {}
-func (NullLiteral) isExpr()      {}
-func (BoolLiteral) isExpr()      {}
-func (IntLiteral) isExpr()       {}
-func (FloatLiteral) isExpr()     {}
-func (StringLiteral) isExpr()    {}
-func (BytesLiteral) isExpr()     {}
-func (DateLiteral) isExpr()      {}
-func (TimestampLiteral) isExpr() {}
-func (NumericLiteral) isExpr()   {}
-func (JSONLiteral) isExpr()      {}
+func (BinaryExpr) isExpr()            {}
+func (UnaryExpr) isExpr()             {}
+func (InExpr) isExpr()                {}
+func (IsNullExpr) isExpr()            {}
+func (IsBoolExpr) isExpr()            {}
+func (BetweenExpr) isExpr()           {}
+func (SelectorExpr) isExpr()          {}
+func (IndexExpr) isExpr()             {}
+func (CallExpr) isExpr()              {}
+func (CountStarExpr) isExpr()         {}
+func (CastExpr) isExpr()              {}
+func (ExtractExpr) isExpr()           {}
+func (CaseExpr) isExpr()              {}
+func (ParenExpr) isExpr()             {}
+func (ScalarSubQuery) isExpr()        {}
+func (ArraySubQuery) isExpr()         {}
+func (ExistsSubQuery) isExpr()        {}
+func (Param) isExpr()                 {}
+func (Ident) isExpr()                 {}
+func (Path) isExpr()                  {}
+func (ArrayLiteral) isExpr()          {}
+func (TupleStructLiteral) isExpr()    {}
+func (TypelessStructLiteral) isExpr() {}
+func (TypedStructLiteral) isExpr()    {}
+func (NullLiteral) isExpr()           {}
+func (BoolLiteral) isExpr()           {}
+func (IntLiteral) isExpr()            {}
+func (FloatLiteral) isExpr()          {}
+func (StringLiteral) isExpr()         {}
+func (BytesLiteral) isExpr()          {}
+func (DateLiteral) isExpr()           {}
+func (TimestampLiteral) isExpr()      {}
+func (NumericLiteral) isExpr()        {}
+func (JSONLiteral) isExpr()           {}
+func (NewConstructor) isExpr()        {}
+func (BracedNewConstructor) isExpr()  {}
+func (BracedConstructor) isExpr()     {}
 
 // Arg represents argument of function call.
 type Arg interface {
@@ -223,6 +230,24 @@ type InCondition interface {
 func (UnnestInCondition) isInCondition()   {}
 func (SubQueryInCondition) isInCondition() {}
 func (ValuesInCondition) isInCondition()   {}
+
+// TypelessStructLiteralArg represents an argument of typeless STRUCT literals.
+type TypelessStructLiteralArg interface {
+	Node
+	isTypelessStructLiteralArg()
+}
+
+func (ExprArg) isTypelessStructLiteralArg() {}
+func (Alias) isTypelessStructLiteralArg()   {}
+
+// NewConstructorArg represents an argument of NEW constructors.
+type NewConstructorArg interface {
+	Node
+	isNewConstructorArg()
+}
+
+func (ExprArg) isNewConstructorArg() {}
+func (Alias) isNewConstructorArg()   {}
 
 // Type represents type node.
 type Type interface {
@@ -277,6 +302,8 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
+func (CreateSchema) isDDL()       {}
+func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
 func (CreateProtoBundle) isDDL()  {}
@@ -613,7 +640,10 @@ type DotStar struct {
 	Expr Expr
 }
 
-// Alias is aliased expression by AS clause in SELECT result columns list.
+// Alias is aliased expression by AS clause.
+//
+// Typically, this appears in SELECT result columns list, but this can appear in typeless STRUCT literals
+// and NEW constructors.
 //
 //	{{.Expr | sql}} {{.As | sql}}
 type Alias struct {
@@ -628,16 +658,12 @@ type Alias struct {
 //
 // It is used in Alias node and some JoinExpr nodes.
 //
-// NOTE: Sometime keyword AS can be omited.
-//
-//	  In this case, it.token.Pos() == it.Alias.token.Pos(), so we can detect this.
-//
-//	AS {{.Alias | sql}}
+//	{{if not .As.Invalid}}AS {{end}}{{.Alias | sql}}
 type AsAlias struct {
 	// pos = As || Alias.pos
 	// end = Alias.end
 
-	As token.Pos // position of "AS" keyword
+	As token.Pos // position of "AS" keyword, optional
 
 	Alias *Ident
 }
@@ -1359,13 +1385,14 @@ type Ident struct {
 }
 
 // Path is dot-chained identifier list.
+// It can be simple name without dot.
 //
 //	{{.Idents | sqlJoin "."}}
 type Path struct {
 	// pos = Idents[0].pos
 	// end = Idents[$].end
 
-	Idents []*Ident // len(Idents) >= 2
+	Idents []*Ident // len(Idents) > 0
 }
 
 // ArrayLiteral is array literal node.
@@ -1382,20 +1409,43 @@ type ArrayLiteral struct {
 	Values []Expr
 }
 
-// StructLiteral is struct literal node.
+// TupleStructLiteral is tuple syntax struct literal node.
 //
-//	STRUCT{{if not (isnil .Fields)}}<{{.Fields | sqlJoin ","}}>{{end}}({{.Values | sqlJoin ","}})
-type StructLiteral struct {
-	// pos = Struct || Lparen
+//	({{.Values | sqlJoin ","}})
+type TupleStructLiteral struct {
+	// pos = Lparen
 	// end = Rparen + 1
 
-	Struct         token.Pos // position of "STRUCT"
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	// NOTE: Distinguish nil from len(Fields) == 0 case.
-	//       nil means type is not specified, or empty slice means this struct has 0 fields.
+	Values []Expr // len(Values) > 1
+}
+
+// TypedStructLiteral is typed struct literal node.
+//
+//	STRUCT<{{.Fields | sqlJoin ","}}>({{.Values | sqlJoin ","}})
+type TypedStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
 	Fields []*StructField
 	Values []Expr
+}
+
+// TypelessStructLiteral is typeless struct literal node.
+//
+//	STRUCT({{.Values | sqlJoin ","}})
+type TypelessStructLiteral struct {
+	// pos = Struct
+	// end = Rparen + 1
+
+	Struct token.Pos // position of "STRUCT"
+	Rparen token.Pos // position of ")"
+
+	Values []TypelessStructLiteralArg
 }
 
 // NullLiteral is just NULL literal.
@@ -1515,6 +1565,85 @@ type JSONLiteral struct {
 	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
+}
+
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+// BracedConstructorFieldValue represents value part of fields in BracedNewConstructor.
+type BracedConstructorFieldValue interface {
+	Node
+	isBracedConstructorFieldValue()
+}
+
+func (*BracedConstructor) isBracedConstructorFieldValue()               {}
+func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+
+// NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
+//
+//	NEW {{.Type | sql}} ({{.Args | sqlJoin ", "}})
+type NewConstructor struct {
+	// pos = New
+	// end = Rparen + 1
+
+	New  token.Pos
+	Type *NamedType
+
+	Args []NewConstructorArg
+
+	Rparen token.Pos
+}
+
+// BracedNewConstructor represents NEW operator which creates a protocol buffer using a map constructor.
+//
+//	NEW {{.Type | sql}} {{"{"}}{{"}"}}
+type BracedNewConstructor struct {
+	// pos = New
+	// end = Body.end
+
+	New token.Pos
+
+	Type *NamedType
+	Body *BracedConstructor
+}
+
+// BracedConstructor represents a single map constructor which is used in BracedNewConstructor.
+// Actually, it is a top level Expr in syntax, but it is not permitted semantically in other place.
+//
+//	{{"{"}}{{.Fields | sqlJoin ", "}}{{"}"}}
+type BracedConstructor struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+
+	Fields []*BracedConstructorField
+}
+
+// BracedConstructorField represents a single field in BracedConstructor.
+//
+//	{{.Name | sql}} {{.Value | sql}}
+type BracedConstructorField struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value BracedConstructorFieldValue
+}
+
+// BracedConstructorFieldValueExpr represents a field value node.
+//
+//	: {{.Expr | sql}}
+type BracedConstructorFieldValueExpr struct {
+	// pos = Colon
+	// end = Expr.end
+
+	Colon token.Pos
+
+	Expr Expr
 }
 
 // ================================================================================
@@ -1645,6 +1774,30 @@ type OptionsDef struct {
 
 	Name  *Ident
 	Value Expr
+}
+
+// CreateSchema is CREATE SCHEMA statement node.
+//
+//	CREATE SCHEMA {{.Name | sql}}
+type CreateSchema struct {
+	// pos = Create
+	// end = Name.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name *Ident
+}
+
+// DropSchema is DROP SCHEMA statement node.
+//
+//	DROP SCHEMA {{.Name | sql}}
+type DropSchema struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
 }
 
 // CreateDatabase is CREATE DATABASE statement node.
@@ -1793,7 +1946,7 @@ type CreateTable struct {
 	Rparen token.Pos // position of ")" of PRIMARY KEY clause
 
 	IfNotExists       bool
-	Name              *Ident
+	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
 	PrimaryKeys       []*IndexKey
@@ -1824,7 +1977,7 @@ type CreateSequence struct {
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name        *Ident
+	Name        *Path
 	IfNotExists bool
 	Options     *Options
 }
@@ -1917,7 +2070,7 @@ type ForeignKey struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	Columns          []*Ident
-	ReferenceTable   *Ident
+	ReferenceTable   *Path
 	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
 	OnDelete         OnDeleteAction // optional
 }
@@ -1958,7 +2111,7 @@ type Cluster struct {
 	Comma       token.Pos // position of ","
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
-	TableName *Ident
+	TableName *Path
 	OnDelete  OnDeleteAction // optional
 }
 
@@ -1999,7 +2152,7 @@ type CreateView struct {
 
 	Create token.Pos
 
-	Name         *Ident
+	Name         *Path
 	OrReplace    bool
 	SecurityType SecurityType
 	Query        QueryExpr
@@ -2014,7 +2167,7 @@ type DropView struct {
 
 	Drop token.Pos
 
-	Name *Ident
+	Name *Path
 }
 
 // AlterTable is ALTER TABLE statement node.
@@ -2026,7 +2179,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *Path
 	TableAlteration TableAlteration
 }
 
@@ -2039,7 +2192,7 @@ type AlterIndex struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name            *Ident
+	Name            *Path
 	IndexAlteration IndexAlteration
 }
 
@@ -2050,7 +2203,7 @@ type AlterSequence struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	Name    *Ident
+	Name    *Path
 	Options *Options
 }
 
@@ -2268,7 +2421,7 @@ type DropTable struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // RenameTable is RENAME TABLE statement node.
@@ -2314,8 +2467,8 @@ type CreateIndex struct {
 	Unique       bool
 	NullFiltered bool
 	IfNotExists  bool
-	Name         *Ident
-	TableName    *Ident
+	Name         *Path
+	TableName    *Path
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
 	InterleaveIn *InterleaveIn // optional
@@ -2502,7 +2655,7 @@ type DropIndex struct {
 	Drop token.Pos // position of "DROP" keyword
 
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // DropVectorIndex is DROP VECTOR INDEX statement node.
@@ -2524,9 +2677,10 @@ type DropVectorIndex struct {
 type DropSequence struct {
 	// pos = Drop
 	// end = Name.end
+
 	Drop     token.Pos
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // CreateRole is CREATE ROLE statement node.

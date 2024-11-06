@@ -55,11 +55,9 @@ FROM
             },
           },
           Values: []ast.Expr{
-            &ast.StructLiteral{
-              Struct: 0,
+            &ast.TupleStructLiteral{
               Lparen: 58,
               Rparen: 67,
-              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 59,
@@ -74,11 +72,9 @@ FROM
                 },
               },
             },
-            &ast.StructLiteral{
-              Struct: 0,
+            &ast.TupleStructLiteral{
               Lparen: 70,
               Rparen: 79,
-              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 71,
@@ -124,4 +120,4 @@ FROM
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[STRUCT(1, "foo"), STRUCT(3, "bar")]) TABLESAMPLE BERNOULLI (90 PERCENT)
+SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[(1, "foo"), (3, "bar")]) TABLESAMPLE BERNOULLI (90 PERCENT)

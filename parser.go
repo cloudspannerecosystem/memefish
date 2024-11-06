@@ -458,7 +458,7 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	}
 
 	expr := p.parseExpr()
-	if as := p.tryParseAsAlias(); as != nil {
+	if as := p.tryParseAsAlias(withOptionalAs); as != nil {
 		return &ast.Alias{
 			Expr: expr,
 			As:   as,
@@ -479,22 +479,33 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	}
 }
 
-func (p *Parser) tryParseAsAlias() *ast.AsAlias {
+type withAs bool
+
+const (
+	withRequiredAs withAs = true
+	withOptionalAs withAs = false
+)
+
+func (p *Parser) tryParseAsAlias(requiredAs withAs) *ast.AsAlias {
 	pos := p.Token.Pos
 
 	if p.Token.Kind == "AS" {
 		p.nextToken()
 		id := p.parseIdent()
 		return &ast.AsAlias{
-			As:    token.InvalidPos,
+			As:    pos,
 			Alias: id,
 		}
+	}
+
+	if requiredAs {
+		return nil
 	}
 
 	if p.Token.Kind == token.TokenIdent {
 		id := p.parseIdent()
 		return &ast.AsAlias{
-			As:    pos,
+			As:    token.InvalidPos,
 			Alias: id,
 		}
 	}
@@ -777,7 +788,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
-		as := p.tryParseAsAlias()
+		as := p.tryParseAsAlias(withOptionalAs)
 		return p.parseTableExprSuffix(&ast.SubQueryTableExpr{
 			Lparen: lparen,
 			Rparen: rparen,
@@ -804,7 +815,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		p.expect("(")
 		expr := p.parseExpr()
 		rparen := p.expect(")").Pos
-		return p.parseUnnestSuffix(false, expr, unnest, rparen)
+		return p.parseUnnestSuffix(expr, unnest, rparen)
 	}
 
 	if p.Token.Kind == token.TokenIdent {
@@ -827,9 +838,9 @@ func (p *Parser) parseIdentOrPath() []*ast.Ident {
 	return ids
 }
 
-func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
+func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 
 	return p.parseTableExprSuffix(&ast.Unnest{
@@ -849,7 +860,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 	with := p.expect("WITH").Pos
 	offset := p.expectKeywordLike("OFFSET").Pos
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	return &ast.WithOffset{
 		With:   with,
@@ -860,7 +871,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	return p.parseTableExprSuffix(&ast.TableName{
 		Table: id,
 		Hint:  hint,
@@ -870,7 +881,7 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 
 func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 	return p.parseTableExprSuffix(&ast.PathTableExpr{
 		Path:       id,
@@ -1427,6 +1438,11 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseSimpleArrayLiteral()
 	case "(":
 		return p.parseParenExpr()
+	case "NEW":
+		return p.parseNewConstructors()
+	// In parser level, it is a valid ast.Expr, but it is semantically valid only in ast.BracedConstructorFieldExpr.
+	case "{":
+		return p.parseBracedConstructor()
 	case token.TokenIdent:
 		id := p.Token
 		switch {
@@ -1798,16 +1814,15 @@ func (p *Parser) parseParenExpr() ast.Expr {
 	}
 
 	if p.Token.Kind != "," {
-		p.panicfAtToken(&paren, "cannot parse (...) as expression, struct literal or subquery")
+		p.panicfAtToken(&paren, "cannot parse (...) as expression, tuple struct literal or subquery")
 	}
 
-	values := []ast.Expr{expr}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		values = append(values, p.parseExpr())
-	}
+	p.expect(",")
+
+	values := append([]ast.Expr{expr}, parseCommaSeparatedList(p, p.parseExpr)...)
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+
+	return &ast.TupleStructLiteral{
 		Lparen: paren.Pos,
 		Rparen: rparen,
 		Values: values,
@@ -1870,27 +1885,65 @@ func (p *Parser) parseArrayLiteralBody() (values []ast.Expr, lbrack, rbrack toke
 	return
 }
 
-func (p *Parser) parseStructLiteral() *ast.StructLiteral {
+func (p *Parser) parseStructLiteral() ast.Expr {
+	// Note that tuple struct syntax is handled in parseParenExpr.
+
 	pos := p.expect("STRUCT").Pos
+	if p.Token.Kind == "<" || p.Token.Kind == "<>" {
+		return p.parseTypedStructLiteral(pos)
+	}
+
+	if p.Token.Kind != "(" {
+		p.panicfAtToken(&p.Token, "expected token: <, <>, ( but: %s", p.Token.Kind)
+	}
+
+	return p.parseTypelessStructLiteral(pos)
+}
+
+func (p *Parser) parseTypedStructLiteral(pos token.Pos) *ast.TypedStructLiteral {
 	fields, _ := p.parseStructTypeFields()
-	lparen := p.expect("(").Pos
+
+	p.expect("(")
 	var values []ast.Expr
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
-			values = append(values, p.parseExpr())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
-		}
+		values = parseCommaSeparatedList(p, p.parseExpr)
 	}
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+
+	return &ast.TypedStructLiteral{
 		Struct: pos,
-		Lparen: lparen,
 		Rparen: rparen,
 		Fields: fields,
 		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLiteral {
+	p.expect("(")
+	var values []ast.TypelessStructLiteralArg
+	if p.Token.Kind != ")" {
+		values = parseCommaSeparatedList(p, p.parseTypelessStructLiteralArg)
+	}
+	rparen := p.expect(")").Pos
+
+	return &ast.TypelessStructLiteral{
+		Struct: pos,
+		Rparen: rparen,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructLiteralArg() ast.TypelessStructLiteralArg {
+	e := p.parseExpr()
+	as := p.tryParseAsAlias(withRequiredAs)
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
+		Expr: e,
 	}
 }
 
@@ -2055,10 +2108,10 @@ func (p *Parser) parseArrayType() *ast.ArrayType {
 
 func (p *Parser) parseStructType() *ast.StructType {
 	pos := p.expect("STRUCT").Pos
-	fields, gt := p.parseStructTypeFields()
-	if fields == nil {
+	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
 		p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
 	}
+	fields, gt := p.parseStructTypeFields()
 	return &ast.StructType{
 		Struct: pos,
 		Gt:     gt,
@@ -2066,28 +2119,20 @@ func (p *Parser) parseStructType() *ast.StructType {
 	}
 }
 
-func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Pos) {
-	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
-		return
-	}
-
-	fields = make([]*ast.StructField, 0)
+func (p *Parser) parseStructTypeFields() ([]*ast.StructField, token.Pos) {
 	if p.Token.Kind == "<>" {
-		gt = p.expect("<>").Pos + 1
-		return
+		gt := p.Token.Pos + 1
+		p.nextToken()
+		return nil, gt
 	}
 
+	var fields []*ast.StructField
 	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
-		for p.Token.Kind != token.TokenEOF {
-			fields = append(fields, p.parseFieldType())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
-		}
+		fields = parseCommaSeparatedList(p, p.parseFieldType)
 	}
 
+	var gt token.Pos
 	if p.Token.Kind == ">>" {
 		p.Token.Kind = ">"
 		p.Token.Raw = ">"
@@ -2096,7 +2141,111 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 	} else {
 		gt = p.expect(">").Pos
 	}
-	return
+
+	return fields, gt
+}
+
+func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
+	p.expect("(")
+
+	// Args can be empty like `NEW pkg.TypeName ()`.
+	var args []ast.NewConstructorArg
+	if p.Token.Kind != ")" {
+		args = parseCommaSeparatedList(p, p.parseNewConstructorArg)
+	}
+
+	rparen := p.expect(")").Pos
+	return &ast.NewConstructor{
+		New:    newPos,
+		Type:   namedType,
+		Args:   args,
+		Rparen: rparen,
+	}
+}
+
+func (p *Parser) parseNewConstructorArg() ast.NewConstructorArg {
+	// Currently, this method's contents are the same as `parseTypelessStructLiteralArg`.
+	// It exists as an individual method for future extensibility.
+
+	e := p.parseExpr()
+	as := p.tryParseAsAlias(withRequiredAs)
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
+		Expr: e,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
+	name := p.parseIdent()
+	var fieldValue ast.BracedConstructorFieldValue
+	switch p.Token.Kind {
+	case ":":
+		colon := p.expect(":").Pos
+		expr := p.parseExpr()
+		fieldValue = &ast.BracedConstructorFieldValueExpr{Colon: colon, Expr: expr}
+	case "{":
+		fieldValue = p.parseBracedConstructor()
+	}
+	return &ast.BracedConstructorField{Name: name, Value: fieldValue}
+}
+
+func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
+	lbrace := p.expect("{").Pos
+
+	// Braced constructor permits empty.
+	var fields []*ast.BracedConstructorField
+	for {
+		if p.Token.Kind == "}" {
+			break
+		}
+
+		if p.Token.Kind != token.TokenIdent {
+			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
+		}
+		fields = append(fields, p.parseBracedNewConstructorField())
+
+		// It is an optional comma.
+		if p.Token.Kind == "," {
+			p.nextToken()
+		}
+	}
+
+	rbrace := p.expect("}").Pos
+
+	return &ast.BracedConstructor{
+		Lbrace: lbrace,
+		Rbrace: rbrace,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.BracedNewConstructor {
+	body := p.parseBracedConstructor()
+	return &ast.BracedNewConstructor{
+		New:  newPos,
+		Type: namedType,
+		Body: body,
+	}
+}
+
+func (p *Parser) parseNewConstructors() ast.Expr {
+	newPos := p.expect("NEW").Pos
+	namedType := p.parseNamedType()
+
+	switch p.Token.Kind {
+	case "(":
+		return p.parseNewConstructor(newPos, namedType)
+	case "{":
+		return p.parseBracedNewConstructor(newPos, namedType)
+	default:
+		p.panicfAtToken(&p.Token, `expect '{' or '(', but %v`, p.Token.Kind)
+	}
+	return nil
 }
 
 func (p *Parser) parseFieldType() *ast.StructField {
@@ -2150,6 +2299,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.Kind == "CREATE":
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
 		case p.Token.Kind == "PROTO":
@@ -2196,6 +2347,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.IsKeywordLike("DROP"):
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseDropSchema(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
@@ -2232,6 +2385,24 @@ func (p *Parser) parseDDL() ast.DDL {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
+}
+
+func (p *Parser) parseCreateSchema(pos token.Pos) *ast.CreateSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.CreateSchema{
+		Create: pos,
+		Name:   name,
+	}
+}
+
+func (p *Parser) parseDropSchema(pos token.Pos) *ast.DropSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.DropSchema{
+		Drop: pos,
+		Name: name,
+	}
 }
 
 func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
@@ -2300,7 +2471,7 @@ func (p *Parser) parseDropProtoBundle(pos token.Pos) *ast.DropProtoBundle {
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	// This loop allows parsing trailing comma intentionally.
 	// TODO: is this allowed by Spanner really?
@@ -2374,10 +2545,15 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
+func (p *Parser) parsePath() *ast.Path {
+	path := p.parseIdentOrPath()
+	return &ast.Path{Idents: path}
+}
+
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	options := p.parseOptions()
 
 	return &ast.CreateSequence{
@@ -2397,7 +2573,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 	}
 	p.expectKeywordLike("VIEW")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expectKeywordLike("SQL")
 	p.expectKeywordLike("SECURITY")
@@ -2428,7 +2604,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 
 func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	p.expectKeywordLike("VIEW")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropView{
 		Drop: pos,
@@ -2488,7 +2664,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	columns := parseCommaSeparatedList(p, p.parseIdent)
 	p.expect(")")
 	p.expectKeywordLike("REFERENCES")
-	refTable := p.parseIdent()
+	refTable := p.parsePath()
 
 	p.expect("(")
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
@@ -2608,7 +2784,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
@@ -2833,10 +3009,10 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	ifNotExists := p.parseIfNotExists()
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("ON")
-	tableName := p.parseIdent()
+	tableName := p.parsePath()
 
 	p.expect("(")
 	var keys []*ast.IndexKey
@@ -3008,7 +3184,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alteration ast.TableAlteration
 	switch {
@@ -3236,7 +3412,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlteration {
 func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	p.expectKeywordLike("INDEX")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{
@@ -3248,7 +3424,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
-	name := p.parseIdent()
+	name := p.parsePath()
 	p.expect("SET")
 	options := p.parseOptions()
 
@@ -3287,7 +3463,7 @@ func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropTable{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3298,7 +3474,7 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropIndex{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3321,7 +3497,7 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3767,7 +3943,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	}
 
 	name := p.parseIdent()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
 
 	return &ast.Delete{
@@ -3780,7 +3956,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 
 func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	name := p.parseIdent()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("SET")
 

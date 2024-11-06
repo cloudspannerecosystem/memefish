@@ -14,10 +14,14 @@ CREATE TABLE Albums (
   Create:      105,
   Rparen:      575,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 118,
-    NameEnd: 124,
-    Name:    "Albums",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 118,
+        NameEnd: 124,
+        Name:    "Albums",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

@@ -574,12 +574,28 @@ func (a *ArrayLiteral) End() token.Pos {
 	return posAdd(a.Rbrack, 1)
 }
 
-func (s *StructLiteral) Pos() token.Pos {
-	return posChoice(s.Struct, s.Lparen)
+func (t *TupleStructLiteral) Pos() token.Pos {
+	return t.Lparen
 }
 
-func (s *StructLiteral) End() token.Pos {
-	return posAdd(s.Rparen, 1)
+func (t *TupleStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypedStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypedStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypelessStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypelessStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
 }
 
 func (n *NullLiteral) Pos() token.Pos {
@@ -662,6 +678,46 @@ func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
 }
 
+func (n *NewConstructor) Pos() token.Pos {
+	return n.New
+}
+
+func (n *NewConstructor) End() token.Pos {
+	return posAdd(n.Rparen, 1)
+}
+
+func (b *BracedNewConstructor) Pos() token.Pos {
+	return b.New
+}
+
+func (b *BracedNewConstructor) End() token.Pos {
+	return nodeEnd(wrapNode(b.Body))
+}
+
+func (b *BracedConstructor) Pos() token.Pos {
+	return b.Lbrace
+}
+
+func (b *BracedConstructor) End() token.Pos {
+	return posAdd(b.Rbrace, 1)
+}
+
+func (b *BracedConstructorField) Pos() token.Pos {
+	return nodePos(wrapNode(b.Name))
+}
+
+func (b *BracedConstructorField) End() token.Pos {
+	return nodeEnd(wrapNode(b.Value))
+}
+
+func (b *BracedConstructorFieldValueExpr) Pos() token.Pos {
+	return b.Colon
+}
+
+func (b *BracedConstructorFieldValueExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.Expr))
+}
+
 func (s *SimpleType) Pos() token.Pos {
 	return s.NamePos
 }
@@ -732,6 +788,22 @@ func (o *OptionsDef) Pos() token.Pos {
 
 func (o *OptionsDef) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
+}
+
+func (c *CreateSchema) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSchema) End() token.Pos {
+	return nodeEnd(wrapNode(c.Name))
+}
+
+func (d *DropSchema) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSchema) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
 }
 
 func (c *CreateDatabase) Pos() token.Pos {

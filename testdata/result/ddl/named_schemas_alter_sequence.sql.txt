@@ -1,0 +1,56 @@
+--- named_schemas_alter_sequence.sql
+ALTER SEQUENCE sch1.sequence
+    SET OPTIONS (skip_range_min=1, skip_range_max=1234567)
+--- AST
+&ast.AlterSequence{
+  Alter: 0,
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 19,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 28,
+        Name:    "sequence",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 37,
+    Rparen:  86,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 46,
+          NameEnd: 60,
+          Name:    "skip_range_min",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 61,
+          ValueEnd: 62,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 64,
+          NameEnd: 78,
+          Name:    "skip_range_max",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 79,
+          ValueEnd: 86,
+          Base:     10,
+          Value:    "1234567",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER SEQUENCE sch1.sequence SET OPTIONS (skip_range_min = 1, skip_range_max = 1234567)

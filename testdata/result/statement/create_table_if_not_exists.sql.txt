@@ -9,10 +9,14 @@ create table if not exists foo (
   Create:      0,
   Rparen:      93,
   IfNotExists: true,
-  Name:        &ast.Ident{
-    NamePos: 27,
-    NameEnd: 30,
-    Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 30,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

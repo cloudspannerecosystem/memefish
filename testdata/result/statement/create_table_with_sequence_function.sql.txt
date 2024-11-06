@@ -11,10 +11,14 @@ CREATE TABLE foo
   Create:      0,
   Rparen:      143,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{

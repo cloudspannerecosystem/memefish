@@ -340,7 +340,7 @@ select 1 + 2, 1 - 2,
                     Value:    "1",
                   },
                   As: &ast.AsAlias{
-                    As:    204,
+                    As:    -1,
                     Alias: &ast.Ident{
                       NamePos: 204,
                       NameEnd: 207,
@@ -915,7 +915,7 @@ select 1 + 2, 1 - 2,
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    792,
           Alias: &ast.Ident{
             NamePos: 795,
             NameEnd: 801,
@@ -934,4 +934,4 @@ select 1 + 2, 1 - 2,
 }
 
 --- SQL
-SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 AS `1`).`1`, NOT NOT TRUE, [1, 2, 3][OFFSET(1)], [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST([1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), [1] || [2], IF(1 > 1, 1, 2) + 1 AS result
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 `1`).`1`, NOT NOT TRUE, [1, 2, 3][OFFSET(1)], [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST([1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), [1] || [2], IF(1 > 1, 1, 2) + 1 AS result

@@ -12,10 +12,14 @@ create table foo (
   Create:      0,
   Rparen:      77,
   IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
@@ -76,10 +80,14 @@ create table foo (
   Cluster:          &ast.Cluster{
     Comma:       78,
     OnDeleteEnd: -1,
-    TableName:   &ast.Ident{
-      NamePos: 103,
-      NameEnd: 109,
-      Name:    "foobar",
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 103,
+          NameEnd: 109,
+          Name:    "foobar",
+        },
+      },
     },
     OnDelete: "",
   },

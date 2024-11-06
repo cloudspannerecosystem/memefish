@@ -1,0 +1,1 @@
+ALTER TABLE sch1.ShoppingCarts DROP CONSTRAINT FKShoppingCartsCustomers

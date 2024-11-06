@@ -43,11 +43,9 @@ select * from unnest([(1, 2), (3, 4)])
             Rbrack: 58,
             Type:   nil,
             Values: []ast.Expr{
-              &ast.StructLiteral{
-                Struct: 0,
+              &ast.TupleStructLiteral{
                 Lparen: 44,
                 Rparen: 49,
-                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 45,
@@ -63,11 +61,9 @@ select * from unnest([(1, 2), (3, 4)])
                   },
                 },
               },
-              &ast.StructLiteral{
-                Struct: 0,
+              &ast.TupleStructLiteral{
                 Lparen: 52,
                 Rparen: 57,
-                Fields: []*ast.StructField(nil),
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 53,
@@ -101,4 +97,4 @@ select * from unnest([(1, 2), (3, 4)])
 }
 
 --- SQL
-INSERT INTO foo (foo, bar) SELECT * FROM UNNEST([STRUCT(1, 2), STRUCT(3, 4)])
+INSERT INTO foo (foo, bar) SELECT * FROM UNNEST([(1, 2), (3, 4)])

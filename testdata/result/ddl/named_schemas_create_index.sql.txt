@@ -1,0 +1,54 @@
+--- named_schemas_create_index.sql
+CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
+--- AST
+&ast.CreateIndex{
+  Create:       0,
+  Rparen:       58,
+  Unique:       false,
+  NullFiltered: false,
+  IfNotExists:  false,
+  Name:         &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 32,
+        Name:    "indexOnSingers",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 36,
+        NameEnd: 40,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 41,
+        NameEnd: 48,
+        Name:    "Singers",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 49,
+        NameEnd: 58,
+        Name:    "FirstName",
+      },
+      Dir: "",
+    },
+  },
+  Storing:      (*ast.Storing)(nil),
+  InterleaveIn: (*ast.InterleaveIn)(nil),
+}
+
+--- SQL
+CREATE INDEX sch1.indexOnSingers ON sch1.Singers (FirstName)

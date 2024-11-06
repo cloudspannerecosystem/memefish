@@ -1,9 +1,10 @@
 package ast
 
 import (
-	"github.com/cloudspannerecosystem/memefish/token"
 	"strconv"
 	"strings"
+
+	"github.com/cloudspannerecosystem/memefish/token"
 )
 
 // ================================================================================
@@ -76,7 +77,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *StructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -231,7 +232,7 @@ func (a *Alias) SQL() string {
 }
 
 func (a *AsAlias) SQL() string {
-	return "AS " + a.Alias.SQL()
+	return strOpt(!a.As.Invalid(), "AS ") + a.Alias.SQL()
 }
 
 func (e *ExprSelectItem) SQL() string {
@@ -614,27 +615,16 @@ func (a *ArrayLiteral) SQL() string {
 		"[" + sqlJoin(a.Values, ", ") + "]"
 }
 
-func (s *StructLiteral) SQL() string {
-	sql := "STRUCT"
-	if s.Fields != nil {
-		sql += "<"
-		for i, f := range s.Fields {
-			if i != 0 {
-				sql += ", "
-			}
-			sql += f.SQL()
-		}
-		sql += ">"
-	}
-	sql += "("
-	for i, v := range s.Values {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += v.SQL()
-	}
-	sql += ")"
-	return sql
+func (s *TupleStructLiteral) SQL() string {
+	return "(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypedStructLiteral) SQL() string {
+	return "STRUCT<" + sqlJoin(s.Fields, ", ") + ">(" + sqlJoin(s.Values, ", ") + ")"
+}
+
+func (s *TypelessStructLiteral) SQL() string {
+	return strOpt(!s.Struct.Invalid(), "STRUCT") + "(" + sqlJoin(s.Values, ", ") + ")"
 }
 
 func (*NullLiteral) SQL() string {
@@ -680,6 +670,35 @@ func (t *NumericLiteral) SQL() string {
 func (t *JSONLiteral) SQL() string {
 	return "JSON " + t.Value.SQL()
 }
+
+// ================================================================================
+//
+// NEW constructors
+//
+// ================================================================================
+
+func (n *NewConstructor) SQL() string {
+	return "NEW " + n.Type.SQL() + "(" + sqlJoin(n.Args, ", ") + ")"
+}
+
+func (b *BracedNewConstructor) SQL() string {
+	return "NEW " + b.Type.SQL() + " " + b.Body.SQL()
+}
+
+func (b *BracedConstructor) SQL() string {
+	return "{" + sqlJoin(b.Fields, ", ") + "}"
+}
+
+func (b *BracedConstructorField) SQL() string {
+	if _, ok := b.Value.(*BracedConstructor); ok {
+		// Name {...}
+		return b.Name.SQL() + " " + b.Value.SQL()
+	}
+	// Name: value
+	return b.Name.SQL() + b.Value.SQL()
+}
+
+func (b *BracedConstructorFieldValueExpr) SQL() string { return ": " + b.Expr.SQL() }
 
 // ================================================================================
 //
@@ -766,6 +785,10 @@ func (g *OptionsDef) SQL() string {
 func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
+
+func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
+
+func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
 
 func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
