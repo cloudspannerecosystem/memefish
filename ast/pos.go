@@ -822,12 +822,60 @@ func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Name))
 }
 
-func (c *CreatePlacement) Pos() token.Pos {
+func (p *ProtoBundleTypes) Pos() token.Pos {
+	return p.Lparen
+}
+
+func (p *ProtoBundleTypes) End() token.Pos {
+	return posAdd(p.Rparen, 1)
+}
+
+func (c *CreateProtoBundle) Pos() token.Pos {
 	return c.Create
 }
 
-func (c *CreatePlacement) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
+func (c *CreateProtoBundle) End() token.Pos {
+	return nodeEnd(wrapNode(c.Types))
+}
+
+func (a *AlterProtoBundle) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterProtoBundle) End() token.Pos {
+	return nodeEnd(wrapNode(a.Alteration))
+}
+
+func (a *AlterProtoBundleInsert) Pos() token.Pos {
+	return a.Insert
+}
+
+func (a *AlterProtoBundleInsert) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (a *AlterProtoBundleUpdate) Pos() token.Pos {
+	return a.Update
+}
+
+func (a *AlterProtoBundleUpdate) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (a *AlterProtoBundleDelete) Pos() token.Pos {
+	return a.Delete
+}
+
+func (a *AlterProtoBundleDelete) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (d *DropProtoBundle) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropProtoBundle) End() token.Pos {
+	return posAdd(d.Bundle, 6)
 }
 
 func (c *CreateTable) Pos() token.Pos {
@@ -1396,6 +1444,14 @@ func (a *AlterStatistics) Pos() token.Pos {
 
 func (a *AlterStatistics) End() token.Pos {
 	return nodeEnd(wrapNode(a.Options))
+}
+
+func (a *Analyze) Pos() token.Pos {
+	return a.Analyze
+}
+
+func (a *Analyze) End() token.Pos {
+	return posAdd(a.Analyze, 7)
 }
 
 func (s *ScalarSchemaType) Pos() token.Pos {

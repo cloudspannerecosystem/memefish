@@ -65,6 +65,9 @@ func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
 func (CreatePlacement) isStatement()    {}
+func (CreateProtoBundle) isStatement()  {}
+func (AlterProtoBundle) isStatement()   {}
+func (DropProtoBundle) isStatement()    {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
@@ -88,6 +91,7 @@ func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
 func (AlterStatistics) isStatement()    {}
+func (Analyze) isStatement()            {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
 func (Insert) isStatement()             {}
@@ -305,6 +309,9 @@ func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
 func (CreatePlacement) isDDL()    {}
+func (CreateProtoBundle) isDDL()  {}
+func (AlterProtoBundle) isDDL()   {}
+func (DropProtoBundle) isDDL()    {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
@@ -328,6 +335,7 @@ func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
 func (AlterStatistics) isDDL()    {}
+func (Analyze) isDDL()            {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
 
@@ -1834,6 +1842,105 @@ type CreatePlacement struct {
 	Options *Options // optional
 }
 
+// ================================================================================
+//
+// PROTO BUNDLE statements
+//
+// ================================================================================
+
+type ProtoBundleAlteration interface {
+	Node
+	isProtoBundleAlteration()
+}
+
+func (AlterProtoBundleInsert) isProtoBundleAlteration() {}
+func (AlterProtoBundleUpdate) isProtoBundleAlteration() {}
+func (AlterProtoBundleDelete) isProtoBundleAlteration() {}
+
+// ProtoBundleTypes is parenthesized Protocol Buffers type names node IN CREATE/ALTER PROTO BUNDLE statement.
+//
+//	({{.Types | sqlJoin ", "}})
+type ProtoBundleTypes struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Types          []*NamedType
+}
+
+// CreateProtoBundle is CREATE PROTO BUNDLE statement node.
+//
+//	CREATE PROTO BUNDLE {{.Types, | sql}}
+type CreateProtoBundle struct {
+	// pos = Create
+	// end = Types.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundle is ALTER PROTO BUNDLE statement node.
+//
+//	ALTER PROTO BUNDLE {{.Alteration | sql}}
+type AlterProtoBundle struct {
+	// pos = Alter
+	// end = Alteration.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Alteration ProtoBundleAlteration
+}
+
+// AlterProtoBundleInsert is INSERT (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	INSERT {{.Types | sql}}
+type AlterProtoBundleInsert struct {
+	// pos = Insert
+	// end = Types.end
+
+	Insert token.Pos // position of "INSERT" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundleUpdate is UPDATE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	UPDATE {{.Types | sql}}
+type AlterProtoBundleUpdate struct {
+	// pos = Update
+	// end = Types.end
+
+	Update token.Pos // position of "UPDATE" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundleDelete is DELETE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	DELETE {{.Types | sql}}
+type AlterProtoBundleDelete struct {
+	// pos = Delete
+	// end = Types.end
+
+	Delete token.Pos // position of "DELETE" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// DropProtoBundle is DROP PROTO BUNDLE statement node.
+//
+//	DROP PROTO BUNDLE
+type DropProtoBundle struct {
+	// pos = Drop
+	// end = Bundle + 6
+
+	Drop   token.Pos // position of "DROP" pseudo keyword
+	Bundle token.Pos // position of "BUNDLE" pseudo keyword
+}
+
+// end of PROTO BUNDLE statements
+
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
@@ -2774,6 +2881,16 @@ type AlterStatistics struct {
 
 	Name    *Ident
 	Options *Options
+}
+
+// Analyze is ANALYZE statement node.
+//
+//	ANALYZE
+type Analyze struct {
+	// pos = Analyze
+	// end = Analyze + 7
+
+	Analyze token.Pos // position of "ANALYZE" keyword
 }
 
 // ================================================================================

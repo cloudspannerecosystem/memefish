@@ -798,6 +798,20 @@ func (c *CreatePlacement) SQL() string {
 	return "CREATE PLACEMENT " + c.Name.SQL() + sqlOpt(" ", c.Options, " ")
 }
 
+func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + ")" }
+
+func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
+
+func (a *AlterProtoBundle) SQL() string { return "ALTER PROTO BUNDLE " + a.Alteration.SQL() }
+
+func (a *AlterProtoBundleInsert) SQL() string { return "INSERT " + a.Types.SQL() }
+
+func (a *AlterProtoBundleUpdate) SQL() string { return "UPDATE " + a.Types.SQL() }
+
+func (a *AlterProtoBundleDelete) SQL() string { return "DELETE " + a.Types.SQL() }
+
+func (d *DropProtoBundle) SQL() string { return "DROP PROTO BUNDLE" }
+
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
@@ -1260,6 +1274,7 @@ func (r *RolePrivilege) SQL() string {
 func (s *AlterStatistics) SQL() string {
 	return "ALTER STATISTICS " + s.Name.SQL() + " SET " + s.Options.SQL()
 }
+func (a *Analyze) SQL() string { return "ANALYZE" }
 
 // ================================================================================
 //

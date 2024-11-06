@@ -1,0 +1,47 @@
+--- create_proto_bundle_backquoted.sql
+-- If you're using a protocol buffer type and any part of the type name is a Spanner reserved keyword,
+-- enclose the entire protocol buffer type name in backticks.
+CREATE PROTO BUNDLE (
+       `examples.shipping.Order`,
+       `examples.shipping.Order.Address`,
+       `examples.shipping.Order.Item`)
+--- AST
+&ast.CreateProtoBundle{
+  Create: 165,
+  Types:  &ast.ProtoBundleTypes{
+    Lparen: 185,
+    Rparen: 300,
+    Types:  []*ast.NamedType{
+      &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 194,
+            NameEnd: 219,
+            Name:    "examples.shipping.Order",
+          },
+        },
+      },
+      &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 228,
+            NameEnd: 261,
+            Name:    "examples.shipping.Order.Address",
+          },
+        },
+      },
+      &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 270,
+            NameEnd: 300,
+            Name:    "examples.shipping.Order.Item",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROTO BUNDLE (`examples.shipping.Order`, `examples.shipping.Order.Address`, `examples.shipping.Order.Item`)
