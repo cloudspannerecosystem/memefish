@@ -213,7 +213,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
-		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
+		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
+		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
@@ -2378,6 +2379,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.IsKeywordLike("REVOKE"):
 		p.nextToken()
 		return p.parseRevoke(pos)
+	case p.Token.IsKeywordLike("ANALYZE"):
+		return p.parseAnalyze()
 	}
 
 	if p.Token.Kind != token.TokenIdent {
@@ -3733,6 +3736,14 @@ func (p *Parser) parseAlterStatistics(pos token.Pos) *ast.AlterStatistics {
 		Alter:   pos,
 		Name:    name,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseAnalyze() *ast.Analyze {
+	pos := p.expectKeywordLike("ANALYZE").Pos
+
+	return &ast.Analyze{
+		Analyze: pos,
 	}
 }
 
