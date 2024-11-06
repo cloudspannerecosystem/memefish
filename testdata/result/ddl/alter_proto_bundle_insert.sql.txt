@@ -1,0 +1,39 @@
+--- alter_proto_bundle_insert.sql
+ALTER PROTO BUNDLE INSERT (
+  examples.shipping.OrderHistory
+)
+--- AST
+&ast.AlterProtoBundle{
+  Alter:      0,
+  Alteration: &ast.AlterProtoBundleInsert{
+    Insert: 19,
+    Types:  &ast.ProtoBundleTypes{
+      Lparen: 26,
+      Rparen: 61,
+      Types:  []*ast.NamedType{
+        &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 30,
+              NameEnd: 38,
+              Name:    "examples",
+            },
+            &ast.Ident{
+              NamePos: 39,
+              NameEnd: 47,
+              Name:    "shipping",
+            },
+            &ast.Ident{
+              NamePos: 48,
+              NameEnd: 60,
+              Name:    "OrderHistory",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER PROTO BUNDLE INSERT (examples.shipping.OrderHistory)

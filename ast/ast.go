@@ -64,6 +64,9 @@ func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
+func (CreateProtoBundle) isStatement()  {}
+func (AlterProtoBundle) isStatement()   {}
+func (DropProtoBundle) isStatement()    {}
 func (CreateTable) isStatement()        {}
 func (AlterTable) isStatement()         {}
 func (DropTable) isStatement()          {}
@@ -303,6 +306,9 @@ func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
+func (CreateProtoBundle) isDDL()  {}
+func (AlterProtoBundle) isDDL()   {}
+func (DropProtoBundle) isDDL()    {}
 func (CreateTable) isDDL()        {}
 func (AlterTable) isDDL()         {}
 func (DropTable) isDDL()          {}
@@ -1818,6 +1824,105 @@ type AlterDatabase struct {
 	Name    *Ident
 	Options *Options
 }
+
+// ================================================================================
+//
+// PROTO BUNDLE statements
+//
+// ================================================================================
+
+type ProtoBundleAlteration interface {
+	Node
+	isProtoBundleAlteration()
+}
+
+func (AlterProtoBundleInsert) isProtoBundleAlteration() {}
+func (AlterProtoBundleUpdate) isProtoBundleAlteration() {}
+func (AlterProtoBundleDelete) isProtoBundleAlteration() {}
+
+// ProtoBundleTypes is parenthesized Protocol Buffers type names node IN CREATE/ALTER PROTO BUNDLE statement.
+//
+//	({{.Types | sqlJoin ", "}})
+type ProtoBundleTypes struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Types          []*NamedType
+}
+
+// CreateProtoBundle is CREATE PROTO BUNDLE statement node.
+//
+//	CREATE PROTO BUNDLE {{.Types, | sql}}
+type CreateProtoBundle struct {
+	// pos = Create
+	// end = Types.end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundle is ALTER PROTO BUNDLE statement node.
+//
+//	ALTER PROTO BUNDLE {{.Alteration | sql}}
+type AlterProtoBundle struct {
+	// pos = Alter
+	// end = Alteration.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Alteration ProtoBundleAlteration
+}
+
+// AlterProtoBundleInsert is INSERT (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	INSERT {{.Types | sql}}
+type AlterProtoBundleInsert struct {
+	// pos = Insert
+	// end = Types.end
+
+	Insert token.Pos // position of "INSERT" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundleUpdate is UPDATE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	UPDATE {{.Types | sql}}
+type AlterProtoBundleUpdate struct {
+	// pos = Update
+	// end = Types.end
+
+	Update token.Pos // position of "UPDATE" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// AlterProtoBundleDelete is DELETE (proto_type_name, ...) node in ALTER PROTO BUNDLE.
+//
+//	DELETE {{.Types | sql}}
+type AlterProtoBundleDelete struct {
+	// pos = Delete
+	// end = Types.end
+
+	Delete token.Pos // position of "DELETE" pseudo keyword
+
+	Types *ProtoBundleTypes
+}
+
+// DropProtoBundle is DROP PROTO BUNDLE statement node.
+//
+//	DROP PROTO BUNDLE
+type DropProtoBundle struct {
+	// pos = Drop
+	// end = Bundle + 6
+
+	Drop   token.Pos // position of "DROP" pseudo keyword
+	Bundle token.Pos // position of "BUNDLE" pseudo keyword
+}
+
+// end of PROTO BUNDLE statements
 
 // CreateTable is CREATE TABLE statement node.
 //

@@ -2303,6 +2303,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseCreateProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
@@ -2328,6 +2330,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseAlterProtoBundle(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
@@ -2345,6 +2349,8 @@ func (p *Parser) parseDDL() ast.DDL {
 		switch {
 		case p.Token.IsKeywordLike("SCHEMA"):
 			return p.parseDropSchema(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
@@ -2421,6 +2427,47 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 	}
 }
 
+func (p *Parser) parseProtoBundleTypes() *ast.ProtoBundleTypes {
+	lparen := p.expect("(").Pos
+	types := parseCommaSeparatedList(p, p.parseNamedType)
+	rparen := p.expect(")").Pos
+	return &ast.ProtoBundleTypes{
+		Lparen: lparen,
+		Rparen: rparen,
+		Types:  types,
+	}
+}
+
+func (p *Parser) parseCreateProtoBundle(pos token.Pos) *ast.CreateProtoBundle {
+	p.expect("PROTO")
+	p.expectKeywordLike("BUNDLE")
+	types := p.parseProtoBundleTypes()
+
+	return &ast.CreateProtoBundle{
+		Create: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) parseAlterProtoBundle(pos token.Pos) *ast.AlterProtoBundle {
+	p.expect("PROTO")
+	p.expectKeywordLike("BUNDLE")
+	alteration := p.parseProtoBundleAlteration()
+	return &ast.AlterProtoBundle{
+		Alter:      pos,
+		Alteration: alteration,
+	}
+}
+
+func (p *Parser) parseDropProtoBundle(pos token.Pos) *ast.DropProtoBundle {
+	p.expect("PROTO")
+	bundle := p.expectKeywordLike("BUNDLE").Pos
+
+	return &ast.DropProtoBundle{
+		Drop:   pos,
+		Bundle: bundle,
+	}
+}
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
@@ -4193,4 +4240,35 @@ func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 		Tos:    tos,
 	}
 
+}
+
+func (p *Parser) parseProtoBundleAlteration() ast.ProtoBundleAlteration {
+	switch {
+	case p.Token.IsKeywordLike("INSERT"):
+		insert := p.expectKeywordLike("INSERT").Pos
+		types := p.parseProtoBundleTypes()
+
+		return &ast.AlterProtoBundleInsert{
+			Insert: insert,
+			Types:  types,
+		}
+	case p.Token.IsKeywordLike("UPDATE"):
+		update := p.expectKeywordLike("UPDATE").Pos
+		types := p.parseProtoBundleTypes()
+
+		return &ast.AlterProtoBundleUpdate{
+			Update: update,
+			Types:  types,
+		}
+	case p.Token.IsKeywordLike("DELETE"):
+		delete := p.expectKeywordLike("DELETE").Pos
+		types := p.parseProtoBundleTypes()
+
+		return &ast.AlterProtoBundleDelete{
+			Delete: delete,
+			Types:  types,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expected INSERT, UPDATE or DELETE, but: %v`, p.Token.AsString))
+	}
 }

@@ -794,6 +794,20 @@ func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }
 
+func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + ")" }
+
+func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
+
+func (a *AlterProtoBundle) SQL() string { return "ALTER PROTO BUNDLE " + a.Alteration.SQL() }
+
+func (a *AlterProtoBundleInsert) SQL() string { return "INSERT " + a.Types.SQL() }
+
+func (a *AlterProtoBundleUpdate) SQL() string { return "UPDATE " + a.Types.SQL() }
+
+func (a *AlterProtoBundleDelete) SQL() string { return "DELETE " + a.Types.SQL() }
+
+func (d *DropProtoBundle) SQL() string { return "DROP PROTO BUNDLE" }
+
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +

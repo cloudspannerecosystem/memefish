@@ -1,0 +1,27 @@
+--- alter_proto_bundle_update.sql
+ALTER PROTO BUNDLE UPDATE(`examples.shipping.Order`)
+--- AST
+&ast.AlterProtoBundle{
+  Alter:      0,
+  Alteration: &ast.AlterProtoBundleUpdate{
+    Update: 19,
+    Types:  &ast.ProtoBundleTypes{
+      Lparen: 25,
+      Rparen: 51,
+      Types:  []*ast.NamedType{
+        &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 26,
+              NameEnd: 51,
+              Name:    "examples.shipping.Order",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER PROTO BUNDLE UPDATE (`examples.shipping.Order`)
