@@ -1283,8 +1283,8 @@ func (c *CreateModelInputOutput) SQL() string {
 func (c *CreateModel) SQL() string {
 	return "CREATE " + strOpt(c.OrReplace, "OR REPLACE ") +
 		"MODEL " +
-		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
 		c.Name.SQL() +
+		strOpt(c.IfNotExists, " IF NOT EXISTS") +
 		sqlOpt(" ", c.InputOutput, "") +
 		" REMOTE" +
 		sqlOpt(" ", c.Options, "")
