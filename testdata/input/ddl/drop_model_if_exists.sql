@@ -1,1 +1,1 @@
-DROP MODEL
+DROP MODEL IF EXISTS MyClassificationModel

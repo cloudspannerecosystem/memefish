@@ -1,0 +1,70 @@
+--- alter_model_if_exists.sql
+ALTER MODEL IF EXISTS MyClassificationModel
+SET OPTIONS (
+    endpoints = [
+        '//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/aaa',
+        '//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/bbb'
+    ],
+    default_batch_size = 100
+)
+--- AST
+&ast.AlterModel{
+  Alter:    0,
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 43,
+        Name:    "MyClassificationModel",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 48,
+    Rparen:  269,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 62,
+          NameEnd: 71,
+          Name:    "endpoints",
+        },
+        Value: &ast.ArrayLiteral{
+          Array:  -1,
+          Lbrack: 74,
+          Rbrack: 237,
+          Type:   nil,
+          Values: []ast.Expr{
+            &ast.StringLiteral{
+              ValuePos: 84,
+              ValueEnd: 153,
+              Value:    "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/aaa",
+            },
+            &ast.StringLiteral{
+              ValuePos: 163,
+              ValueEnd: 232,
+              Value:    "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/bbb",
+            },
+          },
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 244,
+          NameEnd: 262,
+          Name:    "default_batch_size",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 265,
+          ValueEnd: 268,
+          Base:     10,
+          Value:    "100",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER MODEL IF EXISTS MyClassificationModel SET OPTIONS (endpoints = ["//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/aaa", "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/bbb"], default_batch_size = 100)
