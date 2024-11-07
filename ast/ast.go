@@ -2924,7 +2924,7 @@ type CreateModel struct {
 	Remote      token.Pos // position of "REMOTE" keyword
 	OrReplace   bool
 	IfExists    bool
-	Name        *Path
+	Name        *Ident
 	InputOutput *CreateModelInputOutput // optional
 	Options     *Options                // optional
 }
@@ -2938,7 +2938,7 @@ type AlterModel struct {
 
 	Alter    token.Pos
 	IfExists bool
-	Name     *Path
+	Name     *Ident
 	Options  *Options
 }
 
@@ -2951,7 +2951,7 @@ type DropModel struct {
 
 	Drop     token.Pos
 	IfExists bool
-	Name     *Path
+	Name     *Ident
 }
 
 // ================================================================================

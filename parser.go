@@ -3793,7 +3793,7 @@ func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 func (p *Parser) parseCreateModel(pos token.Pos) *ast.CreateModel {
 	p.expectKeywordLike("MODEL")
 	orReplace := false
-	name := p.parsePath()
+	name := p.parseIdent()
 	ifExists := p.parseIfExists()
 	inputOutput := p.tryParseCreateModelInputOutput()
 	remote := p.expectKeywordLike("REMOTE").Pos
@@ -3814,7 +3814,7 @@ func (p *Parser) parseCreateModel(pos token.Pos) *ast.CreateModel {
 func (p *Parser) parseAlterModel(pos token.Pos) *ast.AlterModel {
 	p.expectKeywordLike("MODEL")
 	ifExists := p.parseIfExists()
-	name := p.parsePath()
+	name := p.parseIdent()
 	p.expect("SET")
 	options := p.parseOptions()
 
@@ -3829,7 +3829,7 @@ func (p *Parser) parseAlterModel(pos token.Pos) *ast.AlterModel {
 func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
 	p.expectKeywordLike("MODEL")
 	ifExists := p.parseIfExists()
-	name := p.parsePath()
+	name := p.parseIdent()
 
 	return &ast.DropModel{
 		Drop:     pos,
