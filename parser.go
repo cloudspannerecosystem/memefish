@@ -2310,7 +2310,7 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateTable(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseCreateSequence(pos)
-		case p.Token.IsKeywordLike("VIEW") || p.Token.Kind == "OR":
+		case p.Token.IsKeywordLike("VIEW"):
 			return p.parseCreateView(pos)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
@@ -2322,8 +2322,12 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseCreateChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseCreateModel(pos)
+		case p.Token.Kind == "OR":
+			return p.parseCreateView(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE, OR but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
 		p.nextToken()
 		switch {
@@ -2343,6 +2347,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterChangeStream(pos)
 		case p.Token.IsKeywordLike("STATISTICS"):
 			return p.parseAlterStatistics(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseAlterModel(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
@@ -2368,8 +2374,10 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseDropChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseDropModel(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, MODEL, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("RENAME"):
 		p.nextToken()
 		return p.parseRenameTable(pos)
@@ -3744,6 +3752,89 @@ func (p *Parser) parseAnalyze() *ast.Analyze {
 
 	return &ast.Analyze{
 		Analyze: pos,
+	}
+}
+
+func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
+	name := p.parseIdent()
+	dataType := p.parseSchemaType()
+	options := p.tryParseOptions()
+
+	return &ast.CreateModelColumn{
+		Name:     name,
+		DataType: dataType,
+		Options:  options,
+	}
+}
+
+func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
+	if !p.Token.IsKeywordLike("INPUT") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("INPUT").Pos
+	p.expect("(")
+	inputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	p.expect(")")
+
+	p.expectKeywordLike("OUTPUT")
+	p.expect("(")
+	outputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	rparen := p.expect(")").Pos
+
+	return &ast.CreateModelInputOutput{
+		Input:         pos,
+		Rparen:        rparen,
+		InputColumns:  inputColumns,
+		OutputColumns: outputColumns,
+	}
+}
+
+func (p *Parser) parseCreateModel(pos token.Pos) *ast.CreateModel {
+	p.expectKeywordLike("MODEL")
+	orReplace := false
+	name := p.parsePath()
+	ifExists := p.parseIfExists()
+	inputOutput := p.tryParseCreateModelInputOutput()
+	remote := p.expectKeywordLike("REMOTE").Pos
+	options := p.tryParseOptions()
+
+	return &ast.CreateModel{
+		Create:      pos,
+		OrReplace:   orReplace,
+		IfExists:    ifExists,
+		Name:        name,
+		InputOutput: inputOutput,
+		Remote:      remote,
+		Options:     options,
+	}
+
+}
+
+func (p *Parser) parseAlterModel(pos token.Pos) *ast.AlterModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parsePath()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterModel{
+		Alter:    pos,
+		IfExists: ifExists,
+		Name:     name,
+		Options:  options,
+	}
+}
+
+func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parsePath()
+
+	return &ast.DropModel{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 

@@ -1272,6 +1272,35 @@ func (s *AlterStatistics) SQL() string {
 }
 func (a *Analyze) SQL() string { return "ANALYZE" }
 
+func (c *CreateModelColumn) SQL() string {
+	return c.Name.SQL() + " " + c.DataType.SQL() + sqlOpt(" ", c.Options, "")
+}
+
+func (c *CreateModelInputOutput) SQL() string {
+	return "INPUT (" + sqlJoin(c.InputColumns, ", ") + ") OUTPUT (" + sqlJoin(c.OutputColumns, ", ") + ")"
+}
+
+func (c *CreateModel) SQL() string {
+	return "CREATE " + strOpt(c.OrReplace, "OR REPLACE ") +
+		"MODEL " +
+		strOpt(c.IfExists, "IF EXISTS ") +
+		c.Name.SQL() +
+		sqlOpt(" ", c.InputOutput, "") +
+		" REMOTE" +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (a *AlterModel) SQL() string {
+	return "ALTER MODEL " +
+		strOpt(a.IfExists, "IF EXISTS ") +
+		a.Name.SQL() +
+		" SET " + a.Options.SQL()
+}
+
+func (d *DropModel) SQL() string {
+	return "DROP MODEL " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
 // ================================================================================
 //
 // Types for Schema

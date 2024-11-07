@@ -1454,6 +1454,46 @@ func (a *Analyze) End() token.Pos {
 	return posAdd(a.Analyze, 7)
 }
 
+func (c *CreateModelColumn) Pos() token.Pos {
+	return nodePos(wrapNode(c.Name))
+}
+
+func (c *CreateModelColumn) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.DataType)))
+}
+
+func (c *CreateModelInputOutput) Pos() token.Pos {
+	return c.Input
+}
+
+func (c *CreateModelInputOutput) End() token.Pos {
+	return posAdd(c.Rparen, 1)
+}
+
+func (c *CreateModel) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateModel) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Remote, 6))
+}
+
+func (a *AlterModel) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterModel) End() token.Pos {
+	return nodeEnd(wrapNode(a.Options))
+}
+
+func (d *DropModel) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropModel) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (s *ScalarSchemaType) Pos() token.Pos {
 	return s.NamePos
 }
