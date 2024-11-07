@@ -2912,7 +2912,7 @@ type CreateModelInputOutput struct {
 
 // CreateModel is CREATE MODEL statement node.
 //
-//	CREATE {{if .OrReplace}}OR REPLACE{{end}} MODEL {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} MODEL {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
 //	{{.InputOutput | sqlOpt}}
 //	REMOTE
 //	{{.Options | sqlOpt}}
@@ -2923,7 +2923,7 @@ type CreateModel struct {
 	Create      token.Pos // position of "CREATE" keyword
 	Remote      token.Pos // position of "REMOTE" keyword
 	OrReplace   bool
-	IfExists    bool
+	IfNotExists bool
 	Name        *Ident
 	InputOutput *CreateModelInputOutput // optional
 	Options     *Options                // optional

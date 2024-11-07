@@ -15,11 +15,11 @@ OPTIONS (
 )
 --- AST
 &ast.CreateModel{
-  Create:    0,
-  Remote:    183,
-  OrReplace: false,
-  IfExists:  false,
-  Name:      &ast.Ident{
+  Create:      0,
+  Remote:      183,
+  OrReplace:   false,
+  IfNotExists: false,
+  Name:        &ast.Ident{
     NamePos: 13,
     NameEnd: 34,
     Name:    "MyClassificationModel",
