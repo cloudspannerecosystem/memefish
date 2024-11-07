@@ -4,14 +4,10 @@ DROP MODEL IF EXISTS MyClassificationModel
 &ast.DropModel{
   Drop:     0,
   IfExists: true,
-  Name:     &ast.Path{
-    Idents: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 21,
-        NameEnd: 42,
-        Name:    "MyClassificationModel",
-      },
-    },
+  Name:     &ast.Ident{
+    NamePos: 21,
+    NameEnd: 42,
+    Name:    "MyClassificationModel",
   },
 }
 

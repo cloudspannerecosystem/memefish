@@ -19,14 +19,10 @@ OPTIONS (
   Remote:    183,
   OrReplace: false,
   IfExists:  false,
-  Name:      &ast.Path{
-    Idents: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 13,
-        NameEnd: 34,
-        Name:    "MyClassificationModel",
-      },
-    },
+  Name:      &ast.Ident{
+    NamePos: 13,
+    NameEnd: 34,
+    Name:    "MyClassificationModel",
   },
   InputOutput: &ast.CreateModelInputOutput{
     Input:        35,

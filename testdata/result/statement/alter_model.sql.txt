@@ -11,14 +11,10 @@ SET OPTIONS (
 &ast.AlterModel{
   Alter:    0,
   IfExists: false,
-  Name:     &ast.Path{
-    Idents: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 12,
-        NameEnd: 33,
-        Name:    "MyClassificationModel",
-      },
-    },
+  Name:     &ast.Ident{
+    NamePos: 12,
+    NameEnd: 33,
+    Name:    "MyClassificationModel",
   },
   Options: &ast.Options{
     Options: 38,
