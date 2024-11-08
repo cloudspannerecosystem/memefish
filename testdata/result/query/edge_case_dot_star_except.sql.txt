@@ -25,7 +25,7 @@ SELECT (SELECT T.* EXCEPT (s)) AS n FROM (SELECT 1 AS n, "foo" AS s) AS T
                   NameEnd: 16,
                   Name:    "T",
                 },
-                Except: &ast.SelectExcept{
+                Except: &ast.StarModifierExcept{
                   Except:  19,
                   Rparen:  28,
                   Columns: []*ast.Ident{
@@ -36,7 +36,7 @@ SELECT (SELECT T.* EXCEPT (s)) AS n FROM (SELECT 1 AS n, "foo" AS s) AS T
                     },
                   },
                 },
-                Replace: (*ast.SelectReplace)(nil),
+                Replace: (*ast.StarModifierReplace)(nil),
               },
             },
             From:    (*ast.From)(nil),

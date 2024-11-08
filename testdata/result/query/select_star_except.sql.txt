@@ -11,7 +11,7 @@ SELECT * EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable
     Results:  []ast.SelectItem{
       &ast.Star{
         Star:   7,
-        Except: &ast.SelectExcept{
+        Except: &ast.StarModifierExcept{
           Except:  9,
           Rparen:  26,
           Columns: []*ast.Ident{
@@ -22,7 +22,7 @@ SELECT * EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable
             },
           },
         },
-        Replace: (*ast.SelectReplace)(nil),
+        Replace: (*ast.StarModifierReplace)(nil),
       },
     },
     From: &ast.From{

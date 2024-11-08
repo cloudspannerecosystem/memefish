@@ -16,7 +16,7 @@ SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" A
           NameEnd: 8,
           Name:    "T",
         },
-        Except: &ast.SelectExcept{
+        Except: &ast.StarModifierExcept{
           Except:  11,
           Rparen:  28,
           Columns: []*ast.Ident{
@@ -27,11 +27,11 @@ SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" A
             },
           },
         },
-        Replace: &ast.SelectReplace{
+        Replace: &ast.StarModifierReplace{
           Replace: 30,
           Rparen:  56,
-          Columns: []*ast.SelectReplaceItem{
-            &ast.SelectReplaceItem{
+          Columns: []*ast.StarModifierReplaceItem{
+            &ast.StarModifierReplaceItem{
               Expr: &ast.StringLiteral{
                 ValuePos: 39,
                 ValueEnd: 47,

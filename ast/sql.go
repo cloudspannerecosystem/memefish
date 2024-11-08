@@ -219,11 +219,11 @@ func (s *SubQuery) SQL() string {
 	return sql
 }
 
-func (s *SelectExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, " ") + ")" }
+func (s *StarModifierExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, " ") + ")" }
 
-func (s *SelectReplaceItem) SQL() string { return s.Expr.SQL() + " AS " + s.Name.SQL() }
+func (s *StarModifierReplaceItem) SQL() string { return s.Expr.SQL() + " AS " + s.Name.SQL() }
 
-func (s *SelectReplace) SQL() string { return "REPLACE (" + sqlJoin(s.Columns, ", ") + ")" }
+func (s *StarModifierReplace) SQL() string { return "REPLACE (" + sqlJoin(s.Columns, ", ") + ")" }
 
 func (s *Star) SQL() string {
 	return "*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")

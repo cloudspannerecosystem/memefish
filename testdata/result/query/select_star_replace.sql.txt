@@ -11,12 +11,12 @@ SELECT * REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS 
     Results:  []ast.SelectItem{
       &ast.Star{
         Star:    7,
-        Except:  (*ast.SelectExcept)(nil),
-        Replace: &ast.SelectReplace{
+        Except:  (*ast.StarModifierExcept)(nil),
+        Replace: &ast.StarModifierReplace{
           Replace: 9,
           Rparen:  35,
-          Columns: []*ast.SelectReplaceItem{
-            &ast.SelectReplaceItem{
+          Columns: []*ast.StarModifierReplaceItem{
+            &ast.StarModifierReplaceItem{
               Expr: &ast.StringLiteral{
                 ValuePos: 18,
                 ValueEnd: 26,

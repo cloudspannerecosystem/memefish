@@ -11,8 +11,8 @@ SELECT * FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)
     Results:  []ast.SelectItem{
       &ast.Star{
         Star:    7,
-        Except:  (*ast.SelectExcept)(nil),
-        Replace: (*ast.SelectReplace)(nil),
+        Except:  (*ast.StarModifierExcept)(nil),
+        Replace: (*ast.StarModifierReplace)(nil),
       },
     },
     From: &ast.From{

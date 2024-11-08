@@ -21,8 +21,8 @@ FROM Singers S
           NameEnd: 10,
           Name:    "S",
         },
-        Except:  (*ast.SelectExcept)(nil),
-        Replace: (*ast.SelectReplace)(nil),
+        Except:  (*ast.StarModifierExcept)(nil),
+        Replace: (*ast.StarModifierReplace)(nil),
       },
       &ast.Alias{
         Expr: &ast.Path{

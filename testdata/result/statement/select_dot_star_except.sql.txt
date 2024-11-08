@@ -16,7 +16,7 @@ SELECT T.* EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetab
           NameEnd: 8,
           Name:    "T",
         },
-        Except: &ast.SelectExcept{
+        Except: &ast.StarModifierExcept{
           Except:  11,
           Rparen:  28,
           Columns: []*ast.Ident{
@@ -27,7 +27,7 @@ SELECT T.* EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetab
             },
           },
         },
-        Replace: (*ast.SelectReplace)(nil),
+        Replace: (*ast.StarModifierReplace)(nil),
       },
     },
     From: &ast.From{

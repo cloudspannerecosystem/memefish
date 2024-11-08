@@ -620,10 +620,10 @@ type SubQuery struct {
 	Limit   *Limit   // optional
 }
 
-// SelectExcept is EXCEPT node in Star and DotStar of SelectItem.
+// StarModifierExcept is EXCEPT node in Star and DotStar of SelectItem.
 //
 //	EXCEPT ({{Columns | sqlJoin ", "}})
-type SelectExcept struct {
+type StarModifierExcept struct {
 	// pos = Except
 	// end = Rparen + 1
 
@@ -633,10 +633,10 @@ type SelectExcept struct {
 	Columns []*Ident
 }
 
-// SelectReplaceItem is a single item of SelectReplace.
+// StarModifierReplaceItem is a single item of StarModifierReplace.
 //
 //	{{.Expr | sql}} AS {{.Name | sql}}
-type SelectReplaceItem struct {
+type StarModifierReplaceItem struct {
 	// pos = Expr.pos
 	// end = Name.end
 
@@ -644,17 +644,17 @@ type SelectReplaceItem struct {
 	Name *Ident
 }
 
-// SelectReplace is REPLACE node in Star and DotStar of SelectItem.
+// StarModifierReplace is REPLACE node in Star and DotStar of SelectItem.
 //
 //	REPLACE ({{Columns | sqlJoin ", "}})
-type SelectReplace struct {
+type StarModifierReplace struct {
 	// pos = Replace
 	// end = Rparen + 1
 
 	Replace token.Pos
 	Rparen  token.Pos
 
-	Columns []*SelectReplaceItem
+	Columns []*StarModifierReplaceItem
 }
 
 // Star is a single * in SELECT result columns list.
@@ -669,8 +669,8 @@ type Star struct {
 
 	Star token.Pos // position of "*"
 
-	Except  *SelectExcept  // optional
-	Replace *SelectReplace // optional
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // DotStar is expression with * in SELECT result columns list.
@@ -683,8 +683,8 @@ type DotStar struct {
 	Star token.Pos // position of "*"
 
 	Expr    Expr
-	Except  *SelectExcept  // optional
-	Replace *SelectReplace // optional
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // Alias is aliased expression by AS clause.

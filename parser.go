@@ -450,8 +450,8 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
-// lookaheadSetOperatorExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
-func (p *Parser) lookaheadSetOperatorExcept() bool {
+// lookaheadStarModifierExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
+func (p *Parser) lookaheadStarModifierExcept() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
 		p.Lexer = lexer
@@ -461,11 +461,11 @@ func (p *Parser) lookaheadSetOperatorExcept() bool {
 		return false
 	}
 	p.nextToken()
-	return p.Token.Kind == "ALL" || p.Token.Kind == "DISTINCT"
+	return p.Token.Kind == "("
 }
 
-func (p *Parser) tryParseSelectExcept() *ast.SelectExcept {
-	if p.Token.Kind != "EXCEPT" || p.lookaheadSetOperatorExcept() {
+func (p *Parser) tryParseStarModifierExcept() *ast.StarModifierExcept {
+	if !p.lookaheadStarModifierExcept() {
 		return nil
 	}
 
@@ -474,45 +474,46 @@ func (p *Parser) tryParseSelectExcept() *ast.SelectExcept {
 	columns := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
 
-	return &ast.SelectExcept{
+	return &ast.StarModifierExcept{
 		Except:  pos,
 		Rparen:  rparen,
 		Columns: columns,
 	}
 }
 
-func (p *Parser) parseSelectReplaceItem() *ast.SelectReplaceItem {
+func (p *Parser) parseStarModifierReplaceItem() *ast.StarModifierReplaceItem {
 	expr := p.parseExpr()
 	p.expect("AS")
 	name := p.parseIdent()
 
-	return &ast.SelectReplaceItem{
+	return &ast.StarModifierReplaceItem{
 		Expr: expr,
 		Name: name,
 	}
 }
 
-func (p *Parser) tryParseSelectReplace() *ast.SelectReplace {
+func (p *Parser) tryParseStarModifierReplace() *ast.StarModifierReplace {
 	if !p.Token.IsKeywordLike("REPLACE") {
 		return nil
 	}
 
 	pos := p.expectKeywordLike("REPLACE").Pos
 	p.expect("(")
-	columns := parseCommaSeparatedList(p, p.parseSelectReplaceItem)
+	columns := parseCommaSeparatedList(p, p.parseStarModifierReplaceItem)
 	rparen := p.expect(")").Pos
 
-	return &ast.SelectReplace{
+	return &ast.StarModifierReplace{
 		Replace: pos,
 		Rparen:  rparen,
 		Columns: columns,
 	}
 }
+
 func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "*" {
 		pos := p.expect("*").Pos
-		except := p.tryParseSelectExcept()
-		replace := p.tryParseSelectReplace()
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.Star{
 			Star:    pos,
 			Except:  except,
@@ -531,8 +532,8 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "." {
 		p.nextToken()
 		pos := p.expect("*").Pos
-		except := p.tryParseSelectExcept()
-		replace := p.tryParseSelectReplace()
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.DotStar{
 			Star:    pos,
 			Expr:    expr,

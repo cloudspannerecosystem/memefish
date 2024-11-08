@@ -16,8 +16,8 @@ SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
           NameEnd: 8,
           Name:    "T",
         },
-        Except:  (*ast.SelectExcept)(nil),
-        Replace: (*ast.SelectReplace)(nil),
+        Except:  (*ast.StarModifierExcept)(nil),
+        Replace: (*ast.StarModifierReplace)(nil),
       },
     },
     From: &ast.From{
