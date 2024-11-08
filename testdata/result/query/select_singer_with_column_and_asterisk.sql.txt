@@ -22,7 +22,9 @@ FROM
         },
       },
       &ast.Star{
-        Star: 21,
+        Star:    21,
+        Except:  (*ast.SelectExcept)(nil),
+        Replace: (*ast.SelectReplace)(nil),
       },
     },
     From: &ast.From{

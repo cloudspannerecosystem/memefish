@@ -1,0 +1,89 @@
+--- select_star_except.sql
+SELECT * EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    As:       nil,
+    Results:  []ast.SelectItem{
+      &ast.Star{
+        Star:   7,
+        Except: &ast.SelectExcept{
+          Except:  9,
+          Rparen:  26,
+          Columns: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 17,
+              NameEnd: 26,
+              Name:    "vegetable",
+            },
+          },
+        },
+        Replace: (*ast.SelectReplace)(nil),
+      },
+    },
+    From: &ast.From{
+      From:   28,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 33,
+        Rparen: 80,
+        Query:  &ast.Select{
+          Select:   34,
+          Distinct: false,
+          As:       nil,
+          Results:  []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 41,
+                ValueEnd: 48,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    49,
+                Alias: &ast.Ident{
+                  NamePos: 52,
+                  NameEnd: 57,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 59,
+                ValueEnd: 67,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    68,
+                Alias: &ast.Ident{
+                  NamePos: 71,
+                  NameEnd: 80,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+          From:    (*ast.From)(nil),
+          Where:   (*ast.Where)(nil),
+          GroupBy: (*ast.GroupBy)(nil),
+          Having:  (*ast.Having)(nil),
+          OrderBy: (*ast.OrderBy)(nil),
+          Limit:   (*ast.Limit)(nil),
+        },
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT * EXCEPT (vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

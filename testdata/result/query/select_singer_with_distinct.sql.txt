@@ -15,7 +15,9 @@ FROM
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
-        Star: 20,
+        Star:    20,
+        Except:  (*ast.SelectExcept)(nil),
+        Replace: (*ast.SelectReplace)(nil),
       },
     },
     From: &ast.From{

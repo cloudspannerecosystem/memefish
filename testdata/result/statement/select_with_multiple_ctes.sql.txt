@@ -95,7 +95,9 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
-        Star: 73,
+        Star:    73,
+        Except:  (*ast.SelectExcept)(nil),
+        Replace: (*ast.SelectReplace)(nil),
       },
     },
     From: &ast.From{

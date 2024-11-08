@@ -37,7 +37,9 @@ UNION ALL
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
-            Star: 7,
+            Star:    7,
+            Except:  (*ast.SelectExcept)(nil),
+            Replace: (*ast.SelectReplace)(nil),
           },
         },
         From: &ast.From{
@@ -72,7 +74,9 @@ UNION ALL
               As:       nil,
               Results:  []ast.SelectItem{
                 &ast.Star{
-                  Star: 43,
+                  Star:    43,
+                  Except:  (*ast.SelectExcept)(nil),
+                  Replace: (*ast.SelectReplace)(nil),
                 },
               },
               From: &ast.From{
@@ -107,7 +111,9 @@ UNION ALL
                     As:       nil,
                     Results:  []ast.SelectItem{
                       &ast.Star{
-                        Star: 90,
+                        Star:    90,
+                        Except:  (*ast.SelectExcept)(nil),
+                        Replace: (*ast.SelectReplace)(nil),
                       },
                     },
                     From: &ast.From{
@@ -142,7 +148,9 @@ UNION ALL
                           As:       nil,
                           Results:  []ast.SelectItem{
                             &ast.Star{
-                              Star: 142,
+                              Star:    142,
+                              Except:  (*ast.SelectExcept)(nil),
+                              Replace: (*ast.SelectReplace)(nil),
                             },
                           },
                           From: &ast.From{
@@ -177,7 +185,9 @@ UNION ALL
                                 As:       nil,
                                 Results:  []ast.SelectItem{
                                   &ast.Star{
-                                    Star: 205,
+                                    Star:    205,
+                                    Except:  (*ast.SelectExcept)(nil),
+                                    Replace: (*ast.SelectReplace)(nil),
                                   },
                                 },
                                 From: &ast.From{
@@ -212,7 +222,9 @@ UNION ALL
                                       As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{
-                                          Star: 266,
+                                          Star:    266,
+                                          Except:  (*ast.SelectExcept)(nil),
+                                          Replace: (*ast.SelectReplace)(nil),
                                         },
                                       },
                                       From: &ast.From{
@@ -240,7 +252,9 @@ UNION ALL
                                       As:       nil,
                                       Results:  []ast.SelectItem{
                                         &ast.Star{
-                                          Star: 324,
+                                          Star:    324,
+                                          Except:  (*ast.SelectExcept)(nil),
+                                          Replace: (*ast.SelectReplace)(nil),
                                         },
                                       },
                                       From: &ast.From{

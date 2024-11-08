@@ -21,7 +21,9 @@ ORDER BY
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
-            Star: 7,
+            Star:    7,
+            Except:  (*ast.SelectExcept)(nil),
+            Replace: (*ast.SelectReplace)(nil),
           },
         },
         From: &ast.From{
@@ -49,7 +51,9 @@ ORDER BY
         As:       nil,
         Results:  []ast.SelectItem{
           &ast.Star{
-            Star: 39,
+            Star:    39,
+            Except:  (*ast.SelectExcept)(nil),
+            Replace: (*ast.SelectReplace)(nil),
           },
         },
         From: &ast.From{

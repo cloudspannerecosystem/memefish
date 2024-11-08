@@ -29,7 +29,9 @@ select * from unnest([(1, 2), (3, 4)])
       As:       nil,
       Results:  []ast.SelectItem{
         &ast.Star{
-          Star: 29,
+          Star:    29,
+          Except:  (*ast.SelectExcept)(nil),
+          Replace: (*ast.SelectReplace)(nil),
         },
       },
       From: &ast.From{

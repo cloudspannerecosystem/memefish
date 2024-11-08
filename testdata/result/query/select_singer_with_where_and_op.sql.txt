@@ -16,7 +16,9 @@ WHERE
     As:       nil,
     Results:  []ast.SelectItem{
       &ast.Star{
-        Star: 9,
+        Star:    9,
+        Except:  (*ast.SelectExcept)(nil),
+        Replace: (*ast.SelectReplace)(nil),
       },
     },
     From: &ast.From{
