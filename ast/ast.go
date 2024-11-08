@@ -620,26 +620,71 @@ type SubQuery struct {
 	Limit   *Limit   // optional
 }
 
+// SelectExcept is EXCEPT node in Star and DotStar of SelectItem.
+//
+//	EXCEPT ({{Columns | sqlJoin ", "}})
+type SelectExcept struct {
+	// pos = Except
+	// end = Rparen + 1
+
+	Except token.Pos
+	Rparen token.Pos
+
+	Columns []*Ident
+}
+
+// SelectReplaceItem is a single item of SelectReplace.
+//
+//	{{.Expr | sql}} AS {{.Name | sql}}
+type SelectReplaceItem struct {
+	// pos = Expr.pos
+	// end = Name.end
+
+	Expr Expr
+	Name *Ident
+}
+
+// SelectReplace is REPLACE node in Star and DotStar of SelectItem.
+//
+//	REPLACE ({{Columns | sqlJoin ", "}})
+type SelectReplace struct {
+	// pos = Replace
+	// end = Rparen + 1
+
+	Replace token.Pos
+	Rparen  token.Pos
+
+	Columns []*SelectReplaceItem
+}
+
 // Star is a single * in SELECT result columns list.
 //
-//	*
+//	{{"*"}} {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
+//
+// Note: The text/template notation escapes * to avoid normalize * to - by some formatters
+// because the prefix * is ambiguous with bulletin list.
 type Star struct {
 	// pos = Star
-	// end = Star + 1
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
+
+	Except  *SelectExcept  // optional
+	Replace *SelectReplace // optional
 }
 
 // DotStar is expression with * in SELECT result columns list.
 //
-//	{{.Expr | sql}}.*
+//	{{.Expr | sql}}.* {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
 type DotStar struct {
 	// pos = Expr.pos
-	// end = Star + 1
+	// end = (Replace ?? Except ?? Expr).end
 
 	Star token.Pos // position of "*"
 
-	Expr Expr
+	Expr    Expr
+	Except  *SelectExcept  // optional
+	Replace *SelectReplace // optional
 }
 
 // Alias is aliased expression by AS clause.
