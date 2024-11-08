@@ -450,7 +450,7 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
-func (p *Parser) lookaheadExceptSetOperatorExcept() bool {
+func (p *Parser) lookaheadSetOperatorExcept() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
 		p.Lexer = lexer
@@ -464,7 +464,7 @@ func (p *Parser) lookaheadExceptSetOperatorExcept() bool {
 }
 
 func (p *Parser) tryParseSelectExcept() *ast.SelectExcept {
-	if p.Token.Kind != "EXCEPT" || p.lookaheadExceptSetOperatorExcept(){
+	if p.Token.Kind != "EXCEPT" || p.lookaheadSetOperatorExcept() {
 		return nil
 	}
 
