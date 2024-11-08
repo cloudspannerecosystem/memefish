@@ -450,6 +450,7 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
+// lookaheadSetOperatorExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
 func (p *Parser) lookaheadSetOperatorExcept() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
