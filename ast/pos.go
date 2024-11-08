@@ -131,7 +131,7 @@ func (d *DotStar) Pos() token.Pos {
 }
 
 func (d *DotStar) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(d.Replace), wrapNode(d.Except), wrapNode(d.Expr)))
+	return posChoice(nodeEnd(nodeChoice(wrapNode(d.Replace), wrapNode(d.Except))), posAdd(d.Star, 1))
 }
 
 func (a *Alias) Pos() token.Pos {

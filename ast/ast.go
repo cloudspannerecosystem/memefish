@@ -678,7 +678,7 @@ type Star struct {
 //	{{.Expr | sql}}.* {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
 type DotStar struct {
 	// pos = Expr.pos
-	// end = (Replace ?? Except ?? Expr).end
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
 
