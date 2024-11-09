@@ -534,6 +534,14 @@ func (c *CaseElse) End() token.Pos {
 	return nodeEnd(wrapNode(c.Expr))
 }
 
+func (i *IfExpr) Pos() token.Pos {
+	return i.If
+}
+
+func (i *IfExpr) End() token.Pos {
+	return posAdd(i.Rparen, 1)
+}
+
 func (p *ParenExpr) Pos() token.Pos {
 	return p.Lparen
 }
