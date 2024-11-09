@@ -169,6 +169,7 @@ func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
 func (CaseExpr) isExpr()              {}
+func (IfExpr) isExpr()                {}
 func (ParenExpr) isExpr()             {}
 func (ScalarSubQuery) isExpr()        {}
 func (ArraySubQuery) isExpr()         {}
@@ -1303,6 +1304,22 @@ type CaseElse struct {
 	Else token.Pos // position of "ELSE" keyword
 
 	Expr Expr
+}
+
+// IfExpr is IF conditional expression.
+// Because IF is SQL keyword, it can't be a normal CallExpr.
+//
+//	IF({{.Expr | sql}}, {{.TrueResult | sql}}, {{.ElseResult | sql}})
+type IfExpr struct {
+	// pos = If
+	// end = Rparen + 1
+
+	If     token.Pos // position of "IF" keyword
+	Rparen token.Pos // position of ")"
+
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
 }
 
 // ParenExpr is parenthesized expression node.

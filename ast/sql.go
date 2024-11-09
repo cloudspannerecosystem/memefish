@@ -77,7 +77,7 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -574,6 +574,10 @@ func (c *CaseWhen) SQL() string {
 
 func (c *CaseElse) SQL() string {
 	return "ELSE " + c.Expr.SQL()
+}
+
+func (i *IfExpr) SQL() string {
+	return "IF(" + i.Expr.SQL() + ", " + i.TrueResult.SQL() + ", " + i.ElseResult.SQL() + ")"
 }
 
 func (p *ParenExpr) SQL() string {

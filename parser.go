@@ -1425,6 +1425,8 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseParam()
 	case "CASE":
 		return p.parseCaseExpr()
+	case "IF":
+		return p.parseIfExpr()
 	case "CAST":
 		return p.parseCastExpr()
 	case "EXISTS":
@@ -1715,6 +1717,24 @@ func (p *Parser) parseCaseElse() *ast.CaseElse {
 	}
 }
 
+func (p *Parser) parseIfExpr() *ast.IfExpr {
+	pos := p.expect("IF").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	p.expect(",")
+	trueResult := p.parseExpr()
+	p.expect(",")
+	elseResult := p.parseExpr()
+	rparen := p.expect(")").Pos
+
+	return &ast.IfExpr{
+		If:         pos,
+		Rparen:     rparen,
+		Expr:       expr,
+		TrueResult: trueResult,
+		ElseResult: elseResult,
+	}
+}
 func (p *Parser) parseCastExpr() *ast.CastExpr {
 	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
 		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
@@ -3803,7 +3823,7 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 }
 
 func (p *Parser) parseIfNotExists() bool {
-	if p.Token.IsKeywordLike("IF") {
+	if p.Token.Kind == "IF" {
 		p.nextToken()
 		p.expect("NOT")
 		p.expect("EXISTS")
@@ -3813,7 +3833,7 @@ func (p *Parser) parseIfNotExists() bool {
 }
 
 func (p *Parser) parseIfExists() bool {
-	if p.Token.IsKeywordLike("IF") {
+	if p.Token.Kind == "IF" {
 		p.nextToken()
 		p.expect("EXISTS")
 		return true
