@@ -1735,6 +1735,7 @@ func (p *Parser) parseIfExpr() *ast.IfExpr {
 		ElseResult: elseResult,
 	}
 }
+
 func (p *Parser) parseCastExpr() *ast.CastExpr {
 	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
 		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
