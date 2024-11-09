@@ -1,0 +1,19 @@
+--- edge_case_backquote_keyword.sql
+`IF` + `GRAPH_TABLE`
+--- AST
+&ast.BinaryExpr{
+  Op:   "+",
+  Left: &ast.Ident{
+    NamePos: 0,
+    NameEnd: 4,
+    Name:    "IF",
+  },
+  Right: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 20,
+    Name:    "GRAPH_TABLE",
+  },
+}
+
+--- SQL
+`IF` + `GRAPH_TABLE`
