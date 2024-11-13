@@ -798,7 +798,12 @@ func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + 
 
 func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
 
-func (a *AlterProtoBundle) SQL() string { return "ALTER PROTO BUNDLE " + a.Alteration.SQL() }
+func (a *AlterProtoBundle) SQL() string {
+	return "ALTER PROTO BUNDLE" +
+		sqlOpt(" ", a.Insert, "") +
+		sqlOpt(" ", a.Update, "") +
+		sqlOpt(" ", a.Delete, "")
+}
 
 func (a *AlterProtoBundleInsert) SQL() string { return "INSERT " + a.Types.SQL() }
 

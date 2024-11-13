@@ -1,0 +1,1 @@
+ALTER PROTO BUNDLE INSERT (package.Inserted) UPDATE (package.Updated) DELETE (package.Deleted)

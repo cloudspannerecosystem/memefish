@@ -843,7 +843,7 @@ func (a *AlterProtoBundle) Pos() token.Pos {
 }
 
 func (a *AlterProtoBundle) End() token.Pos {
-	return nodeEnd(wrapNode(a.Alteration))
+	return posChoice(nodeEnd(nodeChoice(wrapNode(a.Delete), wrapNode(a.Update), wrapNode(a.Insert))), posAdd(a.Bundle, 6))
 }
 
 func (a *AlterProtoBundleInsert) Pos() token.Pos {

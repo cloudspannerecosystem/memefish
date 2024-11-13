@@ -2454,11 +2454,59 @@ func (p *Parser) parseCreateProtoBundle(pos token.Pos) *ast.CreateProtoBundle {
 
 func (p *Parser) parseAlterProtoBundle(pos token.Pos) *ast.AlterProtoBundle {
 	p.expect("PROTO")
-	p.expectKeywordLike("BUNDLE")
-	alteration := p.parseProtoBundleAlteration()
+	bundle := p.expectKeywordLike("BUNDLE").Pos
+	insert := p.tryParseAlterProtoBundleInsert()
+	update := p.tryParseAlterProtoBundleUpdate()
+	delete := p.tryParseAlterProtoBundleDelete()
+
 	return &ast.AlterProtoBundle{
-		Alter:      pos,
-		Alteration: alteration,
+		Alter:  pos,
+		Bundle: bundle,
+		Insert: insert,
+		Update: update,
+		Delete: delete,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleInsert() *ast.AlterProtoBundleInsert {
+	if !p.Token.IsKeywordLike("INSERT") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("INSERT").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleInsert{
+		Insert: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleUpdate() *ast.AlterProtoBundleUpdate {
+	if !p.Token.IsKeywordLike("UPDATE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("UPDATE").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleUpdate{
+		Update: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleDelete() *ast.AlterProtoBundleDelete {
+	if !p.Token.IsKeywordLike("DELETE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("DELETE").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleDelete{
+		Delete: pos,
+		Types:  types,
 	}
 }
 
@@ -4251,35 +4299,4 @@ func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 		Tos:    tos,
 	}
 
-}
-
-func (p *Parser) parseProtoBundleAlteration() ast.ProtoBundleAlteration {
-	switch {
-	case p.Token.IsKeywordLike("INSERT"):
-		insert := p.expectKeywordLike("INSERT").Pos
-		types := p.parseProtoBundleTypes()
-
-		return &ast.AlterProtoBundleInsert{
-			Insert: insert,
-			Types:  types,
-		}
-	case p.Token.IsKeywordLike("UPDATE"):
-		update := p.expectKeywordLike("UPDATE").Pos
-		types := p.parseProtoBundleTypes()
-
-		return &ast.AlterProtoBundleUpdate{
-			Update: update,
-			Types:  types,
-		}
-	case p.Token.IsKeywordLike("DELETE"):
-		delete := p.expectKeywordLike("DELETE").Pos
-		types := p.parseProtoBundleTypes()
-
-		return &ast.AlterProtoBundleDelete{
-			Delete: delete,
-			Types:  types,
-		}
-	default:
-		panic(p.errorfAtToken(&p.Token, `expected INSERT, UPDATE or DELETE, but: %v`, p.Token.AsString))
-	}
 }

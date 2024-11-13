@@ -1833,15 +1833,6 @@ type AlterDatabase struct {
 //
 // ================================================================================
 
-type ProtoBundleAlteration interface {
-	Node
-	isProtoBundleAlteration()
-}
-
-func (AlterProtoBundleInsert) isProtoBundleAlteration() {}
-func (AlterProtoBundleUpdate) isProtoBundleAlteration() {}
-func (AlterProtoBundleDelete) isProtoBundleAlteration() {}
-
 // ProtoBundleTypes is parenthesized Protocol Buffers type names node IN CREATE/ALTER PROTO BUNDLE statement.
 //
 //	({{.Types | sqlJoin ", "}})
@@ -1867,14 +1858,17 @@ type CreateProtoBundle struct {
 
 // AlterProtoBundle is ALTER PROTO BUNDLE statement node.
 //
-//	ALTER PROTO BUNDLE {{.Alteration | sql}}
+//	ALTER PROTO BUNDLE {{.Insert | sqlOpt}} {{.Update | sqlOpt}} {{.Delete | sqlOpt}}
 type AlterProtoBundle struct {
 	// pos = Alter
-	// end = Alteration.end
+	// end = (Delete ?? Update ?? Insert).end || Bundle + 6
 
-	Alter token.Pos // position of "ALTER" keyword
+	Alter  token.Pos // position of "ALTER" keyword
+	Bundle token.Pos
 
-	Alteration ProtoBundleAlteration
+	Insert *AlterProtoBundleInsert // optional
+	Update *AlterProtoBundleUpdate // optional
+	Delete *AlterProtoBundleDelete // optional
 }
 
 // AlterProtoBundleInsert is INSERT (proto_type_name, ...) node in ALTER PROTO BUNDLE.
