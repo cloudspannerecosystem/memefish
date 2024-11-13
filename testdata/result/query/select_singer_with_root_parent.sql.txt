@@ -3,8 +3,6 @@
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.SubQuery{
     Lparen: 0,
     Rparen: 24,

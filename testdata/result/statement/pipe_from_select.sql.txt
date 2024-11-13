@@ -1,0 +1,40 @@
+--- pipe_from_select.sql
+FROM Singers
+|> SELECT *
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Hint:  (*ast.Hint)(nil),
+    With:  (*ast.With)(nil),
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        From:   0,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 12,
+            Name:    "Singers",
+          },
+          Hint:   (*ast.Hint)(nil),
+          As:     (*ast.AsAlias)(nil),
+          Sample: (*ast.TableSample)(nil),
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSelect{
+        Pipe:     13,
+        Distinct: false,
+        As:       nil,
+        Results:  []ast.SelectItem{
+          &ast.Star{
+            Star: 23,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers |> SELECT *

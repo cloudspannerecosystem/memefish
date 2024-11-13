@@ -57,8 +57,8 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	return
 }
 
-// ParseQuery parses a SELECT query statement.
-func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
+// ParseQueryStatement parses a SELECT query statement.
+func (p *Parser) ParseQueryStatement() (stmt *ast.QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			stmt = nil
@@ -210,7 +210,7 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
 		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
@@ -245,14 +245,55 @@ func (p *Parser) parseStatements(doParse func()) {
 // ================================================================================
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
+	query := p.parseQueryExpr()
+
+	return &ast.QueryStatement{Query: query}
+}
+
+func (p *Parser) parsePipeOperators() []ast.PipeOperator {
+	var pipeOps []ast.PipeOperator
+	for {
+		if p.Token.Kind != "|>" {
+			break
+		}
+
+		pos := p.expect("|>").Pos
+		var op ast.PipeOperator
+		switch {
+		case p.Token.Kind == "SELECT":
+			p.nextToken()
+			as := p.tryParseSelectAs()
+			results := p.parseSelectResults()
+			op = &ast.PipeSelect{
+				Pipe:     pos,
+				Distinct: false, // TODO
+				As:       as,
+				Results:  results,
+			}
+		case p.Token.Kind == "WHERE":
+			p.nextToken()
+			expr := p.parseExpr()
+			op = &ast.PipeWhere{
+				Pipe: pos,
+				Expr: expr,
+			}
+		}
+		pipeOps = append(pipeOps, op)
+	}
+	return pipeOps
+}
+
+func (p *Parser) parseQuery() *ast.Query {
 	hint := p.tryParseHint()
 	with := p.tryParseWith()
 	query := p.parseQueryExpr()
+	pipeOps := p.parsePipeOperators()
 
-	return &ast.QueryStatement{
-		Hint:  hint,
-		With:  with,
-		Query: query,
+	return &ast.Query{
+		Hint:          hint,
+		With:          with,
+		Query:         query,
+		PipeOperators: pipeOps,
 	}
 }
 
@@ -367,19 +408,43 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 	return p.parseQueryExprSuffix(query)
 }
 
+func (p *Parser) parseFromQuery() *ast.FromQuery {
+	from := p.tryParseFrom()
+	if from == nil {
+		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.Kind))
+	}
+
+	return &ast.FromQuery{From: from}
+}
+
 func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
-	if p.Token.Kind == "(" {
+	var queryExpr ast.QueryExpr
+	switch p.Token.Kind {
+	case "FROM":
+		queryExpr = p.parseFromQuery()
+	case "(":
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
-		return &ast.SubQuery{
+		queryExpr = &ast.SubQuery{
 			Lparen: lparen,
 			Rparen: rparen,
 			Query:  query,
 		}
+	case "SELECT":
+		queryExpr = p.parseSelect()
+	default:
+		queryExpr = p.parseQuery()
 	}
-
-	return p.parseSelect()
+	pipeOps := p.parsePipeOperators()
+	if pipeOps != nil {
+		return &ast.Query{
+			Query:         queryExpr,
+			PipeOperators: pipeOps,
+		}
+	} else {
+		return queryExpr
+	}
 }
 
 func (p *Parser) tryParseSelectAs() ast.SelectAs {

@@ -104,6 +104,8 @@ type QueryExpr interface {
 }
 
 func (Select) isQueryExpr()        {}
+func (Query) isQueryExpr()         {}
+func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
 
@@ -467,16 +469,69 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
+//	{{.Query | sql}}
+type QueryStatement struct {
+	// pos = Query.pos
+	// end = Query.end
+
+	Query QueryExpr
+}
+
+// Query is query node with hints and CTE and pipe operators.
+//
 //	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
-type QueryStatement struct {
+type Query struct {
 	// pos = (Hint ?? With ?? Query).pos
 	// end = Query.end
 
-	Hint  *Hint // optional
-	With  *With // optional
-	Query QueryExpr
+	Hint          *Hint // optional
+	With          *With // optional
+	Query         QueryExpr
+	PipeOperators []PipeOperator
+}
+
+type PipeOperator interface {
+	Node
+	isPipeOperator()
+}
+
+func (PipeSelect) isPipeOperator() {}
+func (PipeWhere) isPipeOperator()  {}
+
+// PipeSelect is SELECT pipe operator node.
+//
+//	|> SELECT {{if .Distinct}}DISTINCT{{end}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+type PipeSelect struct {
+	// pos = Pipe
+	// end = Results[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Distinct bool
+	As       SelectAs     // optional
+	Results  []SelectItem // len(Results) > 0
+}
+
+func (p *PipeSelect) SQL() string {
+	return "|> SELECT " + strOpt(p.Distinct, "DISTINCT ") + sqlOpt("", p.As, " ") + sqlJoin(p.Results, ", ")
+}
+
+// PipeWhere is WHERE pipe operator node.
+//
+//	|> WHERE {{.Expr | sql}}
+type PipeWhere struct {
+	// pos = Pipe
+	// end = Expr.end
+
+	Pipe token.Pos // position of "|>"
+
+	Expr Expr
+}
+
+func (p *PipeWhere) SQL() string {
+	return "|> WHERE " + p.Expr.SQL()
 }
 
 // Hint is hint node.
@@ -588,6 +643,18 @@ type AsTypeName struct {
 
 	As       token.Pos
 	TypeName *NamedType
+}
+
+// FromQuery is FROM relational operator node.
+type FromQuery struct {
+	// pos = From.pos
+	// end = From.end
+
+	From *From
+}
+
+func (f *FromQuery) SQL() string {
+	return f.From.SQL()
 }
 
 // CompoundQuery is query statement node compounded by set operators.

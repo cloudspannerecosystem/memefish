@@ -7,11 +7,35 @@ import (
 )
 
 func (q *QueryStatement) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
+	return nodePos(wrapNode(q.Query))
 }
 
 func (q *QueryStatement) End() token.Pos {
 	return nodeEnd(wrapNode(q.Query))
+}
+
+func (q *Query) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
+}
+
+func (q *Query) End() token.Pos {
+	return nodeEnd(wrapNode(q.Query))
+}
+
+func (p *PipeSelect) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeSelect) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Results))
+}
+
+func (p *PipeWhere) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeWhere) End() token.Pos {
+	return nodeEnd(wrapNode(p.Expr))
 }
 
 func (h *Hint) Pos() token.Pos {
@@ -76,6 +100,14 @@ func (a *AsTypeName) Pos() token.Pos {
 
 func (a *AsTypeName) End() token.Pos {
 	return nodeEnd(wrapNode(a.TypeName))
+}
+
+func (f *FromQuery) Pos() token.Pos {
+	return nodePos(wrapNode(f.From))
+}
+
+func (f *FromQuery) End() token.Pos {
+	return nodeEnd(wrapNode(f.From))
 }
 
 func (c *CompoundQuery) Pos() token.Pos {

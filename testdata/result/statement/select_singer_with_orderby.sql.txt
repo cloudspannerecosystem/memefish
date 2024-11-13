@@ -9,8 +9,6 @@ ORDER BY
   BirthDate DESC
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,

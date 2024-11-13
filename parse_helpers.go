@@ -28,7 +28,7 @@ func ParseStatements(filepath, s string) ([]ast.Statement, error) {
 // ParseQuery parses an input string containing a query statement.
 // filepath can be empty, it is only used in error message.
 func ParseQuery(filepath, s string) (*ast.QueryStatement, error) {
-	return newParser(filepath, s).ParseQuery()
+	return newParser(filepath, s).ParseQueryStatement()
 }
 
 // ParseExpr parses an input string containing an expression.

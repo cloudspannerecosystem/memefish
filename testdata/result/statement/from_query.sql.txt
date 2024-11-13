@@ -1,0 +1,23 @@
+--- from_query.sql
+FROM Singers
+--- AST
+&ast.QueryStatement{
+  Query: &ast.FromQuery{
+    From: &ast.From{
+      From:   0,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 5,
+          NameEnd: 12,
+          Name:    "Singers",
+        },
+        Hint:   (*ast.Hint)(nil),
+        As:     (*ast.AsAlias)(nil),
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers

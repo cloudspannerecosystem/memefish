@@ -132,15 +132,15 @@ func paren(p prec, e Expr) string {
 // ================================================================================
 
 func (q *QueryStatement) SQL() string {
-	var sql string
-	if q.Hint != nil {
-		sql += q.Hint.SQL() + " "
-	}
-	if q.With != nil {
-		sql += q.With.SQL() + " "
-	}
-	sql += q.Query.SQL()
-	return sql
+	return q.Query.SQL()
+}
+
+func (q *Query) SQL() string {
+	return sqlOpt("", q.Hint, " ") +
+		sqlOpt("", q.With, " ") +
+		q.Query.SQL() +
+		strOpt(len(q.PipeOperators) > 0, " ") +
+		sqlJoin(q.PipeOperators, " ")
 }
 
 func (h *Hint) SQL() string {
