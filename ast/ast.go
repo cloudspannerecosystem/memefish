@@ -64,6 +64,7 @@ func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
+func (CreatePlacement) isStatement()    {}
 func (CreateProtoBundle) isStatement()  {}
 func (AlterProtoBundle) isStatement()   {}
 func (DropProtoBundle) isStatement()    {}
@@ -307,6 +308,7 @@ func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
+func (CreatePlacement) isDDL()    {}
 func (CreateProtoBundle) isDDL()  {}
 func (AlterProtoBundle) isDDL()   {}
 func (DropProtoBundle) isDDL()    {}
@@ -1825,6 +1827,19 @@ type AlterDatabase struct {
 
 	Name    *Ident
 	Options *Options
+}
+
+// CreatePlacement is CREATE PLACEMENT statement node.
+//
+//	CREATE PLACEMENT {{.Name | sql}} {{.Options | sqlOpt}}
+type CreatePlacement struct {
+	// pos = Create
+	// end = (Options ?? Name).end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name    *Ident
+	Options *Options // optional
 }
 
 // ================================================================================

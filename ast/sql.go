@@ -794,6 +794,10 @@ func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
 }
 
+func (c *CreatePlacement) SQL() string {
+	return "CREATE PLACEMENT " + c.Name.SQL() + sqlOpt(" ", c.Options, " ")
+}
+
 func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + ")" }
 
 func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
