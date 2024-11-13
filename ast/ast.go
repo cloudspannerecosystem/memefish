@@ -64,6 +64,7 @@ func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
+func (CreatePlacement) isStatement()    {}
 func (CreateProtoBundle) isStatement()  {}
 func (AlterProtoBundle) isStatement()   {}
 func (DropProtoBundle) isStatement()    {}
@@ -172,6 +173,7 @@ func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
 func (CaseExpr) isExpr()              {}
+func (IfExpr) isExpr()                {}
 func (ParenExpr) isExpr()             {}
 func (ScalarSubQuery) isExpr()        {}
 func (ArraySubQuery) isExpr()         {}
@@ -310,6 +312,7 @@ func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
+func (CreatePlacement) isDDL()    {}
 func (CreateProtoBundle) isDDL()  {}
 func (AlterProtoBundle) isDDL()   {}
 func (DropProtoBundle) isDDL()    {}
@@ -1311,6 +1314,22 @@ type CaseElse struct {
 	Expr Expr
 }
 
+// IfExpr is IF conditional expression.
+// Because IF is SQL keyword, it can't be a normal CallExpr.
+//
+//	IF({{.Expr | sql}}, {{.TrueResult | sql}}, {{.ElseResult | sql}})
+type IfExpr struct {
+	// pos = If
+	// end = Rparen + 1
+
+	If     token.Pos // position of "IF" keyword
+	Rparen token.Pos // position of ")"
+
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
+}
+
 // ParenExpr is parenthesized expression node.
 //
 //	({{. | sql}})
@@ -1831,6 +1850,19 @@ type AlterDatabase struct {
 
 	Name    *Ident
 	Options *Options
+}
+
+// CreatePlacement is CREATE PLACEMENT statement node.
+//
+//	CREATE PLACEMENT {{.Name | sql}} {{.Options | sqlOpt}}
+type CreatePlacement struct {
+	// pos = Create
+	// end = (Options ?? Name).end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name    *Ident
+	Options *Options // optional
 }
 
 // ================================================================================

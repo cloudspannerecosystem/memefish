@@ -510,6 +510,14 @@ func (c *CaseElse) End() token.Pos {
 	return nodeEnd(wrapNode(c.Expr))
 }
 
+func (i *IfExpr) Pos() token.Pos {
+	return i.If
+}
+
+func (i *IfExpr) End() token.Pos {
+	return posAdd(i.Rparen, 1)
+}
+
 func (p *ParenExpr) Pos() token.Pos {
 	return p.Lparen
 }
@@ -820,6 +828,14 @@ func (a *AlterDatabase) Pos() token.Pos {
 
 func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Name))
+}
+
+func (c *CreatePlacement) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreatePlacement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
 }
 
 func (p *ProtoBundleTypes) Pos() token.Pos {
