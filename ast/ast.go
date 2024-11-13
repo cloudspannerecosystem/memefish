@@ -2952,8 +2952,9 @@ type CreateModel struct {
 	// pos = Create
 	// end = Options.end || Remote + 6
 
-	Create      token.Pos // position of "CREATE" keyword
-	Remote      token.Pos // position of "REMOTE" keyword
+	Create token.Pos // position of "CREATE" keyword
+	Remote token.Pos // position of "REMOTE" keyword
+
 	OrReplace   bool
 	IfNotExists bool
 	Name        *Ident
@@ -2968,7 +2969,8 @@ type AlterModel struct {
 	// pos = Alter
 	// end = Options.end
 
-	Alter    token.Pos
+	Alter token.Pos
+
 	IfExists bool
 	Name     *Ident
 	Options  *Options
@@ -2981,7 +2983,8 @@ type DropModel struct {
 	// pos = Drop
 	// end = Name.end
 
-	Drop     token.Pos
+	Drop token.Pos
+
 	IfExists bool
 	Name     *Ident
 }
