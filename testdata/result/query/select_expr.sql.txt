@@ -860,52 +860,36 @@ select 1 + 2, 1 - 2,
       &ast.Alias{
         Expr: &ast.BinaryExpr{
           Op:   "+",
-          Left: &ast.CallExpr{
+          Left: &ast.IfExpr{
+            If:     773,
             Rparen: 788,
-            Func:   &ast.Ident{
-              NamePos: 773,
-              NameEnd: 775,
-              Name:    "IF",
-            },
-            Distinct: false,
-            Args:     []ast.Arg{
-              &ast.ExprArg{
-                Expr: &ast.BinaryExpr{
-                  Op:   ">",
-                  Left: &ast.IntLiteral{
-                    ValuePos: 777,
-                    ValueEnd: 778,
-                    Base:     10,
-                    Value:    "1",
-                  },
-                  Right: &ast.IntLiteral{
-                    ValuePos: 781,
-                    ValueEnd: 782,
-                    Base:     10,
-                    Value:    "1",
-                  },
-                },
+            Expr:   &ast.BinaryExpr{
+              Op:   ">",
+              Left: &ast.IntLiteral{
+                ValuePos: 777,
+                ValueEnd: 778,
+                Base:     10,
+                Value:    "1",
               },
-              &ast.ExprArg{
-                Expr: &ast.IntLiteral{
-                  ValuePos: 784,
-                  ValueEnd: 785,
-                  Base:     10,
-                  Value:    "1",
-                },
-              },
-              &ast.ExprArg{
-                Expr: &ast.IntLiteral{
-                  ValuePos: 787,
-                  ValueEnd: 788,
-                  Base:     10,
-                  Value:    "2",
-                },
+              Right: &ast.IntLiteral{
+                ValuePos: 781,
+                ValueEnd: 782,
+                Base:     10,
+                Value:    "1",
               },
             },
-            NamedArgs:    []*ast.NamedArg(nil),
-            NullHandling: nil,
-            Having:       nil,
+            TrueResult: &ast.IntLiteral{
+              ValuePos: 784,
+              ValueEnd: 785,
+              Base:     10,
+              Value:    "1",
+            },
+            ElseResult: &ast.IntLiteral{
+              ValuePos: 787,
+              ValueEnd: 788,
+              Base:     10,
+              Value:    "2",
+            },
           },
           Right: &ast.IntLiteral{
             ValuePos: 790,
