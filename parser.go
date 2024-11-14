@@ -2333,8 +2333,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateTable(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseCreateSequence(pos)
-		case p.Token.IsKeywordLike("VIEW") || p.Token.Kind == "OR":
-			return p.parseCreateView(pos)
+		case p.Token.IsKeywordLike("VIEW"):
+			return p.parseCreateView(pos, false)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
@@ -2345,8 +2345,19 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseCreateChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseCreateModel(pos, false)
+		case p.Token.Kind == "OR":
+			p.expect("OR")
+			p.expectKeywordLike("REPLACE")
+			switch {
+			case p.Token.IsKeywordLike("VIEW"):
+				return p.parseCreateView(pos, true)
+			case p.Token.IsKeywordLike("MODEL"):
+				return p.parseCreateModel(pos, true)
+			}
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE, OR but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
 		p.nextToken()
 		switch {
@@ -2366,6 +2377,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterChangeStream(pos)
 		case p.Token.IsKeywordLike("STATISTICS"):
 			return p.parseAlterStatistics(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseAlterModel(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
@@ -2391,8 +2404,10 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseDropChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseDropModel(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, MODEL, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("RENAME"):
 		p.nextToken()
 		return p.parseRenameTable(pos)
@@ -2603,13 +2618,7 @@ func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	}
 }
 
-func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
-	var orReplace bool
-	if p.Token.Kind == "OR" {
-		p.nextToken()
-		p.expectKeywordLike("REPLACE")
-		orReplace = true
-	}
+func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView {
 	p.expectKeywordLike("VIEW")
 
 	name := p.parsePath()
@@ -3780,6 +3789,88 @@ func (p *Parser) parseAnalyze() *ast.Analyze {
 
 	return &ast.Analyze{
 		Analyze: pos,
+	}
+}
+
+func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
+	name := p.parseIdent()
+	dataType := p.parseSchemaType()
+	options := p.tryParseOptions()
+
+	return &ast.CreateModelColumn{
+		Name:     name,
+		DataType: dataType,
+		Options:  options,
+	}
+}
+
+func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
+	if !p.Token.IsKeywordLike("INPUT") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("INPUT").Pos
+	p.expect("(")
+	inputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	p.expect(")")
+
+	p.expectKeywordLike("OUTPUT")
+	p.expect("(")
+	outputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	rparen := p.expect(")").Pos
+
+	return &ast.CreateModelInputOutput{
+		Input:         pos,
+		Rparen:        rparen,
+		InputColumns:  inputColumns,
+		OutputColumns: outputColumns,
+	}
+}
+
+func (p *Parser) parseCreateModel(pos token.Pos, orReplace bool) *ast.CreateModel {
+	p.expectKeywordLike("MODEL")
+	name := p.parseIdent()
+	ifNotExists := p.parseIfNotExists()
+	inputOutput := p.tryParseCreateModelInputOutput()
+	remote := p.expectKeywordLike("REMOTE").Pos
+	options := p.tryParseOptions()
+
+	return &ast.CreateModel{
+		Create:      pos,
+		OrReplace:   orReplace,
+		IfNotExists: ifNotExists,
+		Name:        name,
+		InputOutput: inputOutput,
+		Remote:      remote,
+		Options:     options,
+	}
+
+}
+
+func (p *Parser) parseAlterModel(pos token.Pos) *ast.AlterModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterModel{
+		Alter:    pos,
+		IfExists: ifExists,
+		Name:     name,
+		Options:  options,
+	}
+}
+
+func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+
+	return &ast.DropModel{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 

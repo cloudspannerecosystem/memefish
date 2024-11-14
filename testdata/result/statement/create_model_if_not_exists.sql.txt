@@ -1,0 +1,92 @@
+--- create_model_if_not_exists.sql
+CREATE MODEL GeminiPro IF NOT EXISTS
+INPUT (prompt STRING(MAX))
+OUTPUT (content STRING(MAX))
+REMOTE OPTIONS (
+  endpoint = '//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro',
+  default_batch_size = 1
+)
+--- AST
+&ast.CreateModel{
+  Create:      0,
+  Remote:      93,
+  OrReplace:   false,
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 13,
+    NameEnd: 22,
+    Name:    "GeminiPro",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        37,
+    Rparen:       91,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 50,
+          Name:    "prompt",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 51,
+          Rparen:  61,
+          Name:    "STRING",
+          Max:     true,
+          Size:    nil,
+        },
+        Options: (*ast.Options)(nil),
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 72,
+          NameEnd: 79,
+          Name:    "content",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 80,
+          Rparen:  90,
+          Name:    "STRING",
+          Max:     true,
+          Size:    nil,
+        },
+        Options: (*ast.Options)(nil),
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 100,
+    Rparen:  263,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 112,
+          NameEnd: 120,
+          Name:    "endpoint",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 123,
+          ValueEnd: 236,
+          Value:    "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 240,
+          NameEnd: 258,
+          Name:    "default_batch_size",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 261,
+          ValueEnd: 262,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL GeminiPro IF NOT EXISTS INPUT (prompt STRING(MAX)) OUTPUT (content STRING(MAX)) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro", default_batch_size = 1)

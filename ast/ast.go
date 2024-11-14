@@ -91,6 +91,9 @@ func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
 func (AlterStatistics) isStatement()    {}
+func (CreateModel) isStatement()        {}
+func (AlterModel) isStatement()         {}
+func (DropModel) isStatement()          {}
 func (Analyze) isStatement()            {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
@@ -336,6 +339,9 @@ func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
 func (AlterStatistics) isDDL()    {}
+func (CreateModel) isDDL()        {}
+func (AlterModel) isDDL()         {}
+func (DropModel) isDDL()          {}
 func (Analyze) isDDL()            {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
@@ -2908,6 +2914,79 @@ type Analyze struct {
 	// end = Analyze + 7
 
 	Analyze token.Pos // position of "ANALYZE" keyword
+}
+
+// CreateModelColumn is a single column definition node in CREATE MODEL.
+//
+//	{{.Name | sql}} {{.DataType | sql}} {{.Options | sqlOpt}}
+type CreateModelColumn struct {
+	// pos = Name.pos
+	// end = (Options ?? DataType).end
+
+	Name     *Ident
+	DataType SchemaType
+	Options  *Options // optional
+}
+
+// CreateModelInputOutput is INPUT and OUTPUT column list node.
+//
+//	INPUT ({{.InputColumns | sqlJoin ", "}}) OUTPUT ({{.OutputColumns | sqlJoin ", "}})
+type CreateModelInputOutput struct {
+	// pos = Input
+	// end = Rparen + 1
+
+	Input  token.Pos
+	Rparen token.Pos // position of the last ")"
+
+	InputColumns  []*CreateModelColumn
+	OutputColumns []*CreateModelColumn
+}
+
+// CreateModel is CREATE MODEL statement node.
+//
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} MODEL {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	{{.InputOutput | sqlOpt}}
+//	REMOTE
+//	{{.Options | sqlOpt}}
+type CreateModel struct {
+	// pos = Create
+	// end = Options.end || Remote + 6
+
+	Create token.Pos // position of "CREATE" keyword
+	Remote token.Pos // position of "REMOTE" keyword
+
+	OrReplace   bool
+	IfNotExists bool
+	Name        *Ident
+	InputOutput *CreateModelInputOutput // optional
+	Options     *Options                // optional
+}
+
+// AlterModel is ALTER MODEL statement node.
+//
+//	ALTER MODEL {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}} SET {{.Options | sql}}
+type AlterModel struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos
+
+	IfExists bool
+	Name     *Ident
+	Options  *Options
+}
+
+// DropModel is DROP MODEL statement node.
+//
+//	DROP MODEL {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropModel struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	IfExists bool
+	Name     *Ident
 }
 
 // ================================================================================
