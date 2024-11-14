@@ -479,7 +479,7 @@ type QueryStatement struct {
 	Query QueryExpr
 }
 
-// Query is query node with optional CTE, ORDER BY, LIMIT, and pipe operators.
+// Query is query expression node with optional CTE, ORDER BY, LIMIT, and pipe operators.
 // Usually, it is used as outermost QueryExpr in SubQuery and QueryStatement
 //
 //	{{.With | sqlOpt}}
@@ -510,39 +510,6 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 
-// PipeSelect is SELECT pipe operator node.
-//
-//	|> SELECT {{if .Distinct}}DISTINCT{{end}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
-type PipeSelect struct {
-	// pos = Pipe
-	// end = Results[$].end
-
-	Pipe token.Pos // position of "|>"
-
-	Distinct bool
-	As       SelectAs     // optional
-	Results  []SelectItem // len(Results) > 0
-}
-
-func (p *PipeSelect) SQL() string {
-	return "|> SELECT " + strOpt(p.Distinct, "DISTINCT ") + sqlOpt("", p.As, " ") + sqlJoin(p.Results, ", ")
-}
-
-// PipeWhere is WHERE pipe operator node.
-//
-//	|> WHERE {{.Expr | sql}}
-type PipeWhere struct {
-	// pos = Pipe
-	// end = Expr.end
-
-	Pipe token.Pos // position of "|>"
-
-	Expr Expr
-}
-
-func (p *PipeWhere) SQL() string {
-	return "|> WHERE " + p.Expr.SQL()
-}
 
 // Hint is hint node.
 //
@@ -857,6 +824,42 @@ type Offset struct {
 	Offset token.Pos // position of "OFFSET" keyword
 
 	Value IntValue
+}
+
+// ================================================================================
+//
+// Pipe Operators
+//
+// Must be the same order in document.
+// https://github.com/google/zetasql/blob/master/docs/pipe-syntax.md#pipe-operators
+// TODO: The reference should be Spanner reference when it is supported.
+//
+// ================================================================================
+
+// PipeSelect is SELECT pipe operator node.
+//
+//	|> SELECT {{if .Distinct}}DISTINCT{{end}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+type PipeSelect struct {
+	// pos = Pipe
+	// end = Results[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Distinct bool
+	As       SelectAs     // optional
+	Results  []SelectItem // len(Results) > 0
+}
+
+// PipeWhere is WHERE pipe operator node.
+//
+//	|> WHERE {{.Expr | sql}}
+type PipeWhere struct {
+	// pos = Pipe
+	// end = Expr.end
+
+	Pipe token.Pos // position of "|>"
+
+	Expr Expr
 }
 
 // ================================================================================

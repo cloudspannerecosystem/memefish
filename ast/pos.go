@@ -22,22 +22,6 @@ func (q *Query) End() token.Pos {
 	return nodeEnd(wrapNode(q.Query))
 }
 
-func (p *PipeSelect) Pos() token.Pos {
-	return p.Pipe
-}
-
-func (p *PipeSelect) End() token.Pos {
-	return nodeEnd(nodeSliceLast(p.Results))
-}
-
-func (p *PipeWhere) Pos() token.Pos {
-	return p.Pipe
-}
-
-func (p *PipeWhere) End() token.Pos {
-	return nodeEnd(wrapNode(p.Expr))
-}
-
 func (h *Hint) Pos() token.Pos {
 	return h.Atmark
 }
@@ -236,6 +220,22 @@ func (o *Offset) Pos() token.Pos {
 
 func (o *Offset) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
+}
+
+func (p *PipeSelect) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeSelect) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Results))
+}
+
+func (p *PipeWhere) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeWhere) End() token.Pos {
+	return nodeEnd(wrapNode(p.Expr))
 }
 
 func (u *Unnest) Pos() token.Pos {
