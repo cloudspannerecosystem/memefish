@@ -15,7 +15,7 @@ func (q *QueryStatement) End() token.Pos {
 }
 
 func (q *Query) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
+	return nodePos(nodeChoice(wrapNode(q.With), wrapNode(q.Query)))
 }
 
 func (q *Query) End() token.Pos {
@@ -75,7 +75,7 @@ func (s *Select) Pos() token.Pos {
 }
 
 func (s *Select) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy), wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
+	return nodeEnd(nodeChoice(wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
 }
 
 func (a *AsStruct) Pos() token.Pos {
@@ -115,7 +115,7 @@ func (c *CompoundQuery) Pos() token.Pos {
 }
 
 func (c *CompoundQuery) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(c.Limit), wrapNode(c.OrderBy), nodeSliceLast(c.Queries)))
+	return nodeEnd(nodeSliceLast(c.Queries))
 }
 
 func (s *SubQuery) Pos() token.Pos {
@@ -123,7 +123,7 @@ func (s *SubQuery) Pos() token.Pos {
 }
 
 func (s *SubQuery) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy))), posAdd(s.Rparen, 1))
+	return posAdd(s.Rparen, 1)
 }
 
 func (s *Star) Pos() token.Pos {

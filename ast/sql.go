@@ -132,13 +132,14 @@ func paren(p prec, e Expr) string {
 // ================================================================================
 
 func (q *QueryStatement) SQL() string {
-	return q.Query.SQL()
+	return sqlOpt("", q.Hint, " ") + q.Query.SQL()
 }
 
 func (q *Query) SQL() string {
-	return sqlOpt("", q.Hint, " ") +
-		sqlOpt("", q.With, " ") +
+	return sqlOpt("", q.With, " ") +
 		q.Query.SQL() +
+		sqlOpt(" ", q.OrderBy, "") +
+		sqlOpt(" ", q.Limit, "") +
 		strOpt(len(q.PipeOperators) > 0, " ") +
 		sqlJoin(q.PipeOperators, " ")
 }
@@ -176,9 +177,7 @@ func (s *Select) SQL() string {
 		sqlOpt(" ", s.From, "") +
 		sqlOpt(" ", s.Where, "") +
 		sqlOpt(" ", s.GroupBy, "") +
-		sqlOpt(" ", s.Having, "") +
-		sqlOpt(" ", s.OrderBy, "") +
-		sqlOpt(" ", s.Limit, "")
+		sqlOpt(" ", s.Having, "")
 }
 
 func (a *AsStruct) SQL() string { return "AS STRUCT" }
@@ -199,23 +198,11 @@ func (c *CompoundQuery) SQL() string {
 	for _, q := range c.Queries[1:] {
 		sql += " " + op + " " + q.SQL()
 	}
-	if c.OrderBy != nil {
-		sql += " " + c.OrderBy.SQL()
-	}
-	if c.Limit != nil {
-		sql += " " + c.Limit.SQL()
-	}
 	return sql
 }
 
 func (s *SubQuery) SQL() string {
 	sql := "(" + s.Query.SQL() + ")"
-	if s.OrderBy != nil {
-		sql += " " + s.OrderBy.SQL()
-	}
-	if s.Limit != nil {
-		sql += " " + s.Limit.SQL()
-	}
 	return sql
 }
 

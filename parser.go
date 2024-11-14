@@ -245,9 +245,13 @@ func (p *Parser) parseStatements(doParse func()) {
 // ================================================================================
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
+	hint := p.tryParseHint()
 	query := p.parseQueryExpr()
 
-	return &ast.QueryStatement{Query: query}
+	return &ast.QueryStatement{
+		Hint:  hint,
+		Query: query,
+	}
 }
 
 func (p *Parser) parsePipeOperators() []ast.PipeOperator {
@@ -283,16 +287,19 @@ func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 	return pipeOps
 }
 
+// parseQuery consumes ORDER BY, LIMIT, and pipe operators.
 func (p *Parser) parseQuery() *ast.Query {
-	hint := p.tryParseHint()
 	with := p.tryParseWith()
 	query := p.parseQueryExpr()
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
 	pipeOps := p.parsePipeOperators()
 
 	return &ast.Query{
-		Hint:          hint,
 		With:          with,
 		Query:         query,
+		OrderBy:       orderBy,
+		Limit:         limit,
 		PipeOperators: pipeOps,
 	}
 }
@@ -359,7 +366,27 @@ func (p *Parser) parseCTE() *ast.CTE {
 }
 
 func (p *Parser) parseQueryExpr() ast.QueryExpr {
+	// If WITH is appeared, it is treated as an outer node of compound query.
+	if p.Token.Kind == "WITH" {
+		return p.parseQuery()
+	}
+
 	query := p.parseSimpleQueryExpr()
+
+	// If the first query is directly followed by ORDER BY, LIMIT or pipe operators, it isn't a compound query
+	switch p.Token.Kind {
+	case "ORDER", "LIMIT", "|>":
+		orderBy := p.tryParseOrderBy()
+		limit := p.tryParseLimit()
+		pipeOps := p.parsePipeOperators()
+
+		return &ast.Query{
+			Query:         query,
+			OrderBy:       orderBy,
+			Limit:         limit,
+			PipeOperators: pipeOps,
+		}
+	}
 
 	for {
 		var op ast.SetOp
@@ -405,23 +432,30 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 		}
 	}
 
-	return p.parseQueryExprSuffix(query)
+	// LIMIT, ORDER BY, pipe operators can only be placed after a compound query.
+	queryExpr, _ := p.parseQueryExprSuffix(query)
+	return queryExpr
 }
 
 func (p *Parser) parseFromQuery() *ast.FromQuery {
 	from := p.tryParseFrom()
 	if from == nil {
-		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.Kind))
+		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.AsString))
 	}
 
 	return &ast.FromQuery{From: from}
 }
 
+// parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
 func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 	var queryExpr ast.QueryExpr
 	switch p.Token.Kind {
+	// FROM and SELECT are the most primitive query form
 	case "FROM":
 		queryExpr = p.parseFromQuery()
+	case "SELECT":
+		queryExpr = p.parseSelect()
+	// Query with paren
 	case "(":
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
@@ -431,20 +465,11 @@ func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 			Rparen: rparen,
 			Query:  query,
 		}
-	case "SELECT":
-		queryExpr = p.parseSelect()
 	default:
-		queryExpr = p.parseQuery()
+		panic(p.errorfAtToken(&p.Token, `expected beginning of simple query "(", SELECT, FROM, but: %q`, p.Token.AsString))
 	}
-	pipeOps := p.parsePipeOperators()
-	if pipeOps != nil {
-		return &ast.Query{
-			Query:         queryExpr,
-			PipeOperators: pipeOps,
-		}
-	} else {
-		return queryExpr
-	}
+
+	return queryExpr
 }
 
 func (p *Parser) tryParseSelectAs() ast.SelectAs {
@@ -637,23 +662,20 @@ func (p *Parser) tryParseHaving() *ast.Having {
 	}
 }
 
-func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
+func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) (queryExpr ast.QueryExpr, hasPipeOps bool) {
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
+	pipeOps := p.parsePipeOperators()
 
-	switch e := e.(type) {
-	case *ast.Select:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.SubQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.CompoundQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
+	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
+		return e, false
 	}
-
-	return e
+	return &ast.Query{
+		Query:         e,
+		OrderBy:       orderBy,
+		Limit:         limit,
+		PipeOperators: pipeOps,
+	}, len(pipeOps) > 0
 }
 
 func (p *Parser) tryParseOrderBy() *ast.OrderBy {

@@ -97,7 +97,8 @@ func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
 func (Update) isStatement()             {}
 
-// QueryExpr represents set operator operands.
+// QueryExpr represents query expression, which can be body of QueryStatement or ParenTableExpr.
+// Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
 type QueryExpr interface {
 	Node
 	isQueryExpr()
@@ -469,26 +470,35 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{.Query | sql}}
+//	{{.Hint | sqlOpt}} {{.Query | sql}}
 type QueryStatement struct {
-	// pos = Query.pos
+	// pos = (Hint ?? Query).pos
 	// end = Query.end
 
+	Hint  *Hint // optional
 	Query QueryExpr
 }
 
-// Query is query node with hints and CTE and pipe operators.
+// Query is query node with optional CTE, ORDER BY, LIMIT, and pipe operators.
+// Usually, it is used as outermost QueryExpr in SubQuery and QueryStatement
 //
-//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
+//	{{.With | sqlOpt}}
+//	{{.Query | sql}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Limit | sqlOpt}}
+//	{{.PipeOperators | sqlJoin ", "}}
 //
 // https://cloud.google.com/spanner/docs/query-syntax
 type Query struct {
-	// pos = (Hint ?? With ?? Query).pos
+	// pos = (With ?? Query).pos
 	// end = Query.end
 
-	Hint          *Hint // optional
-	With          *With // optional
-	Query         QueryExpr
+	With  *With
+	Query QueryExpr
+
+	OrderBy *OrderBy // optional
+	Limit   *Limit   // optional
+
 	PipeOperators []PipeOperator
 }
 
@@ -593,11 +603,9 @@ type CTE struct {
 //	  {{.Where | sqlOpt}}
 //	  {{.GroupBy | sqlOpt}}
 //	  {{.Having | sqlOpt}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
 type Select struct {
 	// pos = Select
-	// end = (Limit ?? OrderBy ?? Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
+	// end = (Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
 
 	Select token.Pos // position of "select" keyword
 
@@ -608,8 +616,6 @@ type Select struct {
 	Where    *Where       // optional
 	GroupBy  *GroupBy     // optional
 	Having   *Having      // optional
-	OrderBy  *OrderBy     // optional
-	Limit    *Limit       // optional
 }
 
 // AsStruct represents AS STRUCT node in SELECT clause.
@@ -657,34 +663,29 @@ func (f *FromQuery) SQL() string {
 	return f.From.SQL()
 }
 
-// CompoundQuery is query statement node compounded by set operators.
+// CompoundQuery is query expression node compounded by set operators.
 //
 //	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
 type CompoundQuery struct {
 	// pos = Queries[0].pos
-	// end = (Limit ?? OrderBy ?? Queries[$]).end
+	// end = Queries[$].end
 
 	Op       SetOp
 	Distinct bool
 	Queries  []QueryExpr // len(Queries) >= 2
-	OrderBy  *OrderBy    // optional
-	Limit    *Limit      // optional
 }
 
-// SubQuery is subquery statement node.
+// SubQuery is parenthesized query expression node.
+// Note: subquery expression is expressed as a ParenTableExpr. Maybe better to rename as like ParenQueryExpr?
 //
-//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
+//	({{.Query | sql}})
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Limit ?? OrderBy).end || Rparen + 1
+	// end = Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	Query   QueryExpr
-	OrderBy *OrderBy // optional
-	Limit   *Limit   // optional
+	Query QueryExpr
 }
 
 // Star is a single * in SELECT result columns list.
