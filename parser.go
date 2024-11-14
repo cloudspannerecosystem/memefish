@@ -437,9 +437,17 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 }
 
 func (p *Parser) parseFromQuery() *ast.FromQuery {
-	from := p.tryParseFrom()
-	if from == nil {
+	if p.Token.Kind != "FROM" {
 		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.AsString))
+	}
+	from := p.tryParseFrom()
+
+	// Although it can be parsed, it is better to reject invalid GoogleSQL queries.
+	switch p.Token.Kind {
+	case "ORDER":
+		panic(p.errorfAtToken(&p.Token, "syntax error: ORDER BY not supported after FROM query; Consider using pipe operator `|> ORDER BY` or parentheses around the FROM query."))
+	case "LIMIT":
+		panic(p.errorfAtToken(&p.Token, "syntax error: LIMIT not supported after FROM query; Consider using pipe operator `|> LIMIT` or parentheses around the FROM query."))
 	}
 
 	return &ast.FromQuery{From: from}
