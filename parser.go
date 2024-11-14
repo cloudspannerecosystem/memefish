@@ -366,7 +366,7 @@ func (p *Parser) parseCTE() *ast.CTE {
 }
 
 func (p *Parser) parseQueryExpr() ast.QueryExpr {
-	// If WITH is appeared, it is treated as an outer node of compound query.
+	// If WITH is appeared, it is treated as an outer node than compound query.
 	if p.Token.Kind == "WITH" {
 		return p.parseQuery()
 	}
@@ -433,8 +433,7 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 	}
 
 	// LIMIT, ORDER BY, pipe operators can only be placed after a compound query.
-	queryExpr, _ := p.parseQueryExprSuffix(query)
-	return queryExpr
+	return p.parseQueryExprSuffix(query)
 }
 
 func (p *Parser) parseFromQuery() *ast.FromQuery {
@@ -662,20 +661,21 @@ func (p *Parser) tryParseHaving() *ast.Having {
 	}
 }
 
-func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) (queryExpr ast.QueryExpr, hasPipeOps bool) {
+// parseQueryExprSuffix wraps QueryExpr if it is followed by ORDER BY, LIMIT, and/or pipe operators.
+func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
 	pipeOps := p.parsePipeOperators()
 
 	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
-		return e, false
+		return e
 	}
 	return &ast.Query{
 		Query:         e,
 		OrderBy:       orderBy,
 		Limit:         limit,
 		PipeOperators: pipeOps,
-	}, len(pipeOps) > 0
+	}
 }
 
 func (p *Parser) tryParseOrderBy() *ast.OrderBy {
