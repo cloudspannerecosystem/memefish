@@ -12,10 +12,10 @@ OFFSET 10
   Query: &ast.Query{
     With:  (*ast.With)(nil),
     Query: &ast.Select{
-      Select:   0,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
+      Select:        0,
+      AllOrDistinct: nil,
+      As:            nil,
+      Results:       []ast.SelectItem{
         &ast.Star{
           Star: 9,
         },

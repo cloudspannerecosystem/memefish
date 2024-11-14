@@ -8,10 +8,10 @@
     Lparen: 0,
     Rparen: 24,
     Query:  &ast.Select{
-      Select:   2,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
+      Select:        2,
+      AllOrDistinct: nil,
+      As:            nil,
+      Results:       []ast.SelectItem{
         &ast.Star{
           Star: 9,
         },

@@ -6,10 +6,10 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,

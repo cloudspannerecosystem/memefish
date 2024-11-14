@@ -6,9 +6,9 @@
   Lparen: 0,
   Rparen: 24,
   Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsStruct{
+    Select:        1,
+    AllOrDistinct: nil,
+    As:            &ast.AsStruct{
       As:     8,
       Struct: 11,
     },

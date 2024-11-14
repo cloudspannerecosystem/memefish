@@ -33,10 +33,10 @@ select 1 + 2, 1 - 2,
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
@@ -327,10 +327,10 @@ select 1 + 2, 1 - 2,
             Lparen: 194,
             Rparen: 207,
             Query:  &ast.Select{
-              Select:   195,
-              Distinct: false,
-              As:       nil,
-              Results:  []ast.SelectItem{
+              Select:        195,
+              AllOrDistinct: nil,
+              As:            nil,
+              Results:       []ast.SelectItem{
                 &ast.Alias{
                   Expr: &ast.IntLiteral{
                     ValuePos: 202,
@@ -752,10 +752,10 @@ select 1 + 2, 1 - 2,
               Distinct: false,
               Queries:  []ast.QueryExpr{
                 &ast.Select{
-                  Select:   698,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:        698,
+                  AllOrDistinct: nil,
+                  As:            nil,
+                  Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.IntLiteral{
                         ValuePos: 705,
@@ -771,10 +771,10 @@ select 1 + 2, 1 - 2,
                   Having:  (*ast.Having)(nil),
                 },
                 &ast.Select{
-                  Select:   717,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:        717,
+                  AllOrDistinct: nil,
+                  As:            nil,
+                  Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.IntLiteral{
                         ValuePos: 724,
@@ -790,10 +790,10 @@ select 1 + 2, 1 - 2,
                   Having:  (*ast.Having)(nil),
                 },
                 &ast.Select{
-                  Select:   736,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:        736,
+                  AllOrDistinct: nil,
+                  As:            nil,
+                  Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.IntLiteral{
                         ValuePos: 743,

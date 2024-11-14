@@ -24,10 +24,10 @@ select * from unnest([(1, 2), (3, 4)])
   },
   Input: &ast.SubQueryInput{
     Query: &ast.Select{
-      Select:   22,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
+      Select:        22,
+      AllOrDistinct: nil,
+      As:            nil,
+      Results:       []ast.SelectItem{
         &ast.Star{
           Star: 29,
         },

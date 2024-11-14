@@ -12,10 +12,10 @@ SELECT
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  9,
@@ -26,9 +26,9 @@ SELECT
             Query:  &ast.Query{
               With:  (*ast.With)(nil),
               Query: &ast.Select{
-                Select:   28,
-                Distinct: false,
-                As:       &ast.AsStruct{
+                Select:        28,
+                AllOrDistinct: nil,
+                As:            &ast.AsStruct{
                   As:     35,
                   Struct: 38,
                 },

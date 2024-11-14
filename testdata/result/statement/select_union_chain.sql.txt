@@ -12,10 +12,10 @@
         Lparen: 0,
         Rparen: 9,
         Query:  &ast.Select{
-          Select:   1,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:        1,
+          AllOrDistinct: nil,
+          As:            nil,
+          Results:       []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 8,
@@ -35,10 +35,10 @@
         Lparen: 21,
         Rparen: 30,
         Query:  &ast.Select{
-          Select:   22,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:        22,
+          AllOrDistinct: nil,
+          As:            nil,
+          Results:       []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 29,
@@ -58,10 +58,10 @@
         Lparen: 42,
         Rparen: 51,
         Query:  &ast.Select{
-          Select:   43,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:        43,
+          AllOrDistinct: nil,
+          As:            nil,
+          Results:       []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 50,

@@ -34,10 +34,10 @@
             Name:    "subq1",
           },
           QueryExpr: &ast.Select{
-            Select:   28,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        28,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
                   NamePos: 35,
@@ -67,10 +67,10 @@
       },
     },
     Query: &ast.Select{
-      Select:   48,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
+      Select:        48,
+      AllOrDistinct: nil,
+      As:            nil,
+      Results:       []ast.SelectItem{
         &ast.Star{
           Star: 55,
         },

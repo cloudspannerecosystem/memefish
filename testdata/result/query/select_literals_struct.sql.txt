@@ -20,19 +20,19 @@ SELECT
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  9,
           Rparen: 37,
           Query:  &ast.Select{
-            Select:   15,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        15,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 22,
@@ -78,10 +78,10 @@ SELECT
           Array:  42,
           Rparen: 73,
           Query:  &ast.Select{
-            Select:   48,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        48,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 55,
@@ -125,10 +125,10 @@ SELECT
           Array:  78,
           Rparen: 133,
           Query:  &ast.Select{
-            Select:   84,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        84,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 91,
@@ -203,10 +203,10 @@ SELECT
           Array:  138,
           Rparen: 181,
           Query:  &ast.Select{
-            Select:   144,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        144,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 151,
@@ -276,10 +276,10 @@ SELECT
           Array:  186,
           Rparen: 235,
           Query:  &ast.Select{
-            Select:   192,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        192,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 199,
@@ -342,10 +342,10 @@ SELECT
           Array:  240,
           Rparen: 291,
           Query:  &ast.Select{
-            Select:   246,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        246,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 253,
@@ -412,10 +412,10 @@ SELECT
           Array:  296,
           Rparen: 329,
           Query:  &ast.Select{
-            Select:   302,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        302,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 309,
@@ -469,10 +469,10 @@ SELECT
           Array:  334,
           Rparen: 356,
           Query:  &ast.Select{
-            Select:   340,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        340,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
                   Lparen: 347,
@@ -512,10 +512,10 @@ SELECT
           Array:  361,
           Rparen: 392,
           Query:  &ast.Select{
-            Select:   367,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        367,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 374,
@@ -556,10 +556,10 @@ SELECT
           Array:  397,
           Rparen: 424,
           Query:  &ast.Select{
-            Select:   403,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        403,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 410,
@@ -597,10 +597,10 @@ SELECT
           Array:  429,
           Rparen: 458,
           Query:  &ast.Select{
-            Select:   435,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        435,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 442,
@@ -637,10 +637,10 @@ SELECT
           Array:  463,
           Rparen: 485,
           Query:  &ast.Select{
-            Select:   469,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        469,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 476,
@@ -670,10 +670,10 @@ SELECT
           Array:  490,
           Rparen: 513,
           Query:  &ast.Select{
-            Select:   496,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        496,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypedStructLiteral{
                   Struct: 503,
@@ -695,10 +695,10 @@ SELECT
           Array:  518,
           Rparen: 539,
           Query:  &ast.Select{
-            Select:   524,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        524,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 531,
@@ -720,10 +720,10 @@ SELECT
           Rparen: 564,
           Hint:   (*ast.Hint)(nil),
           Query:  &ast.Select{
-            Select:   551,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        551,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
                   Lparen: 558,

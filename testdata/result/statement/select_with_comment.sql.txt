@@ -6,10 +6,10 @@ select 1
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   10,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        10,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.IntLiteral{
           ValuePos: 17,

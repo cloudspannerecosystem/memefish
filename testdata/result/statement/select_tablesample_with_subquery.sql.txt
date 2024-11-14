@@ -8,10 +8,10 @@ FROM
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -22,10 +22,10 @@ FROM
         Lparen: 18,
         Rparen: 40,
         Query:  &ast.Select{
-          Select:   19,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:        19,
+          AllOrDistinct: nil,
+          As:            nil,
+          Results:       []ast.SelectItem{
             &ast.Star{
               Star: 26,
             },

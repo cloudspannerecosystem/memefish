@@ -254,6 +254,35 @@ func (p *Parser) parseQueryStatement() *ast.QueryStatement {
 	}
 }
 
+func (p *Parser) parsePipeOperator() ast.PipeOperator {
+	pos := p.expect("|>").Pos
+	switch {
+	case p.Token.Kind == "SELECT":
+		p.nextToken()
+
+		allOrDistinct := p.tryParseAllOrDistinct()
+		as := p.tryParseSelectAs()
+		results := p.parseSelectResults()
+
+		return &ast.PipeSelect{
+			Pipe:          pos,
+			AllOrDistinct: allOrDistinct,
+			As:            as,
+			Results:       results,
+		}
+	case p.Token.Kind == "WHERE":
+		p.nextToken()
+		expr := p.parseExpr()
+		return &ast.PipeWhere{
+			Pipe: pos,
+			Expr: expr,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
+	}
+}
+
+// parsePipeOperators parses pipe operators, which can be empty.
 func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 	var pipeOps []ast.PipeOperator
 	for {
@@ -261,28 +290,7 @@ func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 			break
 		}
 
-		pos := p.expect("|>").Pos
-		var op ast.PipeOperator
-		switch {
-		case p.Token.Kind == "SELECT":
-			p.nextToken()
-			as := p.tryParseSelectAs()
-			results := p.parseSelectResults()
-			op = &ast.PipeSelect{
-				Pipe:     pos,
-				Distinct: false, // TODO
-				As:       as,
-				Results:  results,
-			}
-		case p.Token.Kind == "WHERE":
-			p.nextToken()
-			expr := p.parseExpr()
-			op = &ast.PipeWhere{
-				Pipe: pos,
-				Expr: expr,
-			}
-		}
-		pipeOps = append(pipeOps, op)
+		pipeOps = append(pipeOps, p.parsePipeOperator())
 	}
 	return pipeOps
 }
@@ -506,13 +514,23 @@ func (p *Parser) tryParseSelectAs() ast.SelectAs {
 	}
 }
 
+func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
+	pos := p.Token.Pos
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		return &ast.All{All: pos}
+	case "DISTINCT":
+		p.nextToken()
+		return &ast.Distinct{Distinct: pos}
+	default:
+		return nil
+	}
+}
+
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
-	var distinct bool
-	if p.Token.Kind == "DISTINCT" {
-		p.nextToken()
-		distinct = true
-	}
+	allOrDistinct := p.tryParseAllOrDistinct()
 	selectAs := p.tryParseSelectAs()
 	results := p.parseSelectResults()
 	from := p.tryParseFrom()
@@ -521,14 +539,14 @@ func (p *Parser) parseSelect() *ast.Select {
 	having := p.tryParseHaving()
 
 	return &ast.Select{
-		Select:   sel,
-		Distinct: distinct,
-		As:       selectAs,
-		Results:  results,
-		From:     from,
-		Where:    where,
-		GroupBy:  groupBy,
-		Having:   having,
+		Select:        sel,
+		AllOrDistinct: allOrDistinct,
+		As:            selectAs,
+		Results:       results,
+		From:          from,
+		Where:         where,
+		GroupBy:       groupBy,
+		Having:        having,
 	}
 }
 

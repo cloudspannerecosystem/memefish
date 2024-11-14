@@ -27,7 +27,7 @@ You can use ZetaSQL to check if it's a valid GoogleSQL query.
 
 ```sh
 # statement
-$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --mode=parse,unparse "$(cat testdata/input/query/pipe_from_select.sql)"
+$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --mode=parse,unparse "$(cat testdata/input/query/pipe_from_where_select_distinct.sql)"
 # or expression
 $ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --sql_mode=expression --mode=parse,unparse "$(cat testdata/input/expr/array_literal_empty_with_types.sql)" ```
 ```

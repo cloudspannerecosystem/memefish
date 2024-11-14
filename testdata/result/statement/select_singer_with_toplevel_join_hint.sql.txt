@@ -28,10 +28,10 @@ FROM
     },
   },
   Query: &ast.Select{
-    Select:   25,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        25,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.Star{
         Star: 34,
       },

@@ -1,6 +1,6 @@
---- pipe_from_select.sql
+--- pipe_from_select_all.sql
 FROM Singers
-|> SELECT *
+|> SELECT ALL *
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
@@ -25,12 +25,14 @@ FROM Singers
     Limit:         (*ast.Limit)(nil),
     PipeOperators: []ast.PipeOperator{
       &ast.PipeSelect{
-        Pipe:     13,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
+        Pipe:          13,
+        AllOrDistinct: &ast.All{
+          All: 23,
+        },
+        As:      nil,
+        Results: []ast.SelectItem{
           &ast.Star{
-            Star: 23,
+            Star: 27,
           },
         },
       },
@@ -39,4 +41,4 @@ FROM Singers
 }
 
 --- SQL
-FROM Singers |> SELECT *
+FROM Singers |> SELECT ALL *

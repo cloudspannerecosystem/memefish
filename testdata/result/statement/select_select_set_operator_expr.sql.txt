@@ -7,10 +7,10 @@ select ((select 1) union all (select 2)) + 3,
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
@@ -25,10 +25,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 8,
                   Rparen: 17,
                   Query:  &ast.Select{
-                    Select:   9,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        9,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 16,
@@ -48,10 +48,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 29,
                   Rparen: 38,
                   Query:  &ast.Select{
-                    Select:   30,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        30,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 37,
@@ -92,10 +92,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 54,
                   Rparen: 63,
                   Query:  &ast.Select{
-                    Select:   55,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        55,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 62,
@@ -115,10 +115,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 79,
                   Rparen: 88,
                   Query:  &ast.Select{
-                    Select:   80,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        80,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 87,
@@ -159,10 +159,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 104,
                   Rparen: 113,
                   Query:  &ast.Select{
-                    Select:   105,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        105,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 112,
@@ -182,10 +182,10 @@ select ((select 1) union all (select 2)) + 3,
                   Lparen: 126,
                   Rparen: 135,
                   Query:  &ast.Select{
-                    Select:   127,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:        127,
+                    AllOrDistinct: nil,
+                    As:            nil,
+                    Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 134,

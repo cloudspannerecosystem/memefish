@@ -62,6 +62,22 @@ func (s *Select) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
 }
 
+func (a *All) Pos() token.Pos {
+	return a.All
+}
+
+func (a *All) End() token.Pos {
+	return posAdd(a.All, 3)
+}
+
+func (d *Distinct) Pos() token.Pos {
+	return d.Distinct
+}
+
+func (d *Distinct) End() token.Pos {
+	return posAdd(d.Distinct, 8)
+}
+
 func (a *AsStruct) Pos() token.Pos {
 	return a.As
 }

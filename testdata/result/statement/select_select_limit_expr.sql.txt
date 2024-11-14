@@ -5,10 +5,10 @@ select ((select 1) limit 1 offset 0) + 3
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
@@ -21,10 +21,10 @@ select ((select 1) limit 1 offset 0) + 3
                 Lparen: 8,
                 Rparen: 17,
                 Query:  &ast.Select{
-                  Select:   9,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:        9,
+                  AllOrDistinct: nil,
+                  As:            nil,
+                  Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.IntLiteral{
                         ValuePos: 16,

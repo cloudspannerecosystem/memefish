@@ -11,19 +11,19 @@ SELECT ARRAY(
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  7,
           Rparen: 133,
           Query:  &ast.Select{
-            Select:   16,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        16,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.Star{
                 Star: 27,
               },
@@ -34,10 +34,10 @@ SELECT ARRAY(
                 Lparen: 40,
                 Rparen: 90,
                 Query:  &ast.Select{
-                  Select:   41,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:        41,
+                  AllOrDistinct: nil,
+                  As:            nil,
+                  Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.TypedStructLiteral{
                         Struct: 48,

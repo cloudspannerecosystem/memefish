@@ -1,3 +1,3 @@
 FROM Singers
 |> WHERE FirstName = "John"
-|> SELECT *
+|> SELECT DISTINCT *

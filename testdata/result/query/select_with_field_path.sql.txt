@@ -21,10 +21,10 @@ WHERE A.z.a = 2
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -109,9 +109,9 @@ WHERE A.z.a = 2
           Array:  57,
           Rparen: 251,
           Query:  &ast.Select{
-            Select:   70,
-            Distinct: false,
-            As:       &ast.AsStruct{
+            Select:        70,
+            AllOrDistinct: nil,
+            As:            &ast.AsStruct{
               As:     77,
               Struct: 80,
             },

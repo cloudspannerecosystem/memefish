@@ -51,10 +51,10 @@ lines''',
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.StringLiteral{
           ValuePos: 9,
@@ -386,10 +386,10 @@ lines''',
           Array:  454,
           Rparen: 482,
           Query:  &ast.Select{
-            Select:   460,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        460,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
@@ -435,10 +435,10 @@ lines''',
           Array:  487,
           Rparen: 509,
           Query:  &ast.Select{
-            Select:   493,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        493,
+            AllOrDistinct: nil,
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
                   Lparen: 500,

@@ -1,2 +1,0 @@
-FROM Singers
-|> SELECT *

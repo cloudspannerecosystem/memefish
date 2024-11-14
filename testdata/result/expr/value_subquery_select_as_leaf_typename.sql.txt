@@ -5,9 +5,9 @@
   Lparen: 0,
   Rparen: 26,
   Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsTypeName{
+    Select:        1,
+    AllOrDistinct: nil,
+    As:            &ast.AsTypeName{
       As:       8,
       TypeName: &ast.NamedType{
         Path: []*ast.Ident{

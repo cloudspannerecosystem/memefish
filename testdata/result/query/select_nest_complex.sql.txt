@@ -10,10 +10,10 @@ from (
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: nil,
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.Star{
         Star: 7,
       },
@@ -47,10 +47,10 @@ from (
                         Distinct: false,
                         Queries:  []ast.QueryExpr{
                           &ast.Select{
-                            Select:   23,
-                            Distinct: false,
-                            As:       nil,
-                            Results:  []ast.SelectItem{
+                            Select:        23,
+                            AllOrDistinct: nil,
+                            As:            nil,
+                            Results:       []ast.SelectItem{
                               &ast.Alias{
                                 Expr: &ast.IntLiteral{
                                   ValuePos: 30,
@@ -77,10 +77,10 @@ from (
                             Lparen: 44,
                             Rparen: 53,
                             Query:  &ast.Select{
-                              Select:   45,
-                              Distinct: false,
-                              As:       nil,
-                              Results:  []ast.SelectItem{
+                              Select:        45,
+                              AllOrDistinct: nil,
+                              As:            nil,
+                              Results:       []ast.SelectItem{
                                 &ast.ExprSelectItem{
                                   Expr: &ast.IntLiteral{
                                     ValuePos: 52,
@@ -103,10 +103,10 @@ from (
                       Lparen: 71,
                       Rparen: 80,
                       Query:  &ast.Select{
-                        Select:   72,
-                        Distinct: false,
-                        As:       nil,
-                        Results:  []ast.SelectItem{
+                        Select:        72,
+                        AllOrDistinct: nil,
+                        As:            nil,
+                        Results:       []ast.SelectItem{
                           &ast.ExprSelectItem{
                             Expr: &ast.IntLiteral{
                               ValuePos: 79,
@@ -145,10 +145,10 @@ from (
             Lparen: 103,
             Rparen: 119,
             Query:  &ast.Select{
-              Select:   104,
-              Distinct: false,
-              As:       nil,
-              Results:  []ast.SelectItem{
+              Select:        104,
+              AllOrDistinct: nil,
+              As:            nil,
+              Results:       []ast.SelectItem{
                 &ast.Alias{
                   Expr: &ast.IntLiteral{
                     ValuePos: 111,

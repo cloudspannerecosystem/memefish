@@ -5,9 +5,9 @@
   Lparen: 0,
   Rparen: 18,
   Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsValue{
+    Select:        1,
+    AllOrDistinct: nil,
+    As:            &ast.AsValue{
       As:    8,
       Value: 11,
     },

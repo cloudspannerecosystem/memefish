@@ -229,10 +229,10 @@ NEW Universe {
             Lparen: 349,
             Rparen: 378,
             Query:  &ast.Select{
-              Select:   350,
-              Distinct: false,
-              As:       nil,
-              Results:  []ast.SelectItem{
+              Select:        350,
+              AllOrDistinct: nil,
+              As:            nil,
+              Results:       []ast.SelectItem{
                 &ast.ExprSelectItem{
                   Expr: &ast.Ident{
                     NamePos: 357,

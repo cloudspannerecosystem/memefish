@@ -110,6 +110,16 @@ func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
 
+// AllOrDistinct represents ALL or DISTINCT node.
+// It can be nil if not specified.
+type AllOrDistinct interface {
+	Node
+	isAllOrDistinct()
+}
+
+func (All) isAllOrDistinct()      {}
+func (Distinct) isAllOrDistinct() {}
+
 // PipeOperator represents pipe operator node which can be appeared in Query.
 type PipeOperator interface {
 	Node
@@ -576,13 +586,33 @@ type Select struct {
 
 	Select token.Pos // position of "select" keyword
 
-	Distinct bool
-	As       SelectAs     // optional
-	Results  []SelectItem // len(Results) > 0
-	From     *From        // optional
-	Where    *Where       // optional
-	GroupBy  *GroupBy     // optional
-	Having   *Having      // optional
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
+	From          *From         // optional
+	Where         *Where        // optional
+	GroupBy       *GroupBy      // optional
+	Having        *Having       // optional
+}
+
+// All is ALL node in AllOrDistinct.
+//
+//	ALL
+type All struct {
+	// pos = All
+	// end = All + 3
+
+	All token.Pos // position of "ALL" keyword
+}
+
+// Distinct is DISTINCT node in AllOrDistinct.
+//
+//	DISTINCT
+type Distinct struct {
+	// pos = Distinct
+	// end = Distinct + 8
+
+	Distinct token.Pos // position of "DISTINCT" keyword
 }
 
 // AsStruct represents AS STRUCT node in SELECT clause.
@@ -840,16 +870,16 @@ type Offset struct {
 
 // PipeSelect is SELECT pipe operator node.
 //
-//	|> SELECT {{if .Distinct}}DISTINCT{{end}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+//	|> SELECT {{.AllOrDistinct | sqlOpt}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
 type PipeSelect struct {
 	// pos = Pipe
 	// end = Results[$].end
 
 	Pipe token.Pos // position of "|>"
 
-	Distinct bool
-	As       SelectAs     // optional
-	Results  []SelectItem // len(Results) > 0
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
 }
 
 // PipeWhere is WHERE pipe operator node.

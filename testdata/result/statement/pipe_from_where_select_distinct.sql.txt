@@ -1,7 +1,7 @@
---- pipe_from_where_select.sql
+--- pipe_from_where_select_distinct.sql
 FROM Singers
 |> WHERE FirstName = "John"
-|> SELECT *
+|> SELECT DISTINCT *
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
@@ -42,12 +42,14 @@ FROM Singers
         },
       },
       &ast.PipeSelect{
-        Pipe:     41,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
+        Pipe:          41,
+        AllOrDistinct: &ast.Distinct{
+          Distinct: 51,
+        },
+        As:      nil,
+        Results: []ast.SelectItem{
           &ast.Star{
-            Star: 51,
+            Star: 60,
           },
         },
       },
@@ -56,4 +58,4 @@ FROM Singers
 }
 
 --- SQL
-FROM Singers |> WHERE FirstName = "John" |> SELECT *
+FROM Singers |> WHERE FirstName = "John" |> SELECT DISTINCT *
