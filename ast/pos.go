@@ -7,7 +7,7 @@ import (
 )
 
 func (q *QueryStatement) Pos() token.Pos {
-	return nodePos(wrapNode(q.Query))
+	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.Query)))
 }
 
 func (q *QueryStatement) End() token.Pos {
