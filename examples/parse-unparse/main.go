@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// Do parsing!
-	stmt, err := p.ParseQueryStatement()
+	stmt, err := p.ParseQuery()
 	if err != nil {
 		log.Fatal(err)
 	}

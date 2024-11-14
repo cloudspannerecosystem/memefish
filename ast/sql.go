@@ -202,8 +202,7 @@ func (c *CompoundQuery) SQL() string {
 }
 
 func (s *SubQuery) SQL() string {
-	sql := "(" + s.Query.SQL() + ")"
-	return sql
+	return "(" + s.Query.SQL() + ")"
 }
 
 func (s *Star) SQL() string {

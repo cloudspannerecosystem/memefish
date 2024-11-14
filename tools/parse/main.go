@@ -74,7 +74,7 @@ func main() {
 	case "statement":
 		node, err = p.ParseStatement()
 	case "query":
-		node, err = p.ParseQueryStatement()
+		node, err = p.ParseQuery()
 	case "expr":
 		node, err = p.ParseExpr()
 	case "ddl":

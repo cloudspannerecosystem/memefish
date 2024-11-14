@@ -131,7 +131,7 @@ func TestParseQuery(t *testing.T) {
 	resultPath := "./testdata/result/query"
 
 	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
-		return p.ParseQueryStatement()
+		return p.ParseQuery()
 	})
 }
 

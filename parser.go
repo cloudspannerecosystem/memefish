@@ -57,8 +57,8 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	return
 }
 
-// ParseQueryStatement parses a SELECT query statement.
-func (p *Parser) ParseQueryStatement() (stmt *ast.QueryStatement, err error) {
+// ParseQuery parses a query statement.
+func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			stmt = nil

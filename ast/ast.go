@@ -110,6 +110,15 @@ func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
 
+// PipeOperator represents pipe operator node which can be appeared in Query.
+type PipeOperator interface {
+	Node
+	isPipeOperator()
+}
+
+func (PipeSelect) isPipeOperator() {}
+func (PipeWhere) isPipeOperator()  {}
+
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
 	Node
@@ -502,15 +511,6 @@ type Query struct {
 	PipeOperators []PipeOperator
 }
 
-type PipeOperator interface {
-	Node
-	isPipeOperator()
-}
-
-func (PipeSelect) isPipeOperator() {}
-func (PipeWhere) isPipeOperator()  {}
-
-
 // Hint is hint node.
 //
 //	@{{"{"}}{{.Records | sqlJoin ","}}{{"}"}}
@@ -618,7 +618,7 @@ type AsTypeName struct {
 	TypeName *NamedType
 }
 
-// FromQuery is FROM relational operator node.
+// FromQuery is FROM query expression node.
 type FromQuery struct {
 	// pos = From.pos
 	// end = From.end
@@ -631,6 +631,8 @@ func (f *FromQuery) SQL() string {
 }
 
 // CompoundQuery is query expression node compounded by set operators.
+// Note: A single CompoundQuery can express query expressions compounded by the same set operator.
+// If there are mixed Op or Distinct in query expression, CompoundQuery will be nested.
 //
 //	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
 type CompoundQuery struct {
