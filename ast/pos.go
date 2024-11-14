@@ -854,6 +854,14 @@ func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Name))
 }
 
+func (c *CreatePlacement) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreatePlacement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
+}
+
 func (p *ProtoBundleTypes) Pos() token.Pos {
 	return p.Lparen
 }
