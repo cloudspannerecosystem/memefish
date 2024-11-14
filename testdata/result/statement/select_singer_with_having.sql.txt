@@ -10,6 +10,7 @@ HAVING
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -64,8 +65,6 @@ HAVING
         },
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

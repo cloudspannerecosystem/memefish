@@ -4,6 +4,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
      t.arr AS a WITH OFFSET AS off
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -133,8 +134,6 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

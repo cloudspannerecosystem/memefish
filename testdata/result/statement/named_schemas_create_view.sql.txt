@@ -133,8 +133,6 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
     },
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

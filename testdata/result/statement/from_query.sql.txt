@@ -2,6 +2,7 @@
 FROM Singers
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.FromQuery{
     From: &ast.From{
       From:   0,

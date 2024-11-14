@@ -7,154 +7,158 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 
 --- AST
 &ast.QueryStatement{
-  Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
-      &ast.ExprSelectItem{
-        Expr: &ast.CastExpr{
-          Cast:   7,
-          Rparen: 22,
-          Safe:   false,
-          Expr:   &ast.IntLiteral{
-            ValuePos: 12,
-            ValueEnd: 13,
-            Base:     10,
-            Value:    "1",
-          },
-          Type: &ast.SimpleType{
-            NamePos: 17,
-            Name:    "INT64",
-          },
-        },
-      },
-      &ast.ExprSelectItem{
-        Expr: &ast.CastExpr{
-          Cast:   25,
-          Rparen: 44,
-          Safe:   false,
-          Expr:   &ast.FloatLiteral{
-            ValuePos: 30,
-            ValueEnd: 33,
-            Value:    "0.1",
-          },
-          Type: &ast.SimpleType{
-            NamePos: 37,
-            Name:    "FLOAT32",
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Query{
+    With:  (*ast.With)(nil),
+    Query: &ast.Select{
+      Select:   0,
+      Distinct: false,
+      As:       nil,
+      Results:  []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.CastExpr{
+            Cast:   7,
+            Rparen: 22,
+            Safe:   false,
+            Expr:   &ast.IntLiteral{
+              ValuePos: 12,
+              ValueEnd: 13,
+              Base:     10,
+              Value:    "1",
+            },
+            Type: &ast.SimpleType{
+              NamePos: 17,
+              Name:    "INT64",
+            },
           },
         },
-      },
-      &ast.ExprSelectItem{
-        Expr: &ast.CastExpr{
-          Cast:   47,
-          Rparen: 147,
-          Safe:   false,
-          Expr:   &ast.TupleStructLiteral{
-            Lparen: 52,
-            Rparen: 84,
-            Values: []ast.Expr{
-              &ast.TypelessStructLiteral{
-                Struct: 53,
-                Rparen: 60,
-                Values: []ast.TypelessStructLiteralArg(nil),
-              },
-              &ast.IntLiteral{
-                ValuePos: 63,
-                ValueEnd: 64,
-                Base:     10,
-                Value:    "1",
-              },
-              &ast.ArrayLiteral{
-                Array:  -1,
-                Lbrack: 66,
-                Rbrack: 71,
-                Type:   nil,
-                Values: []ast.Expr{
-                  &ast.IntLiteral{
-                    ValuePos: 67,
-                    ValueEnd: 68,
-                    Base:     10,
-                    Value:    "2",
-                  },
-                  &ast.IntLiteral{
-                    ValuePos: 70,
-                    ValueEnd: 71,
-                    Base:     10,
-                    Value:    "3",
+        &ast.ExprSelectItem{
+          Expr: &ast.CastExpr{
+            Cast:   25,
+            Rparen: 44,
+            Safe:   false,
+            Expr:   &ast.FloatLiteral{
+              ValuePos: 30,
+              ValueEnd: 33,
+              Value:    "0.1",
+            },
+            Type: &ast.SimpleType{
+              NamePos: 37,
+              Name:    "FLOAT32",
+            },
+          },
+        },
+        &ast.ExprSelectItem{
+          Expr: &ast.CastExpr{
+            Cast:   47,
+            Rparen: 147,
+            Safe:   false,
+            Expr:   &ast.TupleStructLiteral{
+              Lparen: 52,
+              Rparen: 84,
+              Values: []ast.Expr{
+                &ast.TypelessStructLiteral{
+                  Struct: 53,
+                  Rparen: 60,
+                  Values: []ast.TypelessStructLiteralArg(nil),
+                },
+                &ast.IntLiteral{
+                  ValuePos: 63,
+                  ValueEnd: 64,
+                  Base:     10,
+                  Value:    "1",
+                },
+                &ast.ArrayLiteral{
+                  Array:  -1,
+                  Lbrack: 66,
+                  Rbrack: 71,
+                  Type:   nil,
+                  Values: []ast.Expr{
+                    &ast.IntLiteral{
+                      ValuePos: 67,
+                      ValueEnd: 68,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                    &ast.IntLiteral{
+                      ValuePos: 70,
+                      ValueEnd: 71,
+                      Base:     10,
+                      Value:    "3",
+                    },
                   },
                 },
-              },
-              &ast.ArrayLiteral{
-                Array:  -1,
-                Lbrack: 74,
-                Rbrack: 83,
-                Type:   nil,
-                Values: []ast.Expr{
-                  &ast.StringLiteral{
-                    ValuePos: 75,
-                    ValueEnd: 78,
-                    Value:    "4",
-                  },
-                  &ast.StringLiteral{
-                    ValuePos: 80,
-                    ValueEnd: 83,
-                    Value:    "5",
+                &ast.ArrayLiteral{
+                  Array:  -1,
+                  Lbrack: 74,
+                  Rbrack: 83,
+                  Type:   nil,
+                  Values: []ast.Expr{
+                    &ast.StringLiteral{
+                      ValuePos: 75,
+                      ValueEnd: 78,
+                      Value:    "4",
+                    },
+                    &ast.StringLiteral{
+                      ValuePos: 80,
+                      ValueEnd: 83,
+                      Value:    "5",
+                    },
                   },
                 },
               },
             },
-          },
-          Type: &ast.StructType{
-            Struct: 89,
-            Gt:     146,
-            Fields: []*ast.StructField{
-              &ast.StructField{
-                Ident: (*ast.Ident)(nil),
-                Type:  &ast.StructType{
-                  Struct: 96,
-                  Gt:     103,
-                  Fields: []*ast.StructField(nil),
+            Type: &ast.StructType{
+              Struct: 89,
+              Gt:     146,
+              Fields: []*ast.StructField{
+                &ast.StructField{
+                  Ident: (*ast.Ident)(nil),
+                  Type:  &ast.StructType{
+                    Struct: 96,
+                    Gt:     103,
+                    Fields: []*ast.StructField(nil),
+                  },
                 },
-              },
-              &ast.StructField{
-                Ident: &ast.Ident{
-                  NamePos: 106,
-                  NameEnd: 107,
-                  Name:    "x",
-                },
-                Type: &ast.SimpleType{
-                  NamePos: 108,
-                  Name:    "INT64",
-                },
-              },
-              &ast.StructField{
-                Ident: &ast.Ident{
-                  NamePos: 115,
-                  NameEnd: 116,
-                  Name:    "y",
-                },
-                Type: &ast.ArrayType{
-                  Array: 117,
-                  Gt:    128,
-                  Item:  &ast.SimpleType{
-                    NamePos: 123,
+                &ast.StructField{
+                  Ident: &ast.Ident{
+                    NamePos: 106,
+                    NameEnd: 107,
+                    Name:    "x",
+                  },
+                  Type: &ast.SimpleType{
+                    NamePos: 108,
                     Name:    "INT64",
                   },
                 },
-              },
-              &ast.StructField{
-                Ident: &ast.Ident{
-                  NamePos: 131,
-                  NameEnd: 132,
-                  Name:    "z",
+                &ast.StructField{
+                  Ident: &ast.Ident{
+                    NamePos: 115,
+                    NameEnd: 116,
+                    Name:    "y",
+                  },
+                  Type: &ast.ArrayType{
+                    Array: 117,
+                    Gt:    128,
+                    Item:  &ast.SimpleType{
+                      NamePos: 123,
+                      Name:    "INT64",
+                    },
+                  },
                 },
-                Type: &ast.ArrayType{
-                  Array: 133,
-                  Gt:    145,
-                  Item:  &ast.SimpleType{
-                    NamePos: 139,
-                    Name:    "STRING",
+                &ast.StructField{
+                  Ident: &ast.Ident{
+                    NamePos: 131,
+                    NameEnd: 132,
+                    Name:    "z",
+                  },
+                  Type: &ast.ArrayType{
+                    Array: 133,
+                    Gt:    145,
+                    Item:  &ast.SimpleType{
+                      NamePos: 139,
+                      Name:    "STRING",
+                    },
                   },
                 },
               },
@@ -162,67 +166,95 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           },
         },
       },
-    },
-    From: &ast.From{
-      From:   149,
-      Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
+      From: &ast.From{
+        From:   149,
+        Source: &ast.Join{
           Op:     ",",
           Method: "",
           Hint:   (*ast.Hint)(nil),
-          Left:   &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 154,
-              NameEnd: 155,
-              Name:    "x",
-            },
+          Left:   &ast.Join{
+            Op:     ",",
+            Method: "",
             Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: &ast.TableSample{
-              TableSample: 156,
-              Method:      "BERNOULLI",
-              Size:        &ast.TableSampleSize{
-                Lparen: 178,
-                Rparen: 207,
-                Value:  &ast.CastNumValue{
-                  Cast:   179,
-                  Rparen: 198,
-                  Expr:   &ast.FloatLiteral{
-                    ValuePos: 184,
-                    ValueEnd: 187,
-                    Value:    "0.1",
+            Left:   &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 154,
+                NameEnd: 155,
+                Name:    "x",
+              },
+              Hint:   (*ast.Hint)(nil),
+              As:     (*ast.AsAlias)(nil),
+              Sample: &ast.TableSample{
+                TableSample: 156,
+                Method:      "BERNOULLI",
+                Size:        &ast.TableSampleSize{
+                  Lparen: 178,
+                  Rparen: 207,
+                  Value:  &ast.CastNumValue{
+                    Cast:   179,
+                    Rparen: 198,
+                    Expr:   &ast.FloatLiteral{
+                      ValuePos: 184,
+                      ValueEnd: 187,
+                      Value:    "0.1",
+                    },
+                    Type: "FLOAT64",
                   },
-                  Type: "FLOAT64",
+                  Unit: "PERCENT",
                 },
-                Unit: "PERCENT",
               },
             },
+            Right: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 215,
+                NameEnd: 216,
+                Name:    "y",
+              },
+              Hint:   (*ast.Hint)(nil),
+              As:     (*ast.AsAlias)(nil),
+              Sample: &ast.TableSample{
+                TableSample: 217,
+                Method:      "BERNOULLI",
+                Size:        &ast.TableSampleSize{
+                  Lparen: 239,
+                  Rparen: 261,
+                  Value:  &ast.CastNumValue{
+                    Cast:   240,
+                    Rparen: 255,
+                    Expr:   &ast.IntLiteral{
+                      ValuePos: 245,
+                      ValueEnd: 246,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Type: "INT64",
+                  },
+                  Unit: "ROWS",
+                },
+              },
+            },
+            Cond: nil,
           },
           Right: &ast.TableName{
             Table: &ast.Ident{
-              NamePos: 215,
-              NameEnd: 216,
-              Name:    "y",
+              NamePos: 269,
+              NameEnd: 270,
+              Name:    "z",
             },
             Hint:   (*ast.Hint)(nil),
             As:     (*ast.AsAlias)(nil),
             Sample: &ast.TableSample{
-              TableSample: 217,
+              TableSample: 271,
               Method:      "BERNOULLI",
               Size:        &ast.TableSampleSize{
-                Lparen: 239,
-                Rparen: 261,
+                Lparen: 293,
+                Rparen: 320,
                 Value:  &ast.CastNumValue{
-                  Cast:   240,
-                  Rparen: 255,
-                  Expr:   &ast.IntLiteral{
-                    ValuePos: 245,
-                    ValueEnd: 246,
-                    Base:     10,
-                    Value:    "1",
+                  Cast:   294,
+                  Rparen: 314,
+                  Expr:   &ast.Param{
+                    Atmark: 299,
+                    Name:   "param",
                   },
                   Type: "INT64",
                 },
@@ -232,39 +264,11 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
           },
           Cond: nil,
         },
-        Right: &ast.TableName{
-          Table: &ast.Ident{
-            NamePos: 269,
-            NameEnd: 270,
-            Name:    "z",
-          },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
-          Sample: &ast.TableSample{
-            TableSample: 271,
-            Method:      "BERNOULLI",
-            Size:        &ast.TableSampleSize{
-              Lparen: 293,
-              Rparen: 320,
-              Value:  &ast.CastNumValue{
-                Cast:   294,
-                Rparen: 314,
-                Expr:   &ast.Param{
-                  Atmark: 299,
-                  Name:   "param",
-                },
-                Type: "INT64",
-              },
-              Unit: "ROWS",
-            },
-          },
-        },
-        Cond: nil,
       },
+      Where:   (*ast.Where)(nil),
+      GroupBy: (*ast.GroupBy)(nil),
+      Having:  (*ast.Having)(nil),
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
     OrderBy: (*ast.OrderBy)(nil),
     Limit:   &ast.Limit{
       Limit: 322,
@@ -290,6 +294,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
         },
       },
     },
+    PipeOperators: []ast.PipeOperator(nil),
   },
 }
 

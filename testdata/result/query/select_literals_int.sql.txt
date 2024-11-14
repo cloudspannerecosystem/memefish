@@ -7,6 +7,7 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -49,8 +50,6 @@ SELECT
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

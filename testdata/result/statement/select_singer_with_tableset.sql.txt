@@ -5,6 +5,7 @@ SELECT * FROM Singers
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
@@ -34,8 +35,6 @@ SELECT * FROM Singers
         Where:   (*ast.Where)(nil),
         GroupBy: (*ast.GroupBy)(nil),
         Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.Select{
         Select:   32,
@@ -62,12 +61,8 @@ SELECT * FROM Singers
         Where:   (*ast.Where)(nil),
         GroupBy: (*ast.GroupBy)(nil),
         Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

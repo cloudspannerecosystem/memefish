@@ -8,6 +8,7 @@ from (
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -29,63 +30,41 @@ from (
           Left:   &ast.SubQueryTableExpr{
             Lparen: 20,
             Rparen: 90,
-            Query:  &ast.SubQuery{
-              Lparen: 21,
-              Rparen: 81,
-              Query:  &ast.CompoundQuery{
-                Op:       "UNION",
-                Distinct: true,
-                Queries:  []ast.QueryExpr{
-                  &ast.SubQuery{
-                    Lparen: 22,
-                    Rparen: 54,
-                    Query:  &ast.CompoundQuery{
-                      Op:       "UNION",
-                      Distinct: false,
-                      Queries:  []ast.QueryExpr{
-                        &ast.Select{
-                          Select:   23,
-                          Distinct: false,
-                          As:       nil,
-                          Results:  []ast.SelectItem{
-                            &ast.Alias{
-                              Expr: &ast.IntLiteral{
-                                ValuePos: 30,
-                                ValueEnd: 31,
-                                Base:     10,
-                                Value:    "1",
-                              },
-                              As: &ast.AsAlias{
-                                As:    -1,
-                                Alias: &ast.Ident{
-                                  NamePos: 32,
-                                  NameEnd: 33,
-                                  Name:    "A",
-                                },
-                              },
-                            },
-                          },
-                          From:    (*ast.From)(nil),
-                          Where:   (*ast.Where)(nil),
-                          GroupBy: (*ast.GroupBy)(nil),
-                          Having:  (*ast.Having)(nil),
-                          OrderBy: (*ast.OrderBy)(nil),
-                          Limit:   (*ast.Limit)(nil),
-                        },
-                        &ast.SubQuery{
-                          Lparen: 44,
-                          Rparen: 53,
-                          Query:  &ast.Select{
-                            Select:   45,
+            Query:  &ast.Query{
+              With:  (*ast.With)(nil),
+              Query: &ast.SubQuery{
+                Lparen: 21,
+                Rparen: 81,
+                Query:  &ast.CompoundQuery{
+                  Op:       "UNION",
+                  Distinct: true,
+                  Queries:  []ast.QueryExpr{
+                    &ast.SubQuery{
+                      Lparen: 22,
+                      Rparen: 54,
+                      Query:  &ast.CompoundQuery{
+                        Op:       "UNION",
+                        Distinct: false,
+                        Queries:  []ast.QueryExpr{
+                          &ast.Select{
+                            Select:   23,
                             Distinct: false,
                             As:       nil,
                             Results:  []ast.SelectItem{
-                              &ast.ExprSelectItem{
+                              &ast.Alias{
                                 Expr: &ast.IntLiteral{
-                                  ValuePos: 52,
-                                  ValueEnd: 53,
+                                  ValuePos: 30,
+                                  ValueEnd: 31,
                                   Base:     10,
-                                  Value:    "2",
+                                  Value:    "1",
+                                },
+                                As: &ast.AsAlias{
+                                  As:    -1,
+                                  Alias: &ast.Ident{
+                                    NamePos: 32,
+                                    NameEnd: 33,
+                                    Name:    "A",
+                                  },
                                 },
                               },
                             },
@@ -93,49 +72,58 @@ from (
                             Where:   (*ast.Where)(nil),
                             GroupBy: (*ast.GroupBy)(nil),
                             Having:  (*ast.Having)(nil),
-                            OrderBy: (*ast.OrderBy)(nil),
-                            Limit:   (*ast.Limit)(nil),
                           },
-                          OrderBy: (*ast.OrderBy)(nil),
-                          Limit:   (*ast.Limit)(nil),
-                        },
-                      },
-                      OrderBy: (*ast.OrderBy)(nil),
-                      Limit:   (*ast.Limit)(nil),
-                    },
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
-                  },
-                  &ast.SubQuery{
-                    Lparen: 71,
-                    Rparen: 80,
-                    Query:  &ast.Select{
-                      Select:   72,
-                      Distinct: false,
-                      As:       nil,
-                      Results:  []ast.SelectItem{
-                        &ast.ExprSelectItem{
-                          Expr: &ast.IntLiteral{
-                            ValuePos: 79,
-                            ValueEnd: 80,
-                            Base:     10,
-                            Value:    "1",
+                          &ast.SubQuery{
+                            Lparen: 44,
+                            Rparen: 53,
+                            Query:  &ast.Select{
+                              Select:   45,
+                              Distinct: false,
+                              As:       nil,
+                              Results:  []ast.SelectItem{
+                                &ast.ExprSelectItem{
+                                  Expr: &ast.IntLiteral{
+                                    ValuePos: 52,
+                                    ValueEnd: 53,
+                                    Base:     10,
+                                    Value:    "2",
+                                  },
+                                },
+                              },
+                              From:    (*ast.From)(nil),
+                              Where:   (*ast.Where)(nil),
+                              GroupBy: (*ast.GroupBy)(nil),
+                              Having:  (*ast.Having)(nil),
+                            },
                           },
                         },
                       },
-                      From:    (*ast.From)(nil),
-                      Where:   (*ast.Where)(nil),
-                      GroupBy: (*ast.GroupBy)(nil),
-                      Having:  (*ast.Having)(nil),
-                      OrderBy: (*ast.OrderBy)(nil),
-                      Limit:   (*ast.Limit)(nil),
                     },
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
+                    &ast.SubQuery{
+                      Lparen: 71,
+                      Rparen: 80,
+                      Query:  &ast.Select{
+                        Select:   72,
+                        Distinct: false,
+                        As:       nil,
+                        Results:  []ast.SelectItem{
+                          &ast.ExprSelectItem{
+                            Expr: &ast.IntLiteral{
+                              ValuePos: 79,
+                              ValueEnd: 80,
+                              Base:     10,
+                              Value:    "1",
+                            },
+                          },
+                        },
+                        From:    (*ast.From)(nil),
+                        Where:   (*ast.Where)(nil),
+                        GroupBy: (*ast.GroupBy)(nil),
+                        Having:  (*ast.Having)(nil),
+                      },
+                    },
                   },
                 },
-                OrderBy: (*ast.OrderBy)(nil),
-                Limit:   (*ast.Limit)(nil),
               },
               OrderBy: (*ast.OrderBy)(nil),
               Limit:   &ast.Limit{
@@ -148,6 +136,7 @@ from (
                 },
                 Offset: (*ast.Offset)(nil),
               },
+              PipeOperators: []ast.PipeOperator(nil),
             },
             As:     (*ast.AsAlias)(nil),
             Sample: (*ast.TableSample)(nil),
@@ -197,8 +186,6 @@ from (
               Where:   (*ast.Where)(nil),
               GroupBy: (*ast.GroupBy)(nil),
               Having:  (*ast.Having)(nil),
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   (*ast.Limit)(nil),
             },
             As:     (*ast.AsAlias)(nil),
             Sample: (*ast.TableSample)(nil),
@@ -221,8 +208,6 @@ from (
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

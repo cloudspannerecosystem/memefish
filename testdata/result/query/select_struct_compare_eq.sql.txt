@@ -9,6 +9,7 @@ SELECT ARRAY(
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -103,8 +104,6 @@ SELECT ARRAY(
                   Where:   (*ast.Where)(nil),
                   GroupBy: (*ast.GroupBy)(nil),
                   Having:  (*ast.Having)(nil),
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 As: &ast.AsAlias{
                   As:    92,
@@ -168,8 +167,6 @@ SELECT ARRAY(
             },
             GroupBy: (*ast.GroupBy)(nil),
             Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -178,8 +175,6 @@ SELECT ARRAY(
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

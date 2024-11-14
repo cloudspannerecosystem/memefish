@@ -3,6 +3,7 @@
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.SubQuery{
     Lparen: 0,
     Rparen: 24,
@@ -31,11 +32,7 @@
       Where:   (*ast.Where)(nil),
       GroupBy: (*ast.GroupBy)(nil),
       Having:  (*ast.Having)(nil),
-      OrderBy: (*ast.OrderBy)(nil),
-      Limit:   (*ast.Limit)(nil),
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

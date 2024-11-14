@@ -9,81 +9,81 @@ ORDER BY
 
 --- AST
 &ast.QueryStatement{
-  Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
-      &ast.Select{
-        Select:   0,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
-          &ast.Star{
-            Star: 7,
-          },
-        },
-        From: &ast.From{
-          From:   9,
-          Source: &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 14,
-              NameEnd: 21,
-              Name:    "Singers",
-            },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: (*ast.TableSample)(nil),
-          },
-        },
-        Where:   (*ast.Where)(nil),
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
-      },
-      &ast.Select{
-        Select:   32,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
-          &ast.Star{
-            Star: 39,
-          },
-        },
-        From: &ast.From{
-          From:   41,
-          Source: &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 46,
-              NameEnd: 53,
-              Name:    "Singers",
-            },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: (*ast.TableSample)(nil),
-          },
-        },
-        Where: &ast.Where{
-          Where: 54,
-          Expr:  &ast.BinaryExpr{
-            Op:   "=",
-            Left: &ast.Ident{
-              NamePos: 62,
-              NameEnd: 70,
-              Name:    "SingerId",
-            },
-            Right: &ast.IntLiteral{
-              ValuePos: 73,
-              ValueEnd: 74,
-              Base:     10,
-              Value:    "1",
+  Hint:  (*ast.Hint)(nil),
+  Query: &ast.Query{
+    With:  (*ast.With)(nil),
+    Query: &ast.CompoundQuery{
+      Op:       "UNION",
+      Distinct: false,
+      Queries:  []ast.QueryExpr{
+        &ast.Select{
+          Select:   0,
+          Distinct: false,
+          As:       nil,
+          Results:  []ast.SelectItem{
+            &ast.Star{
+              Star: 7,
             },
           },
+          From: &ast.From{
+            From:   9,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 14,
+                NameEnd: 21,
+                Name:    "Singers",
+              },
+              Hint:   (*ast.Hint)(nil),
+              As:     (*ast.AsAlias)(nil),
+              Sample: (*ast.TableSample)(nil),
+            },
+          },
+          Where:   (*ast.Where)(nil),
+          GroupBy: (*ast.GroupBy)(nil),
+          Having:  (*ast.Having)(nil),
         },
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
+        &ast.Select{
+          Select:   32,
+          Distinct: false,
+          As:       nil,
+          Results:  []ast.SelectItem{
+            &ast.Star{
+              Star: 39,
+            },
+          },
+          From: &ast.From{
+            From:   41,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 46,
+                NameEnd: 53,
+                Name:    "Singers",
+              },
+              Hint:   (*ast.Hint)(nil),
+              As:     (*ast.AsAlias)(nil),
+              Sample: (*ast.TableSample)(nil),
+            },
+          },
+          Where: &ast.Where{
+            Where: 54,
+            Expr:  &ast.BinaryExpr{
+              Op:   "=",
+              Left: &ast.Ident{
+                NamePos: 62,
+                NameEnd: 70,
+                Name:    "SingerId",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 73,
+                ValueEnd: 74,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          GroupBy: (*ast.GroupBy)(nil),
+          Having:  (*ast.Having)(nil),
+        },
       },
     },
     OrderBy: &ast.OrderBy{
@@ -101,7 +101,8 @@ ORDER BY
         },
       },
     },
-    Limit: (*ast.Limit)(nil),
+    Limit:         (*ast.Limit)(nil),
+    PipeOperators: []ast.PipeOperator(nil),
   },
 }
 

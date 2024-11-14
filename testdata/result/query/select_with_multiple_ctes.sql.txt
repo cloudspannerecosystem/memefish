@@ -3,8 +3,8 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Query{
-    Hint: (*ast.Hint)(nil),
     With: &ast.With{
       With: 0,
       CTEs: []*ast.CTE{
@@ -44,8 +44,6 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
             Where:   (*ast.Where)(nil),
             GroupBy: (*ast.GroupBy)(nil),
             Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
         &ast.CTE{
@@ -84,8 +82,6 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
             Where:   (*ast.Where)(nil),
             GroupBy: (*ast.GroupBy)(nil),
             Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -115,9 +111,9 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
       Where:   (*ast.Where)(nil),
       GroupBy: (*ast.GroupBy)(nil),
       Having:  (*ast.Having)(nil),
-      OrderBy: (*ast.OrderBy)(nil),
-      Limit:   (*ast.Limit)(nil),
     },
+    OrderBy:       (*ast.OrderBy)(nil),
+    Limit:         (*ast.Limit)(nil),
     PipeOperators: []ast.PipeOperator(nil),
   },
 }

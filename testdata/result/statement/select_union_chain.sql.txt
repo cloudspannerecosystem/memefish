@@ -3,6 +3,7 @@
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
     Op:       "UNION",
     Distinct: false,
@@ -28,11 +29,7 @@
           Where:   (*ast.Where)(nil),
           GroupBy: (*ast.GroupBy)(nil),
           Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.SubQuery{
         Lparen: 21,
@@ -55,11 +52,7 @@
           Where:   (*ast.Where)(nil),
           GroupBy: (*ast.GroupBy)(nil),
           Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.SubQuery{
         Lparen: 42,
@@ -82,15 +75,9 @@
           Where:   (*ast.Where)(nil),
           GroupBy: (*ast.GroupBy)(nil),
           Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

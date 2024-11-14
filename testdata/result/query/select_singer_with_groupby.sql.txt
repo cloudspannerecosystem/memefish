@@ -8,6 +8,7 @@ GROUP BY
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -57,9 +58,7 @@ GROUP BY
         },
       },
     },
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
+    Having: (*ast.Having)(nil),
   },
 }
 

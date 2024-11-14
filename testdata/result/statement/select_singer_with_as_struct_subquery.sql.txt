@@ -10,6 +10,7 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:   0,
     Distinct: false,
@@ -22,34 +23,37 @@ SELECT
           Query:  &ast.SubQuery{
             Lparen: 20,
             Rparen: 88,
-            Query:  &ast.Select{
-              Select:   28,
-              Distinct: false,
-              As:       &ast.AsStruct{
-                As:     35,
-                Struct: 38,
-              },
-              Results: []ast.SelectItem{
-                &ast.Star{
-                  Star: 53,
+            Query:  &ast.Query{
+              With:  (*ast.With)(nil),
+              Query: &ast.Select{
+                Select:   28,
+                Distinct: false,
+                As:       &ast.AsStruct{
+                  As:     35,
+                  Struct: 38,
                 },
-              },
-              From: &ast.From{
-                From:   61,
-                Source: &ast.TableName{
-                  Table: &ast.Ident{
-                    NamePos: 66,
-                    NameEnd: 73,
-                    Name:    "Singers",
+                Results: []ast.SelectItem{
+                  &ast.Star{
+                    Star: 53,
                   },
-                  Hint:   (*ast.Hint)(nil),
-                  As:     (*ast.AsAlias)(nil),
-                  Sample: (*ast.TableSample)(nil),
                 },
+                From: &ast.From{
+                  From:   61,
+                  Source: &ast.TableName{
+                    Table: &ast.Ident{
+                      NamePos: 66,
+                      NameEnd: 73,
+                      Name:    "Singers",
+                    },
+                    Hint:   (*ast.Hint)(nil),
+                    As:     (*ast.AsAlias)(nil),
+                    Sample: (*ast.TableSample)(nil),
+                  },
+                },
+                Where:   (*ast.Where)(nil),
+                GroupBy: (*ast.GroupBy)(nil),
+                Having:  (*ast.Having)(nil),
               },
-              Where:   (*ast.Where)(nil),
-              GroupBy: (*ast.GroupBy)(nil),
-              Having:  (*ast.Having)(nil),
               OrderBy: (*ast.OrderBy)(nil),
               Limit:   &ast.Limit{
                 Limit: 74,
@@ -61,9 +65,8 @@ SELECT
                 },
                 Offset: (*ast.Offset)(nil),
               },
+              PipeOperators: []ast.PipeOperator(nil),
             },
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -72,8 +75,6 @@ SELECT
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

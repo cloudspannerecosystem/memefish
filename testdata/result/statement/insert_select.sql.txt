@@ -90,8 +90,6 @@ select * from unnest([(1, 2), (3, 4)])
       Where:   (*ast.Where)(nil),
       GroupBy: (*ast.GroupBy)(nil),
       Having:  (*ast.Having)(nil),
-      OrderBy: (*ast.OrderBy)(nil),
-      Limit:   (*ast.Limit)(nil),
     },
   },
 }

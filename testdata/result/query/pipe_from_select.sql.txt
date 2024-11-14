@@ -3,8 +3,8 @@ FROM Singers
 |> SELECT *
 --- AST
 &ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
   Query: &ast.Query{
-    Hint:  (*ast.Hint)(nil),
     With:  (*ast.With)(nil),
     Query: &ast.FromQuery{
       From: &ast.From{
@@ -21,6 +21,8 @@ FROM Singers
         },
       },
     },
+    OrderBy:       (*ast.OrderBy)(nil),
+    Limit:         (*ast.Limit)(nil),
     PipeOperators: []ast.PipeOperator{
       &ast.PipeSelect{
         Pipe:     13,
