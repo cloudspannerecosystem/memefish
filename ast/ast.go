@@ -647,14 +647,14 @@ func (f *FromQuery) SQL() string {
 // Note: A single CompoundQuery can express query expressions compounded by the same set operator.
 // If there are mixed Op or Distinct in query expression, CompoundQuery will be nested.
 //
-//	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
+//	{{.Queries | sqlJoin (printf "%s %s" .Op .AllOrDistinct)}}
 type CompoundQuery struct {
 	// pos = Queries[0].pos
 	// end = Queries[$].end
 
-	Op       SetOp
-	Distinct bool
-	Queries  []QueryExpr // len(Queries) >= 2
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Queries       []QueryExpr // len(Queries) >= 2
 }
 
 // SubQuery is parenthesized query expression node.

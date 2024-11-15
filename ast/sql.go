@@ -180,10 +180,6 @@ func (s *Select) SQL() string {
 		sqlOpt(" ", s.Having, "")
 }
 
-func (a *All) SQL() string { return "ALL" }
-
-func (a *Distinct) SQL() string { return "DISTINCT" }
-
 func (a *AsStruct) SQL() string { return "AS STRUCT" }
 
 func (a *AsValue) SQL() string { return "AS VALUE" }
@@ -191,18 +187,7 @@ func (a *AsValue) SQL() string { return "AS VALUE" }
 func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
 
 func (c *CompoundQuery) SQL() string {
-	op := string(c.Op)
-	if c.Distinct {
-		op += " DISTINCT"
-	} else {
-		op += " ALL"
-	}
-
-	sql := c.Queries[0].SQL()
-	for _, q := range c.Queries[1:] {
-		sql += " " + op + " " + q.SQL()
-	}
-	return sql
+	return sqlJoin(c.Queries, " "+string(c.Op)+" "+strOpt(c.AllOrDistinct != "", " "+string(c.AllOrDistinct)))
 }
 
 func (s *SubQuery) SQL() string {
