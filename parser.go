@@ -305,7 +305,7 @@ func (p *Parser) parseQuery() *ast.Query {
 
 	query := p.parseQueryExpr()
 
-	// If nested query expression is *ast.Query itself, merge to avoid deep nest.
+	// If nested query expression is *ast.Query itself, merge parsed WITH into it to avoid deep nest.
 	if q, ok := query.(*ast.Query); ok {
 		return &ast.Query{
 			With:          with,
@@ -398,19 +398,10 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 
 	query := p.parseSimpleQueryExpr()
 
-	// If the first query is directly followed by ORDER BY, LIMIT or pipe operators, it isn't a compound query
+	// If the first query is directly followed by ORDER BY, LIMIT or pipe operators, it won't be a compound query
 	switch p.Token.Kind {
 	case "ORDER", "LIMIT", "|>":
-		orderBy := p.tryParseOrderBy()
-		limit := p.tryParseLimit()
-		pipeOps := p.parsePipeOperators()
-
-		return &ast.Query{
-			Query:         query,
-			OrderBy:       orderBy,
-			Limit:         limit,
-			PipeOperators: pipeOps,
-		}
+		return p.parseQueryExprSuffix(query)
 	}
 
 	for {
