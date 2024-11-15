@@ -1,6 +1,5 @@
 package ast
 
-// AllOrDistinct is used as pointer value.
 type AllOrDistinct string
 
 const (
