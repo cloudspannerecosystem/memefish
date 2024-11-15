@@ -471,19 +471,18 @@ func (p *Parser) parseFromQuery() *ast.FromQuery {
 
 // parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
 func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
-	var queryExpr ast.QueryExpr
 	switch p.Token.Kind {
 	// FROM and SELECT are the most primitive query form
 	case "FROM":
-		queryExpr = p.parseFromQuery()
+		return p.parseFromQuery()
 	case "SELECT":
-		queryExpr = p.parseSelect()
+		return p.parseSelect()
 	// Query with paren
 	case "(":
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
-		queryExpr = &ast.SubQuery{
+		return &ast.SubQuery{
 			Lparen: lparen,
 			Rparen: rparen,
 			Query:  query,
@@ -491,8 +490,6 @@ func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 	default:
 		panic(p.errorfAtToken(&p.Token, `expected beginning of simple query "(", SELECT, FROM, but: %q`, p.Token.AsString))
 	}
-
-	return queryExpr
 }
 
 func (p *Parser) tryParseSelectAs() ast.SelectAs {
