@@ -1,5 +1,14 @@
 package ast
 
+// AllOrDistinct is used as pointer value.
+type AllOrDistinct string
+
+const (
+	AllOrDistinctUnspecified AllOrDistinct = ""
+	AllOrDistinctAll         AllOrDistinct = "ALL"
+	AllOrDistinctDistinct    AllOrDistinct = "DISTINCT"
+)
+
 type TableHintKey string
 
 const (

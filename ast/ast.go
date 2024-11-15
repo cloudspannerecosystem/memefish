@@ -110,6 +110,7 @@ func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
 
+/*
 // AllOrDistinct represents ALL or DISTINCT node.
 // It can be nil if not specified.
 type AllOrDistinct interface {
@@ -119,6 +120,8 @@ type AllOrDistinct interface {
 
 func (All) isAllOrDistinct()      {}
 func (Distinct) isAllOrDistinct() {}
+
+*/
 
 // PipeOperator represents pipe operator node which can be appeared in Query.
 type PipeOperator interface {
@@ -573,7 +576,7 @@ type CTE struct {
 // Select is SELECT statement node.
 //
 //	SELECT
-//	  {{if .Distinct}}DISTINCT{{end}}
+//	  {{.AllOrDistinct}}
 //	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
@@ -870,7 +873,7 @@ type Offset struct {
 
 // PipeSelect is SELECT pipe operator node.
 //
-//	|> SELECT {{.AllOrDistinct | sqlOpt}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+//	|> SELECT {{.AllOrDistinct}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
 type PipeSelect struct {
 	// pos = Pipe
 	// end = Results[$].end

@@ -171,7 +171,7 @@ func (c *CTE) SQL() string {
 
 func (s *Select) SQL() string {
 	return "SELECT " +
-		sqlOpt("", s.AllOrDistinct, " ") +
+		strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") +
 		sqlOpt("", s.As, " ") +
 		sqlJoin(s.Results, ", ") +
 		sqlOpt(" ", s.From, "") +
@@ -291,7 +291,7 @@ func (o *Offset) SQL() string {
 // ================================================================================
 
 func (p *PipeSelect) SQL() string {
-	return "|> SELECT " + sqlOpt("", p.AllOrDistinct, " ") + sqlOpt("", p.As, " ") + sqlJoin(p.Results, ", ")
+	return "|> SELECT " + strOpt(p.AllOrDistinct != "", string(p.AllOrDistinct)+" ") + sqlOpt("", p.As, " ") + sqlJoin(p.Results, ", ")
 }
 
 func (p *PipeWhere) SQL() string {

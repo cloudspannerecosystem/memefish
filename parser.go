@@ -702,16 +702,15 @@ func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 }
 
 func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
-	pos := p.Token.Pos
 	switch p.Token.Kind {
 	case "ALL":
 		p.nextToken()
-		return &ast.All{All: pos}
+		return ast.AllOrDistinctAll
 	case "DISTINCT":
 		p.nextToken()
-		return &ast.Distinct{Distinct: pos}
+		return ast.AllOrDistinctDistinct
 	default:
-		return nil
+		return ast.AllOrDistinctUnspecified
 	}
 }
 
