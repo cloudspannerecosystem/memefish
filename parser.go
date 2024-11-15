@@ -422,28 +422,19 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 		opTok := p.Token
 		p.nextToken()
 
-		var distinct bool
-		switch p.Token.Kind {
-		case "ALL":
-			distinct = false
-		case "DISTINCT":
-			distinct = true
-		default:
-			p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
-		}
-		p.nextToken()
+		allOrDistinct := p.parseAllOrDistinct()
 
 		right := p.parseSimpleQueryExpr()
 		if c, ok := query.(*ast.CompoundQuery); ok {
-			if !(c.Op == op && c.Distinct == distinct) {
+			if !(c.Op == op && c.AllOrDistinct == allOrDistinct) {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
 			c.Queries = append(c.Queries, right)
 		} else {
 			query = &ast.CompoundQuery{
-				Op:       op,
-				Distinct: distinct,
-				Queries:  []ast.QueryExpr{query, right},
+				Op:            op,
+				AllOrDistinct: allOrDistinct,
+				Queries:       []ast.QueryExpr{query, right},
 			}
 		}
 	}
@@ -715,6 +706,13 @@ func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
 	}
 }
 
+func (p *Parser) parseAllOrDistinct() ast.AllOrDistinct {
+	if p.Token.Kind != "ALL" && p.Token.Kind != "DISTINCT" {
+		p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
+	}
+
+	return p.tryParseAllOrDistinct()
+}
 func (p *Parser) tryParseOrderBy() *ast.OrderBy {
 	if p.Token.Kind != "ORDER" {
 		return nil

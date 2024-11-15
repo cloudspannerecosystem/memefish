@@ -9,7 +9,7 @@
     Rparen: 24,
     Query:  &ast.Select{
       Select:        2,
-      AllOrDistinct: nil,
+      AllOrDistinct: "",
       As:            nil,
       Results:       []ast.SelectItem{
         &ast.Star{

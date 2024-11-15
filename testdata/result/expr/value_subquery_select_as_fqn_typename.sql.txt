@@ -6,7 +6,7 @@
   Rparen: 34,
   Query:  &ast.Select{
     Select:        1,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            &ast.AsTypeName{
       As:       8,
       TypeName: &ast.NamedType{

@@ -26,11 +26,9 @@ FROM Singers
     PipeOperators: []ast.PipeOperator{
       &ast.PipeSelect{
         Pipe:          13,
-        AllOrDistinct: &ast.All{
-          All: 23,
-        },
-        As:      nil,
-        Results: []ast.SelectItem{
+        AllOrDistinct: "ALL",
+        As:            nil,
+        Results:       []ast.SelectItem{
           &ast.Star{
             Star: 27,
           },

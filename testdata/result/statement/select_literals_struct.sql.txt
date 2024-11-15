@@ -21,7 +21,7 @@ SELECT
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -30,7 +30,7 @@ SELECT
           Rparen: 37,
           Query:  &ast.Select{
             Select:        15,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -79,7 +79,7 @@ SELECT
           Rparen: 73,
           Query:  &ast.Select{
             Select:        48,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -126,7 +126,7 @@ SELECT
           Rparen: 133,
           Query:  &ast.Select{
             Select:        84,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -204,7 +204,7 @@ SELECT
           Rparen: 181,
           Query:  &ast.Select{
             Select:        144,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -277,7 +277,7 @@ SELECT
           Rparen: 235,
           Query:  &ast.Select{
             Select:        192,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -343,7 +343,7 @@ SELECT
           Rparen: 291,
           Query:  &ast.Select{
             Select:        246,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -413,7 +413,7 @@ SELECT
           Rparen: 329,
           Query:  &ast.Select{
             Select:        302,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -470,7 +470,7 @@ SELECT
           Rparen: 356,
           Query:  &ast.Select{
             Select:        340,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -513,7 +513,7 @@ SELECT
           Rparen: 392,
           Query:  &ast.Select{
             Select:        367,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -557,7 +557,7 @@ SELECT
           Rparen: 424,
           Query:  &ast.Select{
             Select:        403,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -598,7 +598,7 @@ SELECT
           Rparen: 458,
           Query:  &ast.Select{
             Select:        435,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -638,7 +638,7 @@ SELECT
           Rparen: 485,
           Query:  &ast.Select{
             Select:        469,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -671,7 +671,7 @@ SELECT
           Rparen: 513,
           Query:  &ast.Select{
             Select:        496,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -696,7 +696,7 @@ SELECT
           Rparen: 539,
           Query:  &ast.Select{
             Select:        524,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -721,7 +721,7 @@ SELECT
           Hint:   (*ast.Hint)(nil),
           Query:  &ast.Select{
             Select:        551,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{

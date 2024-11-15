@@ -6,7 +6,7 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.Alias{

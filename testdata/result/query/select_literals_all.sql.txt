@@ -52,7 +52,7 @@ lines''',
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -387,7 +387,7 @@ lines''',
           Rparen: 482,
           Query:  &ast.Select{
             Select:        460,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -436,7 +436,7 @@ lines''',
           Rparen: 509,
           Query:  &ast.Select{
             Select:        493,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{

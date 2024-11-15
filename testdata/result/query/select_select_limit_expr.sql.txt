@@ -6,7 +6,7 @@ select ((select 1) limit 1 offset 0) + 3
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -22,7 +22,7 @@ select ((select 1) limit 1 offset 0) + 3
                 Rparen: 17,
                 Query:  &ast.Select{
                   Select:        9,
-                  AllOrDistinct: nil,
+                  AllOrDistinct: "",
                   As:            nil,
                   Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{

@@ -34,7 +34,7 @@ select 1 + 2, 1 - 2,
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -328,7 +328,7 @@ select 1 + 2, 1 - 2,
             Rparen: 207,
             Query:  &ast.Select{
               Select:        195,
-              AllOrDistinct: nil,
+              AllOrDistinct: "",
               As:            nil,
               Results:       []ast.SelectItem{
                 &ast.Alias{
@@ -748,12 +748,12 @@ select 1 + 2, 1 - 2,
             Lparen: 697,
             Rparen: 744,
             Query:  &ast.CompoundQuery{
-              Op:       "UNION",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:            "UNION",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
                 &ast.Select{
                   Select:        698,
-                  AllOrDistinct: nil,
+                  AllOrDistinct: "",
                   As:            nil,
                   Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
@@ -772,7 +772,7 @@ select 1 + 2, 1 - 2,
                 },
                 &ast.Select{
                   Select:        717,
-                  AllOrDistinct: nil,
+                  AllOrDistinct: "",
                   As:            nil,
                   Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{
@@ -791,7 +791,7 @@ select 1 + 2, 1 - 2,
                 },
                 &ast.Select{
                   Select:        736,
-                  AllOrDistinct: nil,
+                  AllOrDistinct: "",
                   As:            nil,
                   Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{

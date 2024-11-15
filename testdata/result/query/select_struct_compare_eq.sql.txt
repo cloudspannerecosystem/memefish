@@ -12,7 +12,7 @@ SELECT ARRAY(
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -21,7 +21,7 @@ SELECT ARRAY(
           Rparen: 133,
           Query:  &ast.Select{
             Select:        16,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.Star{
@@ -35,7 +35,7 @@ SELECT ARRAY(
                 Rparen: 90,
                 Query:  &ast.Select{
                   Select:        41,
-                  AllOrDistinct: nil,
+                  AllOrDistinct: "",
                   As:            nil,
                   Results:       []ast.SelectItem{
                     &ast.ExprSelectItem{

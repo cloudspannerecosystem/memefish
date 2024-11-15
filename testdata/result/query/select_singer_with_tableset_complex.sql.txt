@@ -27,12 +27,12 @@ UNION ALL
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.Select{
         Select:        0,
-        AllOrDistinct: nil,
+        AllOrDistinct: "",
         As:            nil,
         Results:       []ast.SelectItem{
           &ast.Star{
@@ -60,12 +60,12 @@ UNION ALL
         Lparen: 32,
         Rparen: 367,
         Query:  &ast.CompoundQuery{
-          Op:       "UNION",
-          Distinct: true,
-          Queries:  []ast.QueryExpr{
+          Op:            "UNION",
+          AllOrDistinct: "DISTINCT",
+          Queries:       []ast.QueryExpr{
             &ast.Select{
               Select:        36,
-              AllOrDistinct: nil,
+              AllOrDistinct: "",
               As:            nil,
               Results:       []ast.SelectItem{
                 &ast.Star{
@@ -93,12 +93,12 @@ UNION ALL
               Lparen: 77,
               Rparen: 365,
               Query:  &ast.CompoundQuery{
-                Op:       "INTERSECT",
-                Distinct: false,
-                Queries:  []ast.QueryExpr{
+                Op:            "INTERSECT",
+                AllOrDistinct: "ALL",
+                Queries:       []ast.QueryExpr{
                   &ast.Select{
                     Select:        83,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.Star{
@@ -126,12 +126,12 @@ UNION ALL
                     Lparen: 127,
                     Rparen: 361,
                     Query:  &ast.CompoundQuery{
-                      Op:       "INTERSECT",
-                      Distinct: true,
-                      Queries:  []ast.QueryExpr{
+                      Op:            "INTERSECT",
+                      AllOrDistinct: "DISTINCT",
+                      Queries:       []ast.QueryExpr{
                         &ast.Select{
                           Select:        135,
-                          AllOrDistinct: nil,
+                          AllOrDistinct: "",
                           As:            nil,
                           Results:       []ast.SelectItem{
                             &ast.Star{
@@ -159,12 +159,12 @@ UNION ALL
                           Lparen: 188,
                           Rparen: 355,
                           Query:  &ast.CompoundQuery{
-                            Op:       "EXCEPT",
-                            Distinct: false,
-                            Queries:  []ast.QueryExpr{
+                            Op:            "EXCEPT",
+                            AllOrDistinct: "ALL",
+                            Queries:       []ast.QueryExpr{
                               &ast.Select{
                                 Select:        198,
-                                AllOrDistinct: nil,
+                                AllOrDistinct: "",
                                 As:            nil,
                                 Results:       []ast.SelectItem{
                                   &ast.Star{
@@ -192,12 +192,12 @@ UNION ALL
                                 Lparen: 247,
                                 Rparen: 347,
                                 Query:  &ast.CompoundQuery{
-                                  Op:       "EXCEPT",
-                                  Distinct: true,
-                                  Queries:  []ast.QueryExpr{
+                                  Op:            "EXCEPT",
+                                  AllOrDistinct: "DISTINCT",
+                                  Queries:       []ast.QueryExpr{
                                     &ast.Select{
                                       Select:        259,
-                                      AllOrDistinct: nil,
+                                      AllOrDistinct: "",
                                       As:            nil,
                                       Results:       []ast.SelectItem{
                                         &ast.Star{
@@ -223,7 +223,7 @@ UNION ALL
                                     },
                                     &ast.Select{
                                       Select:        317,
-                                      AllOrDistinct: nil,
+                                      AllOrDistinct: "",
                                       As:            nil,
                                       Results:       []ast.SelectItem{
                                         &ast.Star{

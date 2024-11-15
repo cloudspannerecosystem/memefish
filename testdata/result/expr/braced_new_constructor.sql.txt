@@ -230,7 +230,7 @@ NEW Universe {
             Rparen: 378,
             Query:  &ast.Select{
               Select:        350,
-              AllOrDistinct: nil,
+              AllOrDistinct: "",
               As:            nil,
               Results:       []ast.SelectItem{
                 &ast.ExprSelectItem{

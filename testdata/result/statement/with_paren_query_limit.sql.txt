@@ -16,7 +16,7 @@ WITH cte AS (SELECT 1) (SELECT * FROM cte) LIMIT 1
           },
           QueryExpr: &ast.Select{
             Select:        13,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -41,7 +41,7 @@ WITH cte AS (SELECT 1) (SELECT * FROM cte) LIMIT 1
       Rparen: 41,
       Query:  &ast.Select{
         Select:        24,
-        AllOrDistinct: nil,
+        AllOrDistinct: "",
         As:            nil,
         Results:       []ast.SelectItem{
           &ast.Star{

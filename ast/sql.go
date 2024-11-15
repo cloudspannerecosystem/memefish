@@ -187,7 +187,7 @@ func (a *AsValue) SQL() string { return "AS VALUE" }
 func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
 
 func (c *CompoundQuery) SQL() string {
-	return sqlJoin(c.Queries, " "+string(c.Op)+" "+strOpt(c.AllOrDistinct != "", " "+string(c.AllOrDistinct)))
+	return sqlJoin(c.Queries, " "+string(c.Op)+" "+strOpt(c.AllOrDistinct != "", string(c.AllOrDistinct)+" "))
 }
 
 func (s *SubQuery) SQL() string {

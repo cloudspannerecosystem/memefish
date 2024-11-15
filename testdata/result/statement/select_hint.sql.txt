@@ -36,7 +36,7 @@
   },
   Query: &ast.Select{
     Select:        24,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{

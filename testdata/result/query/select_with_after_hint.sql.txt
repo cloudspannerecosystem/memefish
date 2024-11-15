@@ -35,7 +35,7 @@
           },
           QueryExpr: &ast.Select{
             Select:        28,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
@@ -68,7 +68,7 @@
     },
     Query: &ast.Select{
       Select:        48,
-      AllOrDistinct: nil,
+      AllOrDistinct: "",
       As:            nil,
       Results:       []ast.SelectItem{
         &ast.Star{

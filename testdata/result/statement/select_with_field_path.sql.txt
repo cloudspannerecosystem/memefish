@@ -22,7 +22,7 @@ WHERE A.z.a = 2
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -110,7 +110,7 @@ WHERE A.z.a = 2
           Rparen: 251,
           Query:  &ast.Select{
             Select:        70,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            &ast.AsStruct{
               As:     77,
               Struct: 80,

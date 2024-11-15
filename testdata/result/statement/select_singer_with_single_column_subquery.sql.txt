@@ -9,7 +9,7 @@ SELECT (
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -20,7 +20,7 @@ SELECT (
             With:  (*ast.With)(nil),
             Query: &ast.Select{
               Select:        11,
-              AllOrDistinct: nil,
+              AllOrDistinct: "",
               As:            nil,
               Results:       []ast.SelectItem{
                 &ast.ExprSelectItem{

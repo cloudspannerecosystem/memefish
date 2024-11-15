@@ -8,7 +8,7 @@ select ((select 1) union all (select 2)) + 3,
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
@@ -18,15 +18,15 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 7,
             Rparen: 39,
             Query:  &ast.CompoundQuery{
-              Op:       "UNION",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:            "UNION",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 8,
                   Rparen: 17,
                   Query:  &ast.Select{
                     Select:        9,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
@@ -49,7 +49,7 @@ select ((select 1) union all (select 2)) + 3,
                   Rparen: 38,
                   Query:  &ast.Select{
                     Select:        30,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
@@ -85,15 +85,15 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 53,
             Rparen: 89,
             Query:  &ast.CompoundQuery{
-              Op:       "INTERSECT",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:            "INTERSECT",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 54,
                   Rparen: 63,
                   Query:  &ast.Select{
                     Select:        55,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
@@ -116,7 +116,7 @@ select ((select 1) union all (select 2)) + 3,
                   Rparen: 88,
                   Query:  &ast.Select{
                     Select:        80,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
@@ -152,15 +152,15 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 103,
             Rparen: 136,
             Query:  &ast.CompoundQuery{
-              Op:       "EXCEPT",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:            "EXCEPT",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 104,
                   Rparen: 113,
                   Query:  &ast.Select{
                     Select:        105,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{
@@ -183,7 +183,7 @@ select ((select 1) union all (select 2)) + 3,
                   Rparen: 135,
                   Query:  &ast.Select{
                     Select:        127,
-                    AllOrDistinct: nil,
+                    AllOrDistinct: "",
                     As:            nil,
                     Results:       []ast.SelectItem{
                       &ast.ExprSelectItem{

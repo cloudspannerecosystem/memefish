@@ -6,7 +6,7 @@
   Rparen: 18,
   Query:  &ast.Select{
     Select:        1,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            &ast.AsValue{
       As:    8,
       Value: 11,

@@ -12,7 +12,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
     With:  (*ast.With)(nil),
     Query: &ast.Select{
       Select:        0,
-      AllOrDistinct: nil,
+      AllOrDistinct: "",
       As:            nil,
       Results:       []ast.SelectItem{
         &ast.ExprSelectItem{

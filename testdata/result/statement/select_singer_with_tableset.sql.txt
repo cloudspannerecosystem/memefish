@@ -7,12 +7,12 @@ SELECT * FROM Singers
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.Select{
         Select:        0,
-        AllOrDistinct: nil,
+        AllOrDistinct: "",
         As:            nil,
         Results:       []ast.SelectItem{
           &ast.Star{
@@ -38,7 +38,7 @@ SELECT * FROM Singers
       },
       &ast.Select{
         Select:        32,
-        AllOrDistinct: nil,
+        AllOrDistinct: "",
         As:            nil,
         Results:       []ast.SelectItem{
           &ast.Star{

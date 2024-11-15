@@ -25,7 +25,7 @@ select * from unnest([(1, 2), (3, 4)])
   Input: &ast.SubQueryInput{
     Query: &ast.Select{
       Select:        22,
-      AllOrDistinct: nil,
+      AllOrDistinct: "",
       As:            nil,
       Results:       []ast.SelectItem{
         &ast.Star{

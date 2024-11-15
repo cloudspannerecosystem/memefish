@@ -5,15 +5,15 @@
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.SubQuery{
         Lparen: 0,
         Rparen: 9,
         Query:  &ast.Select{
           Select:        1,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.ExprSelectItem{
@@ -36,7 +36,7 @@
         Rparen: 30,
         Query:  &ast.Select{
           Select:        22,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.ExprSelectItem{
@@ -59,7 +59,7 @@
         Rparen: 51,
         Query:  &ast.Select{
           Select:        43,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.ExprSelectItem{

@@ -13,12 +13,12 @@ ORDER BY
   Query: &ast.Query{
     With:  (*ast.With)(nil),
     Query: &ast.CompoundQuery{
-      Op:       "UNION",
-      Distinct: false,
-      Queries:  []ast.QueryExpr{
+      Op:            "UNION",
+      AllOrDistinct: "ALL",
+      Queries:       []ast.QueryExpr{
         &ast.Select{
           Select:        0,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.Star{
@@ -44,7 +44,7 @@ ORDER BY
         },
         &ast.Select{
           Select:        32,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.Star{

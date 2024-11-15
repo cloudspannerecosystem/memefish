@@ -17,7 +17,7 @@ FROM cte
           },
           QueryExpr: &ast.Select{
             Select:        13,
-            AllOrDistinct: nil,
+            AllOrDistinct: "",
             As:            nil,
             Results:       []ast.SelectItem{
               &ast.ExprSelectItem{

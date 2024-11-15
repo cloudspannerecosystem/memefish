@@ -10,11 +10,9 @@ FROM
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: &ast.Distinct{
-      Distinct: 9,
-    },
-    As:      nil,
-    Results: []ast.SelectItem{
+    AllOrDistinct: "DISTINCT",
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.Star{
         Star: 20,
       },

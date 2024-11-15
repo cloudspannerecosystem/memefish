@@ -15,7 +15,7 @@ FROM (
   Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
     Select:        0,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            nil,
     Results:       []ast.SelectItem{
       &ast.Star{
@@ -29,7 +29,7 @@ FROM (
         Rparen: 77,
         Query:  &ast.Select{
           Select:        20,
-          AllOrDistinct: nil,
+          AllOrDistinct: "",
           As:            nil,
           Results:       []ast.SelectItem{
             &ast.Star{

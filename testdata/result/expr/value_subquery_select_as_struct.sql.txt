@@ -7,7 +7,7 @@
   Rparen: 24,
   Query:  &ast.Select{
     Select:        1,
-    AllOrDistinct: nil,
+    AllOrDistinct: "",
     As:            &ast.AsStruct{
       As:     8,
       Struct: 11,

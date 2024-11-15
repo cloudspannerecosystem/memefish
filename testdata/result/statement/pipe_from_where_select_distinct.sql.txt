@@ -43,11 +43,9 @@ FROM Singers
       },
       &ast.PipeSelect{
         Pipe:          41,
-        AllOrDistinct: &ast.Distinct{
-          Distinct: 51,
-        },
-        As:      nil,
-        Results: []ast.SelectItem{
+        AllOrDistinct: "DISTINCT",
+        As:            nil,
+        Results:       []ast.SelectItem{
           &ast.Star{
             Star: 60,
           },
