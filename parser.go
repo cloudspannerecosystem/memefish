@@ -693,7 +693,13 @@ func (p *Parser) tryParseHaving() *ast.Having {
 }
 
 // parseQueryExprSuffix wraps QueryExpr if it is followed by ORDER BY, LIMIT, and/or pipe operators.
+// It must not be called to *ast.Query itself because *ast.Query already consumes its suffix.
 func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
+	// Query already consumes suffixes and currently it should be a logic bug.
+	if _, ok := e.(*ast.Query); ok {
+		panic(p.errorfAtToken(&p.Token, "invalid state of repeated processing of suffix of ast.Query. It is suspected a bug."))
+	}
+
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
 	pipeOps := p.parsePipeOperators()
