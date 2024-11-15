@@ -1,12 +1,12 @@
 package ast
 
+// AllOrDistinct represents ALL or DISTINCT in SELECT or set operations, etc.
+// If it is optional, it may be an empty string, so handle it according to the context.
 type AllOrDistinct string
 
 const (
-	// AllOrDistinctUnspecified is zero value of AllOrDistinct, and it must be ignored in SQL().
-	AllOrDistinctUnspecified AllOrDistinct = ""
-	AllOrDistinctAll         AllOrDistinct = "ALL"
-	AllOrDistinctDistinct    AllOrDistinct = "DISTINCT"
+	AllOrDistinctAll      AllOrDistinct = "ALL"
+	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
 )
 
 type TableHintKey string
