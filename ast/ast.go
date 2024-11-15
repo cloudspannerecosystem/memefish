@@ -97,7 +97,7 @@ func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
 func (Update) isStatement()             {}
 
-// QueryExpr represents query expression, which can be body of QueryStatement or ParenTableExpr.
+// QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
 // Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
 type QueryExpr interface {
 	Node
