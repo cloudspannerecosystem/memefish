@@ -519,20 +519,6 @@ func (p *Parser) tryParseSelectAs() ast.SelectAs {
 	}
 }
 
-func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
-	pos := p.Token.Pos
-	switch p.Token.Kind {
-	case "ALL":
-		p.nextToken()
-		return &ast.All{All: pos}
-	case "DISTINCT":
-		p.nextToken()
-		return &ast.Distinct{Distinct: pos}
-	default:
-		return nil
-	}
-}
-
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
 	allOrDistinct := p.tryParseAllOrDistinct()
@@ -712,6 +698,20 @@ func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 		OrderBy:       orderBy,
 		Limit:         limit,
 		PipeOperators: pipeOps,
+	}
+}
+
+func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
+	pos := p.Token.Pos
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		return &ast.All{All: pos}
+	case "DISTINCT":
+		p.nextToken()
+		return &ast.Distinct{Distinct: pos}
+	default:
+		return nil
 	}
 }
 
