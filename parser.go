@@ -298,7 +298,24 @@ func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 // parseQuery consumes ORDER BY, LIMIT, and pipe operators.
 func (p *Parser) parseQuery() *ast.Query {
 	with := p.tryParseWith()
+
+	if p.Token.Kind == "WITH" {
+		panic(p.errorfAtToken(&p.Token, "expect query expression, but unexpected WITH"))
+	}
+
 	query := p.parseQueryExpr()
+
+	// If nested query expression is *ast.Query itself, merge to avoid deep nest.
+	if q, ok := query.(*ast.Query); ok {
+		return &ast.Query{
+			With:          with,
+			Query:         q.Query,
+			OrderBy:       q.OrderBy,
+			Limit:         q.Limit,
+			PipeOperators: q.PipeOperators,
+		}
+	}
+
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
 	pipeOps := p.parsePipeOperators()
