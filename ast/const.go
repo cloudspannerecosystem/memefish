@@ -3,11 +3,10 @@ package ast
 type AllOrDistinct string
 
 const (
-	// AllOrDistinctUnspecified is zero value of AllOrDistinct
+	// AllOrDistinctUnspecified is zero value of AllOrDistinct, and it must be ignored in SQL().
 	AllOrDistinctUnspecified AllOrDistinct = ""
-
-	AllOrDistinctAll      AllOrDistinct = "ALL"
-	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
+	AllOrDistinctAll         AllOrDistinct = "ALL"
+	AllOrDistinctDistinct    AllOrDistinct = "DISTINCT"
 )
 
 type TableHintKey string
