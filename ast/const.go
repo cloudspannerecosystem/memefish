@@ -4,9 +4,11 @@ package ast
 type AllOrDistinct string
 
 const (
+	// AllOrDistinctUnspecified is zero value of AllOrDistinct
 	AllOrDistinctUnspecified AllOrDistinct = ""
-	AllOrDistinctAll         AllOrDistinct = "ALL"
-	AllOrDistinctDistinct    AllOrDistinct = "DISTINCT"
+
+	AllOrDistinctAll      AllOrDistinct = "ALL"
+	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
 )
 
 type TableHintKey string

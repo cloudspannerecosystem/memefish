@@ -710,6 +710,7 @@ func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
 		p.nextToken()
 		return ast.AllOrDistinctDistinct
 	default:
+		// This is only zero value of typed string.
 		return ast.AllOrDistinctUnspecified
 	}
 }
