@@ -4,11 +4,10 @@ If you place `.sql` files containing GoogleSQL in the correct location in this d
 they will be automatically tested.
 
 - input
-  - ddl: input of `ParseDDL()`
-  - dml: input of `ParseDML()`
+  - ddl: input of `ParseDDL()` and `ParseStatement()`
+  - dml: input of `ParseDML()` and `ParseStatement()`
   - expr: input of `ParseExpr()`
-  - query: input of `ParseQueryStatement()`
-  - statement: input of `ParseStatement()`
+  - query: input of `ParseQuery()` and `ParseStatemen()`
 
 You can use this command in your project root to automatically update `testdata/result`.
 
