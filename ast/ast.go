@@ -598,26 +598,6 @@ type Select struct {
 	Having        *Having       // optional
 }
 
-// All is ALL node in AllOrDistinct.
-//
-//	ALL
-type All struct {
-	// pos = All
-	// end = All + 3
-
-	All token.Pos // position of "ALL" keyword
-}
-
-// Distinct is DISTINCT node in AllOrDistinct.
-//
-//	DISTINCT
-type Distinct struct {
-	// pos = Distinct
-	// end = Distinct + 8
-
-	Distinct token.Pos // position of "DISTINCT" keyword
-}
-
 // AsStruct represents AS STRUCT node in SELECT clause.
 //
 //	AS STRUCT
