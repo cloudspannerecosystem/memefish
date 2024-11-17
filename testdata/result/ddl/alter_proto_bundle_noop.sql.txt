@@ -1,0 +1,13 @@
+--- alter_proto_bundle_noop.sql
+ALTER PROTO BUNDLE
+--- AST
+&ast.AlterProtoBundle{
+  Alter:  0,
+  Bundle: 12,
+  Insert: (*ast.AlterProtoBundleInsert)(nil),
+  Update: (*ast.AlterProtoBundleUpdate)(nil),
+  Delete: (*ast.AlterProtoBundleDelete)(nil),
+}
+
+--- SQL
+ALTER PROTO BUNDLE
