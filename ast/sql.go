@@ -489,8 +489,7 @@ func (s *SelectorExpr) SQL() string {
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Expr) + "[" + i.Index.SQL() + "]"
-	return sql
+	return paren(p, i.Expr) + "[" + i.Index.SQL() + "]"
 }
 
 func (s *SubscriptSpecifierKeyword) SQL() string {
