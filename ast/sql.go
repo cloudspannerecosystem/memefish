@@ -493,6 +493,10 @@ func (i *IndexExpr) SQL() string {
 	return sql
 }
 
+func (s *SubscriptSpecifierKeyword) SQL() string {
+	return string(s.Keyword) + "(" + s.Expr.SQL() + ")"
+}
+
 func (c *CallExpr) SQL() string {
 	return c.Func.SQL() + "(" + strOpt(c.Distinct, "DISTINCT ") +
 		sqlJoin(c.Args, ", ") +

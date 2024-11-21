@@ -51,7 +51,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 21,
             Rparen:     29,
             Keyword:    "OFFSET",
@@ -93,7 +93,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 47,
             Rparen:     56,
             Keyword:    "ORDINAL",
@@ -135,7 +135,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 74,
             Rparen:     87,
             Keyword:    "SAFE_OFFSET",
@@ -177,7 +177,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 105,
             Rparen:     114,
             Keyword:    "ORDINAL",
@@ -262,7 +262,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 156,
             Rparen:     164,
             Keyword:    "OFFSET",
@@ -308,7 +308,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 188,
             Rparen:     197,
             Keyword:    "ORDINAL",
@@ -354,7 +354,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 221,
             Rparen:     234,
             Keyword:    "SAFE_OFFSET",
@@ -400,7 +400,7 @@ select
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 258,
             Rparen:     267,
             Keyword:    "ORDINAL",

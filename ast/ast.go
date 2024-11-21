@@ -199,6 +199,15 @@ func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
 
+// SubscriptSpecifier represents specifier of subscript operators.
+type SubscriptSpecifier interface {
+	Node
+	isSubscriptSpecifier()
+}
+
+func (ExprArg) isSubscriptSpecifier()                   {}
+func (SubscriptSpecifierKeyword) isSubscriptSpecifier() {}
+
 // Arg represents argument of function call.
 type Arg interface {
 	Node
@@ -1107,38 +1116,13 @@ type IndexExpr struct {
 	Rbrack token.Pos // position of "]"
 
 	Expr  Expr
-	Index IndexSpecifier
+	Index SubscriptSpecifier
 }
 
-type IndexSpecifier interface {
-	Node
-	isIndexSpecifier()
-}
-
-func (ExprArg) isIndexSpecifier()               {}
-func (IndexSpecifierKeyword) isIndexSpecifier() {}
-
-// IndexSpecifierOffset is an OFFSET node for subscript specifier.
-//
-//	OFFSET({{.Expr | sql}})
-type IndexSpecifierOffset struct {
-	// pos = Offset
-	// end = Rparen + 1
-
-	Offset token.Pos // position of "OFFSET"
-	Rparen token.Pos // position of ")"
-
-	Expr Expr
-}
-
-func (i *IndexSpecifierOffset) SQL() string {
-	return "OFFSET(" + i.Expr.SQL() + ")"
-}
-
-// IndexSpecifierKeyword is a positional keyword node for subscript specifier.
+// SubscriptSpecifierKeyword is a positional keyword node for subscript specifier.
 //
 //	{{string(.Keyword)}}({{.Expr | sql}})
-type IndexSpecifierKeyword struct {
+type SubscriptSpecifierKeyword struct {
 	// pos = KeywordPos
 	// end = Rparen + 1
 
@@ -1148,10 +1132,6 @@ type IndexSpecifierKeyword struct {
 	Keyword PositionKeyword // one of "OFFSET" or "SAFE_OFFSET" or "ORDINAL" OR "SAFE_ORDINAL"
 
 	Expr Expr
-}
-
-func (i *IndexSpecifierKeyword) SQL() string {
-	return string(i.Keyword) + "(" + i.Expr.SQL() + ")"
 }
 
 // CallExpr is function call expression node.

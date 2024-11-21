@@ -407,7 +407,7 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 250,
             Rparen:     258,
             Keyword:    "OFFSET",
@@ -449,7 +449,7 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 279,
             Rparen:     289,
             Keyword:    "OFFSET",
@@ -491,7 +491,7 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IndexSpecifierKeyword{
+          Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 310,
             Rparen:     319,
             Keyword:    "ORDINAL",

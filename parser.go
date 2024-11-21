@@ -1395,7 +1395,7 @@ func (p *Parser) parseSelector() ast.Expr {
 	}
 }
 
-func (p *Parser) parseIndexSpecifier() ast.IndexSpecifier {
+func (p *Parser) parseIndexSpecifier() ast.SubscriptSpecifier {
 	pos := p.Token.Pos
 	switch {
 	case p.Token.IsIdent("OFFSET"), p.Token.IsIdent("ORDINAL"),
@@ -1417,7 +1417,7 @@ func (p *Parser) parseIndexSpecifier() ast.IndexSpecifier {
 		expr := p.parseExpr()
 		rparen := p.expect(")").Pos
 
-		return &ast.IndexSpecifierKeyword{
+		return &ast.SubscriptSpecifierKeyword{
 			KeywordPos: pos,
 			Keyword:    keyword,
 			Rparen:     rparen,
