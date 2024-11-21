@@ -1129,9 +1129,8 @@ type SubscriptSpecifierKeyword struct {
 	KeywordPos token.Pos // position of Keyword
 	Rparen     token.Pos // position of ")"
 
-	Keyword PositionKeyword // one of "OFFSET" or "SAFE_OFFSET" or "ORDINAL" OR "SAFE_ORDINAL"
-
-	Expr Expr
+	Keyword PositionKeyword
+	Expr    Expr
 }
 
 // CallExpr is function call expression node.
