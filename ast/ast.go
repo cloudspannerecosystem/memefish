@@ -1119,7 +1119,7 @@ type IndexExpr struct {
 	Index SubscriptSpecifier
 }
 
-// SubscriptSpecifierKeyword is a positional keyword node for subscript specifier.
+// SubscriptSpecifierKeyword is subscript specifier with position keyword.
 //
 //	{{string(.Keyword)}}({{.Expr | sql}})
 type SubscriptSpecifierKeyword struct {
