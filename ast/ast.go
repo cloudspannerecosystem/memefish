@@ -1092,17 +1092,66 @@ type SelectorExpr struct {
 	Ident *Ident
 }
 
-// IndexExpr is array item access expression node.
+// IndexExpr is a subscript operator expression node.
+// This node can be:
+//	- array subscript operator
+//	- struct subscript operator
+//	- JSON subscript operator
+// Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{.Index | sql}}]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
 
 	Rbrack token.Pos // position of "]"
 
-	Ordinal     bool
-	Expr, Index Expr
+	Expr  Expr
+	Index IndexSpecifier
+}
+
+type IndexSpecifier interface {
+	Node
+	isIndexSpecifier()
+}
+
+func (ExprArg) isIndexSpecifier()               {}
+func (IndexSpecifierKeyword) isIndexSpecifier() {}
+
+// IndexSpecifierOffset is an OFFSET node for subscript specifier.
+//
+//	OFFSET({{.Expr | sql}})
+type IndexSpecifierOffset struct {
+	// pos = Offset
+	// end = Rparen + 1
+
+	Offset token.Pos // position of "OFFSET"
+	Rparen token.Pos // position of ")"
+
+	Expr Expr
+}
+
+func (i *IndexSpecifierOffset) SQL() string {
+	return "OFFSET(" + i.Expr.SQL() + ")"
+}
+
+// IndexSpecifierKeyword is a positional keyword node for subscript specifier.
+//
+//	{{string(.Keyword)}}({{.Expr | sql}})
+type IndexSpecifierKeyword struct {
+	// pos = KeywordPos
+	// end = Rparen + 1
+
+	KeywordPos token.Pos // position of Keyword
+	Rparen     token.Pos // position of ")"
+
+	Keyword PositionKeyword // one of "OFFSET" or "SAFE_OFFSET" or "ORDINAL" OR "SAFE_ORDINAL"
+
+	Expr Expr
+}
+
+func (i *IndexSpecifierKeyword) SQL() string {
+	return string(i.Keyword) + "(" + i.Expr.SQL() + ")"
 }
 
 // CallExpr is function call expression node.

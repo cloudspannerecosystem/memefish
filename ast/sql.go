@@ -489,13 +489,7 @@ func (s *SelectorExpr) SQL() string {
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Expr) + "["
-	if i.Ordinal {
-		sql += "ORDINAL"
-	} else {
-		sql += "OFFSET"
-	}
-	sql += "(" + i.Index.SQL() + ")]"
+	sql := paren(p, i.Expr) + "[" + i.Index.SQL() + "]"
 	return sql
 }
 

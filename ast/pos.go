@@ -382,6 +382,22 @@ func (i *IndexExpr) End() token.Pos {
 	return posAdd(i.Rbrack, 1)
 }
 
+func (i *IndexSpecifierOffset) Pos() token.Pos {
+	return i.Offset
+}
+
+func (i *IndexSpecifierOffset) End() token.Pos {
+	return posAdd(i.Rparen, 1)
+}
+
+func (i *IndexSpecifierKeyword) Pos() token.Pos {
+	return i.KeywordPos
+}
+
+func (i *IndexSpecifierKeyword) End() token.Pos {
+	return posAdd(i.Rparen, 1)
+}
+
 func (c *CallExpr) Pos() token.Pos {
 	return nodePos(wrapNode(c.Func))
 }

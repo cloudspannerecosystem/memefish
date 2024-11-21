@@ -1382,28 +1382,50 @@ func (p *Parser) parseSelector() ast.Expr {
 			}
 		case "[":
 			p.nextToken()
-			id := p.expect(token.TokenIdent)
-			ordinal := false
-			if char.EqualFold(id.AsString, "ORDINAL") {
-				ordinal = true
-			} else if char.EqualFold(id.AsString, "OFFSET") {
-				ordinal = false
-			} else {
-				p.panicfAtToken(id, "expected identifier: ORDINAL, OFFSET, but: %s", id.Raw)
-			}
-			p.expect("(")
-			index := p.parseExpr()
-			p.expect(")")
+			index := p.parseIndexSpecifier()
 			rbrack := p.expect("]").Pos
 			expr = &ast.IndexExpr{
-				Rbrack:  rbrack,
-				Ordinal: ordinal,
-				Expr:    expr,
-				Index:   index,
+				Rbrack: rbrack,
+				Expr:   expr,
+				Index:  index,
 			}
 		default:
 			return expr
 		}
+	}
+}
+
+func (p *Parser) parseIndexSpecifier() ast.IndexSpecifier {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.IsIdent("OFFSET"), p.Token.IsIdent("ORDINAL"),
+		p.Token.IsIdent("SAFE_OFFSET"), p.Token.IsIdent("SAFE_ORDINAL"):
+		var keyword ast.PositionKeyword
+		switch {
+		case p.Token.IsIdent("OFFSET"):
+			keyword = ast.PositionKeywordOffset
+		case p.Token.IsIdent("ORDINAL"):
+			keyword = ast.PositionKeywordOrdinal
+		case p.Token.IsIdent("SAFE_OFFSET"):
+			keyword = ast.PositionKeywordSafeOffset
+		case p.Token.IsIdent("SAFE_ORDINAL"):
+			keyword = ast.PositionKeywordSafeOrdinal
+
+		}
+		p.nextToken()
+		p.expect("(")
+		expr := p.parseExpr()
+		rparen := p.expect(")").Pos
+
+		return &ast.IndexSpecifierKeyword{
+			KeywordPos: pos,
+			Keyword:    keyword,
+			Rparen:     rparen,
+			Expr:       expr,
+		}
+	default:
+		expr := p.parseExpr()
+		return &ast.ExprArg{Expr: expr}
 	}
 }
 
