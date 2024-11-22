@@ -51,6 +51,7 @@ SELECT
           NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: nil,
           Having:       nil,
+          Hint:         (*ast.Hint)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -114,6 +115,7 @@ SELECT
           NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: nil,
           Having:       nil,
+          Hint:         (*ast.Hint)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -147,6 +149,7 @@ SELECT
           NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: nil,
           Having:       nil,
+          Hint:         (*ast.Hint)(nil),
         },
         As: &ast.AsAlias{
           As:    270,
@@ -178,6 +181,7 @@ SELECT
           NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: nil,
           Having:       nil,
+          Hint:         (*ast.Hint)(nil),
         },
         As: &ast.AsAlias{
           As:    304,
