@@ -398,6 +398,14 @@ func (c *CallExpr) End() token.Pos {
 	return posAdd(c.Rparen, 1)
 }
 
+func (t *TVFCallExpr) Pos() token.Pos {
+	return nodePos(wrapNode(t.Name))
+}
+
+func (t *TVFCallExpr) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
 func (e *ExprArg) Pos() token.Pos {
 	return nodePos(wrapNode(e.Expr))
 }
@@ -420,6 +428,22 @@ func (s *SequenceArg) Pos() token.Pos {
 
 func (s *SequenceArg) End() token.Pos {
 	return nodeEnd(wrapNode(s.Expr))
+}
+
+func (m *ModelArg) Pos() token.Pos {
+	return m.Model
+}
+
+func (m *ModelArg) End() token.Pos {
+	return nodeEnd(wrapNode(m.Name))
+}
+
+func (t *TableArg) Pos() token.Pos {
+	return t.Table
+}
+
+func (t *TableArg) End() token.Pos {
+	return nodeEnd(wrapNode(t.Name))
 }
 
 func (n *NamedArg) Pos() token.Pos {

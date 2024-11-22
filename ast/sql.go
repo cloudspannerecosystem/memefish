@@ -506,6 +506,15 @@ func (c *CallExpr) SQL() string {
 		")"
 }
 
+func (c *TVFCallExpr) SQL() string {
+	return c.Name.SQL() + "(" +
+		sqlJoin(c.Args, ", ") +
+		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
+		sqlJoin(c.NamedArgs, ", ") +
+		")" +
+		sqlOpt(" ", c.Hint, "")
+}
+
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
 
 func (i *IgnoreNulls) SQL() string { return "IGNORE NULLS" }
@@ -530,6 +539,14 @@ func (i *IntervalArg) SQL() string {
 
 func (s *SequenceArg) SQL() string {
 	return "SEQUENCE " + s.Expr.SQL()
+}
+
+func (s *ModelArg) SQL() string {
+	return "MODEL " + s.Name.SQL()
+}
+
+func (s *TableArg) SQL() string {
+	return "TABLE " + s.Name.SQL()
 }
 
 func (*CountStarExpr) SQL() string {
