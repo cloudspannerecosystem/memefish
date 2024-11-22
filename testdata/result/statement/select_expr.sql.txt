@@ -380,9 +380,8 @@ select 1 + 2, 1 - 2,
       },
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
-          Rbrack:  259,
-          Ordinal: false,
-          Expr:    &ast.ArrayLiteral{
+          Rbrack: 259,
+          Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 240,
             Rbrack: 248,
@@ -408,19 +407,23 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IntLiteral{
-            ValuePos: 257,
-            ValueEnd: 258,
-            Base:     10,
-            Value:    "1",
+          Index: &ast.SubscriptSpecifierKeyword{
+            KeywordPos: 250,
+            Rparen:     258,
+            Keyword:    "OFFSET",
+            Expr:       &ast.IntLiteral{
+              ValuePos: 257,
+              ValueEnd: 258,
+              Base:     10,
+              Value:    "1",
+            },
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
-          Rbrack:  290,
-          Ordinal: false,
-          Expr:    &ast.ArrayLiteral{
+          Rbrack: 290,
+          Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 269,
             Rbrack: 277,
@@ -446,19 +449,23 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IntLiteral{
-            ValuePos: 288,
-            ValueEnd: 289,
-            Base:     10,
-            Value:    "1",
+          Index: &ast.SubscriptSpecifierKeyword{
+            KeywordPos: 279,
+            Rparen:     289,
+            Keyword:    "OFFSET",
+            Expr:       &ast.IntLiteral{
+              ValuePos: 288,
+              ValueEnd: 289,
+              Base:     10,
+              Value:    "1",
+            },
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
-          Rbrack:  320,
-          Ordinal: true,
-          Expr:    &ast.ArrayLiteral{
+          Rbrack: 320,
+          Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 300,
             Rbrack: 308,
@@ -484,11 +491,16 @@ select 1 + 2, 1 - 2,
               },
             },
           },
-          Index: &ast.IntLiteral{
-            ValuePos: 318,
-            ValueEnd: 319,
-            Base:     10,
-            Value:    "1",
+          Index: &ast.SubscriptSpecifierKeyword{
+            KeywordPos: 310,
+            Rparen:     319,
+            Keyword:    "ORDINAL",
+            Expr:       &ast.IntLiteral{
+              ValuePos: 318,
+              ValueEnd: 319,
+              Base:     10,
+              Value:    "1",
+            },
           },
         },
       },

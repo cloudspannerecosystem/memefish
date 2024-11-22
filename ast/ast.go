@@ -199,6 +199,15 @@ func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
 
+// SubscriptSpecifier represents specifier of subscript operators.
+type SubscriptSpecifier interface {
+	Node
+	isSubscriptSpecifier()
+}
+
+func (ExprArg) isSubscriptSpecifier()                   {}
+func (SubscriptSpecifierKeyword) isSubscriptSpecifier() {}
+
 // Arg represents argument of function call.
 type Arg interface {
 	Node
@@ -1092,17 +1101,36 @@ type SelectorExpr struct {
 	Ident *Ident
 }
 
-// IndexExpr is array item access expression node.
+// IndexExpr is a subscript operator expression node.
+// This node can be:
+//	- array subscript operator
+//	- struct subscript operator
+//	- JSON subscript operator
+// Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{.Index | sql}}]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
 
 	Rbrack token.Pos // position of "]"
 
-	Ordinal     bool
-	Expr, Index Expr
+	Expr  Expr
+	Index SubscriptSpecifier
+}
+
+// SubscriptSpecifierKeyword is subscript specifier with position keyword.
+//
+//	{{string(.Keyword)}}({{.Expr | sql}})
+type SubscriptSpecifierKeyword struct {
+	// pos = KeywordPos
+	// end = Rparen + 1
+
+	KeywordPos token.Pos // position of Keyword
+	Rparen     token.Pos // position of ")"
+
+	Keyword PositionKeyword
+	Expr    Expr
 }
 
 // CallExpr is function call expression node.

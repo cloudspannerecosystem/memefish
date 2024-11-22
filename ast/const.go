@@ -22,6 +22,15 @@ const (
 	LoopJoinMethod  JoinMethod = "LOOP" // Undocumented, but the Spanner accept this value at least.
 )
 
+type PositionKeyword string
+
+const (
+	PositionKeywordOffset      PositionKeyword = "OFFSET"
+	PositionKeywordSafeOffset  PositionKeyword = "SAFE_OFFSET"
+	PositionKeywordOrdinal     PositionKeyword = "ORDINAL"
+	PositionKeywordSafeOrdinal PositionKeyword = "SAFE_ORDINAL"
+)
+
 type SetOp string
 
 const (

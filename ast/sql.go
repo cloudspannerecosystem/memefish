@@ -77,7 +77,10 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
+		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
+		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
+		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -486,14 +489,11 @@ func (s *SelectorExpr) SQL() string {
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Expr) + "["
-	if i.Ordinal {
-		sql += "ORDINAL"
-	} else {
-		sql += "OFFSET"
-	}
-	sql += "(" + i.Index.SQL() + ")]"
-	return sql
+	return paren(p, i.Expr) + "[" + i.Index.SQL() + "]"
+}
+
+func (s *SubscriptSpecifierKeyword) SQL() string {
+	return string(s.Keyword) + "(" + s.Expr.SQL() + ")"
 }
 
 func (c *CallExpr) SQL() string {
