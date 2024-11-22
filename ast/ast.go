@@ -1143,9 +1143,10 @@ type SubscriptSpecifierKeyword struct {
 //		{{.NullHandling | sqlOpt}}
 //		{{.Having | sqlOpt}}
 //	)
+//	{{.Hint | sqlOpt}}
 type CallExpr struct {
 	// pos = Func.pos
-	// end = Rparen + 1
+	// end = Hint.end || Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
@@ -1155,6 +1156,7 @@ type CallExpr struct {
 	NamedArgs    []*NamedArg
 	NullHandling NullHandlingModifier // optional
 	Having       HavingModifier       // optional
+	Hint         *Hint                // optional
 }
 
 // ExprArg is argument of the generic function call.

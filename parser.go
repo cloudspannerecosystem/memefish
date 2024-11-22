@@ -1555,6 +1555,8 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	having := p.tryParseHavingModifier()
 
 	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+
 	return &ast.CallExpr{
 		Rparen:       rparen,
 		Func:         fn,
@@ -1563,6 +1565,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		NamedArgs:    namedArgs,
 		NullHandling: nullHandling,
 		Having:       having,
+		Hint:         hint,
 	}
 }
 
