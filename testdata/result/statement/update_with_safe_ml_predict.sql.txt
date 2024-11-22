@@ -1,4 +1,4 @@
---- update_with_ml_predict.sql
+--- update_with_safe_ml_predict.sql
 -- https://cloud.google.com/spanner/docs/backfill-embeddings?hl=en#backfill
 UPDATE products
 SET
