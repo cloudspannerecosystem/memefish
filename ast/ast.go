@@ -1238,7 +1238,7 @@ type ModelArg struct {
 
 // TableArg is TABLE table_name argument of table valued function call.
 //
-//	TABLE {{.Path | sql}}
+//	TABLE {{.Name | sql}}
 type TableArg struct {
 	// pos = Table
 	// end = Name.end
