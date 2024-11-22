@@ -1,0 +1,226 @@
+--- update_with_ml_predict.sql
+-- https://cloud.google.com/spanner/docs/backfill-embeddings?hl=en#backfill
+UPDATE products
+SET
+    products.desc_embed = (
+        SELECT embeddings.values
+        FROM SAFE.ML.PREDICT(
+                MODEL gecko_model,
+                (SELECT products.description AS content)
+             ) @{remote_udf_max_rows_per_rpc=200}
+    ),
+    products.desc_embed_model_version = 3
+WHERE products.desc_embed IS NULL
+--- AST
+&ast.Update{
+  Update:    76,
+  TableName: &ast.Ident{
+    NamePos: 83,
+    NameEnd: 91,
+    Name:    "products",
+  },
+  As:      (*ast.AsAlias)(nil),
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 100,
+          NameEnd: 108,
+          Name:    "products",
+        },
+        &ast.Ident{
+          NamePos: 109,
+          NameEnd: 119,
+          Name:    "desc_embed",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Default:    false,
+        Expr:       &ast.ScalarSubQuery{
+          Lparen: 122,
+          Rparen: 333,
+          Query:  &ast.Select{
+            Select:   132,
+            Distinct: false,
+            As:       nil,
+            Results:  []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 139,
+                      NameEnd: 149,
+                      Name:    "embeddings",
+                    },
+                    &ast.Ident{
+                      NamePos: 150,
+                      NameEnd: 156,
+                      Name:    "values",
+                    },
+                  },
+                },
+              },
+            },
+            From: &ast.From{
+              From:   165,
+              Source: &ast.TVFCallExpr{
+                Rparen: 292,
+                Name:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 170,
+                      NameEnd: 174,
+                      Name:    "SAFE",
+                    },
+                    &ast.Ident{
+                      NamePos: 175,
+                      NameEnd: 177,
+                      Name:    "ML",
+                    },
+                    &ast.Ident{
+                      NamePos: 178,
+                      NameEnd: 185,
+                      Name:    "PREDICT",
+                    },
+                  },
+                },
+                Args: []ast.TVFArg{
+                  &ast.ModelArg{
+                    Model: 203,
+                    Name:  &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 209,
+                          NameEnd: 220,
+                          Name:    "gecko_model",
+                        },
+                      },
+                    },
+                  },
+                  &ast.ExprArg{
+                    Expr: &ast.ScalarSubQuery{
+                      Lparen: 238,
+                      Rparen: 277,
+                      Query:  &ast.Select{
+                        Select:   239,
+                        Distinct: false,
+                        As:       nil,
+                        Results:  []ast.SelectItem{
+                          &ast.Alias{
+                            Expr: &ast.Path{
+                              Idents: []*ast.Ident{
+                                &ast.Ident{
+                                  NamePos: 246,
+                                  NameEnd: 254,
+                                  Name:    "products",
+                                },
+                                &ast.Ident{
+                                  NamePos: 255,
+                                  NameEnd: 266,
+                                  Name:    "description",
+                                },
+                              },
+                            },
+                            As: &ast.AsAlias{
+                              As:    267,
+                              Alias: &ast.Ident{
+                                NamePos: 270,
+                                NameEnd: 277,
+                                Name:    "content",
+                              },
+                            },
+                          },
+                        },
+                        From:    (*ast.From)(nil),
+                        Where:   (*ast.Where)(nil),
+                        GroupBy: (*ast.GroupBy)(nil),
+                        Having:  (*ast.Having)(nil),
+                        OrderBy: (*ast.OrderBy)(nil),
+                        Limit:   (*ast.Limit)(nil),
+                      },
+                    },
+                  },
+                },
+                NamedArgs: []*ast.NamedArg(nil),
+                Hint:      &ast.Hint{
+                  Atmark:  294,
+                  Rbrace:  327,
+                  Records: []*ast.HintRecord{
+                    &ast.HintRecord{
+                      Key: &ast.Ident{
+                        NamePos: 296,
+                        NameEnd: 323,
+                        Name:    "remote_udf_max_rows_per_rpc",
+                      },
+                      Value: &ast.IntLiteral{
+                        ValuePos: 324,
+                        ValueEnd: 327,
+                        Base:     10,
+                        Value:    "200",
+                      },
+                    },
+                  },
+                },
+                Sample: (*ast.TableSample)(nil),
+              },
+            },
+            Where:   (*ast.Where)(nil),
+            GroupBy: (*ast.GroupBy)(nil),
+            Having:  (*ast.Having)(nil),
+            OrderBy: (*ast.OrderBy)(nil),
+            Limit:   (*ast.Limit)(nil),
+          },
+        },
+      },
+    },
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 340,
+          NameEnd: 348,
+          Name:    "products",
+        },
+        &ast.Ident{
+          NamePos: 349,
+          NameEnd: 373,
+          Name:    "desc_embed_model_version",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Default:    false,
+        Expr:       &ast.IntLiteral{
+          ValuePos: 376,
+          ValueEnd: 377,
+          Base:     10,
+          Value:    "3",
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 378,
+    Expr:  &ast.IsNullExpr{
+      Null: 407,
+      Not:  false,
+      Left: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 384,
+            NameEnd: 392,
+            Name:    "products",
+          },
+          &ast.Ident{
+            NamePos: 393,
+            NameEnd: 403,
+            Name:    "desc_embed",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE products SET products.desc_embed = (SELECT embeddings.values FROM SAFE.ML.PREDICT(MODEL gecko_model, (SELECT products.description AS content)) @{remote_udf_max_rows_per_rpc=200}), products.desc_embed_model_version = 3 WHERE products.desc_embed IS NULL

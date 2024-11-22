@@ -1,0 +1,399 @@
+--- select_from_ml_predict_textbison.sql
+SELECT product_id, product_name, content
+FROM ML.PREDICT(
+        MODEL TextBison,
+        (SELECT
+             product.id as product_id,
+             product.name as product_name,
+             CONCAT("Is this product safe for infants?", "\n",
+                    "Product Name: ", product.name, "\n",
+                    "Category Name: ", category.name, "\n",
+                    "Product Description:", product.description) AS prompt
+         FROM
+             Products AS product JOIN Categories AS category
+                                      ON product.category_id = category.id),
+        STRUCT(100 AS maxOutputTokens)
+     ) @{remote_udf_max_rows_per_rpc=1}
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   0,
+    Distinct: false,
+    As:       nil,
+    Results:  []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 7,
+          NameEnd: 17,
+          Name:    "product_id",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 19,
+          NameEnd: 31,
+          Name:    "product_name",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 33,
+          NameEnd: 40,
+          Name:    "content",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   41,
+      Source: &ast.TVFCallExpr{
+        Rparen: 633,
+        Name:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 46,
+              NameEnd: 48,
+              Name:    "ML",
+            },
+            &ast.Ident{
+              NamePos: 49,
+              NameEnd: 56,
+              Name:    "PREDICT",
+            },
+          },
+        },
+        Args: []ast.TVFArg{
+          &ast.ModelArg{
+            Model: 66,
+            Name:  &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 72,
+                  NameEnd: 81,
+                  Name:    "TextBison",
+                },
+              },
+            },
+          },
+          &ast.ExprArg{
+            Expr: &ast.ScalarSubQuery{
+              Lparen: 91,
+              Rparen: 586,
+              Query:  &ast.Select{
+                Select:   92,
+                Distinct: false,
+                As:       nil,
+                Results:  []ast.SelectItem{
+                  &ast.Alias{
+                    Expr: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 112,
+                          NameEnd: 119,
+                          Name:    "product",
+                        },
+                        &ast.Ident{
+                          NamePos: 120,
+                          NameEnd: 122,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                    As: &ast.AsAlias{
+                      As:    123,
+                      Alias: &ast.Ident{
+                        NamePos: 126,
+                        NameEnd: 136,
+                        Name:    "product_id",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 151,
+                          NameEnd: 158,
+                          Name:    "product",
+                        },
+                        &ast.Ident{
+                          NamePos: 159,
+                          NameEnd: 163,
+                          Name:    "name",
+                        },
+                      },
+                    },
+                    As: &ast.AsAlias{
+                      As:    164,
+                      Alias: &ast.Ident{
+                        NamePos: 167,
+                        NameEnd: 179,
+                        Name:    "product_name",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.CallExpr{
+                      Rparen: 425,
+                      Func:   &ast.Ident{
+                        NamePos: 194,
+                        NameEnd: 200,
+                        Name:    "CONCAT",
+                      },
+                      Distinct: false,
+                      Args:     []ast.Arg{
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 201,
+                            ValueEnd: 236,
+                            Value:    "Is this product safe for infants?",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 238,
+                            ValueEnd: 242,
+                            Value:    "\n",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 264,
+                            ValueEnd: 280,
+                            Value:    "Product Name: ",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 282,
+                                NameEnd: 289,
+                                Name:    "product",
+                              },
+                              &ast.Ident{
+                                NamePos: 290,
+                                NameEnd: 294,
+                                Name:    "name",
+                              },
+                            },
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 296,
+                            ValueEnd: 300,
+                            Value:    "\n",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 322,
+                            ValueEnd: 339,
+                            Value:    "Category Name: ",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 341,
+                                NameEnd: 349,
+                                Name:    "category",
+                              },
+                              &ast.Ident{
+                                NamePos: 350,
+                                NameEnd: 354,
+                                Name:    "name",
+                              },
+                            },
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 356,
+                            ValueEnd: 360,
+                            Value:    "\n",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 382,
+                            ValueEnd: 404,
+                            Value:    "Product Description:",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 406,
+                                NameEnd: 413,
+                                Name:    "product",
+                              },
+                              &ast.Ident{
+                                NamePos: 414,
+                                NameEnd: 425,
+                                Name:    "description",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      NamedArgs:    []*ast.NamedArg(nil),
+                      NullHandling: nil,
+                      Having:       nil,
+                    },
+                    As: &ast.AsAlias{
+                      As:    427,
+                      Alias: &ast.Ident{
+                        NamePos: 430,
+                        NameEnd: 436,
+                        Name:    "prompt",
+                      },
+                    },
+                  },
+                },
+                From: &ast.From{
+                  From:   446,
+                  Source: &ast.Join{
+                    Op:     "INNER JOIN",
+                    Method: "",
+                    Hint:   (*ast.Hint)(nil),
+                    Left:   &ast.TableName{
+                      Table: &ast.Ident{
+                        NamePos: 464,
+                        NameEnd: 472,
+                        Name:    "Products",
+                      },
+                      Hint: (*ast.Hint)(nil),
+                      As:   &ast.AsAlias{
+                        As:    473,
+                        Alias: &ast.Ident{
+                          NamePos: 476,
+                          NameEnd: 483,
+                          Name:    "product",
+                        },
+                      },
+                      Sample: (*ast.TableSample)(nil),
+                    },
+                    Right: &ast.TableName{
+                      Table: &ast.Ident{
+                        NamePos: 489,
+                        NameEnd: 499,
+                        Name:    "Categories",
+                      },
+                      Hint: (*ast.Hint)(nil),
+                      As:   &ast.AsAlias{
+                        As:    500,
+                        Alias: &ast.Ident{
+                          NamePos: 503,
+                          NameEnd: 511,
+                          Name:    "category",
+                        },
+                      },
+                      Sample: (*ast.TableSample)(nil),
+                    },
+                    Cond: &ast.On{
+                      On:   550,
+                      Expr: &ast.BinaryExpr{
+                        Op:   "=",
+                        Left: &ast.Path{
+                          Idents: []*ast.Ident{
+                            &ast.Ident{
+                              NamePos: 553,
+                              NameEnd: 560,
+                              Name:    "product",
+                            },
+                            &ast.Ident{
+                              NamePos: 561,
+                              NameEnd: 572,
+                              Name:    "category_id",
+                            },
+                          },
+                        },
+                        Right: &ast.Path{
+                          Idents: []*ast.Ident{
+                            &ast.Ident{
+                              NamePos: 575,
+                              NameEnd: 583,
+                              Name:    "category",
+                            },
+                            &ast.Ident{
+                              NamePos: 584,
+                              NameEnd: 586,
+                              Name:    "id",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                Where:   (*ast.Where)(nil),
+                GroupBy: (*ast.GroupBy)(nil),
+                Having:  (*ast.Having)(nil),
+                OrderBy: (*ast.OrderBy)(nil),
+                Limit:   (*ast.Limit)(nil),
+              },
+            },
+          },
+          &ast.ExprArg{
+            Expr: &ast.TypelessStructLiteral{
+              Struct: 597,
+              Rparen: 626,
+              Values: []ast.TypelessStructLiteralArg{
+                &ast.Alias{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 604,
+                    ValueEnd: 607,
+                    Base:     10,
+                    Value:    "100",
+                  },
+                  As: &ast.AsAlias{
+                    As:    608,
+                    Alias: &ast.Ident{
+                      NamePos: 611,
+                      NameEnd: 626,
+                      Name:    "maxOutputTokens",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        NamedArgs: []*ast.NamedArg(nil),
+        Hint:      &ast.Hint{
+          Atmark:  635,
+          Rbrace:  666,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Ident{
+                NamePos: 637,
+                NameEnd: 664,
+                Name:    "remote_udf_max_rows_per_rpc",
+              },
+              Value: &ast.IntLiteral{
+                ValuePos: 665,
+                ValueEnd: 666,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+        },
+        Sample: (*ast.TableSample)(nil),
+      },
+    },
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT product_id, product_name, content FROM ML.PREDICT(MODEL TextBison, (SELECT product.id AS product_id, product.name AS product_name, CONCAT("Is this product safe for infants\?", "\n", "Product Name: ", product.name, "\n", "Category Name: ", category.name, "\n", "Product Description:", product.description) AS prompt FROM Products AS product INNER JOIN Categories AS category ON product.category_id = category.id), STRUCT(100 AS maxOutputTokens)) @{remote_udf_max_rows_per_rpc=1}
