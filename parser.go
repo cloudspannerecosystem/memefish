@@ -838,7 +838,7 @@ func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
 
 	var args []ast.TVFArg
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF && !p.lookaheadNamedArg() {
+		for !p.lookaheadNamedArg() {
 			args = append(args, p.parseTVFArg())
 			if p.Token.Kind != "," {
 				break
