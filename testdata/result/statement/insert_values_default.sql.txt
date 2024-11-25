@@ -48,6 +48,7 @@ values (1, default)
       },
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

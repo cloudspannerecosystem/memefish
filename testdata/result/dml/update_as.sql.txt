@@ -84,7 +84,8 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
       },
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL
-UPDATE foo AS F SET F.foo = F.bar + 1 WHERE foo = F.bar
+UPDATE foo AS FF.foo = F.bar + 1 WHERE foo = F.bar

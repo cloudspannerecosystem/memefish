@@ -54,6 +54,7 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
       },
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

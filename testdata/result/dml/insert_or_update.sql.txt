@@ -53,6 +53,7 @@ INSERT OR UPDATE INTO foo
       },
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL
