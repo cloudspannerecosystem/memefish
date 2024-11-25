@@ -1370,20 +1370,22 @@ func (a *AlterSearchIndex) SQL() string {
 //
 // ================================================================================
 
+func (w *WithAction) SQL() string {
+	return "WITH ACTION" + sqlOpt(" ", w.Alias, "")
+}
+
+func (t *ThenReturn) SQL() string {
+	return "THEN RETURN " + sqlOpt("", t.WithAction, " ") + sqlJoin(t.Items, ", ")
+}
+
 func (i *Insert) SQL() string {
-	sql := "INSERT "
-	if i.InsertOrType != "" {
-		sql += "OR " + string(i.InsertOrType) + " "
-	}
-	sql += "INTO " + i.TableName.SQL() + " ("
-	for i, c := range i.Columns {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += c.SQL()
-	}
-	sql += ") " + i.Input.SQL()
-	return sql
+	return "INSERT " +
+		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
+		"INTO " + i.TableName.SQL() + " (" +
+		sqlJoin(i.Columns, ", ") +
+		") " +
+		i.Input.SQL() +
+		sqlOpt(" ", i.ThenReturn, "")
 }
 
 func (v *ValuesInput) SQL() string {
@@ -1421,25 +1423,19 @@ func (s *SubQueryInput) SQL() string {
 }
 
 func (d *Delete) SQL() string {
-	sql := "DELETE FROM " + d.TableName.SQL()
-	if d.As != nil {
-		sql += " " + d.As.SQL()
-	}
-	sql += " " + d.Where.SQL()
-	return sql
+	return "DELETE FROM " +
+		d.TableName.SQL() +
+		sqlOpt(" ", d.As, "") +
+		sqlOpt(" ", d.Where, "") +
+		sqlOpt(" ", d.ThenReturn, "")
 }
 
 func (u *Update) SQL() string {
-	sql := "UPDATE " + u.TableName.SQL()
-	if u.As != nil {
-		sql += " " + u.As.SQL()
-	}
-	sql += " SET " + u.Updates[0].SQL()
-	for _, item := range u.Updates[1:] {
-		sql += ", " + item.SQL()
-	}
-	sql += " " + u.Where.SQL()
-	return sql
+	return "UPDATE " + u.TableName.SQL() +
+		sqlOpt(" ", u.As, "") +
+		sqlJoin(u.Updates, ", ") +
+		sqlOpt(" ", u.Where, "") +
+		sqlOpt(" ", u.ThenReturn, "")
 }
 
 func (u *UpdateItem) SQL() string {

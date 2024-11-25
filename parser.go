@@ -4039,6 +4039,39 @@ func (p *Parser) parseDML() ast.DML {
 	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
 }
 
+func (p *Parser) tryParseWithAction() *ast.WithAction {
+	if p.Token.Kind != "WITH" {
+		return nil
+	}
+
+	with := p.expect("WITH").Pos
+	action := p.expectKeywordLike("ACTION").Pos
+	alias := p.tryParseAsAlias(withRequiredAs)
+
+	return &ast.WithAction{
+		With:  with,
+		Action: action,
+		Alias: alias,
+	}
+}
+
+func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
+	if p.Token.Kind != "THEN" {
+		return nil
+	}
+
+	then := p.expect("THEN").Pos
+	p.expectKeywordLike("RETURN")
+	withAction := p.tryParseWithAction()
+	items := parseCommaSeparatedList(p, p.parseSelectItem)
+
+	return &ast.ThenReturn{
+		Then:       then,
+		WithAction: withAction,
+		Items:      items,
+	}
+}
+
 func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
@@ -4080,12 +4113,15 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 		input = p.parseSubQueryInput()
 	}
 
+	thenReturn := p.tryParseThenReturn()
+
 	return &ast.Insert{
 		Insert:       pos,
 		InsertOrType: insertOrType,
 		TableName:    name,
 		Columns:      columns,
 		Input:        input,
+		ThenReturn:   thenReturn,
 	}
 }
 
@@ -4153,12 +4189,14 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	name := p.parseIdent()
 	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
+	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Delete{
-		Delete:    pos,
-		TableName: name,
-		As:        as,
-		Where:     where,
+		Delete:     pos,
+		TableName:  name,
+		As:         as,
+		Where:      where,
+		ThenReturn: thenReturn,
 	}
 }
 
@@ -4171,13 +4209,15 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	items := parseCommaSeparatedList(p, p.parseUpdateItem)
 
 	where := p.parseWhere()
+	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Update{
-		Update:    pos,
-		TableName: name,
-		As:        as,
-		Updates:   items,
-		Where:     where,
+		Update:     pos,
+		TableName:  name,
+		As:         as,
+		Updates:    items,
+		Where:      where,
+		ThenReturn: thenReturn,
 	}
 }
 

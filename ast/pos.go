@@ -1566,12 +1566,28 @@ func (a *AlterSearchIndex) End() token.Pos {
 	return nodeEnd(wrapNode(a.IndexAlteration))
 }
 
+func (w *WithAction) Pos() token.Pos {
+	return w.With
+}
+
+func (w *WithAction) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(w.Alias)), posAdd(w.With, 4))
+}
+
+func (t *ThenReturn) Pos() token.Pos {
+	return t.Then
+}
+
+func (t *ThenReturn) End() token.Pos {
+	return nodeEnd(nodeSliceLast(t.Items))
+}
+
 func (i *Insert) Pos() token.Pos {
 	return i.Insert
 }
 
 func (i *Insert) End() token.Pos {
-	return nodeEnd(wrapNode(i.Input))
+	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.Input)))
 }
 
 func (v *ValuesInput) Pos() token.Pos {
@@ -1611,7 +1627,7 @@ func (d *Delete) Pos() token.Pos {
 }
 
 func (d *Delete) End() token.Pos {
-	return nodeEnd(wrapNode(d.Where))
+	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.Where)))
 }
 
 func (u *Update) Pos() token.Pos {
@@ -1619,7 +1635,7 @@ func (u *Update) Pos() token.Pos {
 }
 
 func (u *Update) End() token.Pos {
-	return nodeEnd(wrapNode(u.Where))
+	return nodeEnd(nodeChoice(wrapNode(u.ThenReturn), wrapNode(u.Where)))
 }
 
 func (u *UpdateItem) Pos() token.Pos {
