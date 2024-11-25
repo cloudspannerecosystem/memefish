@@ -3128,7 +3128,7 @@ type AlterSearchIndex struct {
 //	WITH ACTION {{.Alias | sqlOpt}}
 type WithAction struct {
 	// pos = With
-	// end = Alias.end || With + 4
+	// end = Alias.end || Action + 6
 
 	With   token.Pos // position of "WITH" keyword
 	Action token.Pos // position of "ACTION" keyword

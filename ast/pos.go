@@ -1571,7 +1571,7 @@ func (w *WithAction) Pos() token.Pos {
 }
 
 func (w *WithAction) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(w.Alias)), posAdd(w.With, 4))
+	return posChoice(nodeEnd(wrapNode(w.Alias)), posAdd(w.Action, 6))
 }
 
 func (t *ThenReturn) Pos() token.Pos {

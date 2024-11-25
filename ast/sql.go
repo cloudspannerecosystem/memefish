@@ -1431,8 +1431,8 @@ func (d *Delete) SQL() string {
 }
 
 func (u *Update) SQL() string {
-	return "UPDATE " + u.TableName.SQL() +
-		sqlOpt(" ", u.As, "") +
+	return "UPDATE " + u.TableName.SQL() + " SET " +
+		sqlOpt("", u.As, " ") +
 		sqlJoin(u.Updates, ", ") +
 		sqlOpt(" ", u.Where, "") +
 		sqlOpt(" ", u.ThenReturn, "")

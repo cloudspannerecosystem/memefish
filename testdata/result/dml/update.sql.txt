@@ -82,4 +82,4 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
 }
 
 --- SQL
-UPDATE foofoo = bar, bar = foo, baz = DEFAULT WHERE foo = 1
+UPDATE foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1

@@ -94,4 +94,4 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1 then return wit
 }
 
 --- SQL
-UPDATE foofoo = bar, bar = foo, baz = DEFAULT WHERE foo = 1 THEN RETURN WITH ACTION *
+UPDATE foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1 THEN RETURN WITH ACTION *
