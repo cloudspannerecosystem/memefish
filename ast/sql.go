@@ -1424,15 +1424,16 @@ func (s *SubQueryInput) SQL() string {
 
 func (d *Delete) SQL() string {
 	return "DELETE FROM " +
-		d.TableName.SQL() +
-		sqlOpt(" ", d.As, "") +
-		sqlOpt(" ", d.Where, "") +
+		d.TableName.SQL() + " " +
+		sqlOpt("", d.As, " ") +
+		d.Where.SQL() +
 		sqlOpt(" ", d.ThenReturn, "")
 }
 
 func (u *Update) SQL() string {
-	return "UPDATE " + u.TableName.SQL() + " SET " +
+	return "UPDATE " + u.TableName.SQL() + " " +
 		sqlOpt("", u.As, " ") +
+		"SET " +
 		sqlJoin(u.Updates, ", ") +
 		sqlOpt(" ", u.Where, "") +
 		sqlOpt(" ", u.ThenReturn, "")
