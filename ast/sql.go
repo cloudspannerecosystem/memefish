@@ -1435,7 +1435,7 @@ func (u *Update) SQL() string {
 		sqlOpt("", u.As, " ") +
 		"SET " +
 		sqlJoin(u.Updates, ", ") +
-		sqlOpt(" ", u.Where, "") +
+		" " + u.Where.SQL() +
 		sqlOpt(" ", u.ThenReturn, "")
 }
 
