@@ -9,19 +9,16 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/Code-Hex/dd"
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/k0kubun/pp"
 	"github.com/pmezard/go-difflib/difflib"
 )
 
 var update = flag.Bool("update", false, "update result files")
 
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
-	printer := pp.New()
-	printer.SetColoringEnabled(false)
-
 	if *update {
 		_, err := os.Stat(resultPath)
 		if err == nil {
@@ -70,7 +67,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- AST\n")
-			_, _ = printer.Fprintln(&buf, node)
+			_, _ = fmt.Fprintln(&buf, dd.Dump(node, dd.WithOmitEmptyFields()))
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
