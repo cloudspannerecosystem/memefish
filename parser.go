@@ -737,13 +737,9 @@ func (p *Parser) parseTableExpr(toplevel bool) ast.TableExpr {
 				p.nextToken()
 				method = ast.HashJoinMethod
 				needJoin = true
-			case p.Token.IsKeywordLike("APPLY"):
+			case p.Token.IsKeywordLike("LOOKUP"):
 				p.nextToken()
-				method = ast.ApplyJoinMethod
-				needJoin = true
-			case p.Token.IsKeywordLike("LOOP"):
-				p.nextToken()
-				method = ast.LoopJoinMethod
+				method = ast.LookupJoinMethod
 				needJoin = true
 			}
 		}
