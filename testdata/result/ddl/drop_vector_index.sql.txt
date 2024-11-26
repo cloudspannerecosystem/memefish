@@ -2,9 +2,7 @@
 DROP VECTOR INDEX hello_vector_index
 --- AST
 &ast.DropVectorIndex{
-  Drop:     0,
-  IfExists: false,
-  Name:     &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 18,
     NameEnd: 36,
     Name:    "hello_vector_index",

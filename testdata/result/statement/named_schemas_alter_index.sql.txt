@@ -2,8 +2,7 @@
 ALTER INDEX sch1.indexOnSingers ADD STORED COLUMN SingerInfo
 --- AST
 &ast.AlterIndex{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,

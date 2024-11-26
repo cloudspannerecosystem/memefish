@@ -3,8 +3,7 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
 
 --- AST
 &ast.AlterChangeStream{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 38,
     Name:    "change_stream_name",

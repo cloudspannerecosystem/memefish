@@ -8,10 +8,8 @@ CREATE TABLE foo
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      143,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 143,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -32,7 +30,6 @@ CREATE TABLE foo
         NamePos: 27,
         Name:    "INT64",
       },
-      NotNull:     false,
       DefaultExpr: &ast.ColumnDefaultExpr{
         Default: 33,
         Rparen:  88,
@@ -43,8 +40,7 @@ CREATE TABLE foo
             NameEnd: 65,
             Name:    "GET_NEXT_SEQUENCE_VALUE",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.SequenceArg{
               Sequence: 66,
               Expr:     &ast.Ident{
@@ -54,14 +50,9 @@ CREATE TABLE foo
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -75,13 +66,8 @@ CREATE TABLE foo
         Rparen:  110,
         Name:    "STRING",
         Max:     true,
-        Size:    nil,
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -94,15 +80,10 @@ CREATE TABLE foo
         NamePos: 121,
         Name:    "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -110,12 +91,8 @@ CREATE TABLE foo
         NameEnd: 143,
         Name:    "id",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL
