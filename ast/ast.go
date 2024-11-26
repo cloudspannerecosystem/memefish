@@ -1299,7 +1299,7 @@ type WithExprVar struct {
 
 // WithExpr is WITH expression node.
 //
-//	WITH({{Vars | sqlJoin ", "}}, {{.Expr | sql}})
+//	WITH({{.Vars | sqlJoin ", "}}, {{.Expr | sql}})
 type WithExpr struct {
 	// pos = With
 	// end = Rparen + 1
