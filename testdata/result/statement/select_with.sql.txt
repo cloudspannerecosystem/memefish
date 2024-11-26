@@ -17,8 +17,68 @@ SELECT WITH(a AS '123',       -- a is '123'
         Expr: &ast.WithExpr{
           With:   97,
           Rparen: 241,
-          Vars:   []*ast.WithExprVar(nil),
-          Expr:   &ast.CallExpr{
+          Vars:   []*ast.WithExprVar{
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 102,
+                NameEnd: 103,
+                Name:    "a",
+              },
+              Expr: &ast.StringLiteral{
+                ValuePos: 107,
+                ValueEnd: 112,
+                Value:    "123",
+              },
+            },
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 138,
+                NameEnd: 139,
+                Name:    "b",
+              },
+              Expr: &ast.CallExpr{
+                Rparen: 158,
+                Func:   &ast.Ident{
+                  NamePos: 143,
+                  NameEnd: 149,
+                  Name:    "CONCAT",
+                },
+                Distinct: false,
+                Args:     []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 150,
+                      NameEnd: 151,
+                      Name:    "a",
+                    },
+                  },
+                  &ast.ExprArg{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 153,
+                      ValueEnd: 158,
+                      Value:    "456",
+                    },
+                  },
+                },
+                NamedArgs:    []*ast.NamedArg(nil),
+                NullHandling: nil,
+                Having:       nil,
+              },
+            },
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 185,
+                NameEnd: 186,
+                Name:    "c",
+              },
+              Expr: &ast.StringLiteral{
+                ValuePos: 190,
+                ValueEnd: 195,
+                Value:    "789",
+              },
+            },
+          },
+          Expr: &ast.CallExpr{
             Rparen: 240,
             Func:   &ast.Ident{
               NamePos: 229,
@@ -67,4 +127,4 @@ SELECT WITH(a AS '123',       -- a is '123'
 }
 
 --- SQL
-SELECT WITH(, CONCAT(b, c)) AS result
+SELECT WITH(a AS "123", b AS CONCAT(a, "456"), c AS "789", CONCAT(b, c)) AS result
