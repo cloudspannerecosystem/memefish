@@ -1843,7 +1843,7 @@ func (p *Parser) parseWithExprVar() *ast.WithExprVar {
 	}
 }
 
-func (p *Parser) lookupWithExprVar() bool {
+func (p *Parser) lookaheadWithExprVar() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
 		p.Lexer = lexer
@@ -1860,7 +1860,7 @@ func (p *Parser) parseWithExpr() *ast.WithExpr {
 
 	var vars []*ast.WithExprVar
 	for {
-		if !p.lookupWithExprVar() {
+		if !p.lookaheadWithExprVar() {
 			break
 		}
 
