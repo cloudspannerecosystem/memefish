@@ -1850,7 +1850,6 @@ func (p *Parser) lookaheadWithExprVar() bool {
 	}()
 
 	p.parseIdent()
-
 	return p.Token.Kind == "AS"
 }
 
@@ -1859,11 +1858,7 @@ func (p *Parser) parseWithExpr() *ast.WithExpr {
 	p.expect("(")
 
 	var vars []*ast.WithExprVar
-	for {
-		if !p.lookaheadWithExprVar() {
-			break
-		}
-
+	for p.lookaheadWithExprVar() {
 		vars = append(vars, p.parseWithExprVar())
 		p.expect(",")
 	}
@@ -1873,7 +1868,7 @@ func (p *Parser) parseWithExpr() *ast.WithExpr {
 	return &ast.WithExpr{
 		With:   with,
 		Rparen: rparen,
-		Vars:   nil,
+		Vars:   vars,
 		Expr:   expr,
 	}
 }
