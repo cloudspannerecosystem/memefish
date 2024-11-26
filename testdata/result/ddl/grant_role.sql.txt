@@ -3,19 +3,18 @@ GRANT ROLE pii_access, pii_writter TO ROLE hr_manager, hr_director
 
 --- AST
 &ast.Grant{
-  Grant:     0,
   Privilege: &ast.RolePrivilege{
-    Role:  6,
+    Role: 6,
     Names: []*ast.Ident{
       &ast.Ident{
         NamePos: 11,
         NameEnd: 21,
-        Name:    "pii_access",
+        Name: "pii_access",
       },
       &ast.Ident{
         NamePos: 23,
         NameEnd: 34,
-        Name:    "pii_writter",
+        Name: "pii_writter",
       },
     },
   },
@@ -23,12 +22,12 @@ GRANT ROLE pii_access, pii_writter TO ROLE hr_manager, hr_director
     &ast.Ident{
       NamePos: 43,
       NameEnd: 53,
-      Name:    "hr_manager",
+      Name: "hr_manager",
     },
     &ast.Ident{
       NamePos: 55,
       NameEnd: 66,
-      Name:    "hr_director",
+      Name: "hr_director",
     },
   },
 }

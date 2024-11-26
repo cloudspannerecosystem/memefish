@@ -2,11 +2,10 @@
 CREATE SCHEMA sch1
 --- AST
 &ast.CreateSchema{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 14,
     NameEnd: 18,
-    Name:    "sch1",
+    Name: "sch1",
   },
 }
 

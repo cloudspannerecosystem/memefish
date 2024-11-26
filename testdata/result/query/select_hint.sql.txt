@@ -3,57 +3,47 @@
 --- AST
 &ast.QueryStatement{
   Hint: &ast.Hint{
-    Atmark:  0,
-    Rbrace:  22,
+    Rbrace: 22,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
         Key: &ast.Ident{
           NamePos: 2,
           NameEnd: 7,
-          Name:    "hint1",
+          Name: "hint1",
         },
         Value: &ast.IntLiteral{
           ValuePos: 10,
           ValueEnd: 11,
-          Base:     10,
-          Value:    "1",
+          Base: 10,
+          Value: "1",
         },
       },
       &ast.HintRecord{
         Key: &ast.Ident{
           NamePos: 13,
           NameEnd: 18,
-          Name:    "hint2",
+          Name: "hint2",
         },
         Value: &ast.IntLiteral{
           ValuePos: 21,
           ValueEnd: 22,
-          Base:     10,
-          Value:    "2",
+          Base: 10,
+          Value: "2",
         },
       },
     },
   },
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   24,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select: 24,
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 31,
           NameEnd: 35,
-          Name:    "hint",
+          Name: "hint",
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

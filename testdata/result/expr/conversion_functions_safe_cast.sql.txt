@@ -2,17 +2,16 @@
 SAFE_CAST("apple" AS INT64)
 --- AST
 &ast.CastExpr{
-  Cast:   0,
   Rparen: 26,
-  Safe:   true,
-  Expr:   &ast.StringLiteral{
+  Safe: true,
+  Expr: &ast.StringLiteral{
     ValuePos: 10,
     ValueEnd: 17,
-    Value:    "apple",
+    Value: "apple",
   },
   Type: &ast.SimpleType{
     NamePos: 21,
-    Name:    "INT64",
+    Name: "INT64",
   },
 }
 

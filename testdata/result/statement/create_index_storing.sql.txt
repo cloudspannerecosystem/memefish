@@ -5,17 +5,13 @@ create index foo_bar on foo (
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       40,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  false,
-  Name:         &ast.Path{
+  Rparen: 40,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
         NameEnd: 20,
-        Name:    "foo_bar",
+        Name: "foo_bar",
       },
     },
   },
@@ -24,38 +20,37 @@ create index foo_bar on foo (
       &ast.Ident{
         NamePos: 24,
         NameEnd: 27,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: 36,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 32,
         NameEnd: 35,
-        Name:    "bar",
+        Name: "bar",
       },
       Dir: "ASC",
     },
   },
   Storing: &ast.Storing{
     Storing: 42,
-    Rparen:  59,
+    Rparen: 59,
     Columns: []*ast.Ident{
       &ast.Ident{
         NamePos: 51,
         NameEnd: 54,
-        Name:    "foo",
+        Name: "foo",
       },
       &ast.Ident{
         NamePos: 56,
         NameEnd: 59,
-        Name:    "baz",
+        Name: "baz",
       },
     },
   },
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL

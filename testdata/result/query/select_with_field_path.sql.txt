@@ -19,25 +19,20 @@ WHERE A.z.a = 2
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
               NamePos: 9,
               NameEnd: 10,
-              Name:    "A",
+              Name: "A",
             },
             &ast.Ident{
               NamePos: 11,
               NameEnd: 12,
-              Name:    "x",
+              Name: "x",
             },
           },
         },
@@ -48,12 +43,12 @@ WHERE A.z.a = 2
             &ast.Ident{
               NamePos: 16,
               NameEnd: 17,
-              Name:    "A",
+              Name: "A",
             },
             &ast.Ident{
               NamePos: 18,
               NameEnd: 19,
-              Name:    "y",
+              Name: "y",
             },
           },
         },
@@ -64,17 +59,17 @@ WHERE A.z.a = 2
             &ast.Ident{
               NamePos: 23,
               NameEnd: 24,
-              Name:    "A",
+              Name: "A",
             },
             &ast.Ident{
               NamePos: 25,
               NameEnd: 26,
-              Name:    "z",
+              Name: "z",
             },
             &ast.Ident{
               NamePos: 27,
               NameEnd: 28,
-              Name:    "a",
+              Name: "a",
             },
           },
         },
@@ -85,35 +80,34 @@ WHERE A.z.a = 2
             &ast.Ident{
               NamePos: 32,
               NameEnd: 33,
-              Name:    "A",
+              Name: "A",
             },
             &ast.Ident{
               NamePos: 34,
               NameEnd: 35,
-              Name:    "z",
+              Name: "z",
             },
             &ast.Ident{
               NamePos: 36,
               NameEnd: 37,
-              Name:    "b",
+              Name: "b",
             },
           },
         },
       },
     },
     From: &ast.From{
-      From:   38,
+      From: 38,
       Source: &ast.Unnest{
         Unnest: 45,
         Rparen: 255,
-        Expr:   &ast.ArraySubQuery{
-          Array:  57,
+        Expr: &ast.ArraySubQuery{
+          Array: 57,
           Rparen: 251,
-          Query:  &ast.Select{
-            Select:   70,
-            Distinct: false,
-            As:       &ast.AsStruct{
-              As:     77,
+          Query: &ast.Select{
+            Select: 70,
+            As: &ast.AsStruct{
+              As: 77,
               Struct: 80,
             },
             Results: []ast.SelectItem{
@@ -121,89 +115,89 @@ WHERE A.z.a = 2
                 Expr: &ast.Ident{
                   NamePos: 95,
                   NameEnd: 96,
-                  Name:    "x",
+                  Name: "x",
                 },
               },
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
                   NamePos: 106,
                   NameEnd: 107,
-                  Name:    "y",
+                  Name: "y",
                 },
               },
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
                   NamePos: 117,
                   NameEnd: 118,
-                  Name:    "z",
+                  Name: "z",
                 },
               },
             },
             From: &ast.From{
-              From:   125,
+              From: 125,
               Source: &ast.Unnest{
                 Unnest: 138,
                 Rparen: 245,
-                Expr:   &ast.ArrayLiteral{
-                  Array:  145,
+                Expr: &ast.ArrayLiteral{
+                  Array: 145,
                   Lbrack: 205,
                   Rbrack: 244,
-                  Type:   &ast.StructType{
+                  Type: &ast.StructType{
                     Struct: 151,
-                    Gt:     203,
+                    Gt: 203,
                     Fields: []*ast.StructField{
                       &ast.StructField{
                         Ident: &ast.Ident{
                           NamePos: 158,
                           NameEnd: 159,
-                          Name:    "x",
+                          Name: "x",
                         },
                         Type: &ast.SimpleType{
                           NamePos: 160,
-                          Name:    "INT64",
+                          Name: "INT64",
                         },
                       },
                       &ast.StructField{
                         Ident: &ast.Ident{
                           NamePos: 167,
                           NameEnd: 168,
-                          Name:    "y",
+                          Name: "y",
                         },
                         Type: &ast.SimpleType{
                           NamePos: 169,
-                          Name:    "STRING",
+                          Name: "STRING",
                         },
                       },
                       &ast.StructField{
                         Ident: &ast.Ident{
                           NamePos: 177,
                           NameEnd: 178,
-                          Name:    "z",
+                          Name: "z",
                         },
                         Type: &ast.StructType{
                           Struct: 179,
-                          Gt:     202,
+                          Gt: 202,
                           Fields: []*ast.StructField{
                             &ast.StructField{
                               Ident: &ast.Ident{
                                 NamePos: 186,
                                 NameEnd: 187,
-                                Name:    "a",
+                                Name: "a",
                               },
                               Type: &ast.SimpleType{
                                 NamePos: 188,
-                                Name:    "INT64",
+                                Name: "INT64",
                               },
                             },
                             &ast.StructField{
                               Ident: &ast.Ident{
                                 NamePos: 195,
                                 NameEnd: 196,
-                                Name:    "b",
+                                Name: "b",
                               },
                               Type: &ast.SimpleType{
                                 NamePos: 197,
-                                Name:    "INT64",
+                                Name: "INT64",
                               },
                             },
                           },
@@ -219,13 +213,13 @@ WHERE A.z.a = 2
                         &ast.IntLiteral{
                           ValuePos: 207,
                           ValueEnd: 208,
-                          Base:     10,
-                          Value:    "1",
+                          Base: 10,
+                          Value: "1",
                         },
                         &ast.StringLiteral{
                           ValuePos: 210,
                           ValueEnd: 215,
-                          Value:    "foo",
+                          Value: "foo",
                         },
                         &ast.TupleStructLiteral{
                           Lparen: 217,
@@ -234,14 +228,14 @@ WHERE A.z.a = 2
                             &ast.IntLiteral{
                               ValuePos: 218,
                               ValueEnd: 219,
-                              Base:     10,
-                              Value:    "2",
+                              Base: 10,
+                              Value: "2",
                             },
                             &ast.IntLiteral{
                               ValuePos: 221,
                               ValueEnd: 222,
-                              Base:     10,
-                              Value:    "3",
+                              Base: 10,
+                              Value: "3",
                             },
                           },
                         },
@@ -254,13 +248,13 @@ WHERE A.z.a = 2
                         &ast.IntLiteral{
                           ValuePos: 227,
                           ValueEnd: 228,
-                          Base:     10,
-                          Value:    "3",
+                          Base: 10,
+                          Value: "3",
                         },
                         &ast.StringLiteral{
                           ValuePos: 230,
                           ValueEnd: 235,
-                          Value:    "bar",
+                          Value: "bar",
                         },
                         &ast.TupleStructLiteral{
                           Lparen: 237,
@@ -269,14 +263,14 @@ WHERE A.z.a = 2
                             &ast.IntLiteral{
                               ValuePos: 238,
                               ValueEnd: 239,
-                              Base:     10,
-                              Value:    "4",
+                              Base: 10,
+                              Value: "4",
                             },
                             &ast.IntLiteral{
                               ValuePos: 241,
                               ValueEnd: 242,
-                              Base:     10,
-                              Value:    "5",
+                              Base: 10,
+                              Value: "5",
                             },
                           },
                         },
@@ -284,67 +278,51 @@ WHERE A.z.a = 2
                     },
                   },
                 },
-                Hint:       (*ast.Hint)(nil),
-                As:         (*ast.AsAlias)(nil),
-                WithOffset: (*ast.WithOffset)(nil),
-                Sample:     (*ast.TableSample)(nil),
               },
             },
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
-          As:    257,
+        As: &ast.AsAlias{
+          As: 257,
           Alias: &ast.Ident{
             NamePos: 260,
             NameEnd: 261,
-            Name:    "A",
+            Name: "A",
           },
         },
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 262,
-      Expr:  &ast.BinaryExpr{
-        Op:   "=",
+      Expr: &ast.BinaryExpr{
+        Op: "=",
         Left: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
               NamePos: 268,
               NameEnd: 269,
-              Name:    "A",
+              Name: "A",
             },
             &ast.Ident{
               NamePos: 270,
               NameEnd: 271,
-              Name:    "z",
+              Name: "z",
             },
             &ast.Ident{
               NamePos: 272,
               NameEnd: 273,
-              Name:    "a",
+              Name: "a",
             },
           },
         },
         Right: &ast.IntLiteral{
           ValuePos: 276,
           ValueEnd: 277,
-          Base:     10,
-          Value:    "2",
+          Base: 10,
+          Value: "2",
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

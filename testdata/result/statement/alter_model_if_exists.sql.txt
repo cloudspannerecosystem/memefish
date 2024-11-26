@@ -9,38 +9,36 @@ SET OPTIONS (
 )
 --- AST
 &ast.AlterModel{
-  Alter:    0,
   IfExists: true,
-  Name:     &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 22,
     NameEnd: 43,
-    Name:    "MyClassificationModel",
+    Name: "MyClassificationModel",
   },
   Options: &ast.Options{
     Options: 48,
-    Rparen:  269,
+    Rparen: 269,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 62,
           NameEnd: 71,
-          Name:    "endpoints",
+          Name: "endpoints",
         },
         Value: &ast.ArrayLiteral{
-          Array:  -1,
+          Array: -1,
           Lbrack: 74,
           Rbrack: 237,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.StringLiteral{
               ValuePos: 84,
               ValueEnd: 153,
-              Value:    "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/aaa",
+              Value: "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/aaa",
             },
             &ast.StringLiteral{
               ValuePos: 163,
               ValueEnd: 232,
-              Value:    "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/bbb",
+              Value: "//aiplatform.googleapis.com/projects/aaa/locations/tl/endpoints/bbb",
             },
           },
         },
@@ -49,13 +47,13 @@ SET OPTIONS (
         Name: &ast.Ident{
           NamePos: 244,
           NameEnd: 262,
-          Name:    "default_batch_size",
+          Name: "default_batch_size",
         },
         Value: &ast.IntLiteral{
           ValuePos: 265,
           ValueEnd: 268,
-          Base:     10,
-          Value:    "100",
+          Base: 10,
+          Value: "100",
         },
       },
     },

@@ -2,38 +2,32 @@
 alter table foo add column baz string(max) not null
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.AddColumn{
-    Add:         16,
-    IfNotExists: false,
-    Column:      &ast.ColumnDef{
+    Add: 16,
+    Column: &ast.ColumnDef{
       Null: 47,
       Name: &ast.Ident{
         NamePos: 27,
         NameEnd: 30,
-        Name:    "baz",
+        Name: "baz",
       },
       Type: &ast.SizedSchemaType{
         NamePos: 31,
-        Rparen:  41,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 41,
+        Name: "STRING",
+        Max: true,
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
   },
 }

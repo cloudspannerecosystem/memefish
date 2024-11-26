@@ -2,25 +2,24 @@
 ALTER PROTO BUNDLE INSERT (package.Inserted) UPDATE (package.Updated) DELETE (package.Deleted)
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
   Insert: &ast.AlterProtoBundleInsert{
     Insert: 19,
-    Types:  &ast.ProtoBundleTypes{
+    Types: &ast.ProtoBundleTypes{
       Lparen: 26,
       Rparen: 43,
-      Types:  []*ast.NamedType{
+      Types: []*ast.NamedType{
         &ast.NamedType{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 27,
               NameEnd: 34,
-              Name:    "package",
+              Name: "package",
             },
             &ast.Ident{
               NamePos: 35,
               NameEnd: 43,
-              Name:    "Inserted",
+              Name: "Inserted",
             },
           },
         },
@@ -29,21 +28,21 @@ ALTER PROTO BUNDLE INSERT (package.Inserted) UPDATE (package.Updated) DELETE (pa
   },
   Update: &ast.AlterProtoBundleUpdate{
     Update: 45,
-    Types:  &ast.ProtoBundleTypes{
+    Types: &ast.ProtoBundleTypes{
       Lparen: 52,
       Rparen: 68,
-      Types:  []*ast.NamedType{
+      Types: []*ast.NamedType{
         &ast.NamedType{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 53,
               NameEnd: 60,
-              Name:    "package",
+              Name: "package",
             },
             &ast.Ident{
               NamePos: 61,
               NameEnd: 68,
-              Name:    "Updated",
+              Name: "Updated",
             },
           },
         },
@@ -52,21 +51,21 @@ ALTER PROTO BUNDLE INSERT (package.Inserted) UPDATE (package.Updated) DELETE (pa
   },
   Delete: &ast.AlterProtoBundleDelete{
     Delete: 70,
-    Types:  &ast.ProtoBundleTypes{
+    Types: &ast.ProtoBundleTypes{
       Lparen: 77,
       Rparen: 93,
-      Types:  []*ast.NamedType{
+      Types: []*ast.NamedType{
         &ast.NamedType{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 78,
               NameEnd: 85,
-              Name:    "package",
+              Name: "package",
             },
             &ast.Ident{
               NamePos: 86,
               NameEnd: 93,
-              Name:    "Deleted",
+              Name: "Deleted",
             },
           },
         },

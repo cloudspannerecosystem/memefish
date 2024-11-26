@@ -13,188 +13,161 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.DateLiteral{
-          Date:  9,
+          Date: 9,
           Value: &ast.StringLiteral{
             ValuePos: 13,
             ValueEnd: 25,
-            Value:    "2014-09-27",
+            Value: "2014-09-27",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 46,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 29,
             NameEnd: 33,
-            Name:    "DATE",
+            Name: "DATE",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 34,
                 ValueEnd: 46,
-                Value:    "2014-09-27",
+                Value: "2014-09-27",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.DateLiteral{
-          Date:  51,
+          Date: 51,
           Value: &ast.StringLiteral{
             ValuePos: 56,
             ValueEnd: 69,
-            Value:    "2014-09-27",
+            Value: "2014-09-27",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.TimestampLiteral{
           Timestamp: 73,
-          Value:     &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 83,
             ValueEnd: 110,
-            Value:    "2014-09-27 12:30:00.45-08",
+            Value: "2014-09-27 12:30:00.45-08",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.TimestampLiteral{
           Timestamp: 114,
-          Value:     &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 124,
             ValueEnd: 168,
-            Value:    "2014-09-27 12:30:00.45 America/Los_Angeles",
+            Value: "2014-09-27 12:30:00.45 America/Los_Angeles",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.TimestampLiteral{
           Timestamp: 172,
-          Value:     &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 181,
             ValueEnd: 193,
-            Value:    "2014-09-27",
+            Value: "2014-09-27",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 219,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 197,
             NameEnd: 206,
-            Name:    "TIMESTAMP",
+            Name: "TIMESTAMP",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 207,
                 ValueEnd: 219,
-                Value:    "2014-09-27",
+                Value: "2014-09-27",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.TimestampLiteral{
           Timestamp: 224,
-          Value:     &ast.StringLiteral{
+          Value: &ast.StringLiteral{
             ValuePos: 234,
             ValueEnd: 247,
-            Value:    "2014-09-27",
+            Value: "2014-09-27",
           },
         },
       },
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 268,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 251,
             NameEnd: 255,
-            Name:    "DATE",
+            Name: "DATE",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 256,
                 ValueEnd: 268,
-                Value:    "2014-09-27",
+                Value: "2014-09-27",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
         As: &ast.AsAlias{
-          As:    270,
+          As: 270,
           Alias: &ast.Ident{
             NamePos: 273,
             NameEnd: 276,
-            Name:    "FOO",
+            Name: "FOO",
           },
         },
       },
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 302,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 280,
             NameEnd: 289,
-            Name:    "TIMESTAMP",
+            Name: "TIMESTAMP",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 290,
                 ValueEnd: 302,
-                Value:    "2014-09-27",
+                Value: "2014-09-27",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
         As: &ast.AsAlias{
-          As:    304,
+          As: 304,
           Alias: &ast.Ident{
             NamePos: 307,
             NameEnd: 310,
-            Name:    "BAR",
+            Name: "BAR",
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -7,48 +7,37 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.FloatLiteral{
           ValuePos: 9,
           ValueEnd: 19,
-          Value:    "123.456e-3",
+          Value: "123.456e-3",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.FloatLiteral{
           ValuePos: 23,
           ValueEnd: 27,
-          Value:    ".1E4",
+          Value: ".1E4",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.FloatLiteral{
           ValuePos: 31,
           ValueEnd: 34,
-          Value:    "58.",
+          Value: "58.",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.FloatLiteral{
           ValuePos: 38,
           ValueEnd: 41,
-          Value:    "4e2",
+          Value: "4e2",
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

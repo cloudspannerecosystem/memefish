@@ -2,18 +2,17 @@
 ALTER SEARCH INDEX AlbumsIndex ADD STORED COLUMN Genre
 --- AST
 &ast.AlterSearchIndex{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 19,
     NameEnd: 30,
-    Name:    "AlbumsIndex",
+    Name: "AlbumsIndex",
   },
   IndexAlteration: &ast.AddStoredColumn{
-    Add:  31,
+    Add: 31,
     Name: &ast.Ident{
       NamePos: 49,
       NameEnd: 54,
-      Name:    "Genre",
+      Name: "Genre",
     },
   },
 }

@@ -6,15 +6,13 @@ create table foo (
              on delete no action
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      50,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 50,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
         NameEnd: 16,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
@@ -24,47 +22,39 @@ create table foo (
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
-        Name:    "foo",
+        Name: "foo",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 25,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 47,
         NameEnd: 50,
-        Name:    "foo",
+        Name: "foo",
       },
-      Dir: "",
     },
   },
-  Synonyms: []*ast.Synonym(nil),
-  Cluster:  &ast.Cluster{
-    Comma:       51,
+  Cluster: &ast.Cluster{
+    Comma: 51,
     OnDeleteEnd: 115,
-    TableName:   &ast.Path{
+    TableName: &ast.Path{
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 76,
           NameEnd: 82,
-          Name:    "foobar",
+          Name: "foobar",
         },
       },
     },
     OnDelete: "ON DELETE NO ACTION",
   },
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

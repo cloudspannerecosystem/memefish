@@ -4,65 +4,60 @@ values (1, 2, 3),
        (4, 5, 6)
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 12,
     NameEnd: 15,
-    Name:    "foo",
+    Name: "foo",
   },
   Columns: []*ast.Ident{
     &ast.Ident{
       NamePos: 17,
       NameEnd: 20,
-      Name:    "foo",
+      Name: "foo",
     },
     &ast.Ident{
       NamePos: 22,
       NameEnd: 25,
-      Name:    "bar",
+      Name: "bar",
     },
     &ast.Ident{
       NamePos: 27,
       NameEnd: 30,
-      Name:    "baz",
+      Name: "baz",
     },
   },
   Input: &ast.ValuesInput{
     Values: 32,
-    Rows:   []*ast.ValuesRow{
+    Rows: []*ast.ValuesRow{
       &ast.ValuesRow{
         Lparen: 39,
         Rparen: 47,
-        Exprs:  []*ast.DefaultExpr{
+        Exprs: []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 40,
               ValueEnd: 41,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 43,
               ValueEnd: 44,
-              Base:     10,
-              Value:    "2",
+              Base: 10,
+              Value: "2",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 46,
               ValueEnd: 47,
-              Base:     10,
-              Value:    "3",
+              Base: 10,
+              Value: "3",
             },
           },
         },
@@ -70,35 +65,32 @@ values (1, 2, 3),
       &ast.ValuesRow{
         Lparen: 57,
         Rparen: 65,
-        Exprs:  []*ast.DefaultExpr{
+        Exprs: []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 58,
               ValueEnd: 59,
-              Base:     10,
-              Value:    "4",
+              Base: 10,
+              Value: "4",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 61,
               ValueEnd: 62,
-              Base:     10,
-              Value:    "5",
+              Base: 10,
+              Value: "5",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 64,
               ValueEnd: 65,
-              Base:     10,
-              Value:    "6",
+              Base: 10,
+              Value: "6",
             },
           },
         },

@@ -3,11 +3,10 @@ CREATE ROLE hr_manager
 
 --- AST
 &ast.CreateRole{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 12,
     NameEnd: 22,
-    Name:    "hr_manager",
+    Name: "hr_manager",
   },
 }
 

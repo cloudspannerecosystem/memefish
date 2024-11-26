@@ -3,40 +3,39 @@ ALTER CHANGE STREAM change_stream_name SET OPTIONS (retention_period = '1d', val
 
 --- AST
 &ast.AlterChangeStream{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 38,
-    Name:    "change_stream_name",
+    Name: "change_stream_name",
   },
   ChangeStreamAlteration: &ast.ChangeStreamSetOptions{
-    Set:     39,
+    Set: 39,
     Options: &ast.Options{
       Options: 43,
-      Rparen:  118,
+      Rparen: 118,
       Records: []*ast.OptionsDef{
         &ast.OptionsDef{
           Name: &ast.Ident{
             NamePos: 52,
             NameEnd: 68,
-            Name:    "retention_period",
+            Name: "retention_period",
           },
           Value: &ast.StringLiteral{
             ValuePos: 71,
             ValueEnd: 75,
-            Value:    "1d",
+            Value: "1d",
           },
         },
         &ast.OptionsDef{
           Name: &ast.Ident{
             NamePos: 77,
             NameEnd: 95,
-            Name:    "value_capture_type",
+            Name: "value_capture_type",
           },
           Value: &ast.StringLiteral{
             ValuePos: 98,
             ValueEnd: 118,
-            Value:    "OLD_AND_NEW_VALUES",
+            Value: "OLD_AND_NEW_VALUES",
           },
         },
       },

@@ -6,50 +6,45 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.Unnest{
         Unnest: 18,
         Rparen: 81,
-        Expr:   &ast.ArrayLiteral{
-          Array:  25,
+        Expr: &ast.ArrayLiteral{
+          Array: 25,
           Lbrack: 57,
           Rbrack: 80,
-          Type:   &ast.StructType{
+          Type: &ast.StructType{
             Struct: 31,
-            Gt:     55,
+            Gt: 55,
             Fields: []*ast.StructField{
               &ast.StructField{
                 Ident: &ast.Ident{
                   NamePos: 38,
                   NameEnd: 39,
-                  Name:    "x",
+                  Name: "x",
                 },
                 Type: &ast.SimpleType{
                   NamePos: 40,
-                  Name:    "INT64",
+                  Name: "INT64",
                 },
               },
               &ast.StructField{
                 Ident: &ast.Ident{
                   NamePos: 47,
                   NameEnd: 48,
-                  Name:    "y",
+                  Name: "y",
                 },
                 Type: &ast.SimpleType{
                   NamePos: 49,
-                  Name:    "STRING",
+                  Name: "STRING",
                 },
               },
             },
@@ -62,13 +57,13 @@ FROM
                 &ast.IntLiteral{
                   ValuePos: 59,
                   ValueEnd: 60,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
                 &ast.StringLiteral{
                   ValuePos: 62,
                   ValueEnd: 67,
-                  Value:    "foo",
+                  Value: "foo",
                 },
               },
             },
@@ -79,29 +74,20 @@ FROM
                 &ast.IntLiteral{
                   ValuePos: 71,
                   ValueEnd: 72,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
                 &ast.StringLiteral{
                   ValuePos: 74,
                   ValueEnd: 79,
-                  Value:    "bar",
+                  Value: "bar",
                 },
               },
             },
           },
         },
-        Hint:       (*ast.Hint)(nil),
-        As:         (*ast.AsAlias)(nil),
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

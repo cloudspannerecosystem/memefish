@@ -6,15 +6,13 @@ create table foo (
              on delete cascade
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      49,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 49,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
         NameEnd: 16,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
@@ -24,47 +22,39 @@ create table foo (
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
-        Name:    "foo",
+        Name: "foo",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 25,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 46,
         NameEnd: 49,
-        Name:    "foo",
+        Name: "foo",
       },
-      Dir: "",
     },
   },
-  Synonyms: []*ast.Synonym(nil),
-  Cluster:  &ast.Cluster{
-    Comma:       50,
+  Cluster: &ast.Cluster{
+    Comma: 50,
     OnDeleteEnd: 112,
-    TableName:   &ast.Path{
+    TableName: &ast.Path{
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 75,
           NameEnd: 81,
-          Name:    "foobar",
+          Name: "foobar",
         },
       },
     },
     OnDelete: "ON DELETE CASCADE",
   },
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

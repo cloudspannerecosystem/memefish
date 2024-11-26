@@ -9,72 +9,61 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.Join{
-        Op:     "LEFT OUTER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.TableName{
+        Op: "LEFT OUTER JOIN",
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
             NameEnd: 25,
-            Name:    "Singers",
+            Name: "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As: -1,
             Alias: &ast.Ident{
               NamePos: 26,
               NameEnd: 27,
-              Name:    "A",
+              Name: "A",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 48,
             NameEnd: 55,
-            Name:    "Singers",
+            Name: "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As: -1,
             Alias: &ast.Ident{
               NamePos: 56,
               NameEnd: 57,
-              Name:    "B",
+              Name: "B",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
-          On:   60,
+          On: 60,
           Expr: &ast.BinaryExpr{
-            Op:   "=",
+            Op: "=",
             Left: &ast.Path{
               Idents: []*ast.Ident{
                 &ast.Ident{
                   NamePos: 63,
                   NameEnd: 64,
-                  Name:    "A",
+                  Name: "A",
                 },
                 &ast.Ident{
                   NamePos: 65,
                   NameEnd: 73,
-                  Name:    "SingerID",
+                  Name: "SingerID",
                 },
               },
             },
@@ -83,12 +72,12 @@ FROM
                 &ast.Ident{
                   NamePos: 76,
                   NameEnd: 77,
-                  Name:    "B",
+                  Name: "B",
                 },
                 &ast.Ident{
                   NamePos: 78,
                   NameEnd: 86,
-                  Name:    "SingerID",
+                  Name: "SingerID",
                 },
               },
             },
@@ -96,11 +85,6 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

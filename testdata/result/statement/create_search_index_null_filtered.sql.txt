@@ -5,52 +5,47 @@ STORING(Genre)
 WHERE Genre IS NOT NULL
 --- AST
 &ast.CreateSearchIndex{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 31,
-    Name:    "AlbumsIndex",
+    Name: "AlbumsIndex",
   },
   TableName: &ast.Ident{
     NamePos: 35,
     NameEnd: 41,
-    Name:    "Albums",
+    Name: "Albums",
   },
   TokenListPart: []*ast.Ident{
     &ast.Ident{
       NamePos: 42,
       NameEnd: 59,
-      Name:    "AlbumTitle_Tokens",
+      Name: "AlbumTitle_Tokens",
     },
   },
-  Rparen:  59,
+  Rparen: 59,
   Storing: &ast.Storing{
     Storing: 61,
-    Rparen:  74,
+    Rparen: 74,
     Columns: []*ast.Ident{
       &ast.Ident{
         NamePos: 69,
         NameEnd: 74,
-        Name:    "Genre",
+        Name: "Genre",
       },
     },
   },
-  PartitionColumns: []*ast.Ident(nil),
-  OrderBy:          (*ast.OrderBy)(nil),
-  Where:            &ast.Where{
+  Where: &ast.Where{
     Where: 76,
-    Expr:  &ast.IsNullExpr{
+    Expr: &ast.IsNullExpr{
       Null: 95,
-      Not:  true,
+      Not: true,
       Left: &ast.Ident{
         NamePos: 82,
         NameEnd: 87,
-        Name:    "Genre",
+        Name: "Genre",
       },
     },
   },
-  Interleave: (*ast.InterleaveIn)(nil),
-  Options:    (*ast.Options)(nil),
 }
 
 --- SQL

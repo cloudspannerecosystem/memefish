@@ -10,64 +10,53 @@ HAVING
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 9,
           NameEnd: 17,
-          Name:    "SingerID",
+          Name: "SingerID",
         },
       },
     },
     From: &ast.From{
-      From:   18,
+      From: 18,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 25,
           NameEnd: 32,
-          Name:    "Singers",
+          Name: "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
     GroupBy: &ast.GroupBy{
       Group: 33,
       Exprs: []ast.Expr{
         &ast.Ident{
           NamePos: 44,
           NameEnd: 52,
-          Name:    "SingerID",
+          Name: "SingerID",
         },
       },
     },
     Having: &ast.Having{
       Having: 53,
-      Expr:   &ast.BinaryExpr{
-        Op:   "=",
+      Expr: &ast.BinaryExpr{
+        Op: "=",
         Left: &ast.Ident{
           NamePos: 62,
           NameEnd: 70,
-          Name:    "SingerID",
+          Name: "SingerID",
         },
         Right: &ast.IntLiteral{
           ValuePos: 73,
           ValueEnd: 74,
-          Base:     10,
-          Value:    "1",
+          Base: 10,
+          Value: "1",
         },
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

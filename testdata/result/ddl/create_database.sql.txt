@@ -3,11 +3,10 @@ create database foo_bar_baz
 
 --- AST
 &ast.CreateDatabase{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 16,
     NameEnd: 27,
-    Name:    "foo_bar_baz",
+    Name: "foo_bar_baz",
   },
 }
 

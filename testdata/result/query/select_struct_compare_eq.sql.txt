@@ -9,36 +9,27 @@ SELECT ARRAY(
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
-          Array:  7,
+          Array: 7,
           Rparen: 133,
-          Query:  &ast.Select{
-            Select:   16,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+          Query: &ast.Select{
+            Select: 16,
+            Results: []ast.SelectItem{
               &ast.Star{
                 Star: 27,
               },
             },
             From: &ast.From{
-              From:   31,
+              From: 31,
               Source: &ast.SubQueryTableExpr{
                 Lparen: 40,
                 Rparen: 90,
-                Query:  &ast.Select{
-                  Select:   41,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                Query: &ast.Select{
+                  Select: 41,
+                  Results: []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.TypedStructLiteral{
                         Struct: 48,
@@ -48,33 +39,33 @@ SELECT ARRAY(
                             Ident: &ast.Ident{
                               NamePos: 55,
                               NameEnd: 56,
-                              Name:    "X",
+                              Name: "X",
                             },
                             Type: &ast.SimpleType{
                               NamePos: 57,
-                              Name:    "INT64",
+                              Name: "INT64",
                             },
                           },
                           &ast.StructField{
                             Ident: &ast.Ident{
                               NamePos: 64,
                               NameEnd: 65,
-                              Name:    "Y",
+                              Name: "Y",
                             },
                             Type: &ast.SimpleType{
                               NamePos: 66,
-                              Name:    "INT64",
+                              Name: "INT64",
                             },
                           },
                           &ast.StructField{
                             Ident: &ast.Ident{
                               NamePos: 73,
                               NameEnd: 74,
-                              Name:    "Y",
+                              Name: "Y",
                             },
                             Type: &ast.SimpleType{
                               NamePos: 75,
-                              Name:    "INT64",
+                              Name: "INT64",
                             },
                           },
                         },
@@ -82,51 +73,44 @@ SELECT ARRAY(
                           &ast.IntLiteral{
                             ValuePos: 82,
                             ValueEnd: 83,
-                            Base:     10,
-                            Value:    "1",
+                            Base: 10,
+                            Value: "1",
                           },
                           &ast.IntLiteral{
                             ValuePos: 85,
                             ValueEnd: 86,
-                            Base:     10,
-                            Value:    "2",
+                            Base: 10,
+                            Value: "2",
                           },
                           &ast.IntLiteral{
                             ValuePos: 88,
                             ValueEnd: 89,
-                            Base:     10,
-                            Value:    "3",
+                            Base: 10,
+                            Value: "3",
                           },
                         },
                       },
                     },
                   },
-                  From:    (*ast.From)(nil),
-                  Where:   (*ast.Where)(nil),
-                  GroupBy: (*ast.GroupBy)(nil),
-                  Having:  (*ast.Having)(nil),
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 As: &ast.AsAlias{
-                  As:    92,
+                  As: 92,
                   Alias: &ast.Ident{
                     NamePos: 95,
                     NameEnd: 96,
-                    Name:    "S",
+                    Name: "S",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
             },
             Where: &ast.Where{
               Where: 99,
-              Expr:  &ast.BinaryExpr{
-                Op:   "=",
+              Expr: &ast.BinaryExpr{
+                Op: "=",
                 Left: &ast.Ident{
                   NamePos: 105,
                   NameEnd: 106,
-                  Name:    "S",
+                  Name: "S",
                 },
                 Right: &ast.TypelessStructLiteral{
                   Struct: 109,
@@ -141,24 +125,24 @@ SELECT ARRAY(
                             Expr: &ast.IntLiteral{
                               ValuePos: 123,
                               ValueEnd: 124,
-                              Base:     10,
-                              Value:    "1",
+                              Base: 10,
+                              Value: "1",
                             },
                           },
                           &ast.ExprArg{
                             Expr: &ast.IntLiteral{
                               ValuePos: 126,
                               ValueEnd: 127,
-                              Base:     10,
-                              Value:    "2",
+                              Base: 10,
+                              Value: "2",
                             },
                           },
                           &ast.ExprArg{
                             Expr: &ast.IntLiteral{
                               ValuePos: 129,
                               ValueEnd: 130,
-                              Base:     10,
-                              Value:    "3",
+                              Base: 10,
+                              Value: "3",
                             },
                           },
                         },
@@ -168,20 +152,10 @@ SELECT ARRAY(
                 },
               },
             },
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -3,31 +3,30 @@ alter table foo add row deletion policy ( older_than ( bar, interval 30 day ))
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.AddRowDeletionPolicy{
-    Add:               16,
+    Add: 16,
     RowDeletionPolicy: &ast.RowDeletionPolicy{
-      Row:        20,
-      Rparen:     77,
+      Row: 20,
+      Rparen: 77,
       ColumnName: &ast.Ident{
         NamePos: 55,
         NameEnd: 58,
-        Name:    "bar",
+        Name: "bar",
       },
       NumDays: &ast.IntLiteral{
         ValuePos: 69,
         ValueEnd: 71,
-        Base:     10,
-        Value:    "30",
+        Base: 10,
+        Value: "30",
       },
     },
   },

@@ -8,16 +8,16 @@ CREATE PROTO BUNDLE (
 --- AST
 &ast.CreateProtoBundle{
   Create: 165,
-  Types:  &ast.ProtoBundleTypes{
+  Types: &ast.ProtoBundleTypes{
     Lparen: 185,
     Rparen: 300,
-    Types:  []*ast.NamedType{
+    Types: []*ast.NamedType{
       &ast.NamedType{
         Path: []*ast.Ident{
           &ast.Ident{
             NamePos: 194,
             NameEnd: 219,
-            Name:    "examples.shipping.Order",
+            Name: "examples.shipping.Order",
           },
         },
       },
@@ -26,7 +26,7 @@ CREATE PROTO BUNDLE (
           &ast.Ident{
             NamePos: 228,
             NameEnd: 261,
-            Name:    "examples.shipping.Order.Address",
+            Name: "examples.shipping.Order.Address",
           },
         },
       },
@@ -35,7 +35,7 @@ CREATE PROTO BUNDLE (
           &ast.Ident{
             NamePos: 270,
             NameEnd: 300,
-            Name:    "examples.shipping.Order.Item",
+            Name: "examples.shipping.Order.Item",
           },
         },
       },

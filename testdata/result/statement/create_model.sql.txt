@@ -15,64 +15,56 @@ OPTIONS (
 )
 --- AST
 &ast.CreateModel{
-  Create:      0,
-  Remote:      183,
-  OrReplace:   false,
-  IfNotExists: false,
-  Name:        &ast.Ident{
+  Remote: 183,
+  Name: &ast.Ident{
     NamePos: 13,
     NameEnd: 34,
-    Name:    "MyClassificationModel",
+    Name: "MyClassificationModel",
   },
   InputOutput: &ast.CreateModelInputOutput{
-    Input:        35,
-    Rparen:       181,
+    Input: 35,
+    Rparen: 181,
     InputColumns: []*ast.CreateModelColumn{
       &ast.CreateModelColumn{
         Name: &ast.Ident{
           NamePos: 45,
           NameEnd: 51,
-          Name:    "length",
+          Name: "length",
         },
         DataType: &ast.ScalarSchemaType{
           NamePos: 52,
-          Name:    "FLOAT64",
+          Name: "FLOAT64",
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
           NamePos: 63,
           NameEnd: 71,
-          Name:    "material",
+          Name: "material",
         },
         DataType: &ast.SizedSchemaType{
           NamePos: 72,
-          Rparen:  82,
-          Name:    "STRING",
-          Max:     true,
-          Size:    nil,
+          Rparen: 82,
+          Name: "STRING",
+          Max: true,
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
           NamePos: 87,
           NameEnd: 96,
-          Name:    "tag_array",
+          Name: "tag_array",
         },
         DataType: &ast.ArraySchemaType{
           Array: 97,
-          Gt:    114,
-          Item:  &ast.SizedSchemaType{
+          Gt: 114,
+          Item: &ast.SizedSchemaType{
             NamePos: 103,
-            Rparen:  113,
-            Name:    "STRING",
-            Max:     true,
-            Size:    nil,
+            Rparen: 113,
+            Name: "STRING",
+            Max: true,
           },
         },
-        Options: (*ast.Options)(nil),
       },
     },
     OutputColumns: []*ast.CreateModelColumn{
@@ -80,53 +72,50 @@ OPTIONS (
         Name: &ast.Ident{
           NamePos: 129,
           NameEnd: 135,
-          Name:    "scores",
+          Name: "scores",
         },
         DataType: &ast.ArraySchemaType{
           Array: 136,
-          Gt:    149,
-          Item:  &ast.ScalarSchemaType{
+          Gt: 149,
+          Item: &ast.ScalarSchemaType{
             NamePos: 142,
-            Name:    "FLOAT64",
+            Name: "FLOAT64",
           },
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
           NamePos: 154,
           NameEnd: 161,
-          Name:    "classes",
+          Name: "classes",
         },
         DataType: &ast.ArraySchemaType{
           Array: 162,
-          Gt:    179,
-          Item:  &ast.SizedSchemaType{
+          Gt: 179,
+          Item: &ast.SizedSchemaType{
             NamePos: 168,
-            Rparen:  178,
-            Name:    "STRING",
-            Max:     true,
-            Size:    nil,
+            Rparen: 178,
+            Name: "STRING",
+            Max: true,
           },
         },
-        Options: (*ast.Options)(nil),
       },
     },
   },
   Options: &ast.Options{
     Options: 190,
-    Rparen:  301,
+    Rparen: 301,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 202,
           NameEnd: 210,
-          Name:    "endpoint",
+          Name: "endpoint",
         },
         Value: &ast.StringLiteral{
           ValuePos: 213,
           ValueEnd: 300,
-          Value:    "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID",
+          Value: "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID",
         },
       },
     },

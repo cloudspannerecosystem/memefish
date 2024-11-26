@@ -2,13 +2,11 @@
 (SELECT AS VALUE 1)
 --- AST
 &ast.ScalarSubQuery{
-  Lparen: 0,
   Rparen: 18,
-  Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsValue{
-      As:    8,
+  Query: &ast.Select{
+    Select: 1,
+    As: &ast.AsValue{
+      As: 8,
       Value: 11,
     },
     Results: []ast.SelectItem{
@@ -16,17 +14,11 @@
         Expr: &ast.IntLiteral{
           ValuePos: 17,
           ValueEnd: 18,
-          Base:     10,
-          Value:    "1",
+          Base: 10,
+          Value: "1",
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

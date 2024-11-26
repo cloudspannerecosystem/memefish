@@ -2,13 +2,12 @@
 DROP VIEW SingersView
 --- AST
 &ast.DropView{
-  Drop: 0,
   Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 10,
         NameEnd: 21,
-        Name:    "SingersView",
+        Name: "SingersView",
       },
     },
   },

@@ -3,38 +3,33 @@ alter table foo add column if not exists baz string(max) not null
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.AddColumn{
-    Add:         16,
+    Add: 16,
     IfNotExists: true,
-    Column:      &ast.ColumnDef{
+    Column: &ast.ColumnDef{
       Null: 61,
       Name: &ast.Ident{
         NamePos: 41,
         NameEnd: 44,
-        Name:    "baz",
+        Name: "baz",
       },
       Type: &ast.SizedSchemaType{
         NamePos: 45,
-        Rparen:  55,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 55,
+        Name: "STRING",
+        Max: true,
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
   },
 }

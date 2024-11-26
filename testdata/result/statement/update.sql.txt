@@ -2,29 +2,26 @@
 update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
 --- AST
 &ast.Update{
-  Update:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
-    Name:    "foo",
+    Name: "foo",
   },
-  As:      (*ast.AsAlias)(nil),
   Updates: []*ast.UpdateItem{
     &ast.UpdateItem{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 15,
           NameEnd: 18,
-          Name:    "foo",
+          Name: "foo",
         },
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
-        Expr:       &ast.Ident{
+        Expr: &ast.Ident{
           NamePos: 21,
           NameEnd: 24,
-          Name:    "bar",
+          Name: "bar",
         },
       },
     },
@@ -33,16 +30,15 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
         &ast.Ident{
           NamePos: 26,
           NameEnd: 29,
-          Name:    "bar",
+          Name: "bar",
         },
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
-        Expr:       &ast.Ident{
+        Expr: &ast.Ident{
           NamePos: 32,
           NameEnd: 35,
-          Name:    "foo",
+          Name: "foo",
         },
       },
     },
@@ -51,30 +47,29 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
         &ast.Ident{
           NamePos: 37,
           NameEnd: 40,
-          Name:    "baz",
+          Name: "baz",
         },
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: 43,
-        Default:    true,
-        Expr:       nil,
+        Default: true,
       },
     },
   },
   Where: &ast.Where{
     Where: 51,
-    Expr:  &ast.BinaryExpr{
-      Op:   "=",
+    Expr: &ast.BinaryExpr{
+      Op: "=",
       Left: &ast.Ident{
         NamePos: 57,
         NameEnd: 60,
-        Name:    "foo",
+        Name: "foo",
       },
       Right: &ast.IntLiteral{
         ValuePos: 63,
         ValueEnd: 64,
-        Base:     10,
-        Value:    "1",
+        Base: 10,
+        Value: "1",
       },
     },
   },

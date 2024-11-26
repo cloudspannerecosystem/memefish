@@ -2,18 +2,17 @@
 update foo as F set F.foo = F.bar + 1 where foo = F.bar
 --- AST
 &ast.Update{
-  Update:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
-    Name:    "foo",
+    Name: "foo",
   },
   As: &ast.AsAlias{
-    As:    11,
+    As: 11,
     Alias: &ast.Ident{
       NamePos: 14,
       NameEnd: 15,
-      Name:    "F",
+      Name: "F",
     },
   },
   Updates: []*ast.UpdateItem{
@@ -22,38 +21,37 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
         &ast.Ident{
           NamePos: 20,
           NameEnd: 21,
-          Name:    "F",
+          Name: "F",
         },
         &ast.Ident{
           NamePos: 22,
           NameEnd: 25,
-          Name:    "foo",
+          Name: "foo",
         },
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
-        Expr:       &ast.BinaryExpr{
-          Op:   "+",
+        Expr: &ast.BinaryExpr{
+          Op: "+",
           Left: &ast.Path{
             Idents: []*ast.Ident{
               &ast.Ident{
                 NamePos: 28,
                 NameEnd: 29,
-                Name:    "F",
+                Name: "F",
               },
               &ast.Ident{
                 NamePos: 30,
                 NameEnd: 33,
-                Name:    "bar",
+                Name: "bar",
               },
             },
           },
           Right: &ast.IntLiteral{
             ValuePos: 36,
             ValueEnd: 37,
-            Base:     10,
-            Value:    "1",
+            Base: 10,
+            Value: "1",
           },
         },
       },
@@ -61,24 +59,24 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
   },
   Where: &ast.Where{
     Where: 38,
-    Expr:  &ast.BinaryExpr{
-      Op:   "=",
+    Expr: &ast.BinaryExpr{
+      Op: "=",
       Left: &ast.Ident{
         NamePos: 44,
         NameEnd: 47,
-        Name:    "foo",
+        Name: "foo",
       },
       Right: &ast.Path{
         Idents: []*ast.Ident{
           &ast.Ident{
             NamePos: 50,
             NameEnd: 51,
-            Name:    "F",
+            Name: "F",
           },
           &ast.Ident{
             NamePos: 52,
             NameEnd: 55,
-            Name:    "bar",
+            Name: "bar",
           },
         },
       },

@@ -10,25 +10,19 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
-          Array:  9,
+          Array: 9,
           Rparen: 92,
-          Query:  &ast.SubQuery{
+          Query: &ast.SubQuery{
             Lparen: 20,
             Rparen: 88,
-            Query:  &ast.Select{
-              Select:   28,
-              Distinct: false,
-              As:       &ast.AsStruct{
-                As:     35,
+            Query: &ast.Select{
+              Select: 28,
+              As: &ast.AsStruct{
+                As: 35,
                 Struct: 38,
               },
               Results: []ast.SelectItem{
@@ -37,45 +31,29 @@ SELECT
                 },
               },
               From: &ast.From{
-                From:   61,
+                From: 61,
                 Source: &ast.TableName{
                   Table: &ast.Ident{
                     NamePos: 66,
                     NameEnd: 73,
-                    Name:    "Singers",
+                    Name: "Singers",
                   },
-                  Hint:   (*ast.Hint)(nil),
-                  As:     (*ast.AsAlias)(nil),
-                  Sample: (*ast.TableSample)(nil),
                 },
               },
-              Where:   (*ast.Where)(nil),
-              GroupBy: (*ast.GroupBy)(nil),
-              Having:  (*ast.Having)(nil),
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   &ast.Limit{
+              Limit: &ast.Limit{
                 Limit: 74,
                 Count: &ast.IntLiteral{
                   ValuePos: 80,
                   ValueEnd: 83,
-                  Base:     10,
-                  Value:    "100",
+                  Base: 10,
+                  Value: "100",
                 },
-                Offset: (*ast.Offset)(nil),
               },
             },
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

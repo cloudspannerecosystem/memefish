@@ -8,39 +8,31 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 43,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 11,
             NameEnd: 20,
-            Name:    "ARRAY_AGG",
+            Name: "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 21,
                 NameEnd: 27,
-                Name:    "inches",
+                Name: "inches",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       &ast.HavingMax{
+          Having: &ast.HavingMax{
             Having: 28,
-            Expr:   &ast.Ident{
+            Expr: &ast.Ident{
               NamePos: 39,
               NameEnd: 43,
-              Name:    "year",
+              Name: "year",
             },
           },
         },
@@ -48,29 +40,26 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 82,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 50,
             NameEnd: 59,
-            Name:    "ARRAY_AGG",
+            Name: "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 60,
                 NameEnd: 66,
-                Name:    "inches",
+                Name: "inches",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       &ast.HavingMin{
+          Having: &ast.HavingMin{
             Having: 67,
-            Expr:   &ast.Ident{
+            Expr: &ast.Ident{
               NamePos: 78,
               NameEnd: 82,
-              Name:    "year",
+              Name: "year",
             },
           },
         },
@@ -78,95 +67,81 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 118,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 89,
             NameEnd: 98,
-            Name:    "ARRAY_AGG",
+            Name: "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 99,
                 NameEnd: 105,
-                Name:    "inches",
+                Name: "inches",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.IgnoreNulls{
             Ignore: 106,
-            Nulls:  113,
+            Nulls: 113,
           },
-          Having: nil,
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 155,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 125,
             NameEnd: 134,
-            Name:    "ARRAY_AGG",
+            Name: "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 135,
                 NameEnd: 141,
-                Name:    "inches",
+                Name: "inches",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.RespectNulls{
             Respect: 142,
-            Nulls:   150,
+            Nulls: 150,
           },
-          Having: nil,
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 208,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 162,
             NameEnd: 171,
-            Name:    "ARRAY_AGG",
+            Name: "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 172,
                 NameEnd: 178,
-                Name:    "inches",
+                Name: "inches",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.RespectNulls{
             Respect: 179,
-            Nulls:   187,
+            Nulls: 187,
           },
           Having: &ast.HavingMax{
             Having: 193,
-            Expr:   &ast.Ident{
+            Expr: &ast.Ident{
               NamePos: 204,
               NameEnd: 208,
-              Name:    "year",
+              Name: "year",
             },
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -2,20 +2,18 @@
 NEW Universe {}
 --- AST
 &ast.BracedNewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
         NamePos: 4,
         NameEnd: 12,
-        Name:    "Universe",
+        Name: "Universe",
       },
     },
   },
   Body: &ast.BracedConstructor{
     Lbrace: 13,
     Rbrace: 14,
-    Fields: []*ast.BracedConstructorField(nil),
   },
 }
 

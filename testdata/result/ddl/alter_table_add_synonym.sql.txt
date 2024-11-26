@@ -2,22 +2,21 @@
 ALTER TABLE Singers ADD SYNONYM SingersTest
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 19,
-        Name:    "Singers",
+        Name: "Singers",
       },
     },
   },
   TableAlteration: &ast.AddSynonym{
-    Add:  20,
+    Add: 20,
     Name: &ast.Ident{
       NamePos: 32,
       NameEnd: 43,
-      Name:    "SingersTest",
+      Name: "SingersTest",
     },
   },
 }

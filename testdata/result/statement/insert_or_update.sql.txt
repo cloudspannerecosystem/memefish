@@ -3,50 +3,47 @@ INSERT OR UPDATE INTO foo
 (foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
-  Insert:       0,
   InsertOrType: "UPDATE",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 22,
     NameEnd: 25,
-    Name:    "foo",
+    Name: "foo",
   },
   Columns: []*ast.Ident{
     &ast.Ident{
       NamePos: 27,
       NameEnd: 30,
-      Name:    "foo",
+      Name: "foo",
     },
     &ast.Ident{
       NamePos: 32,
       NameEnd: 35,
-      Name:    "bar",
+      Name: "bar",
     },
   },
   Input: &ast.ValuesInput{
     Values: 37,
-    Rows:   []*ast.ValuesRow{
+    Rows: []*ast.ValuesRow{
       &ast.ValuesRow{
         Lparen: 44,
         Rparen: 49,
-        Exprs:  []*ast.DefaultExpr{
+        Exprs: []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 45,
               ValueEnd: 46,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 48,
               ValueEnd: 49,
-              Base:     10,
-              Value:    "2",
+              Base: 10,
+              Value: "2",
             },
           },
         },

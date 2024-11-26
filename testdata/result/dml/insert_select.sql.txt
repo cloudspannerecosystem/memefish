@@ -3,45 +3,40 @@ insert foo (foo, bar)
 select * from unnest([(1, 2), (3, 4)])
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
-    Name:    "foo",
+    Name: "foo",
   },
   Columns: []*ast.Ident{
     &ast.Ident{
       NamePos: 12,
       NameEnd: 15,
-      Name:    "foo",
+      Name: "foo",
     },
     &ast.Ident{
       NamePos: 17,
       NameEnd: 20,
-      Name:    "bar",
+      Name: "bar",
     },
   },
   Input: &ast.SubQueryInput{
     Query: &ast.Select{
-      Select:   22,
-      Distinct: false,
-      As:       nil,
-      Results:  []ast.SelectItem{
+      Select: 22,
+      Results: []ast.SelectItem{
         &ast.Star{
           Star: 29,
         },
       },
       From: &ast.From{
-        From:   31,
+        From: 31,
         Source: &ast.Unnest{
           Unnest: 36,
           Rparen: 59,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 43,
             Rbrack: 58,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.TupleStructLiteral{
                 Lparen: 44,
@@ -50,14 +45,14 @@ select * from unnest([(1, 2), (3, 4)])
                   &ast.IntLiteral{
                     ValuePos: 45,
                     ValueEnd: 46,
-                    Base:     10,
-                    Value:    "1",
+                    Base: 10,
+                    Value: "1",
                   },
                   &ast.IntLiteral{
                     ValuePos: 48,
                     ValueEnd: 49,
-                    Base:     10,
-                    Value:    "2",
+                    Base: 10,
+                    Value: "2",
                   },
                 },
               },
@@ -68,30 +63,21 @@ select * from unnest([(1, 2), (3, 4)])
                   &ast.IntLiteral{
                     ValuePos: 53,
                     ValueEnd: 54,
-                    Base:     10,
-                    Value:    "3",
+                    Base: 10,
+                    Value: "3",
                   },
                   &ast.IntLiteral{
                     ValuePos: 56,
                     ValueEnd: 57,
-                    Base:     10,
-                    Value:    "4",
+                    Base: 10,
+                    Value: "4",
                   },
                 },
               },
             },
           },
-          Hint:       (*ast.Hint)(nil),
-          As:         (*ast.AsAlias)(nil),
-          WithOffset: (*ast.WithOffset)(nil),
-          Sample:     (*ast.TableSample)(nil),
         },
       },
-      Where:   (*ast.Where)(nil),
-      GroupBy: (*ast.GroupBy)(nil),
-      Having:  (*ast.Having)(nil),
-      OrderBy: (*ast.OrderBy)(nil),
-      Limit:   (*ast.Limit)(nil),
     },
   },
 }

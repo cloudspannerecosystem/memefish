@@ -2,40 +2,37 @@
 ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 19,
-        Name:    "actions",
+        Name: "actions",
       },
     },
   },
   TableAlteration: &ast.AlterColumn{
     Alter: 20,
-    Name:  &ast.Ident{
+    Name: &ast.Ident{
       NamePos: 33,
       NameEnd: 39,
-      Name:    "output",
+      Name: "output",
     },
     Alteration: &ast.AlterColumnType{
       Type: &ast.SizedSchemaType{
         NamePos: 40,
-        Rparen:  50,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 50,
+        Name: "STRING",
+        Max: true,
       },
-      Null:        56,
-      NotNull:     true,
+      Null: 56,
+      NotNull: true,
       DefaultExpr: &ast.ColumnDefaultExpr{
         Default: 61,
-        Rparen:  71,
-        Expr:    &ast.StringLiteral{
+        Rparen: 71,
+        Expr: &ast.StringLiteral{
           ValuePos: 69,
           ValueEnd: 71,
-          Value:    "",
         },
       },
     },

@@ -3,13 +3,12 @@ alter index foo drop stored column bar
 
 --- AST
 &ast.AlterIndex{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
@@ -18,7 +17,7 @@ alter index foo drop stored column bar
     Name: &ast.Ident{
       NamePos: 35,
       NameEnd: 38,
-      Name:    "bar",
+      Name: "bar",
     },
   },
 }

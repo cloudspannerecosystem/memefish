@@ -3,38 +3,37 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
 
 --- AST
 &ast.Grant{
-  Grant:     0,
   Privilege: &ast.PrivilegeOnTable{
     Privileges: []ast.TablePrivilege{
       &ast.SelectPrivilege{
-        Select:  6,
-        Rparen:  34,
+        Select: 6,
+        Rparen: 34,
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 13,
             NameEnd: 17,
-            Name:    "name",
+            Name: "name",
           },
           &ast.Ident{
             NamePos: 19,
             NameEnd: 24,
-            Name:    "level",
+            Name: "level",
           },
           &ast.Ident{
             NamePos: 26,
             NameEnd: 34,
-            Name:    "location",
+            Name: "location",
           },
         },
       },
       &ast.UpdatePrivilege{
-        Update:  37,
-        Rparen:  52,
+        Update: 37,
+        Rparen: 52,
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 44,
             NameEnd: 52,
-            Name:    "location",
+            Name: "location",
           },
         },
       },
@@ -43,12 +42,12 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
       &ast.Ident{
         NamePos: 63,
         NameEnd: 72,
-        Name:    "employees",
+        Name: "employees",
       },
       &ast.Ident{
         NamePos: 74,
         NameEnd: 85,
-        Name:    "contractors",
+        Name: "contractors",
       },
     },
   },
@@ -56,12 +55,12 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
     &ast.Ident{
       NamePos: 94,
       NameEnd: 104,
-      Name:    "hr_manager",
+      Name: "hr_manager",
     },
     &ast.Ident{
       NamePos: 106,
       NameEnd: 115,
-      Name:    "hr_member",
+      Name: "hr_member",
     },
   },
 }

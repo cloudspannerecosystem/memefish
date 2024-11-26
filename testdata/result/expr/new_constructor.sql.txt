@@ -2,28 +2,27 @@
 NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)
 --- AST
 &ast.NewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
         NamePos: 4,
         NameEnd: 13,
-        Name:    "googlesql",
+        Name: "googlesql",
       },
       &ast.Ident{
         NamePos: 14,
         NameEnd: 22,
-        Name:    "examples",
+        Name: "examples",
       },
       &ast.Ident{
         NamePos: 23,
         NameEnd: 28,
-        Name:    "music",
+        Name: "music",
       },
       &ast.Ident{
         NamePos: 29,
         NameEnd: 34,
-        Name:    "Chart",
+        Name: "Chart",
       },
     },
   },
@@ -32,14 +31,14 @@ NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)
       Expr: &ast.Ident{
         NamePos: 35,
         NameEnd: 38,
-        Name:    "key",
+        Name: "key",
       },
       As: &ast.AsAlias{
-        As:    39,
+        As: 39,
         Alias: &ast.Ident{
           NamePos: 42,
           NameEnd: 46,
-          Name:    "rank",
+          Name: "rank",
         },
       },
     },
@@ -47,14 +46,14 @@ NEW googlesql.examples.music.Chart(key AS rank, name AS chart_name)
       Expr: &ast.Ident{
         NamePos: 48,
         NameEnd: 52,
-        Name:    "name",
+        Name: "name",
       },
       As: &ast.AsAlias{
-        As:    53,
+        As: 53,
         Alias: &ast.Ident{
           NamePos: 56,
           NameEnd: 66,
-          Name:    "chart_name",
+          Name: "chart_name",
         },
       },
     },

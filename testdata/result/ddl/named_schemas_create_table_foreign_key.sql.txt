@@ -8,20 +8,18 @@ CREATE TABLE sch1.ShoppingCarts (
 ) PRIMARY KEY(CartId)
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      296,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 296,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
         NameEnd: 17,
-        Name:    "sch1",
+        Name: "sch1",
       },
       &ast.Ident{
         NamePos: 18,
         NameEnd: 31,
-        Name:    "ShoppingCarts",
+        Name: "ShoppingCarts",
       },
     },
   },
@@ -31,78 +29,68 @@ CREATE TABLE sch1.ShoppingCarts (
       Name: &ast.Ident{
         NamePos: 36,
         NameEnd: 42,
-        Name:    "CartId",
+        Name: "CartId",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 43,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 82,
       Name: &ast.Ident{
         NamePos: 61,
         NameEnd: 71,
-        Name:    "CustomerId",
+        Name: "CustomerId",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 72,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 119,
       Name: &ast.Ident{
         NamePos: 90,
         NameEnd: 102,
-        Name:    "CustomerName",
+        Name: "CustomerName",
       },
       Type: &ast.SizedSchemaType{
         NamePos: 103,
-        Rparen:  113,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 113,
+        Name: "STRING",
+        Max: true,
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
       ConstraintPos: 127,
-      Name:          &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 138,
         NameEnd: 162,
-        Name:    "FKShoppingCartsCustomers",
+        Name: "FKShoppingCartsCustomers",
       },
       Constraint: &ast.ForeignKey{
-        Foreign:     163,
-        Rparen:      255,
+        Foreign: 163,
+        Rparen: 255,
         OnDeleteEnd: 274,
-        Columns:     []*ast.Ident{
+        Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 175,
             NameEnd: 185,
-            Name:    "CustomerId",
+            Name: "CustomerId",
           },
           &ast.Ident{
             NamePos: 187,
             NameEnd: 199,
-            Name:    "CustomerName",
+            Name: "CustomerName",
           },
         },
         ReferenceTable: &ast.Path{
@@ -110,12 +98,12 @@ CREATE TABLE sch1.ShoppingCarts (
             &ast.Ident{
               NamePos: 216,
               NameEnd: 220,
-              Name:    "sch1",
+              Name: "sch1",
             },
             &ast.Ident{
               NamePos: 221,
               NameEnd: 230,
-              Name:    "Customers",
+              Name: "Customers",
             },
           },
         },
@@ -123,12 +111,12 @@ CREATE TABLE sch1.ShoppingCarts (
           &ast.Ident{
             NamePos: 231,
             NameEnd: 241,
-            Name:    "CustomerId",
+            Name: "CustomerId",
           },
           &ast.Ident{
             NamePos: 243,
             NameEnd: 255,
-            Name:    "CustomerName",
+            Name: "CustomerName",
           },
         },
         OnDelete: "ON DELETE CASCADE",
@@ -138,17 +126,13 @@ CREATE TABLE sch1.ShoppingCarts (
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 290,
         NameEnd: 296,
-        Name:    "CartId",
+        Name: "CartId",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

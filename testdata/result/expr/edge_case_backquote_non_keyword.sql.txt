@@ -2,16 +2,15 @@
 `DATABASE` + `SCHEMA`
 --- AST
 &ast.BinaryExpr{
-  Op:   "+",
+  Op: "+",
   Left: &ast.Ident{
-    NamePos: 0,
     NameEnd: 10,
-    Name:    "DATABASE",
+    Name: "DATABASE",
   },
   Right: &ast.Ident{
     NamePos: 13,
     NameEnd: 21,
-    Name:    "SCHEMA",
+    Name: "SCHEMA",
   },
 }
 

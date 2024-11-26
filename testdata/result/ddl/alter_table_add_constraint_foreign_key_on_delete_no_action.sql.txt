@@ -3,39 +3,38 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.AddTableConstraint{
-    Add:             16,
+    Add: 16,
     TableConstraint: &ast.TableConstraint{
       ConstraintPos: 20,
-      Name:          &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 31,
         NameEnd: 37,
-        Name:    "fkname",
+        Name: "fkname",
       },
       Constraint: &ast.ForeignKey{
-        Foreign:     38,
-        Rparen:      90,
+        Foreign: 38,
+        Rparen: 90,
         OnDeleteEnd: 111,
-        Columns:     []*ast.Ident{
+        Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 51,
             NameEnd: 54,
-            Name:    "foo",
+            Name: "foo",
           },
           &ast.Ident{
             NamePos: 56,
             NameEnd: 59,
-            Name:    "bar",
+            Name: "bar",
           },
         },
         ReferenceTable: &ast.Path{
@@ -43,7 +42,7 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
             &ast.Ident{
               NamePos: 72,
               NameEnd: 74,
-              Name:    "t2",
+              Name: "t2",
             },
           },
         },
@@ -51,12 +50,12 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
           &ast.Ident{
             NamePos: 76,
             NameEnd: 82,
-            Name:    "t2key1",
+            Name: "t2key1",
           },
           &ast.Ident{
             NamePos: 84,
             NameEnd: 90,
-            Name:    "t2key2",
+            Name: "t2key2",
           },
         },
         OnDelete: "ON DELETE NO ACTION",

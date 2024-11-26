@@ -8,51 +8,39 @@ WHERE
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 18,
           NameEnd: 25,
-          Name:    "Singers",
+          Name: "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 26,
-      Expr:  &ast.BinaryExpr{
-        Op:   "=",
+      Expr: &ast.BinaryExpr{
+        Op: "=",
         Left: &ast.Ident{
           NamePos: 34,
           NameEnd: 42,
-          Name:    "SingerID",
+          Name: "SingerID",
         },
         Right: &ast.IntLiteral{
           ValuePos: 45,
           ValueEnd: 46,
-          Base:     10,
-          Value:    "1",
+          Base: 10,
+          Value: "1",
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -6,17 +6,13 @@ create index foo_bar on foo (
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       41,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  false,
-  Name:         &ast.Path{
+  Rparen: 41,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
         NameEnd: 20,
-        Name:    "foo_bar",
+        Name: "foo_bar",
       },
     },
   },
@@ -25,38 +21,38 @@ create index foo_bar on foo (
       &ast.Ident{
         NamePos: 24,
         NameEnd: 27,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: 36,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 32,
         NameEnd: 35,
-        Name:    "foo",
+        Name: "foo",
       },
       Dir: "DESC",
     },
   },
   Storing: &ast.Storing{
     Storing: 43,
-    Rparen:  55,
+    Rparen: 55,
     Columns: []*ast.Ident{
       &ast.Ident{
         NamePos: 52,
         NameEnd: 55,
-        Name:    "bar",
+        Name: "bar",
       },
     },
   },
   InterleaveIn: &ast.InterleaveIn{
-    Comma:     56,
+    Comma: 56,
     TableName: &ast.Ident{
       NamePos: 74,
       NameEnd: 80,
-      Name:    "foobar",
+      Name: "foobar",
     },
   },
 }

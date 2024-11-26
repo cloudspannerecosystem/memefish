@@ -12,82 +12,62 @@ FROM (
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.SubQueryTableExpr{
         Lparen: 16,
         Rparen: 77,
-        Query:  &ast.Select{
-          Select:   20,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+        Query: &ast.Select{
+          Select: 20,
+          Results: []ast.SelectItem{
             &ast.Star{
               Star: 31,
             },
           },
           From: &ast.From{
-            From:   35,
+            From: 35,
             Source: &ast.TableName{
               Table: &ast.Ident{
                 NamePos: 44,
                 NameEnd: 51,
-                Name:    "Singers",
+                Name: "Singers",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
           Where: &ast.Where{
             Where: 54,
-            Expr:  &ast.BinaryExpr{
-              Op:   "=",
+            Expr: &ast.BinaryExpr{
+              Op: "=",
               Left: &ast.Ident{
                 NamePos: 64,
                 NameEnd: 72,
-                Name:    "SingerID",
+                Name: "SingerID",
               },
               Right: &ast.IntLiteral{
                 ValuePos: 75,
                 ValueEnd: 76,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
             },
           },
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
         As: &ast.AsAlias{
-          As:    79,
+          As: 79,
           Alias: &ast.Ident{
             NamePos: 82,
             NameEnd: 83,
-            Name:    "S",
+            Name: "S",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -6,15 +6,14 @@ create table if not exists foo (
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      93,
+  Rparen: 93,
   IfNotExists: true,
-  Name:        &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 27,
         NameEnd: 30,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
@@ -24,60 +23,47 @@ create table if not exists foo (
       Name: &ast.Ident{
         NamePos: 35,
         NameEnd: 38,
-        Name:    "foo",
+        Name: "foo",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 39,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 64,
       Name: &ast.Ident{
         NamePos: 48,
         NameEnd: 51,
-        Name:    "bar",
+        Name: "bar",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 52,
-        Name:    "FLOAT64",
+        Name: "FLOAT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 85,
         NameEnd: 88,
-        Name:    "foo",
+        Name: "foo",
       },
-      Dir: "",
     },
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 90,
         NameEnd: 93,
-        Name:    "bar",
+        Name: "bar",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

@@ -8,75 +8,61 @@ WHERE
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 18,
           NameEnd: 25,
-          Name:    "Singers",
+          Name: "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 26,
-      Expr:  &ast.InExpr{
-        Not:  false,
+      Expr: &ast.InExpr{
         Left: &ast.Ident{
           NamePos: 34,
           NameEnd: 42,
-          Name:    "SingerId",
+          Name: "SingerId",
         },
         Right: &ast.UnnestInCondition{
           Unnest: 46,
           Rparen: 67,
-          Expr:   &ast.ArrayLiteral{
-            Array:  53,
+          Expr: &ast.ArrayLiteral{
+            Array: 53,
             Lbrack: 58,
             Rbrack: 66,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 59,
                 ValueEnd: 60,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 62,
                 ValueEnd: 63,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 65,
                 ValueEnd: 66,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

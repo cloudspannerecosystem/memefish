@@ -7,63 +7,43 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.TableName{
+        Op: ",",
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
             NameEnd: 30,
-            Name:    "ComplexTable",
+            Name: "ComplexTable",
           },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
-          Sample: (*ast.TableSample)(nil),
         },
         Right: &ast.Unnest{
           Unnest: 34,
           Rparen: 62,
-          Expr:   &ast.Path{
+          Expr: &ast.Path{
             Idents: []*ast.Ident{
               &ast.Ident{
                 NamePos: 41,
                 NameEnd: 53,
-                Name:    "ComplexTable",
+                Name: "ComplexTable",
               },
               &ast.Ident{
                 NamePos: 54,
                 NameEnd: 62,
-                Name:    "IntArray",
+                Name: "IntArray",
               },
             },
           },
-          Hint:       (*ast.Hint)(nil),
-          As:         (*ast.AsAlias)(nil),
-          WithOffset: (*ast.WithOffset)(nil),
-          Sample:     (*ast.TableSample)(nil),
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

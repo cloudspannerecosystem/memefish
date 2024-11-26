@@ -3,13 +3,12 @@ alter table foo drop column bar
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
@@ -18,7 +17,7 @@ alter table foo drop column bar
     Name: &ast.Ident{
       NamePos: 28,
       NameEnd: 31,
-      Name:    "bar",
+      Name: "bar",
     },
   },
 }

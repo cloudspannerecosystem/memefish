@@ -25,294 +25,283 @@ WHERE
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 18,
           NameEnd: 25,
-          Name:    "Singers",
+          Name: "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 26,
-      Expr:  &ast.BinaryExpr{
-        Op:   "OR",
+      Expr: &ast.BinaryExpr{
+        Op: "OR",
         Left: &ast.BinaryExpr{
-          Op:   "OR",
+          Op: "OR",
           Left: &ast.BinaryExpr{
-            Op:   "OR",
+            Op: "OR",
             Left: &ast.BinaryExpr{
-              Op:   "OR",
+              Op: "OR",
               Left: &ast.BinaryExpr{
-                Op:   "OR",
+                Op: "OR",
                 Left: &ast.BinaryExpr{
-                  Op:   "OR",
+                  Op: "OR",
                   Left: &ast.BinaryExpr{
-                    Op:   "OR",
+                    Op: "OR",
                     Left: &ast.BinaryExpr{
-                      Op:   "OR",
+                      Op: "OR",
                       Left: &ast.BinaryExpr{
-                        Op:   "OR",
+                        Op: "OR",
                         Left: &ast.BinaryExpr{
-                          Op:   "OR",
+                          Op: "OR",
                           Left: &ast.BinaryExpr{
-                            Op:   "OR",
+                            Op: "OR",
                             Left: &ast.BinaryExpr{
-                              Op:   "OR",
+                              Op: "OR",
                               Left: &ast.BinaryExpr{
-                                Op:   "OR",
+                                Op: "OR",
                                 Left: &ast.BinaryExpr{
-                                  Op:   "OR",
+                                  Op: "OR",
                                   Left: &ast.BinaryExpr{
-                                    Op:   "OR",
+                                    Op: "OR",
                                     Left: &ast.BinaryExpr{
-                                      Op:   "OR",
+                                      Op: "OR",
                                       Left: &ast.BinaryExpr{
-                                        Op:   "OR",
+                                        Op: "OR",
                                         Left: &ast.BinaryExpr{
-                                          Op:   "=",
+                                          Op: "=",
                                           Left: &ast.Ident{
                                             NamePos: 34,
                                             NameEnd: 42,
-                                            Name:    "SingerID",
+                                            Name: "SingerID",
                                           },
                                           Right: &ast.IntLiteral{
                                             ValuePos: 45,
                                             ValueEnd: 46,
-                                            Base:     10,
-                                            Value:    "1",
+                                            Base: 10,
+                                            Value: "1",
                                           },
                                         },
                                         Right: &ast.BinaryExpr{
-                                          Op:   "<",
+                                          Op: "<",
                                           Left: &ast.Ident{
                                             NamePos: 52,
                                             NameEnd: 60,
-                                            Name:    "SingerID",
+                                            Name: "SingerID",
                                           },
                                           Right: &ast.IntLiteral{
                                             ValuePos: 63,
                                             ValueEnd: 64,
-                                            Base:     10,
-                                            Value:    "1",
+                                            Base: 10,
+                                            Value: "1",
                                           },
                                         },
                                       },
                                       Right: &ast.BinaryExpr{
-                                        Op:   ">",
+                                        Op: ">",
                                         Left: &ast.Ident{
                                           NamePos: 70,
                                           NameEnd: 78,
-                                          Name:    "SingerID",
+                                          Name: "SingerID",
                                         },
                                         Right: &ast.IntLiteral{
                                           ValuePos: 81,
                                           ValueEnd: 82,
-                                          Base:     10,
-                                          Value:    "1",
+                                          Base: 10,
+                                          Value: "1",
                                         },
                                       },
                                     },
                                     Right: &ast.BinaryExpr{
-                                      Op:   "<=",
+                                      Op: "<=",
                                       Left: &ast.Ident{
                                         NamePos: 88,
                                         NameEnd: 96,
-                                        Name:    "SingerID",
+                                        Name: "SingerID",
                                       },
                                       Right: &ast.IntLiteral{
                                         ValuePos: 100,
                                         ValueEnd: 101,
-                                        Base:     10,
-                                        Value:    "1",
+                                        Base: 10,
+                                        Value: "1",
                                       },
                                     },
                                   },
                                   Right: &ast.BinaryExpr{
-                                    Op:   ">=",
+                                    Op: ">=",
                                     Left: &ast.Ident{
                                       NamePos: 107,
                                       NameEnd: 115,
-                                      Name:    "SingerID",
+                                      Name: "SingerID",
                                     },
                                     Right: &ast.IntLiteral{
                                       ValuePos: 119,
                                       ValueEnd: 120,
-                                      Base:     10,
-                                      Value:    "1",
+                                      Base: 10,
+                                      Value: "1",
                                     },
                                   },
                                 },
                                 Right: &ast.BinaryExpr{
-                                  Op:   "!=",
+                                  Op: "!=",
                                   Left: &ast.Ident{
                                     NamePos: 126,
                                     NameEnd: 134,
-                                    Name:    "SingerID",
+                                    Name: "SingerID",
                                   },
                                   Right: &ast.IntLiteral{
                                     ValuePos: 138,
                                     ValueEnd: 139,
-                                    Base:     10,
-                                    Value:    "1",
+                                    Base: 10,
+                                    Value: "1",
                                   },
                                 },
                               },
                               Right: &ast.InExpr{
-                                Not:  false,
                                 Left: &ast.Ident{
                                   NamePos: 145,
                                   NameEnd: 153,
-                                  Name:    "SingerID",
+                                  Name: "SingerID",
                                 },
                                 Right: &ast.ValuesInCondition{
                                   Lparen: 157,
                                   Rparen: 165,
-                                  Exprs:  []ast.Expr{
+                                  Exprs: []ast.Expr{
                                     &ast.IntLiteral{
                                       ValuePos: 158,
                                       ValueEnd: 159,
-                                      Base:     10,
-                                      Value:    "1",
+                                      Base: 10,
+                                      Value: "1",
                                     },
                                     &ast.IntLiteral{
                                       ValuePos: 161,
                                       ValueEnd: 162,
-                                      Base:     10,
-                                      Value:    "2",
+                                      Base: 10,
+                                      Value: "2",
                                     },
                                     &ast.IntLiteral{
                                       ValuePos: 164,
                                       ValueEnd: 165,
-                                      Base:     10,
-                                      Value:    "3",
+                                      Base: 10,
+                                      Value: "3",
                                     },
                                   },
                                 },
                               },
                             },
                             Right: &ast.InExpr{
-                              Not:  true,
+                              Not: true,
                               Left: &ast.Ident{
                                 NamePos: 172,
                                 NameEnd: 180,
-                                Name:    "SingerID",
+                                Name: "SingerID",
                               },
                               Right: &ast.ValuesInCondition{
                                 Lparen: 188,
                                 Rparen: 196,
-                                Exprs:  []ast.Expr{
+                                Exprs: []ast.Expr{
                                   &ast.IntLiteral{
                                     ValuePos: 189,
                                     ValueEnd: 190,
-                                    Base:     10,
-                                    Value:    "1",
+                                    Base: 10,
+                                    Value: "1",
                                   },
                                   &ast.IntLiteral{
                                     ValuePos: 192,
                                     ValueEnd: 193,
-                                    Base:     10,
-                                    Value:    "2",
+                                    Base: 10,
+                                    Value: "2",
                                   },
                                   &ast.IntLiteral{
                                     ValuePos: 195,
                                     ValueEnd: 196,
-                                    Base:     10,
-                                    Value:    "3",
+                                    Base: 10,
+                                    Value: "3",
                                   },
                                 },
                               },
                             },
                           },
                           Right: &ast.BetweenExpr{
-                            Not:  false,
                             Left: &ast.Ident{
                               NamePos: 203,
                               NameEnd: 211,
-                              Name:    "SingerID",
+                              Name: "SingerID",
                             },
                             RightStart: &ast.IntLiteral{
                               ValuePos: 220,
                               ValueEnd: 221,
-                              Base:     10,
-                              Value:    "1",
+                              Base: 10,
+                              Value: "1",
                             },
                             RightEnd: &ast.IntLiteral{
                               ValuePos: 226,
                               ValueEnd: 227,
-                              Base:     10,
-                              Value:    "3",
+                              Base: 10,
+                              Value: "3",
                             },
                           },
                         },
                         Right: &ast.BetweenExpr{
-                          Not:  true,
+                          Not: true,
                           Left: &ast.Ident{
                             NamePos: 233,
                             NameEnd: 241,
-                            Name:    "SingerID",
+                            Name: "SingerID",
                           },
                           RightStart: &ast.IntLiteral{
                             ValuePos: 254,
                             ValueEnd: 255,
-                            Base:     10,
-                            Value:    "1",
+                            Base: 10,
+                            Value: "1",
                           },
                           RightEnd: &ast.IntLiteral{
                             ValuePos: 260,
                             ValueEnd: 261,
-                            Base:     10,
-                            Value:    "3",
+                            Base: 10,
+                            Value: "3",
                           },
                         },
                       },
                       Right: &ast.BinaryExpr{
-                        Op:   "LIKE",
+                        Op: "LIKE",
                         Left: &ast.Ident{
                           NamePos: 267,
                           NameEnd: 276,
-                          Name:    "FirstName",
+                          Name: "FirstName",
                         },
                         Right: &ast.StringLiteral{
                           ValuePos: 282,
                           ValueEnd: 286,
-                          Value:    "%a",
+                          Value: "%a",
                         },
                       },
                     },
                     Right: &ast.BinaryExpr{
-                      Op:   "NOT LIKE",
+                      Op: "NOT LIKE",
                       Left: &ast.Ident{
                         NamePos: 292,
                         NameEnd: 301,
-                        Name:    "FirstName",
+                        Name: "FirstName",
                       },
                       Right: &ast.StringLiteral{
                         ValuePos: 311,
                         ValueEnd: 315,
-                        Value:    "%a",
+                        Value: "%a",
                       },
                     },
                   },
                   Right: &ast.IsNullExpr{
                     Null: 329,
-                    Not:  false,
                     Left: &ast.NullLiteral{
                       Null: 321,
                     },
@@ -320,7 +309,7 @@ WHERE
                 },
                 Right: &ast.IsNullExpr{
                   Null: 351,
-                  Not:  true,
+                  Not: true,
                   Left: &ast.NullLiteral{
                     Null: 339,
                   },
@@ -328,22 +317,21 @@ WHERE
               },
               Right: &ast.IsBoolExpr{
                 RightPos: 379,
-                Not:      false,
-                Left:     &ast.ParenExpr{
+                Left: &ast.ParenExpr{
                   Lparen: 361,
                   Rparen: 374,
-                  Expr:   &ast.BinaryExpr{
-                    Op:   "=",
+                  Expr: &ast.BinaryExpr{
+                    Op: "=",
                     Left: &ast.Ident{
                       NamePos: 362,
                       NameEnd: 370,
-                      Name:    "SingerID",
+                      Name: "SingerID",
                     },
                     Right: &ast.IntLiteral{
                       ValuePos: 373,
                       ValueEnd: 374,
-                      Base:     10,
-                      Value:    "1",
+                      Base: 10,
+                      Value: "1",
                     },
                   },
                 },
@@ -352,22 +340,22 @@ WHERE
             },
             Right: &ast.IsBoolExpr{
               RightPos: 411,
-              Not:      true,
-              Left:     &ast.ParenExpr{
+              Not: true,
+              Left: &ast.ParenExpr{
                 Lparen: 389,
                 Rparen: 402,
-                Expr:   &ast.BinaryExpr{
-                  Op:   "=",
+                Expr: &ast.BinaryExpr{
+                  Op: "=",
                   Left: &ast.Ident{
                     NamePos: 390,
                     NameEnd: 398,
-                    Name:    "SingerID",
+                    Name: "SingerID",
                   },
                   Right: &ast.IntLiteral{
                     ValuePos: 401,
                     ValueEnd: 402,
-                    Base:     10,
-                    Value:    "1",
+                    Base: 10,
+                    Value: "1",
                   },
                 },
               },
@@ -376,57 +364,50 @@ WHERE
           },
           Right: &ast.IsBoolExpr{
             RightPos: 439,
-            Not:      false,
-            Left:     &ast.ParenExpr{
+            Left: &ast.ParenExpr{
               Lparen: 421,
               Rparen: 434,
-              Expr:   &ast.BinaryExpr{
-                Op:   "=",
+              Expr: &ast.BinaryExpr{
+                Op: "=",
                 Left: &ast.Ident{
                   NamePos: 422,
                   NameEnd: 430,
-                  Name:    "SingerID",
+                  Name: "SingerID",
                 },
                 Right: &ast.IntLiteral{
                   ValuePos: 433,
                   ValueEnd: 434,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
             },
-            Right: false,
           },
         },
         Right: &ast.IsBoolExpr{
           RightPos: 472,
-          Not:      true,
-          Left:     &ast.ParenExpr{
+          Not: true,
+          Left: &ast.ParenExpr{
             Lparen: 450,
             Rparen: 463,
-            Expr:   &ast.BinaryExpr{
-              Op:   "=",
+            Expr: &ast.BinaryExpr{
+              Op: "=",
               Left: &ast.Ident{
                 NamePos: 451,
                 NameEnd: 459,
-                Name:    "SingerID",
+                Name: "SingerID",
               },
               Right: &ast.IntLiteral{
                 ValuePos: 462,
                 ValueEnd: 463,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
             },
           },
-          Right: false,
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

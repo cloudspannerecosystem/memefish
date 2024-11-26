@@ -21,387 +21,359 @@ select
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 11,
-          Rparen:  66,
-          Part:    &ast.Ident{
+          Rparen: 66,
+          Part: &ast.Ident{
             NamePos: 19,
             NameEnd: 29,
-            Name:    "nanosecond",
+            Name: "nanosecond",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 35,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 45,
               ValueEnd: 66,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 73,
-          Rparen:  129,
-          Part:    &ast.Ident{
+          Rparen: 129,
+          Part: &ast.Ident{
             NamePos: 81,
             NameEnd: 92,
-            Name:    "microsecond",
+            Name: "microsecond",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 98,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 108,
               ValueEnd: 129,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 136,
-          Rparen:  192,
-          Part:    &ast.Ident{
+          Rparen: 192,
+          Part: &ast.Ident{
             NamePos: 144,
             NameEnd: 155,
-            Name:    "millisecond",
+            Name: "millisecond",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 161,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 171,
               ValueEnd: 192,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 199,
-          Rparen:  250,
-          Part:    &ast.Ident{
+          Rparen: 250,
+          Part: &ast.Ident{
             NamePos: 207,
             NameEnd: 213,
-            Name:    "second",
+            Name: "second",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 219,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 229,
               ValueEnd: 250,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 257,
-          Rparen:  308,
-          Part:    &ast.Ident{
+          Rparen: 308,
+          Part: &ast.Ident{
             NamePos: 265,
             NameEnd: 271,
-            Name:    "minute",
+            Name: "minute",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 277,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 287,
               ValueEnd: 308,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 315,
-          Rparen:  364,
-          Part:    &ast.Ident{
+          Rparen: 364,
+          Part: &ast.Ident{
             NamePos: 323,
             NameEnd: 327,
-            Name:    "hour",
+            Name: "hour",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 333,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 343,
               ValueEnd: 364,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 371,
-          Rparen:  411,
-          Part:    &ast.Ident{
+          Rparen: 411,
+          Part: &ast.Ident{
             NamePos: 379,
             NameEnd: 388,
-            Name:    "dayofweek",
+            Name: "dayofweek",
           },
           Expr: &ast.DateLiteral{
-            Date:  394,
+            Date: 394,
             Value: &ast.StringLiteral{
               ValuePos: 399,
               ValueEnd: 411,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 418,
-          Rparen:  452,
-          Part:    &ast.Ident{
+          Rparen: 452,
+          Part: &ast.Ident{
             NamePos: 426,
             NameEnd: 429,
-            Name:    "day",
+            Name: "day",
           },
           Expr: &ast.DateLiteral{
-            Date:  435,
+            Date: 435,
             Value: &ast.StringLiteral{
               ValuePos: 440,
               ValueEnd: 452,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 459,
-          Rparen:  499,
-          Part:    &ast.Ident{
+          Rparen: 499,
+          Part: &ast.Ident{
             NamePos: 467,
             NameEnd: 476,
-            Name:    "dayofyear",
+            Name: "dayofyear",
           },
           Expr: &ast.DateLiteral{
-            Date:  482,
+            Date: 482,
             Value: &ast.StringLiteral{
               ValuePos: 487,
               ValueEnd: 499,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 506,
-          Rparen:  546,
-          Part:    &ast.Ident{
+          Rparen: 546,
+          Part: &ast.Ident{
             NamePos: 514,
             NameEnd: 523,
-            Name:    "dayofyear",
+            Name: "dayofyear",
           },
           Expr: &ast.DateLiteral{
-            Date:  529,
+            Date: 529,
             Value: &ast.StringLiteral{
               ValuePos: 534,
               ValueEnd: 546,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 553,
-          Rparen:  588,
-          Part:    &ast.Ident{
+          Rparen: 588,
+          Part: &ast.Ident{
             NamePos: 561,
             NameEnd: 565,
-            Name:    "week",
+            Name: "week",
           },
           Expr: &ast.DateLiteral{
-            Date:  571,
+            Date: 571,
             Value: &ast.StringLiteral{
               ValuePos: 576,
               ValueEnd: 588,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 595,
-          Rparen:  633,
-          Part:    &ast.Ident{
+          Rparen: 633,
+          Part: &ast.Ident{
             NamePos: 603,
             NameEnd: 610,
-            Name:    "isoweek",
+            Name: "isoweek",
           },
           Expr: &ast.DateLiteral{
-            Date:  616,
+            Date: 616,
             Value: &ast.StringLiteral{
               ValuePos: 621,
               ValueEnd: 633,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 640,
-          Rparen:  676,
-          Part:    &ast.Ident{
+          Rparen: 676,
+          Part: &ast.Ident{
             NamePos: 648,
             NameEnd: 653,
-            Name:    "month",
+            Name: "month",
           },
           Expr: &ast.DateLiteral{
-            Date:  659,
+            Date: 659,
             Value: &ast.StringLiteral{
               ValuePos: 664,
               ValueEnd: 676,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 683,
-          Rparen:  721,
-          Part:    &ast.Ident{
+          Rparen: 721,
+          Part: &ast.Ident{
             NamePos: 691,
             NameEnd: 698,
-            Name:    "quarter",
+            Name: "quarter",
           },
           Expr: &ast.DateLiteral{
-            Date:  704,
+            Date: 704,
             Value: &ast.StringLiteral{
               ValuePos: 709,
               ValueEnd: 721,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 728,
-          Rparen:  763,
-          Part:    &ast.Ident{
+          Rparen: 763,
+          Part: &ast.Ident{
             NamePos: 736,
             NameEnd: 740,
-            Name:    "year",
+            Name: "year",
           },
           Expr: &ast.DateLiteral{
-            Date:  746,
+            Date: 746,
             Value: &ast.StringLiteral{
               ValuePos: 751,
               ValueEnd: 763,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 770,
-          Rparen:  808,
-          Part:    &ast.Ident{
+          Rparen: 808,
+          Part: &ast.Ident{
             NamePos: 778,
             NameEnd: 785,
-            Name:    "isoyear",
+            Name: "isoyear",
           },
           Expr: &ast.DateLiteral{
-            Date:  791,
+            Date: 791,
             Value: &ast.StringLiteral{
               ValuePos: 796,
               ValueEnd: 808,
-              Value:    "2019-09-01",
+              Value: "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 815,
-          Rparen:  864,
-          Part:    &ast.Ident{
+          Rparen: 864,
+          Part: &ast.Ident{
             NamePos: 823,
             NameEnd: 827,
-            Name:    "date",
+            Name: "date",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 833,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 843,
               ValueEnd: 864,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 871,
-          Rparen:  946,
-          Part:    &ast.Ident{
+          Rparen: 946,
+          Part: &ast.Ident{
             NamePos: 879,
             NameEnd: 883,
-            Name:    "hour",
+            Name: "hour",
           },
           Expr: &ast.TimestampLiteral{
             Timestamp: 889,
-            Value:     &ast.StringLiteral{
+            Value: &ast.StringLiteral{
               ValuePos: 899,
               ValueEnd: 920,
-              Value:    "2019-09-01 08:11:23",
+              Value: "2019-09-01 08:11:23",
             },
           },
           AtTimeZone: &ast.AtTimeZone{
-            At:   921,
+            At: 921,
             Expr: &ast.StringLiteral{
               ValuePos: 934,
               ValueEnd: 946,
-              Value:    "Asia/Tokyo",
+              Value: "Asia/Tokyo",
             },
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

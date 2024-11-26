@@ -9,79 +9,63 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.Join{
-        Op:     "CROSS JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.TableName{
+        Op: "CROSS JOIN",
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
             NameEnd: 25,
-            Name:    "Singers",
+            Name: "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As: -1,
             Alias: &ast.Ident{
               NamePos: 26,
               NameEnd: 27,
-              Name:    "A",
+              Name: "A",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 43,
             NameEnd: 50,
-            Name:    "Singers",
+            Name: "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As: -1,
             Alias: &ast.Ident{
               NamePos: 51,
               NameEnd: 52,
-              Name:    "B",
+              Name: "B",
             },
           },
           Sample: &ast.TableSample{
             TableSample: 55,
-            Method:      "BERNOULLI",
-            Size:        &ast.TableSampleSize{
+            Method: "BERNOULLI",
+            Size: &ast.TableSampleSize{
               Lparen: 77,
               Rparen: 88,
-              Value:  &ast.IntLiteral{
+              Value: &ast.IntLiteral{
                 ValuePos: 78,
                 ValueEnd: 80,
-                Base:     10,
-                Value:    "90",
+                Base: 10,
+                Value: "90",
               },
               Unit: "PERCENT",
             },
           },
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

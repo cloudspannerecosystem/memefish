@@ -3,46 +3,42 @@ insert foo (foo, bar)
 values (1, default)
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
-    Name:    "foo",
+    Name: "foo",
   },
   Columns: []*ast.Ident{
     &ast.Ident{
       NamePos: 12,
       NameEnd: 15,
-      Name:    "foo",
+      Name: "foo",
     },
     &ast.Ident{
       NamePos: 17,
       NameEnd: 20,
-      Name:    "bar",
+      Name: "bar",
     },
   },
   Input: &ast.ValuesInput{
     Values: 22,
-    Rows:   []*ast.ValuesRow{
+    Rows: []*ast.ValuesRow{
       &ast.ValuesRow{
         Lparen: 29,
         Rparen: 40,
-        Exprs:  []*ast.DefaultExpr{
+        Exprs: []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
-            Expr:       &ast.IntLiteral{
+            Expr: &ast.IntLiteral{
               ValuePos: 30,
               ValueEnd: 31,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
           &ast.DefaultExpr{
             DefaultPos: 33,
-            Default:    true,
-            Expr:       nil,
+            Default: true,
           },
         },
       },

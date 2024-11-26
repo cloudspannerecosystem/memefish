@@ -3,11 +3,10 @@ DROP ROLE hr_manager
 
 --- AST
 &ast.DropRole{
-  Drop: 0,
   Name: &ast.Ident{
     NamePos: 10,
     NameEnd: 20,
-    Name:    "hr_manager",
+    Name: "hr_manager",
   },
 }
 

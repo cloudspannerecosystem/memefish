@@ -5,30 +5,24 @@ CREATE SEARCH INDEX AlbumsIndex
 --- AST
 &ast.CreateSearchIndex{
   Create: 23,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 43,
     NameEnd: 54,
-    Name:    "AlbumsIndex",
+    Name: "AlbumsIndex",
   },
   TableName: &ast.Ident{
     NamePos: 60,
     NameEnd: 66,
-    Name:    "Albums",
+    Name: "Albums",
   },
   TokenListPart: []*ast.Ident{
     &ast.Ident{
       NamePos: 67,
       NameEnd: 84,
-      Name:    "AlbumTitle_Tokens",
+      Name: "AlbumTitle_Tokens",
     },
   },
-  Rparen:           84,
-  Storing:          (*ast.Storing)(nil),
-  PartitionColumns: []*ast.Ident(nil),
-  OrderBy:          (*ast.OrderBy)(nil),
-  Where:            (*ast.Where)(nil),
-  Interleave:       (*ast.InterleaveIn)(nil),
-  Options:          (*ast.Options)(nil),
+  Rparen: 84,
 }
 
 --- SQL

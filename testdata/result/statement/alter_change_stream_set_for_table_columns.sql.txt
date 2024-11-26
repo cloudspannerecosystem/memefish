@@ -3,54 +3,53 @@ ALTER CHANGE STREAM change_stream_name SET FOR table_name1(column1, column2), ta
 
 --- AST
 &ast.AlterChangeStream{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 38,
-    Name:    "change_stream_name",
+    Name: "change_stream_name",
   },
   ChangeStreamAlteration: &ast.ChangeStreamSetFor{
     Set: 39,
     For: &ast.ChangeStreamForTables{
-      For:    43,
+      For: 43,
       Tables: []*ast.ChangeStreamForTable{
         &ast.ChangeStreamForTable{
-          Rparen:    75,
+          Rparen: 75,
           TableName: &ast.Ident{
             NamePos: 47,
             NameEnd: 58,
-            Name:    "table_name1",
+            Name: "table_name1",
           },
           Columns: []*ast.Ident{
             &ast.Ident{
               NamePos: 59,
               NameEnd: 66,
-              Name:    "column1",
+              Name: "column1",
             },
             &ast.Ident{
               NamePos: 68,
               NameEnd: 75,
-              Name:    "column2",
+              Name: "column2",
             },
           },
         },
         &ast.ChangeStreamForTable{
-          Rparen:    106,
+          Rparen: 106,
           TableName: &ast.Ident{
             NamePos: 78,
             NameEnd: 89,
-            Name:    "table_name2",
+            Name: "table_name2",
           },
           Columns: []*ast.Ident{
             &ast.Ident{
               NamePos: 90,
               NameEnd: 97,
-              Name:    "column1",
+              Name: "column1",
             },
             &ast.Ident{
               NamePos: 99,
               NameEnd: 106,
-              Name:    "column2",
+              Name: "column2",
             },
           },
         },

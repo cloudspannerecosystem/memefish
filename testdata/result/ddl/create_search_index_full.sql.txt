@@ -9,38 +9,37 @@ WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL
 OPTIONS(sort_order_sharding=true)
 --- AST
 &ast.CreateSearchIndex{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 35,
-    Name:    "AlbumsIndexFull",
+    Name: "AlbumsIndexFull",
   },
   TableName: &ast.Ident{
     NamePos: 39,
     NameEnd: 45,
-    Name:    "Albums",
+    Name: "Albums",
   },
   TokenListPart: []*ast.Ident{
     &ast.Ident{
       NamePos: 46,
       NameEnd: 58,
-      Name:    "Title_Tokens",
+      Name: "Title_Tokens",
     },
     &ast.Ident{
       NamePos: 60,
       NameEnd: 73,
-      Name:    "Studio_Tokens",
+      Name: "Studio_Tokens",
     },
   },
-  Rparen:  73,
+  Rparen: 73,
   Storing: &ast.Storing{
     Storing: 75,
-    Rparen:  88,
+    Rparen: 88,
     Columns: []*ast.Ident{
       &ast.Ident{
         NamePos: 83,
         NameEnd: 88,
-        Name:    "Genre",
+        Name: "Genre",
       },
     },
   },
@@ -48,7 +47,7 @@ OPTIONS(sort_order_sharding=true)
     &ast.Ident{
       NamePos: 103,
       NameEnd: 111,
-      Name:    "SingerId",
+      Name: "SingerId",
     },
   },
   OrderBy: &ast.OrderBy{
@@ -56,61 +55,60 @@ OPTIONS(sort_order_sharding=true)
     Items: []*ast.OrderByItem{
       &ast.OrderByItem{
         DirPos: 138,
-        Expr:   &ast.Ident{
+        Expr: &ast.Ident{
           NamePos: 121,
           NameEnd: 137,
-          Name:    "ReleaseTimestamp",
+          Name: "ReleaseTimestamp",
         },
-        Collate: (*ast.Collate)(nil),
-        Dir:     "DESC",
+        Dir: "DESC",
       },
     },
   },
   Where: &ast.Where{
     Where: 143,
-    Expr:  &ast.BinaryExpr{
-      Op:   "AND",
+    Expr: &ast.BinaryExpr{
+      Op: "AND",
       Left: &ast.IsNullExpr{
         Null: 162,
-        Not:  true,
+        Not: true,
         Left: &ast.Ident{
           NamePos: 149,
           NameEnd: 154,
-          Name:    "Genre",
+          Name: "Genre",
         },
       },
       Right: &ast.IsNullExpr{
         Null: 195,
-        Not:  true,
+        Not: true,
         Left: &ast.Ident{
           NamePos: 171,
           NameEnd: 187,
-          Name:    "ReleaseTimestamp",
+          Name: "ReleaseTimestamp",
         },
       },
     },
   },
   Interleave: &ast.InterleaveIn{
-    Comma:     200,
+    Comma: 200,
     TableName: &ast.Ident{
       NamePos: 216,
       NameEnd: 223,
-      Name:    "Singers",
+      Name: "Singers",
     },
   },
   Options: &ast.Options{
     Options: 224,
-    Rparen:  256,
+    Rparen: 256,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 232,
           NameEnd: 251,
-          Name:    "sort_order_sharding",
+          Name: "sort_order_sharding",
         },
         Value: &ast.BoolLiteral{
           ValuePos: 252,
-          Value:    true,
+          Value: true,
         },
       },
     },

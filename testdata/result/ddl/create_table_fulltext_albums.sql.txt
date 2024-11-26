@@ -11,15 +11,14 @@ CREATE TABLE Albums (
 ) PRIMARY KEY(AlbumId)
 --- AST
 &ast.CreateTable{
-  Create:      105,
-  Rparen:      575,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Create: 105,
+  Rparen: 575,
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 118,
         NameEnd: 124,
-        Name:    "Albums",
+        Name: "Albums",
       },
     },
   },
@@ -29,192 +28,154 @@ CREATE TABLE Albums (
       Name: &ast.Ident{
         NamePos: 151,
         NameEnd: 158,
-        Name:    "AlbumId",
+        Name: "AlbumId",
       },
       Type: &ast.SizedSchemaType{
         NamePos: 159,
-        Rparen:  169,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 169,
+        Name: "STRING",
+        Max: true,
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 224,
       Name: &ast.Ident{
         NamePos: 205,
         NameEnd: 213,
-        Name:    "SingerId",
+        Name: "SingerId",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 214,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 281,
       Name: &ast.Ident{
         NamePos: 254,
         NameEnd: 270,
-        Name:    "ReleaseTimestamp",
+        Name: "ReleaseTimestamp",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 271,
-        Name:    "INT64",
+        Name: "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 311,
         NameEnd: 321,
-        Name:    "AlbumTitle",
+        Name: "AlbumTitle",
       },
       Type: &ast.SizedSchemaType{
         NamePos: 322,
-        Rparen:  332,
-        Name:    "STRING",
-        Max:     true,
-        Size:    nil,
+        Rparen: 332,
+        Name: "STRING",
+        Max: true,
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 359,
         NameEnd: 365,
-        Name:    "Rating",
+        Name: "Rating",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 366,
-        Name:    "FLOAT64",
+        Name: "FLOAT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 399,
         NameEnd: 416,
-        Name:    "AlbumTitle_Tokens",
+        Name: "AlbumTitle_Tokens",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 417,
-        Name:    "TOKENLIST",
+        Name: "TOKENLIST",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:     427,
+        As: 427,
         Stored: -1,
         Rparen: 460,
-        Expr:   &ast.CallExpr{
+        Expr: &ast.CallExpr{
           Rparen: 459,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 431,
             NameEnd: 448,
-            Name:    "TOKENIZE_FULLTEXT",
+            Name: "TOKENIZE_FULLTEXT",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 449,
                 NameEnd: 459,
-                Name:    "AlbumTitle",
+                Name: "AlbumTitle",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      Hidden:  462,
-      Options: (*ast.Options)(nil),
+      Hidden: 462,
     },
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 494,
         NameEnd: 507,
-        Name:    "Rating_Tokens",
+        Name: "Rating_Tokens",
       },
       Type: &ast.ScalarSchemaType{
         NamePos: 508,
-        Name:    "TOKENLIST",
+        Name: "TOKENLIST",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
-        As:     518,
+        As: 518,
         Stored: -1,
         Rparen: 545,
-        Expr:   &ast.CallExpr{
+        Expr: &ast.CallExpr{
           Rparen: 544,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 522,
             NameEnd: 537,
-            Name:    "TOKENIZE_NUMBER",
+            Name: "TOKENIZE_NUMBER",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 538,
                 NameEnd: 544,
-                Name:    "Rating",
+                Name: "Rating",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      Hidden:  547,
-      Options: (*ast.Options)(nil),
+      Hidden: 547,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
-      Name:   &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 568,
         NameEnd: 575,
-        Name:    "AlbumId",
+        Name: "AlbumId",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

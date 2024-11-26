@@ -13,19 +13,16 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BytesLiteral{
           ValuePos: 9,
           ValueEnd: 15,
-          Value:    []uint8{
-            0x61, 0x62, 0x63,
+          Value: []uint8{
+            97,
+            98,
+            99,
           },
         },
       },
@@ -33,8 +30,10 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 19,
           ValueEnd: 29,
-          Value:    []uint8{
-            0x61, 0x62, 0x63,
+          Value: []uint8{
+            97,
+            98,
+            99,
           },
         },
       },
@@ -42,8 +41,10 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 33,
           ValueEnd: 43,
-          Value:    []uint8{
-            0x61, 0x62, 0x63,
+          Value: []uint8{
+            97,
+            98,
+            99,
           },
         },
       },
@@ -51,8 +52,11 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 47,
           ValueEnd: 59,
-          Value:    []uint8{
-            0x61, 0x62, 0x63, 0x0a,
+          Value: []uint8{
+            97,
+            98,
+            99,
+            10,
           },
         },
       },
@@ -60,8 +64,11 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 63,
           ValueEnd: 71,
-          Value:    []uint8{
-            0x61, 0x62, 0x63, 0x2b,
+          Value: []uint8{
+            97,
+            98,
+            99,
+            43,
           },
         },
       },
@@ -69,8 +76,11 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 75,
           ValueEnd: 83,
-          Value:    []uint8{
-            0x61, 0x62, 0x63, 0x2b,
+          Value: []uint8{
+            97,
+            98,
+            99,
+            43,
           },
         },
       },
@@ -78,8 +88,10 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 87,
           ValueEnd: 98,
-          Value:    []uint8{
-            0x61, 0x62, 0x63,
+          Value: []uint8{
+            97,
+            98,
+            99,
           },
         },
       },
@@ -87,8 +99,12 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 102,
           ValueEnd: 115,
-          Value:    []uint8{
-            0x61, 0x62, 0x63, 0x5c, 0x6e,
+          Value: []uint8{
+            97,
+            98,
+            99,
+            92,
+            110,
           },
         },
       },
@@ -96,8 +112,8 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 119,
           ValueEnd: 126,
-          Value:    []uint8{
-            0x00,
+          Value: []uint8{
+            0,
           },
         },
       },
@@ -105,18 +121,14 @@ SELECT
         Expr: &ast.BytesLiteral{
           ValuePos: 130,
           ValueEnd: 145,
-          Value:    []uint8{
-            0x3f, 0x3f, 0x3f,
+          Value: []uint8{
+            63,
+            63,
+            63,
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

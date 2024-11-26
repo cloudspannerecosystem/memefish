@@ -32,104 +32,77 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
     },
     From: &ast.From{
-      From:   11,
+      From: 11,
       Source: &ast.Join{
-        Op:     "RIGHT OUTER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     "RIGHT OUTER JOIN",
-          Method: "",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.Join{
-            Op:     "LEFT OUTER JOIN",
-            Method: "",
-            Hint:   (*ast.Hint)(nil),
-            Left:   &ast.Join{
-              Op:     "LEFT OUTER JOIN",
-              Method: "",
-              Hint:   (*ast.Hint)(nil),
-              Left:   &ast.Join{
-                Op:     "FULL OUTER JOIN",
-                Method: "",
-                Hint:   (*ast.Hint)(nil),
-                Left:   &ast.Join{
-                  Op:     "FULL OUTER JOIN",
-                  Method: "",
-                  Hint:   (*ast.Hint)(nil),
-                  Left:   &ast.Join{
-                    Op:     "CROSS JOIN",
-                    Method: "",
-                    Hint:   (*ast.Hint)(nil),
-                    Left:   &ast.Join{
-                      Op:     "INNER JOIN",
-                      Method: "",
-                      Hint:   (*ast.Hint)(nil),
-                      Left:   &ast.Join{
-                        Op:     "INNER JOIN",
-                        Method: "",
-                        Hint:   (*ast.Hint)(nil),
-                        Left:   &ast.TableName{
+        Op: "RIGHT OUTER JOIN",
+        Left: &ast.Join{
+          Op: "RIGHT OUTER JOIN",
+          Left: &ast.Join{
+            Op: "LEFT OUTER JOIN",
+            Left: &ast.Join{
+              Op: "LEFT OUTER JOIN",
+              Left: &ast.Join{
+                Op: "FULL OUTER JOIN",
+                Left: &ast.Join{
+                  Op: "FULL OUTER JOIN",
+                  Left: &ast.Join{
+                    Op: "CROSS JOIN",
+                    Left: &ast.Join{
+                      Op: "INNER JOIN",
+                      Left: &ast.Join{
+                        Op: "INNER JOIN",
+                        Left: &ast.TableName{
                           Table: &ast.Ident{
                             NamePos: 18,
                             NameEnd: 25,
-                            Name:    "Singers",
+                            Name: "Singers",
                           },
-                          Hint: (*ast.Hint)(nil),
-                          As:   &ast.AsAlias{
-                            As:    -1,
+                          As: &ast.AsAlias{
+                            As: -1,
                             Alias: &ast.Ident{
                               NamePos: 26,
                               NameEnd: 27,
-                              Name:    "A",
+                              Name: "A",
                             },
                           },
-                          Sample: (*ast.TableSample)(nil),
                         },
                         Right: &ast.TableName{
                           Table: &ast.Ident{
                             NamePos: 37,
                             NameEnd: 44,
-                            Name:    "Singers",
+                            Name: "Singers",
                           },
-                          Hint: (*ast.Hint)(nil),
-                          As:   &ast.AsAlias{
-                            As:    -1,
+                          As: &ast.AsAlias{
+                            As: -1,
                             Alias: &ast.Ident{
                               NamePos: 45,
                               NameEnd: 46,
-                              Name:    "B",
+                              Name: "B",
                             },
                           },
-                          Sample: (*ast.TableSample)(nil),
                         },
                         Cond: &ast.On{
-                          On:   49,
+                          On: 49,
                           Expr: &ast.BinaryExpr{
-                            Op:   "=",
+                            Op: "=",
                             Left: &ast.Path{
                               Idents: []*ast.Ident{
                                 &ast.Ident{
                                   NamePos: 52,
                                   NameEnd: 53,
-                                  Name:    "A",
+                                  Name: "A",
                                 },
                                 &ast.Ident{
                                   NamePos: 54,
                                   NameEnd: 62,
-                                  Name:    "SingerID",
+                                  Name: "SingerID",
                                 },
                               },
                             },
@@ -138,12 +111,12 @@ FROM
                                 &ast.Ident{
                                   NamePos: 65,
                                   NameEnd: 66,
-                                  Name:    "B",
+                                  Name: "B",
                                 },
                                 &ast.Ident{
                                   NamePos: 67,
                                   NameEnd: 75,
-                                  Name:    "SingerID",
+                                  Name: "SingerID",
                                 },
                               },
                             },
@@ -154,34 +127,32 @@ FROM
                         Table: &ast.Ident{
                           NamePos: 91,
                           NameEnd: 98,
-                          Name:    "Singers",
+                          Name: "Singers",
                         },
-                        Hint: (*ast.Hint)(nil),
-                        As:   &ast.AsAlias{
-                          As:    -1,
+                        As: &ast.AsAlias{
+                          As: -1,
                           Alias: &ast.Ident{
                             NamePos: 99,
                             NameEnd: 100,
-                            Name:    "C",
+                            Name: "C",
                           },
                         },
-                        Sample: (*ast.TableSample)(nil),
                       },
                       Cond: &ast.On{
-                        On:   103,
+                        On: 103,
                         Expr: &ast.BinaryExpr{
-                          Op:   "=",
+                          Op: "=",
                           Left: &ast.Path{
                             Idents: []*ast.Ident{
                               &ast.Ident{
                                 NamePos: 106,
                                 NameEnd: 107,
-                                Name:    "A",
+                                Name: "A",
                               },
                               &ast.Ident{
                                 NamePos: 108,
                                 NameEnd: 116,
-                                Name:    "SingerID",
+                                Name: "SingerID",
                               },
                             },
                           },
@@ -190,12 +161,12 @@ FROM
                               &ast.Ident{
                                 NamePos: 119,
                                 NameEnd: 120,
-                                Name:    "C",
+                                Name: "C",
                               },
                               &ast.Ident{
                                 NamePos: 121,
                                 NameEnd: 129,
-                                Name:    "SingerID",
+                                Name: "SingerID",
                               },
                             },
                           },
@@ -206,53 +177,48 @@ FROM
                       Table: &ast.Ident{
                         NamePos: 145,
                         NameEnd: 152,
-                        Name:    "Singers",
+                        Name: "Singers",
                       },
-                      Hint: (*ast.Hint)(nil),
-                      As:   &ast.AsAlias{
-                        As:    -1,
+                      As: &ast.AsAlias{
+                        As: -1,
                         Alias: &ast.Ident{
                           NamePos: 153,
                           NameEnd: 154,
-                          Name:    "D",
+                          Name: "D",
                         },
                       },
-                      Sample: (*ast.TableSample)(nil),
                     },
-                    Cond: nil,
                   },
                   Right: &ast.TableName{
                     Table: &ast.Ident{
                       NamePos: 169,
                       NameEnd: 176,
-                      Name:    "Singers",
+                      Name: "Singers",
                     },
-                    Hint: (*ast.Hint)(nil),
-                    As:   &ast.AsAlias{
-                      As:    -1,
+                    As: &ast.AsAlias{
+                      As: -1,
                       Alias: &ast.Ident{
                         NamePos: 177,
                         NameEnd: 178,
-                        Name:    "E",
+                        Name: "E",
                       },
                     },
-                    Sample: (*ast.TableSample)(nil),
                   },
                   Cond: &ast.On{
-                    On:   181,
+                    On: 181,
                     Expr: &ast.BinaryExpr{
-                      Op:   "=",
+                      Op: "=",
                       Left: &ast.Path{
                         Idents: []*ast.Ident{
                           &ast.Ident{
                             NamePos: 184,
                             NameEnd: 185,
-                            Name:    "A",
+                            Name: "A",
                           },
                           &ast.Ident{
                             NamePos: 186,
                             NameEnd: 194,
-                            Name:    "SingerID",
+                            Name: "SingerID",
                           },
                         },
                       },
@@ -261,12 +227,12 @@ FROM
                           &ast.Ident{
                             NamePos: 197,
                             NameEnd: 198,
-                            Name:    "E",
+                            Name: "E",
                           },
                           &ast.Ident{
                             NamePos: 199,
                             NameEnd: 207,
-                            Name:    "SingerID",
+                            Name: "SingerID",
                           },
                         },
                       },
@@ -277,34 +243,32 @@ FROM
                   Table: &ast.Ident{
                     NamePos: 228,
                     NameEnd: 235,
-                    Name:    "Singers",
+                    Name: "Singers",
                   },
-                  Hint: (*ast.Hint)(nil),
-                  As:   &ast.AsAlias{
-                    As:    -1,
+                  As: &ast.AsAlias{
+                    As: -1,
                     Alias: &ast.Ident{
                       NamePos: 236,
                       NameEnd: 237,
-                      Name:    "F",
+                      Name: "F",
                     },
                   },
-                  Sample: (*ast.TableSample)(nil),
                 },
                 Cond: &ast.On{
-                  On:   240,
+                  On: 240,
                   Expr: &ast.BinaryExpr{
-                    Op:   "=",
+                    Op: "=",
                     Left: &ast.Path{
                       Idents: []*ast.Ident{
                         &ast.Ident{
                           NamePos: 243,
                           NameEnd: 244,
-                          Name:    "A",
+                          Name: "A",
                         },
                         &ast.Ident{
                           NamePos: 245,
                           NameEnd: 253,
-                          Name:    "SingerID",
+                          Name: "SingerID",
                         },
                       },
                     },
@@ -313,12 +277,12 @@ FROM
                         &ast.Ident{
                           NamePos: 256,
                           NameEnd: 257,
-                          Name:    "F",
+                          Name: "F",
                         },
                         &ast.Ident{
                           NamePos: 258,
                           NameEnd: 266,
-                          Name:    "SingerID",
+                          Name: "SingerID",
                         },
                       },
                     },
@@ -329,34 +293,32 @@ FROM
                 Table: &ast.Ident{
                   NamePos: 281,
                   NameEnd: 288,
-                  Name:    "Singers",
+                  Name: "Singers",
                 },
-                Hint: (*ast.Hint)(nil),
-                As:   &ast.AsAlias{
-                  As:    -1,
+                As: &ast.AsAlias{
+                  As: -1,
                   Alias: &ast.Ident{
                     NamePos: 289,
                     NameEnd: 290,
-                    Name:    "G",
+                    Name: "G",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
               Cond: &ast.On{
-                On:   293,
+                On: 293,
                 Expr: &ast.BinaryExpr{
-                  Op:   "=",
+                  Op: "=",
                   Left: &ast.Path{
                     Idents: []*ast.Ident{
                       &ast.Ident{
                         NamePos: 296,
                         NameEnd: 297,
-                        Name:    "A",
+                        Name: "A",
                       },
                       &ast.Ident{
                         NamePos: 298,
                         NameEnd: 306,
-                        Name:    "SingerID",
+                        Name: "SingerID",
                       },
                     },
                   },
@@ -365,12 +327,12 @@ FROM
                       &ast.Ident{
                         NamePos: 309,
                         NameEnd: 310,
-                        Name:    "G",
+                        Name: "G",
                       },
                       &ast.Ident{
                         NamePos: 311,
                         NameEnd: 319,
-                        Name:    "SingerID",
+                        Name: "SingerID",
                       },
                     },
                   },
@@ -381,34 +343,32 @@ FROM
               Table: &ast.Ident{
                 NamePos: 340,
                 NameEnd: 347,
-                Name:    "Singers",
+                Name: "Singers",
               },
-              Hint: (*ast.Hint)(nil),
-              As:   &ast.AsAlias{
-                As:    -1,
+              As: &ast.AsAlias{
+                As: -1,
                 Alias: &ast.Ident{
                   NamePos: 348,
                   NameEnd: 349,
-                  Name:    "H",
+                  Name: "H",
                 },
               },
-              Sample: (*ast.TableSample)(nil),
             },
             Cond: &ast.On{
-              On:   352,
+              On: 352,
               Expr: &ast.BinaryExpr{
-                Op:   "=",
+                Op: "=",
                 Left: &ast.Path{
                   Idents: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 355,
                       NameEnd: 356,
-                      Name:    "A",
+                      Name: "A",
                     },
                     &ast.Ident{
                       NamePos: 357,
                       NameEnd: 365,
-                      Name:    "SingerID",
+                      Name: "SingerID",
                     },
                   },
                 },
@@ -417,12 +377,12 @@ FROM
                     &ast.Ident{
                       NamePos: 368,
                       NameEnd: 369,
-                      Name:    "H",
+                      Name: "H",
                     },
                     &ast.Ident{
                       NamePos: 370,
                       NameEnd: 378,
-                      Name:    "SingerID",
+                      Name: "SingerID",
                     },
                   },
                 },
@@ -433,34 +393,32 @@ FROM
             Table: &ast.Ident{
               NamePos: 394,
               NameEnd: 401,
-              Name:    "Singers",
+              Name: "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
-              As:    -1,
+            As: &ast.AsAlias{
+              As: -1,
               Alias: &ast.Ident{
                 NamePos: 402,
                 NameEnd: 403,
-                Name:    "I",
+                Name: "I",
               },
             },
-            Sample: (*ast.TableSample)(nil),
           },
           Cond: &ast.On{
-            On:   406,
+            On: 406,
             Expr: &ast.BinaryExpr{
-              Op:   "=",
+              Op: "=",
               Left: &ast.Path{
                 Idents: []*ast.Ident{
                   &ast.Ident{
                     NamePos: 409,
                     NameEnd: 410,
-                    Name:    "A",
+                    Name: "A",
                   },
                   &ast.Ident{
                     NamePos: 411,
                     NameEnd: 419,
-                    Name:    "SingerID",
+                    Name: "SingerID",
                   },
                 },
               },
@@ -469,12 +427,12 @@ FROM
                   &ast.Ident{
                     NamePos: 422,
                     NameEnd: 423,
-                    Name:    "I",
+                    Name: "I",
                   },
                   &ast.Ident{
                     NamePos: 424,
                     NameEnd: 432,
-                    Name:    "SingerID",
+                    Name: "SingerID",
                   },
                 },
               },
@@ -485,34 +443,32 @@ FROM
           Table: &ast.Ident{
             NamePos: 454,
             NameEnd: 461,
-            Name:    "Singers",
+            Name: "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As: -1,
             Alias: &ast.Ident{
               NamePos: 462,
               NameEnd: 463,
-              Name:    "J",
+              Name: "J",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
-          On:   466,
+          On: 466,
           Expr: &ast.BinaryExpr{
-            Op:   "=",
+            Op: "=",
             Left: &ast.Path{
               Idents: []*ast.Ident{
                 &ast.Ident{
                   NamePos: 469,
                   NameEnd: 470,
-                  Name:    "A",
+                  Name: "A",
                 },
                 &ast.Ident{
                   NamePos: 471,
                   NameEnd: 479,
-                  Name:    "SingerID",
+                  Name: "SingerID",
                 },
               },
             },
@@ -521,12 +477,12 @@ FROM
                 &ast.Ident{
                   NamePos: 482,
                   NameEnd: 483,
-                  Name:    "J",
+                  Name: "J",
                 },
                 &ast.Ident{
                   NamePos: 484,
                   NameEnd: 492,
-                  Name:    "SingerID",
+                  Name: "SingerID",
                 },
               },
             },
@@ -534,11 +490,6 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

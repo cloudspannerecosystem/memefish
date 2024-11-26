@@ -3,40 +3,39 @@ alter table foo add constraint cname check (c1 > 0)
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.AddTableConstraint{
-    Add:             16,
+    Add: 16,
     TableConstraint: &ast.TableConstraint{
       ConstraintPos: 20,
-      Name:          &ast.Ident{
+      Name: &ast.Ident{
         NamePos: 31,
         NameEnd: 36,
-        Name:    "cname",
+        Name: "cname",
       },
       Constraint: &ast.Check{
-        Check:  37,
+        Check: 37,
         Rparen: 50,
-        Expr:   &ast.BinaryExpr{
-          Op:   ">",
+        Expr: &ast.BinaryExpr{
+          Op: ">",
           Left: &ast.Ident{
             NamePos: 44,
             NameEnd: 46,
-            Name:    "c1",
+            Name: "c1",
           },
           Right: &ast.IntLiteral{
             ValuePos: 49,
             ValueEnd: 50,
-            Base:     10,
-            Value:    "0",
+            Base: 10,
+            Value: "0",
           },
         },
       },

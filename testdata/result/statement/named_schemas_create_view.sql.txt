@@ -4,40 +4,36 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
    FROM sch1.Singers AS s WHERE s.SingerId = 123456
 --- AST
 &ast.CreateView{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 16,
-        Name:    "sch1",
+        Name: "sch1",
       },
       &ast.Ident{
         NamePos: 17,
         NameEnd: 27,
-        Name:    "SingerView",
+        Name: "SingerView",
       },
     },
   },
-  OrReplace:    false,
   SecurityType: "INVOKER",
-  Query:        &ast.Select{
-    Select:   52,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+  Query: &ast.Select{
+    Select: 52,
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
               NamePos: 59,
               NameEnd: 60,
-              Name:    "s",
+              Name: "s",
             },
             &ast.Ident{
               NamePos: 61,
               NameEnd: 70,
-              Name:    "FirstName",
+              Name: "FirstName",
             },
           },
         },
@@ -48,12 +44,12 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
             &ast.Ident{
               NamePos: 72,
               NameEnd: 73,
-              Name:    "s",
+              Name: "s",
             },
             &ast.Ident{
               NamePos: 74,
               NameEnd: 82,
-              Name:    "LastName",
+              Name: "LastName",
             },
           },
         },
@@ -64,77 +60,70 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
             &ast.Ident{
               NamePos: 84,
               NameEnd: 85,
-              Name:    "s",
+              Name: "s",
             },
             &ast.Ident{
               NamePos: 86,
               NameEnd: 96,
-              Name:    "SingerInfo",
+              Name: "SingerInfo",
             },
           },
         },
       },
     },
     From: &ast.From{
-      From:   100,
+      From: 100,
       Source: &ast.PathTableExpr{
         Path: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
               NamePos: 105,
               NameEnd: 109,
-              Name:    "sch1",
+              Name: "sch1",
             },
             &ast.Ident{
               NamePos: 110,
               NameEnd: 117,
-              Name:    "Singers",
+              Name: "Singers",
             },
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
-          As:    118,
+        As: &ast.AsAlias{
+          As: 118,
           Alias: &ast.Ident{
             NamePos: 121,
             NameEnd: 122,
-            Name:    "s",
+            Name: "s",
           },
         },
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 123,
-      Expr:  &ast.BinaryExpr{
-        Op:   "=",
+      Expr: &ast.BinaryExpr{
+        Op: "=",
         Left: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
               NamePos: 129,
               NameEnd: 130,
-              Name:    "s",
+              Name: "s",
             },
             &ast.Ident{
               NamePos: 131,
               NameEnd: 139,
-              Name:    "SingerId",
+              Name: "SingerId",
             },
           },
         },
         Right: &ast.IntLiteral{
           ValuePos: 142,
           ValueEnd: 148,
-          Base:     10,
-          Value:    "123456",
+          Base: 10,
+          Value: "123456",
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

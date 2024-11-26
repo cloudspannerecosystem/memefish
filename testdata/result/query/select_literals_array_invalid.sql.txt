@@ -4,95 +4,86 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  -1,
+          Array: -1,
           Lbrack: 9,
           Rbrack: 41,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.ArrayLiteral{
-              Array:  -1,
+              Array: -1,
               Lbrack: 10,
               Rbrack: 18,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 11,
                   ValueEnd: 12,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
                 &ast.IntLiteral{
                   ValuePos: 14,
                   ValueEnd: 15,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
                 &ast.IntLiteral{
                   ValuePos: 17,
                   ValueEnd: 18,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
             &ast.ArrayLiteral{
-              Array:  -1,
+              Array: -1,
               Lbrack: 21,
               Rbrack: 29,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 22,
                   ValueEnd: 23,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
                 &ast.IntLiteral{
                   ValuePos: 25,
                   ValueEnd: 26,
-                  Base:     10,
-                  Value:    "4",
+                  Base: 10,
+                  Value: "4",
                 },
                 &ast.IntLiteral{
                   ValuePos: 28,
                   ValueEnd: 29,
-                  Base:     10,
-                  Value:    "6",
+                  Base: 10,
+                  Value: "6",
                 },
               },
             },
             &ast.ArrayLiteral{
-              Array:  -1,
+              Array: -1,
               Lbrack: 32,
               Rbrack: 40,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 33,
                   ValueEnd: 34,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
                 &ast.IntLiteral{
                   ValuePos: 36,
                   ValueEnd: 37,
-                  Base:     10,
-                  Value:    "6",
+                  Base: 10,
+                  Value: "6",
                 },
                 &ast.IntLiteral{
                   ValuePos: 39,
                   ValueEnd: 40,
-                  Base:     10,
-                  Value:    "9",
+                  Base: 10,
+                  Value: "9",
                 },
               },
             },
@@ -100,12 +91,6 @@ SELECT
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

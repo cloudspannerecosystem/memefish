@@ -5,99 +5,88 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
           NameEnd: 14,
-          Name:    "AlbumId",
+          Name: "AlbumId",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 16,
           NameEnd: 26,
-          Name:    "AlbumTitle",
+          Name: "AlbumTitle",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 28,
           NameEnd: 43,
-          Name:    "MarketingBudget",
+          Name: "MarketingBudget",
         },
       },
     },
     From: &ast.From{
-      From:   44,
+      From: 44,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 49,
           NameEnd: 55,
-          Name:    "Albums",
+          Name: "Albums",
         },
         Hint: &ast.Hint{
-          Atmark:  55,
-          Rbrace:  87,
+          Atmark: 55,
+          Rbrace: 87,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
               Key: &ast.Ident{
                 NamePos: 57,
                 NameEnd: 68,
-                Name:    "FORCE_INDEX",
+                Name: "FORCE_INDEX",
               },
               Value: &ast.Ident{
                 NamePos: 69,
                 NameEnd: 87,
-                Name:    "AlbumsByAlbumTitle",
+                Name: "AlbumsByAlbumTitle",
               },
             },
           },
         },
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
       Where: 89,
-      Expr:  &ast.BinaryExpr{
-        Op:   "AND",
+      Expr: &ast.BinaryExpr{
+        Op: "AND",
         Left: &ast.BinaryExpr{
-          Op:   ">=",
+          Op: ">=",
           Left: &ast.Ident{
             NamePos: 95,
             NameEnd: 105,
-            Name:    "AlbumTitle",
+            Name: "AlbumTitle",
           },
           Right: &ast.Param{
             Atmark: 109,
-            Name:   "startTitle",
+            Name: "startTitle",
           },
         },
         Right: &ast.BinaryExpr{
-          Op:   "<",
+          Op: "<",
           Left: &ast.Ident{
             NamePos: 125,
             NameEnd: 135,
-            Name:    "AlbumTitle",
+            Name: "AlbumTitle",
           },
           Right: &ast.Param{
             Atmark: 138,
-            Name:   "endTitle",
+            Name: "endTitle",
           },
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

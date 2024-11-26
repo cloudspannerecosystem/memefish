@@ -4,49 +4,47 @@ WHERE embedding IS NOT NULL
 OPTIONS(distance_type = 'COSINE')
 --- AST
 &ast.CreateVectorIndex{
-  Create:      0,
-  IfNotExists: false,
-  Name:        &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 38,
-    Name:    "hello_vector_index",
+    Name: "hello_vector_index",
   },
   TableName: &ast.Ident{
     NamePos: 42,
     NameEnd: 47,
-    Name:    "hello",
+    Name: "hello",
   },
   ColumnName: &ast.Ident{
     NamePos: 48,
     NameEnd: 57,
-    Name:    "embedding",
+    Name: "embedding",
   },
   Where: &ast.Where{
     Where: 59,
-    Expr:  &ast.IsNullExpr{
+    Expr: &ast.IsNullExpr{
       Null: 82,
-      Not:  true,
+      Not: true,
       Left: &ast.Ident{
         NamePos: 65,
         NameEnd: 74,
-        Name:    "embedding",
+        Name: "embedding",
       },
     },
   },
   Options: &ast.Options{
     Options: 87,
-    Rparen:  119,
+    Rparen: 119,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 95,
           NameEnd: 108,
-          Name:    "distance_type",
+          Name: "distance_type",
         },
         Value: &ast.StringLiteral{
           ValuePos: 111,
           ValueEnd: 119,
-          Value:    "COSINE",
+          Value: "COSINE",
         },
       },
     },

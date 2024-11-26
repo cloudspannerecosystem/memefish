@@ -2,22 +2,19 @@
 ALTER PROTO BUNDLE DELETE(`examples.shipping.OrderHistory`)
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
-  Insert: (*ast.AlterProtoBundleInsert)(nil),
-  Update: (*ast.AlterProtoBundleUpdate)(nil),
   Delete: &ast.AlterProtoBundleDelete{
     Delete: 19,
-    Types:  &ast.ProtoBundleTypes{
+    Types: &ast.ProtoBundleTypes{
       Lparen: 25,
       Rparen: 58,
-      Types:  []*ast.NamedType{
+      Types: []*ast.NamedType{
         &ast.NamedType{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 26,
               NameEnd: 58,
-              Name:    "examples.shipping.OrderHistory",
+              Name: "examples.shipping.OrderHistory",
             },
           },
         },

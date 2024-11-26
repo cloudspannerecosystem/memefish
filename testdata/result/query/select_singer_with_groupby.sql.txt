@@ -8,60 +8,48 @@ GROUP BY
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 9,
           NameEnd: 18,
-          Name:    "FirstName",
+          Name: "FirstName",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 20,
           NameEnd: 29,
-          Name:    "BirthDate",
+          Name: "BirthDate",
         },
       },
     },
     From: &ast.From{
-      From:   30,
+      From: 30,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 37,
           NameEnd: 44,
-          Name:    "Singers",
+          Name: "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
     GroupBy: &ast.GroupBy{
       Group: 45,
       Exprs: []ast.Expr{
         &ast.Ident{
           NamePos: 56,
           NameEnd: 65,
-          Name:    "FirstName",
+          Name: "FirstName",
         },
         &ast.Ident{
           NamePos: 67,
           NameEnd: 76,
-          Name:    "BirthDate",
+          Name: "BirthDate",
         },
       },
     },
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

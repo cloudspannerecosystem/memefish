@@ -2,16 +2,15 @@
 `IF` + `GRAPH_TABLE`
 --- AST
 &ast.BinaryExpr{
-  Op:   "+",
+  Op: "+",
   Left: &ast.Ident{
-    NamePos: 0,
     NameEnd: 4,
-    Name:    "IF",
+    Name: "IF",
   },
   Right: &ast.Ident{
     NamePos: 7,
     NameEnd: 20,
-    Name:    "GRAPH_TABLE",
+    Name: "GRAPH_TABLE",
   },
 }
 

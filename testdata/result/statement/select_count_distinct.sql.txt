@@ -2,55 +2,39 @@
 select count(distinct x) from foo
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 23,
-          Func:   &ast.Ident{
+          Func: &ast.Ident{
             NamePos: 7,
             NameEnd: 12,
-            Name:    "count",
+            Name: "count",
           },
           Distinct: true,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 22,
                 NameEnd: 23,
-                Name:    "x",
+                Name: "x",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
     },
     From: &ast.From{
-      From:   25,
+      From: 25,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 30,
           NameEnd: 33,
-          Name:    "foo",
+          Name: "foo",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

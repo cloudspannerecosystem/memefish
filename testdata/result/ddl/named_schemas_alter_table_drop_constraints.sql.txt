@@ -2,18 +2,17 @@
 ALTER TABLE sch1.ShoppingCarts DROP CONSTRAINT FKShoppingCartsCustomers
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 16,
-        Name:    "sch1",
+        Name: "sch1",
       },
       &ast.Ident{
         NamePos: 17,
         NameEnd: 30,
-        Name:    "ShoppingCarts",
+        Name: "ShoppingCarts",
       },
     },
   },
@@ -22,7 +21,7 @@ ALTER TABLE sch1.ShoppingCarts DROP CONSTRAINT FKShoppingCartsCustomers
     Name: &ast.Ident{
       NamePos: 47,
       NameEnd: 71,
-      Name:    "FKShoppingCartsCustomers",
+      Name: "FKShoppingCartsCustomers",
     },
   },
 }

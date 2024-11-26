@@ -3,38 +3,37 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
 
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.PrivilegeOnTable{
     Privileges: []ast.TablePrivilege{
       &ast.SelectPrivilege{
-        Select:  7,
-        Rparen:  35,
+        Select: 7,
+        Rparen: 35,
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 14,
             NameEnd: 18,
-            Name:    "name",
+            Name: "name",
           },
           &ast.Ident{
             NamePos: 20,
             NameEnd: 25,
-            Name:    "level",
+            Name: "level",
           },
           &ast.Ident{
             NamePos: 27,
             NameEnd: 35,
-            Name:    "location",
+            Name: "location",
           },
         },
       },
       &ast.UpdatePrivilege{
-        Update:  38,
-        Rparen:  53,
+        Update: 38,
+        Rparen: 53,
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 45,
             NameEnd: 53,
-            Name:    "location",
+            Name: "location",
           },
         },
       },
@@ -43,12 +42,12 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
       &ast.Ident{
         NamePos: 64,
         NameEnd: 73,
-        Name:    "employees",
+        Name: "employees",
       },
       &ast.Ident{
         NamePos: 75,
         NameEnd: 86,
-        Name:    "contractors",
+        Name: "contractors",
       },
     },
   },
@@ -56,12 +55,12 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
     &ast.Ident{
       NamePos: 97,
       NameEnd: 107,
-      Name:    "hr_manager",
+      Name: "hr_manager",
     },
     &ast.Ident{
       NamePos: 109,
       NameEnd: 118,
-      Name:    "hr_member",
+      Name: "hr_member",
     },
   },
 }

@@ -7,70 +7,69 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
 
 --- AST
 &ast.CreateSequence{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 30,
         NameEnd: 40,
-        Name:    "MySequence",
+        Name: "MySequence",
       },
     },
   },
   IfNotExists: true,
-  Options:     &ast.Options{
+  Options: &ast.Options{
     Options: 41,
-    Rparen:  172,
+    Rparen: 172,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 55,
           NameEnd: 68,
-          Name:    "sequence_kind",
+          Name: "sequence_kind",
         },
         Value: &ast.StringLiteral{
           ValuePos: 69,
           ValueEnd: 92,
-          Value:    "bit_reversed_positive",
+          Value: "bit_reversed_positive",
         },
       },
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 98,
           NameEnd: 112,
-          Name:    "skip_range_min",
+          Name: "skip_range_min",
         },
         Value: &ast.IntLiteral{
           ValuePos: 115,
           ValueEnd: 116,
-          Base:     10,
-          Value:    "1",
+          Base: 10,
+          Value: "1",
         },
       },
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 122,
           NameEnd: 136,
-          Name:    "skip_range_max",
+          Name: "skip_range_max",
         },
         Value: &ast.IntLiteral{
           ValuePos: 139,
           ValueEnd: 143,
-          Base:     10,
-          Value:    "1000",
+          Base: 10,
+          Value: "1000",
         },
       },
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 149,
           NameEnd: 167,
-          Name:    "start_with_counter",
+          Name: "start_with_counter",
         },
         Value: &ast.IntLiteral{
           ValuePos: 170,
           ValueEnd: 172,
-          Base:     10,
-          Value:    "50",
+          Base: 10,
+          Value: "50",
         },
       },
     },

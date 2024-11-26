@@ -2,30 +2,29 @@
 RENAME TABLE Singers TO Artists, Albums TO Recordings
 --- AST
 &ast.RenameTable{
-  Rename: 0,
-  Tos:    []*ast.RenameTableTo{
+  Tos: []*ast.RenameTableTo{
     &ast.RenameTableTo{
       Old: &ast.Ident{
         NamePos: 13,
         NameEnd: 20,
-        Name:    "Singers",
+        Name: "Singers",
       },
       New: &ast.Ident{
         NamePos: 24,
         NameEnd: 31,
-        Name:    "Artists",
+        Name: "Artists",
       },
     },
     &ast.RenameTableTo{
       Old: &ast.Ident{
         NamePos: 33,
         NameEnd: 39,
-        Name:    "Albums",
+        Name: "Albums",
       },
       New: &ast.Ident{
         NamePos: 43,
         NameEnd: 53,
-        Name:    "Recordings",
+        Name: "Recordings",
       },
     },
   },

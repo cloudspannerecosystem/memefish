@@ -4,52 +4,51 @@ OPTIONS(retention_period = '1d')
 
 --- AST
 &ast.CreateChangeStream{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 21,
     NameEnd: 39,
-    Name:    "change_stream_name",
+    Name: "change_stream_name",
   },
   For: &ast.ChangeStreamForTables{
-    For:    40,
+    For: 40,
     Tables: []*ast.ChangeStreamForTable{
       &ast.ChangeStreamForTable{
-        Rparen:    72,
+        Rparen: 72,
         TableName: &ast.Ident{
           NamePos: 44,
           NameEnd: 55,
-          Name:    "table_name1",
+          Name: "table_name1",
         },
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 56,
             NameEnd: 63,
-            Name:    "column1",
+            Name: "column1",
           },
           &ast.Ident{
             NamePos: 65,
             NameEnd: 72,
-            Name:    "column2",
+            Name: "column2",
           },
         },
       },
       &ast.ChangeStreamForTable{
-        Rparen:    103,
+        Rparen: 103,
         TableName: &ast.Ident{
           NamePos: 75,
           NameEnd: 86,
-          Name:    "table_name2",
+          Name: "table_name2",
         },
         Columns: []*ast.Ident{
           &ast.Ident{
             NamePos: 87,
             NameEnd: 94,
-            Name:    "column1",
+            Name: "column1",
           },
           &ast.Ident{
             NamePos: 96,
             NameEnd: 103,
-            Name:    "column2",
+            Name: "column2",
           },
         },
       },
@@ -57,18 +56,18 @@ OPTIONS(retention_period = '1d')
   },
   Options: &ast.Options{
     Options: 105,
-    Rparen:  136,
+    Rparen: 136,
     Records: []*ast.OptionsDef{
       &ast.OptionsDef{
         Name: &ast.Ident{
           NamePos: 113,
           NameEnd: 129,
-          Name:    "retention_period",
+          Name: "retention_period",
         },
         Value: &ast.StringLiteral{
           ValuePos: 132,
           ValueEnd: 136,
-          Value:    "1d",
+          Value: "1d",
         },
       },
     },

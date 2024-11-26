@@ -15,51 +15,45 @@ select
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 30,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 11,
             Rbrack: 19,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 12,
                 ValueEnd: 13,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 15,
                 ValueEnd: 16,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 18,
                 ValueEnd: 19,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 21,
-            Rparen:     29,
-            Keyword:    "OFFSET",
-            Expr:       &ast.IntLiteral{
+            Rparen: 29,
+            Keyword: "OFFSET",
+            Expr: &ast.IntLiteral{
               ValuePos: 28,
               ValueEnd: 29,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -67,41 +61,40 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 57,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 37,
             Rbrack: 45,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 38,
                 ValueEnd: 39,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 41,
                 ValueEnd: 42,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 44,
                 ValueEnd: 45,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 47,
-            Rparen:     56,
-            Keyword:    "ORDINAL",
-            Expr:       &ast.IntLiteral{
+            Rparen: 56,
+            Keyword: "ORDINAL",
+            Expr: &ast.IntLiteral{
               ValuePos: 55,
               ValueEnd: 56,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -109,41 +102,40 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 88,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 64,
             Rbrack: 72,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 65,
                 ValueEnd: 66,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 68,
                 ValueEnd: 69,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 71,
                 ValueEnd: 72,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 74,
-            Rparen:     87,
-            Keyword:    "SAFE_OFFSET",
-            Expr:       &ast.IntLiteral{
+            Rparen: 87,
+            Keyword: "SAFE_OFFSET",
+            Expr: &ast.IntLiteral{
               ValuePos: 86,
               ValueEnd: 87,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -151,41 +143,40 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 115,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 95,
             Rbrack: 103,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 96,
                 ValueEnd: 97,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 99,
                 ValueEnd: 100,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 102,
                 ValueEnd: 103,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 105,
-            Rparen:     114,
-            Keyword:    "ORDINAL",
-            Expr:       &ast.IntLiteral{
+            Rparen: 114,
+            Keyword: "ORDINAL",
+            Expr: &ast.IntLiteral{
               ValuePos: 113,
               ValueEnd: 114,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -193,29 +184,28 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 133,
-          Expr:   &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 122,
             Rbrack: 130,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.IntLiteral{
                 ValuePos: 123,
                 ValueEnd: 124,
-                Base:     10,
-                Value:    "1",
+                Base: 10,
+                Value: "1",
               },
               &ast.IntLiteral{
                 ValuePos: 126,
                 ValueEnd: 127,
-                Base:     10,
-                Value:    "2",
+                Base: 10,
+                Value: "2",
               },
               &ast.IntLiteral{
                 ValuePos: 129,
                 ValueEnd: 130,
-                Base:     10,
-                Value:    "3",
+                Base: 10,
+                Value: "3",
               },
             },
           },
@@ -223,8 +213,8 @@ select
             Expr: &ast.IntLiteral{
               ValuePos: 132,
               ValueEnd: 133,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -232,7 +222,7 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 165,
-          Expr:   &ast.TypelessStructLiteral{
+          Expr: &ast.TypelessStructLiteral{
             Struct: 140,
             Rparen: 154,
             Values: []ast.TypelessStructLiteralArg{
@@ -240,37 +230,37 @@ select
                 Expr: &ast.IntLiteral{
                   ValuePos: 147,
                   ValueEnd: 148,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 150,
                   ValueEnd: 151,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 153,
                   ValueEnd: 154,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 156,
-            Rparen:     164,
-            Keyword:    "OFFSET",
-            Expr:       &ast.IntLiteral{
+            Rparen: 164,
+            Keyword: "OFFSET",
+            Expr: &ast.IntLiteral{
               ValuePos: 163,
               ValueEnd: 164,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -278,7 +268,7 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 198,
-          Expr:   &ast.TypelessStructLiteral{
+          Expr: &ast.TypelessStructLiteral{
             Struct: 172,
             Rparen: 186,
             Values: []ast.TypelessStructLiteralArg{
@@ -286,37 +276,37 @@ select
                 Expr: &ast.IntLiteral{
                   ValuePos: 179,
                   ValueEnd: 180,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 182,
                   ValueEnd: 183,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 185,
                   ValueEnd: 186,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 188,
-            Rparen:     197,
-            Keyword:    "ORDINAL",
-            Expr:       &ast.IntLiteral{
+            Rparen: 197,
+            Keyword: "ORDINAL",
+            Expr: &ast.IntLiteral{
               ValuePos: 196,
               ValueEnd: 197,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -324,7 +314,7 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 235,
-          Expr:   &ast.TypelessStructLiteral{
+          Expr: &ast.TypelessStructLiteral{
             Struct: 205,
             Rparen: 219,
             Values: []ast.TypelessStructLiteralArg{
@@ -332,37 +322,37 @@ select
                 Expr: &ast.IntLiteral{
                   ValuePos: 212,
                   ValueEnd: 213,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 215,
                   ValueEnd: 216,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 218,
                   ValueEnd: 219,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 221,
-            Rparen:     234,
-            Keyword:    "SAFE_OFFSET",
-            Expr:       &ast.IntLiteral{
+            Rparen: 234,
+            Keyword: "SAFE_OFFSET",
+            Expr: &ast.IntLiteral{
               ValuePos: 233,
               ValueEnd: 234,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -370,7 +360,7 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 268,
-          Expr:   &ast.TypelessStructLiteral{
+          Expr: &ast.TypelessStructLiteral{
             Struct: 242,
             Rparen: 256,
             Values: []ast.TypelessStructLiteralArg{
@@ -378,37 +368,37 @@ select
                 Expr: &ast.IntLiteral{
                   ValuePos: 249,
                   ValueEnd: 250,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 252,
                   ValueEnd: 253,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 255,
                   ValueEnd: 256,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
           },
           Index: &ast.SubscriptSpecifierKeyword{
             KeywordPos: 258,
-            Rparen:     267,
-            Keyword:    "ORDINAL",
-            Expr:       &ast.IntLiteral{
+            Rparen: 267,
+            Keyword: "ORDINAL",
+            Expr: &ast.IntLiteral{
               ValuePos: 266,
               ValueEnd: 267,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -416,7 +406,7 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 292,
-          Expr:   &ast.TypelessStructLiteral{
+          Expr: &ast.TypelessStructLiteral{
             Struct: 275,
             Rparen: 289,
             Values: []ast.TypelessStructLiteralArg{
@@ -424,24 +414,24 @@ select
                 Expr: &ast.IntLiteral{
                   ValuePos: 282,
                   ValueEnd: 283,
-                  Base:     10,
-                  Value:    "1",
+                  Base: 10,
+                  Value: "1",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 285,
                   ValueEnd: 286,
-                  Base:     10,
-                  Value:    "2",
+                  Base: 10,
+                  Value: "2",
                 },
               },
               &ast.ExprArg{
                 Expr: &ast.IntLiteral{
                   ValuePos: 288,
                   ValueEnd: 289,
-                  Base:     10,
-                  Value:    "3",
+                  Base: 10,
+                  Value: "3",
                 },
               },
             },
@@ -450,8 +440,8 @@ select
             Expr: &ast.IntLiteral{
               ValuePos: 291,
               ValueEnd: 292,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -459,20 +449,20 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 317,
-          Expr:   &ast.JSONLiteral{
-            JSON:  299,
+          Expr: &ast.JSONLiteral{
+            JSON: 299,
             Value: &ast.StringLiteral{
               ValuePos: 304,
               ValueEnd: 315,
-              Value:    "[1, 2, 3]",
+              Value: "[1, 2, 3]",
             },
           },
           Index: &ast.ExprArg{
             Expr: &ast.IntLiteral{
               ValuePos: 316,
               ValueEnd: 317,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
@@ -480,30 +470,24 @@ select
       &ast.ExprSelectItem{
         Expr: &ast.IndexExpr{
           Rbrack: 359,
-          Expr:   &ast.JSONLiteral{
-            JSON:  324,
+          Expr: &ast.JSONLiteral{
+            JSON: 324,
             Value: &ast.StringLiteral{
               ValuePos: 329,
               ValueEnd: 355,
-              Value:    "{\"a\": 1, \"b\": 2, \"c\": 3}",
+              Value: "{\"a\": 1, \"b\": 2, \"c\": 3}",
             },
           },
           Index: &ast.ExprArg{
             Expr: &ast.StringLiteral{
               ValuePos: 356,
               ValueEnd: 359,
-              Value:    "a",
+              Value: "a",
             },
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

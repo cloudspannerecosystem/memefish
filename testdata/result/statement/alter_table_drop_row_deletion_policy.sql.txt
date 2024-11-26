@@ -3,18 +3,17 @@ alter table foo drop row deletion policy
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
         NameEnd: 15,
-        Name:    "foo",
+        Name: "foo",
       },
     },
   },
   TableAlteration: &ast.DropRowDeletionPolicy{
-    Drop:   16,
+    Drop: 16,
     Policy: 34,
   },
 }

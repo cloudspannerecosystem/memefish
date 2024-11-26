@@ -2,13 +2,12 @@
 NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
 --- AST
 &ast.BracedNewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
         NamePos: 4,
         NameEnd: 12,
-        Name:    "Universe",
+        Name: "Universe",
       },
     },
   },
@@ -20,14 +19,14 @@ NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
         Name: &ast.Ident{
           NamePos: 14,
           NameEnd: 18,
-          Name:    "name",
+          Name: "name",
         },
         Value: &ast.BracedConstructorFieldValueExpr{
           Colon: 18,
-          Expr:  &ast.StringLiteral{
+          Expr: &ast.StringLiteral{
             ValuePos: 20,
             ValueEnd: 25,
-            Value:    "Sol",
+            Value: "Sol",
           },
         },
       },
@@ -35,30 +34,29 @@ NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
         Name: &ast.Ident{
           NamePos: 27,
           NameEnd: 42,
-          Name:    "closest_planets",
+          Name: "closest_planets",
         },
         Value: &ast.BracedConstructorFieldValueExpr{
           Colon: 42,
-          Expr:  &ast.ArrayLiteral{
-            Array:  -1,
+          Expr: &ast.ArrayLiteral{
+            Array: -1,
             Lbrack: 44,
             Rbrack: 73,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.StringLiteral{
                 ValuePos: 45,
                 ValueEnd: 54,
-                Value:    "Mercury",
+                Value: "Mercury",
               },
               &ast.StringLiteral{
                 ValuePos: 56,
                 ValueEnd: 63,
-                Value:    "Venus",
+                Value: "Venus",
               },
               &ast.StringLiteral{
                 ValuePos: 65,
                 ValueEnd: 72,
-                Value:    "Earth",
+                Value: "Earth",
               },
             },
           },

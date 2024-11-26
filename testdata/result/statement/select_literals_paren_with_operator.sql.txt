@@ -3,41 +3,30 @@ SELECT (1+1)
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ParenExpr{
           Lparen: 7,
           Rparen: 11,
-          Expr:   &ast.BinaryExpr{
-            Op:   "+",
+          Expr: &ast.BinaryExpr{
+            Op: "+",
             Left: &ast.IntLiteral{
               ValuePos: 8,
               ValueEnd: 9,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
             Right: &ast.IntLiteral{
               ValuePos: 10,
               ValueEnd: 11,
-              Base:     10,
-              Value:    "1",
+              Base: 10,
+              Value: "1",
             },
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
