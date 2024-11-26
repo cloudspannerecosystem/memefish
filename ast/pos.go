@@ -486,12 +486,12 @@ func (a *AtTimeZone) End() token.Pos {
 	return nodeEnd(wrapNode(a.Expr))
 }
 
-func (n *WithExprVar) Pos() token.Pos {
-	return nodePos(wrapNode(n.Expr))
+func (w *WithExprVar) Pos() token.Pos {
+	return nodePos(wrapNode(w.Name))
 }
 
-func (n *WithExprVar) End() token.Pos {
-	return nodeEnd(wrapNode(n.Name))
+func (w *WithExprVar) End() token.Pos {
+	return nodeEnd(wrapNode(w.Expr))
 }
 
 func (w *WithExpr) Pos() token.Pos {
