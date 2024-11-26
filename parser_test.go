@@ -67,7 +67,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- AST\n")
-			_, _ = fmt.Fprintln(&buf, dd.Dump(node, dd.WithOmitEmptyFields()))
+			_, _ = fmt.Fprintln(&buf, dd.Dump(node, dd.WithOmitEmptyFields(), dd.WithUintFormat(dd.HexUint)))
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
