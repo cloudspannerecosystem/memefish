@@ -1,0 +1,70 @@
+--- select_with.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/operators#with_expression
+SELECT WITH(a AS '123',       -- a is '123'
+    b AS CONCAT(a, '456'),    -- b is '123456'
+    c AS '789',               -- c is '789'
+    CONCAT(b, c)) AS result   -- b + c is '123456789'
+--- AST
+&ast.QueryStatement{
+  Hint:  (*ast.Hint)(nil),
+  With:  (*ast.With)(nil),
+  Query: &ast.Select{
+    Select:   90,
+    Distinct: false,
+    As:       nil,
+    Results:  []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.WithExpr{
+          With:   97,
+          Rparen: 241,
+          Vars:   []*ast.WithExprVar(nil),
+          Expr:   &ast.CallExpr{
+            Rparen: 240,
+            Func:   &ast.Ident{
+              NamePos: 229,
+              NameEnd: 235,
+              Name:    "CONCAT",
+            },
+            Distinct: false,
+            Args:     []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 236,
+                  NameEnd: 237,
+                  Name:    "b",
+                },
+              },
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 239,
+                  NameEnd: 240,
+                  Name:    "c",
+                },
+              },
+            },
+            NamedArgs:    []*ast.NamedArg(nil),
+            NullHandling: nil,
+            Having:       nil,
+          },
+        },
+        As: &ast.AsAlias{
+          As:    243,
+          Alias: &ast.Ident{
+            NamePos: 246,
+            NameEnd: 252,
+            Name:    "result",
+          },
+        },
+      },
+    },
+    From:    (*ast.From)(nil),
+    Where:   (*ast.Where)(nil),
+    GroupBy: (*ast.GroupBy)(nil),
+    Having:  (*ast.Having)(nil),
+    OrderBy: (*ast.OrderBy)(nil),
+    Limit:   (*ast.Limit)(nil),
+  },
+}
+
+--- SQL
+SELECT WITH(, CONCAT(b, c)) AS result
