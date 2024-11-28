@@ -1604,7 +1604,7 @@ func (p *Parser) lookaheadLambdaArg() bool {
 }
 
 func (p *Parser) parseLambdaArg() *ast.LambdaArg {
-	var lparen token.Pos
+	lparen := token.InvalidPos
 	var args []*ast.Ident
 	if p.Token.Kind == "(" {
 		lparen = p.expect("(").Pos

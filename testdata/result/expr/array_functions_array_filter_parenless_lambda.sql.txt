@@ -39,7 +39,7 @@ ARRAY_FILTER([1 ,2, 3], e -> e > 1)
       },
     },
     &ast.LambdaArg{
-      Lparen: 0,
+      Lparen: -1,
       Args:   []*ast.Ident{
         &ast.Ident{
           NamePos: 24,
@@ -69,4 +69,4 @@ ARRAY_FILTER([1 ,2, 3], e -> e > 1)
 }
 
 --- SQL
-ARRAY_FILTER([1, 2, 3], (e) -> e > 1)
+ARRAY_FILTER([1, 2, 3], e -> e > 1)
