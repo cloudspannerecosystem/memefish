@@ -217,6 +217,7 @@ type Arg interface {
 func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
+func (LambdaArg) isArg()   {}
 
 // NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
 type NullHandlingModifier interface {
@@ -1189,6 +1190,19 @@ type SequenceArg struct {
 
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
+	Expr Expr
+}
+
+// LambdaArg is lambda expression argument of the generic function call.
+//
+//	{{if .Lparen.Invalid}}{{.Args | sqlJoin ", "}}{{else}}({{.Args | sqlJoin ", "}}) -> {{.Expr | sql}}
+type LambdaArg struct {
+	// pos = Lparen || Args[0].pos
+	// end = Expr.end
+
+	Lparen token.Pos // optional
+
+	Args []*Ident
 	Expr Expr
 }
 
