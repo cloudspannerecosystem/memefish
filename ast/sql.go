@@ -549,6 +549,12 @@ func (a *AtTimeZone) SQL() string {
 	return "AT TIME ZONE " + a.Expr.SQL()
 }
 
+func (r ReplaceFieldsArg) SQL() string { return r.Expr.SQL() + " AS " + r.Field.SQL() }
+
+func (r *ReplaceFieldsExpr) SQL() string {
+	return "REPLACE_FIELDS(" + r.Expr.SQL() + ", " + sqlJoin(r.Fields, ", ") + ")"
+}
+
 func (c *CastExpr) SQL() string {
 	return strOpt(c.Safe, "SAFE_") + "CAST(" + c.Expr.SQL() + " AS " + c.Type.SQL() + ")"
 }

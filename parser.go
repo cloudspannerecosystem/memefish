@@ -1469,6 +1469,8 @@ func (p *Parser) parseLit() ast.Expr {
 		switch {
 		case id.IsKeywordLike("SAFE_CAST"):
 			return p.parseCastExpr()
+		case id.IsKeywordLike("REPLACE_FIELDS"):
+			return p.parseReplaceFieldsExpr()
 		}
 		p.nextToken()
 		switch p.Token.Kind {
@@ -1751,6 +1753,32 @@ func (p *Parser) parseIfExpr() *ast.IfExpr {
 		Expr:       expr,
 		TrueResult: trueResult,
 		ElseResult: elseResult,
+	}
+}
+
+func (p *Parser) parseReplaceFieldsArg() *ast.ReplaceFieldsArg {
+	expr := p.parseExpr()
+	p.expect("AS")
+	field := p.parsePath()
+
+	return &ast.ReplaceFieldsArg{
+		Expr:  expr,
+		Field: field,
+	}
+}
+func (p *Parser) parseReplaceFieldsExpr() *ast.ReplaceFieldsExpr {
+	replaceFields := p.expectKeywordLike("REPLACE_FIELDS").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	p.expect(",")
+	fields := parseCommaSeparatedList(p, p.parseReplaceFieldsArg)
+	rparen := p.expect(")").Pos
+
+	return &ast.ReplaceFieldsExpr{
+		ReplaceFields: replaceFields,
+		Rparen:        rparen,
+		Expr:          expr,
+		Fields:        fields,
 	}
 }
 

@@ -172,6 +172,7 @@ func (CallExpr) isExpr()              {}
 func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
+func (ReplaceFieldsExpr) isExpr()     {}
 func (CaseExpr) isExpr()              {}
 func (IfExpr) isExpr()                {}
 func (ParenExpr) isExpr()             {}
@@ -1271,6 +1272,31 @@ type ExtractExpr struct {
 	Part       *Ident
 	Expr       Expr
 	AtTimeZone *AtTimeZone // optional
+}
+
+// ReplaceFieldsArg is value AS field_path node in ReplaceFieldsExpr.
+//
+//	{{.Expr | sql}} AS {{.Field | sql}}
+type ReplaceFieldsArg struct {
+	// pos = Expr.pos
+	// end = Field.end
+
+	Expr  Expr
+	Field *Path
+}
+
+// ReplaceFieldsExpr is REPLACE_FIELDS call expression node.
+//
+//	REPLACE_FIELDS({{.Part | sql}} FROM {{.Expr | sql}} {{.AtTimeZone | sqlOpt}})
+type ReplaceFieldsExpr struct {
+	// pos = ReplaceFields
+	// end = Rparen + 1
+
+	ReplaceFields token.Pos // position of "REPLACE_FIELDS" keyword
+	Rparen        token.Pos // position of ")"
+
+	Expr   Expr
+	Fields []*ReplaceFieldsArg
 }
 
 // AtTimeZone is AT TIME ZONE clause in EXTRACT call.
