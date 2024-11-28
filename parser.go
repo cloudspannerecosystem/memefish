@@ -1766,6 +1766,7 @@ func (p *Parser) parseReplaceFieldsArg() *ast.ReplaceFieldsArg {
 		Field: field,
 	}
 }
+
 func (p *Parser) parseReplaceFieldsExpr() *ast.ReplaceFieldsExpr {
 	replaceFields := p.expectKeywordLike("REPLACE_FIELDS").Pos
 	p.expect("(")
