@@ -478,6 +478,22 @@ func (e *ExtractExpr) End() token.Pos {
 	return posAdd(e.Rparen, 1)
 }
 
+func (r *ReplaceFieldsArg) Pos() token.Pos {
+	return nodePos(wrapNode(r.Expr))
+}
+
+func (r *ReplaceFieldsArg) End() token.Pos {
+	return nodeEnd(wrapNode(r.Field))
+}
+
+func (r *ReplaceFieldsExpr) Pos() token.Pos {
+	return r.ReplaceFields
+}
+
+func (r *ReplaceFieldsExpr) End() token.Pos {
+	return posAdd(r.Rparen, 1)
+}
+
 func (a *AtTimeZone) Pos() token.Pos {
 	return a.At
 }
