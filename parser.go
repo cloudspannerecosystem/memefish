@@ -1590,12 +1590,51 @@ func (p *Parser) tryParseNamedArg() *ast.NamedArg {
 	}
 }
 
+func (p *Parser) lookaheadLambdaArg() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "(" && p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
+	// Note: all lambda patterns can be parsed as expr -> expr.
+	p.parseExpr()
+	return p.Token.Kind == "->"
+}
+
+func (p *Parser) parseLambdaArg() *ast.LambdaArg {
+	lparen := token.InvalidPos
+	var args []*ast.Ident
+	if p.Token.Kind == "(" {
+		lparen = p.expect("(").Pos
+		args = parseCommaSeparatedList(p, p.parseIdent)
+		p.expect(")")
+	} else {
+		args = []*ast.Ident{p.parseIdent()}
+	}
+
+	p.expect("->")
+	expr := p.parseExpr()
+
+	return &ast.LambdaArg{
+		Lparen: lparen,
+		Args:   args,
+		Expr:   expr,
+	}
+}
+
 func (p *Parser) parseArg() ast.Arg {
 	if i := p.tryParseIntervalArg(); i != nil {
 		return i
 	}
 	if s := p.tryParseSequenceArg(); s != nil {
 		return s
+	}
+	if p.lookaheadLambdaArg() {
+		return p.parseLambdaArg()
 	}
 	return p.parseExprArg()
 }

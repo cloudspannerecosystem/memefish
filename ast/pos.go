@@ -422,6 +422,14 @@ func (s *SequenceArg) End() token.Pos {
 	return nodeEnd(wrapNode(s.Expr))
 }
 
+func (l *LambdaArg) Pos() token.Pos {
+	return posChoice(l.Lparen, nodePos(nodeSliceIndex(l.Args, 0)))
+}
+
+func (l *LambdaArg) End() token.Pos {
+	return nodeEnd(wrapNode(l.Expr))
+}
+
 func (n *NamedArg) Pos() token.Pos {
 	return nodePos(wrapNode(n.Name))
 }

@@ -506,6 +506,15 @@ func (c *CallExpr) SQL() string {
 		")"
 }
 
+func (l *LambdaArg) SQL() string {
+	// This implementation is not exactly matched with the doc comment for simplicity.
+	return strOpt(!l.Lparen.Invalid(), "(") +
+		sqlJoin(l.Args, ", ") +
+		strOpt(!l.Lparen.Invalid(), ")") +
+		" -> " +
+		l.Expr.SQL()
+}
+
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
 
 func (i *IgnoreNulls) SQL() string { return "IGNORE NULLS" }
