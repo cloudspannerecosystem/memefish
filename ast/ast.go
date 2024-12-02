@@ -1196,6 +1196,8 @@ type SequenceArg struct {
 // LambdaArg is lambda expression argument of the generic function call.
 //
 //	{{if .Lparen.Invalid}}{{.Args | sqlJoin ", "}}{{else}}({{.Args | sqlJoin ", "}}) -> {{.Expr | sql}}
+//
+// Note: Args won't be empty. If Lparen is not appeared, Args have exactly one element.
 type LambdaArg struct {
 	// pos = Lparen || Args[0].pos
 	// end = Expr.end
