@@ -1202,7 +1202,7 @@ type LambdaArg struct {
 
 	Lparen token.Pos // optional
 
-	Args []*Ident
+	Args []*Ident // if Lparen.Invalid() then len(Args) = 1 else len(Args) > 0
 	Expr Expr
 }
 
