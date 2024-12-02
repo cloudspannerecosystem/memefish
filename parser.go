@@ -1624,10 +1624,6 @@ func (p *Parser) lookaheadLambdaArg() bool {
 	default:
 		return false
 	}
-
-	// Note: all lambda patterns can be parsed as expr -> expr.
-	p.parseExpr()
-	return p.Token.Kind == "->"
 }
 
 func (p *Parser) parseLambdaArg() *ast.LambdaArg {
