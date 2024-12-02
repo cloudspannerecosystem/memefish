@@ -1611,7 +1611,7 @@ func (p *Parser) parseLambdaArg() *ast.LambdaArg {
 		args = parseCommaSeparatedList(p, p.parseIdent)
 		p.expect(")")
 	} else {
-		args = parseCommaSeparatedList(p, p.parseIdent)
+		args = []*ast.Ident{p.parseIdent()}
 	}
 
 	p.expect("->")
