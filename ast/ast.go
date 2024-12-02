@@ -1287,7 +1287,7 @@ type ReplaceFieldsArg struct {
 
 // ReplaceFieldsExpr is REPLACE_FIELDS call expression node.
 //
-//	REPLACE_FIELDS({{.Part | sql}} FROM {{.Expr | sql}} {{.AtTimeZone | sqlOpt}})
+//	REPLACE_FIELDS({{.Expr.| sql}}, {{.Fields | sqlJoin ", "}})
 type ReplaceFieldsExpr struct {
 	// pos = ReplaceFields
 	// end = Rparen + 1
