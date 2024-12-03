@@ -11,12 +11,11 @@ HAVING
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: "",
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 9,
@@ -66,8 +65,6 @@ HAVING
         },
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

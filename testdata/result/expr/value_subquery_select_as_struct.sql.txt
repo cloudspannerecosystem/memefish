@@ -6,9 +6,9 @@
   Lparen: 0,
   Rparen: 24,
   Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsStruct{
+    Select:        1,
+    AllOrDistinct: "",
+    As:            &ast.AsStruct{
       As:     8,
       Struct: 11,
     },
@@ -34,8 +34,6 @@
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

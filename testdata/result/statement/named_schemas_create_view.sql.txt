@@ -22,10 +22,10 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
   OrReplace:    false,
   SecurityType: "INVOKER",
   Query:        &ast.Select{
-    Select:   52,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        52,
+    AllOrDistinct: "",
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -133,8 +133,6 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
     },
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

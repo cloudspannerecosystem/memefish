@@ -50,12 +50,11 @@ lines''',
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: "",
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.StringLiteral{
           ValuePos: 9,
@@ -387,10 +386,10 @@ lines''',
           Array:  454,
           Rparen: 482,
           Query:  &ast.Select{
-            Select:   460,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        460,
+            AllOrDistinct: "",
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
@@ -428,8 +427,6 @@ lines''',
             Where:   (*ast.Where)(nil),
             GroupBy: (*ast.GroupBy)(nil),
             Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -438,10 +435,10 @@ lines''',
           Array:  487,
           Rparen: 509,
           Query:  &ast.Select{
-            Select:   493,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:        493,
+            AllOrDistinct: "",
+            As:            nil,
+            Results:       []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.TupleStructLiteral{
                   Lparen: 500,
@@ -473,8 +470,6 @@ lines''',
             Where:   (*ast.Where)(nil),
             GroupBy: (*ast.GroupBy)(nil),
             Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -631,8 +626,6 @@ lines''',
     Where:   (*ast.Where)(nil),
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

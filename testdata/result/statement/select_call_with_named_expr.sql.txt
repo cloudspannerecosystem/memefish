@@ -5,12 +5,11 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
 --- AST
 &ast.QueryStatement{
   Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:        0,
+    AllOrDistinct: "",
+    As:            nil,
+    Results:       []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -144,8 +143,6 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
     },
     GroupBy: (*ast.GroupBy)(nil),
     Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
