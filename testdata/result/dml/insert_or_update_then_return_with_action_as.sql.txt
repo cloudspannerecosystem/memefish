@@ -1,10 +1,11 @@
---- insert_or_ignore.sql
-INSERT OR IGNORE INTO foo
+--- insert_or_update_then_return_with_action_as.sql
+INSERT OR UPDATE INTO foo
 (foo, bar) VALUES (1, 2)
+THEN RETURN WITH ACTION AS act *
 --- AST
 &ast.Insert{
   Insert:       0,
-  InsertOrType: "IGNORE",
+  InsertOrType: "UPDATE",
   TableName:    &ast.Ident{
     NamePos: 22,
     NameEnd: 25,
@@ -53,8 +54,27 @@ INSERT OR IGNORE INTO foo
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
+  ThenReturn: &ast.ThenReturn{
+    Then:       51,
+    WithAction: &ast.WithAction{
+      With:   63,
+      Action: 68,
+      Alias:  &ast.AsAlias{
+        As:    75,
+        Alias: &ast.Ident{
+          NamePos: 78,
+          NameEnd: 81,
+          Name:    "act",
+        },
+      },
+    },
+    Items: []ast.SelectItem{
+      &ast.Star{
+        Star: 82,
+      },
+    },
+  },
 }
 
 --- SQL
-INSERT OR IGNORE INTO foo (foo, bar) VALUES (1, 2)
+INSERT OR UPDATE INTO foo (foo, bar) VALUES (1, 2) THEN RETURN WITH ACTION AS act *

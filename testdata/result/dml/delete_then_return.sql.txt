@@ -1,5 +1,5 @@
---- delete.sql
-delete foo where foo = 1 and bar = 2
+--- delete_then_return.sql
+delete foo where foo = 1 and bar = 2 then return *
 --- AST
 &ast.Delete{
   Delete:    0,
@@ -43,8 +43,16 @@ delete foo where foo = 1 and bar = 2
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
+  ThenReturn: &ast.ThenReturn{
+    Then:       37,
+    WithAction: (*ast.WithAction)(nil),
+    Items:      []ast.SelectItem{
+      &ast.Star{
+        Star: 49,
+      },
+    },
+  },
 }
 
 --- SQL
-DELETE FROM foo WHERE foo = 1 AND bar = 2
+DELETE FROM foo WHERE foo = 1 AND bar = 2 THEN RETURN *

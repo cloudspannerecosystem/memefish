@@ -94,6 +94,7 @@ select * from unnest([(1, 2), (3, 4)])
       Limit:   (*ast.Limit)(nil),
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL
