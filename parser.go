@@ -450,11 +450,74 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
+// lookaheadStarModifierExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
+func (p *Parser) lookaheadStarModifierExcept() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "EXCEPT" {
+		return false
+	}
+	p.nextToken()
+	return p.Token.Kind == "("
+}
+
+func (p *Parser) tryParseStarModifierExcept() *ast.StarModifierExcept {
+	if !p.lookaheadStarModifierExcept() {
+		return nil
+	}
+
+	pos := p.expect("EXCEPT").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierExcept{
+		Except:  pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) parseStarModifierReplaceItem() *ast.StarModifierReplaceItem {
+	expr := p.parseExpr()
+	p.expect("AS")
+	name := p.parseIdent()
+
+	return &ast.StarModifierReplaceItem{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) tryParseStarModifierReplace() *ast.StarModifierReplace {
+	if !p.Token.IsKeywordLike("REPLACE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("REPLACE").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseStarModifierReplaceItem)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierReplace{
+		Replace: pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
 func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "*" {
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.Star{
-			Star: pos,
+			Star:    pos,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
@@ -469,9 +532,13 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "." {
 		p.nextToken()
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.DotStar{
-			Star: pos,
-			Expr: expr,
+			Star:    pos,
+			Expr:    expr,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
