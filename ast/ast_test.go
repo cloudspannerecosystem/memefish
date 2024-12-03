@@ -31,6 +31,9 @@ func TestStatement(t *testing.T) {
 	Statement(&Insert{}).isStatement()
 	Statement(&Delete{}).isStatement()
 	Statement(&Update{}).isStatement()
+	Statement(&Grant{}).isStatement()
+	Statement(&Revoke{}).isStatement()
+	Statement(&GQLGraphQuery{}).isStatement()
 }
 
 func TestQueryExpr(t *testing.T) {

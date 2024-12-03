@@ -254,6 +254,14 @@ func (p *ParenTableExpr) End() token.Pos {
 	return posChoice(nodeEnd(wrapNode(p.Sample)), posAdd(p.Rparen, 1))
 }
 
+func (g *GraphTableExpr) Pos() token.Pos {
+	return g.GraphTable
+}
+
+func (g *GraphTableExpr) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(g.As)), posAdd(g.Rparen, 1))
+}
+
 func (j *Join) Pos() token.Pos {
 	return nodePos(wrapNode(j.Left))
 }
@@ -342,6 +350,14 @@ func (v *ValuesInCondition) End() token.Pos {
 	return posAdd(v.Rparen, 1)
 }
 
+func (g *GQLSubQueryInCondition) Pos() token.Pos {
+	return g.LBrace
+}
+
+func (g *GQLSubQueryInCondition) End() token.Pos {
+	return posAdd(g.RBrace, 1)
+}
+
 func (i *IsNullExpr) Pos() token.Pos {
 	return nodePos(wrapNode(i.Left))
 }
@@ -356,6 +372,22 @@ func (i *IsBoolExpr) Pos() token.Pos {
 
 func (i *IsBoolExpr) End() token.Pos {
 	return posAdd(i.RightPos, ifThenElse(i.Right, 4, 5))
+}
+
+func (i *IsSourceExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Node))
+}
+
+func (i *IsSourceExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Edge))
+}
+
+func (i *IsDestinationExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Node))
+}
+
+func (i *IsDestinationExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Edge))
 }
 
 func (b *BetweenExpr) Pos() token.Pos {
@@ -572,6 +604,30 @@ func (a *ArraySubQuery) Pos() token.Pos {
 
 func (a *ArraySubQuery) End() token.Pos {
 	return posAdd(a.Rparen, 1)
+}
+
+func (a *ArrayGQLSubQuery) Pos() token.Pos {
+	return a.Array
+}
+
+func (a *ArrayGQLSubQuery) End() token.Pos {
+	return posAdd(a.RBrace, 1)
+}
+
+func (v *ValueGQLSubQuery) Pos() token.Pos {
+	return v.Array
+}
+
+func (v *ValueGQLSubQuery) End() token.Pos {
+	return posAdd(v.RBrace, 1)
+}
+
+func (e *ExistsGQLSubQuery) Pos() token.Pos {
+	return e.Exists
+}
+
+func (e *ExistsGQLSubQuery) End() token.Pos {
+	return posAdd(e.RBrace, 1)
 }
 
 func (e *ExistsSubQuery) Pos() token.Pos {
@@ -1668,4 +1724,396 @@ func (u *UpdateItem) Pos() token.Pos {
 
 func (u *UpdateItem) End() token.Pos {
 	return nodeEnd(wrapNode(u.DefaultExpr))
+}
+
+func (g *GQLGraphQuery) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.GraphClause), wrapNode(g.MultiLinearQueryStatement)))
+}
+
+func (g *GQLGraphQuery) End() token.Pos {
+	return nodeEnd(wrapNode(g.MultiLinearQueryStatement))
+}
+
+func (g *GQLQueryExpr) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.GraphClause), wrapNode(g.MultiLinearQueryStatement)))
+}
+
+func (g *GQLQueryExpr) End() token.Pos {
+	return nodeEnd(wrapNode(g.MultiLinearQueryStatement))
+}
+
+func (g *GQLGraphClause) Pos() token.Pos {
+	return g.Graph
+}
+
+func (g *GQLGraphClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.PropertyGraphName))
+}
+
+func (g *GQLMultiLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.LinearQueryStatementList, 0))
+}
+
+func (g *GQLMultiLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.LinearQueryStatementList))
+}
+
+func (g *GQLSimpleLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.PrimitiveQueryStatementList, 0))
+}
+
+func (g *GQLSimpleLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.PrimitiveQueryStatementList))
+}
+
+func (g *GQLSimpleLinearQueryStatementWithSetOperator) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLSimpleLinearQueryStatementWithSetOperator) End() token.Pos {
+	return nodeEnd(wrapNode(g.Statement))
+}
+
+func (g *GQLCompositeLinearQueryStatement) Pos() token.Pos {
+	return nodePos(wrapNode(g.HeadSimpleLinearQueryStatement))
+}
+
+func (g *GQLCompositeLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.TailSimpleLinearQueryStatementList))
+}
+
+func (g *GQLMatchStatement) Pos() token.Pos {
+	return posChoice(g.Optional, g.Match)
+}
+
+func (g *GQLMatchStatement) End() token.Pos {
+	return nodeEnd(wrapNode(g.GraphPattern))
+}
+
+func (g *GQLFilterStatement) Pos() token.Pos {
+	return g.Filter
+}
+
+func (g *GQLFilterStatement) End() token.Pos {
+	return nodeEnd(wrapNode(g.Expr))
+}
+
+func (g *GQLForStatement) Pos() token.Pos {
+	return g.For
+}
+
+func (g *GQLForStatement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.WithOffsetClause), wrapNode(g.ArrayExpression)))
+}
+
+func (g *GQLWithOffsetClause) Pos() token.Pos {
+	return g.With
+}
+
+func (g *GQLWithOffsetClause) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(g.OffsetName)), posAdd(g.Offset, 6))
+}
+
+func (g *GQLLimitClause) Pos() token.Pos {
+	return nodePos(wrapNode(g.Limit))
+}
+
+func (g *GQLLimitClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.Limit))
+}
+
+func (g *GQLOffsetClause) Pos() token.Pos {
+	return nodePos(wrapNode(g.Offset))
+}
+
+func (g *GQLOffsetClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.Offset))
+}
+
+func (g *GQLLimitWithOffsetClause) Pos() token.Pos {
+	return nodePos(wrapNode(g.Limit))
+}
+
+func (g *GQLLimitWithOffsetClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.Offset))
+}
+
+func (g *GQLLimitStatement) Pos() token.Pos {
+	return g.Limit
+}
+
+func (g *GQLLimitStatement) End() token.Pos {
+	return nodeEnd(wrapNode(g.Count))
+}
+
+func (g *GQLOffsetStatement) Pos() token.Pos {
+	return g.Offset
+}
+
+func (g *GQLOffsetStatement) End() token.Pos {
+	return nodeEnd(wrapNode(g.Count))
+}
+
+func (g *GQLOrderByStatement) Pos() token.Pos {
+	return g.Order
+}
+
+func (g *GQLOrderByStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.OrderBySpecificationList))
+}
+
+func (g *GQLOrderBySpecification) Pos() token.Pos {
+	return nodePos(wrapNode(g.Expr))
+}
+
+func (g *GQLOrderBySpecification) End() token.Pos {
+	return posChoice(g.DirectionPos, nodeEnd(wrapNode(g.CollationSpecification)))
+}
+
+func (g *GQLCollationSpecification) Pos() token.Pos {
+	return g.Collate
+}
+
+func (g *GQLCollationSpecification) End() token.Pos {
+	return nodeEnd(wrapNode(g.Specification))
+}
+
+func (g *GQLWithStatement) Pos() token.Pos {
+	return g.With
+}
+
+func (g *GQLWithStatement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.GroupByClause), nodeSliceLast(g.ReturnItemList)))
+}
+
+func (g *GQLReturnStatement) Pos() token.Pos {
+	return g.Return
+}
+
+func (g *GQLReturnStatement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.LimitAndOffsetClause), wrapNode(g.OrderByClause), wrapNode(g.GroupByClause), nodeSliceLast(g.ReturnItemList)))
+}
+
+func (g *GQLLinearGraphVariable) Pos() token.Pos {
+	return nodePos(wrapNode(g.VariableName))
+}
+
+func (g *GQLLinearGraphVariable) End() token.Pos {
+	return nodeEnd(wrapNode(g.Value))
+}
+
+func (g *GQLLetStatement) Pos() token.Pos {
+	return g.Let
+}
+
+func (g *GQLLetStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.LinearGraphVariableList))
+}
+
+func (g *GQLGraphPattern) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.PathPatternList, 0))
+}
+
+func (g *GQLGraphPattern) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.WhereClause), nodeSliceLast(g.PathPatternList)))
+}
+
+func (g *GQLTopLevelPathPattern) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.PathSearchPrefixOrPathMode), wrapNode(g.PathPattern)))
+}
+
+func (g *GQLTopLevelPathPattern) End() token.Pos {
+	return nodeEnd(wrapNode(g.PathPattern))
+}
+
+func (g *GQLFullEdgeAny) Pos() token.Pos {
+	return g.First
+}
+
+func (g *GQLFullEdgeAny) End() token.Pos {
+	return posAdd(g.Last, 1)
+}
+
+func (g *GQLFullEdgeLeft) Pos() token.Pos {
+	return g.First
+}
+
+func (g *GQLFullEdgeLeft) End() token.Pos {
+	return posAdd(g.Last, 1)
+}
+
+func (g *GQLFullEdgeRight) Pos() token.Pos {
+	return g.First
+}
+
+func (g *GQLFullEdgeRight) End() token.Pos {
+	return posAdd(g.Last, 1)
+}
+
+func (g *GQLAbbreviatedEdgeAny) Pos() token.Pos {
+	return g.Hyphen
+}
+
+func (g *GQLAbbreviatedEdgeAny) End() token.Pos {
+	return posAdd(g.Hyphen, 1)
+}
+
+func (g *GQLAbbreviatedEdgeLeft) Pos() token.Pos {
+	return g.First
+}
+
+func (g *GQLAbbreviatedEdgeLeft) End() token.Pos {
+	return posAdd(g.Last, 1)
+}
+
+func (g *GQLAbbreviatedEdgeRight) Pos() token.Pos {
+	return g.First
+}
+
+func (g *GQLAbbreviatedEdgeRight) End() token.Pos {
+	return posAdd(g.Last, 1)
+}
+
+func (g *GQLQuantifiablePathTerm) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.PathTerm)))
+}
+
+func (g *GQLQuantifiablePathTerm) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Quantifier), wrapNode(g.PathTerm)))
+}
+
+func (g *GQLPathPattern) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.PathTermList, 0))
+}
+
+func (g *GQLPathPattern) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.PathTermList))
+}
+
+func (g *GQLWhereClause) Pos() token.Pos {
+	return g.Where
+}
+
+func (g *GQLWhereClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.BoolExpression))
+}
+
+func (g *GQLPathMode) Pos() token.Pos {
+	return nodePos(wrapNode(g.ModeToken))
+}
+
+func (g *GQLPathMode) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.PathOrPathsToken), wrapNode(g.ModeToken)))
+}
+
+func (g *GQLFixedQuantifier) Pos() token.Pos {
+	return g.LBrace
+}
+
+func (g *GQLFixedQuantifier) End() token.Pos {
+	return posAdd(g.RBrace, 1)
+}
+
+func (g *GQLBoundedQuantifier) Pos() token.Pos {
+	return g.LBrace
+}
+
+func (g *GQLBoundedQuantifier) End() token.Pos {
+	return posAdd(g.RBrace, 1)
+}
+
+func (g *GQLSubpathPattern) Pos() token.Pos {
+	return g.LParen
+}
+
+func (g *GQLSubpathPattern) End() token.Pos {
+	return posAdd(g.RParen, 1)
+}
+
+func (g *GQLNodePattern) Pos() token.Pos {
+	return g.LParen
+}
+
+func (g *GQLNodePattern) End() token.Pos {
+	return posAdd(g.RParen, 1)
+}
+
+func (g *GQLPatternFiller) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.GraphPatternVariable), wrapNode(g.IsLabelCondition), wrapNode(g.Filter)))
+}
+
+func (g *GQLPatternFiller) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Filter), wrapNode(g.IsLabelCondition), wrapNode(g.GraphPatternVariable), wrapNode(g.Hint)))
+}
+
+func (g *GQLIsLabelCondition) Pos() token.Pos {
+	return g.IsOrColon
+}
+
+func (g *GQLIsLabelCondition) End() token.Pos {
+	return nodeEnd(wrapNode(g.LabelExpression))
+}
+
+func (g *GQLLabelOrExpression) Pos() token.Pos {
+	return nodePos(wrapNode(g.Left))
+}
+
+func (g *GQLLabelOrExpression) End() token.Pos {
+	return nodeEnd(wrapNode(g.Right))
+}
+
+func (g *GQLLabelParenExpression) Pos() token.Pos {
+	return g.LParen
+}
+
+func (g *GQLLabelParenExpression) End() token.Pos {
+	return posAdd(g.RParen, 1)
+}
+
+func (g *GQLLabelAndExpression) Pos() token.Pos {
+	return nodePos(wrapNode(g.Left))
+}
+
+func (g *GQLLabelAndExpression) End() token.Pos {
+	return nodeEnd(wrapNode(g.Right))
+}
+
+func (g *GQLLabelNotExpression) Pos() token.Pos {
+	return g.Not
+}
+
+func (g *GQLLabelNotExpression) End() token.Pos {
+	return nodeEnd(wrapNode(g.LabelExpression))
+}
+
+func (g *GQLLabelName) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLLabelName) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(g.LabelName)), posAdd(g.StartPos, 1))
+}
+
+func (g *GQLPropertyFilters) Pos() token.Pos {
+	return g.LBrace
+}
+
+func (g *GQLPropertyFilters) End() token.Pos {
+	return posAdd(g.RBrace, 1)
+}
+
+func (g *GQLElementProperty) Pos() token.Pos {
+	return nodePos(wrapNode(g.ElementPropertyName))
+}
+
+func (g *GQLElementProperty) End() token.Pos {
+	return nodePos(wrapNode(g.ElementPropertyValue))
+}
+
+func (g *GQLPathSearchPrefix) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLPathSearchPrefix) End() token.Pos {
+	return g.LastEnd
 }
