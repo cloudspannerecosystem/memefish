@@ -1596,13 +1596,34 @@ func (p *Parser) lookaheadLambdaArg() bool {
 		p.Lexer = lexer
 	}()
 
-	if p.Token.Kind != "(" && p.Token.Kind != token.TokenIdent {
+	switch p.Token.Kind {
+	case "(":
+		p.nextToken()
+		if p.Token.Kind != token.TokenIdent {
+			return false
+		}
+		p.nextToken()
+
+		for p.Token.Kind != ")" {
+			if p.Token.Kind != "," {
+				return false
+			}
+			p.nextToken()
+
+			if p.Token.Kind != token.TokenIdent {
+				return false
+			}
+			p.nextToken()
+		}
+		p.nextToken()
+
+		return p.Token.Kind == "->"
+	case token.TokenIdent:
+		p.nextToken()
+		return p.Token.Kind == "->"
+	default:
 		return false
 	}
-
-	// Note: all lambda patterns can be parsed as expr -> expr.
-	p.parseExpr()
-	return p.Token.Kind == "->"
 }
 
 func (p *Parser) parseLambdaArg() *ast.LambdaArg {
