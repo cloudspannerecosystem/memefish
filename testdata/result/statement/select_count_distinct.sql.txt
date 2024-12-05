@@ -30,6 +30,7 @@ select count(distinct x) from foo
           NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: nil,
           Having:       nil,
+          Hint:         (*ast.Hint)(nil),
         },
       },
     },

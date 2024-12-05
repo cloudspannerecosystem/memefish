@@ -395,7 +395,7 @@ func (c *CallExpr) Pos() token.Pos {
 }
 
 func (c *CallExpr) End() token.Pos {
-	return posAdd(c.Rparen, 1)
+	return posChoice(nodeEnd(wrapNode(c.Hint)), posAdd(c.Rparen, 1))
 }
 
 func (e *ExprArg) Pos() token.Pos {

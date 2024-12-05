@@ -503,7 +503,8 @@ func (c *CallExpr) SQL() string {
 		sqlJoin(c.NamedArgs, ", ") +
 		sqlOpt(" ", c.NullHandling, "") +
 		sqlOpt(" ", c.Having, "") +
-		")"
+		")" +
+		sqlOpt(" ", c.Hint, "")
 }
 
 func (l *LambdaArg) SQL() string {
