@@ -9,7 +9,6 @@ SET OPTIONS (
 )
 --- AST
 &ast.AlterModel{
-  Alter:    0,
   IfExists: true,
   Name:     &ast.Ident{
     NamePos: 22,
@@ -30,7 +29,6 @@ SET OPTIONS (
           Array:  -1,
           Lbrack: 74,
           Rbrack: 237,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.StringLiteral{
               ValuePos: 84,

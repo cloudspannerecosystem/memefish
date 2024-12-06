@@ -10,13 +10,8 @@ HAVING
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 9,
@@ -33,12 +28,8 @@ HAVING
           NameEnd: 32,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
     GroupBy: &ast.GroupBy{
       Group: 33,
       Exprs: []ast.Expr{
@@ -66,8 +57,6 @@ HAVING
         },
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

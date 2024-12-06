@@ -3,7 +3,6 @@ REVOKE ROLE pii_access, pii_writter FROM ROLE hr_manager, hr_director
 
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.RolePrivilege{
     Role:  7,
     Names: []*ast.Ident{

@@ -9,8 +9,7 @@ WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL
 OPTIONS(sort_order_sharding=true)
 --- AST
 &ast.CreateSearchIndex{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 35,
     Name:    "AlbumsIndexFull",
@@ -61,8 +60,7 @@ OPTIONS(sort_order_sharding=true)
           NameEnd: 137,
           Name:    "ReleaseTimestamp",
         },
-        Collate: (*ast.Collate)(nil),
-        Dir:     "DESC",
+        Dir: "DESC",
       },
     },
   },

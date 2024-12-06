@@ -2,8 +2,7 @@
 ALTER TABLE Singers RENAME TO SingersNew, ADD SYNONYM Singers
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,

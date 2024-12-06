@@ -7,10 +7,8 @@ CREATE TABLE sch1.Singers (
 ) PRIMARY KEY(SingerId)
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      161,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 161,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -36,11 +34,8 @@ CREATE TABLE sch1.Singers (
         NamePos: 41,
         Name:    "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -53,7 +48,6 @@ CREATE TABLE sch1.Singers (
         NamePos: 71,
         Rparen:  82,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 78,
           ValueEnd: 82,
@@ -61,11 +55,7 @@ CREATE TABLE sch1.Singers (
           Value:    "1024",
         },
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -78,7 +68,6 @@ CREATE TABLE sch1.Singers (
         NamePos: 98,
         Rparen:  109,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 105,
           ValueEnd: 109,
@@ -86,11 +75,7 @@ CREATE TABLE sch1.Singers (
           Value:    "1024",
         },
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -104,17 +89,11 @@ CREATE TABLE sch1.Singers (
         Rparen:  136,
         Name:    "BYTES",
         Max:     true,
-        Size:    nil,
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -122,12 +101,8 @@ CREATE TABLE sch1.Singers (
         NameEnd: 161,
         Name:    "SingerId",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

@@ -21,13 +21,8 @@ select
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ExtractExpr{
           Extract: 11,
@@ -45,7 +40,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -65,7 +59,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -85,7 +78,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -105,7 +97,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -125,7 +116,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -145,7 +135,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -165,7 +154,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -185,7 +173,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -205,7 +192,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -225,7 +211,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -245,7 +230,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -265,7 +249,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -285,7 +268,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -305,7 +287,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -325,7 +306,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -345,7 +325,6 @@ select
               Value:    "2019-09-01",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -365,7 +344,6 @@ select
               Value:    "2019-09-01 08:11:23",
             },
           },
-          AtTimeZone: (*ast.AtTimeZone)(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -396,12 +374,6 @@ select
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

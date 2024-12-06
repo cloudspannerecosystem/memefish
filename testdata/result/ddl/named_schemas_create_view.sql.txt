@@ -4,8 +4,7 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
    FROM sch1.Singers AS s WHERE s.SingerId = 123456
 --- AST
 &ast.CreateView{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
@@ -19,13 +18,10 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
       },
     },
   },
-  OrReplace:    false,
   SecurityType: "INVOKER",
   Query:        &ast.Select{
-    Select:   52,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  52,
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -92,8 +88,7 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
             },
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
+        As: &ast.AsAlias{
           As:    118,
           Alias: &ast.Ident{
             NamePos: 121,
@@ -101,8 +96,6 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
             Name:    "s",
           },
         },
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -131,10 +124,6 @@ AS Select s.FirstName, s.LastName, s.SingerInfo
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

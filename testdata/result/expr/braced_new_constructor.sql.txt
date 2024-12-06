@@ -59,7 +59,6 @@ NEW Universe {
             Array:  -1,
             Lbrack: 148,
             Rbrack: 177,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.StringLiteral{
                 ValuePos: 149,
@@ -137,7 +136,6 @@ NEW Universe {
             Array:  -1,
             Lbrack: 255,
             Rbrack: 332,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.BracedConstructor{
                 Lbrace: 256,
@@ -229,10 +227,8 @@ NEW Universe {
             Lparen: 349,
             Rparen: 378,
             Query:  &ast.Select{
-              Select:   350,
-              Distinct: false,
-              As:       nil,
-              Results:  []ast.SelectItem{
+              Select:  350,
+              Results: []ast.SelectItem{
                 &ast.ExprSelectItem{
                   Expr: &ast.Ident{
                     NamePos: 357,
@@ -249,16 +245,8 @@ NEW Universe {
                     NameEnd: 378,
                     Name:    "SolTable",
                   },
-                  Hint:   (*ast.Hint)(nil),
-                  As:     (*ast.AsAlias)(nil),
-                  Sample: (*ast.TableSample)(nil),
                 },
               },
-              Where:   (*ast.Where)(nil),
-              GroupBy: (*ast.GroupBy)(nil),
-              Having:  (*ast.Having)(nil),
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   (*ast.Limit)(nil),
             },
           },
         },

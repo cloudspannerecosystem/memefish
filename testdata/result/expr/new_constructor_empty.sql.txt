@@ -3,7 +3,6 @@ NEW googlesql.examples.music.Chart()
 
 --- AST
 &ast.NewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
@@ -28,7 +27,6 @@ NEW googlesql.examples.music.Chart()
       },
     },
   },
-  Args:   []ast.NewConstructorArg(nil),
   Rparen: 35,
 }
 

@@ -3,20 +3,14 @@
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
+    Op:      "UNION",
+    Queries: []ast.QueryExpr{
       &ast.SubQuery{
-        Lparen: 0,
         Rparen: 9,
         Query:  &ast.Select{
-          Select:   1,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  1,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 8,
@@ -26,24 +20,14 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.SubQuery{
         Lparen: 21,
         Rparen: 30,
         Query:  &ast.Select{
-          Select:   22,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  22,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 29,
@@ -53,24 +37,14 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.SubQuery{
         Lparen: 42,
         Rparen: 51,
         Query:  &ast.Select{
-          Select:   43,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  43,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 50,
@@ -80,19 +54,9 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -3,8 +3,7 @@ ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN K
     REFERENCES sch1.Customers(CustomerId, CustomerName) ON DELETE CASCADE
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,

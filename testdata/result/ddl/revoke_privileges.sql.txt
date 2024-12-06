@@ -3,7 +3,6 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
 
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.PrivilegeOnTable{
     Privileges: []ast.TablePrivilege{
       &ast.SelectPrivilege{

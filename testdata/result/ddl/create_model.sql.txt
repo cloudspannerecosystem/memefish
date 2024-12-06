@@ -15,11 +15,8 @@ OPTIONS (
 )
 --- AST
 &ast.CreateModel{
-  Create:      0,
-  Remote:      183,
-  OrReplace:   false,
-  IfNotExists: false,
-  Name:        &ast.Ident{
+  Remote: 183,
+  Name:   &ast.Ident{
     NamePos: 13,
     NameEnd: 34,
     Name:    "MyClassificationModel",
@@ -38,7 +35,6 @@ OPTIONS (
           NamePos: 52,
           Name:    "FLOAT64",
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
@@ -51,9 +47,7 @@ OPTIONS (
           Rparen:  82,
           Name:    "STRING",
           Max:     true,
-          Size:    nil,
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
@@ -69,10 +63,8 @@ OPTIONS (
             Rparen:  113,
             Name:    "STRING",
             Max:     true,
-            Size:    nil,
           },
         },
-        Options: (*ast.Options)(nil),
       },
     },
     OutputColumns: []*ast.CreateModelColumn{
@@ -90,7 +82,6 @@ OPTIONS (
             Name:    "FLOAT64",
           },
         },
-        Options: (*ast.Options)(nil),
       },
       &ast.CreateModelColumn{
         Name: &ast.Ident{
@@ -106,10 +97,8 @@ OPTIONS (
             Rparen:  178,
             Name:    "STRING",
             Max:     true,
-            Size:    nil,
           },
         },
-        Options: (*ast.Options)(nil),
       },
     },
   },

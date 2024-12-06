@@ -2,8 +2,7 @@
 CREATE PLACEMENT `europeplacement` OPTIONS (instance_partition="europe-partition")
 --- AST
 &ast.CreatePlacement{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 17,
     NameEnd: 34,
     Name:    "europeplacement",

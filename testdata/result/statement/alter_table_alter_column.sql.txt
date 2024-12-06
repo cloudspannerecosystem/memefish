@@ -2,8 +2,7 @@
 alter table foo alter column foo string(256) not null
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
@@ -24,7 +23,6 @@ alter table foo alter column foo string(256) not null
         NamePos: 33,
         Rparen:  43,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 40,
           ValueEnd: 43,
@@ -32,9 +30,8 @@ alter table foo alter column foo string(256) not null
           Value:    "256",
         },
       },
-      Null:        49,
-      NotNull:     true,
-      DefaultExpr: (*ast.ColumnDefaultExpr)(nil),
+      Null:    49,
+      NotNull: true,
     },
   },
 }

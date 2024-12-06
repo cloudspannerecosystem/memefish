@@ -7,18 +7,12 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CastExpr{
           Cast:   7,
           Rparen: 22,
-          Safe:   false,
           Expr:   &ast.IntLiteral{
             ValuePos: 12,
             ValueEnd: 13,
@@ -35,7 +29,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
         Expr: &ast.CastExpr{
           Cast:   25,
           Rparen: 44,
-          Safe:   false,
           Expr:   &ast.FloatLiteral{
             ValuePos: 30,
             ValueEnd: 33,
@@ -51,7 +44,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
         Expr: &ast.CastExpr{
           Cast:   47,
           Rparen: 147,
-          Safe:   false,
           Expr:   &ast.TupleStructLiteral{
             Lparen: 52,
             Rparen: 84,
@@ -59,7 +51,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               &ast.TypelessStructLiteral{
                 Struct: 53,
                 Rparen: 60,
-                Values: []ast.TypelessStructLiteralArg(nil),
               },
               &ast.IntLiteral{
                 ValuePos: 63,
@@ -71,7 +62,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Array:  -1,
                 Lbrack: 66,
                 Rbrack: 71,
-                Type:   nil,
                 Values: []ast.Expr{
                   &ast.IntLiteral{
                     ValuePos: 67,
@@ -91,7 +81,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 Array:  -1,
                 Lbrack: 74,
                 Rbrack: 83,
-                Type:   nil,
                 Values: []ast.Expr{
                   &ast.StringLiteral{
                     ValuePos: 75,
@@ -112,11 +101,9 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             Gt:     146,
             Fields: []*ast.StructField{
               &ast.StructField{
-                Ident: (*ast.Ident)(nil),
-                Type:  &ast.StructType{
+                Type: &ast.StructType{
                   Struct: 96,
                   Gt:     103,
-                  Fields: []*ast.StructField(nil),
                 },
               },
               &ast.StructField{
@@ -168,21 +155,15 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
     From: &ast.From{
       From:   149,
       Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     ",",
-          Method: "",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.TableName{
+        Op:   ",",
+        Left: &ast.Join{
+          Op:   ",",
+          Left: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 154,
               NameEnd: 155,
               Name:    "x",
             },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
             Sample: &ast.TableSample{
               TableSample: 156,
               Method:      "BERNOULLI",
@@ -209,8 +190,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               NameEnd: 216,
               Name:    "y",
             },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
             Sample: &ast.TableSample{
               TableSample: 217,
               Method:      "BERNOULLI",
@@ -232,7 +211,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               },
             },
           },
-          Cond: nil,
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
@@ -240,8 +218,6 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             NameEnd: 270,
             Name:    "z",
           },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
           Sample: &ast.TableSample{
             TableSample: 271,
             Method:      "BERNOULLI",
@@ -261,14 +237,9 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
             },
           },
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   &ast.Limit{
+    Limit: &ast.Limit{
       Limit: 322,
       Count: &ast.CastIntValue{
         Cast:   328,

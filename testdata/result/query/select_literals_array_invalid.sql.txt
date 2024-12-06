@@ -4,25 +4,18 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
           Array:  -1,
           Lbrack: 9,
           Rbrack: 41,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.ArrayLiteral{
               Array:  -1,
               Lbrack: 10,
               Rbrack: 18,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 11,
@@ -48,7 +41,6 @@ SELECT
               Array:  -1,
               Lbrack: 21,
               Rbrack: 29,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 22,
@@ -74,7 +66,6 @@ SELECT
               Array:  -1,
               Lbrack: 32,
               Rbrack: 40,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 33,
@@ -100,12 +91,6 @@ SELECT
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

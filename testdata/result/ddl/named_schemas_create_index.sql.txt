@@ -2,12 +2,8 @@
 CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       58,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  false,
-  Name:         &ast.Path{
+  Rparen: 58,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -43,11 +39,8 @@ CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
         NameEnd: 58,
         Name:    "FirstName",
       },
-      Dir: "",
     },
   },
-  Storing:      (*ast.Storing)(nil),
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL

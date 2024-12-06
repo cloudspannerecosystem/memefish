@@ -3,7 +3,6 @@ INSERT OR UPDATE INTO foo
 (foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
-  Insert:       0,
   InsertOrType: "UPDATE",
   TableName:    &ast.Ident{
     NamePos: 22,
@@ -31,7 +30,6 @@ INSERT OR UPDATE INTO foo
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 45,
               ValueEnd: 46,
@@ -41,7 +39,6 @@ INSERT OR UPDATE INTO foo
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 48,
               ValueEnd: 49,

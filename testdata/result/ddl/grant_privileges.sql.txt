@@ -3,7 +3,6 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
 
 --- AST
 &ast.Grant{
-  Grant:     0,
   Privilege: &ast.PrivilegeOnTable{
     Privileges: []ast.TablePrivilege{
       &ast.SelectPrivilege{

@@ -4,8 +4,7 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
 
 --- AST
 &ast.CreateChangeStream{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 21,
     NameEnd: 39,
     Name:    "change_stream_name",

@@ -3,8 +3,7 @@ alter index foo add stored column bar
 
 --- AST
 &ast.AlterIndex{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,

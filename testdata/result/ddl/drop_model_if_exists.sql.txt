@@ -2,7 +2,6 @@
 DROP MODEL IF EXISTS MyClassificationModel
 --- AST
 &ast.DropModel{
-  Drop:     0,
   IfExists: true,
   Name:     &ast.Ident{
     NamePos: 21,

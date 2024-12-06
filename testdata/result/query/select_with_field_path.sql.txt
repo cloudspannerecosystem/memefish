@@ -19,13 +19,8 @@ WHERE A.z.a = 2
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -110,9 +105,8 @@ WHERE A.z.a = 2
           Array:  57,
           Rparen: 251,
           Query:  &ast.Select{
-            Select:   70,
-            Distinct: false,
-            As:       &ast.AsStruct{
+            Select: 70,
+            As:     &ast.AsStruct{
               As:     77,
               Struct: 80,
             },
@@ -284,21 +278,11 @@ WHERE A.z.a = 2
                     },
                   },
                 },
-                Hint:       (*ast.Hint)(nil),
-                As:         (*ast.AsAlias)(nil),
-                WithOffset: (*ast.WithOffset)(nil),
-                Sample:     (*ast.TableSample)(nil),
               },
             },
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
+        As: &ast.AsAlias{
           As:    257,
           Alias: &ast.Ident{
             NamePos: 260,
@@ -306,8 +290,6 @@ WHERE A.z.a = 2
             Name:    "A",
           },
         },
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -341,10 +323,6 @@ WHERE A.z.a = 2
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

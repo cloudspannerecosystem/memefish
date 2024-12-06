@@ -3,10 +3,7 @@
 --- AST
 &ast.ArrayLiteral{
   Array:  -1,
-  Lbrack: 0,
   Rbrack: 1,
-  Type:   nil,
-  Values: []ast.Expr(nil),
 }
 
 --- SQL

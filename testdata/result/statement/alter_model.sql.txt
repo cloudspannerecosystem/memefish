@@ -9,9 +9,7 @@ SET OPTIONS (
 )
 --- AST
 &ast.AlterModel{
-  Alter:    0,
-  IfExists: false,
-  Name:     &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 12,
     NameEnd: 33,
     Name:    "MyClassificationModel",
@@ -30,7 +28,6 @@ SET OPTIONS (
           Array:  -1,
           Lbrack: 64,
           Rbrack: 227,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.StringLiteral{
               ValuePos: 74,

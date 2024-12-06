@@ -2,8 +2,7 @@
 ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)
 --- AST
 &ast.AlterStatistics{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 17,
     NameEnd: 42,
     Name:    "auto_20191128_14_47_22UTC",
@@ -20,7 +19,6 @@ ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)
         },
         Value: &ast.BoolLiteral{
           ValuePos: 65,
-          Value:    false,
         },
       },
     },

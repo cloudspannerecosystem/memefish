@@ -8,8 +8,7 @@ ALTER DATABASE dbname SET OPTIONS (
   )
 --- AST
 &ast.AlterDatabase{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 15,
     NameEnd: 21,
     Name:    "dbname",

@@ -2,7 +2,6 @@
 GRANT EXECUTE ON TABLE FUNCTION READ_SingersNameStream TO ROLE hr_manager
 --- AST
 &ast.Grant{
-  Grant:     0,
   Privilege: &ast.ExecutePrivilegeOnTableFunction{
     Execute: 6,
     Names:   []*ast.Ident{

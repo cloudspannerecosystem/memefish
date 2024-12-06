@@ -3,7 +3,6 @@ DROP CHANGE STREAM change_stream_name
 
 --- AST
 &ast.DropChangeStream{
-  Drop: 0,
   Name: &ast.Ident{
     NamePos: 19,
     NameEnd: 37,

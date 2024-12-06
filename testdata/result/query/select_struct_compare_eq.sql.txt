@@ -9,22 +9,15 @@ SELECT ARRAY(
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  7,
           Rparen: 133,
           Query:  &ast.Select{
-            Select:   16,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:  16,
+            Results: []ast.SelectItem{
               &ast.Star{
                 Star: 27,
               },
@@ -35,10 +28,8 @@ SELECT ARRAY(
                 Lparen: 40,
                 Rparen: 90,
                 Query:  &ast.Select{
-                  Select:   41,
-                  Distinct: false,
-                  As:       nil,
-                  Results:  []ast.SelectItem{
+                  Select:  41,
+                  Results: []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.TypedStructLiteral{
                         Struct: 48,
@@ -101,12 +92,6 @@ SELECT ARRAY(
                       },
                     },
                   },
-                  From:    (*ast.From)(nil),
-                  Where:   (*ast.Where)(nil),
-                  GroupBy: (*ast.GroupBy)(nil),
-                  Having:  (*ast.Having)(nil),
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 As: &ast.AsAlias{
                   As:    92,
@@ -116,7 +101,6 @@ SELECT ARRAY(
                     Name:    "S",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
             },
             Where: &ast.Where{
@@ -168,20 +152,10 @@ SELECT ARRAY(
                 },
               },
             },
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

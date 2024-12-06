@@ -2,7 +2,6 @@
 JSON '{"s": "foo", "n": 42}'
 --- AST
 &ast.JSONLiteral{
-  JSON:  0,
   Value: &ast.StringLiteral{
     ValuePos: 5,
     ValueEnd: 28,

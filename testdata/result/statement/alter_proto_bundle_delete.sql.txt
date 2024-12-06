@@ -2,10 +2,7 @@
 ALTER PROTO BUNDLE DELETE(`examples.shipping.OrderHistory`)
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
-  Insert: (*ast.AlterProtoBundleInsert)(nil),
-  Update: (*ast.AlterProtoBundleUpdate)(nil),
   Delete: &ast.AlterProtoBundleDelete{
     Delete: 19,
     Types:  &ast.ProtoBundleTypes{

@@ -2,8 +2,7 @@
 ALTER SEARCH INDEX AlbumsIndex DROP STORED COLUMN Genre
 --- AST
 &ast.AlterSearchIndex{
-  Alter: 0,
-  Name:  &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 19,
     NameEnd: 30,
     Name:    "AlbumsIndex",

@@ -6,12 +6,8 @@ create index foo_bar on foo (
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       53,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  false,
-  Name:         &ast.Path{
+  Rparen: 53,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -49,8 +45,6 @@ create index foo_bar on foo (
       Dir: "ASC",
     },
   },
-  Storing:      (*ast.Storing)(nil),
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL
