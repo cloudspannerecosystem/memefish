@@ -173,6 +173,7 @@ func (CallExpr) isExpr()              {}
 func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
+func (ReplaceFieldsExpr) isExpr()     {}
 func (CaseExpr) isExpr()              {}
 func (IfExpr) isExpr()                {}
 func (ParenExpr) isExpr()             {}
@@ -218,6 +219,7 @@ type Arg interface {
 func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
+func (LambdaArg) isArg()   {}
 
 type TVFArg interface {
 	Node
@@ -1224,6 +1226,21 @@ type SequenceArg struct {
 	Expr Expr
 }
 
+// LambdaArg is lambda expression argument of the generic function call.
+//
+//	{{if .Lparen.Invalid}}{{.Args | sqlJoin ", "}}{{else}}({{.Args | sqlJoin ", "}}) -> {{.Expr | sql}}
+//
+// Note: Args won't be empty. If Lparen is not appeared, Args have exactly one element.
+type LambdaArg struct {
+	// pos = Lparen || Args[0].pos
+	// end = Expr.end
+
+	Lparen token.Pos // optional
+
+	Args []*Ident // if Lparen.Invalid() then len(Args) = 1 else len(Args) > 0
+	Expr Expr
+}
+
 // ModelArg is argument of model function call.
 //
 //	MODEL {{.Name | sql}}
@@ -1327,6 +1344,31 @@ type ExtractExpr struct {
 	Part       *Ident
 	Expr       Expr
 	AtTimeZone *AtTimeZone // optional
+}
+
+// ReplaceFieldsArg is value AS field_path node in ReplaceFieldsExpr.
+//
+//	{{.Expr | sql}} AS {{.Field | sql}}
+type ReplaceFieldsArg struct {
+	// pos = Expr.pos
+	// end = Field.end
+
+	Expr  Expr
+	Field *Path
+}
+
+// ReplaceFieldsExpr is REPLACE_FIELDS call expression node.
+//
+//	REPLACE_FIELDS({{.Expr.| sql}}, {{.Fields | sqlJoin ", "}})
+type ReplaceFieldsExpr struct {
+	// pos = ReplaceFields
+	// end = Rparen + 1
+
+	ReplaceFields token.Pos // position of "REPLACE_FIELDS" keyword
+	Rparen        token.Pos // position of ")"
+
+	Expr   Expr
+	Fields []*ReplaceFieldsArg
 }
 
 // AtTimeZone is AT TIME ZONE clause in EXTRACT call.
@@ -3179,20 +3221,48 @@ type AlterSearchIndex struct {
 //
 // ================================================================================
 
+// WithAction is WITH ACTION clause in ThenReturn.
+//
+//	WITH ACTION {{.Alias | sqlOpt}}
+type WithAction struct {
+	// pos = With
+	// end = Alias.end || Action + 6
+
+	With   token.Pos // position of "WITH" keyword
+	Action token.Pos // position of "ACTION" keyword
+
+	Alias *AsAlias // optional
+}
+
+// ThenReturn is THEN RETURN clause in DML.
+//
+//	THEN RETURN {{.WithAction | sqlOpt}} {{.Items | sqlJoin ", "}}
+type ThenReturn struct {
+	// pos = Then
+	// end = Items[$].end
+
+	Then token.Pos // position of "THEN" keyword
+
+	WithAction *WithAction // optional
+	Items      []SelectItem
+}
+
 // Insert is INSERT statement node.
 //
 //	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Insert struct {
 	// pos = Insert
-	// end = Input.end
+	// end = (ThenReturn ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
-	TableName *Ident
-	Columns   []*Ident
-	Input     InsertInput
+	TableName  *Ident
+	Columns    []*Ident
+	Input      InsertInput
+	ThenReturn *ThenReturn // optional
 }
 
 // ValuesInput is VALUES clause in INSERT.
@@ -3245,31 +3315,35 @@ type SubQueryInput struct {
 // Delete is DELETE statement.
 //
 //	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Delete struct {
 	// pos = Delete
-	// end = Where.end
+	// end = (ThenReturn ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
-	TableName *Ident
-	As        *AsAlias // optional
-	Where     *Where
+	TableName  *Ident
+	As         *AsAlias // optional
+	Where      *Where
+	ThenReturn *ThenReturn // optional
 }
 
 // Update is UPDATE statement.
 //
 //	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
 //	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Update struct {
 	// pos = Update
-	// end = Where.end
+	// end = (ThenReturn ?? Where).end
 
 	Update token.Pos // position of "UPDATE" keyword
 
-	TableName *Ident
-	As        *AsAlias      // optional
-	Updates   []*UpdateItem // len(Updates) > 0
-	Where     *Where
+	TableName  *Ident
+	As         *AsAlias      // optional
+	Updates    []*UpdateItem // len(Updates) > 0
+	Where      *Where
+	ThenReturn *ThenReturn // optional
 }
 
 // UpdateItem is SET clause items in UPDATE.

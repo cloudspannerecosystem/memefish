@@ -42,6 +42,7 @@ delete foo as F where F.foo = 1
       },
     },
   },
+  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

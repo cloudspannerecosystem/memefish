@@ -1,5 +1,5 @@
---- update.sql
-update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
+--- update_then_return_with_action.sql
+update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1 then return with action *
 --- AST
 &ast.Update{
   Update:    0,
@@ -78,8 +78,20 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
+  ThenReturn: &ast.ThenReturn{
+    Then:       65,
+    WithAction: &ast.WithAction{
+      With:   77,
+      Action: 82,
+      Alias:  (*ast.AsAlias)(nil),
+    },
+    Items: []ast.SelectItem{
+      &ast.Star{
+        Star: 89,
+      },
+    },
+  },
 }
 
 --- SQL
-UPDATE foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1
+UPDATE foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1 THEN RETURN WITH ACTION *
