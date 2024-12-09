@@ -13,12 +13,13 @@ create table types (
   ab array<bool>,
   abs array<bytes(max)>,
   p examples.ProtoType,
+  af32vl array<float32>(vector_length=>128),
 ) primary key (i)
 
 --- AST
 &ast.CreateTable{
   Create:      0,
-  Rparen:      252,
+  Rparen:      297,
   IfNotExists: false,
   Name:        &ast.Path{
     Idents: []*ast.Ident{
@@ -230,12 +231,14 @@ create table types (
         Name:    "ab",
       },
       Type: &ast.ArraySchemaType{
-        Array: 174,
-        Gt:    184,
-        Item:  &ast.ScalarSchemaType{
+        Array:  174,
+        Gt:     184,
+        Rparen: -1,
+        Item:   &ast.ScalarSchemaType{
           NamePos: 180,
           Name:    "BOOL",
         },
+        NamedArgs: []*ast.NamedArg(nil),
       },
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
@@ -251,15 +254,17 @@ create table types (
         Name:    "abs",
       },
       Type: &ast.ArraySchemaType{
-        Array: 193,
-        Gt:    209,
-        Item:  &ast.SizedSchemaType{
+        Array:  193,
+        Gt:     209,
+        Rparen: -1,
+        Item:   &ast.SizedSchemaType{
           NamePos: 199,
           Rparen:  208,
           Name:    "BYTES",
           Max:     true,
           Size:    nil,
         },
+        NamedArgs: []*ast.NamedArg(nil),
       },
       NotNull:       false,
       DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
@@ -294,14 +299,51 @@ create table types (
       Hidden:        -1,
       Options:       (*ast.Options)(nil),
     },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 238,
+        NameEnd: 244,
+        Name:    "af32vl",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  245,
+        Gt:     258,
+        Rparen: 278,
+        Item:   &ast.ScalarSchemaType{
+          NamePos: 251,
+          Name:    "FLOAT32",
+        },
+        NamedArgs: []*ast.NamedArg{
+          &ast.NamedArg{
+            Name: &ast.Ident{
+              NamePos: 260,
+              NameEnd: 273,
+              Name:    "vector_length",
+            },
+            Value: &ast.IntLiteral{
+              ValuePos: 275,
+              ValueEnd: 278,
+              Base:     10,
+              Value:    "128",
+            },
+          },
+        },
+      },
+      NotNull:       false,
+      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
+      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
+      Hidden:        -1,
+      Options:       (*ast.Options)(nil),
+    },
   },
   TableConstraints: []*ast.TableConstraint(nil),
   PrimaryKeys:      []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 251,
-        NameEnd: 252,
+        NamePos: 296,
+        NameEnd: 297,
         Name:    "i",
       },
       Dir: "",
@@ -313,4 +355,4 @@ create table types (
 }
 
 --- SQL
-CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>, p examples.ProtoType) PRIMARY KEY (i)
+CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>, p examples.ProtoType, af32vl ARRAY<FLOAT32>(vector_length => 128)) PRIMARY KEY (i)
