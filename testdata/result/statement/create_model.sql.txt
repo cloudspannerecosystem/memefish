@@ -62,15 +62,17 @@ OPTIONS (
           Name:    "tag_array",
         },
         DataType: &ast.ArraySchemaType{
-          Array: 97,
-          Gt:    114,
-          Item:  &ast.SizedSchemaType{
+          Array:  97,
+          Gt:     114,
+          Rparen: -1,
+          Item:   &ast.SizedSchemaType{
             NamePos: 103,
             Rparen:  113,
             Name:    "STRING",
             Max:     true,
             Size:    nil,
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
         Options: (*ast.Options)(nil),
       },
@@ -83,12 +85,14 @@ OPTIONS (
           Name:    "scores",
         },
         DataType: &ast.ArraySchemaType{
-          Array: 136,
-          Gt:    149,
-          Item:  &ast.ScalarSchemaType{
+          Array:  136,
+          Gt:     149,
+          Rparen: -1,
+          Item:   &ast.ScalarSchemaType{
             NamePos: 142,
             Name:    "FLOAT64",
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
         Options: (*ast.Options)(nil),
       },
@@ -99,15 +103,17 @@ OPTIONS (
           Name:    "classes",
         },
         DataType: &ast.ArraySchemaType{
-          Array: 162,
-          Gt:    179,
-          Item:  &ast.SizedSchemaType{
+          Array:  162,
+          Gt:     179,
+          Rparen: -1,
+          Item:   &ast.SizedSchemaType{
             NamePos: 168,
             Rparen:  178,
             Name:    "STRING",
             Max:     true,
             Size:    nil,
           },
+          NamedArgs: []*ast.NamedArg(nil),
         },
         Options: (*ast.Options)(nil),
       },

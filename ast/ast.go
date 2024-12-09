@@ -3089,15 +3089,17 @@ type SizedSchemaType struct {
 
 // ArraySchemaType is array type node in schema.
 //
-//	ARRAY<{{.Item | sql}}>
+//	ARRAY<{{.Item | sql}}>{{if .NamedArgs}}({{.NamedArgs | sqlJoin ", "}}){{end}}
 type ArraySchemaType struct {
 	// pos = Array
-	// end = Gt + 1
+	// end = Rparen + 1 || Gt + 1
 
-	Array token.Pos // position of "ARRAY" keyword
-	Gt    token.Pos // position of ">"
+	Array  token.Pos // position of "ARRAY" keyword
+	Gt     token.Pos // position of ">"
+	Rparen token.Pos // position of ")" when len(NamedArgs) > 0
 
-	Item SchemaType // ScalarSchemaType or SizedSchemaType
+	Item      SchemaType // ScalarSchemaType or SizedSchemaType
+	NamedArgs []*NamedArg
 }
 
 // ================================================================================
