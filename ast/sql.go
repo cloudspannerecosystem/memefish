@@ -860,7 +860,11 @@ func (c *CreateSequence) SQL() string {
 }
 
 func (c *AlterSequence) SQL() string {
-	return "ALTER SEQUENCE " + c.Name.SQL() + " SET " + c.Options.SQL()
+	return "ALTER SEQUENCE " + c.Name.SQL() +
+		sqlOpt(" SET ", c.Options, "") +
+		sqlOpt(" RESTART COUNTER WITH ", c.RestartCounter, "") +
+		sqlOpt(" ", c.SkipRange, "") +
+		sqlOpt(" ", c.NoSkipRange, "")
 }
 
 func (c *CreateView) SQL() string {

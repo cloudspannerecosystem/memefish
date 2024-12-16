@@ -942,12 +942,44 @@ func (s *Synonym) End() token.Pos {
 	return posAdd(s.Rparen, 1)
 }
 
+func (s *SequenceParamSkipRange) Pos() token.Pos {
+	return s.Skip
+}
+
+func (s *SequenceParamSkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.Max))
+}
+
+func (s *SequenceParamStartCounterWith) Pos() token.Pos {
+	return s.Start
+}
+
+func (s *SequenceParamStartCounterWith) End() token.Pos {
+	return nodeEnd(wrapNode(s.Counter))
+}
+
+func (s *SequenceParamBitReversedPositive) Pos() token.Pos {
+	return s.BitReversedPositive
+}
+
+func (s *SequenceParamBitReversedPositive) End() token.Pos {
+	return posAdd(s.BitReversedPositive, 21)
+}
+
 func (c *CreateSequence) Pos() token.Pos {
 	return c.Create
 }
 
 func (c *CreateSequence) End() token.Pos {
-	return nodeEnd(wrapNode(c.Options))
+	return nodeEnd(nodeChoice(wrapNode(c.Options), nodeSliceLast(c.Params), wrapNode(c.Name)))
+}
+
+func (i *IdentityColumn) Pos() token.Pos {
+	return i.Generated
+}
+
+func (i *IdentityColumn) End() token.Pos {
+	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
 }
 
 func (c *ColumnDef) Pos() token.Pos {
@@ -1212,6 +1244,46 @@ func (a *AlterColumnDropDefault) Pos() token.Pos {
 
 func (a *AlterColumnDropDefault) End() token.Pos {
 	return posAdd(a.Default, 7)
+}
+
+func (a *AlterColumnAlterIdentity) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterColumnAlterIdentity) End() token.Pos {
+	return nodeEnd(wrapNode(a.Alteration))
+}
+
+func (r *RestartCounterWith) Pos() token.Pos {
+	return r.Restart
+}
+
+func (r *RestartCounterWith) End() token.Pos {
+	return nodeEnd(wrapNode(r.Counter))
+}
+
+func (s *SetSkipRange) Pos() token.Pos {
+	return s.Set
+}
+
+func (s *SetSkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.SkipRange))
+}
+
+func (n *NoSkipRange) Pos() token.Pos {
+	return n.No
+}
+
+func (n *NoSkipRange) End() token.Pos {
+	return posAdd(n.Range, 5)
+}
+
+func (s *SetNoSkipRange) Pos() token.Pos {
+	return s.Set
+}
+
+func (s *SetNoSkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.NoSkipRange))
 }
 
 func (d *DropTable) Pos() token.Pos {
