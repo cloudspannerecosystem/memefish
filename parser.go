@@ -3651,13 +3651,13 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 
 }
 
-func (p *Parser) parseSkipRange() *ast.SequenceParamSkipRange {
+func (p *Parser) parseSkipRange() *ast.SkipRange {
 	pos := p.expectKeywordLike("SKIP").Pos
 	p.expect("RANGE")
 	min := p.parseIntLiteral()
 	p.expect(",")
 	max := p.parseIntLiteral()
-	return &ast.SequenceParamSkipRange{
+	return &ast.SkipRange{
 		Skip: pos,
 		Min:  min,
 		Max:  max,
@@ -3698,14 +3698,7 @@ func (p *Parser) parseIdentityAlteration() ast.IdentityAlteration {
 			panic(p.errorfAtToken(&p.Token, "expect SKIP or NO, but: %s", p.Token.AsString))
 		}
 	case p.Token.IsKeywordLike("RESTART"):
-		p.nextToken()
-		p.expectKeywordLike("COUNTER")
-		p.expect("WITH")
-		counter := p.parseIntLiteral()
-		return &ast.RestartCounterWith{
-			Restart: pos,
-			Counter: counter,
-		}
+		return p.parseRestartCounterWith()
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected token: SET, RESTART, but: %s", p.Token.AsString))
 	}
@@ -3741,6 +3734,7 @@ func (p *Parser) parseRestartCounterWith() *ast.RestartCounterWith {
 	restart := p.expectKeywordLike("RESTART").Pos
 	p.expectKeywordLike("COUNTER")
 	p.expect("WITH")
+
 	counter := p.parseIntLiteral()
 
 	return &ast.RestartCounterWith{
@@ -3764,23 +3758,28 @@ func (p *Parser) parseSequenceParam() ast.SequenceParam {
 	case p.Token.IsKeywordLike("SKIP"):
 		p.nextToken()
 		p.expect("RANGE")
+
 		min := p.parseIntLiteral()
 		p.expect(",")
 		max := p.parseIntLiteral()
-		return &ast.SequenceParamSkipRange{
+
+		return &ast.SkipRange{
 			Skip: pos,
 			Min:  min,
 			Max:  max,
 		}
 	case p.Token.IsKeywordLike("BIT_REVERSED_POSITIVE"):
 		p.nextToken()
-		return &ast.SequenceParamBitReversedPositive{BitReversedPositive: pos}
+
+		return &ast.BitReversedPositive{BitReversedPositive: pos}
 	case p.Token.IsKeywordLike("START"):
 		p.nextToken()
 		p.expectKeywordLike("COUNTER")
 		p.expect("WITH")
+
 		counter := p.parseIntLiteral()
-		return &ast.SequenceParamStartCounterWith{
+
+		return &ast.StartCounterWith{
 			Start:   pos,
 			Counter: counter,
 		}
@@ -3799,7 +3798,7 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 		options = p.parseOptions()
 	}
 
-	var skipRange *ast.SequenceParamSkipRange
+	var skipRange *ast.SkipRange
 	if p.Token.IsKeywordLike("SKIP") {
 		skipRange = p.parseSkipRange()
 	}
@@ -3809,20 +3808,18 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 		noSkipRange = p.parseNoSkipRange()
 	}
 
-	var restartCounter *ast.IntLiteral
+	var restartCounterWith *ast.RestartCounterWith
 	if p.Token.IsKeywordLike("RESTART") {
-		restartCounterWith := p.parseRestartCounterWith()
-		restartCounter = restartCounterWith.Counter
+		restartCounterWith = p.parseRestartCounterWith()
 	}
 
 	return &ast.AlterSequence{
-		Alter:          pos,
-		Range:          0,
-		Name:           name,
-		Options:        options,
-		RestartCounter: restartCounter,
-		SkipRange:      skipRange,
-		NoSkipRange:    noSkipRange,
+		Alter:              pos,
+		Name:               name,
+		Options:            options,
+		RestartCounterWith: restartCounterWith,
+		SkipRange:          skipRange,
+		NoSkipRange:        noSkipRange,
 	}
 }
 

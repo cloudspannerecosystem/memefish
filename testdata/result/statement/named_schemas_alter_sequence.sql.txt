@@ -4,7 +4,6 @@ ALTER SEQUENCE sch1.sequence
 --- AST
 &ast.AlterSequence{
   Alter: 0,
-  Range: 0,
   Name:  &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
@@ -51,9 +50,9 @@ ALTER SEQUENCE sch1.sequence
       },
     },
   },
-  RestartCounter: (*ast.IntLiteral)(nil),
-  SkipRange:      (*ast.SequenceParamSkipRange)(nil),
-  NoSkipRange:    (*ast.NoSkipRange)(nil),
+  RestartCounterWith: (*ast.RestartCounterWith)(nil),
+  SkipRange:          (*ast.SkipRange)(nil),
+  NoSkipRange:        (*ast.NoSkipRange)(nil),
 }
 
 --- SQL

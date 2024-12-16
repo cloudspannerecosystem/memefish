@@ -23,7 +23,7 @@ ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY SET SKIP RANGE 1, 1234567
       Alter:      36,
       Alteration: &ast.SetSkipRange{
         Set:       51,
-        SkipRange: &ast.SequenceParamSkipRange{
+        SkipRange: &ast.SkipRange{
           Skip: 55,
           Min:  &ast.IntLiteral{
             ValuePos: 66,

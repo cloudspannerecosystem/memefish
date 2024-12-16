@@ -942,44 +942,36 @@ func (s *Synonym) End() token.Pos {
 	return posAdd(s.Rparen, 1)
 }
 
-func (s *SequenceParamSkipRange) Pos() token.Pos {
-	return s.Skip
-}
-
-func (s *SequenceParamSkipRange) End() token.Pos {
-	return nodeEnd(wrapNode(s.Max))
-}
-
-func (s *SequenceParamStartCounterWith) Pos() token.Pos {
-	return s.Start
-}
-
-func (s *SequenceParamStartCounterWith) End() token.Pos {
-	return nodeEnd(wrapNode(s.Counter))
-}
-
-func (s *SequenceParamBitReversedPositive) Pos() token.Pos {
-	return s.BitReversedPositive
-}
-
-func (s *SequenceParamBitReversedPositive) End() token.Pos {
-	return posAdd(s.BitReversedPositive, 21)
-}
-
 func (c *CreateSequence) Pos() token.Pos {
 	return c.Create
 }
 
 func (c *CreateSequence) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(c.Options), nodeSliceLast(c.Params), wrapNode(c.Name)))
+	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(nodeSliceLast(c.Params)), nodeEnd(wrapNode(c.Name)))
 }
 
-func (i *IdentityColumn) Pos() token.Pos {
-	return i.Generated
+func (s *SkipRange) Pos() token.Pos {
+	return s.Skip
 }
 
-func (i *IdentityColumn) End() token.Pos {
-	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
+func (s *SkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.Max))
+}
+
+func (s *StartCounterWith) Pos() token.Pos {
+	return s.Start
+}
+
+func (s *StartCounterWith) End() token.Pos {
+	return nodeEnd(wrapNode(s.Counter))
+}
+
+func (b *BitReversedPositive) Pos() token.Pos {
+	return b.BitReversedPositive
+}
+
+func (b *BitReversedPositive) End() token.Pos {
+	return posAdd(b.BitReversedPositive, 21)
 }
 
 func (c *ColumnDef) Pos() token.Pos {
@@ -1004,6 +996,14 @@ func (g *GeneratedColumnExpr) Pos() token.Pos {
 
 func (g *GeneratedColumnExpr) End() token.Pos {
 	return posChoice(posAdd(g.Stored, 6), posAdd(g.Rparen, 1))
+}
+
+func (i *IdentityColumn) Pos() token.Pos {
+	return i.Generated
+}
+
+func (i *IdentityColumn) End() token.Pos {
+	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
 }
 
 func (c *ColumnDefOptions) Pos() token.Pos {
