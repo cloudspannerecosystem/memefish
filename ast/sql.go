@@ -883,6 +883,7 @@ func (c *ColumnDef) SQL() string {
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultExpr, "") +
 		sqlOpt(" ", c.GeneratedExpr, "") +
+		sqlOpt(" ", c.IdentityColumn, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
 		sqlOpt(" ", c.Options, "")
 }
