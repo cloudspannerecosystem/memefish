@@ -18,6 +18,7 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
     },
   },
   IfNotExists: true,
+  Params:      []ast.SequenceParam(nil),
   Options:     &ast.Options{
     Options: 41,
     Rparen:  172,

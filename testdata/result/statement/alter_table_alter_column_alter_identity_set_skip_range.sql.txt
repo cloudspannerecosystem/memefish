@@ -1,0 +1,47 @@
+--- alter_table_alter_column_alter_identity_set_skip_range.sql
+ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY SET SKIP RANGE 1, 1234567
+--- AST
+&ast.AlterTable{
+  Alter: 0,
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "actions",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 20,
+    Name:  &ast.Ident{
+      NamePos: 33,
+      NameEnd: 35,
+      Name:    "id",
+    },
+    Alteration: &ast.AlterColumnAlterIdentity{
+      Alter:      36,
+      Alteration: &ast.SetSkipRange{
+        Set:       51,
+        SkipRange: &ast.SequenceParamSkipRange{
+          Skip: 55,
+          Min:  &ast.IntLiteral{
+            ValuePos: 66,
+            ValueEnd: 67,
+            Base:     10,
+            Value:    "1",
+          },
+          Max: &ast.IntLiteral{
+            ValuePos: 69,
+            ValueEnd: 76,
+            Base:     10,
+            Value:    "1234567",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY SET SKIP RANGE 1, 1234567

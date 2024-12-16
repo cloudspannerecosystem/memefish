@@ -1,0 +1,38 @@
+--- alter_sequence_skip_range.sql
+ALTER SEQUENCE my_sequence SKIP RANGE 1, 1234567
+
+--- AST
+&ast.AlterSequence{
+  Alter: 0,
+  Range: 0,
+  Name:  &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 26,
+        Name:    "my_sequence",
+      },
+    },
+  },
+  Options:        (*ast.Options)(nil),
+  RestartCounter: (*ast.IntLiteral)(nil),
+  SkipRange:      &ast.SequenceParamSkipRange{
+    Skip: 27,
+    Min:  &ast.IntLiteral{
+      ValuePos: 38,
+      ValueEnd: 39,
+      Base:     10,
+      Value:    "1",
+    },
+    Max: &ast.IntLiteral{
+      ValuePos: 41,
+      ValueEnd: 48,
+      Base:     10,
+      Value:    "1234567",
+    },
+  },
+  NoSkipRange: (*ast.NoSkipRange)(nil),
+}
+
+--- SQL
+ALTER SEQUENCE my_sequence SKIP RANGE 1, 1234567

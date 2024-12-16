@@ -20,6 +20,7 @@ CREATE SEQUENCE sch1.sequence OPTIONS (
     },
   },
   IfNotExists: false,
+  Params:      []ast.SequenceParam(nil),
   Options:     &ast.Options{
     Options: 30,
     Rparen:  82,
