@@ -250,11 +250,11 @@ func (c *CTE) SQL() string {
 }
 
 func (s *Select) SQLContext(fc *FormatContext) string {
-	return "SELECT " +
-		strOpt(s.Distinct, "DISTINCT ") +
-		sqlOptCtx(fc, "", s.As, " ") +
+	return "SELECT" +
+		strOpt(s.Distinct, " DISTINCT ") +
+		sqlOptCtx(fc, " ", s.As, "") +
 		fc.WithIndent(func(fc *FormatContext) string {
-			return sqlJoinCtx(fc, s.Results, ","+fc.Newline())
+			return fc.Newline() + sqlJoinCtx(fc, s.Results, ","+fc.Newline())
 		}) +
 		sqlOptCtx(fc, fc.Newline(), s.From, "") +
 		sqlOptCtx(fc, fc.Newline(), s.Where, "") +
