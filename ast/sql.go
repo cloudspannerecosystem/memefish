@@ -7,6 +7,12 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
+// ================================================================================
+//
+//  Experimental format with indentation
+//
+// ================================================================================
+
 type FormatOption struct {
 	Newline bool
 	Indent  int
@@ -33,29 +39,29 @@ func (fc *FormatContext) SQL(node Node) string {
 	}
 }
 
-func (fc *FormatContext) newlineOrSpace() string {
+func (fc *FormatContext) newlineOr(s string) string {
 	if fc != nil && fc.Option.Newline {
 		return "\n" + strings.Repeat(" ", fc.Current)
 	}
-	return " "
+	return s
+}
+
+func (fc *FormatContext) newlineOrSpace() string {
+	return fc.newlineOr(" ")
 }
 
 func (fc *FormatContext) newlineOrEmpty() string {
-	if fc != nil && fc.Option.Newline {
-		return "\n" + strings.Repeat(" ", fc.Current)
-	}
-	return ""
+	return fc.newlineOr("")
 }
 
 func (fc *FormatContext) indentScope(f func(fc *FormatContext) string) string {
-	var newFc FormatContext
-	if fc != nil {
-		newFc = *fc
-		newFc.Current += newFc.Option.Indent
-		return f(&newFc)
-	} else {
+	if fc == nil {
 		return f(emptyFormatContext)
 	}
+
+	newFc := *fc
+	newFc.Current += newFc.Option.Indent
+	return f(&newFc)
 }
 
 func sqlOptCtx[T interface {
