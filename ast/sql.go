@@ -46,14 +46,6 @@ func (fc *FormatContext) newlineOr(s string) string {
 	return s
 }
 
-func (fc *FormatContext) newlineOrSpace() string {
-	return fc.newlineOr(" ")
-}
-
-func (fc *FormatContext) newlineOrEmpty() string {
-	return fc.newlineOr("")
-}
-
 func (fc *FormatContext) indentScope(f func(fc *FormatContext) string) string {
 	if fc == nil {
 		return f(emptyFormatContext)
@@ -222,8 +214,8 @@ func paren(p prec, e Expr) string {
 // ================================================================================
 
 func (q *QueryStatement) sqlContext(fc *FormatContext) string {
-	return sqlOptCtx(fc, "", q.Hint, fc.newlineOrSpace()) +
-		sqlOptCtx(fc, "", q.With, fc.newlineOrSpace()) +
+	return sqlOptCtx(fc, "", q.Hint, fc.newlineOr(" ")) +
+		sqlOptCtx(fc, "", q.With, fc.newlineOr(" ")) +
 		fc.SQL(q.Query)
 }
 
@@ -264,14 +256,14 @@ func (s *Select) sqlContext(fc *FormatContext) string {
 			if len(s.Results) == 1 {
 				return " " + fc.SQL(s.Results[0])
 			}
-			return fc.newlineOrSpace() + sqlJoinCtx(fc, s.Results, ","+fc.newlineOrSpace())
+			return fc.newlineOr(" ") + sqlJoinCtx(fc, s.Results, ","+fc.newlineOr(" "))
 		}) +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.From, "") +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.Where, "") +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.GroupBy, "") +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.Having, "") +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.OrderBy, "") +
-		sqlOptCtx(fc, fc.newlineOrSpace(), s.Limit, "")
+		sqlOptCtx(fc, fc.newlineOr(" "), s.From, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), s.Where, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), s.GroupBy, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), s.Having, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), s.OrderBy, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), s.Limit, "")
 }
 
 func (s *Select) SQL() string {
@@ -441,9 +433,9 @@ func (e *PathTableExpr) SQL() string {
 func (s *SubQueryTableExpr) sqlContext(fc *FormatContext) string {
 	return "(" +
 		fc.indentScope(func(fc *FormatContext) string {
-			return fc.newlineOrEmpty() + fc.SQL(s.Query)
+			return fc.newlineOr("") + fc.SQL(s.Query)
 		}) +
-		fc.newlineOrEmpty() + ")" +
+		fc.newlineOr("") + ")" +
 		sqlOptCtx(fc, " ", s.As, "") +
 		sqlOptCtx(fc, " ", s.Sample, "")
 }
@@ -455,9 +447,9 @@ func (s *SubQueryTableExpr) SQL() string {
 func (p *ParenTableExpr) sqlContext(fc *FormatContext) string {
 	return "(" +
 		fc.indentScope(func(fc *FormatContext) string {
-			return fc.newlineOrEmpty() + p.Source.SQL()
+			return fc.newlineOr("") + p.Source.SQL()
 		}) +
-		fc.newlineOrEmpty() + ")" +
+		fc.newlineOr("") + ")" +
 		sqlOpt(" ", p.Sample, "")
 }
 
@@ -947,13 +939,13 @@ func (c *CreateTable) sqlContext(fc *FormatContext) string {
 		fc.SQL(c.Name) +
 		" (" +
 		fc.indentScope(func(fc *FormatContext) string {
-			return fc.newlineOrEmpty() + sqlJoinCtx(fc, c.Columns, ","+fc.newlineOrSpace()) +
-				strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ","+fc.newlineOrSpace()) +
-				sqlJoinCtx(fc, c.TableConstraints, ","+fc.newlineOrSpace()) +
-				strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ","+fc.newlineOrSpace()) +
-				sqlJoinCtx(fc, c.Synonyms, ","+fc.newlineOrSpace())
+			return fc.newlineOr("") + sqlJoinCtx(fc, c.Columns, ","+fc.newlineOr(" ")) +
+				strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ","+fc.newlineOr(" ")) +
+				sqlJoinCtx(fc, c.TableConstraints, ","+fc.newlineOr(" ")) +
+				strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ","+fc.newlineOr(" ")) +
+				sqlJoinCtx(fc, c.Synonyms, ","+fc.newlineOr(" "))
 		}) +
-		fc.newlineOrEmpty() +
+		fc.newlineOr("") +
 		") PRIMARY KEY (" +
 		sqlJoinCtx(fc, c.PrimaryKeys, ", ") +
 		")" +
