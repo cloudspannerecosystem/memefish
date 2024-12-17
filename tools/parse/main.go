@@ -11,11 +11,12 @@ import (
 	"unicode"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/k0kubun/pp"
+
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/cloudspannerecosystem/memefish/tools/util/poslang"
-	"github.com/k0kubun/pp"
 )
 
 var usage = heredoc.Doc(`
@@ -118,6 +119,14 @@ func main() {
 	fmt.Println()
 	fmt.Println("--- SQL")
 	fmt.Println(node.SQL())
+	fmt.Println("--- SQL with indentation")
+	fmt.Println((&ast.FormatContext{
+		Option: ast.FormatOption{
+			Newline: true,
+			Indent:  2,
+		},
+		Current: 0,
+	}).SQL(node))
 
 	if *pos != "" {
 		fmt.Println("--- POS")
