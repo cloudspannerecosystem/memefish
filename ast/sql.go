@@ -958,6 +958,7 @@ func (c *CreateTable) sqlContext(fc *FormatContext) string {
 func (c *CreateTable) SQL() string {
 	return c.sqlContext(nil)
 }
+
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
