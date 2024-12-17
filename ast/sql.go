@@ -254,6 +254,9 @@ func (s *Select) SQLContext(fc *FormatContext) string {
 		strOpt(s.Distinct, " DISTINCT ") +
 		sqlOptCtx(fc, " ", s.As, "") +
 		fc.WithIndent(func(fc *FormatContext) string {
+			if len(s.Results) == 1 {
+				return " " + fc.SQL(s.Results[0])
+			}
 			return fc.Newline() + sqlJoinCtx(fc, s.Results, ","+fc.Newline())
 		}) +
 		sqlOptCtx(fc, fc.Newline(), s.From, "") +
