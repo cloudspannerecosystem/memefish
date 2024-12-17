@@ -258,7 +258,7 @@ func (c *CTE) SQL() string {
 
 func (s *Select) sqlContext(fc *FormatContext) string {
 	return "SELECT" +
-		strOpt(s.Distinct, " DISTINCT ") +
+		strOpt(s.Distinct, " DISTINCT") +
 		sqlOptCtx(fc, " ", s.As, "") +
 		fc.indentScope(func(fc *FormatContext) string {
 			if len(s.Results) == 1 {
