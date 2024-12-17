@@ -432,7 +432,7 @@ func (s *SubQueryTableExpr) SQLContext(fc *FormatContext) string {
 	return "(" + fc.WithIndent(
 		func(fc *FormatContext) string {
 			return fc.NewlineOrEmpty() + fc.SQL(s.Query)
-		}) + fc.Newline() + ")" +
+		}) + fc.NewlineOrEmpty() + ")" +
 		sqlOptCtx(fc, " ", s.As, "") +
 		sqlOptCtx(fc, " ", s.Sample, "")
 }
