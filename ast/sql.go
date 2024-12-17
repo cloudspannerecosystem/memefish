@@ -930,18 +930,25 @@ func (a *AlterProtoBundleDelete) SQL() string { return "DELETE " + a.Types.SQL()
 
 func (d *DropProtoBundle) SQL() string { return "DROP PROTO BUNDLE" }
 
-func (c *CreateTable) SQL() string {
+func (c *CreateTable) SQLContext(fc *FormatContext) string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
-		c.Name.SQL() + " (" +
-		sqlJoin(c.Columns, ", ") + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ", ") +
-		sqlJoin(c.TableConstraints, ", ") + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ", ") +
-		sqlJoin(c.Synonyms, ", ") +
-		") PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
-		sqlOpt("", c.Cluster, "") +
-		sqlOpt("", c.RowDeletionPolicy, "")
+		fc.SQL(c.Name) + " (" +
+		fc.WithIndent(func(fc *FormatContext) string {
+			return fc.NewlineOrEmpty() + sqlJoinCtx(fc, c.Columns, ","+fc.Newline()) +
+				strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ","+fc.Newline()) +
+				sqlJoinCtx(fc, c.TableConstraints, ","+fc.Newline()) +
+				strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ","+fc.Newline()) +
+				sqlJoinCtx(fc, c.Synonyms, ","+fc.Newline())
+		}) + fc.NewlineOrEmpty() +
+		") PRIMARY KEY (" + sqlJoinCtx(fc, c.PrimaryKeys, ", ") + ")" +
+		sqlOptCtx(fc, "", c.Cluster, "") +
+		sqlOptCtx(fc, "", c.RowDeletionPolicy, "")
 }
 
+func (c *CreateTable) SQL() string {
+	return c.SQLContext(nil)
+}
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {
