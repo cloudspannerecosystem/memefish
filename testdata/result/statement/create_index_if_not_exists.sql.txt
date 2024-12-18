@@ -42,4 +42,4 @@ create index if not exists foo_bar on foo (bar)
 }
 
 --- SQL
-CREATE INDEX IF NOT EXISTS foo_bar ON foo (bar)
+CREATE INDEX IF NOT EXISTS foo_bar ON foo(bar)

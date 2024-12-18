@@ -42,4 +42,4 @@ create unique null_filtered index foo_bar on foo (foo)
 }
 
 --- SQL
-CREATE UNIQUE NULL_FILTERED INDEX foo_bar ON foo (foo)
+CREATE UNIQUE NULL_FILTERED INDEX foo_bar ON foo(foo)
