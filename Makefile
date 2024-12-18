@@ -60,4 +60,4 @@ update-mod:
 install-dep: bin/golangci-lint
 
 bin/golangci-lint:
-	GOBIN=$(CURDIR)/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(CURDIR)/bin v1.62.2
