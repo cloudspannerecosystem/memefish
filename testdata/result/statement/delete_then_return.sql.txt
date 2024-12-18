@@ -1,0 +1,55 @@
+--- delete_then_return.sql
+delete foo where foo = 1 and bar = 2 then return *
+--- AST
+&ast.Delete{
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
+  },
+  Where: &ast.Where{
+    Where: 11,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 17,
+          NameEnd: 20,
+          Name:    "foo",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 29,
+          NameEnd: 32,
+          Name:    "bar",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 35,
+          ValueEnd: 36,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+    },
+  },
+  ThenReturn: &ast.ThenReturn{
+    Then:  37,
+    Items: []ast.SelectItem{
+      &ast.Star{
+        Star: 49,
+      },
+    },
+  },
+}
+
+--- SQL
+DELETE FROM foo WHERE foo = 1 AND bar = 2 THEN RETURN *

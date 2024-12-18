@@ -1,0 +1,86 @@
+--- create_or_replace_model.sql
+CREATE OR REPLACE MODEL GeminiPro
+INPUT (prompt STRING(MAX))
+OUTPUT (content STRING(MAX))
+REMOTE OPTIONS (
+  endpoint = '//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro',
+  default_batch_size = 1
+)
+--- AST
+&ast.CreateModel{
+  Remote:    90,
+  OrReplace: true,
+  Name:      &ast.Ident{
+    NamePos: 24,
+    NameEnd: 33,
+    Name:    "GeminiPro",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        34,
+    Rparen:       88,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 41,
+          NameEnd: 47,
+          Name:    "prompt",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 48,
+          Rparen:  58,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 69,
+          NameEnd: 76,
+          Name:    "content",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 77,
+          Rparen:  87,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 97,
+    Rparen:  260,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 109,
+          NameEnd: 117,
+          Name:    "endpoint",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 120,
+          ValueEnd: 233,
+          Value:    "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 237,
+          NameEnd: 255,
+          Name:    "default_batch_size",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 258,
+          ValueEnd: 259,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE MODEL GeminiPro INPUT (prompt STRING(MAX)) OUTPUT (content STRING(MAX)) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro", default_batch_size = 1)

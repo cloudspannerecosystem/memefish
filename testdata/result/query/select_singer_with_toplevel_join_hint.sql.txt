@@ -11,7 +11,6 @@ FROM
 --- AST
 &ast.QueryStatement{
   Hint: &ast.Hint{
-    Atmark:  0,
     Rbrace:  23,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
@@ -27,32 +26,24 @@ FROM
       },
     },
   },
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   25,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  25,
+    Results: []ast.SelectItem{
       &ast.Star{
-        Star:    34,
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
+        Star: 34,
       },
     },
     From: &ast.From{
       From:   36,
       Source: &ast.Join{
-        Op:     "LEFT OUTER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.TableName{
+        Op:   "LEFT OUTER JOIN",
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 43,
             NameEnd: 50,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    -1,
             Alias: &ast.Ident{
               NamePos: 51,
@@ -60,7 +51,6 @@ FROM
               Name:    "A",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
@@ -68,8 +58,7 @@ FROM
             NameEnd: 80,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    -1,
             Alias: &ast.Ident{
               NamePos: 81,
@@ -77,7 +66,6 @@ FROM
               Name:    "B",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
           On:   85,
@@ -115,11 +103,6 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

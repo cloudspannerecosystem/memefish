@@ -2,13 +2,8 @@
 SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.ScalarSubQuery{
           Lparen: 7,
@@ -18,10 +13,8 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
             Distinct: true,
             Queries:  []ast.QueryExpr{
               &ast.Select{
-                Select:   8,
-                Distinct: false,
-                As:       nil,
-                Results:  []ast.SelectItem{
+                Select:  8,
+                Results: []ast.SelectItem{
                   &ast.DotStar{
                     Star: 17,
                     Expr: &ast.Ident{
@@ -29,22 +22,12 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
                       NameEnd: 16,
                       Name:    "T",
                     },
-                    Except:  (*ast.StarModifierExcept)(nil),
-                    Replace: (*ast.StarModifierReplace)(nil),
                   },
                 },
-                From:    (*ast.From)(nil),
-                Where:   (*ast.Where)(nil),
-                GroupBy: (*ast.GroupBy)(nil),
-                Having:  (*ast.Having)(nil),
-                OrderBy: (*ast.OrderBy)(nil),
-                Limit:   (*ast.Limit)(nil),
               },
               &ast.Select{
-                Select:   35,
-                Distinct: false,
-                As:       nil,
-                Results:  []ast.SelectItem{
+                Select:  35,
+                Results: []ast.SelectItem{
                   &ast.DotStar{
                     Star: 44,
                     Expr: &ast.Ident{
@@ -52,20 +35,10 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
                       NameEnd: 43,
                       Name:    "T",
                     },
-                    Except:  (*ast.StarModifierExcept)(nil),
-                    Replace: (*ast.StarModifierReplace)(nil),
                   },
                 },
-                From:    (*ast.From)(nil),
-                Where:   (*ast.Where)(nil),
-                GroupBy: (*ast.GroupBy)(nil),
-                Having:  (*ast.Having)(nil),
-                OrderBy: (*ast.OrderBy)(nil),
-                Limit:   (*ast.Limit)(nil),
               },
             },
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
         As: &ast.AsAlias{
@@ -84,10 +57,8 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
         Lparen: 57,
         Rparen: 71,
         Query:  &ast.Select{
-          Select:   58,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  58,
+          Results: []ast.SelectItem{
             &ast.Alias{
               Expr: &ast.IntLiteral{
                 ValuePos: 65,
@@ -105,12 +76,6 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
         As: &ast.AsAlias{
           As:    73,
@@ -120,14 +85,8 @@ SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
             Name:    "T",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

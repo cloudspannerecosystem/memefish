@@ -6,17 +6,10 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
-        Star:    9,
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
+        Star: 9,
       },
     },
     From: &ast.From{
@@ -28,7 +21,6 @@ FROM
           Array:  -1,
           Lbrack: 25,
           Rbrack: 31,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.IntLiteral{
               ValuePos: 26,
@@ -69,20 +61,12 @@ FROM
             },
           },
         },
-        As:         (*ast.AsAlias)(nil),
         WithOffset: &ast.WithOffset{
           With:   46,
           Offset: 51,
-          As:     (*ast.AsAlias)(nil),
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

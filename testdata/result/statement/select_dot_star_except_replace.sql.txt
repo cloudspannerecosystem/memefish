@@ -2,13 +2,8 @@
 SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) AS T
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.DotStar{
         Star: 9,
         Expr: &ast.Ident{
@@ -53,10 +48,8 @@ SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" A
         Lparen: 63,
         Rparen: 110,
         Query:  &ast.Select{
-          Select:   64,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  64,
+          Results: []ast.SelectItem{
             &ast.Alias{
               Expr: &ast.StringLiteral{
                 ValuePos: 71,
@@ -88,12 +81,6 @@ SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" A
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
         As: &ast.AsAlias{
           As:    112,
@@ -103,14 +90,8 @@ SELECT T.* EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" A
             Name:    "T",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -2,13 +2,8 @@
 SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.DotStar{
         Star: 9,
         Expr: &ast.Ident{
@@ -16,8 +11,6 @@ SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
           NameEnd: 8,
           Name:    "T",
         },
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
       },
     },
     From: &ast.From{
@@ -26,10 +19,8 @@ SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
         Lparen: 16,
         Rparen: 63,
         Query:  &ast.Select{
-          Select:   17,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  17,
+          Results: []ast.SelectItem{
             &ast.Alias{
               Expr: &ast.StringLiteral{
                 ValuePos: 24,
@@ -61,12 +52,6 @@ SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
         As: &ast.AsAlias{
           As:    -1,
@@ -76,14 +61,8 @@ SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
             Name:    "T",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

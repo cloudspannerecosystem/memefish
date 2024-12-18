@@ -18,25 +18,17 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
-        Star:    9,
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
+        Star: 9,
       },
     },
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     "INNER JOIN",
-        Method: "",
-        Hint:   &ast.Hint{
+        Op:   "INNER JOIN",
+        Hint: &ast.Hint{
           Atmark:  258,
           Rbrace:  279,
           Records: []*ast.HintRecord{
@@ -55,9 +47,8 @@ FROM
           },
         },
         Left: &ast.Join{
-          Op:     "INNER JOIN",
-          Method: "",
-          Hint:   &ast.Hint{
+          Op:   "INNER JOIN",
+          Hint: &ast.Hint{
             Atmark:  187,
             Rbrace:  209,
             Records: []*ast.HintRecord{
@@ -76,9 +67,8 @@ FROM
             },
           },
           Left: &ast.Join{
-            Op:     "INNER JOIN",
-            Method: "",
-            Hint:   &ast.Hint{
+            Op:   "INNER JOIN",
+            Hint: &ast.Hint{
               Atmark:  117,
               Rbrace:  138,
               Records: []*ast.HintRecord{
@@ -97,9 +87,8 @@ FROM
               },
             },
             Left: &ast.Join{
-              Op:     "LEFT OUTER JOIN",
-              Method: "",
-              Hint:   &ast.Hint{
+              Op:   "LEFT OUTER JOIN",
+              Hint: &ast.Hint{
                 Atmark:  45,
                 Rbrace:  68,
                 Records: []*ast.HintRecord{
@@ -122,8 +111,7 @@ FROM
                   NameEnd: 25,
                   Name:    "Singers",
                 },
-                Hint: (*ast.Hint)(nil),
-                As:   &ast.AsAlias{
+                As: &ast.AsAlias{
                   As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 26,
@@ -131,7 +119,6 @@ FROM
                     Name:    "A",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
               Right: &ast.TableName{
                 Table: &ast.Ident{
@@ -139,8 +126,7 @@ FROM
                   NameEnd: 79,
                   Name:    "Singers",
                 },
-                Hint: (*ast.Hint)(nil),
-                As:   &ast.AsAlias{
+                As: &ast.AsAlias{
                   As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 80,
@@ -148,7 +134,6 @@ FROM
                     Name:    "B",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
               Cond: &ast.On{
                 On:   84,
@@ -191,8 +176,7 @@ FROM
                 NameEnd: 149,
                 Name:    "Singers",
               },
-              Hint: (*ast.Hint)(nil),
-              As:   &ast.AsAlias{
+              As: &ast.AsAlias{
                 As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 150,
@@ -200,7 +184,6 @@ FROM
                   Name:    "C",
                 },
               },
-              Sample: (*ast.TableSample)(nil),
             },
             Cond: &ast.On{
               On:   154,
@@ -243,8 +226,7 @@ FROM
               NameEnd: 220,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
+            As: &ast.AsAlias{
               As:    -1,
               Alias: &ast.Ident{
                 NamePos: 221,
@@ -252,7 +234,6 @@ FROM
                 Name:    "D",
               },
             },
-            Sample: (*ast.TableSample)(nil),
           },
           Cond: &ast.On{
             On:   225,
@@ -295,8 +276,7 @@ FROM
             NameEnd: 290,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    -1,
             Alias: &ast.Ident{
               NamePos: 291,
@@ -304,7 +284,6 @@ FROM
               Name:    "E",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
           On:   295,
@@ -342,11 +321,6 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

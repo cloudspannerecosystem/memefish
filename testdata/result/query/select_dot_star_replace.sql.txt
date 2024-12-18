@@ -2,13 +2,8 @@
 SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) AS T
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.DotStar{
         Star: 9,
         Expr: &ast.Ident{
@@ -16,7 +11,6 @@ SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" A
           NameEnd: 8,
           Name:    "T",
         },
-        Except:  (*ast.StarModifierExcept)(nil),
         Replace: &ast.StarModifierReplace{
           Replace: 11,
           Rparen:  37,
@@ -43,10 +37,8 @@ SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" A
         Lparen: 44,
         Rparen: 91,
         Query:  &ast.Select{
-          Select:   45,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  45,
+          Results: []ast.SelectItem{
             &ast.Alias{
               Expr: &ast.StringLiteral{
                 ValuePos: 52,
@@ -78,12 +70,6 @@ SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" A
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
         As: &ast.AsAlias{
           As:    93,
@@ -93,14 +79,8 @@ SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" A
             Name:    "T",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

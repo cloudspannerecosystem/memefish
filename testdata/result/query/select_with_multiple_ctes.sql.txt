@@ -3,9 +3,7 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
 
 --- AST
 &ast.QueryStatement{
-  Hint: (*ast.Hint)(nil),
   With: &ast.With{
-    With: 0,
     CTEs: []*ast.CTE{
       &ast.CTE{
         Rparen: 33,
@@ -15,10 +13,8 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
           Name:    "subq1",
         },
         QueryExpr: &ast.Select{
-          Select:   15,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  15,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.Ident{
                 NamePos: 22,
@@ -35,16 +31,8 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
                 NameEnd: 33,
                 Name:    "foo",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
       },
       &ast.CTE{
@@ -55,10 +43,8 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
           Name:    "subq2",
         },
         QueryExpr: &ast.Select{
-          Select:   46,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  46,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.Ident{
                 NamePos: 53,
@@ -75,29 +61,17 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
                 NameEnd: 64,
                 Name:    "foo",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
       },
     },
   },
   Query: &ast.Select{
-    Select:   66,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  66,
+    Results: []ast.SelectItem{
       &ast.Star{
-        Star:    73,
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
+        Star: 73,
       },
     },
     From: &ast.From{
@@ -108,16 +82,8 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
           NameEnd: 85,
           Name:    "subq1",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

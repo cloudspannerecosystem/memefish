@@ -25,17 +25,10 @@ WHERE
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
-        Star:    9,
-        Except:  (*ast.StarModifierExcept)(nil),
-        Replace: (*ast.StarModifierReplace)(nil),
+        Star: 9,
       },
     },
     From: &ast.From{
@@ -46,9 +39,6 @@ WHERE
           NameEnd: 25,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -177,7 +167,6 @@ WHERE
                                 },
                               },
                               Right: &ast.InExpr{
-                                Not:  false,
                                 Left: &ast.Ident{
                                   NamePos: 145,
                                   NameEnd: 153,
@@ -243,7 +232,6 @@ WHERE
                             },
                           },
                           Right: &ast.BetweenExpr{
-                            Not:  false,
                             Left: &ast.Ident{
                               NamePos: 203,
                               NameEnd: 211,
@@ -314,7 +302,6 @@ WHERE
                   },
                   Right: &ast.IsNullExpr{
                     Null: 329,
-                    Not:  false,
                     Left: &ast.NullLiteral{
                       Null: 321,
                     },
@@ -330,7 +317,6 @@ WHERE
               },
               Right: &ast.IsBoolExpr{
                 RightPos: 379,
-                Not:      false,
                 Left:     &ast.ParenExpr{
                   Lparen: 361,
                   Rparen: 374,
@@ -378,7 +364,6 @@ WHERE
           },
           Right: &ast.IsBoolExpr{
             RightPos: 439,
-            Not:      false,
             Left:     &ast.ParenExpr{
               Lparen: 421,
               Rparen: 434,
@@ -397,7 +382,6 @@ WHERE
                 },
               },
             },
-            Right: false,
           },
         },
         Right: &ast.IsBoolExpr{
@@ -421,14 +405,9 @@ WHERE
               },
             },
           },
-          Right: false,
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

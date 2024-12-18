@@ -3,12 +3,9 @@ create index if not exists foo_bar on foo (bar)
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       46,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  true,
-  Name:         &ast.Path{
+  Rparen:      46,
+  IfNotExists: true,
+  Name:        &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 27,
@@ -34,12 +31,9 @@ create index if not exists foo_bar on foo (bar)
         NameEnd: 46,
         Name:    "bar",
       },
-      Dir: "",
     },
   },
-  Storing:      (*ast.Storing)(nil),
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL
-CREATE INDEX IF NOT EXISTS foo_bar ON foo (bar)
+CREATE INDEX IF NOT EXISTS foo_bar ON foo(bar)

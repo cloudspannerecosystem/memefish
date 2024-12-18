@@ -5,8 +5,7 @@ STORING(Genre)
 WHERE Genre IS NOT NULL
 --- AST
 &ast.CreateSearchIndex{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 31,
     Name:    "AlbumsIndex",
@@ -35,9 +34,7 @@ WHERE Genre IS NOT NULL
       },
     },
   },
-  PartitionColumns: []*ast.Ident(nil),
-  OrderBy:          (*ast.OrderBy)(nil),
-  Where:            &ast.Where{
+  Where: &ast.Where{
     Where: 76,
     Expr:  &ast.IsNullExpr{
       Null: 95,
@@ -49,8 +46,6 @@ WHERE Genre IS NOT NULL
       },
     },
   },
-  Interleave: (*ast.InterleaveIn)(nil),
-  Options:    (*ast.Options)(nil),
 }
 
 --- SQL

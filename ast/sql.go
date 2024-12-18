@@ -77,7 +77,10 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery, *ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral, *TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral, *DateLiteral, *TimestampLiteral, *NumericLiteral:
+	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
+		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
+		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
+		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -492,14 +495,11 @@ func (s *SelectorExpr) SQL() string {
 
 func (i *IndexExpr) SQL() string {
 	p := exprPrec(i)
-	sql := paren(p, i.Expr) + "["
-	if i.Ordinal {
-		sql += "ORDINAL"
-	} else {
-		sql += "OFFSET"
-	}
-	sql += "(" + i.Index.SQL() + ")]"
-	return sql
+	return paren(p, i.Expr) + "[" + i.Index.SQL() + "]"
+}
+
+func (s *SubscriptSpecifierKeyword) SQL() string {
+	return string(s.Keyword) + "(" + s.Expr.SQL() + ")"
 }
 
 func (c *CallExpr) SQL() string {
@@ -509,7 +509,17 @@ func (c *CallExpr) SQL() string {
 		sqlJoin(c.NamedArgs, ", ") +
 		sqlOpt(" ", c.NullHandling, "") +
 		sqlOpt(" ", c.Having, "") +
-		")"
+		")" +
+		sqlOpt(" ", c.Hint, "")
+}
+
+func (l *LambdaArg) SQL() string {
+	// This implementation is not exactly matched with the doc comment for simplicity.
+	return strOpt(!l.Lparen.Invalid(), "(") +
+		sqlJoin(l.Args, ", ") +
+		strOpt(!l.Lparen.Invalid(), ")") +
+		" -> " +
+		l.Expr.SQL()
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
@@ -553,6 +563,12 @@ func (e *ExtractExpr) SQL() string {
 
 func (a *AtTimeZone) SQL() string {
 	return "AT TIME ZONE " + a.Expr.SQL()
+}
+
+func (r *ReplaceFieldsArg) SQL() string { return r.Expr.SQL() + " AS " + r.Field.SQL() }
+
+func (r *ReplaceFieldsExpr) SQL() string {
+	return "REPLACE_FIELDS(" + r.Expr.SQL() + ", " + sqlJoin(r.Fields, ", ") + ")"
 }
 
 func (c *CastExpr) SQL() string {
@@ -812,7 +828,12 @@ func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + 
 
 func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
 
-func (a *AlterProtoBundle) SQL() string { return "ALTER PROTO BUNDLE " + a.Alteration.SQL() }
+func (a *AlterProtoBundle) SQL() string {
+	return "ALTER PROTO BUNDLE" +
+		sqlOpt(" ", a.Insert, "") +
+		sqlOpt(" ", a.Update, "") +
+		sqlOpt(" ", a.Delete, "")
+}
 
 func (a *AlterProtoBundleInsert) SQL() string { return "INSERT " + a.Types.SQL() }
 
@@ -1013,32 +1034,16 @@ func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.Tos, ", 
 func (r *RenameTableTo) SQL() string { return r.Old.SQL() + " TO " + r.New.SQL() }
 
 func (c *CreateIndex) SQL() string {
-	sql := "CREATE "
-	if c.Unique {
-		sql += "UNIQUE "
-	}
-	if c.NullFiltered {
-		sql += "NULL_FILTERED "
-	}
-	sql += "INDEX "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
-	for i, k := range c.Keys {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += k.SQL()
-	}
-	sql += ")"
-	if c.Storing != nil {
-		sql += " " + c.Storing.SQL()
-	}
-	if c.InterleaveIn != nil {
-		sql += c.InterleaveIn.SQL()
-	}
-	return sql
+	return "CREATE " +
+		strOpt(c.Unique, "UNIQUE ") +
+		strOpt(c.NullFiltered, "NULL_FILTERED ") +
+		"INDEX " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " ON " + c.TableName.SQL() + "(" +
+		sqlJoin(c.Keys, ", ") +
+		")" +
+		sqlOpt(" ", c.Storing, "") +
+		sqlOpt("", c.InterleaveIn, "")
 }
 
 func (c *CreateVectorIndex) SQL() string {
@@ -1286,6 +1291,35 @@ func (s *AlterStatistics) SQL() string {
 }
 func (a *Analyze) SQL() string { return "ANALYZE" }
 
+func (c *CreateModelColumn) SQL() string {
+	return c.Name.SQL() + " " + c.DataType.SQL() + sqlOpt(" ", c.Options, "")
+}
+
+func (c *CreateModelInputOutput) SQL() string {
+	return "INPUT (" + sqlJoin(c.InputColumns, ", ") + ") OUTPUT (" + sqlJoin(c.OutputColumns, ", ") + ")"
+}
+
+func (c *CreateModel) SQL() string {
+	return "CREATE " + strOpt(c.OrReplace, "OR REPLACE ") +
+		"MODEL " +
+		c.Name.SQL() +
+		strOpt(c.IfNotExists, " IF NOT EXISTS") +
+		sqlOpt(" ", c.InputOutput, "") +
+		" REMOTE" +
+		sqlOpt(" ", c.Options, "")
+}
+
+func (a *AlterModel) SQL() string {
+	return "ALTER MODEL " +
+		strOpt(a.IfExists, "IF EXISTS ") +
+		a.Name.SQL() +
+		" SET " + a.Options.SQL()
+}
+
+func (d *DropModel) SQL() string {
+	return "DROP MODEL " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
 // ================================================================================
 //
 // Types for Schema
@@ -1308,7 +1342,7 @@ func (s *SizedSchemaType) SQL() string {
 }
 
 func (a *ArraySchemaType) SQL() string {
-	return "ARRAY<" + a.Item.SQL() + ">"
+	return "ARRAY<" + a.Item.SQL() + ">" + strOpt(len(a.NamedArgs) > 0, "("+sqlJoin(a.NamedArgs, ", ")+")")
 }
 
 // ================================================================================
@@ -1342,20 +1376,22 @@ func (a *AlterSearchIndex) SQL() string {
 //
 // ================================================================================
 
+func (w *WithAction) SQL() string {
+	return "WITH ACTION" + sqlOpt(" ", w.Alias, "")
+}
+
+func (t *ThenReturn) SQL() string {
+	return "THEN RETURN " + sqlOpt("", t.WithAction, " ") + sqlJoin(t.Items, ", ")
+}
+
 func (i *Insert) SQL() string {
-	sql := "INSERT "
-	if i.InsertOrType != "" {
-		sql += "OR " + string(i.InsertOrType) + " "
-	}
-	sql += "INTO " + i.TableName.SQL() + " ("
-	for i, c := range i.Columns {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += c.SQL()
-	}
-	sql += ") " + i.Input.SQL()
-	return sql
+	return "INSERT " +
+		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
+		"INTO " + i.TableName.SQL() + " (" +
+		sqlJoin(i.Columns, ", ") +
+		") " +
+		i.Input.SQL() +
+		sqlOpt(" ", i.ThenReturn, "")
 }
 
 func (v *ValuesInput) SQL() string {
@@ -1393,25 +1429,20 @@ func (s *SubQueryInput) SQL() string {
 }
 
 func (d *Delete) SQL() string {
-	sql := "DELETE FROM " + d.TableName.SQL()
-	if d.As != nil {
-		sql += " " + d.As.SQL()
-	}
-	sql += " " + d.Where.SQL()
-	return sql
+	return "DELETE FROM " +
+		d.TableName.SQL() + " " +
+		sqlOpt("", d.As, " ") +
+		d.Where.SQL() +
+		sqlOpt(" ", d.ThenReturn, "")
 }
 
 func (u *Update) SQL() string {
-	sql := "UPDATE " + u.TableName.SQL()
-	if u.As != nil {
-		sql += " " + u.As.SQL()
-	}
-	sql += " SET " + u.Updates[0].SQL()
-	for _, item := range u.Updates[1:] {
-		sql += ", " + item.SQL()
-	}
-	sql += " " + u.Where.SQL()
-	return sql
+	return "UPDATE " + u.TableName.SQL() + " " +
+		sqlOpt("", u.As, " ") +
+		"SET " +
+		sqlJoin(u.Updates, ", ") +
+		" " + u.Where.SQL() +
+		sqlOpt(" ", u.ThenReturn, "")
 }
 
 func (u *UpdateItem) SQL() string {
