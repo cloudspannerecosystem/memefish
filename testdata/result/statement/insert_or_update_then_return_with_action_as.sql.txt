@@ -4,7 +4,6 @@ INSERT OR UPDATE INTO foo
 THEN RETURN WITH ACTION AS act *
 --- AST
 &ast.Insert{
-  Insert:       0,
   InsertOrType: "UPDATE",
   TableName:    &ast.Ident{
     NamePos: 22,
@@ -32,7 +31,6 @@ THEN RETURN WITH ACTION AS act *
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 45,
               ValueEnd: 46,
@@ -42,7 +40,6 @@ THEN RETURN WITH ACTION AS act *
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 48,
               ValueEnd: 49,

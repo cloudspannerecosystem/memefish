@@ -3,9 +3,7 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
 
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 12,
     NameEnd: 15,
     Name:    "foo",
@@ -26,7 +24,6 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.CallExpr{
               Rparen: 73,
               Func:   &ast.Ident{
@@ -34,8 +31,7 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
                 NameEnd: 52,
                 Name:    "GET_NEXT_SEQUENCE_VALUE",
               },
-              Distinct: false,
-              Args:     []ast.Arg{
+              Args: []ast.Arg{
                 &ast.SequenceArg{
                   Sequence: 53,
                   Expr:     &ast.Ident{
@@ -45,16 +41,12 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
                   },
                 },
               },
-              NamedArgs:    []*ast.NamedArg(nil),
-              NullHandling: nil,
-              Having:       nil,
             },
           },
         },
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

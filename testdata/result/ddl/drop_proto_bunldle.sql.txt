@@ -2,7 +2,6 @@
 DROP PROTO BUNDLE
 --- AST
 &ast.DropProtoBundle{
-  Drop:   0,
   Bundle: 11,
 }
 

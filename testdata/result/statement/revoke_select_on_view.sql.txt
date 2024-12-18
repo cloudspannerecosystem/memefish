@@ -2,7 +2,6 @@
 REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.SelectPrivilegeOnView{
     Select: 7,
     Names:  []*ast.Ident{
