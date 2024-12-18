@@ -13,15 +13,19 @@ import (
 //
 // ================================================================================
 
+// FormatOption is container of format configurations.
+// You should construct it using FormatOptionCompact() or FormatOptionPretty().
 type FormatOption struct {
 	newline bool
 	indent  int
 }
 
+// FormatOptionCompact is format option without newline and indentation.
 func FormatOptionCompact() FormatOption {
 	return FormatOption{}
 }
 
+// FormatOptionPretty is format option with newline and configured indentation.
 func FormatOptionPretty(indent int) FormatOption {
 	return FormatOption{newline: true, indent: indent}
 }
@@ -30,11 +34,14 @@ var emptyFormatContext = &FormatContext{
 	Option: FormatOptionCompact(),
 }
 
+// FormatContext is container of FormatOption and current indentation.
 type FormatContext struct {
-	Option  FormatOption
-	Current int
+	Option        FormatOption
+	CurrentIndent int
 }
 
+// SQL is entry point of pretty printing.
+// If node implements NodeFormat, it calls NodeFormat.sqlContext() instead of Node.SQL().
 func (fc *FormatContext) SQL(node Node) string {
 	if nodeFormat, ok := node.(NodeFormat); fc != nil && ok {
 		return nodeFormat.sqlContext(fc)
@@ -43,25 +50,28 @@ func (fc *FormatContext) SQL(node Node) string {
 	}
 }
 
+// newlineOr returns newline with indentation if FormatOptionPretty is used.
+// Otherwise, it returns argument string.
 func (fc *FormatContext) newlineOr(s string) string {
 	if fc == nil {
 		return s
 	}
 
-	return strIfElse(fc.Option.newline, "\n", s) + strings.Repeat(" ", fc.Current)
+	return strIfElse(fc.Option.newline, "\n", s) + strings.Repeat(" ", fc.CurrentIndent)
 }
 
-// indentScope executes function with FormatContext with needed indentation.
+// indentScope executes function with FormatContext with deeper indentation.
 func (fc *FormatContext) indentScope(f func(fc *FormatContext) string) string {
 	if fc == nil {
 		return f(emptyFormatContext)
 	}
 
 	newFc := *fc
-	newFc.Current += fc.Option.indent
+	newFc.CurrentIndent += fc.Option.indent
 	return f(&newFc)
 }
 
+// sqlOptCtx is sqlOpt with FormatContext.
 func sqlOptCtx[T interface {
 	Node
 	comparable
@@ -73,9 +83,7 @@ func sqlOptCtx[T interface {
 	return left + fc.SQL(node) + right
 }
 
-// sqlJoinCtx outputs joined string of SQL() of all elems by sep.
-// It supports FormatContext.
-// This function corresponds to sqlJoin in ast.go
+// sqlJoinCtx is sqlJoin with FormatContext.
 func sqlJoinCtx[T Node](fc *FormatContext, elems []T, sep string) string {
 	var b strings.Builder
 	for i, r := range elems {
@@ -87,6 +95,8 @@ func sqlJoinCtx[T Node](fc *FormatContext, elems []T, sep string) string {
 	return b.String()
 }
 
+// NodeFormat is Node with FormatContext support.
+// If it is implemented, (*FormatContext).SQL calls sqlContext() instead of SQL().
 type NodeFormat interface {
 	Node
 	// sqlContext will be Node.SQL() finally.
