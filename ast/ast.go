@@ -408,6 +408,17 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
 
+// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn.
+// They are change default value of column and mutually exclusive.
+type ColumnDefaultSemantics interface {
+	Node
+	isColumnDefaultSemantics()
+}
+
+func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
+func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
+func (IdentityColumn) isColumnDefaultSemantics()      {}
+
 type SequenceParam interface {
 	Node
 	isSequenceParam()
@@ -2366,17 +2377,6 @@ type ColumnDef struct {
 	Hidden  token.Pos // InvalidPos if not hidden
 	Options *Options  // optional
 }
-
-// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn.
-// They are change default value of column and mutually exclusive.
-type ColumnDefaultSemantics interface {
-	Node
-	isColumnDefaultSemantics()
-}
-
-func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
-func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
-func (IdentityColumn) isColumnDefaultSemantics()      {}
 
 // ColumnDefaultExpr is a default value expression for the column.
 //
