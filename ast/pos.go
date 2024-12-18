@@ -398,6 +398,14 @@ func (c *CallExpr) End() token.Pos {
 	return posChoice(nodeEnd(wrapNode(c.Hint)), posAdd(c.Rparen, 1))
 }
 
+func (t *TVFCallExpr) Pos() token.Pos {
+	return nodePos(wrapNode(t.Name))
+}
+
+func (t *TVFCallExpr) End() token.Pos {
+	return posChoice(nodeEnd(nodeChoice(wrapNode(t.Sample), wrapNode(t.Hint))), posAdd(t.Rparen, 1))
+}
+
 func (e *ExprArg) Pos() token.Pos {
 	return nodePos(wrapNode(e.Expr))
 }
@@ -428,6 +436,22 @@ func (l *LambdaArg) Pos() token.Pos {
 
 func (l *LambdaArg) End() token.Pos {
 	return nodeEnd(wrapNode(l.Expr))
+}
+
+func (m *ModelArg) Pos() token.Pos {
+	return m.Model
+}
+
+func (m *ModelArg) End() token.Pos {
+	return nodeEnd(wrapNode(m.Name))
+}
+
+func (t *TableArg) Pos() token.Pos {
+	return t.Table
+}
+
+func (t *TableArg) End() token.Pos {
+	return nodeEnd(wrapNode(t.Name))
 }
 
 func (n *NamedArg) Pos() token.Pos {

@@ -817,6 +817,9 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
+		if p.Token.Kind == "(" {
+			return p.parseTVFCallExpr(ids)
+		}
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
 		}
@@ -824,6 +827,63 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
+	p.expect("(")
+
+	var args []ast.TVFArg
+	if p.Token.Kind != ")" {
+		for !p.lookaheadNamedArg() {
+			args = append(args, p.parseTVFArg())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+		}
+	}
+
+	var namedArgs []*ast.NamedArg
+	if p.lookaheadNamedArg() {
+		namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+	}
+
+	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+	sample := p.tryParseTableSample()
+
+	return &ast.TVFCallExpr{
+		Rparen:    rparen,
+		Name:      &ast.Path{Idents: ids},
+		Args:      args,
+		NamedArgs: namedArgs,
+		Hint:      hint,
+		Sample:    sample,
+	}
+}
+
+func (p *Parser) parseTVFArg() ast.TVFArg {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.IsKeywordLike("TABLE"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.TableArg{
+			Table: pos,
+			Name:  path,
+		}
+	case p.Token.IsKeywordLike("MODEL"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.ModelArg{
+			Model: pos,
+			Name:  path,
+		}
+	default:
+		return p.parseExprArg()
+	}
 }
 
 func (p *Parser) parseIdentOrPath() []*ast.Ident {

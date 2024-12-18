@@ -144,6 +144,7 @@ func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
+func (TVFCallExpr) isTableExpr()       {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -220,6 +221,15 @@ func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 func (LambdaArg) isArg()   {}
+
+type TVFArg interface {
+	Node
+	isTVFArg()
+}
+
+func (ExprArg) isTVFArg()  {}
+func (ModelArg) isTVFArg() {}
+func (TableArg) isTVFArg() {}
 
 // NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
 type NullHandlingModifier interface {
@@ -1162,6 +1172,28 @@ type CallExpr struct {
 	Hint         *Hint                // optional
 }
 
+// TVFCallExpr is table-valued function call expression node.
+//
+//	{{.Name | sql}}(
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//	)
+//	{{.Hint | sqlOpt}}
+//	{{.Sample | sqlOpt}}
+type TVFCallExpr struct {
+	// pos = Name.pos
+	// end = (Sample ?? Hint).end || Rparen + 1
+
+	Rparen token.Pos // position of ")"
+
+	Name      *Path
+	Args      []TVFArg
+	NamedArgs []*NamedArg
+	Hint      *Hint        // optional
+	Sample    *TableSample // optional
+}
+
 // ExprArg is argument of the generic function call.
 //
 //	{{.Expr | sql}}
@@ -1210,6 +1242,30 @@ type LambdaArg struct {
 
 	Args []*Ident // if Lparen.Invalid() then len(Args) = 1 else len(Args) > 0
 	Expr Expr
+}
+
+// ModelArg is argument of model function call.
+//
+//	MODEL {{.Name | sql}}
+type ModelArg struct {
+	// pos = Model
+	// end = Name.end
+
+	Model token.Pos // position of "MODEL" keyword
+
+	Name *Path
+}
+
+// TableArg is TABLE table_name argument of table valued function call.
+//
+//	TABLE {{.Name | sql}}
+type TableArg struct {
+	// pos = Table
+	// end = Name.end
+
+	Table token.Pos // position of "TABLE" keyword
+
+	Name *Path
 }
 
 // NamedArg represents a name and value pair in named arguments

@@ -1,0 +1,175 @@
+--- select_from_ml_predict_hint.sql
+-- https://cloud.google.com/spanner/docs/ml-tutorial-generative-ai?hl=en#register_a_generative_ai_model_in_a_schema
+SELECT content
+FROM ML.PREDICT(
+    MODEL TextBison,
+    (SELECT "Is 13 prime?" AS prompt),
+    STRUCT(256 AS maxOutputTokens, 0.2 AS temperature, 40 as topK, 0.95 AS topP)
+) @{remote_udf_max_rows_per_rpc=1}
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  116,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 123,
+          NameEnd: 130,
+          Name:    "content",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   131,
+      Source: &ast.TVFCallExpr{
+        Rparen: 289,
+        Name:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 136,
+              NameEnd: 138,
+              Name:    "ML",
+            },
+            &ast.Ident{
+              NamePos: 139,
+              NameEnd: 146,
+              Name:    "PREDICT",
+            },
+          },
+        },
+        Args: []ast.TVFArg{
+          &ast.ModelArg{
+            Model: 152,
+            Name:  &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 158,
+                  NameEnd: 167,
+                  Name:    "TextBison",
+                },
+              },
+            },
+          },
+          &ast.ExprArg{
+            Expr: &ast.ScalarSubQuery{
+              Lparen: 173,
+              Rparen: 205,
+              Query:  &ast.Select{
+                Select:  174,
+                Results: []ast.SelectItem{
+                  &ast.Alias{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 181,
+                      ValueEnd: 195,
+                      Value:    "Is 13 prime?",
+                    },
+                    As: &ast.AsAlias{
+                      As:    196,
+                      Alias: &ast.Ident{
+                        NamePos: 199,
+                        NameEnd: 205,
+                        Name:    "prompt",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.ExprArg{
+            Expr: &ast.TypelessStructLiteral{
+              Struct: 212,
+              Rparen: 287,
+              Values: []ast.TypelessStructLiteralArg{
+                &ast.Alias{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 219,
+                    ValueEnd: 222,
+                    Base:     10,
+                    Value:    "256",
+                  },
+                  As: &ast.AsAlias{
+                    As:    223,
+                    Alias: &ast.Ident{
+                      NamePos: 226,
+                      NameEnd: 241,
+                      Name:    "maxOutputTokens",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.FloatLiteral{
+                    ValuePos: 243,
+                    ValueEnd: 246,
+                    Value:    "0.2",
+                  },
+                  As: &ast.AsAlias{
+                    As:    247,
+                    Alias: &ast.Ident{
+                      NamePos: 250,
+                      NameEnd: 261,
+                      Name:    "temperature",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 263,
+                    ValueEnd: 265,
+                    Base:     10,
+                    Value:    "40",
+                  },
+                  As: &ast.AsAlias{
+                    As:    266,
+                    Alias: &ast.Ident{
+                      NamePos: 269,
+                      NameEnd: 273,
+                      Name:    "topK",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.FloatLiteral{
+                    ValuePos: 275,
+                    ValueEnd: 279,
+                    Value:    "0.95",
+                  },
+                  As: &ast.AsAlias{
+                    As:    280,
+                    Alias: &ast.Ident{
+                      NamePos: 283,
+                      NameEnd: 287,
+                      Name:    "topP",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Hint: &ast.Hint{
+          Atmark:  291,
+          Rbrace:  322,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Ident{
+                NamePos: 293,
+                NameEnd: 320,
+                Name:    "remote_udf_max_rows_per_rpc",
+              },
+              Value: &ast.IntLiteral{
+                ValuePos: 321,
+                ValueEnd: 322,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT content FROM ML.PREDICT(MODEL TextBison, (SELECT "Is 13 prime\?" AS prompt), STRUCT(256 AS maxOutputTokens, 0.2 AS temperature, 40 AS topK, 0.95 AS topP)) @{remote_udf_max_rows_per_rpc=1}
