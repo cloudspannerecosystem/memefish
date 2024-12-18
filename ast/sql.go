@@ -31,7 +31,7 @@ func formatOptionPretty(indent int) formatOption {
 }
 
 // FormatContext is container of format option and current indentation.
-// Note: All methods of FormatContext must support nil receiver.
+// If methods are called with nil receiver, they will work as FormatContextCompact() is receiver.
 type FormatContext struct {
 	option        formatOption
 	currentIndent int
@@ -49,8 +49,13 @@ func FormatContextPretty(indent int) *FormatContext {
 
 // SQL is entry point of pretty printing.
 // If node implements NodeFormat, it calls NodeFormat.sqlContext() instead of Node.SQL().
+// If it is called with nil receiver, FormatContextCompact() is used instead.
 func (fc *FormatContext) SQL(node Node) string {
-	if nodeFormat, ok := node.(NodeFormat); fc != nil && ok {
+	if fc == nil {
+		fc = FormatContextCompact()
+	}
+
+	if nodeFormat, ok := node.(NodeFormat); ok {
 		return nodeFormat.sqlContext(fc)
 	} else {
 		return node.SQL()
@@ -61,7 +66,7 @@ func (fc *FormatContext) SQL(node Node) string {
 // Otherwise, it returns argument string.
 func (fc *FormatContext) newlineOr(s string) string {
 	if fc == nil {
-		return s
+		fc = FormatContextCompact()
 	}
 
 	return strIfElse(fc.option.newline, "\n", s) + strings.Repeat(" ", fc.currentIndent)
@@ -70,7 +75,7 @@ func (fc *FormatContext) newlineOr(s string) string {
 // indentScope executes function with FormatContext with deeper indentation.
 func (fc *FormatContext) indentScope(f func(fc *FormatContext) string) string {
 	if fc == nil {
-		return f(nil)
+		fc = FormatContextCompact()
 	}
 
 	newFc := *fc
@@ -83,6 +88,10 @@ func sqlOptCtx[T interface {
 	Node
 	comparable
 }](fc *FormatContext, left string, node T, right string) string {
+	if fc == nil {
+		fc = FormatContextCompact()
+	}
+
 	var zero T
 	if node == zero {
 		return ""
@@ -108,7 +117,7 @@ type NodeFormat interface {
 	Node
 
 	// sqlContext is Node.SQL() with FormatContext conceptually.
-	// It can be called with nil.
+	// If it is called with nil FormatContext, FormatContextCompact() is used instead.
 	// Note: It would become to Node.SQL() finally.
 	sqlContext(fmtCtx *FormatContext) string
 }
