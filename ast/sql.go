@@ -1036,7 +1036,7 @@ func (c *CreateIndex) SQL() string {
 		sqlJoin(c.Keys, ", ") +
 		")" +
 		sqlOpt(" ", c.Storing, "") +
-		sqlOpt(" ", c.InterleaveIn, "")
+		sqlOpt("", c.InterleaveIn, "")
 }
 
 func (c *CreateVectorIndex) SQL() string {
