@@ -3,7 +3,6 @@ drop table if exists foo
 
 --- AST
 &ast.DropTable{
-  Drop:     0,
   IfExists: true,
   Name:     &ast.Path{
     Idents: []*ast.Ident{

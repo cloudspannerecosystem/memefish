@@ -16,13 +16,8 @@ FROM ML.PREDICT(
 ) @{remote_udf_max_rows_per_rpc=1}
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -81,10 +76,8 @@ FROM ML.PREDICT(
               Lparen: 83,
               Rparen: 542,
               Query:  &ast.Select{
-                Select:   84,
-                Distinct: false,
-                As:       nil,
-                Results:  []ast.SelectItem{
+                Select:  84,
+                Results: []ast.SelectItem{
                   &ast.Alias{
                     Expr: &ast.Path{
                       Idents: []*ast.Ident{
@@ -141,8 +134,7 @@ FROM ML.PREDICT(
                         NameEnd: 180,
                         Name:    "CONCAT",
                       },
-                      Distinct: false,
-                      Args:     []ast.Arg{
+                      Args: []ast.Arg{
                         &ast.ExprArg{
                           Expr: &ast.StringLiteral{
                             ValuePos: 181,
@@ -241,9 +233,6 @@ FROM ML.PREDICT(
                           },
                         },
                       },
-                      NamedArgs:    []*ast.NamedArg(nil),
-                      NullHandling: nil,
-                      Having:       nil,
                     },
                     As: &ast.AsAlias{
                       As:    395,
@@ -258,17 +247,14 @@ FROM ML.PREDICT(
                 From: &ast.From{
                   From:   410,
                   Source: &ast.Join{
-                    Op:     "INNER JOIN",
-                    Method: "",
-                    Hint:   (*ast.Hint)(nil),
-                    Left:   &ast.TableName{
+                    Op:   "INNER JOIN",
+                    Left: &ast.TableName{
                       Table: &ast.Ident{
                         NamePos: 424,
                         NameEnd: 432,
                         Name:    "Products",
                       },
-                      Hint: (*ast.Hint)(nil),
-                      As:   &ast.AsAlias{
+                      As: &ast.AsAlias{
                         As:    433,
                         Alias: &ast.Ident{
                           NamePos: 436,
@@ -276,7 +262,6 @@ FROM ML.PREDICT(
                           Name:    "product",
                         },
                       },
-                      Sample: (*ast.TableSample)(nil),
                     },
                     Right: &ast.TableName{
                       Table: &ast.Ident{
@@ -284,8 +269,7 @@ FROM ML.PREDICT(
                         NameEnd: 459,
                         Name:    "Categories",
                       },
-                      Hint: (*ast.Hint)(nil),
-                      As:   &ast.AsAlias{
+                      As: &ast.AsAlias{
                         As:    460,
                         Alias: &ast.Ident{
                           NamePos: 463,
@@ -293,7 +277,6 @@ FROM ML.PREDICT(
                           Name:    "category",
                         },
                       },
-                      Sample: (*ast.TableSample)(nil),
                     },
                     Cond: &ast.On{
                       On:   506,
@@ -331,11 +314,6 @@ FROM ML.PREDICT(
                     },
                   },
                 },
-                Where:   (*ast.Where)(nil),
-                GroupBy: (*ast.GroupBy)(nil),
-                Having:  (*ast.Having)(nil),
-                OrderBy: (*ast.OrderBy)(nil),
-                Limit:   (*ast.Limit)(nil),
               },
             },
           },
@@ -364,8 +342,7 @@ FROM ML.PREDICT(
             },
           },
         },
-        NamedArgs: []*ast.NamedArg(nil),
-        Hint:      &ast.Hint{
+        Hint: &ast.Hint{
           Atmark:  582,
           Rbrace:  613,
           Records: []*ast.HintRecord{
@@ -384,14 +361,8 @@ FROM ML.PREDICT(
             },
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

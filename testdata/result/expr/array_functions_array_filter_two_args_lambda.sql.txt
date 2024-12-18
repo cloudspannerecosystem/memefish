@@ -4,18 +4,15 @@ ARRAY_FILTER([0, 2, 3], (e, i) -> e > i)
 &ast.CallExpr{
   Rparen: 39,
   Func:   &ast.Ident{
-    NamePos: 0,
     NameEnd: 12,
     Name:    "ARRAY_FILTER",
   },
-  Distinct: false,
-  Args:     []ast.Arg{
+  Args: []ast.Arg{
     &ast.ExprArg{
       Expr: &ast.ArrayLiteral{
         Array:  -1,
         Lbrack: 13,
         Rbrack: 21,
-        Type:   nil,
         Values: []ast.Expr{
           &ast.IntLiteral{
             ValuePos: 14,
@@ -67,9 +64,6 @@ ARRAY_FILTER([0, 2, 3], (e, i) -> e > i)
       },
     },
   },
-  NamedArgs:    []*ast.NamedArg(nil),
-  NullHandling: nil,
-  Having:       nil,
 }
 
 --- SQL

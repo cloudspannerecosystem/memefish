@@ -4,9 +4,7 @@ WHERE embedding IS NOT NULL
 OPTIONS(distance_type = 'COSINE')
 --- AST
 &ast.CreateVectorIndex{
-  Create:      0,
-  IfNotExists: false,
-  Name:        &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 20,
     NameEnd: 38,
     Name:    "hello_vector_index",

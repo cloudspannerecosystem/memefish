@@ -4,9 +4,7 @@ values (1, 2, 3),
        (4, 5, 6)
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 12,
     NameEnd: 15,
     Name:    "foo",
@@ -37,7 +35,6 @@ values (1, 2, 3),
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 40,
               ValueEnd: 41,
@@ -47,7 +44,6 @@ values (1, 2, 3),
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 43,
               ValueEnd: 44,
@@ -57,7 +53,6 @@ values (1, 2, 3),
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 46,
               ValueEnd: 47,
@@ -73,7 +68,6 @@ values (1, 2, 3),
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 58,
               ValueEnd: 59,
@@ -83,7 +77,6 @@ values (1, 2, 3),
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 61,
               ValueEnd: 62,
@@ -93,7 +86,6 @@ values (1, 2, 3),
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 64,
               ValueEnd: 65,
@@ -105,7 +97,6 @@ values (1, 2, 3),
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

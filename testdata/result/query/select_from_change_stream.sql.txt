@@ -7,13 +7,8 @@ SELECT ChangeRecord FROM READ_SingersNameStream (
 )
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -35,7 +30,6 @@ SELECT ChangeRecord FROM READ_SingersNameStream (
             },
           },
         },
-        Args:      []ast.TVFArg(nil),
         NamedArgs: []*ast.NamedArg{
           &ast.NamedArg{
             Name: &ast.Ident{
@@ -83,15 +77,8 @@ SELECT ChangeRecord FROM READ_SingersNameStream (
             },
           },
         },
-        Hint:   (*ast.Hint)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

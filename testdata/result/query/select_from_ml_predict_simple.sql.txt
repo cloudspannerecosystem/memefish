@@ -3,13 +3,8 @@ SELECT id, color, value
 FROM ML.PREDICT(MODEL DiamondAppraise, TABLE Diamonds)
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -76,16 +71,8 @@ FROM ML.PREDICT(MODEL DiamondAppraise, TABLE Diamonds)
             },
           },
         },
-        NamedArgs: []*ast.NamedArg(nil),
-        Hint:      (*ast.Hint)(nil),
-        Sample:    (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
