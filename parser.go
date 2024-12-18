@@ -166,8 +166,7 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
-		stmt = p.parseDML()
-		return
+		return p.parseDML()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
@@ -211,11 +210,10 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 	hint := p.tryParseHint()
 	query := p.parseQueryExpr()
 
-	stmt = &ast.QueryStatement{
+	return &ast.QueryStatement{
 		Hint:  hint,
 		Query: query,
 	}
-	return
 }
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
@@ -2467,17 +2465,13 @@ func (p *Parser) parseType() (t ast.Type) {
 	switch p.Token.Kind {
 	case token.TokenIdent:
 		if !p.lookaheadSimpleType() {
-			t = p.parseNamedType()
-			return
+			return p.parseNamedType()
 		}
-		t = p.parseSimpleType()
-		return
+		return p.parseSimpleType()
 	case "ARRAY":
-		t = p.parseArrayType()
-		return
+		return p.parseArrayType()
 	case "STRUCT":
-		t = p.parseStructType()
-		return
+		return p.parseStructType()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: <ident>, ARRAY, STRUCT, but: %s", p.Token.Kind))
@@ -2747,17 +2741,13 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		case p.Token.IsKeywordLike("VIEW"):
 			return p.parseCreateView(pos, false)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
-			ddl = p.parseCreateIndex(pos)
-			return
+			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
-			ddl = p.parseCreateVectorIndex(pos)
-			return
+			return p.parseCreateVectorIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
-			ddl = p.parseCreateSearchIndex(pos)
-			return
+			return p.parseCreateSearchIndex(pos)
 		case p.Token.IsKeywordLike("ROLE"):
-			ddl = p.parseCreateRole(pos)
-			return
+			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseCreateChangeStream(pos)
 		case p.Token.IsKeywordLike("MODEL"):
@@ -2777,24 +2767,19 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		p.nextToken()
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
-			ddl = p.parseAlterTable(pos)
-			return
+			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseAlterProtoBundle(pos)
 		case p.Token.IsKeywordLike("INDEX"):
-			ddl = p.parseAlterIndex(pos)
-			return
+			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
-			ddl = p.parseAlterSearchIndex(pos)
-			return
+			return p.parseAlterSearchIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
-			ddl = p.parseAlterSequence(pos)
-			return
+			return p.parseAlterSequence(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
-			ddl = p.parseAlterChangeStream(pos)
-			return
+			return p.parseAlterChangeStream(pos)
 		case p.Token.IsKeywordLike("STATISTICS"):
 			return p.parseAlterStatistics(pos)
 		case p.Token.IsKeywordLike("MODEL"):
@@ -2809,26 +2794,19 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		case p.Token.Kind == "PROTO":
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
-			ddl = p.parseDropTable(pos)
-			return
+			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
-			ddl = p.parseDropIndex(pos)
-			return
+			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
-			ddl = p.parseDropSearchIndex(pos)
-			return
+			return p.parseDropSearchIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
-			ddl = p.parseDropVectorIndex(pos)
-			return
+			return p.parseDropVectorIndex(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
-			ddl = p.parseDropSequence(pos)
-			return
+			return p.parseDropSequence(pos)
 		case p.Token.IsKeywordLike("VIEW"):
-			ddl = p.parseDropView(pos)
-			return
+			return p.parseDropView(pos)
 		case p.Token.IsKeywordLike("ROLE"):
-			ddl = p.parseDropRole(pos)
-			return
+			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseDropChangeStream(pos)
 		case p.Token.IsKeywordLike("MODEL"):
@@ -2837,12 +2815,10 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, MODEL, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("RENAME"):
 		p.nextToken()
-		ddl = p.parseRenameTable(pos)
-		return
+		return p.parseRenameTable(pos)
 	case p.Token.IsKeywordLike("GRANT"):
 		p.nextToken()
-		ddl = p.parseGrant(pos)
-		return
+		return p.parseGrant(pos)
 	case p.Token.IsKeywordLike("REVOKE"):
 		p.nextToken()
 		return p.parseRevoke(pos)
@@ -4454,14 +4430,11 @@ func (p *Parser) parseDML() (dml ast.DML) {
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		dml = p.parseInsert(pos)
-		return
+		return p.parseInsert(pos)
 	case id.IsKeywordLike("DELETE"):
-		dml = p.parseDelete(pos)
-		return
+		return p.parseDelete(pos)
 	case id.IsKeywordLike("UPDATE"):
-		dml = p.parseUpdate(pos)
-		return
+		return p.parseUpdate(pos)
 	}
 
 	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
