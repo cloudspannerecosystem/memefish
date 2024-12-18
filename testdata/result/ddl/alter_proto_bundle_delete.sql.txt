@@ -1,0 +1,27 @@
+--- alter_proto_bundle_delete.sql
+ALTER PROTO BUNDLE DELETE(`examples.shipping.OrderHistory`)
+--- AST
+&ast.AlterProtoBundle{
+  Bundle: 12,
+  Delete: &ast.AlterProtoBundleDelete{
+    Delete: 19,
+    Types:  &ast.ProtoBundleTypes{
+      Lparen: 25,
+      Rparen: 58,
+      Types:  []*ast.NamedType{
+        &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 26,
+              NameEnd: 58,
+              Name:    "examples.shipping.OrderHistory",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER PROTO BUNDLE DELETE (`examples.shipping.OrderHistory`)

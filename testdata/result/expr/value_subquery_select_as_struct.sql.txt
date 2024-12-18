@@ -3,12 +3,10 @@
 
 --- AST
 &ast.ScalarSubQuery{
-  Lparen: 0,
   Rparen: 24,
   Query:  &ast.Select{
-    Select:   1,
-    Distinct: false,
-    As:       &ast.AsStruct{
+    Select: 1,
+    As:     &ast.AsStruct{
       As:     8,
       Struct: 11,
     },
@@ -21,7 +19,7 @@
           Value:    "1",
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    20,
           Alias: &ast.Ident{
             NamePos: 23,
             NameEnd: 24,
@@ -30,12 +28,6 @@
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

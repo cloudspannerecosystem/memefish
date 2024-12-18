@@ -6,13 +6,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -55,11 +50,9 @@ FROM
             },
           },
           Values: []ast.Expr{
-            &ast.StructLiteral{
-              Struct: 0,
+            &ast.TupleStructLiteral{
               Lparen: 58,
               Rparen: 67,
-              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 59,
@@ -74,11 +67,9 @@ FROM
                 },
               },
             },
-            &ast.StructLiteral{
-              Struct: 0,
+            &ast.TupleStructLiteral{
               Lparen: 70,
               Rparen: 79,
-              Fields: []*ast.StructField(nil),
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 71,
@@ -95,19 +86,10 @@ FROM
             },
           },
         },
-        Hint:       (*ast.Hint)(nil),
-        As:         (*ast.AsAlias)(nil),
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[STRUCT(1, "foo"), STRUCT(3, "bar")])
+SELECT * FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING>>[(1, "foo"), (3, "bar")])

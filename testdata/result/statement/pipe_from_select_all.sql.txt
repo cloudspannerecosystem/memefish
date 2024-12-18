@@ -1,0 +1,33 @@
+--- pipe_from_select_all.sql
+FROM Singers
+|> SELECT ALL *
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 12,
+            Name:    "Singers",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeSelect{
+        Pipe:          13,
+        AllOrDistinct: "ALL",
+        Results:       []ast.SelectItem{
+          &ast.Star{
+            Star: 27,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers |> SELECT ALL *

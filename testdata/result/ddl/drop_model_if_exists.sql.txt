@@ -1,0 +1,14 @@
+--- drop_model_if_exists.sql
+DROP MODEL IF EXISTS MyClassificationModel
+--- AST
+&ast.DropModel{
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 21,
+    NameEnd: 42,
+    Name:    "MyClassificationModel",
+  },
+}
+
+--- SQL
+DROP MODEL IF EXISTS MyClassificationModel

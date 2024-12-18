@@ -1,0 +1,1 @@
+ARRAY_FILTER([0, 2, 3], (e, i) -> e > i)

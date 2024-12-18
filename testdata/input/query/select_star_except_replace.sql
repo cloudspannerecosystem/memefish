@@ -1,0 +1,1 @@
+SELECT * EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

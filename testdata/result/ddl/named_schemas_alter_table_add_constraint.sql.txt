@@ -1,0 +1,78 @@
+--- named_schemas_alter_table_add_constraint.sql
+ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN KEY(CustomerId, CustomerName)
+    REFERENCES sch1.Customers(CustomerId, CustomerName) ON DELETE CASCADE
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 16,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 30,
+        Name:    "ShoppingCarts",
+      },
+    },
+  },
+  TableAlteration: &ast.AddTableConstraint{
+    Add:             31,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: 35,
+      Name:          &ast.Ident{
+        NamePos: 46,
+        NameEnd: 70,
+        Name:    "FKShoppingCartsCustomers",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     71,
+        Rparen:      163,
+        OnDeleteEnd: 182,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 83,
+            NameEnd: 93,
+            Name:    "CustomerId",
+          },
+          &ast.Ident{
+            NamePos: 95,
+            NameEnd: 107,
+            Name:    "CustomerName",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 124,
+              NameEnd: 128,
+              Name:    "sch1",
+            },
+            &ast.Ident{
+              NamePos: 129,
+              NameEnd: 138,
+              Name:    "Customers",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 139,
+            NameEnd: 149,
+            Name:    "CustomerId",
+          },
+          &ast.Ident{
+            NamePos: 151,
+            NameEnd: 163,
+            Name:    "CustomerName",
+          },
+        },
+        OnDelete: "ON DELETE CASCADE",
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN KEY (CustomerId, CustomerName) REFERENCES sch1.Customers (CustomerId, CustomerName) ON DELETE CASCADE

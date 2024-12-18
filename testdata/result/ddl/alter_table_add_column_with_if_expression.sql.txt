@@ -2,16 +2,18 @@
 ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND status != "SCHEDULING", TIMESTAMP_ADD(updated_at, INTERVAL 120 DAY), NULL)) STORED
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 15,
-    Name:    "foo",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
   },
   TableAlteration: &ast.AddColumn{
-    Add:         16,
-    IfNotExists: false,
-    Column:      &ast.ColumnDef{
+    Add:    16,
+    Column: &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
         NamePos: 27,
@@ -22,102 +24,79 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
         NamePos: 38,
         Name:    "TIMESTAMP",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     48,
         Stored: 153,
         Rparen: 151,
-        Expr:   &ast.CallExpr{
+        Expr:   &ast.IfExpr{
+          If:     52,
           Rparen: 150,
-          Func:   &ast.Ident{
-            NamePos: 52,
-            NameEnd: 54,
-            Name:    "IF",
-          },
-          Distinct: false,
-          Args:     []ast.Arg{
-            &ast.ExprArg{
-              Expr: &ast.BinaryExpr{
-                Op:   "AND",
-                Left: &ast.BinaryExpr{
-                  Op:   "!=",
-                  Left: &ast.Ident{
-                    NamePos: 56,
-                    NameEnd: 62,
-                    Name:    "status",
-                  },
-                  Right: &ast.StringLiteral{
-                    ValuePos: 66,
-                    ValueEnd: 72,
-                    Value:    "OPEN",
-                  },
-                },
-                Right: &ast.BinaryExpr{
-                  Op:   "!=",
-                  Left: &ast.Ident{
-                    NamePos: 77,
-                    NameEnd: 83,
-                    Name:    "status",
-                  },
-                  Right: &ast.StringLiteral{
-                    ValuePos: 87,
-                    ValueEnd: 99,
-                    Value:    "SCHEDULING",
-                  },
-                },
+          Expr:   &ast.BinaryExpr{
+            Op:   "AND",
+            Left: &ast.BinaryExpr{
+              Op:   "!=",
+              Left: &ast.Ident{
+                NamePos: 56,
+                NameEnd: 62,
+                Name:    "status",
+              },
+              Right: &ast.StringLiteral{
+                ValuePos: 66,
+                ValueEnd: 72,
+                Value:    "OPEN",
               },
             },
-            &ast.ExprArg{
-              Expr: &ast.CallExpr{
-                Rparen: 143,
-                Func:   &ast.Ident{
-                  NamePos: 101,
-                  NameEnd: 114,
-                  Name:    "TIMESTAMP_ADD",
-                },
-                Distinct: false,
-                Args:     []ast.Arg{
-                  &ast.ExprArg{
-                    Expr: &ast.Ident{
-                      NamePos: 115,
-                      NameEnd: 125,
-                      Name:    "updated_at",
-                    },
-                  },
-                  &ast.IntervalArg{
-                    Interval: 127,
-                    Expr:     &ast.IntLiteral{
-                      ValuePos: 136,
-                      ValueEnd: 139,
-                      Base:     10,
-                      Value:    "120",
-                    },
-                    Unit: &ast.Ident{
-                      NamePos: 140,
-                      NameEnd: 143,
-                      Name:    "DAY",
-                    },
-                  },
-                },
-                NamedArgs:    []*ast.NamedArg(nil),
-                NullHandling: nil,
-                Having:       nil,
+            Right: &ast.BinaryExpr{
+              Op:   "!=",
+              Left: &ast.Ident{
+                NamePos: 77,
+                NameEnd: 83,
+                Name:    "status",
               },
-            },
-            &ast.ExprArg{
-              Expr: &ast.NullLiteral{
-                Null: 146,
+              Right: &ast.StringLiteral{
+                ValuePos: 87,
+                ValueEnd: 99,
+                Value:    "SCHEDULING",
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
+          TrueResult: &ast.CallExpr{
+            Rparen: 143,
+            Func:   &ast.Ident{
+              NamePos: 101,
+              NameEnd: 114,
+              Name:    "TIMESTAMP_ADD",
+            },
+            Args: []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 115,
+                  NameEnd: 125,
+                  Name:    "updated_at",
+                },
+              },
+              &ast.IntervalArg{
+                Interval: 127,
+                Expr:     &ast.IntLiteral{
+                  ValuePos: 136,
+                  ValueEnd: 139,
+                  Base:     10,
+                  Value:    "120",
+                },
+                Unit: &ast.Ident{
+                  NamePos: 140,
+                  NameEnd: 143,
+                  Name:    "DAY",
+                },
+              },
+            },
+          },
+          ElseResult: &ast.NullLiteral{
+            Null: 146,
+          },
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
 }

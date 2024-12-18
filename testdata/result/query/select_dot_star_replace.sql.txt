@@ -1,0 +1,88 @@
+--- select_dot_star_replace.sql
+SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) AS T
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.DotStar{
+        Star: 9,
+        Expr: &ast.Ident{
+          NamePos: 7,
+          NameEnd: 8,
+          Name:    "T",
+        },
+        Replace: &ast.StarModifierReplace{
+          Replace: 11,
+          Rparen:  37,
+          Columns: []*ast.StarModifierReplaceItem{
+            &ast.StarModifierReplaceItem{
+              Expr: &ast.StringLiteral{
+                ValuePos: 20,
+                ValueEnd: 28,
+                Value:    "orange",
+              },
+              Name: &ast.Ident{
+                NamePos: 32,
+                NameEnd: 37,
+                Name:    "fruit",
+              },
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   39,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 44,
+        Rparen: 91,
+        Query:  &ast.Select{
+          Select:  45,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 52,
+                ValueEnd: 59,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    60,
+                Alias: &ast.Ident{
+                  NamePos: 63,
+                  NameEnd: 68,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 70,
+                ValueEnd: 78,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    79,
+                Alias: &ast.Ident{
+                  NamePos: 82,
+                  NameEnd: 91,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    93,
+          Alias: &ast.Ident{
+            NamePos: 96,
+            NameEnd: 97,
+            Name:    "T",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) AS T

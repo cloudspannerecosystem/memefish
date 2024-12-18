@@ -2,11 +2,14 @@
 ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 19,
-    Name:    "actions",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "actions",
+      },
+    },
   },
   TableAlteration: &ast.AlterColumn{
     Alter: 20,
@@ -21,7 +24,6 @@ ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
         Rparen:  50,
         Name:    "STRING",
         Max:     true,
-        Size:    nil,
       },
       Null:        56,
       NotNull:     true,
@@ -31,7 +33,6 @@ ALTER TABLE actions ALTER COLUMN output STRING(MAX) NOT NULL DEFAULT("")
         Expr:    &ast.StringLiteral{
           ValuePos: 69,
           ValueEnd: 71,
-          Value:    "",
         },
       },
     },

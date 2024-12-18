@@ -6,22 +6,10 @@ FROM
   HASH JOIN
   Singers B
   ON A.SingerID = B.SingerID
-  APPLY JOIN
-  Singer C
-  ON B.SingerID = C.SingerID
-  LOOP JOIN
-  Singer D
-  ON C.SingerID = D.SingerID
-
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -30,168 +18,51 @@ FROM
       From:   11,
       Source: &ast.Join{
         Op:     "INNER JOIN",
-        Method: "LOOP",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     "INNER JOIN",
-          Method: "APPLY",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.Join{
-            Op:     "INNER JOIN",
-            Method: "HASH",
-            Hint:   (*ast.Hint)(nil),
-            Left:   &ast.TableName{
-              Table: &ast.Ident{
-                NamePos: 18,
-                NameEnd: 25,
-                Name:    "Singers",
-              },
-              Hint: (*ast.Hint)(nil),
-              As:   &ast.AsAlias{
-                As:    26,
-                Alias: &ast.Ident{
-                  NamePos: 26,
-                  NameEnd: 27,
-                  Name:    "A",
-                },
-              },
-              Sample: (*ast.TableSample)(nil),
-            },
-            Right: &ast.TableName{
-              Table: &ast.Ident{
-                NamePos: 42,
-                NameEnd: 49,
-                Name:    "Singers",
-              },
-              Hint: (*ast.Hint)(nil),
-              As:   &ast.AsAlias{
-                As:    50,
-                Alias: &ast.Ident{
-                  NamePos: 50,
-                  NameEnd: 51,
-                  Name:    "B",
-                },
-              },
-              Sample: (*ast.TableSample)(nil),
-            },
-            Cond: &ast.On{
-              On:   54,
-              Expr: &ast.BinaryExpr{
-                Op:   "=",
-                Left: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 57,
-                      NameEnd: 58,
-                      Name:    "A",
-                    },
-                    &ast.Ident{
-                      NamePos: 59,
-                      NameEnd: 67,
-                      Name:    "SingerID",
-                    },
-                  },
-                },
-                Right: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 70,
-                      NameEnd: 71,
-                      Name:    "B",
-                    },
-                    &ast.Ident{
-                      NamePos: 72,
-                      NameEnd: 80,
-                      Name:    "SingerID",
-                    },
-                  },
-                },
-              },
-            },
+        Method: "HASH",
+        Left:   &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 25,
+            Name:    "Singers",
           },
-          Right: &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 96,
-              NameEnd: 102,
-              Name:    "Singer",
-            },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
-              As:    103,
-              Alias: &ast.Ident{
-                NamePos: 103,
-                NameEnd: 104,
-                Name:    "C",
-              },
-            },
-            Sample: (*ast.TableSample)(nil),
-          },
-          Cond: &ast.On{
-            On:   107,
-            Expr: &ast.BinaryExpr{
-              Op:   "=",
-              Left: &ast.Path{
-                Idents: []*ast.Ident{
-                  &ast.Ident{
-                    NamePos: 110,
-                    NameEnd: 111,
-                    Name:    "B",
-                  },
-                  &ast.Ident{
-                    NamePos: 112,
-                    NameEnd: 120,
-                    Name:    "SingerID",
-                  },
-                },
-              },
-              Right: &ast.Path{
-                Idents: []*ast.Ident{
-                  &ast.Ident{
-                    NamePos: 123,
-                    NameEnd: 124,
-                    Name:    "C",
-                  },
-                  &ast.Ident{
-                    NamePos: 125,
-                    NameEnd: 133,
-                    Name:    "SingerID",
-                  },
-                },
-              },
+          As: &ast.AsAlias{
+            As:    -1,
+            Alias: &ast.Ident{
+              NamePos: 26,
+              NameEnd: 27,
+              Name:    "A",
             },
           },
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
-            NamePos: 148,
-            NameEnd: 154,
-            Name:    "Singer",
+            NamePos: 42,
+            NameEnd: 49,
+            Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    155,
+          As: &ast.AsAlias{
+            As:    -1,
             Alias: &ast.Ident{
-              NamePos: 155,
-              NameEnd: 156,
-              Name:    "D",
+              NamePos: 50,
+              NameEnd: 51,
+              Name:    "B",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
-          On:   159,
+          On:   54,
           Expr: &ast.BinaryExpr{
             Op:   "=",
             Left: &ast.Path{
               Idents: []*ast.Ident{
                 &ast.Ident{
-                  NamePos: 162,
-                  NameEnd: 163,
-                  Name:    "C",
+                  NamePos: 57,
+                  NameEnd: 58,
+                  Name:    "A",
                 },
                 &ast.Ident{
-                  NamePos: 164,
-                  NameEnd: 172,
+                  NamePos: 59,
+                  NameEnd: 67,
                   Name:    "SingerID",
                 },
               },
@@ -199,13 +70,13 @@ FROM
             Right: &ast.Path{
               Idents: []*ast.Ident{
                 &ast.Ident{
-                  NamePos: 175,
-                  NameEnd: 176,
-                  Name:    "D",
+                  NamePos: 70,
+                  NameEnd: 71,
+                  Name:    "B",
                 },
                 &ast.Ident{
-                  NamePos: 177,
-                  NameEnd: 185,
+                  NamePos: 72,
+                  NameEnd: 80,
                   Name:    "SingerID",
                 },
               },
@@ -214,13 +85,8 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singer AS C ON B.SingerID = C.SingerID INNER JOIN Singer AS D ON C.SingerID = D.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID

@@ -1,0 +1,13 @@
+--- create_schema.sql
+CREATE SCHEMA sch1
+--- AST
+&ast.CreateSchema{
+  Name: &ast.Ident{
+    NamePos: 14,
+    NameEnd: 18,
+    Name:    "sch1",
+  },
+}
+
+--- SQL
+CREATE SCHEMA sch1

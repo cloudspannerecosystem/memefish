@@ -9,13 +9,8 @@ FROM Singers
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.Ident{
           NamePos: 9,
@@ -23,7 +18,7 @@ FROM Singers
           Name:    "SingerId",
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    18,
           Alias: &ast.Ident{
             NamePos: 21,
             NameEnd: 23,
@@ -68,16 +63,8 @@ FROM Singers
           NameEnd: 88,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -6,13 +6,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -26,7 +21,6 @@ FROM
           Array:  -1,
           Lbrack: 25,
           Rbrack: 31,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.IntLiteral{
               ValuePos: 26,
@@ -48,9 +42,8 @@ FROM
             },
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
-          As:    34,
+        As: &ast.AsAlias{
+          As:    -1,
           Alias: &ast.Ident{
             NamePos: 34,
             NameEnd: 39,
@@ -61,7 +54,7 @@ FROM
           With:   40,
           Offset: 45,
           As:     &ast.AsAlias{
-            As:    52,
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 52,
               NameEnd: 55,
@@ -69,16 +62,10 @@ FROM
             },
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM UNNEST([1, 2, 3]) AS value WITH OFFSET AS num
+SELECT * FROM UNNEST([1, 2, 3]) value WITH OFFSET num

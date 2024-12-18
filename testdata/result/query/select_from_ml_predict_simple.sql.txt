@@ -1,0 +1,80 @@
+--- select_from_ml_predict_simple.sql
+SELECT id, color, value
+FROM ML.PREDICT(MODEL DiamondAppraise, TABLE Diamonds)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 7,
+          NameEnd: 9,
+          Name:    "id",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 11,
+          NameEnd: 16,
+          Name:    "color",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 18,
+          NameEnd: 23,
+          Name:    "value",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   24,
+      Source: &ast.TVFCallExpr{
+        Rparen: 77,
+        Name:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 29,
+              NameEnd: 31,
+              Name:    "ML",
+            },
+            &ast.Ident{
+              NamePos: 32,
+              NameEnd: 39,
+              Name:    "PREDICT",
+            },
+          },
+        },
+        Args: []ast.TVFArg{
+          &ast.ModelArg{
+            Model: 40,
+            Name:  &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 46,
+                  NameEnd: 61,
+                  Name:    "DiamondAppraise",
+                },
+              },
+            },
+          },
+          &ast.TableArg{
+            Table: 63,
+            Name:  &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 69,
+                  NameEnd: 77,
+                  Name:    "Diamonds",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT id, color, value FROM ML.PREDICT(MODEL DiamondAppraise, TABLE Diamonds)

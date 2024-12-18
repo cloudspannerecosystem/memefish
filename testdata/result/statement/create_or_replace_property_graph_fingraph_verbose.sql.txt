@@ -29,10 +29,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
   )
 --- AST
 &ast.CreatePropertyGraph{
-  Create:      0,
-  OrReplace:   true,
-  IfNotExists: false,
-  Name:        &ast.Ident{
+  OrReplace: true,
+  Name:      &ast.Ident{
     NamePos: 33,
     NameEnd: 41,
     Name:    "FinGraph",
@@ -92,7 +90,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                           NameEnd: 293,
                           Name:    "create_time",
                         },
-                        Alias: (*ast.Ident)(nil),
                       },
                       &ast.PropertyGraphDerivedProperty{
                         Expr: &ast.Ident{
@@ -100,7 +97,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                           NameEnd: 305,
                           Name:    "is_blocked",
                         },
-                        Alias: (*ast.Ident)(nil),
                       },
                       &ast.PropertyGraphDerivedProperty{
                         Expr: &ast.Ident{
@@ -136,8 +132,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               NameEnd: 482,
               Name:    "Person",
             },
-            Alias:      (*ast.Ident)(nil),
-            Keys:       nil,
             Properties: &ast.PropertyGraphSingleProperties{
               Properties: &ast.PropertyGraphPropertiesAre{
                 Properties:    577,
@@ -214,7 +208,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                   NameEnd: 763,
                   Name:    "Person",
                 },
-                ReferenceColumns: (*ast.PropertyGraphColumnNameList)(nil),
               },
               Destination: &ast.PropertyGraphDestinationKey{
                 Destination: 809,
@@ -234,7 +227,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                   NameEnd: 856,
                   Name:    "Account",
                 },
-                ReferenceColumns: (*ast.PropertyGraphColumnNameList)(nil),
               },
             },
             Properties: &ast.PropertyGraphLabelAndPropertiesList{
@@ -249,9 +241,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                     },
                   },
                   Properties: &ast.PropertyGraphPropertiesAre{
-                    Properties:    926,
-                    Columns:       941,
-                    ExceptColumns: (*ast.PropertyGraphColumnNameList)(nil),
+                    Properties: 926,
+                    Columns:    941,
                   },
                 },
               },
@@ -263,10 +254,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               NameEnd: 976,
               Name:    "AccountTransferAccount",
             },
-            Alias: (*ast.Ident)(nil),
-            Keys:  &ast.PropertyGraphEdgeElementKeys{
-              Element: (*ast.PropertyGraphElementKey)(nil),
-              Source:  &ast.PropertyGraphSourceKey{
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
                 Source: 983,
                 Keys:   &ast.PropertyGraphColumnNameList{
                   LParen:         994,
@@ -338,7 +327,6 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                       Name:    "Transfers",
                     },
                   },
-                  Properties: nil,
                 },
               },
             },

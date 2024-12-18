@@ -16,8 +16,6 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
   )
 --- AST
 &ast.CreatePropertyGraph{
-  Create:      0,
-  OrReplace:   false,
   IfNotExists: true,
   Name:        &ast.Ident{
     NamePos: 36,
@@ -37,9 +35,6 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               NameEnd: 72,
               Name:    "Account",
             },
-            Alias:      (*ast.Ident)(nil),
-            Keys:       nil,
-            Properties: nil,
           },
           &ast.PropertyGraphElement{
             Name: &ast.Ident{
@@ -47,9 +42,6 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               NameEnd: 84,
               Name:    "Person",
             },
-            Alias:      (*ast.Ident)(nil),
-            Keys:       nil,
-            Properties: nil,
           },
         },
       },
@@ -66,10 +58,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               NameEnd: 125,
               Name:    "PersonOwnAccount",
             },
-            Alias: (*ast.Ident)(nil),
-            Keys:  &ast.PropertyGraphEdgeElementKeys{
-              Element: (*ast.PropertyGraphElementKey)(nil),
-              Source:  &ast.PropertyGraphSourceKey{
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
                 Source: 132,
                 Keys:   &ast.PropertyGraphColumnNameList{
                   LParen:         143,
@@ -141,7 +131,6 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                       Name:    "Owns",
                     },
                   },
-                  Properties: nil,
                 },
               },
             },
@@ -152,10 +141,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               NameEnd: 274,
               Name:    "AccountTransferAccount",
             },
-            Alias: (*ast.Ident)(nil),
-            Keys:  &ast.PropertyGraphEdgeElementKeys{
-              Element: (*ast.PropertyGraphElementKey)(nil),
-              Source:  &ast.PropertyGraphSourceKey{
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
                 Source: 281,
                 Keys:   &ast.PropertyGraphColumnNameList{
                   LParen:         292,
@@ -227,7 +214,6 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                       Name:    "Transfers",
                     },
                   },
-                  Properties: nil,
                 },
               },
             },

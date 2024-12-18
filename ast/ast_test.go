@@ -87,7 +87,7 @@ func TestExpr(t *testing.T) {
 	Expr(&Ident{}).isExpr()
 	Expr(&Path{}).isExpr()
 	Expr(&ArrayLiteral{}).isExpr()
-	Expr(&StructLiteral{}).isExpr()
+	Expr(&TypedStructLiteral{}).isExpr()
 	Expr(&NullLiteral{}).isExpr()
 	Expr(&BoolLiteral{}).isExpr()
 	Expr(&IntLiteral{}).isExpr()

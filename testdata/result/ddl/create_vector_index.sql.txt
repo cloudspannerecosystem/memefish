@@ -3,7 +3,6 @@ CREATE VECTOR INDEX IF NOT EXISTS hello_vector_index ON hello(embedding)
 OPTIONS(distance_type = 'COSINE')
 --- AST
 &ast.CreateVectorIndex{
-  Create:      0,
   IfNotExists: true,
   Name:        &ast.Ident{
     NamePos: 34,
@@ -20,7 +19,6 @@ OPTIONS(distance_type = 'COSINE')
     NameEnd: 71,
     Name:    "embedding",
   },
-  Where:   (*ast.Where)(nil),
   Options: &ast.Options{
     Options: 73,
     Rparen:  105,

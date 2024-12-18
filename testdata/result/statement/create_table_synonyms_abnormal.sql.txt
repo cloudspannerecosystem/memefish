@@ -8,13 +8,16 @@ CREATE TABLE Singers (
 ) PRIMARY KEY (SingerId)
 --- AST
 &ast.CreateTable{
-  Create:      45,
-  Rparen:      194,
-  IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 58,
-    NameEnd: 65,
-    Name:    "Singers",
+  Create: 45,
+  Rparen: 194,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 58,
+        NameEnd: 65,
+        Name:    "Singers",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
@@ -28,11 +31,8 @@ CREATE TABLE Singers (
         NamePos: 104,
         Name:    "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -45,7 +45,6 @@ CREATE TABLE Singers (
         NamePos: 135,
         Rparen:  146,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 142,
           ValueEnd: 146,
@@ -53,15 +52,10 @@ CREATE TABLE Singers (
           Value:    "1024",
         },
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -69,7 +63,6 @@ CREATE TABLE Singers (
         NameEnd: 194,
         Name:    "SingerId",
       },
-      Dir: "",
     },
   },
   Synonyms: []*ast.Synonym{
@@ -92,8 +85,6 @@ CREATE TABLE Singers (
       },
     },
   },
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

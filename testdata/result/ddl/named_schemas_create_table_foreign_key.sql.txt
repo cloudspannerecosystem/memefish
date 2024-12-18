@@ -1,0 +1,139 @@
+--- named_schemas_create_table_foreign_key.sql
+CREATE TABLE sch1.ShoppingCarts (
+  CartId INT64 NOT NULL,
+  CustomerId INT64 NOT NULL,
+  CustomerName STRING(MAX) NOT NULL,
+  CONSTRAINT FKShoppingCartsCustomers FOREIGN KEY(CustomerId, CustomerName)
+    REFERENCES sch1.Customers(CustomerId, CustomerName) ON DELETE CASCADE,
+) PRIMARY KEY(CartId)
+--- AST
+&ast.CreateTable{
+  Rparen: 296,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 31,
+        Name:    "ShoppingCarts",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 53,
+      Name: &ast.Ident{
+        NamePos: 36,
+        NameEnd: 42,
+        Name:    "CartId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 43,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 82,
+      Name: &ast.Ident{
+        NamePos: 61,
+        NameEnd: 71,
+        Name:    "CustomerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 72,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 119,
+      Name: &ast.Ident{
+        NamePos: 90,
+        NameEnd: 102,
+        Name:    "CustomerName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 103,
+        Rparen:  113,
+        Name:    "STRING",
+        Max:     true,
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: 127,
+      Name:          &ast.Ident{
+        NamePos: 138,
+        NameEnd: 162,
+        Name:    "FKShoppingCartsCustomers",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     163,
+        Rparen:      255,
+        OnDeleteEnd: 274,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 175,
+            NameEnd: 185,
+            Name:    "CustomerId",
+          },
+          &ast.Ident{
+            NamePos: 187,
+            NameEnd: 199,
+            Name:    "CustomerName",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 216,
+              NameEnd: 220,
+              Name:    "sch1",
+            },
+            &ast.Ident{
+              NamePos: 221,
+              NameEnd: 230,
+              Name:    "Customers",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 231,
+            NameEnd: 241,
+            Name:    "CustomerId",
+          },
+          &ast.Ident{
+            NamePos: 243,
+            NameEnd: 255,
+            Name:    "CustomerName",
+          },
+        },
+        OnDelete: "ON DELETE CASCADE",
+      },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 290,
+        NameEnd: 296,
+        Name:    "CartId",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE sch1.ShoppingCarts (CartId INT64 NOT NULL, CustomerId INT64 NOT NULL, CustomerName STRING(MAX) NOT NULL, CONSTRAINT FKShoppingCartsCustomers FOREIGN KEY (CustomerId, CustomerName) REFERENCES sch1.Customers (CustomerId, CustomerName) ON DELETE CASCADE) PRIMARY KEY (CartId)

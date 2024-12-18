@@ -6,13 +6,16 @@ create table if not exists foo (
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
   Rparen:      93,
   IfNotExists: true,
-  Name:        &ast.Ident{
-    NamePos: 27,
-    NameEnd: 30,
-    Name:    "foo",
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 30,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
@@ -26,11 +29,7 @@ create table if not exists foo (
         NamePos: 39,
         Name:    "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 64,
@@ -43,15 +42,11 @@ create table if not exists foo (
         NamePos: 52,
         Name:    "FLOAT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -59,7 +54,6 @@ create table if not exists foo (
         NameEnd: 88,
         Name:    "foo",
       },
-      Dir: "",
     },
     &ast.IndexKey{
       DirPos: -1,
@@ -68,12 +62,8 @@ create table if not exists foo (
         NameEnd: 93,
         Name:    "bar",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

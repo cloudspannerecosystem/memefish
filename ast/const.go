@@ -1,5 +1,14 @@
 package ast
 
+// AllOrDistinct represents ALL or DISTINCT in SELECT or set operations, etc.
+// If it is optional, it may be an empty string, so handle it according to the context.
+type AllOrDistinct string
+
+const (
+	AllOrDistinctAll      AllOrDistinct = "ALL"
+	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
+)
+
 type TableHintKey string
 
 const (
@@ -14,12 +23,21 @@ const (
 	JoinTypeJoinHint       JoinHintKey = "JOIN_TYPE"
 )
 
+// JoinMethod is used for prefix of JOIN, not for hint.
 type JoinMethod string
 
 const (
-	HashJoinMethod  JoinMethod = "HASH"
-	ApplyJoinMethod JoinMethod = "APPLY"
-	LoopJoinMethod  JoinMethod = "LOOP" // Undocumented, but the Spanner accept this value at least.
+	HashJoinMethod   JoinMethod = "HASH"
+	LookupJoinMethod JoinMethod = "LOOKUP" // Undocumented, but the GoogleSQL can parse this value.
+)
+
+type PositionKeyword string
+
+const (
+	PositionKeywordOffset      PositionKeyword = "OFFSET"
+	PositionKeywordSafeOffset  PositionKeyword = "SAFE_OFFSET"
+	PositionKeywordOrdinal     PositionKeyword = "ORDINAL"
+	PositionKeywordSafeOrdinal PositionKeyword = "SAFE_ORDINAL"
 )
 
 type SetOp string
