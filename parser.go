@@ -1577,17 +1577,23 @@ func (p *Parser) lookaheadNamedArg() bool {
 	return p.Token.Kind == "=>"
 }
 
-func (p *Parser) tryParseNamedArg() *ast.NamedArg {
-	if !p.lookaheadNamedArg() {
-		return nil
-	}
+func (p *Parser) parseNamedArg() *ast.NamedArg {
 	name := p.parseIdent()
 	p.expect("=>")
 	value := p.parseExpr()
+
 	return &ast.NamedArg{
 		Name:  name,
 		Value: value,
 	}
+}
+
+func (p *Parser) tryParseNamedArg() *ast.NamedArg {
+	if !p.lookaheadNamedArg() {
+		return nil
+	}
+
+	return p.parseNamedArg()
 }
 
 func (p *Parser) lookaheadLambdaArg() bool {
@@ -3916,10 +3922,21 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 		p.expect("<")
 		t := p.parseScalarSchemaType()
 		end := p.expect(">").Pos
+
+		var namedArgs []*ast.NamedArg
+		rparen := token.InvalidPos
+		if p.Token.Kind == "(" {
+			p.nextToken()
+			namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+			rparen = p.expect(")").Pos
+		}
+
 		return &ast.ArraySchemaType{
-			Array: pos,
-			Gt:    end,
-			Item:  t,
+			Array:     pos,
+			Gt:        end,
+			Item:      t,
+			NamedArgs: namedArgs,
+			Rparen:    rparen,
 		}
 	}
 
@@ -4134,9 +4151,9 @@ func (p *Parser) tryParseWithAction() *ast.WithAction {
 	alias := p.tryParseAsAlias(withRequiredAs)
 
 	return &ast.WithAction{
-		With:  with,
+		With:   with,
 		Action: action,
-		Alias: alias,
+		Alias:  alias,
 	}
 }
 

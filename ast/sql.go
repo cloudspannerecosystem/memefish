@@ -1335,7 +1335,7 @@ func (s *SizedSchemaType) SQL() string {
 }
 
 func (a *ArraySchemaType) SQL() string {
-	return "ARRAY<" + a.Item.SQL() + ">"
+	return "ARRAY<" + a.Item.SQL() + ">" + strOpt(len(a.NamedArgs) > 0, "("+sqlJoin(a.NamedArgs, ", ")+")")
 }
 
 // ================================================================================
