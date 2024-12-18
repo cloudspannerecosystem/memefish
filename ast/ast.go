@@ -114,19 +114,6 @@ func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
 
-/*
-// AllOrDistinct represents ALL or DISTINCT node.
-// It can be nil if not specified.
-type AllOrDistinct interface {
-	Node
-	isAllOrDistinct()
-}
-
-func (All) isAllOrDistinct()      {}
-func (Distinct) isAllOrDistinct() {}
-
-*/
-
 // PipeOperator represents pipe operator node which can be appeared in Query.
 type PipeOperator interface {
 	Node
