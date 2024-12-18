@@ -57,7 +57,7 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	return
 }
 
-// ParseQuery parses a SELECT query statement.
+// ParseQuery parses a query statement.
 func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -210,7 +210,7 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
 		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
@@ -246,13 +246,86 @@ func (p *Parser) parseStatements(doParse func()) {
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
 	hint := p.tryParseHint()
-	with := p.tryParseWith()
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
 		Hint:  hint,
-		With:  with,
 		Query: query,
+	}
+}
+
+func (p *Parser) parsePipeOperator() ast.PipeOperator {
+	pos := p.expect("|>").Pos
+	switch {
+	case p.Token.Kind == "SELECT":
+		p.nextToken()
+
+		allOrDistinct := p.tryParseAllOrDistinct()
+		as := p.tryParseSelectAs()
+		results := p.parseSelectResults()
+
+		return &ast.PipeSelect{
+			Pipe:          pos,
+			AllOrDistinct: allOrDistinct,
+			As:            as,
+			Results:       results,
+		}
+	case p.Token.Kind == "WHERE":
+		p.nextToken()
+		expr := p.parseExpr()
+		return &ast.PipeWhere{
+			Pipe: pos,
+			Expr: expr,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
+	}
+}
+
+// parsePipeOperators parses pipe operators, which can be empty.
+func (p *Parser) parsePipeOperators() []ast.PipeOperator {
+	var pipeOps []ast.PipeOperator
+	for {
+		if p.Token.Kind != "|>" {
+			break
+		}
+
+		pipeOps = append(pipeOps, p.parsePipeOperator())
+	}
+	return pipeOps
+}
+
+// parseQuery consumes ORDER BY, LIMIT, and pipe operators.
+func (p *Parser) parseQuery() *ast.Query {
+	with := p.tryParseWith()
+
+	if p.Token.Kind == "WITH" {
+		panic(p.errorfAtToken(&p.Token, "expect query expression, but unexpected WITH"))
+	}
+
+	query := p.parseQueryExpr()
+
+	// If nested query expression is *ast.Query(with suffix), merge parsed WITH into it to avoid deep nest.
+	if q, ok := query.(*ast.Query); ok {
+		return &ast.Query{
+			With:          with,
+			Query:         q.Query,
+			OrderBy:       q.OrderBy,
+			Limit:         q.Limit,
+			PipeOperators: q.PipeOperators,
+		}
+	}
+
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	pipeOps := p.parsePipeOperators()
+
+	return &ast.Query{
+		With:          with,
+		Query:         query,
+		OrderBy:       orderBy,
+		Limit:         limit,
+		PipeOperators: pipeOps,
 	}
 }
 
@@ -318,7 +391,18 @@ func (p *Parser) parseCTE() *ast.CTE {
 }
 
 func (p *Parser) parseQueryExpr() ast.QueryExpr {
+	// If WITH is appeared, it is treated as an outer node than compound query.
+	if p.Token.Kind == "WITH" {
+		return p.parseQuery()
+	}
+
 	query := p.parseSimpleQueryExpr()
+
+	// If the query is directly followed by ORDER BY, LIMIT or pipe operators, it won't be a compound query
+	switch p.Token.Kind {
+	case "ORDER", "LIMIT", "|>":
+		return p.parseQueryExprSuffix(query)
+	}
 
 	for {
 		var op ast.SetOp
@@ -338,37 +422,54 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 		opTok := p.Token
 		p.nextToken()
 
-		var distinct bool
-		switch p.Token.Kind {
-		case "ALL":
-			distinct = false
-		case "DISTINCT":
-			distinct = true
-		default:
-			p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
-		}
-		p.nextToken()
+		allOrDistinct := p.parseAllOrDistinct()
 
 		right := p.parseSimpleQueryExpr()
 		if c, ok := query.(*ast.CompoundQuery); ok {
-			if !(c.Op == op && c.Distinct == distinct) {
+			if !(c.Op == op && c.AllOrDistinct == allOrDistinct) {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
 			c.Queries = append(c.Queries, right)
 		} else {
 			query = &ast.CompoundQuery{
-				Op:       op,
-				Distinct: distinct,
-				Queries:  []ast.QueryExpr{query, right},
+				Op:            op,
+				AllOrDistinct: allOrDistinct,
+				Queries:       []ast.QueryExpr{query, right},
 			}
 		}
 	}
 
+	// LIMIT, ORDER BY, pipe operators can be placed after a compound query.
 	return p.parseQueryExprSuffix(query)
 }
 
+func (p *Parser) parseFromQuery() *ast.FromQuery {
+	if p.Token.Kind != "FROM" {
+		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.AsString))
+	}
+	from := p.tryParseFrom()
+
+	// Although it can be parsed, it is better to reject invalid GoogleSQL queries.
+	switch p.Token.Kind {
+	case "ORDER":
+		panic(p.errorfAtToken(&p.Token, "syntax error: ORDER BY not supported after FROM query; Consider using pipe operator `|> ORDER BY` or parentheses around the FROM query."))
+	case "LIMIT":
+		panic(p.errorfAtToken(&p.Token, "syntax error: LIMIT not supported after FROM query; Consider using pipe operator `|> LIMIT` or parentheses around the FROM query."))
+	}
+
+	return &ast.FromQuery{From: from}
+}
+
+// parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
 func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
-	if p.Token.Kind == "(" {
+	switch p.Token.Kind {
+	// FROM and SELECT are the most primitive query form
+	case "FROM":
+		return p.parseFromQuery()
+	case "SELECT":
+		return p.parseSelect()
+	// Query with paren
+	case "(":
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
@@ -377,9 +478,9 @@ func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 			Rparen: rparen,
 			Query:  query,
 		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expected beginning of simple query "(", SELECT, FROM, but: %q`, p.Token.AsString))
 	}
-
-	return p.parseSelect()
 }
 
 func (p *Parser) tryParseSelectAs() ast.SelectAs {
@@ -411,11 +512,7 @@ func (p *Parser) tryParseSelectAs() ast.SelectAs {
 
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
-	var distinct bool
-	if p.Token.Kind == "DISTINCT" {
-		p.nextToken()
-		distinct = true
-	}
+	allOrDistinct := p.tryParseAllOrDistinct()
 	selectAs := p.tryParseSelectAs()
 	results := p.parseSelectResults()
 	from := p.tryParseFrom()
@@ -424,14 +521,14 @@ func (p *Parser) parseSelect() *ast.Select {
 	having := p.tryParseHaving()
 
 	return &ast.Select{
-		Select:   sel,
-		Distinct: distinct,
-		As:       selectAs,
-		Results:  results,
-		From:     from,
-		Where:    where,
-		GroupBy:  groupBy,
-		Having:   having,
+		Select:        sel,
+		AllOrDistinct: allOrDistinct,
+		As:            selectAs,
+		Results:       results,
+		From:          from,
+		Where:         where,
+		GroupBy:       groupBy,
+		Having:        having,
 	}
 }
 
@@ -450,11 +547,74 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
+// lookaheadStarModifierExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
+func (p *Parser) lookaheadStarModifierExcept() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "EXCEPT" {
+		return false
+	}
+	p.nextToken()
+	return p.Token.Kind == "("
+}
+
+func (p *Parser) tryParseStarModifierExcept() *ast.StarModifierExcept {
+	if !p.lookaheadStarModifierExcept() {
+		return nil
+	}
+
+	pos := p.expect("EXCEPT").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierExcept{
+		Except:  pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) parseStarModifierReplaceItem() *ast.StarModifierReplaceItem {
+	expr := p.parseExpr()
+	p.expect("AS")
+	name := p.parseIdent()
+
+	return &ast.StarModifierReplaceItem{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) tryParseStarModifierReplace() *ast.StarModifierReplace {
+	if !p.Token.IsKeywordLike("REPLACE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("REPLACE").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseStarModifierReplaceItem)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierReplace{
+		Replace: pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
 func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "*" {
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.Star{
-			Star: pos,
+			Star:    pos,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
@@ -469,9 +629,13 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "." {
 		p.nextToken()
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.DotStar{
-			Star: pos,
-			Expr: expr,
+			Star:    pos,
+			Expr:    expr,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
@@ -572,25 +736,50 @@ func (p *Parser) tryParseHaving() *ast.Having {
 	}
 }
 
+// parseQueryExprSuffix wraps QueryExpr if it is followed by ORDER BY, LIMIT, and/or pipe operators.
+// It must not be called to *ast.Query itself because *ast.Query already consumes its suffix.
 func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
-	orderBy := p.tryParseOrderBy()
-	limit := p.tryParseLimit()
-
-	switch e := e.(type) {
-	case *ast.Select:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.SubQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.CompoundQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
+	// Query already consumes suffixes and currently it should be a logic bug.
+	if _, ok := e.(*ast.Query); ok {
+		panic(p.errorfAtToken(&p.Token, "invalid state of repeated processing of suffix of ast.Query. It is suspected a bug."))
 	}
 
-	return e
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	pipeOps := p.parsePipeOperators()
+
+	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
+		return e
+	}
+	return &ast.Query{
+		Query:         e,
+		OrderBy:       orderBy,
+		Limit:         limit,
+		PipeOperators: pipeOps,
+	}
 }
 
+func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		return ast.AllOrDistinctAll
+	case "DISTINCT":
+		p.nextToken()
+		return ast.AllOrDistinctDistinct
+	default:
+		// not specified
+		return ""
+	}
+}
+
+func (p *Parser) parseAllOrDistinct() ast.AllOrDistinct {
+	if p.Token.Kind != "ALL" && p.Token.Kind != "DISTINCT" {
+		p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
+	}
+
+	return p.tryParseAllOrDistinct()
+}
 func (p *Parser) tryParseOrderBy() *ast.OrderBy {
 	if p.Token.Kind != "ORDER" {
 		return nil
@@ -817,6 +1006,9 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
+		if p.Token.Kind == "(" {
+			return p.parseTVFCallExpr(ids)
+		}
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
 		}
@@ -824,6 +1016,63 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
+	p.expect("(")
+
+	var args []ast.TVFArg
+	if p.Token.Kind != ")" {
+		for !p.lookaheadNamedArg() {
+			args = append(args, p.parseTVFArg())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+		}
+	}
+
+	var namedArgs []*ast.NamedArg
+	if p.lookaheadNamedArg() {
+		namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+	}
+
+	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+	sample := p.tryParseTableSample()
+
+	return &ast.TVFCallExpr{
+		Rparen:    rparen,
+		Name:      &ast.Path{Idents: ids},
+		Args:      args,
+		NamedArgs: namedArgs,
+		Hint:      hint,
+		Sample:    sample,
+	}
+}
+
+func (p *Parser) parseTVFArg() ast.TVFArg {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.IsKeywordLike("TABLE"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.TableArg{
+			Table: pos,
+			Name:  path,
+		}
+	case p.Token.IsKeywordLike("MODEL"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.ModelArg{
+			Model: pos,
+			Name:  path,
+		}
+	default:
+		return p.parseExprArg()
+	}
 }
 
 func (p *Parser) parseIdentOrPath() []*ast.Ident {
@@ -1451,6 +1700,8 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseExistsSubQuery()
 	case "EXTRACT":
 		return p.parseExtractExpr()
+	case "WITH":
+		return p.parseWithExpr()
 	case "ARRAY":
 		return p.parseArrayLiteralOrSubQuery()
 	case "STRUCT":
@@ -1553,6 +1804,8 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	having := p.tryParseHavingModifier()
 
 	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+
 	return &ast.CallExpr{
 		Rparen:       rparen,
 		Func:         fn,
@@ -1561,6 +1814,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		NamedArgs:    namedArgs,
 		NullHandling: nullHandling,
 		Having:       having,
+		Hint:         hint,
 	}
 }
 
@@ -1577,17 +1831,23 @@ func (p *Parser) lookaheadNamedArg() bool {
 	return p.Token.Kind == "=>"
 }
 
-func (p *Parser) tryParseNamedArg() *ast.NamedArg {
-	if !p.lookaheadNamedArg() {
-		return nil
-	}
+func (p *Parser) parseNamedArg() *ast.NamedArg {
 	name := p.parseIdent()
 	p.expect("=>")
 	value := p.parseExpr()
+
 	return &ast.NamedArg{
 		Name:  name,
 		Value: value,
 	}
+}
+
+func (p *Parser) tryParseNamedArg() *ast.NamedArg {
+	if !p.lookaheadNamedArg() {
+		return nil
+	}
+
+	return p.parseNamedArg()
 }
 
 func (p *Parser) lookaheadLambdaArg() bool {
@@ -1912,6 +2172,47 @@ func (p *Parser) tryParseAtTimeZone() *ast.AtTimeZone {
 	return &ast.AtTimeZone{
 		At:   pos,
 		Expr: e,
+	}
+}
+
+func (p *Parser) parseWithExprVar() *ast.WithExprVar {
+	name := p.parseIdent()
+	p.expect("AS")
+	expr := p.parseExpr()
+
+	return &ast.WithExprVar{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) lookaheadWithExprVar() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	p.parseIdent()
+	return p.Token.Kind == "AS"
+}
+
+func (p *Parser) parseWithExpr() *ast.WithExpr {
+	with := p.expect("WITH").Pos
+	p.expect("(")
+
+	var vars []*ast.WithExprVar
+	for p.lookaheadWithExprVar() {
+		vars = append(vars, p.parseWithExprVar())
+		p.expect(",")
+	}
+
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+	return &ast.WithExpr{
+		With:   with,
+		Rparen: rparen,
+		Vars:   vars,
+		Expr:   expr,
 	}
 }
 
@@ -3916,10 +4217,21 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 		p.expect("<")
 		t := p.parseScalarSchemaType()
 		end := p.expect(">").Pos
+
+		var namedArgs []*ast.NamedArg
+		rparen := token.InvalidPos
+		if p.Token.Kind == "(" {
+			p.nextToken()
+			namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+			rparen = p.expect(")").Pos
+		}
+
 		return &ast.ArraySchemaType{
-			Array: pos,
-			Gt:    end,
-			Item:  t,
+			Array:     pos,
+			Gt:        end,
+			Item:      t,
+			NamedArgs: namedArgs,
+			Rparen:    rparen,
 		}
 	}
 
@@ -4134,9 +4446,9 @@ func (p *Parser) tryParseWithAction() *ast.WithAction {
 	alias := p.tryParseAsAlias(withRequiredAs)
 
 	return &ast.WithAction{
-		With:  with,
+		With:   with,
 		Action: action,
-		Alias: alias,
+		Alias:  alias,
 	}
 }
 

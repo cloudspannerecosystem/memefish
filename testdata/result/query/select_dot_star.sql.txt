@@ -1,0 +1,70 @@
+--- select_dot_star.sql
+SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.DotStar{
+        Star: 9,
+        Expr: &ast.Ident{
+          NamePos: 7,
+          NameEnd: 8,
+          Name:    "T",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   11,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 16,
+        Rparen: 63,
+        Query:  &ast.Select{
+          Select:  17,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 24,
+                ValueEnd: 31,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    32,
+                Alias: &ast.Ident{
+                  NamePos: 35,
+                  NameEnd: 40,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 42,
+                ValueEnd: 50,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    51,
+                Alias: &ast.Ident{
+                  NamePos: 54,
+                  NameEnd: 63,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 65,
+            NameEnd: 66,
+            Name:    "T",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT T.* FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) T

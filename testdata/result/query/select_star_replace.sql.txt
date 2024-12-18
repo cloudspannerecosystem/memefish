@@ -1,0 +1,75 @@
+--- select_star_replace.sql
+SELECT * REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star:    7,
+        Replace: &ast.StarModifierReplace{
+          Replace: 9,
+          Rparen:  35,
+          Columns: []*ast.StarModifierReplaceItem{
+            &ast.StarModifierReplaceItem{
+              Expr: &ast.StringLiteral{
+                ValuePos: 18,
+                ValueEnd: 26,
+                Value:    "orange",
+              },
+              Name: &ast.Ident{
+                NamePos: 30,
+                NameEnd: 35,
+                Name:    "fruit",
+              },
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   37,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 42,
+        Rparen: 89,
+        Query:  &ast.Select{
+          Select:  43,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 50,
+                ValueEnd: 57,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    58,
+                Alias: &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 66,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 68,
+                ValueEnd: 76,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    77,
+                Alias: &ast.Ident{
+                  NamePos: 80,
+                  NameEnd: 89,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

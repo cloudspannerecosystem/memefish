@@ -2,13 +2,11 @@
 delete foo where foo = 1 and bar = 2 then return *
 --- AST
 &ast.Delete{
-  Delete:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
   },
-  As:    (*ast.AsAlias)(nil),
   Where: &ast.Where{
     Where: 11,
     Expr:  &ast.BinaryExpr{
@@ -44,9 +42,8 @@ delete foo where foo = 1 and bar = 2 then return *
     },
   },
   ThenReturn: &ast.ThenReturn{
-    Then:       37,
-    WithAction: (*ast.WithAction)(nil),
-    Items:      []ast.SelectItem{
+    Then:  37,
+    Items: []ast.SelectItem{
       &ast.Star{
         Star: 49,
       },

@@ -2,7 +2,6 @@
 delete foo as F where F.foo = 1
 --- AST
 &ast.Delete{
-  Delete:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
@@ -42,7 +41,6 @@ delete foo as F where F.foo = 1
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

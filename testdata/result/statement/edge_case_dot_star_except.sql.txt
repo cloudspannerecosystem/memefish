@@ -1,0 +1,101 @@
+--- edge_case_dot_star_except.sql
+SELECT (SELECT T.* EXCEPT (s)) AS n FROM (SELECT 1 AS n, "foo" AS s) AS T
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.ScalarSubQuery{
+          Lparen: 7,
+          Rparen: 29,
+          Query:  &ast.Select{
+            Select:  8,
+            Results: []ast.SelectItem{
+              &ast.DotStar{
+                Star: 17,
+                Expr: &ast.Ident{
+                  NamePos: 15,
+                  NameEnd: 16,
+                  Name:    "T",
+                },
+                Except: &ast.StarModifierExcept{
+                  Except:  19,
+                  Rparen:  28,
+                  Columns: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 27,
+                      NameEnd: 28,
+                      Name:    "s",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    31,
+          Alias: &ast.Ident{
+            NamePos: 34,
+            NameEnd: 35,
+            Name:    "n",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   36,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 41,
+        Rparen: 67,
+        Query:  &ast.Select{
+          Select:  42,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.IntLiteral{
+                ValuePos: 49,
+                ValueEnd: 50,
+                Base:     10,
+                Value:    "1",
+              },
+              As: &ast.AsAlias{
+                As:    51,
+                Alias: &ast.Ident{
+                  NamePos: 54,
+                  NameEnd: 55,
+                  Name:    "n",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 57,
+                ValueEnd: 62,
+                Value:    "foo",
+              },
+              As: &ast.AsAlias{
+                As:    63,
+                Alias: &ast.Ident{
+                  NamePos: 66,
+                  NameEnd: 67,
+                  Name:    "s",
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    69,
+          Alias: &ast.Ident{
+            NamePos: 72,
+            NameEnd: 73,
+            Name:    "T",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT (SELECT T.* EXCEPT (s)) AS n FROM (SELECT 1 AS n, "foo" AS s) AS T

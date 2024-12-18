@@ -3,9 +3,7 @@ insert foo (foo, bar)
 values (1, default)
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
@@ -31,7 +29,6 @@ values (1, default)
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 30,
               ValueEnd: 31,
@@ -42,13 +39,11 @@ values (1, default)
           &ast.DefaultExpr{
             DefaultPos: 33,
             Default:    true,
-            Expr:       nil,
           },
         },
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

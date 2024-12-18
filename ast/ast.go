@@ -101,15 +101,27 @@ func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
 func (Update) isStatement()             {}
 
-// QueryExpr represents set operator operands.
+// QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
+// Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
 type QueryExpr interface {
 	Node
 	isQueryExpr()
 }
 
 func (Select) isQueryExpr()        {}
+func (Query) isQueryExpr()         {}
+func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
+
+// PipeOperator represents pipe operator node which can be appeared in Query.
+type PipeOperator interface {
+	Node
+	isPipeOperator()
+}
+
+func (PipeSelect) isPipeOperator() {}
+func (PipeWhere) isPipeOperator()  {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -144,6 +156,7 @@ func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
+func (TVFCallExpr) isTableExpr()       {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -172,6 +185,7 @@ func (CallExpr) isExpr()              {}
 func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
+func (WithExpr) isExpr()              {}
 func (ReplaceFieldsExpr) isExpr()     {}
 func (CaseExpr) isExpr()              {}
 func (IfExpr) isExpr()                {}
@@ -219,6 +233,15 @@ func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 func (LambdaArg) isArg()   {}
+
+type TVFArg interface {
+	Node
+	isTVFArg()
+}
+
+func (ExprArg) isTVFArg()  {}
+func (ModelArg) isTVFArg() {}
+func (TableArg) isTVFArg() {}
 
 // NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
 type NullHandlingModifier interface {
@@ -487,16 +510,36 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
-//
-// https://cloud.google.com/spanner/docs/query-syntax
+//	{{.Hint | sqlOpt}} {{.Query | sql}}
 type QueryStatement struct {
-	// pos = (Hint ?? With ?? Query).pos
+	// pos = (Hint ?? Query).pos
 	// end = Query.end
 
 	Hint  *Hint // optional
-	With  *With // optional
 	Query QueryExpr
+}
+
+// Query is query expression node with optional CTE, ORDER BY, LIMIT, and pipe operators.
+// Usually, it is used as outermost QueryExpr in SubQuery and QueryStatement
+//
+//	{{.With | sqlOpt}}
+//	{{.Query | sql}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Limit | sqlOpt}}
+//	{{.PipeOperators | sqlJoin ", "}}
+//
+// https://cloud.google.com/spanner/docs/query-syntax
+type Query struct {
+	// pos = (With ?? Query).pos
+	// end = Query.end
+
+	With  *With
+	Query QueryExpr
+
+	OrderBy *OrderBy // optional
+	Limit   *Limit   // optional
+
+	PipeOperators []PipeOperator
 }
 
 // Hint is hint node.
@@ -551,30 +594,26 @@ type CTE struct {
 // Select is SELECT statement node.
 //
 //	SELECT
-//	  {{if .Distinct}}DISTINCT{{end}}
+//	  {{.AllOrDistinct}}
 //	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
 //	  {{.GroupBy | sqlOpt}}
 //	  {{.Having | sqlOpt}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
 type Select struct {
 	// pos = Select
-	// end = (Limit ?? OrderBy ?? Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
+	// end = (Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
 
 	Select token.Pos // position of "select" keyword
 
-	Distinct bool
-	As       SelectAs     // optional
-	Results  []SelectItem // len(Results) > 0
-	From     *From        // optional
-	Where    *Where       // optional
-	GroupBy  *GroupBy     // optional
-	Having   *Having      // optional
-	OrderBy  *OrderBy     // optional
-	Limit    *Limit       // optional
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
+	From          *From         // optional
+	Where         *Where        // optional
+	GroupBy       *GroupBy      // optional
+	Having        *Having       // optional
 }
 
 // AsStruct represents AS STRUCT node in SELECT clause.
@@ -610,56 +649,110 @@ type AsTypeName struct {
 	TypeName *NamedType
 }
 
-// CompoundQuery is query statement node compounded by set operators.
-//
-//	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
-type CompoundQuery struct {
-	// pos = Queries[0].pos
-	// end = (Limit ?? OrderBy ?? Queries[$]).end
+// FromQuery is FROM query expression node.
+type FromQuery struct {
+	// pos = From.pos
+	// end = From.end
 
-	Op       SetOp
-	Distinct bool
-	Queries  []QueryExpr // len(Queries) >= 2
-	OrderBy  *OrderBy    // optional
-	Limit    *Limit      // optional
+	From *From
 }
 
-// SubQuery is subquery statement node.
+func (f *FromQuery) SQL() string {
+	return f.From.SQL()
+}
+
+// CompoundQuery is query expression node compounded by set operators.
+// Note: A single CompoundQuery can express query expressions compounded by the same set operator.
+// If there are mixed Op or Distinct in query expression, CompoundQuery will be nested.
 //
-//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
+//	{{.Queries | sqlJoin (printf "%s %s" .Op .AllOrDistinct)}}
+type CompoundQuery struct {
+	// pos = Queries[0].pos
+	// end = Queries[$].end
+
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Queries       []QueryExpr // len(Queries) >= 2
+}
+
+// SubQuery is parenthesized query expression node.
+// Note: subquery expression is expressed as a ParenTableExpr. Maybe better to rename as like ParenQueryExpr?
+//
+//	({{.Query | sql}})
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Limit ?? OrderBy).end || Rparen + 1
+	// end = Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	Query   QueryExpr
-	OrderBy *OrderBy // optional
-	Limit   *Limit   // optional
+	Query QueryExpr
+}
+
+// StarModifierExcept is EXCEPT node in Star and DotStar of SelectItem.
+//
+//	EXCEPT ({{Columns | sqlJoin ", "}})
+type StarModifierExcept struct {
+	// pos = Except
+	// end = Rparen + 1
+
+	Except token.Pos
+	Rparen token.Pos
+
+	Columns []*Ident
+}
+
+// StarModifierReplaceItem is a single item of StarModifierReplace.
+//
+//	{{.Expr | sql}} AS {{.Name | sql}}
+type StarModifierReplaceItem struct {
+	// pos = Expr.pos
+	// end = Name.end
+
+	Expr Expr
+	Name *Ident
+}
+
+// StarModifierReplace is REPLACE node in Star and DotStar of SelectItem.
+//
+//	REPLACE ({{Columns | sqlJoin ", "}})
+type StarModifierReplace struct {
+	// pos = Replace
+	// end = Rparen + 1
+
+	Replace token.Pos
+	Rparen  token.Pos
+
+	Columns []*StarModifierReplaceItem
 }
 
 // Star is a single * in SELECT result columns list.
 //
-//	*
+//	{{"*"}} {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
+//
+// Note: The text/template notation escapes * to avoid normalize * to - by some formatters
+// because the prefix * is ambiguous with bulletin list.
 type Star struct {
 	// pos = Star
-	// end = Star + 1
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
+
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // DotStar is expression with * in SELECT result columns list.
 //
-//	{{.Expr | sql}}.*
+//	{{.Expr | sql}}.* {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
 type DotStar struct {
 	// pos = Expr.pos
-	// end = Star + 1
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
 
-	Expr Expr
+	Expr    Expr
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // Alias is aliased expression by AS clause.
@@ -809,6 +902,42 @@ type Offset struct {
 	Offset token.Pos // position of "OFFSET" keyword
 
 	Value IntValue
+}
+
+// ================================================================================
+//
+// Pipe Operators
+//
+// Must be the same order in document.
+// https://github.com/google/zetasql/blob/master/docs/pipe-syntax.md#pipe-operators
+// TODO: The reference should be Spanner reference when it is supported.
+//
+// ================================================================================
+
+// PipeSelect is SELECT pipe operator node.
+//
+//	|> SELECT {{.AllOrDistinct}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+type PipeSelect struct {
+	// pos = Pipe
+	// end = Results[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
+}
+
+// PipeWhere is WHERE pipe operator node.
+//
+//	|> WHERE {{.Expr | sql}}
+type PipeWhere struct {
+	// pos = Pipe
+	// end = Expr.end
+
+	Pipe token.Pos // position of "|>"
+
+	Expr Expr
 }
 
 // ================================================================================
@@ -1145,9 +1274,10 @@ type SubscriptSpecifierKeyword struct {
 //		{{.NullHandling | sqlOpt}}
 //		{{.Having | sqlOpt}}
 //	)
+//	{{.Hint | sqlOpt}}
 type CallExpr struct {
 	// pos = Func.pos
-	// end = Rparen + 1
+	// end = Hint.end || Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
@@ -1157,6 +1287,29 @@ type CallExpr struct {
 	NamedArgs    []*NamedArg
 	NullHandling NullHandlingModifier // optional
 	Having       HavingModifier       // optional
+	Hint         *Hint                // optional
+}
+
+// TVFCallExpr is table-valued function call expression node.
+//
+//	{{.Name | sql}}(
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//	)
+//	{{.Hint | sqlOpt}}
+//	{{.Sample | sqlOpt}}
+type TVFCallExpr struct {
+	// pos = Name.pos
+	// end = (Sample ?? Hint).end || Rparen + 1
+
+	Rparen token.Pos // position of ")"
+
+	Name      *Path
+	Args      []TVFArg
+	NamedArgs []*NamedArg
+	Hint      *Hint        // optional
+	Sample    *TableSample // optional
 }
 
 // ExprArg is argument of the generic function call.
@@ -1207,6 +1360,30 @@ type LambdaArg struct {
 
 	Args []*Ident // if Lparen.Invalid() then len(Args) = 1 else len(Args) > 0
 	Expr Expr
+}
+
+// ModelArg is argument of model function call.
+//
+//	MODEL {{.Name | sql}}
+type ModelArg struct {
+	// pos = Model
+	// end = Name.end
+
+	Model token.Pos // position of "MODEL" keyword
+
+	Name *Path
+}
+
+// TableArg is TABLE table_name argument of table valued function call.
+//
+//	TABLE {{.Name | sql}}
+type TableArg struct {
+	// pos = Table
+	// end = Name.end
+
+	Table token.Pos // position of "TABLE" keyword
+
+	Name *Path
 }
 
 // NamedArg represents a name and value pair in named arguments
@@ -1324,6 +1501,31 @@ type AtTimeZone struct {
 
 	At token.Pos // position of "AT" keyword
 
+	Expr Expr
+}
+
+// WithExprVar is "name AS expr" node in WITH expression.
+//
+//	{{.Name | sql}} AS {{.Expr | sql}}
+type WithExprVar struct {
+	// pos = Name.pos
+	// end = Expr.end
+
+	Name *Ident
+	Expr Expr
+}
+
+// WithExpr is WITH expression node.
+//
+//	WITH({{.Vars | sqlJoin ", "}}, {{.Expr | sql}})
+type WithExpr struct {
+	// pos = With
+	// end = Rparen + 1
+
+	With   token.Pos // position of "WITH" keyword
+	Rparen token.Pos // position of ")"
+
+	Vars []*WithExprVar // len(Vars) > 0
 	Expr Expr
 }
 
@@ -3089,15 +3291,17 @@ type SizedSchemaType struct {
 
 // ArraySchemaType is array type node in schema.
 //
-//	ARRAY<{{.Item | sql}}>
+//	ARRAY<{{.Item | sql}}>{{if .NamedArgs}}({{.NamedArgs | sqlJoin ", "}}){{end}}
 type ArraySchemaType struct {
 	// pos = Array
-	// end = Gt + 1
+	// end = Rparen + 1 || Gt + 1
 
-	Array token.Pos // position of "ARRAY" keyword
-	Gt    token.Pos // position of ">"
+	Array  token.Pos // position of "ARRAY" keyword
+	Gt     token.Pos // position of ">"
+	Rparen token.Pos // position of ")" when len(NamedArgs) > 0
 
-	Item SchemaType // ScalarSchemaType or SizedSchemaType
+	Item      SchemaType // ScalarSchemaType or SizedSchemaType
+	NamedArgs []*NamedArg
 }
 
 // ================================================================================

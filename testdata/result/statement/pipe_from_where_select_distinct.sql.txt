@@ -1,0 +1,50 @@
+--- pipe_from_where_select_distinct.sql
+FROM Singers
+|> WHERE FirstName = "John"
+|> SELECT DISTINCT *
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 12,
+            Name:    "Singers",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeWhere{
+        Pipe: 13,
+        Expr: &ast.BinaryExpr{
+          Op:   "=",
+          Left: &ast.Ident{
+            NamePos: 22,
+            NameEnd: 31,
+            Name:    "FirstName",
+          },
+          Right: &ast.StringLiteral{
+            ValuePos: 34,
+            ValueEnd: 40,
+            Value:    "John",
+          },
+        },
+      },
+      &ast.PipeSelect{
+        Pipe:          41,
+        AllOrDistinct: "DISTINCT",
+        Results:       []ast.SelectItem{
+          &ast.Star{
+            Star: 60,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM Singers |> WHERE FirstName = "John" |> SELECT DISTINCT *

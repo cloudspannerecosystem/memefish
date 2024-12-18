@@ -1,0 +1,185 @@
+--- select_function_hints.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/functions-reference#function_hints
+SELECT
+    SUBSTRING(CAST(x AS STRING), 2, 5) AS w,
+    SUBSTRING(CAST(x AS STRING), 3, 7) AS y
+FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  99,
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 143,
+          Func:   &ast.Ident{
+            NamePos: 110,
+            NameEnd: 119,
+            Name:    "SUBSTRING",
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.CastExpr{
+                Cast:   120,
+                Rparen: 136,
+                Expr:   &ast.Ident{
+                  NamePos: 125,
+                  NameEnd: 126,
+                  Name:    "x",
+                },
+                Type: &ast.SimpleType{
+                  NamePos: 130,
+                  Name:    "STRING",
+                },
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 139,
+                ValueEnd: 140,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 142,
+                ValueEnd: 143,
+                Base:     10,
+                Value:    "5",
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    145,
+          Alias: &ast.Ident{
+            NamePos: 148,
+            NameEnd: 149,
+            Name:    "w",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 188,
+          Func:   &ast.Ident{
+            NamePos: 155,
+            NameEnd: 164,
+            Name:    "SUBSTRING",
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.CastExpr{
+                Cast:   165,
+                Rparen: 181,
+                Expr:   &ast.Ident{
+                  NamePos: 170,
+                  NameEnd: 171,
+                  Name:    "x",
+                },
+                Type: &ast.SimpleType{
+                  NamePos: 175,
+                  Name:    "STRING",
+                },
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 184,
+                ValueEnd: 185,
+                Base:     10,
+                Value:    "3",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.IntLiteral{
+                ValuePos: 187,
+                ValueEnd: 188,
+                Base:     10,
+                Value:    "7",
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    190,
+          Alias: &ast.Ident{
+            NamePos: 193,
+            NameEnd: 194,
+            Name:    "y",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   195,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 200,
+        Rparen: 254,
+        Query:  &ast.Select{
+          Select:  201,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.CallExpr{
+                Rparen: 216,
+                Func:   &ast.Ident{
+                  NamePos: 208,
+                  NameEnd: 214,
+                  Name:    "SHA512",
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 215,
+                      NameEnd: 216,
+                      Name:    "z",
+                    },
+                  },
+                },
+                Hint: &ast.Hint{
+                  Atmark:  218,
+                  Rbrace:  241,
+                  Records: []*ast.HintRecord{
+                    &ast.HintRecord{
+                      Key: &ast.Ident{
+                        NamePos: 220,
+                        NameEnd: 234,
+                        Name:    "DISABLE_INLINE",
+                      },
+                      Value: &ast.BoolLiteral{
+                        ValuePos: 237,
+                        Value:    true,
+                      },
+                    },
+                  },
+                },
+              },
+              As: &ast.AsAlias{
+                As:    243,
+                Alias: &ast.Ident{
+                  NamePos: 246,
+                  NameEnd: 247,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+          From: &ast.From{
+            From:   248,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 253,
+                NameEnd: 254,
+                Name:    "t",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT SUBSTRING(CAST(x AS STRING), 2, 5) AS w, SUBSTRING(CAST(x AS STRING), 3, 7) AS y FROM (SELECT SHA512(z) @{DISABLE_INLINE=TRUE} AS x FROM t)

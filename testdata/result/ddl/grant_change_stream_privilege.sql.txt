@@ -2,7 +2,6 @@
 GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager
 --- AST
 &ast.Grant{
-  Grant:     0,
   Privilege: &ast.SelectPrivilegeOnChangeStream{
     Select: 6,
     Names:  []*ast.Ident{

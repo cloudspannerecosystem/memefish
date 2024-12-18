@@ -8,13 +8,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -22,21 +17,16 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     ",",
-          Method: "",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.TableName{
+        Op:   ",",
+        Left: &ast.Join{
+          Op:   ",",
+          Left: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 18,
               NameEnd: 25,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
+            As: &ast.AsAlias{
               As:    26,
               Alias: &ast.Ident{
                 NamePos: 29,
@@ -66,8 +56,7 @@ FROM
               NameEnd: 74,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
+            As: &ast.AsAlias{
               As:    75,
               Alias: &ast.Ident{
                 NamePos: 78,
@@ -90,7 +79,6 @@ FROM
               },
             },
           },
-          Cond: nil,
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
@@ -98,8 +86,7 @@ FROM
             NameEnd: 126,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    127,
             Alias: &ast.Ident{
               NamePos: 130,
@@ -122,14 +109,8 @@ FROM
             },
           },
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

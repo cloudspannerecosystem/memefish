@@ -4,7 +4,6 @@ ALTER PROTO BUNDLE INSERT (
 )
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
   Insert: &ast.AlterProtoBundleInsert{
     Insert: 19,
@@ -34,8 +33,6 @@ ALTER PROTO BUNDLE INSERT (
       },
     },
   },
-  Update: (*ast.AlterProtoBundleUpdate)(nil),
-  Delete: (*ast.AlterProtoBundleDelete)(nil),
 }
 
 --- SQL
