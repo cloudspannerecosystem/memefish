@@ -14,16 +14,20 @@ import (
 // ================================================================================
 
 type FormatOption struct {
-	Newline bool
-	Indent  int
+	newline bool
+	indent  int
+}
+
+func FormatOptionCompact() FormatOption {
+	return FormatOption{}
+}
+
+func FormatOptionPretty(indent int) FormatOption {
+	return FormatOption{newline: true, indent: indent}
 }
 
 var emptyFormatContext = &FormatContext{
-	Option: FormatOption{
-		Newline: false,
-		Indent:  0,
-	},
-	Current: 0,
+	Option: FormatOptionCompact(),
 }
 
 type FormatContext struct {
@@ -40,19 +44,21 @@ func (fc *FormatContext) SQL(node Node) string {
 }
 
 func (fc *FormatContext) newlineOr(s string) string {
-	if fc != nil && fc.Option.Newline {
-		return "\n" + strings.Repeat(" ", fc.Current)
+	if fc == nil {
+		return s
 	}
-	return s
+
+	return strIfElse(fc.Option.newline, "\n", s) + strings.Repeat(" ", fc.Current)
 }
 
+// indentScope executes function with FormatContext with needed indentation.
 func (fc *FormatContext) indentScope(f func(fc *FormatContext) string) string {
 	if fc == nil {
 		return f(emptyFormatContext)
 	}
 
 	newFc := *fc
-	newFc.Current += newFc.Option.Indent
+	newFc.Current += fc.Option.indent
 	return f(&newFc)
 }
 
@@ -67,7 +73,8 @@ func sqlOptCtx[T interface {
 	return left + fc.SQL(node) + right
 }
 
-// sqlJoin outputs joined string of SQL() of all elems by sep.
+// sqlJoinCtx outputs joined string of SQL() of all elems by sep.
+// It supports FormatContext.
 // This function corresponds to sqlJoin in ast.go
 func sqlJoinCtx[T Node](fc *FormatContext, elems []T, sep string) string {
 	var b strings.Builder
@@ -241,12 +248,12 @@ func (q *QueryStatement) SQL() string {
 }
 
 func (q *Query) sqlContext(fc *FormatContext) string {
-	return sqlOptCtx(fc, "", q.With, " ") +
+	return sqlOptCtx(fc, "", q.With, fc.newlineOr(" ")) +
 		fc.SQL(q.Query) +
-		sqlOptCtx(fc, " ", q.OrderBy, "") +
-		sqlOptCtx(fc, " ", q.Limit, "") +
-		strOpt(len(q.PipeOperators) > 0, " ") +
-		sqlJoinCtx(fc, q.PipeOperators, " ")
+		sqlOptCtx(fc, fc.newlineOr(" "), q.OrderBy, "") +
+		sqlOptCtx(fc, fc.newlineOr(" "), q.Limit, "") +
+		strOpt(len(q.PipeOperators) > 0, fc.newlineOr(" ")) +
+		sqlJoinCtx(fc, q.PipeOperators, fc.newlineOr(" "))
 }
 
 func (q *Query) SQL() string {
@@ -261,12 +268,23 @@ func (h *HintRecord) SQL() string {
 	return h.Key.SQL() + "=" + h.Value.SQL()
 }
 
+func (w *With) sqlContext(fc *FormatContext) string {
+	return "WITH " + sqlJoinCtx(fc, w.CTEs, ", ")
+}
+
 func (w *With) SQL() string {
-	return "WITH " + sqlJoin(w.CTEs, ", ")
+	return w.sqlContext(nil)
+}
+func (c *CTE) sqlContext(fc *FormatContext) string {
+	return c.Name.SQL() + " AS (" +
+		fc.indentScope(func(fc *FormatContext) string {
+			return fc.newlineOr("") + fc.SQL(c.QueryExpr)
+		}) +
+		fc.newlineOr("") + ")"
 }
 
 func (c *CTE) SQL() string {
-	return c.Name.SQL() + " AS (" + c.QueryExpr.SQL() + ")"
+	return c.sqlContext(nil)
 }
 
 func (s *Select) sqlContext(fc *FormatContext) string {
@@ -429,9 +447,7 @@ func (s *SubQueryTableExpr) sqlContext(fc *FormatContext) string {
 }
 
 func (s *SubQueryTableExpr) SQL() string {
-	return "(" + s.Query.SQL() + ")" +
-		sqlOpt(" ", s.As, "") +
-		sqlOpt(" ", s.Sample, "")
+	return s.sqlContext(nil)
 }
 
 func (p *ParenTableExpr) SQL() string {
@@ -439,15 +455,18 @@ func (p *ParenTableExpr) SQL() string {
 		sqlOpt(" ", p.Sample, "")
 }
 
-func (j *Join) SQL() string {
-	return j.Left.SQL() +
-		strOpt(j.Op != CommaJoin, " ") +
+func (j *Join) sqlContext(fc *FormatContext) string {
+	return fc.SQL(j.Left) +
+		strOpt(j.Op != CommaJoin, fc.newlineOr(" ")) +
 		string(j.Op) + " " +
-		sqlOpt("", j.Hint, " ") +
-		j.Right.SQL() +
-		sqlOpt(" ", j.Cond, "")
+		sqlOptCtx(fc, "", j.Hint, " ") +
+		fc.SQL(j.Right) +
+		sqlOptCtx(fc, " ", j.Cond, "")
 }
 
+func (j *Join) SQL() string {
+	return j.sqlContext(nil)
+}
 func (o *On) SQL() string {
 	return "ON " + o.Expr.SQL()
 }

@@ -122,10 +122,7 @@ func main() {
 
 	fmt.Println("--- SQL with indentation")
 	fc := &ast.FormatContext{
-		Option: ast.FormatOption{
-			Newline: true,
-			Indent:  2,
-		},
+		Option:  ast.FormatOptionPretty(2),
 		Current: 0,
 	}
 	fmt.Println(fc.SQL(node))
