@@ -14,6 +14,7 @@
 //   - sqlIdentQuote x: Quotes the given identifier string if needed.
 //   - sqlStringQuote s: Returns the SQL quoted string of s.
 //   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - tokenJoin toks: Concateates the string representations of tokens.
 //   - isnil v: Checks whether v is nil or others.
 //
 // Each Node's documentation has pos and end information using the following EBNF.
@@ -547,14 +548,14 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // BadNode is a placeholder node for a source code containing syntax errors.
 //
-//	{{.Raw}}
+//	{{.Tokens | tokenJoin}}
 type BadNode struct {
 	// pos = NodePos
 	// end = NodeEnd
 
 	NodePos, NodeEnd token.Pos
 
-	Raw string
+	Tokens []*token.Token
 }
 
 // ================================================================================
@@ -1289,9 +1290,10 @@ type SelectorExpr struct {
 
 // IndexExpr is a subscript operator expression node.
 // This node can be:
-//	- array subscript operator
-//	- struct subscript operator
-//	- JSON subscript operator
+//   - array subscript operator
+//   - struct subscript operator
+//   - JSON subscript operator
+//
 // Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
 //	{{.Expr | sql}}[{{.Index | sql}}]

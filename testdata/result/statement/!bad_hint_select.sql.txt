@@ -12,7 +12,28 @@ syntax error: testdata/input/query/!bad_hint_select.sql:1:3: expected token: {, 
 &ast.QueryStatement{
   Query: &ast.BadNode{
     NodeEnd: 10,
-    Raw:     "@ select 1",
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "@",
+        Raw:  "@",
+        End:  1,
+      },
+      &token.Token{
+        Kind:  "SELECT",
+        Space: " ",
+        Raw:   "select",
+        Pos:   2,
+        End:   8,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   9,
+        End:   10,
+      },
+    },
   },
 }
 

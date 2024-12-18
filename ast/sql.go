@@ -161,7 +161,16 @@ func paren(p prec, e Expr) string {
 //
 // ================================================================================
 
-func (b *BadNode) SQL() string { return b.Raw }
+func (b *BadNode) SQL() string {
+	var sql string
+	for _, tok := range b.Tokens {
+		if sql != "" && len(tok.Space) > 0 {
+			sql += " "
+		}
+		sql += tok.Raw
+	}
+	return sql
+}
 
 // ================================================================================
 //
