@@ -2,7 +2,6 @@
 ALTER PROTO BUNDLE INSERT (package.Inserted) UPDATE (package.Updated) DELETE (package.Deleted)
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
   Insert: &ast.AlterProtoBundleInsert{
     Insert: 19,

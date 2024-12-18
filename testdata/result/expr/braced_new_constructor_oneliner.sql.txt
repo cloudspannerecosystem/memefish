@@ -2,7 +2,6 @@
 NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
 --- AST
 &ast.BracedNewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
@@ -43,7 +42,6 @@ NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth" ]}
             Array:  -1,
             Lbrack: 44,
             Rbrack: 73,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.StringLiteral{
                 ValuePos: 45,

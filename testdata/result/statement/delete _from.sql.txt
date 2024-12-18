@@ -2,13 +2,11 @@
 delete from foo where foo = 1 and bar = 2
 --- AST
 &ast.Delete{
-  Delete:    0,
   TableName: &ast.Ident{
     NamePos: 12,
     NameEnd: 15,
     Name:    "foo",
   },
-  As:    (*ast.AsAlias)(nil),
   Where: &ast.Where{
     Where: 16,
     Expr:  &ast.BinaryExpr{
@@ -43,7 +41,6 @@ delete from foo where foo = 1 and bar = 2
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL
