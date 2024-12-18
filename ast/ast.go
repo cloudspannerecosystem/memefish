@@ -172,6 +172,7 @@ func (CallExpr) isExpr()              {}
 func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
+func (WithExpr) isExpr()              {}
 func (ReplaceFieldsExpr) isExpr()     {}
 func (CaseExpr) isExpr()              {}
 func (IfExpr) isExpr()                {}
@@ -1326,6 +1327,31 @@ type AtTimeZone struct {
 
 	At token.Pos // position of "AT" keyword
 
+	Expr Expr
+}
+
+// WithExprVar is "name AS expr" node in WITH expression.
+//
+//	{{.Name | sql}} AS {{.Expr | sql}}
+type WithExprVar struct {
+	// pos = Name.pos
+	// end = Expr.end
+
+	Name *Ident
+	Expr Expr
+}
+
+// WithExpr is WITH expression node.
+//
+//	WITH({{.Vars | sqlJoin ", "}}, {{.Expr | sql}})
+type WithExpr struct {
+	// pos = With
+	// end = Rparen + 1
+
+	With   token.Pos // position of "WITH" keyword
+	Rparen token.Pos // position of ")"
+
+	Vars []*WithExprVar // len(Vars) > 0
 	Expr Expr
 }
 

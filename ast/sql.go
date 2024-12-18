@@ -80,7 +80,7 @@ func exprPrec(e Expr) prec {
 	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
 		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
 		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
-		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral:
+		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *WithExpr:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -563,6 +563,12 @@ func (r *ReplaceFieldsArg) SQL() string { return r.Expr.SQL() + " AS " + r.Field
 
 func (r *ReplaceFieldsExpr) SQL() string {
 	return "REPLACE_FIELDS(" + r.Expr.SQL() + ", " + sqlJoin(r.Fields, ", ") + ")"
+}
+
+func (n *WithExprVar) SQL() string { return n.Name.SQL() + " AS " + n.Expr.SQL() }
+
+func (w *WithExpr) SQL() string {
+	return "WITH(" + sqlJoin(w.Vars, ", ") + ", " + w.Expr.SQL() + ")"
 }
 
 func (c *CastExpr) SQL() string {

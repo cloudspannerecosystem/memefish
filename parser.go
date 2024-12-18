@@ -1451,6 +1451,8 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseExistsSubQuery()
 	case "EXTRACT":
 		return p.parseExtractExpr()
+	case "WITH":
+		return p.parseWithExpr()
 	case "ARRAY":
 		return p.parseArrayLiteralOrSubQuery()
 	case "STRUCT":
@@ -1921,6 +1923,47 @@ func (p *Parser) tryParseAtTimeZone() *ast.AtTimeZone {
 	return &ast.AtTimeZone{
 		At:   pos,
 		Expr: e,
+	}
+}
+
+func (p *Parser) parseWithExprVar() *ast.WithExprVar {
+	name := p.parseIdent()
+	p.expect("AS")
+	expr := p.parseExpr()
+
+	return &ast.WithExprVar{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) lookaheadWithExprVar() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	p.parseIdent()
+	return p.Token.Kind == "AS"
+}
+
+func (p *Parser) parseWithExpr() *ast.WithExpr {
+	with := p.expect("WITH").Pos
+	p.expect("(")
+
+	var vars []*ast.WithExprVar
+	for p.lookaheadWithExprVar() {
+		vars = append(vars, p.parseWithExprVar())
+		p.expect(",")
+	}
+
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+	return &ast.WithExpr{
+		With:   with,
+		Rparen: rparen,
+		Vars:   vars,
+		Expr:   expr,
 	}
 }
 

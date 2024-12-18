@@ -510,6 +510,22 @@ func (a *AtTimeZone) End() token.Pos {
 	return nodeEnd(wrapNode(a.Expr))
 }
 
+func (w *WithExprVar) Pos() token.Pos {
+	return nodePos(wrapNode(w.Name))
+}
+
+func (w *WithExprVar) End() token.Pos {
+	return nodeEnd(wrapNode(w.Expr))
+}
+
+func (w *WithExpr) Pos() token.Pos {
+	return w.With
+}
+
+func (w *WithExpr) End() token.Pos {
+	return posAdd(w.Rparen, 1)
+}
+
 func (c *CastExpr) Pos() token.Pos {
 	return c.Cast
 }
