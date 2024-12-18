@@ -130,11 +130,7 @@ func sqlOpt[T interface {
 	Node
 	comparable
 }](left string, node T, right string) string {
-	var zero T
-	if node == zero {
-		return ""
-	}
-	return left + node.SQL() + right
+	return sqlOptCtx(nil, left, node, right)
 }
 
 // strOpt outputs:
@@ -166,14 +162,7 @@ func strIfElse(pred bool, ifStr string, elseStr string) string {
 // sqlJoin outputs joined string of SQL() of all elems by sep.
 // This function corresponds to sqlJoin in ast.go
 func sqlJoin[T Node](elems []T, sep string) string {
-	var b strings.Builder
-	for i, r := range elems {
-		if i > 0 {
-			b.WriteString(sep)
-		}
-		b.WriteString(r.SQL())
-	}
-	return b.String()
+	return sqlJoinCtx(nil, elems, sep)
 }
 
 // formatBoolUpper formats bool value as uppercase.
@@ -309,7 +298,7 @@ func (c *CTE) SQL() string {
 
 func (s *Select) sqlContext(fc *FormatContext) string {
 	return "SELECT" +
-		strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") +
+		strOpt(s.AllOrDistinct != "", " "+string(s.AllOrDistinct)) +
 		sqlOptCtx(fc, " ", s.As, "") +
 		fc.indentScope(func(fc *FormatContext) string {
 			if len(s.Results) == 1 {
