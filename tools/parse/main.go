@@ -121,11 +121,7 @@ func main() {
 	fmt.Println(node.SQL())
 
 	fmt.Println("--- SQL with indentation")
-	fc := &ast.FormatContext{
-		Option:  ast.FormatOptionPretty(2),
-		Current: 0,
-	}
-	fmt.Println(fc.SQL(node))
+	fmt.Println(ast.FormatContextPretty(2).SQL(node))
 
 	if *pos != "" {
 		fmt.Println("--- POS")
