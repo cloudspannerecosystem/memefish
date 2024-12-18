@@ -1,0 +1,1 @@
+CALL cancel_query("12345")

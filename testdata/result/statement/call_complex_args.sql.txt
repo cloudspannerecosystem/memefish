@@ -1,0 +1,100 @@
+--- call_complex_args.sql
+-- https://github.com/google/zetasql/blob/a516c6b26d183efc4f56293256bba92e243b7a61/zetasql/parser/testdata/call.test#L92C1-L93C1
+call myprocedure(TABLE my.table, (SELECT * FROM my.another_table), mytvf(1, 2))
+--- AST
+&ast.Call{
+  Call:   129,
+  Rparen: 207,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 134,
+        NameEnd: 145,
+        Name:    "myprocedure",
+      },
+    },
+  },
+  Args: []ast.TVFArg{
+    &ast.TableArg{
+      Table: 146,
+      Name:  &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 152,
+            NameEnd: 154,
+            Name:    "my",
+          },
+          &ast.Ident{
+            NamePos: 155,
+            NameEnd: 160,
+            Name:    "table",
+          },
+        },
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.ScalarSubQuery{
+        Lparen: 162,
+        Rparen: 193,
+        Query:  &ast.Select{
+          Select:  163,
+          Results: []ast.SelectItem{
+            &ast.Star{
+              Star: 170,
+            },
+          },
+          From: &ast.From{
+            From:   172,
+            Source: &ast.PathTableExpr{
+              Path: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 177,
+                    NameEnd: 179,
+                    Name:    "my",
+                  },
+                  &ast.Ident{
+                    NamePos: 180,
+                    NameEnd: 193,
+                    Name:    "another_table",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.CallExpr{
+        Rparen: 206,
+        Func:   &ast.Ident{
+          NamePos: 196,
+          NameEnd: 201,
+          Name:    "mytvf",
+        },
+        Args: []ast.Arg{
+          &ast.ExprArg{
+            Expr: &ast.IntLiteral{
+              ValuePos: 202,
+              ValueEnd: 203,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          &ast.ExprArg{
+            Expr: &ast.IntLiteral{
+              ValuePos: 205,
+              ValueEnd: 206,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CALL myprocedure(TABLE my.table, (SELECT * FROM my.another_table), mytvf(1, 2))
