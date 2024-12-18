@@ -1,8 +1,8 @@
---- bad_plus.sql
+--- !bad_plus.sql
 1 +
 
 --- Error
-syntax error: testdata/input/expr/bad_plus.sql:2:1: unexpected token: <eof>
+syntax error: testdata/input/expr/!bad_plus.sql:2:1: unexpected token: <eof>
 
   2:  
       ^

@@ -1,7 +1,7 @@
---- bad_alter_table_add_column.sql
+--- !bad_alter_table_add_column.sql
 alter table foo add column baz string(max) null
 --- Error
-syntax error: testdata/input/ddl/bad_alter_table_add_column.sql:1:44: expected token: <eof>, but: NULL
+syntax error: testdata/input/ddl/!bad_alter_table_add_column.sql:1:44: expected token: <eof>, but: NULL
 
   1:  alter table foo add column baz string(max) null
                                                  ^~~~
