@@ -13,38 +13,38 @@ import (
 //
 // ================================================================================
 
-// FormatOption is container of format configurations.
-// You should construct it using FormatOptionCompact() or FormatOptionPretty().
-type FormatOption struct {
+// formatOption is container of format configurations.
+// It is conceptually immutable.
+type formatOption struct {
 	newline bool
 	indent  int
 }
 
-// FormatOptionCompact is format option without newline and indentation.
-func FormatOptionCompact() FormatOption {
-	return FormatOption{}
+// formatOptionCompact is format option without newline and indentation.
+func formatOptionCompact() formatOption {
+	return formatOption{}
 }
 
-// FormatOptionPretty is format option with newline and configured indentation.
-func FormatOptionPretty(indent int) FormatOption {
-	return FormatOption{newline: true, indent: indent}
+// formatOptionPretty is format option with newline and configured indentation.
+func formatOptionPretty(indent int) formatOption {
+	return formatOption{newline: true, indent: indent}
 }
 
-// FormatContext is container of FormatOption and current indentation.
+// FormatContext is container of format option and current indentation.
 // Note: All methods of FormatContext must support nil receiver.
 type FormatContext struct {
-	option        FormatOption
+	option        formatOption
 	currentIndent int
 }
 
 // FormatContextCompact is format context without newline and indentation.
 func FormatContextCompact() *FormatContext {
-	return &FormatContext{option: FormatOptionCompact()}
+	return &FormatContext{option: formatOptionCompact()}
 }
 
 // FormatContextPretty is format context with newline and configured indentation.
 func FormatContextPretty(indent int) *FormatContext {
-	return &FormatContext{option: FormatOptionPretty(indent)}
+	return &FormatContext{option: formatOptionPretty(indent)}
 }
 
 // SQL is entry point of pretty printing.
@@ -57,7 +57,7 @@ func (fc *FormatContext) SQL(node Node) string {
 	}
 }
 
-// newlineOr returns newline with indentation if FormatOptionPretty is used.
+// newlineOr returns newline with indentation if formatOptionPretty is used.
 // Otherwise, it returns argument string.
 func (fc *FormatContext) newlineOr(s string) string {
 	if fc == nil {
