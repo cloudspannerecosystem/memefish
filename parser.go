@@ -4832,6 +4832,7 @@ func (p *Parser) handleError(r any, l *Lexer) {
 func (p *Parser) handleParseStatementError(r any, l *Lexer) *ast.BadNode {
 	p.handleError(r, l)
 
+	var tokens []*token.Token
 	pos := p.Token.Pos
 	end := p.Token.Pos
 skip:
@@ -4841,20 +4842,21 @@ skip:
 			break skip
 		}
 		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
 		p.Lexer.nextToken(true)
 	}
 
-	raw := p.Lexer.Buffer[pos:end]
 	return &ast.BadNode{
 		NodePos: pos,
 		NodeEnd: end,
-		Raw:     raw,
+		Tokens:  tokens,
 	}
 }
 
 func (p *Parser) handleParseQueryExprError(simple bool, r any, l *Lexer) *ast.BadNode {
 	p.handleError(r, l)
 
+	var tokens []*token.Token
 	pos := p.Token.Pos
 	end := p.Token.Pos
 	nesting := 0
@@ -4876,20 +4878,21 @@ skip:
 			}
 		}
 		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
 		p.Lexer.nextToken(true)
 	}
 
-	raw := p.Lexer.Buffer[pos:end]
 	return &ast.BadNode{
 		NodePos: pos,
 		NodeEnd: end,
-		Raw:     raw,
+		Tokens:  tokens,
 	}
 }
 
 func (p *Parser) handleParseExprError(r any, l *Lexer) *ast.BadNode {
 	p.handleError(r, l)
 
+	var tokens []*token.Token
 	pos := p.Token.Pos
 	end := p.Token.Pos
 	nesting := 0
@@ -4911,20 +4914,21 @@ skip:
 			}
 		}
 		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
 		p.Lexer.nextToken(true)
 	}
 
-	raw := p.Lexer.Buffer[pos:end]
 	return &ast.BadNode{
 		NodePos: pos,
 		NodeEnd: end,
-		Raw:     raw,
+		Tokens:  tokens,
 	}
 }
 
 func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadNode {
 	p.handleError(r, l)
 
+	var tokens []*token.Token
 	pos := p.Token.Pos
 	end := p.Token.Pos
 	nesting := 0
@@ -4955,15 +4959,15 @@ skip:
 				break skip
 			}
 		}
+		tokens = append(tokens, p.Token.Clone())
 		end = p.Token.End
 		p.Lexer.nextToken(true)
 	}
 
-	raw := p.Lexer.Buffer[pos:end]
 	return &ast.BadNode{
 		NodePos: pos,
 		NodeEnd: end,
-		Raw:     raw,
+		Tokens:  tokens,
 	}
 }
 

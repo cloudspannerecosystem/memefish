@@ -34,7 +34,23 @@ syntax error: testdata/input/expr/!bad_new_braced_constructor.sql:1:20: unexpect
           Expr:  &ast.BadNode{
             NodePos: 15,
             NodeEnd: 18,
-            Raw:     "1 +",
+            Tokens:  []*token.Token{
+              &token.Token{
+                Kind:  "<int>",
+                Space: " ",
+                Raw:   "1",
+                Base:  10,
+                Pos:   15,
+                End:   16,
+              },
+              &token.Token{
+                Kind:  "+",
+                Space: " ",
+                Raw:   "+",
+                Pos:   17,
+                End:   18,
+              },
+            },
           },
         },
       },
