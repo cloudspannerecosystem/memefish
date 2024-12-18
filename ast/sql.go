@@ -797,9 +797,7 @@ func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
 func (c *ColumnDef) SQL() string {
 	return c.Name.SQL() + " " + c.Type.SQL() +
 		strOpt(c.NotNull, " NOT NULL") +
-		sqlOpt(" ", c.DefaultExpr, "") +
-		sqlOpt(" ", c.GeneratedExpr, "") +
-		sqlOpt(" ", c.IdentityColumn, "") +
+		sqlOpt(" ", c.DefaultSemantics, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
 		sqlOpt(" ", c.Options, "")
 }

@@ -2348,14 +2348,12 @@ type BitReversedPositive struct {
 //
 //	{{.Name | sql}}
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
-//	{{.DefaultExpr | sqlOpt}}
-//	{{.GeneratedExpr | sqlOpt}}
-//	{{.IdentityColumn | sqlOpt}}
+//	{{.DefaultSemantics | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Hidden + 6 || GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
+	// end = Options.end || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 
@@ -2363,14 +2361,22 @@ type ColumnDef struct {
 	Type    SchemaType
 	NotNull bool
 
-	// Only one of them can be specified
-	DefaultExpr    *ColumnDefaultExpr   // optional
-	GeneratedExpr  *GeneratedColumnExpr // optional
-	IdentityColumn *IdentityColumn      // optional
+	DefaultSemantics ColumnDefaultSemantics // optional
 
 	Hidden  token.Pos // InvalidPos if not hidden
 	Options *Options  // optional
 }
+
+// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn.
+// They are change default value of column and mutually exclusive.
+type ColumnDefaultSemantics interface {
+	Node
+	isColumnDefaultSemantics()
+}
+
+func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
+func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
+func (IdentityColumn) isColumnDefaultSemantics()      {}
 
 // ColumnDefaultExpr is a default value expression for the column.
 //
@@ -2824,6 +2830,7 @@ type RestartCounterWith struct {
 
 	Counter *IntLiteral
 }
+
 // SetSkipRange is SET SKIP RANGE node
 //
 //	SET {{.SkipRange | sql}}

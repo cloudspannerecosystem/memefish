@@ -33,7 +33,7 @@ create table foo (
         NamePos: 26,
         Name:    "INT64",
       },
-      IdentityColumn: &ast.IdentityColumn{
+      DefaultSemantics: &ast.IdentityColumn{
         Generated: 32,
         Identity:  56,
         Rparen:    140,
@@ -80,7 +80,7 @@ create table foo (
         NamePos: 158,
         Name:    "INT64",
       },
-      IdentityColumn: &ast.IdentityColumn{
+      DefaultSemantics: &ast.IdentityColumn{
         Generated: 164,
         Identity:  188,
         Rparen:    252,
@@ -112,7 +112,7 @@ create table foo (
         NamePos: 269,
         Name:    "INT64",
       },
-      IdentityColumn: &ast.IdentityColumn{
+      DefaultSemantics: &ast.IdentityColumn{
         Generated: 275,
         Identity:  299,
         Rparen:    361,
@@ -150,7 +150,7 @@ create table foo (
         NamePos: 375,
         Name:    "INT64",
       },
-      IdentityColumn: &ast.IdentityColumn{
+      DefaultSemantics: &ast.IdentityColumn{
         Generated: 381,
         Identity:  405,
         Rparen:    437,

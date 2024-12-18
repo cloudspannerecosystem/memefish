@@ -24,7 +24,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
         NamePos: 38,
         Name:    "TIMESTAMP",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     48,
         Stored: 153,
         Rparen: 151,

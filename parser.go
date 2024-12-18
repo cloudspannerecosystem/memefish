@@ -3130,13 +3130,8 @@ func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	}
 }
 
-func (p *Parser) tryParseIdentityColumn() *ast.IdentityColumn {
-	pos := p.Token.Pos
-	if !p.Token.IsKeywordLike("GENERATED") {
-		return nil
-	}
-
-	p.nextToken()
+func (p *Parser) parseIdentityColumn() *ast.IdentityColumn {
+	pos := p.expectKeywordLike("GENERATED").Pos
 	p.expect("BY")
 	p.expect("DEFAULT")
 	p.expect("AS")
@@ -3161,9 +3156,16 @@ func (p *Parser) tryParseIdentityColumn() *ast.IdentityColumn {
 func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	name := p.parseIdent()
 	t, notNull, null := p.parseTypeNotNull()
-	defaultExpr := p.tryParseColumnDefaultExpr()
-	generated := p.tryParseGeneratedColumnExpr()
-	identity := p.tryParseIdentityColumn()
+
+	var defaultSemantics ast.ColumnDefaultSemantics
+	switch {
+	case p.Token.Kind == "DEFAULT":
+		defaultSemantics = p.parseColumnDefaultExpr()
+	case p.Token.Kind == "AS":
+		defaultSemantics = p.parseGeneratedColumnExpr()
+	case p.Token.IsKeywordLike("GENERATED"):
+		defaultSemantics = p.parseIdentityColumn()
+	}
 
 	hiddenPos := token.InvalidPos
 	if p.Token.IsKeywordLike("HIDDEN") {
@@ -3173,15 +3175,13 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
-		Null:           null,
-		Name:           name,
-		Type:           t,
-		NotNull:        notNull,
-		DefaultExpr:    defaultExpr,
-		GeneratedExpr:  generated,
-		IdentityColumn: identity,
-		Hidden:         hiddenPos,
-		Options:        options,
+		Null:             null,
+		Name:             name,
+		Type:             t,
+		NotNull:          notNull,
+		DefaultSemantics: defaultSemantics,
+		Hidden:           hiddenPos,
+		Options:          options,
 	}
 }
 
@@ -3273,6 +3273,10 @@ func (p *Parser) tryParseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 		return nil
 	}
 
+	return p.parseColumnDefaultExpr()
+}
+
+func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	def := p.expect("DEFAULT").Pos
 	p.expect("(")
 	expr := p.parseExpr()
@@ -3290,6 +3294,10 @@ func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 		return nil
 	}
 
+	return p.parseGeneratedColumnExpr()
+}
+
+func (p *Parser) parseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	pos := p.expect("AS").Pos
 	p.expect("(")
 	expr := p.parseExpr()
@@ -3912,7 +3920,7 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 	case p.Token.Kind == "SET":
 		set := p.expect("SET").Pos
 		if p.Token.Kind == "DEFAULT" {
-			defaultExpr := p.tryParseColumnDefaultExpr()
+			defaultExpr := p.parseColumnDefaultExpr()
 			return &ast.AlterColumnSetDefault{
 				Set:         set,
 				DefaultExpr: defaultExpr,
