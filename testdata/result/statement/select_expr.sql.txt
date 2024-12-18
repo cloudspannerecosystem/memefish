@@ -580,10 +580,14 @@ select 1 + 2, 1 - 2,
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 556,
-          Func:   &ast.Ident{
-            NamePos: 514,
-            NameEnd: 522,
-            Name:    "date_add",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 514,
+                NameEnd: 522,
+                Name:    "date_add",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -616,10 +620,14 @@ select 1 + 2, 1 - 2,
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 628,
-          Func:   &ast.Ident{
-            NamePos: 566,
-            NameEnd: 579,
-            Name:    "timestamp_add",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 566,
+                NameEnd: 579,
+                Name:    "timestamp_add",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{

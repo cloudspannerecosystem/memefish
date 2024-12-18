@@ -129,10 +129,14 @@ FROM ML.PREDICT(
                   &ast.Alias{
                     Expr: &ast.CallExpr{
                       Rparen: 393,
-                      Func:   &ast.Ident{
-                        NamePos: 174,
-                        NameEnd: 180,
-                        Name:    "CONCAT",
+                      Func:   &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 174,
+                            NameEnd: 180,
+                            Name:    "CONCAT",
+                          },
+                        },
                       },
                       Args: []ast.Arg{
                         &ast.ExprArg{

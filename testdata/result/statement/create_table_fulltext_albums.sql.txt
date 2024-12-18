@@ -112,10 +112,14 @@ CREATE TABLE Albums (
         Rparen: 460,
         Expr:   &ast.CallExpr{
           Rparen: 459,
-          Func:   &ast.Ident{
-            NamePos: 431,
-            NameEnd: 448,
-            Name:    "TOKENIZE_FULLTEXT",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 431,
+                NameEnd: 448,
+                Name:    "TOKENIZE_FULLTEXT",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -147,10 +151,14 @@ CREATE TABLE Albums (
         Rparen: 545,
         Expr:   &ast.CallExpr{
           Rparen: 544,
-          Func:   &ast.Ident{
-            NamePos: 522,
-            NameEnd: 537,
-            Name:    "TOKENIZE_NUMBER",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 522,
+                NameEnd: 537,
+                Name:    "TOKENIZE_NUMBER",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{

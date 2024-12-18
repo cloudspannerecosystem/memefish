@@ -86,10 +86,14 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
         },
         Right: &ast.CallExpr{
           Rparen: 138,
-          Func:   &ast.Ident{
-            NamePos: 71,
-            NameEnd: 77,
-            Name:    "SEARCH",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 71,
+                NameEnd: 77,
+                Name:    "SEARCH",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{

@@ -1281,7 +1281,7 @@ type CallExpr struct {
 
 	Rparen token.Pos // position of ")"
 
-	Func         *Ident
+	Func         *Path
 	Distinct     bool
 	Args         []Arg
 	NamedArgs    []*NamedArg
