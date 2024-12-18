@@ -100,6 +100,7 @@ func (DropVectorIndex) isStatement()    {}
 func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
 func (Update) isStatement()             {}
+func (Call) isStatement()               {}
 
 // QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
 // Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
@@ -3503,4 +3504,24 @@ type UpdateItem struct {
 
 	Path        []*Ident // len(Path) > 0
 	DefaultExpr *DefaultExpr
+}
+
+// ================================================================================
+//
+// Procedural language
+//
+// ================================================================================
+
+// Call is CALL statement.
+//
+//	CALL {{.Name | sql}}({{.Args | sqlJoin ", "}})
+type Call struct {
+	// pos = Call
+	// end = Rparen +1
+
+	Call   token.Pos
+	Rparen token.Pos
+
+	Name *Path
+	Args []TVFArg // len(Args) > 0
 }

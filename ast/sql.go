@@ -1460,3 +1460,13 @@ func (u *Update) SQL() string {
 func (u *UpdateItem) SQL() string {
 	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }
+
+// ================================================================================
+//
+// Procedural language
+//
+// ================================================================================
+
+func (c *Call) SQL() string {
+	return "CALL " + c.Name.SQL() + "(" + sqlJoin(c.Args, ", ") + ")"
+}
