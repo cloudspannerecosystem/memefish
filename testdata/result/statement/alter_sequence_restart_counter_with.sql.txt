@@ -2,8 +2,7 @@
 ALTER SEQUENCE my_sequence RESTART COUNTER WITH 1000
 --- AST
 &ast.AlterSequence{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 15,
@@ -12,7 +11,6 @@ ALTER SEQUENCE my_sequence RESTART COUNTER WITH 1000
       },
     },
   },
-  Options:            (*ast.Options)(nil),
   RestartCounterWith: &ast.RestartCounterWith{
     Restart: 27,
     Counter: &ast.IntLiteral{
@@ -22,8 +20,6 @@ ALTER SEQUENCE my_sequence RESTART COUNTER WITH 1000
       Value:    "1000",
     },
   },
-  SkipRange:   (*ast.SkipRange)(nil),
-  NoSkipRange: (*ast.NoSkipRange)(nil),
 }
 
 --- SQL

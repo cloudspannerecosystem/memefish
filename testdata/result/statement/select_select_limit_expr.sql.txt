@@ -3,45 +3,33 @@ select ((select 1) limit 1 offset 0) + 3
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
           Left: &ast.ScalarSubQuery{
             Lparen: 7,
             Rparen: 35,
-            Query:  &ast.SubQuery{
-              Lparen: 8,
-              Rparen: 17,
-              Query:  &ast.Select{
-                Select:   9,
-                Distinct: false,
-                As:       nil,
-                Results:  []ast.SelectItem{
-                  &ast.ExprSelectItem{
-                    Expr: &ast.IntLiteral{
-                      ValuePos: 16,
-                      ValueEnd: 17,
-                      Base:     10,
-                      Value:    "1",
+            Query:  &ast.Query{
+              Query: &ast.SubQuery{
+                Lparen: 8,
+                Rparen: 17,
+                Query:  &ast.Select{
+                  Select:  9,
+                  Results: []ast.SelectItem{
+                    &ast.ExprSelectItem{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 16,
+                        ValueEnd: 17,
+                        Base:     10,
+                        Value:    "1",
+                      },
                     },
                   },
                 },
-                From:    (*ast.From)(nil),
-                Where:   (*ast.Where)(nil),
-                GroupBy: (*ast.GroupBy)(nil),
-                Having:  (*ast.Having)(nil),
-                OrderBy: (*ast.OrderBy)(nil),
-                Limit:   (*ast.Limit)(nil),
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   &ast.Limit{
+              Limit: &ast.Limit{
                 Limit: 19,
                 Count: &ast.IntLiteral{
                   ValuePos: 25,
@@ -70,12 +58,6 @@ select ((select 1) limit 1 offset 0) + 3
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

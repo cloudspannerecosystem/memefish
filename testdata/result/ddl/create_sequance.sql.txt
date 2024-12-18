@@ -7,8 +7,7 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
 
 --- AST
 &ast.CreateSequence{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 30,
@@ -18,7 +17,6 @@ CREATE SEQUENCE IF NOT EXISTS MySequence OPTIONS (
     },
   },
   IfNotExists: true,
-  Params:      []ast.SequenceParam(nil),
   Options:     &ast.Options{
     Options: 41,
     Rparen:  172,

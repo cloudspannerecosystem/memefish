@@ -16,10 +16,8 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      573,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 573,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -40,12 +38,7 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 50,
@@ -58,12 +51,8 @@ create table foo (
         NamePos: 38,
         Name:    "FLOAT64",
       },
-      NotNull:        true,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 78,
@@ -76,7 +65,6 @@ create table foo (
         NamePos: 62,
         Rparen:  72,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 69,
           ValueEnd: 72,
@@ -84,12 +72,9 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull:        true,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        &ast.Options{
+      NotNull: true,
+      Hidden:  -1,
+      Options: &ast.Options{
         Options: 83,
         Rparen:  120,
         Records: []*ast.OptionsDef{
@@ -117,7 +102,6 @@ create table foo (
         NamePos: 129,
         Rparen:  139,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 136,
           ValueEnd: 139,
@@ -126,7 +110,6 @@ create table foo (
         },
       },
       NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 172,
@@ -138,8 +121,7 @@ create table foo (
             NameEnd: 160,
             Name:    "concat",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 161,
@@ -155,14 +137,9 @@ create table foo (
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -175,12 +152,7 @@ create table foo (
         NamePos: 487,
         Name:    "JSON",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 515,
@@ -204,23 +176,14 @@ create table foo (
             NameEnd: 546,
             Name:    "current_timestamp",
           },
-          Distinct:     false,
-          Args:         []ast.Arg(nil),
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     182,
         Rparen:      221,
@@ -248,12 +211,10 @@ create table foo (
             Name:    "t2key1",
           },
         },
-        OnDelete: "",
       },
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     226,
         Rparen:      265,
@@ -286,7 +247,6 @@ create table foo (
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     288,
         Rparen:      327,
@@ -361,12 +321,10 @@ create table foo (
             Name:    "t2key2",
           },
         },
-        OnDelete: "",
       },
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.Check{
         Check:  427,
         Rparen: 441,
@@ -421,7 +379,6 @@ create table foo (
         NameEnd: 568,
         Name:    "foo",
       },
-      Dir: "",
     },
     &ast.IndexKey{
       DirPos: -1,
@@ -430,12 +387,8 @@ create table foo (
         NameEnd: 573,
         Name:    "bar",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

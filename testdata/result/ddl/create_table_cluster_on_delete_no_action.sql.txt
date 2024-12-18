@@ -6,10 +6,8 @@ create table foo (
              on delete no action
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      50,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 50,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -30,16 +28,10 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -47,11 +39,9 @@ create table foo (
         NameEnd: 50,
         Name:    "foo",
       },
-      Dir: "",
     },
   },
-  Synonyms: []*ast.Synonym(nil),
-  Cluster:  &ast.Cluster{
+  Cluster: &ast.Cluster{
     Comma:       51,
     OnDeleteEnd: 115,
     TableName:   &ast.Path{
@@ -65,7 +55,6 @@ create table foo (
     },
     OnDelete: "ON DELETE NO ACTION",
   },
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

@@ -4,8 +4,7 @@ CREATE SEQUENCE sch1.sequence OPTIONS (
 )
 --- AST
 &ast.CreateSequence{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 16,
@@ -19,9 +18,7 @@ CREATE SEQUENCE sch1.sequence OPTIONS (
       },
     },
   },
-  IfNotExists: false,
-  Params:      []ast.SequenceParam(nil),
-  Options:     &ast.Options{
+  Options: &ast.Options{
     Options: 30,
     Rparen:  82,
     Records: []*ast.OptionsDef{

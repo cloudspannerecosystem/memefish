@@ -7,9 +7,8 @@ REPLACE_FIELDS(
   11 AS details.chapters)
 --- AST
 &ast.ReplaceFieldsExpr{
-  ReplaceFields: 0,
-  Rparen:        166,
-  Expr:          &ast.NewConstructor{
+  Rparen: 166,
+  Expr:   &ast.NewConstructor{
     New:  18,
     Type: &ast.NamedType{
       Path: []*ast.Ident{

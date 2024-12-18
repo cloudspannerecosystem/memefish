@@ -3,8 +3,7 @@ ALTER SEQUENCE my_sequence SKIP RANGE 1, 1234567
 
 --- AST
 &ast.AlterSequence{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 15,
@@ -13,9 +12,7 @@ ALTER SEQUENCE my_sequence SKIP RANGE 1, 1234567
       },
     },
   },
-  Options:            (*ast.Options)(nil),
-  RestartCounterWith: (*ast.RestartCounterWith)(nil),
-  SkipRange:          &ast.SkipRange{
+  SkipRange: &ast.SkipRange{
     Skip: 27,
     Min:  &ast.IntLiteral{
       ValuePos: 38,
@@ -30,7 +27,6 @@ ALTER SEQUENCE my_sequence SKIP RANGE 1, 1234567
       Value:    "1234567",
     },
   },
-  NoSkipRange: (*ast.NoSkipRange)(nil),
 }
 
 --- SQL

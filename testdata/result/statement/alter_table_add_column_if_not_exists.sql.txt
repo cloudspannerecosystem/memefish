@@ -3,8 +3,7 @@ alter table foo add column if not exists baz string(max) not null
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
@@ -28,14 +27,9 @@ alter table foo add column if not exists baz string(max) not null
         Rparen:  55,
         Name:    "STRING",
         Max:     true,
-        Size:    nil,
       },
-      NotNull:        true,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
-      IdentityColumn: (*ast.IdentityColumn)(nil),
-      Hidden:         -1,
-      Options:        (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
   },
 }

@@ -1,0 +1,48 @@
+--- pipe_cte_from.sql
+WITH cte AS (SELECT 1)
+FROM cte
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    With: &ast.With{
+      CTEs: []*ast.CTE{
+        &ast.CTE{
+          Rparen: 21,
+          Name:   &ast.Ident{
+            NamePos: 5,
+            NameEnd: 8,
+            Name:    "cte",
+          },
+          QueryExpr: &ast.Select{
+            Select:  13,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 20,
+                  ValueEnd: 21,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        From:   23,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 28,
+            NameEnd: 31,
+            Name:    "cte",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+WITH cte AS (SELECT 1) FROM cte

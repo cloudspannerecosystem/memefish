@@ -11,10 +11,8 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      457,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 457,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -35,9 +33,6 @@ create table foo (
         NamePos: 26,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
       IdentityColumn: &ast.IdentityColumn{
         Generated: 32,
         Identity:  56,
@@ -72,8 +67,7 @@ create table foo (
           },
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -86,9 +80,6 @@ create table foo (
         NamePos: 158,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
       IdentityColumn: &ast.IdentityColumn{
         Generated: 164,
         Identity:  188,
@@ -108,8 +99,7 @@ create table foo (
           },
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -122,9 +112,6 @@ create table foo (
         NamePos: 269,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
       IdentityColumn: &ast.IdentityColumn{
         Generated: 275,
         Identity:  299,
@@ -150,8 +137,7 @@ create table foo (
           },
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -164,9 +150,6 @@ create table foo (
         NamePos: 375,
         Name:    "INT64",
       },
-      NotNull:        false,
-      DefaultExpr:    (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr:  (*ast.GeneratedColumnExpr)(nil),
       IdentityColumn: &ast.IdentityColumn{
         Generated: 381,
         Identity:  405,
@@ -177,12 +160,10 @@ create table foo (
           },
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -190,12 +171,8 @@ create table foo (
         NameEnd: 457,
         Name:    "id",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

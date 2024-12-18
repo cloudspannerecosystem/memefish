@@ -2,13 +2,11 @@
 update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
 --- AST
 &ast.Update{
-  Update:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
   },
-  As:      (*ast.AsAlias)(nil),
   Updates: []*ast.UpdateItem{
     &ast.UpdateItem{
       Path: []*ast.Ident{
@@ -20,7 +18,6 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
         Expr:       &ast.Ident{
           NamePos: 21,
           NameEnd: 24,
@@ -38,7 +35,6 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
         Expr:       &ast.Ident{
           NamePos: 32,
           NameEnd: 35,
@@ -57,7 +53,6 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: 43,
         Default:    true,
-        Expr:       nil,
       },
     },
   },
@@ -78,7 +73,6 @@ update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       },
     },
   },
-  ThenReturn: (*ast.ThenReturn)(nil),
 }
 
 --- SQL

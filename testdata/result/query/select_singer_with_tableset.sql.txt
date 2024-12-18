@@ -5,17 +5,12 @@ SELECT * FROM Singers
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.CompoundQuery{
-    Op:       "UNION",
-    Distinct: false,
-    Queries:  []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.Select{
-        Select:   0,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
+        Results: []ast.SelectItem{
           &ast.Star{
             Star: 7,
           },
@@ -28,22 +23,12 @@ SELECT * FROM Singers
               NameEnd: 21,
               Name:    "Singers",
             },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: (*ast.TableSample)(nil),
           },
         },
-        Where:   (*ast.Where)(nil),
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
       &ast.Select{
-        Select:   32,
-        Distinct: false,
-        As:       nil,
-        Results:  []ast.SelectItem{
+        Select:  32,
+        Results: []ast.SelectItem{
           &ast.Star{
             Star: 39,
           },
@@ -56,20 +41,10 @@ SELECT * FROM Singers
               NameEnd: 53,
               Name:    "Singers",
             },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: (*ast.TableSample)(nil),
           },
         },
-        Where:   (*ast.Where)(nil),
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
-        OrderBy: (*ast.OrderBy)(nil),
-        Limit:   (*ast.Limit)(nil),
       },
     },
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

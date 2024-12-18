@@ -2,8 +2,7 @@
 ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY RESTART COUNTER WITH 1000
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,

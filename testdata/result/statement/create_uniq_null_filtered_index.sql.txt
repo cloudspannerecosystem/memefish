@@ -3,11 +3,9 @@ create unique null_filtered index foo_bar on foo (foo)
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
   Rparen:       53,
   Unique:       true,
   NullFiltered: true,
-  IfNotExists:  false,
   Name:         &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
@@ -34,12 +32,9 @@ create unique null_filtered index foo_bar on foo (foo)
         NameEnd: 53,
         Name:    "foo",
       },
-      Dir: "",
     },
   },
-  Storing:      (*ast.Storing)(nil),
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL
-CREATE UNIQUE NULL_FILTERED INDEX foo_bar ON foo (foo)
+CREATE UNIQUE NULL_FILTERED INDEX foo_bar ON foo(foo)

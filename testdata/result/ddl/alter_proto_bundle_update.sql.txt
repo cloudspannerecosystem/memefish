@@ -2,9 +2,7 @@
 ALTER PROTO BUNDLE UPDATE(`examples.shipping.Order`)
 --- AST
 &ast.AlterProtoBundle{
-  Alter:  0,
   Bundle: 12,
-  Insert: (*ast.AlterProtoBundleInsert)(nil),
   Update: &ast.AlterProtoBundleUpdate{
     Update: 19,
     Types:  &ast.ProtoBundleTypes{
@@ -23,7 +21,6 @@ ALTER PROTO BUNDLE UPDATE(`examples.shipping.Order`)
       },
     },
   },
-  Delete: (*ast.AlterProtoBundleDelete)(nil),
 }
 
 --- SQL
