@@ -20,17 +20,8 @@ type formatOption struct {
 	indent  int
 }
 
-// formatOptionCompact is format option without newline and indentation.
-func formatOptionCompact() formatOption {
-	return formatOption{}
-}
-
-// formatOptionPretty is format option with newline and configured indentation.
-func formatOptionPretty(indent int) formatOption {
-	return formatOption{newline: true, indent: indent}
-}
-
 // FormatContext is container of format option and current indentation.
+// You should initialize this struct using FormatContextCompact() or FormatContextPretty().
 // If methods are called with nil receiver, they will work as FormatContextCompact() is receiver.
 type FormatContext struct {
 	option        formatOption
@@ -39,12 +30,12 @@ type FormatContext struct {
 
 // FormatContextCompact is format context without newline and indentation.
 func FormatContextCompact() *FormatContext {
-	return &FormatContext{option: formatOptionCompact()}
+	return &FormatContext{option: formatOption{}}
 }
 
 // FormatContextPretty is format context with newline and configured indentation.
 func FormatContextPretty(indent int) *FormatContext {
-	return &FormatContext{option: formatOptionPretty(indent)}
+	return &FormatContext{option: formatOption{newline: true, indent: indent}}
 }
 
 // SQL is entry point of pretty printing.
