@@ -7,19 +7,21 @@ LIMIT 100
 
 --- AST
 &ast.QueryStatement{
-  Query: &ast.Select{
-    Results: []ast.SelectItem{
-      &ast.Star{
-        Star: 9,
+  Query: &ast.Query{
+    Query: &ast.Select{
+      Results: []ast.SelectItem{
+        &ast.Star{
+          Star: 9,
+        },
       },
-    },
-    From: &ast.From{
-      From:   11,
-      Source: &ast.TableName{
-        Table: &ast.Ident{
-          NamePos: 18,
-          NameEnd: 25,
-          Name:    "Singers",
+      From: &ast.From{
+        From:   11,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 18,
+            NameEnd: 25,
+            Name:    "Singers",
+          },
         },
       },
     },

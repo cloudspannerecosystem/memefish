@@ -21,55 +21,57 @@
       },
     },
   },
-  With: &ast.With{
-    With: 13,
-    CTEs: []*ast.CTE{
-      &ast.CTE{
-        Rparen: 46,
-        Name:   &ast.Ident{
-          NamePos: 18,
-          NameEnd: 23,
-          Name:    "subq1",
-        },
-        QueryExpr: &ast.Select{
-          Select:  28,
-          Results: []ast.SelectItem{
-            &ast.ExprSelectItem{
-              Expr: &ast.Ident{
-                NamePos: 35,
-                NameEnd: 37,
-                Name:    "c1",
+  Query: &ast.Query{
+    With: &ast.With{
+      With: 13,
+      CTEs: []*ast.CTE{
+        &ast.CTE{
+          Rparen: 46,
+          Name:   &ast.Ident{
+            NamePos: 18,
+            NameEnd: 23,
+            Name:    "subq1",
+          },
+          QueryExpr: &ast.Select{
+            Select:  28,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 35,
+                  NameEnd: 37,
+                  Name:    "c1",
+                },
               },
             },
-          },
-          From: &ast.From{
-            From:   38,
-            Source: &ast.TableName{
-              Table: &ast.Ident{
-                NamePos: 43,
-                NameEnd: 46,
-                Name:    "foo",
+            From: &ast.From{
+              From:   38,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 43,
+                  NameEnd: 46,
+                  Name:    "foo",
+                },
               },
             },
           },
         },
       },
     },
-  },
-  Query: &ast.Select{
-    Select:  48,
-    Results: []ast.SelectItem{
-      &ast.Star{
-        Star: 55,
+    Query: &ast.Select{
+      Select:  48,
+      Results: []ast.SelectItem{
+        &ast.Star{
+          Star: 55,
+        },
       },
-    },
-    From: &ast.From{
-      From:   57,
-      Source: &ast.TableName{
-        Table: &ast.Ident{
-          NamePos: 62,
-          NameEnd: 67,
-          Name:    "subq1",
+      From: &ast.From{
+        From:   57,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 62,
+            NameEnd: 67,
+            Name:    "subq1",
+          },
         },
       },
     },

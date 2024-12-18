@@ -135,15 +135,16 @@ func paren(p prec, e Expr) string {
 // ================================================================================
 
 func (q *QueryStatement) SQL() string {
-	var sql string
-	if q.Hint != nil {
-		sql += q.Hint.SQL() + " "
-	}
-	if q.With != nil {
-		sql += q.With.SQL() + " "
-	}
-	sql += q.Query.SQL()
-	return sql
+	return sqlOpt("", q.Hint, " ") + q.Query.SQL()
+}
+
+func (q *Query) SQL() string {
+	return sqlOpt("", q.With, " ") +
+		q.Query.SQL() +
+		sqlOpt(" ", q.OrderBy, "") +
+		sqlOpt(" ", q.Limit, "") +
+		strOpt(len(q.PipeOperators) > 0, " ") +
+		sqlJoin(q.PipeOperators, " ")
 }
 
 func (h *Hint) SQL() string {
@@ -173,15 +174,13 @@ func (c *CTE) SQL() string {
 
 func (s *Select) SQL() string {
 	return "SELECT " +
-		strOpt(s.Distinct, "DISTINCT ") +
+		strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") +
 		sqlOpt("", s.As, " ") +
 		sqlJoin(s.Results, ", ") +
 		sqlOpt(" ", s.From, "") +
 		sqlOpt(" ", s.Where, "") +
 		sqlOpt(" ", s.GroupBy, "") +
-		sqlOpt(" ", s.Having, "") +
-		sqlOpt(" ", s.OrderBy, "") +
-		sqlOpt(" ", s.Limit, "")
+		sqlOpt(" ", s.Having, "")
 }
 
 func (a *AsStruct) SQL() string { return "AS STRUCT" }
@@ -191,35 +190,11 @@ func (a *AsValue) SQL() string { return "AS VALUE" }
 func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
 
 func (c *CompoundQuery) SQL() string {
-	op := string(c.Op)
-	if c.Distinct {
-		op += " DISTINCT"
-	} else {
-		op += " ALL"
-	}
-
-	sql := c.Queries[0].SQL()
-	for _, q := range c.Queries[1:] {
-		sql += " " + op + " " + q.SQL()
-	}
-	if c.OrderBy != nil {
-		sql += " " + c.OrderBy.SQL()
-	}
-	if c.Limit != nil {
-		sql += " " + c.Limit.SQL()
-	}
-	return sql
+	return sqlJoin(c.Queries, " "+string(c.Op)+" "+strOpt(c.AllOrDistinct != "", string(c.AllOrDistinct)+" "))
 }
 
 func (s *SubQuery) SQL() string {
-	sql := "(" + s.Query.SQL() + ")"
-	if s.OrderBy != nil {
-		sql += " " + s.OrderBy.SQL()
-	}
-	if s.Limit != nil {
-		sql += " " + s.Limit.SQL()
-	}
-	return sql
+	return "(" + s.Query.SQL() + ")"
 }
 
 func (s *StarModifierExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, " ") + ")" }
@@ -301,6 +276,20 @@ func (l *Limit) SQL() string {
 
 func (o *Offset) SQL() string {
 	return "OFFSET " + o.Value.SQL()
+}
+
+// ================================================================================
+//
+// Pipe Operators
+//
+// ================================================================================
+
+func (p *PipeSelect) SQL() string {
+	return "|> SELECT " + strOpt(p.AllOrDistinct != "", string(p.AllOrDistinct)+" ") + sqlOpt("", p.As, " ") + sqlJoin(p.Results, ", ")
+}
+
+func (p *PipeWhere) SQL() string {
+	return "|> WHERE " + p.Expr.SQL()
 }
 
 // ================================================================================

@@ -7,10 +7,18 @@ import (
 )
 
 func (q *QueryStatement) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
+	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.Query)))
 }
 
 func (q *QueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(q.Query))
+}
+
+func (q *Query) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(q.With), wrapNode(q.Query)))
+}
+
+func (q *Query) End() token.Pos {
 	return nodeEnd(wrapNode(q.Query))
 }
 
@@ -51,7 +59,7 @@ func (s *Select) Pos() token.Pos {
 }
 
 func (s *Select) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy), wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
+	return nodeEnd(nodeChoice(wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
 }
 
 func (a *AsStruct) Pos() token.Pos {
@@ -78,12 +86,20 @@ func (a *AsTypeName) End() token.Pos {
 	return nodeEnd(wrapNode(a.TypeName))
 }
 
+func (f *FromQuery) Pos() token.Pos {
+	return nodePos(wrapNode(f.From))
+}
+
+func (f *FromQuery) End() token.Pos {
+	return nodeEnd(wrapNode(f.From))
+}
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return nodePos(nodeSliceIndex(c.Queries, 0))
 }
 
 func (c *CompoundQuery) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(c.Limit), wrapNode(c.OrderBy), nodeSliceLast(c.Queries)))
+	return nodeEnd(nodeSliceLast(c.Queries))
 }
 
 func (s *SubQuery) Pos() token.Pos {
@@ -91,7 +107,7 @@ func (s *SubQuery) Pos() token.Pos {
 }
 
 func (s *SubQuery) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy))), posAdd(s.Rparen, 1))
+	return posAdd(s.Rparen, 1)
 }
 
 func (s *StarModifierExcept) Pos() token.Pos {
@@ -228,6 +244,22 @@ func (o *Offset) Pos() token.Pos {
 
 func (o *Offset) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
+}
+
+func (p *PipeSelect) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeSelect) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Results))
+}
+
+func (p *PipeWhere) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeWhere) End() token.Pos {
+	return nodeEnd(wrapNode(p.Expr))
 }
 
 func (u *Unnest) Pos() token.Pos {

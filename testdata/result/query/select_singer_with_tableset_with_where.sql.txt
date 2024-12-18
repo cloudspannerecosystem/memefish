@@ -9,57 +9,60 @@ ORDER BY
 
 --- AST
 &ast.QueryStatement{
-  Query: &ast.CompoundQuery{
-    Op:      "UNION",
-    Queries: []ast.QueryExpr{
-      &ast.Select{
-        Results: []ast.SelectItem{
-          &ast.Star{
-            Star: 7,
+  Query: &ast.Query{
+    Query: &ast.CompoundQuery{
+      Op:            "UNION",
+      AllOrDistinct: "ALL",
+      Queries:       []ast.QueryExpr{
+        &ast.Select{
+          Results: []ast.SelectItem{
+            &ast.Star{
+              Star: 7,
+            },
           },
-        },
-        From: &ast.From{
-          From:   9,
-          Source: &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 14,
-              NameEnd: 21,
-              Name:    "Singers",
+          From: &ast.From{
+            From:   9,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 14,
+                NameEnd: 21,
+                Name:    "Singers",
+              },
             },
           },
         },
-      },
-      &ast.Select{
-        Select:  32,
-        Results: []ast.SelectItem{
-          &ast.Star{
-            Star: 39,
-          },
-        },
-        From: &ast.From{
-          From:   41,
-          Source: &ast.TableName{
-            Table: &ast.Ident{
-              NamePos: 46,
-              NameEnd: 53,
-              Name:    "Singers",
+        &ast.Select{
+          Select:  32,
+          Results: []ast.SelectItem{
+            &ast.Star{
+              Star: 39,
             },
           },
-        },
-        Where: &ast.Where{
-          Where: 54,
-          Expr:  &ast.BinaryExpr{
-            Op:   "=",
-            Left: &ast.Ident{
-              NamePos: 62,
-              NameEnd: 70,
-              Name:    "SingerId",
+          From: &ast.From{
+            From:   41,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 46,
+                NameEnd: 53,
+                Name:    "Singers",
+              },
             },
-            Right: &ast.IntLiteral{
-              ValuePos: 73,
-              ValueEnd: 74,
-              Base:     10,
-              Value:    "1",
+          },
+          Where: &ast.Where{
+            Where: 54,
+            Expr:  &ast.BinaryExpr{
+              Op:   "=",
+              Left: &ast.Ident{
+                NamePos: 62,
+                NameEnd: 70,
+                Name:    "SingerId",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 73,
+                ValueEnd: 74,
+                Base:     10,
+                Value:    "1",
+              },
             },
           },
         },

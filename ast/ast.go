@@ -101,15 +101,27 @@ func (Insert) isStatement()             {}
 func (Delete) isStatement()             {}
 func (Update) isStatement()             {}
 
-// QueryExpr represents set operator operands.
+// QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
+// Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
 type QueryExpr interface {
 	Node
 	isQueryExpr()
 }
 
 func (Select) isQueryExpr()        {}
+func (Query) isQueryExpr()         {}
+func (FromQuery) isQueryExpr()     {}
 func (SubQuery) isQueryExpr()      {}
 func (CompoundQuery) isQueryExpr() {}
+
+// PipeOperator represents pipe operator node which can be appeared in Query.
+type PipeOperator interface {
+	Node
+	isPipeOperator()
+}
+
+func (PipeSelect) isPipeOperator() {}
+func (PipeWhere) isPipeOperator()  {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -498,16 +510,36 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // QueryStatement is query statement node.
 //
-//	{{.Hint | sqlOpt}} {{.With | sqlOpt}} {{.Query | sql}}
-//
-// https://cloud.google.com/spanner/docs/query-syntax
+//	{{.Hint | sqlOpt}} {{.Query | sql}}
 type QueryStatement struct {
-	// pos = (Hint ?? With ?? Query).pos
+	// pos = (Hint ?? Query).pos
 	// end = Query.end
 
 	Hint  *Hint // optional
-	With  *With // optional
 	Query QueryExpr
+}
+
+// Query is query expression node with optional CTE, ORDER BY, LIMIT, and pipe operators.
+// Usually, it is used as outermost QueryExpr in SubQuery and QueryStatement
+//
+//	{{.With | sqlOpt}}
+//	{{.Query | sql}}
+//	{{.OrderBy | sqlOpt}}
+//	{{.Limit | sqlOpt}}
+//	{{.PipeOperators | sqlJoin ", "}}
+//
+// https://cloud.google.com/spanner/docs/query-syntax
+type Query struct {
+	// pos = (With ?? Query).pos
+	// end = Query.end
+
+	With  *With
+	Query QueryExpr
+
+	OrderBy *OrderBy // optional
+	Limit   *Limit   // optional
+
+	PipeOperators []PipeOperator
 }
 
 // Hint is hint node.
@@ -562,30 +594,26 @@ type CTE struct {
 // Select is SELECT statement node.
 //
 //	SELECT
-//	  {{if .Distinct}}DISTINCT{{end}}
+//	  {{.AllOrDistinct}}
 //	  {{.As | sqlOpt}}
 //	  {{.Results | sqlJoin ","}}
 //	  {{.From | sqlOpt}}
 //	  {{.Where | sqlOpt}}
 //	  {{.GroupBy | sqlOpt}}
 //	  {{.Having | sqlOpt}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
 type Select struct {
 	// pos = Select
-	// end = (Limit ?? OrderBy ?? Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
+	// end = (Having ?? GroupBy ?? Where ?? From ?? Results[$]).end
 
 	Select token.Pos // position of "select" keyword
 
-	Distinct bool
-	As       SelectAs     // optional
-	Results  []SelectItem // len(Results) > 0
-	From     *From        // optional
-	Where    *Where       // optional
-	GroupBy  *GroupBy     // optional
-	Having   *Having      // optional
-	OrderBy  *OrderBy     // optional
-	Limit    *Limit       // optional
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
+	From          *From         // optional
+	Where         *Where        // optional
+	GroupBy       *GroupBy      // optional
+	Having        *Having       // optional
 }
 
 // AsStruct represents AS STRUCT node in SELECT clause.
@@ -621,34 +649,43 @@ type AsTypeName struct {
 	TypeName *NamedType
 }
 
-// CompoundQuery is query statement node compounded by set operators.
-//
-//	{{.Queries | sqlJoin (printf "%s %s" .Op or(and(.Distinct, "DISTINCT"), "ALL"))}}
-//	  {{.OrderBy | sqlOpt}}
-//	  {{.Limit | sqlOpt}}
-type CompoundQuery struct {
-	// pos = Queries[0].pos
-	// end = (Limit ?? OrderBy ?? Queries[$]).end
+// FromQuery is FROM query expression node.
+type FromQuery struct {
+	// pos = From.pos
+	// end = From.end
 
-	Op       SetOp
-	Distinct bool
-	Queries  []QueryExpr // len(Queries) >= 2
-	OrderBy  *OrderBy    // optional
-	Limit    *Limit      // optional
+	From *From
 }
 
-// SubQuery is subquery statement node.
+func (f *FromQuery) SQL() string {
+	return f.From.SQL()
+}
+
+// CompoundQuery is query expression node compounded by set operators.
+// Note: A single CompoundQuery can express query expressions compounded by the same set operator.
+// If there are mixed Op or Distinct in query expression, CompoundQuery will be nested.
 //
-//	({{.Query | sql}}) {{.OrderBy | sqlOpt}} {{.Limit | sqlOpt}}
+//	{{.Queries | sqlJoin (printf "%s %s" .Op .AllOrDistinct)}}
+type CompoundQuery struct {
+	// pos = Queries[0].pos
+	// end = Queries[$].end
+
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Queries       []QueryExpr // len(Queries) >= 2
+}
+
+// SubQuery is parenthesized query expression node.
+// Note: subquery expression is expressed as a ParenTableExpr. Maybe better to rename as like ParenQueryExpr?
+//
+//	({{.Query | sql}})
 type SubQuery struct {
 	// pos = Lparen
-	// end = (Limit ?? OrderBy).end || Rparen + 1
+	// end = Rparen + 1
 
 	Lparen, Rparen token.Pos // position of "(" and ")"
 
-	Query   QueryExpr
-	OrderBy *OrderBy // optional
-	Limit   *Limit   // optional
+	Query QueryExpr
 }
 
 // StarModifierExcept is EXCEPT node in Star and DotStar of SelectItem.
@@ -865,6 +902,42 @@ type Offset struct {
 	Offset token.Pos // position of "OFFSET" keyword
 
 	Value IntValue
+}
+
+// ================================================================================
+//
+// Pipe Operators
+//
+// Must be the same order in document.
+// https://github.com/google/zetasql/blob/master/docs/pipe-syntax.md#pipe-operators
+// TODO: The reference should be Spanner reference when it is supported.
+//
+// ================================================================================
+
+// PipeSelect is SELECT pipe operator node.
+//
+//	|> SELECT {{.AllOrDistinct}} {{.As | sqlOpt}} {{.Results | sqlJoin ", "}}
+type PipeSelect struct {
+	// pos = Pipe
+	// end = Results[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	AllOrDistinct AllOrDistinct // optional
+	As            SelectAs      // optional
+	Results       []SelectItem  // len(Results) > 0
+}
+
+// PipeWhere is WHERE pipe operator node.
+//
+//	|> WHERE {{.Expr | sql}}
+type PipeWhere struct {
+	// pos = Pipe
+	// end = Expr.end
+
+	Pipe token.Pos // position of "|>"
+
+	Expr Expr
 }
 
 // ================================================================================

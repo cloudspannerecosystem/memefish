@@ -11,18 +11,20 @@ select ((select 1) limit 1 offset 0) + 3
           Left: &ast.ScalarSubQuery{
             Lparen: 7,
             Rparen: 35,
-            Query:  &ast.SubQuery{
-              Lparen: 8,
-              Rparen: 17,
-              Query:  &ast.Select{
-                Select:  9,
-                Results: []ast.SelectItem{
-                  &ast.ExprSelectItem{
-                    Expr: &ast.IntLiteral{
-                      ValuePos: 16,
-                      ValueEnd: 17,
-                      Base:     10,
-                      Value:    "1",
+            Query:  &ast.Query{
+              Query: &ast.SubQuery{
+                Lparen: 8,
+                Rparen: 17,
+                Query:  &ast.Select{
+                  Select:  9,
+                  Results: []ast.SelectItem{
+                    &ast.ExprSelectItem{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 16,
+                        ValueEnd: 17,
+                        Base:     10,
+                        Value:    "1",
+                      },
                     },
                   },
                 },

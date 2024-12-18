@@ -6,8 +6,9 @@ SELECT * FROM Singers
 --- AST
 &ast.QueryStatement{
   Query: &ast.CompoundQuery{
-    Op:      "UNION",
-    Queries: []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.Select{
         Results: []ast.SelectItem{
           &ast.Star{

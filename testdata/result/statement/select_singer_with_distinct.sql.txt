@@ -8,8 +8,8 @@ FROM
 --- AST
 &ast.QueryStatement{
   Query: &ast.Select{
-    Distinct: true,
-    Results:  []ast.SelectItem{
+    AllOrDistinct: "DISTINCT",
+    Results:       []ast.SelectItem{
       &ast.Star{
         Star: 20,
       },

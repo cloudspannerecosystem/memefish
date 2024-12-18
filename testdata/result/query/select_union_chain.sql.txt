@@ -4,8 +4,9 @@
 --- AST
 &ast.QueryStatement{
   Query: &ast.CompoundQuery{
-    Op:      "UNION",
-    Queries: []ast.QueryExpr{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
       &ast.SubQuery{
         Rparen: 9,
         Query:  &ast.Select{

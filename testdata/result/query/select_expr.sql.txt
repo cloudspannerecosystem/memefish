@@ -734,8 +734,9 @@ select 1 + 2, 1 - 2,
             Lparen: 697,
             Rparen: 744,
             Query:  &ast.CompoundQuery{
-              Op:      "UNION",
-              Queries: []ast.QueryExpr{
+              Op:            "UNION",
+              AllOrDistinct: "ALL",
+              Queries:       []ast.QueryExpr{
                 &ast.Select{
                   Select:  698,
                   Results: []ast.SelectItem{

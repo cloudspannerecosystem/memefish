@@ -1,5 +1,14 @@
 package ast
 
+// AllOrDistinct represents ALL or DISTINCT in SELECT or set operations, etc.
+// If it is optional, it may be an empty string, so handle it according to the context.
+type AllOrDistinct string
+
+const (
+	AllOrDistinctAll      AllOrDistinct = "ALL"
+	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
+)
+
 type TableHintKey string
 
 const (

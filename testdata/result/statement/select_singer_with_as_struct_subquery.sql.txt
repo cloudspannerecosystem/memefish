@@ -19,24 +19,26 @@ SELECT
           Query:  &ast.SubQuery{
             Lparen: 20,
             Rparen: 88,
-            Query:  &ast.Select{
-              Select: 28,
-              As:     &ast.AsStruct{
-                As:     35,
-                Struct: 38,
-              },
-              Results: []ast.SelectItem{
-                &ast.Star{
-                  Star: 53,
+            Query:  &ast.Query{
+              Query: &ast.Select{
+                Select: 28,
+                As:     &ast.AsStruct{
+                  As:     35,
+                  Struct: 38,
                 },
-              },
-              From: &ast.From{
-                From:   61,
-                Source: &ast.TableName{
-                  Table: &ast.Ident{
-                    NamePos: 66,
-                    NameEnd: 73,
-                    Name:    "Singers",
+                Results: []ast.SelectItem{
+                  &ast.Star{
+                    Star: 53,
+                  },
+                },
+                From: &ast.From{
+                  From:   61,
+                  Source: &ast.TableName{
+                    Table: &ast.Ident{
+                      NamePos: 66,
+                      NameEnd: 73,
+                      Name:    "Singers",
+                    },
                   },
                 },
               },

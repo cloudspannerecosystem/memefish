@@ -3,84 +3,86 @@ with subq1 as (select c1 from foo), subq2 as (select c2 from foo) select * from 
 
 --- AST
 &ast.QueryStatement{
-  With: &ast.With{
-    CTEs: []*ast.CTE{
-      &ast.CTE{
-        Rparen: 33,
-        Name:   &ast.Ident{
-          NamePos: 5,
-          NameEnd: 10,
-          Name:    "subq1",
-        },
-        QueryExpr: &ast.Select{
-          Select:  15,
-          Results: []ast.SelectItem{
-            &ast.ExprSelectItem{
-              Expr: &ast.Ident{
-                NamePos: 22,
-                NameEnd: 24,
-                Name:    "c1",
+  Query: &ast.Query{
+    With: &ast.With{
+      CTEs: []*ast.CTE{
+        &ast.CTE{
+          Rparen: 33,
+          Name:   &ast.Ident{
+            NamePos: 5,
+            NameEnd: 10,
+            Name:    "subq1",
+          },
+          QueryExpr: &ast.Select{
+            Select:  15,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 22,
+                  NameEnd: 24,
+                  Name:    "c1",
+                },
               },
             },
-          },
-          From: &ast.From{
-            From:   25,
-            Source: &ast.TableName{
-              Table: &ast.Ident{
-                NamePos: 30,
-                NameEnd: 33,
-                Name:    "foo",
-              },
-            },
-          },
-        },
-      },
-      &ast.CTE{
-        Rparen: 64,
-        Name:   &ast.Ident{
-          NamePos: 36,
-          NameEnd: 41,
-          Name:    "subq2",
-        },
-        QueryExpr: &ast.Select{
-          Select:  46,
-          Results: []ast.SelectItem{
-            &ast.ExprSelectItem{
-              Expr: &ast.Ident{
-                NamePos: 53,
-                NameEnd: 55,
-                Name:    "c2",
-              },
-            },
-          },
-          From: &ast.From{
-            From:   56,
-            Source: &ast.TableName{
-              Table: &ast.Ident{
-                NamePos: 61,
-                NameEnd: 64,
-                Name:    "foo",
+            From: &ast.From{
+              From:   25,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 30,
+                  NameEnd: 33,
+                  Name:    "foo",
+                },
               },
             },
           },
         },
-      },
-    },
-  },
-  Query: &ast.Select{
-    Select:  66,
-    Results: []ast.SelectItem{
-      &ast.Star{
-        Star: 73,
+        &ast.CTE{
+          Rparen: 64,
+          Name:   &ast.Ident{
+            NamePos: 36,
+            NameEnd: 41,
+            Name:    "subq2",
+          },
+          QueryExpr: &ast.Select{
+            Select:  46,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 53,
+                  NameEnd: 55,
+                  Name:    "c2",
+                },
+              },
+            },
+            From: &ast.From{
+              From:   56,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 64,
+                  Name:    "foo",
+                },
+              },
+            },
+          },
+        },
       },
     },
-    From: &ast.From{
-      From:   75,
-      Source: &ast.TableName{
-        Table: &ast.Ident{
-          NamePos: 80,
-          NameEnd: 85,
-          Name:    "subq1",
+    Query: &ast.Select{
+      Select:  66,
+      Results: []ast.SelectItem{
+        &ast.Star{
+          Star: 73,
+        },
+      },
+      From: &ast.From{
+        From:   75,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 80,
+            NameEnd: 85,
+            Name:    "subq1",
+          },
         },
       },
     },

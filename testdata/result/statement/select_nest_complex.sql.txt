@@ -24,52 +24,55 @@ from (
           Left: &ast.SubQueryTableExpr{
             Lparen: 20,
             Rparen: 90,
-            Query:  &ast.SubQuery{
-              Lparen: 21,
-              Rparen: 81,
-              Query:  &ast.CompoundQuery{
-                Op:       "UNION",
-                Distinct: true,
-                Queries:  []ast.QueryExpr{
-                  &ast.SubQuery{
-                    Lparen: 22,
-                    Rparen: 54,
-                    Query:  &ast.CompoundQuery{
-                      Op:      "UNION",
-                      Queries: []ast.QueryExpr{
-                        &ast.Select{
-                          Select:  23,
-                          Results: []ast.SelectItem{
-                            &ast.Alias{
-                              Expr: &ast.IntLiteral{
-                                ValuePos: 30,
-                                ValueEnd: 31,
-                                Base:     10,
-                                Value:    "1",
-                              },
-                              As: &ast.AsAlias{
-                                As:    -1,
-                                Alias: &ast.Ident{
-                                  NamePos: 32,
-                                  NameEnd: 33,
-                                  Name:    "A",
+            Query:  &ast.Query{
+              Query: &ast.SubQuery{
+                Lparen: 21,
+                Rparen: 81,
+                Query:  &ast.CompoundQuery{
+                  Op:            "UNION",
+                  AllOrDistinct: "DISTINCT",
+                  Queries:       []ast.QueryExpr{
+                    &ast.SubQuery{
+                      Lparen: 22,
+                      Rparen: 54,
+                      Query:  &ast.CompoundQuery{
+                        Op:            "UNION",
+                        AllOrDistinct: "ALL",
+                        Queries:       []ast.QueryExpr{
+                          &ast.Select{
+                            Select:  23,
+                            Results: []ast.SelectItem{
+                              &ast.Alias{
+                                Expr: &ast.IntLiteral{
+                                  ValuePos: 30,
+                                  ValueEnd: 31,
+                                  Base:     10,
+                                  Value:    "1",
+                                },
+                                As: &ast.AsAlias{
+                                  As:    -1,
+                                  Alias: &ast.Ident{
+                                    NamePos: 32,
+                                    NameEnd: 33,
+                                    Name:    "A",
+                                  },
                                 },
                               },
                             },
                           },
-                        },
-                        &ast.SubQuery{
-                          Lparen: 44,
-                          Rparen: 53,
-                          Query:  &ast.Select{
-                            Select:  45,
-                            Results: []ast.SelectItem{
-                              &ast.ExprSelectItem{
-                                Expr: &ast.IntLiteral{
-                                  ValuePos: 52,
-                                  ValueEnd: 53,
-                                  Base:     10,
-                                  Value:    "2",
+                          &ast.SubQuery{
+                            Lparen: 44,
+                            Rparen: 53,
+                            Query:  &ast.Select{
+                              Select:  45,
+                              Results: []ast.SelectItem{
+                                &ast.ExprSelectItem{
+                                  Expr: &ast.IntLiteral{
+                                    ValuePos: 52,
+                                    ValueEnd: 53,
+                                    Base:     10,
+                                    Value:    "2",
+                                  },
                                 },
                               },
                             },
@@ -77,19 +80,19 @@ from (
                         },
                       },
                     },
-                  },
-                  &ast.SubQuery{
-                    Lparen: 71,
-                    Rparen: 80,
-                    Query:  &ast.Select{
-                      Select:  72,
-                      Results: []ast.SelectItem{
-                        &ast.ExprSelectItem{
-                          Expr: &ast.IntLiteral{
-                            ValuePos: 79,
-                            ValueEnd: 80,
-                            Base:     10,
-                            Value:    "1",
+                    &ast.SubQuery{
+                      Lparen: 71,
+                      Rparen: 80,
+                      Query:  &ast.Select{
+                        Select:  72,
+                        Results: []ast.SelectItem{
+                          &ast.ExprSelectItem{
+                            Expr: &ast.IntLiteral{
+                              ValuePos: 79,
+                              ValueEnd: 80,
+                              Base:     10,
+                              Value:    "1",
+                            },
                           },
                         },
                       },

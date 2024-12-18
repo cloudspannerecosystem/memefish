@@ -12,24 +12,26 @@ SELECT (
         Expr: &ast.ScalarSubQuery{
           Lparen: 7,
           Rparen: 53,
-          Query:  &ast.Select{
-            Select:  11,
-            Results: []ast.SelectItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 18,
-                  NameEnd: 27,
-                  Name:    "FirstName",
+          Query:  &ast.Query{
+            Query: &ast.Select{
+              Select:  11,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 18,
+                    NameEnd: 27,
+                    Name:    "FirstName",
+                  },
                 },
               },
-            },
-            From: &ast.From{
-              From:   30,
-              Source: &ast.TableName{
-                Table: &ast.Ident{
-                  NamePos: 35,
-                  NameEnd: 42,
-                  Name:    "Singers",
+              From: &ast.From{
+                From:   30,
+                Source: &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 35,
+                    NameEnd: 42,
+                    Name:    "Singers",
+                  },
                 },
               },
             },
