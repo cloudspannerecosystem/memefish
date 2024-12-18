@@ -301,10 +301,8 @@ func (s *Select) sqlContext(fc *FormatContext) string {
 		strOpt(s.AllOrDistinct != "", " "+string(s.AllOrDistinct)) +
 		sqlOptCtx(fc, " ", s.As, "") +
 		fc.indentScope(func(fc *FormatContext) string {
-			if len(s.Results) == 1 {
-				return " " + fc.SQL(s.Results[0])
-			}
-			return fc.newlineOr(" ") + sqlJoinCtx(fc, s.Results, ","+fc.newlineOr(" "))
+			return strIfElse(len(s.Results) > 1, fc.newlineOr(" "), " ") +
+				sqlJoinCtx(fc, s.Results, ","+fc.newlineOr(" "))
 		}) +
 		sqlOptCtx(fc, fc.newlineOr(" "), s.From, "") +
 		sqlOptCtx(fc, fc.newlineOr(" "), s.Where, "") +
