@@ -42,7 +42,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 
 	for _, in := range inputs {
 		in := in
-		bad := strings.HasPrefix(in.Name(), "bad_")
+		bad := strings.HasPrefix(in.Name(), "!bad_")
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 

@@ -8,7 +8,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"github.com/cloudspannerecosystem/memefish/token"
 	. "github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -263,7 +262,7 @@ func TestLexerWrongNoError(t *testing.T) {
 			hasBad := false
 			for l.Token.Kind != TokenEOF {
 				l.nextToken(true)
-				if l.Token.Kind == token.TokenBad {
+				if l.Token.Kind == TokenBad {
 					hasBad = true
 				}
 			}
