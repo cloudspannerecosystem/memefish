@@ -12,16 +12,13 @@ import (
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 	"github.com/pmezard/go-difflib/difflib"
 )
 
 var update = flag.Bool("update", false, "update result files")
 
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
-	printer := pp.New()
-	printer.SetColoringEnabled(false)
-
 	if *update {
 		_, err := os.Stat(resultPath)
 		if err == nil {
@@ -63,6 +60,10 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				log.Fatalf("error on parsing input file: %v", err)
 			}
 
+			pprinter := pp.New()
+			pprinter.SetColoringEnabled(false)
+			pprinter.SetOmitEmpty(true)
+
 			var buf bytes.Buffer
 
 			fmt.Fprintf(&buf, "--- %s\n", in.Name())
@@ -70,7 +71,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- AST\n")
-			_, _ = printer.Fprintln(&buf, node)
+			_, _ = pprinter.Fprintln(&buf, node)
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")

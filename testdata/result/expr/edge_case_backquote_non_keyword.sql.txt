@@ -4,7 +4,6 @@
 &ast.BinaryExpr{
   Op:   "+",
   Left: &ast.Ident{
-    NamePos: 0,
     NameEnd: 10,
     Name:    "DATABASE",
   },

@@ -22,13 +22,7 @@ CREATE SEARCH INDEX AlbumsIndex
       Name:    "AlbumTitle_Tokens",
     },
   },
-  Rparen:           84,
-  Storing:          (*ast.Storing)(nil),
-  PartitionColumns: []*ast.Ident(nil),
-  OrderBy:          (*ast.OrderBy)(nil),
-  Where:            (*ast.Where)(nil),
-  Interleave:       (*ast.InterleaveIn)(nil),
-  Options:          (*ast.Options)(nil),
+  Rparen: 84,
 }
 
 --- SQL

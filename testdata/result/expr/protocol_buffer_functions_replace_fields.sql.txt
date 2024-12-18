@@ -1,0 +1,125 @@
+--- protocol_buffer_functions_replace_fields.sql
+REPLACE_FIELDS(
+  NEW Book(
+    "The Hummingbird" AS title,
+    NEW BookDetails(10 AS chapters) AS details),
+  "The Hummingbird II" AS title,
+  11 AS details.chapters)
+--- AST
+&ast.ReplaceFieldsExpr{
+  Rparen: 166,
+  Expr:   &ast.NewConstructor{
+    New:  18,
+    Type: &ast.NamedType{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 22,
+          NameEnd: 26,
+          Name:    "Book",
+        },
+      },
+    },
+    Args: []ast.NewConstructorArg{
+      &ast.Alias{
+        Expr: &ast.StringLiteral{
+          ValuePos: 32,
+          ValueEnd: 49,
+          Value:    "The Hummingbird",
+        },
+        As: &ast.AsAlias{
+          As:    50,
+          Alias: &ast.Ident{
+            NamePos: 53,
+            NameEnd: 58,
+            Name:    "title",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.NewConstructor{
+          New:  64,
+          Type: &ast.NamedType{
+            Path: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 68,
+                NameEnd: 79,
+                Name:    "BookDetails",
+              },
+            },
+          },
+          Args: []ast.NewConstructorArg{
+            &ast.Alias{
+              Expr: &ast.IntLiteral{
+                ValuePos: 80,
+                ValueEnd: 82,
+                Base:     10,
+                Value:    "10",
+              },
+              As: &ast.AsAlias{
+                As:    83,
+                Alias: &ast.Ident{
+                  NamePos: 86,
+                  NameEnd: 94,
+                  Name:    "chapters",
+                },
+              },
+            },
+          },
+          Rparen: 94,
+        },
+        As: &ast.AsAlias{
+          As:    96,
+          Alias: &ast.Ident{
+            NamePos: 99,
+            NameEnd: 106,
+            Name:    "details",
+          },
+        },
+      },
+    },
+    Rparen: 106,
+  },
+  Fields: []*ast.ReplaceFieldsArg{
+    &ast.ReplaceFieldsArg{
+      Expr: &ast.StringLiteral{
+        ValuePos: 111,
+        ValueEnd: 131,
+        Value:    "The Hummingbird II",
+      },
+      Field: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 135,
+            NameEnd: 140,
+            Name:    "title",
+          },
+        },
+      },
+    },
+    &ast.ReplaceFieldsArg{
+      Expr: &ast.IntLiteral{
+        ValuePos: 144,
+        ValueEnd: 146,
+        Base:     10,
+        Value:    "11",
+      },
+      Field: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 150,
+            NameEnd: 157,
+            Name:    "details",
+          },
+          &ast.Ident{
+            NamePos: 158,
+            NameEnd: 166,
+            Name:    "chapters",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+REPLACE_FIELDS(NEW Book("The Hummingbird" AS title, NEW BookDetails(10 AS chapters) AS details), "The Hummingbird II" AS title, 11 AS details.chapters)

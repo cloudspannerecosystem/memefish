@@ -11,10 +11,9 @@ CREATE TABLE Albums (
 ) PRIMARY KEY(AlbumId)
 --- AST
 &ast.CreateTable{
-  Create:      105,
-  Rparen:      575,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Create: 105,
+  Rparen: 575,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 118,
@@ -36,13 +35,9 @@ CREATE TABLE Albums (
         Rparen:  169,
         Name:    "STRING",
         Max:     true,
-        Size:    nil,
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 224,
@@ -55,11 +50,8 @@ CREATE TABLE Albums (
         NamePos: 214,
         Name:    "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 281,
@@ -72,11 +64,8 @@ CREATE TABLE Albums (
         NamePos: 271,
         Name:    "INT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -90,13 +79,8 @@ CREATE TABLE Albums (
         Rparen:  332,
         Name:    "STRING",
         Max:     true,
-        Size:    nil,
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -109,11 +93,7 @@ CREATE TABLE Albums (
         NamePos: 366,
         Name:    "FLOAT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -126,8 +106,6 @@ CREATE TABLE Albums (
         NamePos: 417,
         Name:    "TOKENLIST",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     427,
         Stored: -1,
@@ -139,8 +117,7 @@ CREATE TABLE Albums (
             NameEnd: 448,
             Name:    "TOKENIZE_FULLTEXT",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 449,
@@ -149,14 +126,9 @@ CREATE TABLE Albums (
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
-          Hint:         (*ast.Hint)(nil),
         },
       },
-      Hidden:  462,
-      Options: (*ast.Options)(nil),
+      Hidden: 462,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -169,8 +141,6 @@ CREATE TABLE Albums (
         NamePos: 508,
         Name:    "TOKENLIST",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
       GeneratedExpr: &ast.GeneratedColumnExpr{
         As:     518,
         Stored: -1,
@@ -182,8 +152,7 @@ CREATE TABLE Albums (
             NameEnd: 537,
             Name:    "TOKENIZE_NUMBER",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 538,
@@ -192,18 +161,12 @@ CREATE TABLE Albums (
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
-          Hint:         (*ast.Hint)(nil),
         },
       },
-      Hidden:  547,
-      Options: (*ast.Options)(nil),
+      Hidden: 547,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -211,12 +174,8 @@ CREATE TABLE Albums (
         NameEnd: 575,
         Name:    "AlbumId",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

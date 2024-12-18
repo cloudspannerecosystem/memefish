@@ -6,13 +6,9 @@ SELECT
 FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   99,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  99,
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 143,
@@ -21,13 +17,11 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
             NameEnd: 119,
             Name:    "SUBSTRING",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.CastExpr{
                 Cast:   120,
                 Rparen: 136,
-                Safe:   false,
                 Expr:   &ast.Ident{
                   NamePos: 125,
                   NameEnd: 126,
@@ -56,10 +50,6 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
-          Hint:         (*ast.Hint)(nil),
         },
         As: &ast.AsAlias{
           As:    145,
@@ -78,13 +68,11 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
             NameEnd: 164,
             Name:    "SUBSTRING",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.CastExpr{
                 Cast:   165,
                 Rparen: 181,
-                Safe:   false,
                 Expr:   &ast.Ident{
                   NamePos: 170,
                   NameEnd: 171,
@@ -113,10 +101,6 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
-          Hint:         (*ast.Hint)(nil),
         },
         As: &ast.AsAlias{
           As:    190,
@@ -134,10 +118,8 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
         Lparen: 200,
         Rparen: 254,
         Query:  &ast.Select{
-          Select:   201,
-          Distinct: false,
-          As:       nil,
-          Results:  []ast.SelectItem{
+          Select:  201,
+          Results: []ast.SelectItem{
             &ast.Alias{
               Expr: &ast.CallExpr{
                 Rparen: 216,
@@ -146,8 +128,7 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
                   NameEnd: 214,
                   Name:    "SHA512",
                 },
-                Distinct: false,
-                Args:     []ast.Arg{
+                Args: []ast.Arg{
                   &ast.ExprArg{
                     Expr: &ast.Ident{
                       NamePos: 215,
@@ -156,10 +137,7 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
                     },
                   },
                 },
-                NamedArgs:    []*ast.NamedArg(nil),
-                NullHandling: nil,
-                Having:       nil,
-                Hint:         &ast.Hint{
+                Hint: &ast.Hint{
                   Atmark:  218,
                   Rbrace:  241,
                   Records: []*ast.HintRecord{
@@ -195,26 +173,11 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
                 NameEnd: 254,
                 Name:    "t",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
-          OrderBy: (*ast.OrderBy)(nil),
-          Limit:   (*ast.Limit)(nil),
         },
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

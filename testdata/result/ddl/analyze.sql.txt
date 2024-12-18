@@ -1,9 +1,7 @@
 --- analyze.sql
 ANALYZE
 --- AST
-&ast.Analyze{
-  Analyze: 0,
-}
+&ast.Analyze{}
 
 --- SQL
 ANALYZE

@@ -2,7 +2,6 @@
 REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.SelectPrivilegeOnChangeStream{
     Select: 7,
     Names:  []*ast.Ident{

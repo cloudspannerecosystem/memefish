@@ -5,13 +5,8 @@ select ((select 1) union all (select 2)) + 3,
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
@@ -19,17 +14,14 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 7,
             Rparen: 39,
             Query:  &ast.CompoundQuery{
-              Op:       "UNION",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:      "UNION",
+              Queries: []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 8,
                   Rparen: 17,
                   Query:  &ast.Select{
-                    Select:   9,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  9,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 16,
@@ -39,24 +31,14 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 &ast.SubQuery{
                   Lparen: 29,
                   Rparen: 38,
                   Query:  &ast.Select{
-                    Select:   30,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  30,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 37,
@@ -66,19 +48,9 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   (*ast.Limit)(nil),
             },
           },
           Right: &ast.IntLiteral{
@@ -96,17 +68,14 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 53,
             Rparen: 89,
             Query:  &ast.CompoundQuery{
-              Op:       "INTERSECT",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:      "INTERSECT",
+              Queries: []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 54,
                   Rparen: 63,
                   Query:  &ast.Select{
-                    Select:   55,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  55,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 62,
@@ -116,24 +85,14 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 &ast.SubQuery{
                   Lparen: 79,
                   Rparen: 88,
                   Query:  &ast.Select{
-                    Select:   80,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  80,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 87,
@@ -143,19 +102,9 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   (*ast.Limit)(nil),
             },
           },
           Right: &ast.IntLiteral{
@@ -173,17 +122,14 @@ select ((select 1) union all (select 2)) + 3,
             Lparen: 103,
             Rparen: 136,
             Query:  &ast.CompoundQuery{
-              Op:       "EXCEPT",
-              Distinct: false,
-              Queries:  []ast.QueryExpr{
+              Op:      "EXCEPT",
+              Queries: []ast.QueryExpr{
                 &ast.SubQuery{
                   Lparen: 104,
                   Rparen: 113,
                   Query:  &ast.Select{
-                    Select:   105,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  105,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 112,
@@ -193,24 +139,14 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
                 &ast.SubQuery{
                   Lparen: 126,
                   Rparen: 135,
                   Query:  &ast.Select{
-                    Select:   127,
-                    Distinct: false,
-                    As:       nil,
-                    Results:  []ast.SelectItem{
+                    Select:  127,
+                    Results: []ast.SelectItem{
                       &ast.ExprSelectItem{
                         Expr: &ast.IntLiteral{
                           ValuePos: 134,
@@ -220,19 +156,9 @@ select ((select 1) union all (select 2)) + 3,
                         },
                       },
                     },
-                    From:    (*ast.From)(nil),
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
-                    OrderBy: (*ast.OrderBy)(nil),
-                    Limit:   (*ast.Limit)(nil),
                   },
-                  OrderBy: (*ast.OrderBy)(nil),
-                  Limit:   (*ast.Limit)(nil),
                 },
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   (*ast.Limit)(nil),
             },
           },
           Right: &ast.IntLiteral{
@@ -244,12 +170,6 @@ select ((select 1) union all (select 2)) + 3,
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
