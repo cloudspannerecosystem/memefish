@@ -59,4 +59,4 @@ create index foo_bar on foo (
 }
 
 --- SQL
-CREATE INDEX foo_bar ON foo (bar ASC) STORING (foo, baz)
+CREATE INDEX foo_bar ON foo(bar ASC) STORING (foo, baz)

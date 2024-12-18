@@ -1027,32 +1027,16 @@ func (r *RenameTable) SQL() string { return "RENAME TABLE " + sqlJoin(r.Tos, ", 
 func (r *RenameTableTo) SQL() string { return r.Old.SQL() + " TO " + r.New.SQL() }
 
 func (c *CreateIndex) SQL() string {
-	sql := "CREATE "
-	if c.Unique {
-		sql += "UNIQUE "
-	}
-	if c.NullFiltered {
-		sql += "NULL_FILTERED "
-	}
-	sql += "INDEX "
-	if c.IfNotExists {
-		sql += "IF NOT EXISTS "
-	}
-	sql += c.Name.SQL() + " ON " + c.TableName.SQL() + " ("
-	for i, k := range c.Keys {
-		if i != 0 {
-			sql += ", "
-		}
-		sql += k.SQL()
-	}
-	sql += ")"
-	if c.Storing != nil {
-		sql += " " + c.Storing.SQL()
-	}
-	if c.InterleaveIn != nil {
-		sql += c.InterleaveIn.SQL()
-	}
-	return sql
+	return "CREATE " +
+		strOpt(c.Unique, "UNIQUE ") +
+		strOpt(c.NullFiltered, "NULL_FILTERED ") +
+		"INDEX " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " ON " + c.TableName.SQL() + "(" +
+		sqlJoin(c.Keys, ", ") +
+		")" +
+		sqlOpt(" ", c.Storing, "") +
+		sqlOpt("", c.InterleaveIn, "")
 }
 
 func (c *CreateVectorIndex) SQL() string {

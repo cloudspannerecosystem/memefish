@@ -54,4 +54,4 @@ create index foo_bar on foo (
 }
 
 --- SQL
-CREATE INDEX foo_bar ON foo (bar DESC, baz ASC)
+CREATE INDEX foo_bar ON foo(bar DESC, baz ASC)

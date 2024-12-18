@@ -62,4 +62,4 @@ create index foo_bar on foo (
 }
 
 --- SQL
-CREATE INDEX foo_bar ON foo (foo DESC) STORING (bar), INTERLEAVE IN foobar
+CREATE INDEX foo_bar ON foo(foo DESC) STORING (bar), INTERLEAVE IN foobar

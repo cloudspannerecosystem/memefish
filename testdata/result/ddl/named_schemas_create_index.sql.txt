@@ -51,4 +51,4 @@ CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
 }
 
 --- SQL
-CREATE INDEX sch1.indexOnSingers ON sch1.Singers (FirstName)
+CREATE INDEX sch1.indexOnSingers ON sch1.Singers(FirstName)
