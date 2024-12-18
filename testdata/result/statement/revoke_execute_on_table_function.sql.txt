@@ -2,7 +2,6 @@
 REVOKE EXECUTE ON TABLE FUNCTION READ_SingersNameStream FROM ROLE hr_manager
 --- AST
 &ast.Revoke{
-  Revoke:    0,
   Privilege: &ast.ExecutePrivilegeOnTableFunction{
     Execute: 7,
     Names:   []*ast.Ident{

@@ -2,14 +2,13 @@
 delete foo as F where F.foo = 1
 --- AST
 &ast.Delete{
-  Delete:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
   },
   As: &ast.AsAlias{
-    As:    -1,
+    As:    11,
     Alias: &ast.Ident{
       NamePos: 14,
       NameEnd: 15,

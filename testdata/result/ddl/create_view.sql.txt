@@ -8,19 +8,19 @@ from singers
 
 --- AST
 &ast.CreateView{
-  Create: 0,
-  Name:   &ast.Ident{
-    NamePos: 12,
-    NameEnd: 23,
-    Name:    "singernames",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 23,
+        Name:    "singernames",
+      },
+    },
   },
-  OrReplace:    false,
   SecurityType: "INVOKER",
   Query:        &ast.Select{
-    Select:   48,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  48,
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -37,7 +37,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    76,
           Alias: &ast.Ident{
             NamePos: 79,
             NameEnd: 87,
@@ -86,7 +86,7 @@ from singers
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    138,
           Alias: &ast.Ident{
             NamePos: 141,
             NameEnd: 145,
@@ -103,16 +103,8 @@ from singers
           NameEnd: 158,
           Name:    "singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -4,13 +4,8 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
      t.arr AS a WITH OFFSET AS off
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -29,21 +24,17 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
     From: &ast.From{
       From:   14,
       Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Unnest{
+        Op:   ",",
+        Left: &ast.Unnest{
           Unnest: 19,
           Rparen: 62,
           Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 26,
             Rbrack: 61,
-            Type:   nil,
             Values: []ast.Expr{
-              &ast.StructLiteral{
+              &ast.TypedStructLiteral{
                 Struct: 27,
-                Lparen: 52,
                 Rparen: 60,
                 Fields: []*ast.StructField{
                   &ast.StructField{
@@ -67,7 +58,6 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
                     Array:  -1,
                     Lbrack: 53,
                     Rbrack: 59,
-                    Type:   nil,
                     Values: []ast.Expr{
                       &ast.StringLiteral{
                         ValuePos: 54,
@@ -80,17 +70,14 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As:    64,
             Alias: &ast.Ident{
               NamePos: 67,
               NameEnd: 68,
               Name:    "t",
             },
           },
-          WithOffset: (*ast.WithOffset)(nil),
-          Sample:     (*ast.TableSample)(nil),
         },
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
@@ -107,9 +94,8 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    -1,
+          As: &ast.AsAlias{
+            As:    81,
             Alias: &ast.Ident{
               NamePos: 84,
               NameEnd: 85,
@@ -120,7 +106,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
             With:   86,
             Offset: 91,
             As:     &ast.AsAlias{
-              As:    -1,
+              As:    98,
               Alias: &ast.Ident{
                 NamePos: 101,
                 NameEnd: 104,
@@ -128,16 +114,9 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

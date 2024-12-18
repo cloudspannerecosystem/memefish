@@ -9,13 +9,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -23,25 +18,21 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     "LEFT OUTER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.TableName{
+        Op:   "LEFT OUTER JOIN",
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
             NameEnd: 25,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    26,
+          As: &ast.AsAlias{
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 26,
               NameEnd: 27,
               Name:    "A",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Right: &ast.TableName{
           Table: &ast.Ident{
@@ -49,16 +40,14 @@ FROM
             NameEnd: 55,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    56,
+          As: &ast.AsAlias{
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 56,
               NameEnd: 57,
               Name:    "B",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.Using{
           Using:  60,
@@ -78,13 +67,8 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A LEFT OUTER JOIN Singers AS B USING (SingerID, FirstName)
+SELECT * FROM Singers A LEFT OUTER JOIN Singers B USING (SingerID, FirstName)

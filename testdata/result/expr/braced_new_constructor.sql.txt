@@ -1,0 +1,259 @@
+--- braced_new_constructor.sql
+-- Example from https://cloud.google.com/spanner/docs/reference/standard-sql/operators#new_operator
+NEW Universe {
+  name: "Sol"
+  closest_planets: ["Mercury", "Venus", "Earth" ]
+  star {
+    radius_miles: 432690
+    age: 4603000000
+  }
+  constellations: [{
+    name: "Libra"
+    index: 0
+  }, {
+    name: "Scorpio"
+    index: 1
+  }]
+  all_planets: (SELECT planets FROM SolTable)
+}
+--- AST
+&ast.BracedNewConstructor{
+  New:  100,
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 104,
+        NameEnd: 112,
+        Name:    "Universe",
+      },
+    },
+  },
+  Body: &ast.BracedConstructor{
+    Lbrace: 113,
+    Rbrace: 380,
+    Fields: []*ast.BracedConstructorField{
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 117,
+          NameEnd: 121,
+          Name:    "name",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 121,
+          Expr:  &ast.StringLiteral{
+            ValuePos: 123,
+            ValueEnd: 128,
+            Value:    "Sol",
+          },
+        },
+      },
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 131,
+          NameEnd: 146,
+          Name:    "closest_planets",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 146,
+          Expr:  &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 148,
+            Rbrack: 177,
+            Values: []ast.Expr{
+              &ast.StringLiteral{
+                ValuePos: 149,
+                ValueEnd: 158,
+                Value:    "Mercury",
+              },
+              &ast.StringLiteral{
+                ValuePos: 160,
+                ValueEnd: 167,
+                Value:    "Venus",
+              },
+              &ast.StringLiteral{
+                ValuePos: 169,
+                ValueEnd: 176,
+                Value:    "Earth",
+              },
+            },
+          },
+        },
+      },
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 181,
+          NameEnd: 185,
+          Name:    "star",
+        },
+        Value: &ast.BracedConstructor{
+          Lbrace: 186,
+          Rbrace: 235,
+          Fields: []*ast.BracedConstructorField{
+            &ast.BracedConstructorField{
+              Name: &ast.Ident{
+                NamePos: 192,
+                NameEnd: 204,
+                Name:    "radius_miles",
+              },
+              Value: &ast.BracedConstructorFieldValueExpr{
+                Colon: 204,
+                Expr:  &ast.IntLiteral{
+                  ValuePos: 206,
+                  ValueEnd: 212,
+                  Base:     10,
+                  Value:    "432690",
+                },
+              },
+            },
+            &ast.BracedConstructorField{
+              Name: &ast.Ident{
+                NamePos: 217,
+                NameEnd: 220,
+                Name:    "age",
+              },
+              Value: &ast.BracedConstructorFieldValueExpr{
+                Colon: 220,
+                Expr:  &ast.IntLiteral{
+                  ValuePos: 222,
+                  ValueEnd: 232,
+                  Base:     10,
+                  Value:    "4603000000",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 239,
+          NameEnd: 253,
+          Name:    "constellations",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 253,
+          Expr:  &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 255,
+            Rbrack: 332,
+            Values: []ast.Expr{
+              &ast.BracedConstructor{
+                Lbrace: 256,
+                Rbrace: 291,
+                Fields: []*ast.BracedConstructorField{
+                  &ast.BracedConstructorField{
+                    Name: &ast.Ident{
+                      NamePos: 262,
+                      NameEnd: 266,
+                      Name:    "name",
+                    },
+                    Value: &ast.BracedConstructorFieldValueExpr{
+                      Colon: 266,
+                      Expr:  &ast.StringLiteral{
+                        ValuePos: 268,
+                        ValueEnd: 275,
+                        Value:    "Libra",
+                      },
+                    },
+                  },
+                  &ast.BracedConstructorField{
+                    Name: &ast.Ident{
+                      NamePos: 280,
+                      NameEnd: 285,
+                      Name:    "index",
+                    },
+                    Value: &ast.BracedConstructorFieldValueExpr{
+                      Colon: 285,
+                      Expr:  &ast.IntLiteral{
+                        ValuePos: 287,
+                        ValueEnd: 288,
+                        Base:     10,
+                        Value:    "0",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.BracedConstructor{
+                Lbrace: 294,
+                Rbrace: 331,
+                Fields: []*ast.BracedConstructorField{
+                  &ast.BracedConstructorField{
+                    Name: &ast.Ident{
+                      NamePos: 300,
+                      NameEnd: 304,
+                      Name:    "name",
+                    },
+                    Value: &ast.BracedConstructorFieldValueExpr{
+                      Colon: 304,
+                      Expr:  &ast.StringLiteral{
+                        ValuePos: 306,
+                        ValueEnd: 315,
+                        Value:    "Scorpio",
+                      },
+                    },
+                  },
+                  &ast.BracedConstructorField{
+                    Name: &ast.Ident{
+                      NamePos: 320,
+                      NameEnd: 325,
+                      Name:    "index",
+                    },
+                    Value: &ast.BracedConstructorFieldValueExpr{
+                      Colon: 325,
+                      Expr:  &ast.IntLiteral{
+                        ValuePos: 327,
+                        ValueEnd: 328,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 336,
+          NameEnd: 347,
+          Name:    "all_planets",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 347,
+          Expr:  &ast.ScalarSubQuery{
+            Lparen: 349,
+            Rparen: 378,
+            Query:  &ast.Select{
+              Select:  350,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 357,
+                    NameEnd: 364,
+                    Name:    "planets",
+                  },
+                },
+              },
+              From: &ast.From{
+                From:   365,
+                Source: &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 370,
+                    NameEnd: 378,
+                    Name:    "SolTable",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+NEW Universe {name: "Sol", closest_planets: ["Mercury", "Venus", "Earth"], star {radius_miles: 432690, age: 4603000000}, constellations: [{name: "Libra", index: 0}, {name: "Scorpio", index: 1}], all_planets: (SELECT planets FROM SolTable)}

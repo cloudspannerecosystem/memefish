@@ -1,0 +1,66 @@
+--- with_paren_query_limit.sql
+WITH cte AS (SELECT 1) (SELECT * FROM cte) LIMIT 1
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    With: &ast.With{
+      CTEs: []*ast.CTE{
+        &ast.CTE{
+          Rparen: 21,
+          Name:   &ast.Ident{
+            NamePos: 5,
+            NameEnd: 8,
+            Name:    "cte",
+          },
+          QueryExpr: &ast.Select{
+            Select:  13,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 20,
+                  ValueEnd: 21,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    Query: &ast.SubQuery{
+      Lparen: 23,
+      Rparen: 41,
+      Query:  &ast.Select{
+        Select:  24,
+        Results: []ast.SelectItem{
+          &ast.Star{
+            Star: 31,
+          },
+        },
+        From: &ast.From{
+          From:   33,
+          Source: &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 38,
+              NameEnd: 41,
+              Name:    "cte",
+            },
+          },
+        },
+      },
+    },
+    Limit: &ast.Limit{
+      Limit: 43,
+      Count: &ast.IntLiteral{
+        ValuePos: 49,
+        ValueEnd: 50,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+}
+
+--- SQL
+WITH cte AS (SELECT 1) (SELECT * FROM cte) LIMIT 1

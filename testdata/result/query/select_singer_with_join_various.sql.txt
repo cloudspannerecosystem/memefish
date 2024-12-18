@@ -32,13 +32,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -46,57 +41,37 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     "RIGHT OUTER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     "RIGHT OUTER JOIN",
-          Method: "",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.Join{
-            Op:     "LEFT OUTER JOIN",
-            Method: "",
-            Hint:   (*ast.Hint)(nil),
-            Left:   &ast.Join{
-              Op:     "LEFT OUTER JOIN",
-              Method: "",
-              Hint:   (*ast.Hint)(nil),
-              Left:   &ast.Join{
-                Op:     "FULL OUTER JOIN",
-                Method: "",
-                Hint:   (*ast.Hint)(nil),
-                Left:   &ast.Join{
-                  Op:     "FULL OUTER JOIN",
-                  Method: "",
-                  Hint:   (*ast.Hint)(nil),
-                  Left:   &ast.Join{
-                    Op:     "CROSS JOIN",
-                    Method: "",
-                    Hint:   (*ast.Hint)(nil),
-                    Left:   &ast.Join{
-                      Op:     "INNER JOIN",
-                      Method: "",
-                      Hint:   (*ast.Hint)(nil),
-                      Left:   &ast.Join{
-                        Op:     "INNER JOIN",
-                        Method: "",
-                        Hint:   (*ast.Hint)(nil),
-                        Left:   &ast.TableName{
+        Op:   "RIGHT OUTER JOIN",
+        Left: &ast.Join{
+          Op:   "RIGHT OUTER JOIN",
+          Left: &ast.Join{
+            Op:   "LEFT OUTER JOIN",
+            Left: &ast.Join{
+              Op:   "LEFT OUTER JOIN",
+              Left: &ast.Join{
+                Op:   "FULL OUTER JOIN",
+                Left: &ast.Join{
+                  Op:   "FULL OUTER JOIN",
+                  Left: &ast.Join{
+                    Op:   "CROSS JOIN",
+                    Left: &ast.Join{
+                      Op:   "INNER JOIN",
+                      Left: &ast.Join{
+                        Op:   "INNER JOIN",
+                        Left: &ast.TableName{
                           Table: &ast.Ident{
                             NamePos: 18,
                             NameEnd: 25,
                             Name:    "Singers",
                           },
-                          Hint: (*ast.Hint)(nil),
-                          As:   &ast.AsAlias{
-                            As:    26,
+                          As: &ast.AsAlias{
+                            As:    -1,
                             Alias: &ast.Ident{
                               NamePos: 26,
                               NameEnd: 27,
                               Name:    "A",
                             },
                           },
-                          Sample: (*ast.TableSample)(nil),
                         },
                         Right: &ast.TableName{
                           Table: &ast.Ident{
@@ -104,16 +79,14 @@ FROM
                             NameEnd: 44,
                             Name:    "Singers",
                           },
-                          Hint: (*ast.Hint)(nil),
-                          As:   &ast.AsAlias{
-                            As:    45,
+                          As: &ast.AsAlias{
+                            As:    -1,
                             Alias: &ast.Ident{
                               NamePos: 45,
                               NameEnd: 46,
                               Name:    "B",
                             },
                           },
-                          Sample: (*ast.TableSample)(nil),
                         },
                         Cond: &ast.On{
                           On:   49,
@@ -156,16 +129,14 @@ FROM
                           NameEnd: 98,
                           Name:    "Singers",
                         },
-                        Hint: (*ast.Hint)(nil),
-                        As:   &ast.AsAlias{
-                          As:    99,
+                        As: &ast.AsAlias{
+                          As:    -1,
                           Alias: &ast.Ident{
                             NamePos: 99,
                             NameEnd: 100,
                             Name:    "C",
                           },
                         },
-                        Sample: (*ast.TableSample)(nil),
                       },
                       Cond: &ast.On{
                         On:   103,
@@ -208,18 +179,15 @@ FROM
                         NameEnd: 152,
                         Name:    "Singers",
                       },
-                      Hint: (*ast.Hint)(nil),
-                      As:   &ast.AsAlias{
-                        As:    153,
+                      As: &ast.AsAlias{
+                        As:    -1,
                         Alias: &ast.Ident{
                           NamePos: 153,
                           NameEnd: 154,
                           Name:    "D",
                         },
                       },
-                      Sample: (*ast.TableSample)(nil),
                     },
-                    Cond: nil,
                   },
                   Right: &ast.TableName{
                     Table: &ast.Ident{
@@ -227,16 +195,14 @@ FROM
                       NameEnd: 176,
                       Name:    "Singers",
                     },
-                    Hint: (*ast.Hint)(nil),
-                    As:   &ast.AsAlias{
-                      As:    177,
+                    As: &ast.AsAlias{
+                      As:    -1,
                       Alias: &ast.Ident{
                         NamePos: 177,
                         NameEnd: 178,
                         Name:    "E",
                       },
                     },
-                    Sample: (*ast.TableSample)(nil),
                   },
                   Cond: &ast.On{
                     On:   181,
@@ -279,16 +245,14 @@ FROM
                     NameEnd: 235,
                     Name:    "Singers",
                   },
-                  Hint: (*ast.Hint)(nil),
-                  As:   &ast.AsAlias{
-                    As:    236,
+                  As: &ast.AsAlias{
+                    As:    -1,
                     Alias: &ast.Ident{
                       NamePos: 236,
                       NameEnd: 237,
                       Name:    "F",
                     },
                   },
-                  Sample: (*ast.TableSample)(nil),
                 },
                 Cond: &ast.On{
                   On:   240,
@@ -331,16 +295,14 @@ FROM
                   NameEnd: 288,
                   Name:    "Singers",
                 },
-                Hint: (*ast.Hint)(nil),
-                As:   &ast.AsAlias{
-                  As:    289,
+                As: &ast.AsAlias{
+                  As:    -1,
                   Alias: &ast.Ident{
                     NamePos: 289,
                     NameEnd: 290,
                     Name:    "G",
                   },
                 },
-                Sample: (*ast.TableSample)(nil),
               },
               Cond: &ast.On{
                 On:   293,
@@ -383,16 +345,14 @@ FROM
                 NameEnd: 347,
                 Name:    "Singers",
               },
-              Hint: (*ast.Hint)(nil),
-              As:   &ast.AsAlias{
-                As:    348,
+              As: &ast.AsAlias{
+                As:    -1,
                 Alias: &ast.Ident{
                   NamePos: 348,
                   NameEnd: 349,
                   Name:    "H",
                 },
               },
-              Sample: (*ast.TableSample)(nil),
             },
             Cond: &ast.On{
               On:   352,
@@ -435,16 +395,14 @@ FROM
               NameEnd: 401,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
-              As:    402,
+            As: &ast.AsAlias{
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 402,
                 NameEnd: 403,
                 Name:    "I",
               },
             },
-            Sample: (*ast.TableSample)(nil),
           },
           Cond: &ast.On{
             On:   406,
@@ -487,16 +445,14 @@ FROM
             NameEnd: 461,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    462,
+          As: &ast.AsAlias{
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 462,
               NameEnd: 463,
               Name:    "J",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
           On:   466,
@@ -534,13 +490,8 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID CROSS JOIN Singers AS D FULL OUTER JOIN Singers AS E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers AS F ON A.SingerID = F.SingerID LEFT OUTER JOIN Singers AS G ON A.SingerID = G.SingerID LEFT OUTER JOIN Singers AS H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers AS I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers AS J ON A.SingerID = J.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID INNER JOIN Singers C ON A.SingerID = C.SingerID CROSS JOIN Singers D FULL OUTER JOIN Singers E ON A.SingerID = E.SingerID FULL OUTER JOIN Singers F ON A.SingerID = F.SingerID LEFT OUTER JOIN Singers G ON A.SingerID = G.SingerID LEFT OUTER JOIN Singers H ON A.SingerID = H.SingerID RIGHT OUTER JOIN Singers I ON A.SingerID = I.SingerID RIGHT OUTER JOIN Singers J ON A.SingerID = J.SingerID

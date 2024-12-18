@@ -49,13 +49,8 @@ lines''',
   true, false
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.StringLiteral{
           ValuePos: 9,
@@ -152,7 +147,7 @@ lines''',
           ValuePos: 204,
           ValueEnd: 210,
           Value:    []uint8{
-            0x61, 0x62, 0x63,
+            97, 98, 99,
           },
         },
       },
@@ -161,7 +156,7 @@ lines''',
           ValuePos: 214,
           ValueEnd: 224,
           Value:    []uint8{
-            0x61, 0x62, 0x63,
+            97, 98, 99,
           },
         },
       },
@@ -170,7 +165,7 @@ lines''',
           ValuePos: 228,
           ValueEnd: 238,
           Value:    []uint8{
-            0x61, 0x62, 0x63,
+            97, 98, 99,
           },
         },
       },
@@ -179,7 +174,7 @@ lines''',
           ValuePos: 242,
           ValueEnd: 250,
           Value:    []uint8{
-            0x61, 0x62, 0x63, 0x2b,
+            97, 98, 99, 43,
           },
         },
       },
@@ -188,7 +183,7 @@ lines''',
           ValuePos: 254,
           ValueEnd: 262,
           Value:    []uint8{
-            0x61, 0x62, 0x63, 0x2b,
+            97, 98, 99, 43,
           },
         },
       },
@@ -197,7 +192,7 @@ lines''',
           ValuePos: 266,
           ValueEnd: 277,
           Value:    []uint8{
-            0x61, 0x62, 0x63,
+            97, 98, 99,
           },
         },
       },
@@ -266,7 +261,6 @@ lines''',
           Array:  -1,
           Lbrack: 352,
           Rbrack: 360,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.IntLiteral{
               ValuePos: 353,
@@ -294,7 +288,6 @@ lines''',
           Array:  -1,
           Lbrack: 365,
           Rbrack: 380,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.StringLiteral{
               ValuePos: 366,
@@ -319,7 +312,6 @@ lines''',
           Array:  385,
           Lbrack: 390,
           Rbrack: 398,
-          Type:   nil,
           Values: []ast.Expr{
             &ast.IntLiteral{
               ValuePos: 391,
@@ -379,7 +371,6 @@ lines''',
             NamePos: 442,
             Name:    "INT64",
           },
-          Values: []ast.Expr(nil),
         },
       },
       &ast.ExprSelectItem{
@@ -387,45 +378,41 @@ lines''',
           Array:  454,
           Rparen: 482,
           Query:  &ast.Select{
-            Select:   460,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:  460,
+            Results: []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
+                Expr: &ast.TypelessStructLiteral{
                   Struct: 467,
-                  Lparen: 473,
                   Rparen: 481,
-                  Fields: []*ast.StructField(nil),
-                  Values: []ast.Expr{
-                    &ast.IntLiteral{
-                      ValuePos: 474,
-                      ValueEnd: 475,
-                      Base:     10,
-                      Value:    "1",
+                  Values: []ast.TypelessStructLiteralArg{
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 474,
+                        ValueEnd: 475,
+                        Base:     10,
+                        Value:    "1",
+                      },
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 477,
-                      ValueEnd: 478,
-                      Base:     10,
-                      Value:    "2",
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 477,
+                        ValueEnd: 478,
+                        Base:     10,
+                        Value:    "2",
+                      },
                     },
-                    &ast.IntLiteral{
-                      ValuePos: 480,
-                      ValueEnd: 481,
-                      Base:     10,
-                      Value:    "3",
+                    &ast.ExprArg{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 480,
+                        ValueEnd: 481,
+                        Base:     10,
+                        Value:    "3",
+                      },
                     },
                   },
                 },
               },
             },
-            From:    (*ast.From)(nil),
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -434,16 +421,12 @@ lines''',
           Array:  487,
           Rparen: 509,
           Query:  &ast.Select{
-            Select:   493,
-            Distinct: false,
-            As:       nil,
-            Results:  []ast.SelectItem{
+            Select:  493,
+            Results: []ast.SelectItem{
               &ast.ExprSelectItem{
-                Expr: &ast.StructLiteral{
-                  Struct: 0,
+                Expr: &ast.TupleStructLiteral{
                   Lparen: 500,
                   Rparen: 508,
-                  Fields: []*ast.StructField(nil),
                   Values: []ast.Expr{
                     &ast.IntLiteral{
                       ValuePos: 501,
@@ -467,12 +450,6 @@ lines''',
                 },
               },
             },
-            From:    (*ast.From)(nil),
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
       },
@@ -494,8 +471,7 @@ lines''',
             NameEnd: 539,
             Name:    "DATE",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 540,
@@ -504,9 +480,6 @@ lines''',
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -547,8 +520,7 @@ lines''',
             NameEnd: 690,
             Name:    "TIMESTAMP",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 691,
@@ -557,9 +529,6 @@ lines''',
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -621,18 +590,11 @@ lines''',
       &ast.ExprSelectItem{
         Expr: &ast.BoolLiteral{
           ValuePos: 785,
-          Value:    false,
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT STRUCT(1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE
+SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE

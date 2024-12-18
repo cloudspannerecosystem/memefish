@@ -1,0 +1,30 @@
+--- named_schemas_alter_index.sql
+ALTER INDEX sch1.indexOnSingers ADD STORED COLUMN SingerInfo
+--- AST
+&ast.AlterIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 16,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 31,
+        Name:    "indexOnSingers",
+      },
+    },
+  },
+  IndexAlteration: &ast.AddStoredColumn{
+    Add:  32,
+    Name: &ast.Ident{
+      NamePos: 50,
+      NameEnd: 60,
+      Name:    "SingerInfo",
+    },
+  },
+}
+
+--- SQL
+ALTER INDEX sch1.indexOnSingers ADD STORED COLUMN SingerInfo

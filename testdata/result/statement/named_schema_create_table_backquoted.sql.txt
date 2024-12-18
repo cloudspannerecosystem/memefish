@@ -1,0 +1,48 @@
+--- named_schema_create_table_backquoted.sql
+CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
+--- AST
+&ast.CreateTable{
+  Rparen: 53,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "ORDER",
+      },
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 28,
+        Name:    "ORDER",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 29,
+        NameEnd: 31,
+        Name:    "PK",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 32,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 51,
+        NameEnd: 53,
+        Name:    "PK",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE `ORDER`.`ORDER` (PK INT64) PRIMARY KEY (PK)

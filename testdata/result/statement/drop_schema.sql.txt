@@ -1,0 +1,13 @@
+--- drop_schema.sql
+DROP SCHEMA sch1
+--- AST
+&ast.DropSchema{
+  Name: &ast.Ident{
+    NamePos: 12,
+    NameEnd: 16,
+    Name:    "sch1",
+  },
+}
+
+--- SQL
+DROP SCHEMA sch1

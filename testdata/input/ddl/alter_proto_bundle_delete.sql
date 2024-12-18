@@ -1,0 +1,1 @@
+ALTER PROTO BUNDLE DELETE(`examples.shipping.OrderHistory`)

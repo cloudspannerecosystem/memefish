@@ -7,13 +7,8 @@ FROM Singers S
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.DotStar{
         Star: 11,
         Expr: &ast.Ident{
@@ -38,7 +33,7 @@ FROM Singers S
           },
         },
         As: &ast.AsAlias{
-          As:    -1,
+          As:    27,
           Alias: &ast.Ident{
             NamePos: 30,
             NameEnd: 32,
@@ -71,25 +66,18 @@ FROM Singers S
           NameEnd: 60,
           Name:    "Singers",
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
-          As:    61,
+        As: &ast.AsAlias{
+          As:    -1,
           Alias: &ast.Ident{
             NamePos: 61,
             NameEnd: 62,
             Name:    "S",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT S.*, S.SingerId AS ID, S.FirstName FROM Singers AS S
+SELECT S.*, S.SingerId AS ID, S.FirstName FROM Singers S

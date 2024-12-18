@@ -11,35 +11,48 @@ import (
 	. "github.com/cloudspannerecosystem/memefish/token"
 )
 
+// Keep same order https://github.com/google/zetasql/blob/master/zetasql/parser/flex_tokenizer.l
 var symbols = []string{
-	".",
-	",",
-	";",
 	"(",
-	")",
-	"{",
-	"}",
 	"[",
+	"{",
+	")",
 	"]",
-	"@",
-	"~",
+	"}",
+	"*",
+	",",
+	"=",
+	"+=",
+	"-=",
+	"!=",
+	"<=",
+	"<<",
+	"=>",
+	"->",
+	"<",
+	">",
+	">=",
+	"||",
+	"|",
+	"^",
+	"&",
 	"+",
 	"-",
-	"*",
 	"/",
-	"&",
-	"^",
-	"|",
-	"||",
-	"=",
-	"<",
-	"<<",
-	"<=",
-	"<>",
-	">",
-	">>",
-	">=",
-	"!=",
+	"~",
+	"?",
+	"!",
+	"%",
+	"|>",
+	"@",
+	"@@",
+	".",
+	":",
+	"\\",
+	";",
+	"$",
+	"<>", // <> is not a valid token in ZetaSQL, but it is a token in memefish
+	">>", // >> is not a valid token in ZetaSQL, but it is a token in memefish.
 }
 
 var lexerTestCases = []struct {
@@ -130,26 +143,27 @@ var lexerTestCases = []struct {
 var lexerWrongTestCase = []struct {
 	source  string
 	pos     Pos
+	end     Pos
 	message string
 }{
-	{"?", 0, "illegal input character: '?'"},
-	{`"foo`, 0, "unclosed string literal"},
-	{`R"foo`, 1, "unclosed raw string literal"},
-	{"'foo\n", 0, "unclosed string literal: newline appears in non triple-quoted"},
-	{"R'foo\n", 1, "unclosed raw string literal: newline appears in non triple-quoted"},
-	{"R'foo\\", 1, "invalid escape sequence: \\<eof>"},
-	{`"\400"`, 0, "invalid escape sequence: \\4"},
-	{`"\3xx"`, 0, "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits"},
-	{`"\xZZ"`, 0, "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits"},
-	{`"\XZZ"`, 0, "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits"},
-	{`B"\u0031"`, 1, "invalid escape sequence: \\u is not allowed in bytes literal"},
-	{`B"\U00000031"`, 1, "invalid escape sequence: \\U is not allowed in bytes literal"},
-	{`B"\U00000031"`, 1, "invalid escape sequence: \\U is not allowed in bytes literal"},
-	{`"\UFFFFFFFF"`, 0, "invalid escape sequence: invalid code point: U+FFFFFFFF"},
-	{"``", 0, "invalid empty identifier"},
-	{"1from", 1, "number literal cannot follow identifier without any spaces"},
-	{`'''0`, 0, "unclosed triple-quoted string literal"},
-	{`/*`, 2, "unclosed comment"},
+	{"\b", 0, 0, "illegal input character: '\\b'"},
+	{`"foo`, 0, 4, "unclosed string literal"},
+	{`R"foo`, 1, 5, "unclosed raw string literal"},
+	{"'foo\n", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
+	{"R'foo\n", 1, 5, "unclosed raw string literal: newline appears in non triple-quoted"},
+	{"R'foo\\", 5, 6, "invalid escape sequence: \\<eof>"},
+	{`"\400"`, 1, 3, "invalid escape sequence: \\4"},
+	{`"\3xx"`, 1, 4, "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits"},
+	{`"\xZZ"`, 1, 4, "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits"},
+	{`"\XZZ"`, 1, 4, "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits"},
+	{`B"\u0031"`, 2, 4, "invalid escape sequence: \\u is not allowed in bytes literal"},
+	{`B"\U00000031"`, 2, 4, "invalid escape sequence: \\U is not allowed in bytes literal"},
+	{`B"\U00000031"`, 2, 4, "invalid escape sequence: \\U is not allowed in bytes literal"},
+	{`"\UFFFFFFFF"`, 1, 11, "invalid escape sequence: invalid code point: U+FFFFFFFF"},
+	{"``", 0, 2, "invalid empty identifier"},
+	{"1from", 1, 1, "number literal cannot follow identifier without any spaces"},
+	{`'''0`, 0, 4, "unclosed triple-quoted string literal"},
+	{`/*`, 0, 2, "unclosed comment"},
 }
 
 func testLexer(t *testing.T, source string, tokens []*Token) {
@@ -227,7 +241,10 @@ func TestLexerWrong(t *testing.T) {
 					t.Errorf("expected error message: %q, but: %q", tc.message, e.Message)
 				}
 				if e.Position.Pos != tc.pos {
-					t.Errorf("expected error position: %v, but: %v", tc.pos, e.Position.Pos)
+					t.Errorf("expected error position (pos): %v, but: %v", tc.pos, e.Position.Pos)
+				}
+				if e.Position.End != tc.end {
+					t.Errorf("expected error position (end): %v, but: %v", tc.end, e.Position.End)
 				}
 			} else {
 				t.Errorf("unexpected error: %v", err)

@@ -12,13 +12,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -26,29 +21,23 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     "INNER JOIN",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Join{
-          Op:     "INNER JOIN",
-          Method: "",
-          Hint:   (*ast.Hint)(nil),
-          Left:   &ast.TableName{
+        Op:   "INNER JOIN",
+        Left: &ast.Join{
+          Op:   "INNER JOIN",
+          Left: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 18,
               NameEnd: 25,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
-              As:    26,
+            As: &ast.AsAlias{
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 26,
                 NameEnd: 27,
                 Name:    "A",
               },
             },
-            Sample: (*ast.TableSample)(nil),
           },
           Right: &ast.TableName{
             Table: &ast.Ident{
@@ -56,16 +45,14 @@ FROM
               NameEnd: 44,
               Name:    "Singers",
             },
-            Hint: (*ast.Hint)(nil),
-            As:   &ast.AsAlias{
-              As:    45,
+            As: &ast.AsAlias{
+              As:    -1,
               Alias: &ast.Ident{
                 NamePos: 45,
                 NameEnd: 46,
                 Name:    "B",
               },
             },
-            Sample: (*ast.TableSample)(nil),
           },
           Cond: &ast.On{
             On:   49,
@@ -108,16 +95,14 @@ FROM
             NameEnd: 98,
             Name:    "Singers",
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
-            As:    99,
+          As: &ast.AsAlias{
+            As:    -1,
             Alias: &ast.Ident{
               NamePos: 99,
               NameEnd: 100,
               Name:    "C",
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
         Cond: &ast.On{
           On:   103,
@@ -155,13 +140,8 @@ FROM
         },
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT * FROM Singers AS A INNER JOIN Singers AS B ON A.SingerID = B.SingerID INNER JOIN Singers AS C ON A.SingerID = C.SingerID
+SELECT * FROM Singers A INNER JOIN Singers B ON A.SingerID = B.SingerID INNER JOIN Singers C ON A.SingerID = C.SingerID

@@ -19,13 +19,8 @@ WHERE A.z.a = 2
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -110,9 +105,8 @@ WHERE A.z.a = 2
           Array:  57,
           Rparen: 251,
           Query:  &ast.Select{
-            Select:   70,
-            Distinct: false,
-            As:       &ast.AsStruct{
+            Select: 70,
+            As:     &ast.AsStruct{
               As:     77,
               Struct: 80,
             },
@@ -212,11 +206,9 @@ WHERE A.z.a = 2
                     },
                   },
                   Values: []ast.Expr{
-                    &ast.StructLiteral{
-                      Struct: 0,
+                    &ast.TupleStructLiteral{
                       Lparen: 206,
                       Rparen: 223,
-                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 207,
@@ -229,11 +221,9 @@ WHERE A.z.a = 2
                           ValueEnd: 215,
                           Value:    "foo",
                         },
-                        &ast.StructLiteral{
-                          Struct: 0,
+                        &ast.TupleStructLiteral{
                           Lparen: 217,
                           Rparen: 222,
-                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 218,
@@ -251,11 +241,9 @@ WHERE A.z.a = 2
                         },
                       },
                     },
-                    &ast.StructLiteral{
-                      Struct: 0,
+                    &ast.TupleStructLiteral{
                       Lparen: 226,
                       Rparen: 243,
-                      Fields: []*ast.StructField(nil),
                       Values: []ast.Expr{
                         &ast.IntLiteral{
                           ValuePos: 227,
@@ -268,11 +256,9 @@ WHERE A.z.a = 2
                           ValueEnd: 235,
                           Value:    "bar",
                         },
-                        &ast.StructLiteral{
-                          Struct: 0,
+                        &ast.TupleStructLiteral{
                           Lparen: 237,
                           Rparen: 242,
-                          Fields: []*ast.StructField(nil),
                           Values: []ast.Expr{
                             &ast.IntLiteral{
                               ValuePos: 238,
@@ -292,30 +278,18 @@ WHERE A.z.a = 2
                     },
                   },
                 },
-                Hint:       (*ast.Hint)(nil),
-                As:         (*ast.AsAlias)(nil),
-                WithOffset: (*ast.WithOffset)(nil),
-                Sample:     (*ast.TableSample)(nil),
               },
             },
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
-            OrderBy: (*ast.OrderBy)(nil),
-            Limit:   (*ast.Limit)(nil),
           },
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
-          As:    -1,
+        As: &ast.AsAlias{
+          As:    257,
           Alias: &ast.Ident{
             NamePos: 260,
             NameEnd: 261,
             Name:    "A",
           },
         },
-        WithOffset: (*ast.WithOffset)(nil),
-        Sample:     (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -349,12 +323,8 @@ WHERE A.z.a = 2
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
 --- SQL
-SELECT A.x, A.y, A.z.a, A.z.b FROM UNNEST(ARRAY(SELECT AS STRUCT x, y, z FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING, z STRUCT<a INT64, b INT64>>>[STRUCT(1, "foo", STRUCT(2, 3)), STRUCT(3, "bar", STRUCT(4, 5))]))) AS A WHERE A.z.a = 2
+SELECT A.x, A.y, A.z.a, A.z.b FROM UNNEST(ARRAY(SELECT AS STRUCT x, y, z FROM UNNEST(ARRAY<STRUCT<x INT64, y STRING, z STRUCT<a INT64, b INT64>>>[(1, "foo", (2, 3)), (3, "bar", (4, 5))]))) AS A WHERE A.z.a = 2

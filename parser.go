@@ -57,7 +57,7 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	return
 }
 
-// ParseQuery parses a SELECT query statement.
+// ParseQuery parses a query statement.
 func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -210,10 +210,11 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 
 func (p *Parser) parseStatement() ast.Statement {
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(":
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatement()
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
-		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE"):
+		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
+		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
@@ -245,13 +246,86 @@ func (p *Parser) parseStatements(doParse func()) {
 
 func (p *Parser) parseQueryStatement() *ast.QueryStatement {
 	hint := p.tryParseHint()
-	with := p.tryParseWith()
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
 		Hint:  hint,
-		With:  with,
 		Query: query,
+	}
+}
+
+func (p *Parser) parsePipeOperator() ast.PipeOperator {
+	pos := p.expect("|>").Pos
+	switch {
+	case p.Token.Kind == "SELECT":
+		p.nextToken()
+
+		allOrDistinct := p.tryParseAllOrDistinct()
+		as := p.tryParseSelectAs()
+		results := p.parseSelectResults()
+
+		return &ast.PipeSelect{
+			Pipe:          pos,
+			AllOrDistinct: allOrDistinct,
+			As:            as,
+			Results:       results,
+		}
+	case p.Token.Kind == "WHERE":
+		p.nextToken()
+		expr := p.parseExpr()
+		return &ast.PipeWhere{
+			Pipe: pos,
+			Expr: expr,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected pipe operator name, but: %q", p.Token.AsString))
+	}
+}
+
+// parsePipeOperators parses pipe operators, which can be empty.
+func (p *Parser) parsePipeOperators() []ast.PipeOperator {
+	var pipeOps []ast.PipeOperator
+	for {
+		if p.Token.Kind != "|>" {
+			break
+		}
+
+		pipeOps = append(pipeOps, p.parsePipeOperator())
+	}
+	return pipeOps
+}
+
+// parseQuery consumes ORDER BY, LIMIT, and pipe operators.
+func (p *Parser) parseQuery() *ast.Query {
+	with := p.tryParseWith()
+
+	if p.Token.Kind == "WITH" {
+		panic(p.errorfAtToken(&p.Token, "expect query expression, but unexpected WITH"))
+	}
+
+	query := p.parseQueryExpr()
+
+	// If nested query expression is *ast.Query(with suffix), merge parsed WITH into it to avoid deep nest.
+	if q, ok := query.(*ast.Query); ok {
+		return &ast.Query{
+			With:          with,
+			Query:         q.Query,
+			OrderBy:       q.OrderBy,
+			Limit:         q.Limit,
+			PipeOperators: q.PipeOperators,
+		}
+	}
+
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	pipeOps := p.parsePipeOperators()
+
+	return &ast.Query{
+		With:          with,
+		Query:         query,
+		OrderBy:       orderBy,
+		Limit:         limit,
+		PipeOperators: pipeOps,
 	}
 }
 
@@ -317,7 +391,18 @@ func (p *Parser) parseCTE() *ast.CTE {
 }
 
 func (p *Parser) parseQueryExpr() ast.QueryExpr {
+	// If WITH is appeared, it is treated as an outer node than compound query.
+	if p.Token.Kind == "WITH" {
+		return p.parseQuery()
+	}
+
 	query := p.parseSimpleQueryExpr()
+
+	// If the query is directly followed by ORDER BY, LIMIT or pipe operators, it won't be a compound query
+	switch p.Token.Kind {
+	case "ORDER", "LIMIT", "|>":
+		return p.parseQueryExprSuffix(query)
+	}
 
 	for {
 		var op ast.SetOp
@@ -337,37 +422,54 @@ func (p *Parser) parseQueryExpr() ast.QueryExpr {
 		opTok := p.Token
 		p.nextToken()
 
-		var distinct bool
-		switch p.Token.Kind {
-		case "ALL":
-			distinct = false
-		case "DISTINCT":
-			distinct = true
-		default:
-			p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
-		}
-		p.nextToken()
+		allOrDistinct := p.parseAllOrDistinct()
 
 		right := p.parseSimpleQueryExpr()
 		if c, ok := query.(*ast.CompoundQuery); ok {
-			if !(c.Op == op && c.Distinct == distinct) {
+			if !(c.Op == op && c.AllOrDistinct == allOrDistinct) {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
 			c.Queries = append(c.Queries, right)
 		} else {
 			query = &ast.CompoundQuery{
-				Op:       op,
-				Distinct: distinct,
-				Queries:  []ast.QueryExpr{query, right},
+				Op:            op,
+				AllOrDistinct: allOrDistinct,
+				Queries:       []ast.QueryExpr{query, right},
 			}
 		}
 	}
 
+	// LIMIT, ORDER BY, pipe operators can be placed after a compound query.
 	return p.parseQueryExprSuffix(query)
 }
 
+func (p *Parser) parseFromQuery() *ast.FromQuery {
+	if p.Token.Kind != "FROM" {
+		panic(p.errorfAtToken(&p.Token, "expected 'FROM', got %s", p.Token.AsString))
+	}
+	from := p.tryParseFrom()
+
+	// Although it can be parsed, it is better to reject invalid GoogleSQL queries.
+	switch p.Token.Kind {
+	case "ORDER":
+		panic(p.errorfAtToken(&p.Token, "syntax error: ORDER BY not supported after FROM query; Consider using pipe operator `|> ORDER BY` or parentheses around the FROM query."))
+	case "LIMIT":
+		panic(p.errorfAtToken(&p.Token, "syntax error: LIMIT not supported after FROM query; Consider using pipe operator `|> LIMIT` or parentheses around the FROM query."))
+	}
+
+	return &ast.FromQuery{From: from}
+}
+
+// parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
 func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
-	if p.Token.Kind == "(" {
+	switch p.Token.Kind {
+	// FROM and SELECT are the most primitive query form
+	case "FROM":
+		return p.parseFromQuery()
+	case "SELECT":
+		return p.parseSelect()
+	// Query with paren
+	case "(":
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
@@ -376,9 +478,9 @@ func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
 			Rparen: rparen,
 			Query:  query,
 		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expected beginning of simple query "(", SELECT, FROM, but: %q`, p.Token.AsString))
 	}
-
-	return p.parseSelect()
 }
 
 func (p *Parser) tryParseSelectAs() ast.SelectAs {
@@ -410,11 +512,7 @@ func (p *Parser) tryParseSelectAs() ast.SelectAs {
 
 func (p *Parser) parseSelect() *ast.Select {
 	sel := p.expect("SELECT").Pos
-	var distinct bool
-	if p.Token.Kind == "DISTINCT" {
-		p.nextToken()
-		distinct = true
-	}
+	allOrDistinct := p.tryParseAllOrDistinct()
 	selectAs := p.tryParseSelectAs()
 	results := p.parseSelectResults()
 	from := p.tryParseFrom()
@@ -423,14 +521,14 @@ func (p *Parser) parseSelect() *ast.Select {
 	having := p.tryParseHaving()
 
 	return &ast.Select{
-		Select:   sel,
-		Distinct: distinct,
-		As:       selectAs,
-		Results:  results,
-		From:     from,
-		Where:    where,
-		GroupBy:  groupBy,
-		Having:   having,
+		Select:        sel,
+		AllOrDistinct: allOrDistinct,
+		As:            selectAs,
+		Results:       results,
+		From:          from,
+		Where:         where,
+		GroupBy:       groupBy,
+		Having:        having,
 	}
 }
 
@@ -449,16 +547,79 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 	return results
 }
 
+// lookaheadStarModifierExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
+func (p *Parser) lookaheadStarModifierExcept() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "EXCEPT" {
+		return false
+	}
+	p.nextToken()
+	return p.Token.Kind == "("
+}
+
+func (p *Parser) tryParseStarModifierExcept() *ast.StarModifierExcept {
+	if !p.lookaheadStarModifierExcept() {
+		return nil
+	}
+
+	pos := p.expect("EXCEPT").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierExcept{
+		Except:  pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) parseStarModifierReplaceItem() *ast.StarModifierReplaceItem {
+	expr := p.parseExpr()
+	p.expect("AS")
+	name := p.parseIdent()
+
+	return &ast.StarModifierReplaceItem{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) tryParseStarModifierReplace() *ast.StarModifierReplace {
+	if !p.Token.IsKeywordLike("REPLACE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("REPLACE").Pos
+	p.expect("(")
+	columns := parseCommaSeparatedList(p, p.parseStarModifierReplaceItem)
+	rparen := p.expect(")").Pos
+
+	return &ast.StarModifierReplace{
+		Replace: pos,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
 func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "*" {
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.Star{
-			Star: pos,
+			Star:    pos,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
 	expr := p.parseExpr()
-	if as := p.tryParseAsAlias(); as != nil {
+	if as := p.tryParseAsAlias(withOptionalAs); as != nil {
 		return &ast.Alias{
 			Expr: expr,
 			As:   as,
@@ -468,9 +629,13 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	if p.Token.Kind == "." {
 		p.nextToken()
 		pos := p.expect("*").Pos
+		except := p.tryParseStarModifierExcept()
+		replace := p.tryParseStarModifierReplace()
 		return &ast.DotStar{
-			Star: pos,
-			Expr: expr,
+			Star:    pos,
+			Expr:    expr,
+			Except:  except,
+			Replace: replace,
 		}
 	}
 
@@ -479,22 +644,33 @@ func (p *Parser) parseSelectItem() ast.SelectItem {
 	}
 }
 
-func (p *Parser) tryParseAsAlias() *ast.AsAlias {
+type withAs bool
+
+const (
+	withRequiredAs withAs = true
+	withOptionalAs withAs = false
+)
+
+func (p *Parser) tryParseAsAlias(requiredAs withAs) *ast.AsAlias {
 	pos := p.Token.Pos
 
 	if p.Token.Kind == "AS" {
 		p.nextToken()
 		id := p.parseIdent()
 		return &ast.AsAlias{
-			As:    token.InvalidPos,
+			As:    pos,
 			Alias: id,
 		}
+	}
+
+	if requiredAs {
+		return nil
 	}
 
 	if p.Token.Kind == token.TokenIdent {
 		id := p.parseIdent()
 		return &ast.AsAlias{
-			As:    pos,
+			As:    token.InvalidPos,
 			Alias: id,
 		}
 	}
@@ -560,25 +736,50 @@ func (p *Parser) tryParseHaving() *ast.Having {
 	}
 }
 
+// parseQueryExprSuffix wraps QueryExpr if it is followed by ORDER BY, LIMIT, and/or pipe operators.
+// It must not be called to *ast.Query itself because *ast.Query already consumes its suffix.
 func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
-	orderBy := p.tryParseOrderBy()
-	limit := p.tryParseLimit()
-
-	switch e := e.(type) {
-	case *ast.Select:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.SubQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
-	case *ast.CompoundQuery:
-		e.OrderBy = orderBy
-		e.Limit = limit
+	// Query already consumes suffixes and currently it should be a logic bug.
+	if _, ok := e.(*ast.Query); ok {
+		panic(p.errorfAtToken(&p.Token, "invalid state of repeated processing of suffix of ast.Query. It is suspected a bug."))
 	}
 
-	return e
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
+	pipeOps := p.parsePipeOperators()
+
+	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
+		return e
+	}
+	return &ast.Query{
+		Query:         e,
+		OrderBy:       orderBy,
+		Limit:         limit,
+		PipeOperators: pipeOps,
+	}
 }
 
+func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
+	switch p.Token.Kind {
+	case "ALL":
+		p.nextToken()
+		return ast.AllOrDistinctAll
+	case "DISTINCT":
+		p.nextToken()
+		return ast.AllOrDistinctDistinct
+	default:
+		// not specified
+		return ""
+	}
+}
+
+func (p *Parser) parseAllOrDistinct() ast.AllOrDistinct {
+	if p.Token.Kind != "ALL" && p.Token.Kind != "DISTINCT" {
+		p.panicfAtToken(&p.Token, "expected token: ALL, DISTINCT, but: %s", p.Token.Kind)
+	}
+
+	return p.tryParseAllOrDistinct()
+}
 func (p *Parser) tryParseOrderBy() *ast.OrderBy {
 	if p.Token.Kind != "ORDER" {
 		return nil
@@ -725,13 +926,9 @@ func (p *Parser) parseTableExpr(toplevel bool) ast.TableExpr {
 				p.nextToken()
 				method = ast.HashJoinMethod
 				needJoin = true
-			case p.Token.IsKeywordLike("APPLY"):
+			case p.Token.IsKeywordLike("LOOKUP"):
 				p.nextToken()
-				method = ast.ApplyJoinMethod
-				needJoin = true
-			case p.Token.IsKeywordLike("LOOP"):
-				p.nextToken()
-				method = ast.LoopJoinMethod
+				method = ast.LookupJoinMethod
 				needJoin = true
 			}
 		}
@@ -777,7 +974,7 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		lparen := p.expect("(").Pos
 		query := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
-		as := p.tryParseAsAlias()
+		as := p.tryParseAsAlias(withOptionalAs)
 		return p.parseTableExprSuffix(&ast.SubQueryTableExpr{
 			Lparen: lparen,
 			Rparen: rparen,
@@ -804,11 +1001,14 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		p.expect("(")
 		expr := p.parseExpr()
 		rparen := p.expect(")").Pos
-		return p.parseUnnestSuffix(false, expr, unnest, rparen)
+		return p.parseUnnestSuffix(expr, unnest, rparen)
 	}
 
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
+		if p.Token.Kind == "(" {
+			return p.parseTVFCallExpr(ids)
+		}
 		if len(ids) == 1 {
 			return p.parseTableNameSuffix(ids[0])
 		}
@@ -816,6 +1016,63 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
+	p.expect("(")
+
+	var args []ast.TVFArg
+	if p.Token.Kind != ")" {
+		for !p.lookaheadNamedArg() {
+			args = append(args, p.parseTVFArg())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+		}
+	}
+
+	var namedArgs []*ast.NamedArg
+	if p.lookaheadNamedArg() {
+		namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+	}
+
+	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+	sample := p.tryParseTableSample()
+
+	return &ast.TVFCallExpr{
+		Rparen:    rparen,
+		Name:      &ast.Path{Idents: ids},
+		Args:      args,
+		NamedArgs: namedArgs,
+		Hint:      hint,
+		Sample:    sample,
+	}
+}
+
+func (p *Parser) parseTVFArg() ast.TVFArg {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.IsKeywordLike("TABLE"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.TableArg{
+			Table: pos,
+			Name:  path,
+		}
+	case p.Token.IsKeywordLike("MODEL"):
+		p.nextToken()
+		path := p.parsePath()
+
+		return &ast.ModelArg{
+			Model: pos,
+			Name:  path,
+		}
+	default:
+		return p.parseExprArg()
+	}
 }
 
 func (p *Parser) parseIdentOrPath() []*ast.Ident {
@@ -827,9 +1084,9 @@ func (p *Parser) parseIdentOrPath() []*ast.Ident {
 	return ids
 }
 
-func (p *Parser) parseUnnestSuffix(implicit bool, expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
+func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 
 	return p.parseTableExprSuffix(&ast.Unnest{
@@ -849,7 +1106,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 	with := p.expect("WITH").Pos
 	offset := p.expectKeywordLike("OFFSET").Pos
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	return &ast.WithOffset{
 		With:   with,
@@ -860,7 +1117,7 @@ func (p *Parser) tryParseWithOffset() *ast.WithOffset {
 
 func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	return p.parseTableExprSuffix(&ast.TableName{
 		Table: id,
 		Hint:  hint,
@@ -870,7 +1127,7 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 
 func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
 	hint := p.tryParseHint()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	withOffset := p.tryParseWithOffset()
 	return p.parseTableExprSuffix(&ast.PathTableExpr{
 		Path:       id,
@@ -1370,28 +1627,50 @@ func (p *Parser) parseSelector() ast.Expr {
 			}
 		case "[":
 			p.nextToken()
-			id := p.expect(token.TokenIdent)
-			ordinal := false
-			if char.EqualFold(id.AsString, "ORDINAL") {
-				ordinal = true
-			} else if char.EqualFold(id.AsString, "OFFSET") {
-				ordinal = false
-			} else {
-				p.panicfAtToken(id, "expected identifier: ORDINAL, OFFSET, but: %s", id.Raw)
-			}
-			p.expect("(")
-			index := p.parseExpr()
-			p.expect(")")
+			index := p.parseIndexSpecifier()
 			rbrack := p.expect("]").Pos
 			expr = &ast.IndexExpr{
-				Rbrack:  rbrack,
-				Ordinal: ordinal,
-				Expr:    expr,
-				Index:   index,
+				Rbrack: rbrack,
+				Expr:   expr,
+				Index:  index,
 			}
 		default:
 			return expr
 		}
+	}
+}
+
+func (p *Parser) parseIndexSpecifier() ast.SubscriptSpecifier {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.IsIdent("OFFSET"), p.Token.IsIdent("ORDINAL"),
+		p.Token.IsIdent("SAFE_OFFSET"), p.Token.IsIdent("SAFE_ORDINAL"):
+		var keyword ast.PositionKeyword
+		switch {
+		case p.Token.IsIdent("OFFSET"):
+			keyword = ast.PositionKeywordOffset
+		case p.Token.IsIdent("ORDINAL"):
+			keyword = ast.PositionKeywordOrdinal
+		case p.Token.IsIdent("SAFE_OFFSET"):
+			keyword = ast.PositionKeywordSafeOffset
+		case p.Token.IsIdent("SAFE_ORDINAL"):
+			keyword = ast.PositionKeywordSafeOrdinal
+
+		}
+		p.nextToken()
+		p.expect("(")
+		expr := p.parseExpr()
+		rparen := p.expect(")").Pos
+
+		return &ast.SubscriptSpecifierKeyword{
+			KeywordPos: pos,
+			Keyword:    keyword,
+			Rparen:     rparen,
+			Expr:       expr,
+		}
+	default:
+		expr := p.parseExpr()
+		return &ast.ExprArg{Expr: expr}
 	}
 }
 
@@ -1413,12 +1692,16 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseParam()
 	case "CASE":
 		return p.parseCaseExpr()
+	case "IF":
+		return p.parseIfExpr()
 	case "CAST":
 		return p.parseCastExpr()
 	case "EXISTS":
 		return p.parseExistsSubQuery()
 	case "EXTRACT":
 		return p.parseExtractExpr()
+	case "WITH":
+		return p.parseWithExpr()
 	case "ARRAY":
 		return p.parseArrayLiteralOrSubQuery()
 	case "STRUCT":
@@ -1427,11 +1710,18 @@ func (p *Parser) parseLit() ast.Expr {
 		return p.parseSimpleArrayLiteral()
 	case "(":
 		return p.parseParenExpr()
+	case "NEW":
+		return p.parseNewConstructors()
+	// In parser level, it is a valid ast.Expr, but it is semantically valid only in ast.BracedConstructorFieldExpr.
+	case "{":
+		return p.parseBracedConstructor()
 	case token.TokenIdent:
 		id := p.Token
 		switch {
 		case id.IsKeywordLike("SAFE_CAST"):
 			return p.parseCastExpr()
+		case id.IsKeywordLike("REPLACE_FIELDS"):
+			return p.parseReplaceFieldsExpr()
 		}
 		p.nextToken()
 		switch p.Token.Kind {
@@ -1514,6 +1804,8 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 	having := p.tryParseHavingModifier()
 
 	rparen := p.expect(")").Pos
+	hint := p.tryParseHint()
+
 	return &ast.CallExpr{
 		Rparen:       rparen,
 		Func:         fn,
@@ -1522,6 +1814,7 @@ func (p *Parser) parseCall(id token.Token) ast.Expr {
 		NamedArgs:    namedArgs,
 		NullHandling: nullHandling,
 		Having:       having,
+		Hint:         hint,
 	}
 }
 
@@ -1538,16 +1831,79 @@ func (p *Parser) lookaheadNamedArg() bool {
 	return p.Token.Kind == "=>"
 }
 
+func (p *Parser) parseNamedArg() *ast.NamedArg {
+	name := p.parseIdent()
+	p.expect("=>")
+	value := p.parseExpr()
+
+	return &ast.NamedArg{
+		Name:  name,
+		Value: value,
+	}
+}
+
 func (p *Parser) tryParseNamedArg() *ast.NamedArg {
 	if !p.lookaheadNamedArg() {
 		return nil
 	}
-	name := p.parseIdent()
-	p.expect("=>")
-	value := p.parseExpr()
-	return &ast.NamedArg{
-		Name:  name,
-		Value: value,
+
+	return p.parseNamedArg()
+}
+
+func (p *Parser) lookaheadLambdaArg() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	switch p.Token.Kind {
+	case "(":
+		p.nextToken()
+		if p.Token.Kind != token.TokenIdent {
+			return false
+		}
+		p.nextToken()
+
+		for p.Token.Kind != ")" {
+			if p.Token.Kind != "," {
+				return false
+			}
+			p.nextToken()
+
+			if p.Token.Kind != token.TokenIdent {
+				return false
+			}
+			p.nextToken()
+		}
+		p.nextToken()
+
+		return p.Token.Kind == "->"
+	case token.TokenIdent:
+		p.nextToken()
+		return p.Token.Kind == "->"
+	default:
+		return false
+	}
+}
+
+func (p *Parser) parseLambdaArg() *ast.LambdaArg {
+	lparen := token.InvalidPos
+	var args []*ast.Ident
+	if p.Token.Kind == "(" {
+		lparen = p.expect("(").Pos
+		args = parseCommaSeparatedList(p, p.parseIdent)
+		p.expect(")")
+	} else {
+		args = []*ast.Ident{p.parseIdent()}
+	}
+
+	p.expect("->")
+	expr := p.parseExpr()
+
+	return &ast.LambdaArg{
+		Lparen: lparen,
+		Args:   args,
+		Expr:   expr,
 	}
 }
 
@@ -1557,6 +1913,9 @@ func (p *Parser) parseArg() ast.Arg {
 	}
 	if s := p.tryParseSequenceArg(); s != nil {
 		return s
+	}
+	if p.lookaheadLambdaArg() {
+		return p.parseLambdaArg()
 	}
 	return p.parseExprArg()
 }
@@ -1698,6 +2057,52 @@ func (p *Parser) parseCaseElse() *ast.CaseElse {
 	}
 }
 
+func (p *Parser) parseIfExpr() *ast.IfExpr {
+	pos := p.expect("IF").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	p.expect(",")
+	trueResult := p.parseExpr()
+	p.expect(",")
+	elseResult := p.parseExpr()
+	rparen := p.expect(")").Pos
+
+	return &ast.IfExpr{
+		If:         pos,
+		Rparen:     rparen,
+		Expr:       expr,
+		TrueResult: trueResult,
+		ElseResult: elseResult,
+	}
+}
+
+func (p *Parser) parseReplaceFieldsArg() *ast.ReplaceFieldsArg {
+	expr := p.parseExpr()
+	p.expect("AS")
+	field := p.parsePath()
+
+	return &ast.ReplaceFieldsArg{
+		Expr:  expr,
+		Field: field,
+	}
+}
+
+func (p *Parser) parseReplaceFieldsExpr() *ast.ReplaceFieldsExpr {
+	replaceFields := p.expectKeywordLike("REPLACE_FIELDS").Pos
+	p.expect("(")
+	expr := p.parseExpr()
+	p.expect(",")
+	fields := parseCommaSeparatedList(p, p.parseReplaceFieldsArg)
+	rparen := p.expect(")").Pos
+
+	return &ast.ReplaceFieldsExpr{
+		ReplaceFields: replaceFields,
+		Rparen:        rparen,
+		Expr:          expr,
+		Fields:        fields,
+	}
+}
+
 func (p *Parser) parseCastExpr() *ast.CastExpr {
 	if p.Token.Kind != "CAST" && !p.Token.IsKeywordLike("SAFE_CAST") {
 		panic(p.errorfAtToken(&p.Token, `expected CAST keyword or SAFE_CAST pseudo keyword, but: %v`, p.Token.Kind))
@@ -1770,6 +2175,47 @@ func (p *Parser) tryParseAtTimeZone() *ast.AtTimeZone {
 	}
 }
 
+func (p *Parser) parseWithExprVar() *ast.WithExprVar {
+	name := p.parseIdent()
+	p.expect("AS")
+	expr := p.parseExpr()
+
+	return &ast.WithExprVar{
+		Expr: expr,
+		Name: name,
+	}
+}
+
+func (p *Parser) lookaheadWithExprVar() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	p.parseIdent()
+	return p.Token.Kind == "AS"
+}
+
+func (p *Parser) parseWithExpr() *ast.WithExpr {
+	with := p.expect("WITH").Pos
+	p.expect("(")
+
+	var vars []*ast.WithExprVar
+	for p.lookaheadWithExprVar() {
+		vars = append(vars, p.parseWithExprVar())
+		p.expect(",")
+	}
+
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+	return &ast.WithExpr{
+		With:   with,
+		Rparen: rparen,
+		Vars:   vars,
+		Expr:   expr,
+	}
+}
+
 func (p *Parser) parseParenExpr() ast.Expr {
 	paren := p.Token
 
@@ -1798,16 +2244,15 @@ func (p *Parser) parseParenExpr() ast.Expr {
 	}
 
 	if p.Token.Kind != "," {
-		p.panicfAtToken(&paren, "cannot parse (...) as expression, struct literal or subquery")
+		p.panicfAtToken(&paren, "cannot parse (...) as expression, tuple struct literal or subquery")
 	}
 
-	values := []ast.Expr{expr}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		values = append(values, p.parseExpr())
-	}
+	p.expect(",")
+
+	values := append([]ast.Expr{expr}, parseCommaSeparatedList(p, p.parseExpr)...)
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+
+	return &ast.TupleStructLiteral{
 		Lparen: paren.Pos,
 		Rparen: rparen,
 		Values: values,
@@ -1870,27 +2315,65 @@ func (p *Parser) parseArrayLiteralBody() (values []ast.Expr, lbrack, rbrack toke
 	return
 }
 
-func (p *Parser) parseStructLiteral() *ast.StructLiteral {
+func (p *Parser) parseStructLiteral() ast.Expr {
+	// Note that tuple struct syntax is handled in parseParenExpr.
+
 	pos := p.expect("STRUCT").Pos
+	if p.Token.Kind == "<" || p.Token.Kind == "<>" {
+		return p.parseTypedStructLiteral(pos)
+	}
+
+	if p.Token.Kind != "(" {
+		p.panicfAtToken(&p.Token, "expected token: <, <>, ( but: %s", p.Token.Kind)
+	}
+
+	return p.parseTypelessStructLiteral(pos)
+}
+
+func (p *Parser) parseTypedStructLiteral(pos token.Pos) *ast.TypedStructLiteral {
 	fields, _ := p.parseStructTypeFields()
-	lparen := p.expect("(").Pos
+
+	p.expect("(")
 	var values []ast.Expr
 	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
-			values = append(values, p.parseExpr())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
-		}
+		values = parseCommaSeparatedList(p, p.parseExpr)
 	}
 	rparen := p.expect(")").Pos
-	return &ast.StructLiteral{
+
+	return &ast.TypedStructLiteral{
 		Struct: pos,
-		Lparen: lparen,
 		Rparen: rparen,
 		Fields: fields,
 		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructLiteral(pos token.Pos) *ast.TypelessStructLiteral {
+	p.expect("(")
+	var values []ast.TypelessStructLiteralArg
+	if p.Token.Kind != ")" {
+		values = parseCommaSeparatedList(p, p.parseTypelessStructLiteralArg)
+	}
+	rparen := p.expect(")").Pos
+
+	return &ast.TypelessStructLiteral{
+		Struct: pos,
+		Rparen: rparen,
+		Values: values,
+	}
+}
+
+func (p *Parser) parseTypelessStructLiteralArg() ast.TypelessStructLiteralArg {
+	e := p.parseExpr()
+	as := p.tryParseAsAlias(withRequiredAs)
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
+		Expr: e,
 	}
 }
 
@@ -2055,10 +2538,10 @@ func (p *Parser) parseArrayType() *ast.ArrayType {
 
 func (p *Parser) parseStructType() *ast.StructType {
 	pos := p.expect("STRUCT").Pos
-	fields, gt := p.parseStructTypeFields()
-	if fields == nil {
+	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
 		p.panicfAtToken(&p.Token, "expected token: <, <>, but: %s", p.Token.Kind)
 	}
+	fields, gt := p.parseStructTypeFields()
 	return &ast.StructType{
 		Struct: pos,
 		Gt:     gt,
@@ -2066,28 +2549,20 @@ func (p *Parser) parseStructType() *ast.StructType {
 	}
 }
 
-func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Pos) {
-	if p.Token.Kind != "<" && p.Token.Kind != "<>" {
-		return
-	}
-
-	fields = make([]*ast.StructField, 0)
+func (p *Parser) parseStructTypeFields() ([]*ast.StructField, token.Pos) {
 	if p.Token.Kind == "<>" {
-		gt = p.expect("<>").Pos + 1
-		return
+		gt := p.Token.Pos + 1
+		p.nextToken()
+		return nil, gt
 	}
 
+	var fields []*ast.StructField
 	p.expect("<")
 	if p.Token.Kind != ">" && p.Token.Kind != ">>" {
-		for p.Token.Kind != token.TokenEOF {
-			fields = append(fields, p.parseFieldType())
-			if p.Token.Kind != "," {
-				break
-			}
-			p.nextToken()
-		}
+		fields = parseCommaSeparatedList(p, p.parseFieldType)
 	}
 
+	var gt token.Pos
 	if p.Token.Kind == ">>" {
 		p.Token.Kind = ">"
 		p.Token.Raw = ">"
@@ -2096,7 +2571,111 @@ func (p *Parser) parseStructTypeFields() (fields []*ast.StructField, gt token.Po
 	} else {
 		gt = p.expect(">").Pos
 	}
-	return
+
+	return fields, gt
+}
+
+func (p *Parser) parseNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.NewConstructor {
+	p.expect("(")
+
+	// Args can be empty like `NEW pkg.TypeName ()`.
+	var args []ast.NewConstructorArg
+	if p.Token.Kind != ")" {
+		args = parseCommaSeparatedList(p, p.parseNewConstructorArg)
+	}
+
+	rparen := p.expect(")").Pos
+	return &ast.NewConstructor{
+		New:    newPos,
+		Type:   namedType,
+		Args:   args,
+		Rparen: rparen,
+	}
+}
+
+func (p *Parser) parseNewConstructorArg() ast.NewConstructorArg {
+	// Currently, this method's contents are the same as `parseTypelessStructLiteralArg`.
+	// It exists as an individual method for future extensibility.
+
+	e := p.parseExpr()
+	as := p.tryParseAsAlias(withRequiredAs)
+	if as != nil {
+		return &ast.Alias{
+			Expr: e,
+			As:   as,
+		}
+	}
+	return &ast.ExprArg{
+		Expr: e,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
+	name := p.parseIdent()
+	var fieldValue ast.BracedConstructorFieldValue
+	switch p.Token.Kind {
+	case ":":
+		colon := p.expect(":").Pos
+		expr := p.parseExpr()
+		fieldValue = &ast.BracedConstructorFieldValueExpr{Colon: colon, Expr: expr}
+	case "{":
+		fieldValue = p.parseBracedConstructor()
+	}
+	return &ast.BracedConstructorField{Name: name, Value: fieldValue}
+}
+
+func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
+	lbrace := p.expect("{").Pos
+
+	// Braced constructor permits empty.
+	var fields []*ast.BracedConstructorField
+	for {
+		if p.Token.Kind == "}" {
+			break
+		}
+
+		if p.Token.Kind != token.TokenIdent {
+			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
+		}
+		fields = append(fields, p.parseBracedNewConstructorField())
+
+		// It is an optional comma.
+		if p.Token.Kind == "," {
+			p.nextToken()
+		}
+	}
+
+	rbrace := p.expect("}").Pos
+
+	return &ast.BracedConstructor{
+		Lbrace: lbrace,
+		Rbrace: rbrace,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseBracedNewConstructor(newPos token.Pos, namedType *ast.NamedType) *ast.BracedNewConstructor {
+	body := p.parseBracedConstructor()
+	return &ast.BracedNewConstructor{
+		New:  newPos,
+		Type: namedType,
+		Body: body,
+	}
+}
+
+func (p *Parser) parseNewConstructors() ast.Expr {
+	newPos := p.expect("NEW").Pos
+	namedType := p.parseNamedType()
+
+	switch p.Token.Kind {
+	case "(":
+		return p.parseNewConstructor(newPos, namedType)
+	case "{":
+		return p.parseBracedNewConstructor(newPos, namedType)
+	default:
+		p.panicfAtToken(&p.Token, `expect '{' or '(', but %v`, p.Token.Kind)
+	}
+	return nil
 }
 
 func (p *Parser) parseFieldType() *ast.StructField {
@@ -2150,14 +2729,20 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.Kind == "CREATE":
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
+		case p.Token.IsKeywordLike("PLACEMENT"):
+			return p.parseCreatePlacement(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseCreateProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseCreateSequence(pos)
-		case p.Token.IsKeywordLike("VIEW") || p.Token.Kind == "OR":
-			return p.parseCreateView(pos)
+		case p.Token.IsKeywordLike("VIEW"):
+			return p.parseCreateView(pos, false)
 		case p.Token.IsKeywordLike("INDEX") || p.Token.IsKeywordLike("UNIQUE") || p.Token.IsKeywordLike("NULL_FILTERED"):
 			return p.parseCreateIndex(pos)
 		case p.Token.IsKeywordLike("VECTOR"):
@@ -2168,8 +2753,19 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseCreateRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseCreateChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseCreateModel(pos, false)
+		case p.Token.Kind == "OR":
+			p.expect("OR")
+			p.expectKeywordLike("REPLACE")
+			switch {
+			case p.Token.IsKeywordLike("VIEW"):
+				return p.parseCreateView(pos, true)
+			case p.Token.IsKeywordLike("MODEL"):
+				return p.parseCreateModel(pos, true)
+			}
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: DATABASE, TABLE, INDEX, UNIQUE, NULL_FILTERED, ROLE, CHANGE, OR but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("ALTER"):
 		p.nextToken()
 		switch {
@@ -2177,6 +2773,8 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseAlterProtoBundle(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseAlterIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
@@ -2187,11 +2785,17 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseAlterChangeStream(pos)
 		case p.Token.IsKeywordLike("STATISTICS"):
 			return p.parseAlterStatistics(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseAlterModel(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
 		p.nextToken()
 		switch {
+		case p.Token.IsKeywordLike("SCHEMA"):
+			return p.parseDropSchema(pos)
+		case p.Token.Kind == "PROTO":
+			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseDropTable(pos)
 		case p.Token.IsKeywordLike("INDEX"):
@@ -2208,8 +2812,10 @@ func (p *Parser) parseDDL() ast.DDL {
 			return p.parseDropRole(pos)
 		case p.Token.IsKeywordLike("CHANGE"):
 			return p.parseDropChangeStream(pos)
+		case p.Token.IsKeywordLike("MODEL"):
+			return p.parseDropModel(pos)
 		}
-		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, but: %s", p.Token.AsString)
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, MODEL, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("RENAME"):
 		p.nextToken()
 		return p.parseRenameTable(pos)
@@ -2219,6 +2825,8 @@ func (p *Parser) parseDDL() ast.DDL {
 	case p.Token.IsKeywordLike("REVOKE"):
 		p.nextToken()
 		return p.parseRevoke(pos)
+	case p.Token.IsKeywordLike("ANALYZE"):
+		return p.parseAnalyze()
 	}
 
 	if p.Token.Kind != token.TokenIdent {
@@ -2228,9 +2836,28 @@ func (p *Parser) parseDDL() ast.DDL {
 	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
 }
 
+func (p *Parser) parseCreateSchema(pos token.Pos) *ast.CreateSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.CreateSchema{
+		Create: pos,
+		Name:   name,
+	}
+}
+
+func (p *Parser) parseDropSchema(pos token.Pos) *ast.DropSchema {
+	p.expectKeywordLike("SCHEMA")
+	name := p.parseIdent()
+	return &ast.DropSchema{
+		Drop: pos,
+		Name: name,
+	}
+}
+
 func (p *Parser) parseCreateDatabase(pos token.Pos) *ast.CreateDatabase {
 	p.expectKeywordLike("DATABASE")
 	name := p.parseIdent()
+
 	return &ast.CreateDatabase{
 		Create: pos,
 		Name:   name,
@@ -2250,10 +2877,111 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 	}
 }
 
+func (p *Parser) parseCreatePlacement(pos token.Pos) *ast.CreatePlacement {
+	p.expectKeywordLike("PLACEMENT")
+	name := p.parseIdent()
+	options := p.parseOptions()
+
+	return &ast.CreatePlacement{
+		Create:  pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
+func (p *Parser) parseProtoBundleTypes() *ast.ProtoBundleTypes {
+	lparen := p.expect("(").Pos
+	types := parseCommaSeparatedList(p, p.parseNamedType)
+	rparen := p.expect(")").Pos
+	return &ast.ProtoBundleTypes{
+		Lparen: lparen,
+		Rparen: rparen,
+		Types:  types,
+	}
+}
+
+func (p *Parser) parseCreateProtoBundle(pos token.Pos) *ast.CreateProtoBundle {
+	p.expect("PROTO")
+	p.expectKeywordLike("BUNDLE")
+	types := p.parseProtoBundleTypes()
+
+	return &ast.CreateProtoBundle{
+		Create: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) parseAlterProtoBundle(pos token.Pos) *ast.AlterProtoBundle {
+	p.expect("PROTO")
+	bundle := p.expectKeywordLike("BUNDLE").Pos
+	insert := p.tryParseAlterProtoBundleInsert()
+	update := p.tryParseAlterProtoBundleUpdate()
+	delete := p.tryParseAlterProtoBundleDelete()
+
+	return &ast.AlterProtoBundle{
+		Alter:  pos,
+		Bundle: bundle,
+		Insert: insert,
+		Update: update,
+		Delete: delete,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleInsert() *ast.AlterProtoBundleInsert {
+	if !p.Token.IsKeywordLike("INSERT") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("INSERT").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleInsert{
+		Insert: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleUpdate() *ast.AlterProtoBundleUpdate {
+	if !p.Token.IsKeywordLike("UPDATE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("UPDATE").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleUpdate{
+		Update: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) tryParseAlterProtoBundleDelete() *ast.AlterProtoBundleDelete {
+	if !p.Token.IsKeywordLike("DELETE") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("DELETE").Pos
+	types := p.parseProtoBundleTypes()
+
+	return &ast.AlterProtoBundleDelete{
+		Delete: pos,
+		Types:  types,
+	}
+}
+
+func (p *Parser) parseDropProtoBundle(pos token.Pos) *ast.DropProtoBundle {
+	p.expect("PROTO")
+	bundle := p.expectKeywordLike("BUNDLE").Pos
+
+	return &ast.DropProtoBundle{
+		Drop:   pos,
+		Bundle: bundle,
+	}
+}
 func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	p.expectKeywordLike("TABLE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	// This loop allows parsing trailing comma intentionally.
 	// TODO: is this allowed by Spanner really?
@@ -2327,10 +3055,15 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 }
 
+func (p *Parser) parsePath() *ast.Path {
+	path := p.parseIdentOrPath()
+	return &ast.Path{Idents: path}
+}
+
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	options := p.parseOptions()
 
 	return &ast.CreateSequence{
@@ -2341,16 +3074,10 @@ func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	}
 }
 
-func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
-	var orReplace bool
-	if p.Token.Kind == "OR" {
-		p.nextToken()
-		p.expectKeywordLike("REPLACE")
-		orReplace = true
-	}
+func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView {
 	p.expectKeywordLike("VIEW")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expectKeywordLike("SQL")
 	p.expectKeywordLike("SECURITY")
@@ -2381,7 +3108,7 @@ func (p *Parser) parseCreateView(pos token.Pos) *ast.CreateView {
 
 func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	p.expectKeywordLike("VIEW")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.DropView{
 		Drop: pos,
@@ -2441,7 +3168,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	columns := parseCommaSeparatedList(p, p.parseIdent)
 	p.expect(")")
 	p.expectKeywordLike("REFERENCES")
-	refTable := p.parseIdent()
+	refTable := p.parsePath()
 
 	p.expect("(")
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
@@ -2561,7 +3288,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	p.nextToken()
 	p.expect("IN")
 	p.expectKeywordLike("PARENT")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
@@ -2786,10 +3513,10 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	ifNotExists := p.parseIfNotExists()
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("ON")
-	tableName := p.parseIdent()
+	tableName := p.parsePath()
 
 	p.expect("(")
 	var keys []*ast.IndexKey
@@ -2961,7 +3688,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alteration ast.TableAlteration
 	switch {
@@ -3189,7 +3916,7 @@ func (p *Parser) parseAlterColumn() ast.TableAlteration {
 func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	p.expectKeywordLike("INDEX")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterIndex{
@@ -3201,7 +3928,7 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
-	name := p.parseIdent()
+	name := p.parsePath()
 	p.expect("SET")
 	options := p.parseOptions()
 
@@ -3240,7 +3967,7 @@ func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropTable{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3251,7 +3978,7 @@ func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 	p.expectKeywordLike("INDEX")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropIndex{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3274,7 +4001,7 @@ func (p *Parser) parseDropVectorIndex(pos token.Pos) *ast.DropVectorIndex {
 func (p *Parser) parseDropSequence(pos token.Pos) *ast.DropSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropSequence{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3490,10 +4217,21 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 		p.expect("<")
 		t := p.parseScalarSchemaType()
 		end := p.expect(">").Pos
+
+		var namedArgs []*ast.NamedArg
+		rparen := token.InvalidPos
+		if p.Token.Kind == "(" {
+			p.nextToken()
+			namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+			rparen = p.expect(")").Pos
+		}
+
 		return &ast.ArraySchemaType{
-			Array: pos,
-			Gt:    end,
-			Item:  t,
+			Array:     pos,
+			Gt:        end,
+			Item:      t,
+			NamedArgs: namedArgs,
+			Rparen:    rparen,
 		}
 	}
 
@@ -3510,6 +4248,96 @@ func (p *Parser) parseAlterStatistics(pos token.Pos) *ast.AlterStatistics {
 		Alter:   pos,
 		Name:    name,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseAnalyze() *ast.Analyze {
+	pos := p.expectKeywordLike("ANALYZE").Pos
+
+	return &ast.Analyze{
+		Analyze: pos,
+	}
+}
+
+func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
+	name := p.parseIdent()
+	dataType := p.parseSchemaType()
+	options := p.tryParseOptions()
+
+	return &ast.CreateModelColumn{
+		Name:     name,
+		DataType: dataType,
+		Options:  options,
+	}
+}
+
+func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
+	if !p.Token.IsKeywordLike("INPUT") {
+		return nil
+	}
+
+	pos := p.expectKeywordLike("INPUT").Pos
+	p.expect("(")
+	inputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	p.expect(")")
+
+	p.expectKeywordLike("OUTPUT")
+	p.expect("(")
+	outputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
+	rparen := p.expect(")").Pos
+
+	return &ast.CreateModelInputOutput{
+		Input:         pos,
+		Rparen:        rparen,
+		InputColumns:  inputColumns,
+		OutputColumns: outputColumns,
+	}
+}
+
+func (p *Parser) parseCreateModel(pos token.Pos, orReplace bool) *ast.CreateModel {
+	p.expectKeywordLike("MODEL")
+	name := p.parseIdent()
+	ifNotExists := p.parseIfNotExists()
+	inputOutput := p.tryParseCreateModelInputOutput()
+	remote := p.expectKeywordLike("REMOTE").Pos
+	options := p.tryParseOptions()
+
+	return &ast.CreateModel{
+		Create:      pos,
+		OrReplace:   orReplace,
+		IfNotExists: ifNotExists,
+		Name:        name,
+		InputOutput: inputOutput,
+		Remote:      remote,
+		Options:     options,
+	}
+
+}
+
+func (p *Parser) parseAlterModel(pos token.Pos) *ast.AlterModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterModel{
+		Alter:    pos,
+		IfExists: ifExists,
+		Name:     name,
+		Options:  options,
+	}
+}
+
+func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
+	p.expectKeywordLike("MODEL")
+	ifExists := p.parseIfExists()
+	name := p.parseIdent()
+
+	return &ast.DropModel{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
@@ -3569,7 +4397,7 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 }
 
 func (p *Parser) parseIfNotExists() bool {
-	if p.Token.IsKeywordLike("IF") {
+	if p.Token.Kind == "IF" {
 		p.nextToken()
 		p.expect("NOT")
 		p.expect("EXISTS")
@@ -3579,7 +4407,7 @@ func (p *Parser) parseIfNotExists() bool {
 }
 
 func (p *Parser) parseIfExists() bool {
-	if p.Token.IsKeywordLike("IF") {
+	if p.Token.Kind == "IF" {
 		p.nextToken()
 		p.expect("EXISTS")
 		return true
@@ -3606,6 +4434,39 @@ func (p *Parser) parseDML() ast.DML {
 	}
 
 	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
+}
+
+func (p *Parser) tryParseWithAction() *ast.WithAction {
+	if p.Token.Kind != "WITH" {
+		return nil
+	}
+
+	with := p.expect("WITH").Pos
+	action := p.expectKeywordLike("ACTION").Pos
+	alias := p.tryParseAsAlias(withRequiredAs)
+
+	return &ast.WithAction{
+		With:   with,
+		Action: action,
+		Alias:  alias,
+	}
+}
+
+func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
+	if p.Token.Kind != "THEN" {
+		return nil
+	}
+
+	then := p.expect("THEN").Pos
+	p.expectKeywordLike("RETURN")
+	withAction := p.tryParseWithAction()
+	items := parseCommaSeparatedList(p, p.parseSelectItem)
+
+	return &ast.ThenReturn{
+		Then:       then,
+		WithAction: withAction,
+		Items:      items,
+	}
 }
 
 func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
@@ -3649,12 +4510,15 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 		input = p.parseSubQueryInput()
 	}
 
+	thenReturn := p.tryParseThenReturn()
+
 	return &ast.Insert{
 		Insert:       pos,
 		InsertOrType: insertOrType,
 		TableName:    name,
 		Columns:      columns,
 		Input:        input,
+		ThenReturn:   thenReturn,
 	}
 }
 
@@ -3720,33 +4584,37 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	}
 
 	name := p.parseIdent()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
+	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Delete{
-		Delete:    pos,
-		TableName: name,
-		As:        as,
-		Where:     where,
+		Delete:     pos,
+		TableName:  name,
+		As:         as,
+		Where:      where,
+		ThenReturn: thenReturn,
 	}
 }
 
 func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	name := p.parseIdent()
-	as := p.tryParseAsAlias()
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("SET")
 
 	items := parseCommaSeparatedList(p, p.parseUpdateItem)
 
 	where := p.parseWhere()
+	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Update{
-		Update:    pos,
-		TableName: name,
-		As:        as,
-		Updates:   items,
-		Where:     where,
+		Update:     pos,
+		TableName:  name,
+		As:         as,
+		Updates:    items,
+		Where:      where,
+		ThenReturn: thenReturn,
 	}
 }
 

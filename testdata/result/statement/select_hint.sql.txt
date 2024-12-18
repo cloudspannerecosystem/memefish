@@ -3,7 +3,6 @@
 --- AST
 &ast.QueryStatement{
   Hint: &ast.Hint{
-    Atmark:  0,
     Rbrace:  22,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
@@ -34,12 +33,9 @@
       },
     },
   },
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   24,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Select:  24,
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 31,
@@ -48,12 +44,6 @@
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

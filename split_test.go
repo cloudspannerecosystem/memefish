@@ -69,8 +69,6 @@ func TestSplitRawStatements(t *testing.T) {
 			want: []*memefish.RawStatement{
 				{Statement: "SELECT `1;2;3`", End: token.Pos(14)},
 			}},
-		// $` may become a valid token in the future, but it's reasonable to check its current behavior.
-		{desc: "unknown token", input: "SELECT $;", errRe: regexp.MustCompile(`illegal input character: '\$'`)},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			stmts, err := memefish.SplitRawStatements("", test.input)

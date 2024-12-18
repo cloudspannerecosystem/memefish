@@ -7,10 +7,18 @@ import (
 )
 
 func (q *QueryStatement) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.With), wrapNode(q.Query)))
+	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.Query)))
 }
 
 func (q *QueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(q.Query))
+}
+
+func (q *Query) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(q.With), wrapNode(q.Query)))
+}
+
+func (q *Query) End() token.Pos {
 	return nodeEnd(wrapNode(q.Query))
 }
 
@@ -51,7 +59,7 @@ func (s *Select) Pos() token.Pos {
 }
 
 func (s *Select) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy), wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
+	return nodeEnd(nodeChoice(wrapNode(s.Having), wrapNode(s.GroupBy), wrapNode(s.Where), wrapNode(s.From), nodeSliceLast(s.Results)))
 }
 
 func (a *AsStruct) Pos() token.Pos {
@@ -78,12 +86,20 @@ func (a *AsTypeName) End() token.Pos {
 	return nodeEnd(wrapNode(a.TypeName))
 }
 
+func (f *FromQuery) Pos() token.Pos {
+	return nodePos(wrapNode(f.From))
+}
+
+func (f *FromQuery) End() token.Pos {
+	return nodeEnd(wrapNode(f.From))
+}
+
 func (c *CompoundQuery) Pos() token.Pos {
 	return nodePos(nodeSliceIndex(c.Queries, 0))
 }
 
 func (c *CompoundQuery) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(c.Limit), wrapNode(c.OrderBy), nodeSliceLast(c.Queries)))
+	return nodeEnd(nodeSliceLast(c.Queries))
 }
 
 func (s *SubQuery) Pos() token.Pos {
@@ -91,7 +107,31 @@ func (s *SubQuery) Pos() token.Pos {
 }
 
 func (s *SubQuery) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy))), posAdd(s.Rparen, 1))
+	return posAdd(s.Rparen, 1)
+}
+
+func (s *StarModifierExcept) Pos() token.Pos {
+	return s.Except
+}
+
+func (s *StarModifierExcept) End() token.Pos {
+	return posAdd(s.Rparen, 1)
+}
+
+func (s *StarModifierReplaceItem) Pos() token.Pos {
+	return nodePos(wrapNode(s.Expr))
+}
+
+func (s *StarModifierReplaceItem) End() token.Pos {
+	return nodeEnd(wrapNode(s.Name))
+}
+
+func (s *StarModifierReplace) Pos() token.Pos {
+	return s.Replace
+}
+
+func (s *StarModifierReplace) End() token.Pos {
+	return posAdd(s.Rparen, 1)
 }
 
 func (s *Star) Pos() token.Pos {
@@ -99,7 +139,7 @@ func (s *Star) Pos() token.Pos {
 }
 
 func (s *Star) End() token.Pos {
-	return posAdd(s.Star, 1)
+	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Replace), wrapNode(s.Except))), posAdd(s.Star, 1))
 }
 
 func (d *DotStar) Pos() token.Pos {
@@ -107,7 +147,7 @@ func (d *DotStar) Pos() token.Pos {
 }
 
 func (d *DotStar) End() token.Pos {
-	return posAdd(d.Star, 1)
+	return posChoice(nodeEnd(nodeChoice(wrapNode(d.Replace), wrapNode(d.Except))), posAdd(d.Star, 1))
 }
 
 func (a *Alias) Pos() token.Pos {
@@ -204,6 +244,22 @@ func (o *Offset) Pos() token.Pos {
 
 func (o *Offset) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
+}
+
+func (p *PipeSelect) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeSelect) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Results))
+}
+
+func (p *PipeWhere) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeWhere) End() token.Pos {
+	return nodeEnd(wrapNode(p.Expr))
 }
 
 func (u *Unnest) Pos() token.Pos {
@@ -382,12 +438,28 @@ func (i *IndexExpr) End() token.Pos {
 	return posAdd(i.Rbrack, 1)
 }
 
+func (s *SubscriptSpecifierKeyword) Pos() token.Pos {
+	return s.KeywordPos
+}
+
+func (s *SubscriptSpecifierKeyword) End() token.Pos {
+	return posAdd(s.Rparen, 1)
+}
+
 func (c *CallExpr) Pos() token.Pos {
 	return nodePos(wrapNode(c.Func))
 }
 
 func (c *CallExpr) End() token.Pos {
-	return posAdd(c.Rparen, 1)
+	return posChoice(nodeEnd(wrapNode(c.Hint)), posAdd(c.Rparen, 1))
+}
+
+func (t *TVFCallExpr) Pos() token.Pos {
+	return nodePos(wrapNode(t.Name))
+}
+
+func (t *TVFCallExpr) End() token.Pos {
+	return posChoice(nodeEnd(nodeChoice(wrapNode(t.Sample), wrapNode(t.Hint))), posAdd(t.Rparen, 1))
 }
 
 func (e *ExprArg) Pos() token.Pos {
@@ -412,6 +484,30 @@ func (s *SequenceArg) Pos() token.Pos {
 
 func (s *SequenceArg) End() token.Pos {
 	return nodeEnd(wrapNode(s.Expr))
+}
+
+func (l *LambdaArg) Pos() token.Pos {
+	return posChoice(l.Lparen, nodePos(nodeSliceIndex(l.Args, 0)))
+}
+
+func (l *LambdaArg) End() token.Pos {
+	return nodeEnd(wrapNode(l.Expr))
+}
+
+func (m *ModelArg) Pos() token.Pos {
+	return m.Model
+}
+
+func (m *ModelArg) End() token.Pos {
+	return nodeEnd(wrapNode(m.Name))
+}
+
+func (t *TableArg) Pos() token.Pos {
+	return t.Table
+}
+
+func (t *TableArg) End() token.Pos {
+	return nodeEnd(wrapNode(t.Name))
 }
 
 func (n *NamedArg) Pos() token.Pos {
@@ -470,12 +566,44 @@ func (e *ExtractExpr) End() token.Pos {
 	return posAdd(e.Rparen, 1)
 }
 
+func (r *ReplaceFieldsArg) Pos() token.Pos {
+	return nodePos(wrapNode(r.Expr))
+}
+
+func (r *ReplaceFieldsArg) End() token.Pos {
+	return nodeEnd(wrapNode(r.Field))
+}
+
+func (r *ReplaceFieldsExpr) Pos() token.Pos {
+	return r.ReplaceFields
+}
+
+func (r *ReplaceFieldsExpr) End() token.Pos {
+	return posAdd(r.Rparen, 1)
+}
+
 func (a *AtTimeZone) Pos() token.Pos {
 	return a.At
 }
 
 func (a *AtTimeZone) End() token.Pos {
 	return nodeEnd(wrapNode(a.Expr))
+}
+
+func (w *WithExprVar) Pos() token.Pos {
+	return nodePos(wrapNode(w.Name))
+}
+
+func (w *WithExprVar) End() token.Pos {
+	return nodeEnd(wrapNode(w.Expr))
+}
+
+func (w *WithExpr) Pos() token.Pos {
+	return w.With
+}
+
+func (w *WithExpr) End() token.Pos {
+	return posAdd(w.Rparen, 1)
 }
 
 func (c *CastExpr) Pos() token.Pos {
@@ -508,6 +636,14 @@ func (c *CaseElse) Pos() token.Pos {
 
 func (c *CaseElse) End() token.Pos {
 	return nodeEnd(wrapNode(c.Expr))
+}
+
+func (i *IfExpr) Pos() token.Pos {
+	return i.If
+}
+
+func (i *IfExpr) End() token.Pos {
+	return posAdd(i.Rparen, 1)
 }
 
 func (p *ParenExpr) Pos() token.Pos {
@@ -574,12 +710,28 @@ func (a *ArrayLiteral) End() token.Pos {
 	return posAdd(a.Rbrack, 1)
 }
 
-func (s *StructLiteral) Pos() token.Pos {
-	return posChoice(s.Struct, s.Lparen)
+func (t *TupleStructLiteral) Pos() token.Pos {
+	return t.Lparen
 }
 
-func (s *StructLiteral) End() token.Pos {
-	return posAdd(s.Rparen, 1)
+func (t *TupleStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypedStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypedStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
+func (t *TypelessStructLiteral) Pos() token.Pos {
+	return t.Struct
+}
+
+func (t *TypelessStructLiteral) End() token.Pos {
+	return posAdd(t.Rparen, 1)
 }
 
 func (n *NullLiteral) Pos() token.Pos {
@@ -662,6 +814,46 @@ func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
 }
 
+func (n *NewConstructor) Pos() token.Pos {
+	return n.New
+}
+
+func (n *NewConstructor) End() token.Pos {
+	return posAdd(n.Rparen, 1)
+}
+
+func (b *BracedNewConstructor) Pos() token.Pos {
+	return b.New
+}
+
+func (b *BracedNewConstructor) End() token.Pos {
+	return nodeEnd(wrapNode(b.Body))
+}
+
+func (b *BracedConstructor) Pos() token.Pos {
+	return b.Lbrace
+}
+
+func (b *BracedConstructor) End() token.Pos {
+	return posAdd(b.Rbrace, 1)
+}
+
+func (b *BracedConstructorField) Pos() token.Pos {
+	return nodePos(wrapNode(b.Name))
+}
+
+func (b *BracedConstructorField) End() token.Pos {
+	return nodeEnd(wrapNode(b.Value))
+}
+
+func (b *BracedConstructorFieldValueExpr) Pos() token.Pos {
+	return b.Colon
+}
+
+func (b *BracedConstructorFieldValueExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.Expr))
+}
+
 func (s *SimpleType) Pos() token.Pos {
 	return s.NamePos
 }
@@ -734,6 +926,22 @@ func (o *OptionsDef) End() token.Pos {
 	return nodeEnd(wrapNode(o.Value))
 }
 
+func (c *CreateSchema) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateSchema) End() token.Pos {
+	return nodeEnd(wrapNode(c.Name))
+}
+
+func (d *DropSchema) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropSchema) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (c *CreateDatabase) Pos() token.Pos {
 	return c.Create
 }
@@ -748,6 +956,70 @@ func (a *AlterDatabase) Pos() token.Pos {
 
 func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Name))
+}
+
+func (c *CreatePlacement) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreatePlacement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
+}
+
+func (p *ProtoBundleTypes) Pos() token.Pos {
+	return p.Lparen
+}
+
+func (p *ProtoBundleTypes) End() token.Pos {
+	return posAdd(p.Rparen, 1)
+}
+
+func (c *CreateProtoBundle) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateProtoBundle) End() token.Pos {
+	return nodeEnd(wrapNode(c.Types))
+}
+
+func (a *AlterProtoBundle) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterProtoBundle) End() token.Pos {
+	return posChoice(nodeEnd(nodeChoice(wrapNode(a.Delete), wrapNode(a.Update), wrapNode(a.Insert))), posAdd(a.Bundle, 6))
+}
+
+func (a *AlterProtoBundleInsert) Pos() token.Pos {
+	return a.Insert
+}
+
+func (a *AlterProtoBundleInsert) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (a *AlterProtoBundleUpdate) Pos() token.Pos {
+	return a.Update
+}
+
+func (a *AlterProtoBundleUpdate) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (a *AlterProtoBundleDelete) Pos() token.Pos {
+	return a.Delete
+}
+
+func (a *AlterProtoBundleDelete) End() token.Pos {
+	return nodeEnd(wrapNode(a.Types))
+}
+
+func (d *DropProtoBundle) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropProtoBundle) End() token.Pos {
+	return posAdd(d.Bundle, 6)
 }
 
 func (c *CreateTable) Pos() token.Pos {
@@ -1318,6 +1590,54 @@ func (a *AlterStatistics) End() token.Pos {
 	return nodeEnd(wrapNode(a.Options))
 }
 
+func (a *Analyze) Pos() token.Pos {
+	return a.Analyze
+}
+
+func (a *Analyze) End() token.Pos {
+	return posAdd(a.Analyze, 7)
+}
+
+func (c *CreateModelColumn) Pos() token.Pos {
+	return nodePos(wrapNode(c.Name))
+}
+
+func (c *CreateModelColumn) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.DataType)))
+}
+
+func (c *CreateModelInputOutput) Pos() token.Pos {
+	return c.Input
+}
+
+func (c *CreateModelInputOutput) End() token.Pos {
+	return posAdd(c.Rparen, 1)
+}
+
+func (c *CreateModel) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateModel) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Remote, 6))
+}
+
+func (a *AlterModel) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterModel) End() token.Pos {
+	return nodeEnd(wrapNode(a.Options))
+}
+
+func (d *DropModel) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropModel) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (s *ScalarSchemaType) Pos() token.Pos {
 	return s.NamePos
 }
@@ -1339,7 +1659,7 @@ func (a *ArraySchemaType) Pos() token.Pos {
 }
 
 func (a *ArraySchemaType) End() token.Pos {
-	return posAdd(a.Gt, 1)
+	return posChoice(posAdd(a.Rparen, 1), posAdd(a.Gt, 1))
 }
 
 func (c *CreateSearchIndex) Pos() token.Pos {
@@ -1366,12 +1686,28 @@ func (a *AlterSearchIndex) End() token.Pos {
 	return nodeEnd(wrapNode(a.IndexAlteration))
 }
 
+func (w *WithAction) Pos() token.Pos {
+	return w.With
+}
+
+func (w *WithAction) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(w.Alias)), posAdd(w.Action, 6))
+}
+
+func (t *ThenReturn) Pos() token.Pos {
+	return t.Then
+}
+
+func (t *ThenReturn) End() token.Pos {
+	return nodeEnd(nodeSliceLast(t.Items))
+}
+
 func (i *Insert) Pos() token.Pos {
 	return i.Insert
 }
 
 func (i *Insert) End() token.Pos {
-	return nodeEnd(wrapNode(i.Input))
+	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.Input)))
 }
 
 func (v *ValuesInput) Pos() token.Pos {
@@ -1411,7 +1747,7 @@ func (d *Delete) Pos() token.Pos {
 }
 
 func (d *Delete) End() token.Pos {
-	return nodeEnd(wrapNode(d.Where))
+	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.Where)))
 }
 
 func (u *Update) Pos() token.Pos {
@@ -1419,7 +1755,7 @@ func (u *Update) Pos() token.Pos {
 }
 
 func (u *Update) End() token.Pos {
-	return nodeEnd(wrapNode(u.Where))
+	return nodeEnd(nodeChoice(wrapNode(u.ThenReturn), wrapNode(u.Where)))
 }
 
 func (u *UpdateItem) Pos() token.Pos {
