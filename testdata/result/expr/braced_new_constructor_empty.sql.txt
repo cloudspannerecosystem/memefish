@@ -2,7 +2,6 @@
 NEW Universe {}
 --- AST
 &ast.BracedNewConstructor{
-  New:  0,
   Type: &ast.NamedType{
     Path: []*ast.Ident{
       &ast.Ident{
@@ -15,7 +14,6 @@ NEW Universe {}
   Body: &ast.BracedConstructor{
     Lbrace: 13,
     Rbrace: 14,
-    Fields: []*ast.BracedConstructorField(nil),
   },
 }
 

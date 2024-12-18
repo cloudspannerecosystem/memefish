@@ -1,0 +1,66 @@
+--- array_functions_array_filter_parenless_lambda.sql
+ARRAY_FILTER([1 ,2, 3], e -> e > 1)
+--- AST
+&ast.CallExpr{
+  Rparen: 34,
+  Func:   &ast.Ident{
+    NameEnd: 12,
+    Name:    "ARRAY_FILTER",
+  },
+  Args: []ast.Arg{
+    &ast.ExprArg{
+      Expr: &ast.ArrayLiteral{
+        Array:  -1,
+        Lbrack: 13,
+        Rbrack: 21,
+        Values: []ast.Expr{
+          &ast.IntLiteral{
+            ValuePos: 14,
+            ValueEnd: 15,
+            Base:     10,
+            Value:    "1",
+          },
+          &ast.IntLiteral{
+            ValuePos: 17,
+            ValueEnd: 18,
+            Base:     10,
+            Value:    "2",
+          },
+          &ast.IntLiteral{
+            ValuePos: 20,
+            ValueEnd: 21,
+            Base:     10,
+            Value:    "3",
+          },
+        },
+      },
+    },
+    &ast.LambdaArg{
+      Lparen: -1,
+      Args:   []*ast.Ident{
+        &ast.Ident{
+          NamePos: 24,
+          NameEnd: 25,
+          Name:    "e",
+        },
+      },
+      Expr: &ast.BinaryExpr{
+        Op:   ">",
+        Left: &ast.Ident{
+          NamePos: 29,
+          NameEnd: 30,
+          Name:    "e",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 33,
+          ValueEnd: 34,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ARRAY_FILTER([1, 2, 3], e -> e > 1)

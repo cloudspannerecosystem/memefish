@@ -2,7 +2,6 @@
 DROP SCHEMA sch1
 --- AST
 &ast.DropSchema{
-  Drop: 0,
   Name: &ast.Ident{
     NamePos: 12,
     NameEnd: 16,

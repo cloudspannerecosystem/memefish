@@ -3,8 +3,7 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
 
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
@@ -59,7 +58,6 @@ alter table foo add constraint fkname foreign key (foo, bar) references t2 (t2ke
             Name:    "t2key2",
           },
         },
-        OnDelete: "",
       },
     },
   },
