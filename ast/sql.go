@@ -222,12 +222,18 @@ func (s *SubQuery) SQL() string {
 	return sql
 }
 
+func (s *StarModifierExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, " ") + ")" }
+
+func (s *StarModifierReplaceItem) SQL() string { return s.Expr.SQL() + " AS " + s.Name.SQL() }
+
+func (s *StarModifierReplace) SQL() string { return "REPLACE (" + sqlJoin(s.Columns, ", ") + ")" }
+
 func (s *Star) SQL() string {
-	return "*"
+	return "*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
 }
 
 func (s *DotStar) SQL() string {
-	return s.Expr.SQL() + ".*"
+	return s.Expr.SQL() + ".*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
 }
 
 func (a *Alias) SQL() string {

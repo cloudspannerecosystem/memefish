@@ -94,12 +94,36 @@ func (s *SubQuery) End() token.Pos {
 	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Limit), wrapNode(s.OrderBy))), posAdd(s.Rparen, 1))
 }
 
+func (s *StarModifierExcept) Pos() token.Pos {
+	return s.Except
+}
+
+func (s *StarModifierExcept) End() token.Pos {
+	return posAdd(s.Rparen, 1)
+}
+
+func (s *StarModifierReplaceItem) Pos() token.Pos {
+	return nodePos(wrapNode(s.Expr))
+}
+
+func (s *StarModifierReplaceItem) End() token.Pos {
+	return nodeEnd(wrapNode(s.Name))
+}
+
+func (s *StarModifierReplace) Pos() token.Pos {
+	return s.Replace
+}
+
+func (s *StarModifierReplace) End() token.Pos {
+	return posAdd(s.Rparen, 1)
+}
+
 func (s *Star) Pos() token.Pos {
 	return s.Star
 }
 
 func (s *Star) End() token.Pos {
-	return posAdd(s.Star, 1)
+	return posChoice(nodeEnd(nodeChoice(wrapNode(s.Replace), wrapNode(s.Except))), posAdd(s.Star, 1))
 }
 
 func (d *DotStar) Pos() token.Pos {
@@ -107,7 +131,7 @@ func (d *DotStar) Pos() token.Pos {
 }
 
 func (d *DotStar) End() token.Pos {
-	return posAdd(d.Star, 1)
+	return posChoice(nodeEnd(nodeChoice(wrapNode(d.Replace), wrapNode(d.Except))), posAdd(d.Star, 1))
 }
 
 func (a *Alias) Pos() token.Pos {
