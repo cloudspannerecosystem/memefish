@@ -3289,14 +3289,6 @@ func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	}
 }
 
-func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
-	if p.Token.Kind != "AS" {
-		return nil
-	}
-
-	return p.parseGeneratedColumnExpr()
-}
-
 func (p *Parser) parseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	pos := p.expect("AS").Pos
 	p.expect("(")
