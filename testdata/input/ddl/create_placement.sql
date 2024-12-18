@@ -1,0 +1,1 @@
+CREATE PLACEMENT `europeplacement` OPTIONS (instance_partition="europe-partition")

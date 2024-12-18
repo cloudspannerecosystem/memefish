@@ -7,12 +7,8 @@ FROM Singers S
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.DotStar{
         Star: 11,
         Expr: &ast.Ident{
@@ -70,8 +66,7 @@ FROM Singers S
           NameEnd: 60,
           Name:    "Singers",
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
+        As: &ast.AsAlias{
           As:    -1,
           Alias: &ast.Ident{
             NamePos: 61,
@@ -79,12 +74,8 @@ FROM Singers S
             Name:    "S",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

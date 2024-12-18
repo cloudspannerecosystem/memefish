@@ -3,9 +3,7 @@ insert foo (foo, bar)
 select * from unnest([(1, 2), (3, 4)])
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
@@ -24,10 +22,8 @@ select * from unnest([(1, 2), (3, 4)])
   },
   Input: &ast.SubQueryInput{
     Query: &ast.Select{
-      Select:        22,
-      AllOrDistinct: "",
-      As:            nil,
-      Results:       []ast.SelectItem{
+      Select:  22,
+      Results: []ast.SelectItem{
         &ast.Star{
           Star: 29,
         },
@@ -41,7 +37,6 @@ select * from unnest([(1, 2), (3, 4)])
             Array:  -1,
             Lbrack: 43,
             Rbrack: 58,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.TupleStructLiteral{
                 Lparen: 44,
@@ -81,15 +76,8 @@ select * from unnest([(1, 2), (3, 4)])
               },
             },
           },
-          Hint:       (*ast.Hint)(nil),
-          As:         (*ast.AsAlias)(nil),
-          WithOffset: (*ast.WithOffset)(nil),
-          Sample:     (*ast.TableSample)(nil),
         },
       },
-      Where:   (*ast.Where)(nil),
-      GroupBy: (*ast.GroupBy)(nil),
-      Having:  (*ast.Having)(nil),
     },
   },
 }

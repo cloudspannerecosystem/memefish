@@ -12,4 +12,5 @@ create table types (
   ab array<bool>,
   abs array<bytes(max)>,
   p examples.ProtoType,
+  af32vl array<float32>(vector_length=>128),
 ) primary key (i)

@@ -8,8 +8,7 @@ from singers
 
 --- AST
 &ast.CreateView{
-  Create: 0,
-  Name:   &ast.Path{
+  Name: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 12,
@@ -18,13 +17,10 @@ from singers
       },
     },
   },
-  OrReplace:    false,
   SecurityType: "DEFINER",
   Query:        &ast.Select{
-    Select:        48,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Select:  48,
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -107,14 +103,8 @@ from singers
           NameEnd: 158,
           Name:    "singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

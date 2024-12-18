@@ -1,0 +1,31 @@
+--- create_placement.sql
+CREATE PLACEMENT `europeplacement` OPTIONS (instance_partition="europe-partition")
+--- AST
+&ast.CreatePlacement{
+  Name: &ast.Ident{
+    NamePos: 17,
+    NameEnd: 34,
+    Name:    "europeplacement",
+  },
+  Options: &ast.Options{
+    Options: 35,
+    Rparen:  81,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 62,
+          Name:    "instance_partition",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 63,
+          ValueEnd: 81,
+          Value:    "europe-partition",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PLACEMENT europeplacement OPTIONS (instance_partition = "europe-partition") 

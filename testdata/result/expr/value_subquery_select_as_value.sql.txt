@@ -2,12 +2,10 @@
 (SELECT AS VALUE 1)
 --- AST
 &ast.ScalarSubQuery{
-  Lparen: 0,
   Rparen: 18,
   Query:  &ast.Select{
-    Select:        1,
-    AllOrDistinct: "",
-    As:            &ast.AsValue{
+    Select: 1,
+    As:     &ast.AsValue{
       As:    8,
       Value: 11,
     },
@@ -21,10 +19,6 @@
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

@@ -2,10 +2,8 @@
 CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      53,
-  IfNotExists: false,
-  Name:        &ast.Path{
+  Rparen: 53,
+  Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
@@ -31,15 +29,10 @@ CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
         NamePos: 32,
         Name:    "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
-  TableConstraints: []*ast.TableConstraint(nil),
-  PrimaryKeys:      []*ast.IndexKey{
+  PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
@@ -47,12 +40,8 @@ CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
         NameEnd: 53,
         Name:    "PK",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL

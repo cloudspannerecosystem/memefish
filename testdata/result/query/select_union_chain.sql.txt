@@ -3,19 +3,15 @@
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
     Op:            "UNION",
     AllOrDistinct: "ALL",
     Queries:       []ast.QueryExpr{
       &ast.SubQuery{
-        Lparen: 0,
         Rparen: 9,
         Query:  &ast.Select{
-          Select:        1,
-          AllOrDistinct: "",
-          As:            nil,
-          Results:       []ast.SelectItem{
+          Select:  1,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 8,
@@ -25,20 +21,14 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
         },
       },
       &ast.SubQuery{
         Lparen: 21,
         Rparen: 30,
         Query:  &ast.Select{
-          Select:        22,
-          AllOrDistinct: "",
-          As:            nil,
-          Results:       []ast.SelectItem{
+          Select:  22,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 29,
@@ -48,20 +38,14 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
         },
       },
       &ast.SubQuery{
         Lparen: 42,
         Rparen: 51,
         Query:  &ast.Select{
-          Select:        43,
-          AllOrDistinct: "",
-          As:            nil,
-          Results:       []ast.SelectItem{
+          Select:  43,
+          Results: []ast.SelectItem{
             &ast.ExprSelectItem{
               Expr: &ast.IntLiteral{
                 ValuePos: 50,
@@ -71,10 +55,6 @@
               },
             },
           },
-          From:    (*ast.From)(nil),
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
         },
       },
     },

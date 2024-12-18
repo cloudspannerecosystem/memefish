@@ -9,12 +9,8 @@ WHERE
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -27,9 +23,6 @@ WHERE
           NameEnd: 25,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -62,8 +55,6 @@ WHERE
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

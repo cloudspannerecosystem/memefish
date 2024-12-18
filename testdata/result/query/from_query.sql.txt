@@ -2,19 +2,14 @@
 FROM Singers
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.FromQuery{
     From: &ast.From{
-      From:   0,
       Source: &ast.TableName{
         Table: &ast.Ident{
           NamePos: 5,
           NameEnd: 12,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
   },

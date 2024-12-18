@@ -1,0 +1,94 @@
+--- edge_case_dot_star_except_distinct.sql
+SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.ScalarSubQuery{
+          Lparen: 7,
+          Rparen: 45,
+          Query:  &ast.CompoundQuery{
+            Op:            "EXCEPT",
+            AllOrDistinct: "DISTINCT",
+            Queries:       []ast.QueryExpr{
+              &ast.Select{
+                Select:  8,
+                Results: []ast.SelectItem{
+                  &ast.DotStar{
+                    Star: 17,
+                    Expr: &ast.Ident{
+                      NamePos: 15,
+                      NameEnd: 16,
+                      Name:    "T",
+                    },
+                  },
+                },
+              },
+              &ast.Select{
+                Select:  35,
+                Results: []ast.SelectItem{
+                  &ast.DotStar{
+                    Star: 44,
+                    Expr: &ast.Ident{
+                      NamePos: 42,
+                      NameEnd: 43,
+                      Name:    "T",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    47,
+          Alias: &ast.Ident{
+            NamePos: 50,
+            NameEnd: 51,
+            Name:    "n",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   52,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 57,
+        Rparen: 71,
+        Query:  &ast.Select{
+          Select:  58,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.IntLiteral{
+                ValuePos: 65,
+                ValueEnd: 66,
+                Base:     10,
+                Value:    "1",
+              },
+              As: &ast.AsAlias{
+                As:    67,
+                Alias: &ast.Ident{
+                  NamePos: 70,
+                  NameEnd: 71,
+                  Name:    "n",
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    73,
+          Alias: &ast.Ident{
+            NamePos: 76,
+            NameEnd: 77,
+            Name:    "T",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT (SELECT T.* EXCEPT DISTINCT SELECT T.*) AS n FROM (SELECT 1 AS n) AS T

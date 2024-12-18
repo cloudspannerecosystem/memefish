@@ -1,0 +1,9 @@
+--- alter_proto_bundle_noop.sql
+ALTER PROTO BUNDLE
+--- AST
+&ast.AlterProtoBundle{
+  Bundle: 12,
+}
+
+--- SQL
+ALTER PROTO BUNDLE

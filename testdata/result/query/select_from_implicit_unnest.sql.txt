@@ -4,12 +4,8 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
      t.arr AS a WITH OFFSET AS off
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -28,17 +24,14 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
     From: &ast.From{
       From:   14,
       Source: &ast.Join{
-        Op:     ",",
-        Method: "",
-        Hint:   (*ast.Hint)(nil),
-        Left:   &ast.Unnest{
+        Op:   ",",
+        Left: &ast.Unnest{
           Unnest: 19,
           Rparen: 62,
           Expr:   &ast.ArrayLiteral{
             Array:  -1,
             Lbrack: 26,
             Rbrack: 61,
-            Type:   nil,
             Values: []ast.Expr{
               &ast.TypedStructLiteral{
                 Struct: 27,
@@ -65,7 +58,6 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
                     Array:  -1,
                     Lbrack: 53,
                     Rbrack: 59,
-                    Type:   nil,
                     Values: []ast.Expr{
                       &ast.StringLiteral{
                         ValuePos: 54,
@@ -78,8 +70,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    64,
             Alias: &ast.Ident{
               NamePos: 67,
@@ -87,8 +78,6 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               Name:    "t",
             },
           },
-          WithOffset: (*ast.WithOffset)(nil),
-          Sample:     (*ast.TableSample)(nil),
         },
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
@@ -105,8 +94,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Hint: (*ast.Hint)(nil),
-          As:   &ast.AsAlias{
+          As: &ast.AsAlias{
             As:    81,
             Alias: &ast.Ident{
               NamePos: 84,
@@ -126,14 +114,9 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
               },
             },
           },
-          Sample: (*ast.TableSample)(nil),
         },
-        Cond: nil,
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

@@ -9,14 +9,9 @@ ORDER BY
   BirthDate DESC
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Query{
-    With:  (*ast.With)(nil),
     Query: &ast.Select{
-      Select:        0,
-      AllOrDistinct: "",
-      As:            nil,
-      Results:       []ast.SelectItem{
+      Results: []ast.SelectItem{
         &ast.Star{
           Star: 9,
         },
@@ -29,14 +24,8 @@ ORDER BY
             NameEnd: 25,
             Name:    "Singers",
           },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
-          Sample: (*ast.TableSample)(nil),
         },
       },
-      Where:   (*ast.Where)(nil),
-      GroupBy: (*ast.GroupBy)(nil),
-      Having:  (*ast.Having)(nil),
     },
     OrderBy: &ast.OrderBy{
       Order: 26,
@@ -48,8 +37,6 @@ ORDER BY
             NameEnd: 46,
             Name:    "FirstName",
           },
-          Collate: (*ast.Collate)(nil),
-          Dir:     "",
         },
         &ast.OrderByItem{
           DirPos: -1,
@@ -66,7 +53,6 @@ ORDER BY
               Value:    "en_US",
             },
           },
-          Dir: "",
         },
         &ast.OrderByItem{
           DirPos: 88,
@@ -75,13 +61,10 @@ ORDER BY
             NameEnd: 87,
             Name:    "BirthDate",
           },
-          Collate: (*ast.Collate)(nil),
-          Dir:     "DESC",
+          Dir: "DESC",
         },
       },
     },
-    Limit:         (*ast.Limit)(nil),
-    PipeOperators: []ast.PipeOperator(nil),
   },
 }
 

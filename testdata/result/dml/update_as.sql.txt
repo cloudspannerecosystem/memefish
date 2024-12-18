@@ -2,7 +2,6 @@
 update foo as F set F.foo = F.bar + 1 where foo = F.bar
 --- AST
 &ast.Update{
-  Update:    0,
   TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
@@ -32,7 +31,6 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
       },
       DefaultExpr: &ast.DefaultExpr{
         DefaultPos: -1,
-        Default:    false,
         Expr:       &ast.BinaryExpr{
           Op:   "+",
           Left: &ast.Path{

@@ -4,9 +4,7 @@ with cte AS (select 1 as foo, 2 as bar)
 select *
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
+  TableName: &ast.Ident{
     NamePos: 7,
     NameEnd: 10,
     Name:    "foo",
@@ -36,10 +34,8 @@ select *
               Name:    "cte",
             },
             QueryExpr: &ast.Select{
-              Select:        35,
-              AllOrDistinct: "",
-              As:            nil,
-              Results:       []ast.SelectItem{
+              Select:  35,
+              Results: []ast.SelectItem{
                 &ast.Alias{
                   Expr: &ast.IntLiteral{
                     ValuePos: 42,
@@ -73,31 +69,18 @@ select *
                   },
                 },
               },
-              From:    (*ast.From)(nil),
-              Where:   (*ast.Where)(nil),
-              GroupBy: (*ast.GroupBy)(nil),
-              Having:  (*ast.Having)(nil),
             },
           },
         },
       },
       Query: &ast.Select{
-        Select:        62,
-        AllOrDistinct: "",
-        As:            nil,
-        Results:       []ast.SelectItem{
+        Select:  62,
+        Results: []ast.SelectItem{
           &ast.Star{
             Star: 69,
           },
         },
-        From:    (*ast.From)(nil),
-        Where:   (*ast.Where)(nil),
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
       },
-      OrderBy:       (*ast.OrderBy)(nil),
-      Limit:         (*ast.Limit)(nil),
-      PipeOperators: []ast.PipeOperator(nil),
     },
   },
 }

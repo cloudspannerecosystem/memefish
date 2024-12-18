@@ -3,12 +3,8 @@ select ((select 1) limit 1 offset 0) + 3
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.BinaryExpr{
           Op:   "+",
@@ -16,15 +12,12 @@ select ((select 1) limit 1 offset 0) + 3
             Lparen: 7,
             Rparen: 35,
             Query:  &ast.Query{
-              With:  (*ast.With)(nil),
               Query: &ast.SubQuery{
                 Lparen: 8,
                 Rparen: 17,
                 Query:  &ast.Select{
-                  Select:        9,
-                  AllOrDistinct: "",
-                  As:            nil,
-                  Results:       []ast.SelectItem{
+                  Select:  9,
+                  Results: []ast.SelectItem{
                     &ast.ExprSelectItem{
                       Expr: &ast.IntLiteral{
                         ValuePos: 16,
@@ -34,14 +27,9 @@ select ((select 1) limit 1 offset 0) + 3
                       },
                     },
                   },
-                  From:    (*ast.From)(nil),
-                  Where:   (*ast.Where)(nil),
-                  GroupBy: (*ast.GroupBy)(nil),
-                  Having:  (*ast.Having)(nil),
                 },
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   &ast.Limit{
+              Limit: &ast.Limit{
                 Limit: 19,
                 Count: &ast.IntLiteral{
                   ValuePos: 25,
@@ -59,7 +47,6 @@ select ((select 1) limit 1 offset 0) + 3
                   },
                 },
               },
-              PipeOperators: []ast.PipeOperator(nil),
             },
           },
           Right: &ast.IntLiteral{
@@ -71,10 +58,6 @@ select ((select 1) limit 1 offset 0) + 3
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

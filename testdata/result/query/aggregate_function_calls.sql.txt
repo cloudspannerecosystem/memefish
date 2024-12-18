@@ -8,12 +8,8 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 43,
@@ -22,8 +18,7 @@ SELECT
             NameEnd: 20,
             Name:    "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 21,
@@ -32,9 +27,7 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       &ast.HavingMax{
+          Having: &ast.HavingMax{
             Having: 28,
             Expr:   &ast.Ident{
               NamePos: 39,
@@ -52,8 +45,7 @@ SELECT
             NameEnd: 59,
             Name:    "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 60,
@@ -62,9 +54,7 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       &ast.HavingMin{
+          Having: &ast.HavingMin{
             Having: 67,
             Expr:   &ast.Ident{
               NamePos: 78,
@@ -82,8 +72,7 @@ SELECT
             NameEnd: 98,
             Name:    "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 99,
@@ -92,12 +81,10 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.IgnoreNulls{
             Ignore: 106,
             Nulls:  113,
           },
-          Having: nil,
         },
       },
       &ast.ExprSelectItem{
@@ -108,8 +95,7 @@ SELECT
             NameEnd: 134,
             Name:    "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 135,
@@ -118,12 +104,10 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.RespectNulls{
             Respect: 142,
             Nulls:   150,
           },
-          Having: nil,
         },
       },
       &ast.ExprSelectItem{
@@ -134,8 +118,7 @@ SELECT
             NameEnd: 171,
             Name:    "ARRAY_AGG",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 172,
@@ -144,7 +127,6 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
           NullHandling: &ast.RespectNulls{
             Respect: 179,
             Nulls:   187,
@@ -160,10 +142,6 @@ SELECT
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

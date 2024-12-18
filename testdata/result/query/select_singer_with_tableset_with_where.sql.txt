@@ -9,18 +9,13 @@ ORDER BY
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Query{
-    With:  (*ast.With)(nil),
     Query: &ast.CompoundQuery{
       Op:            "UNION",
       AllOrDistinct: "ALL",
       Queries:       []ast.QueryExpr{
         &ast.Select{
-          Select:        0,
-          AllOrDistinct: "",
-          As:            nil,
-          Results:       []ast.SelectItem{
+          Results: []ast.SelectItem{
             &ast.Star{
               Star: 7,
             },
@@ -33,20 +28,12 @@ ORDER BY
                 NameEnd: 21,
                 Name:    "Singers",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
-          Where:   (*ast.Where)(nil),
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
         },
         &ast.Select{
-          Select:        32,
-          AllOrDistinct: "",
-          As:            nil,
-          Results:       []ast.SelectItem{
+          Select:  32,
+          Results: []ast.SelectItem{
             &ast.Star{
               Star: 39,
             },
@@ -59,9 +46,6 @@ ORDER BY
                 NameEnd: 53,
                 Name:    "Singers",
               },
-              Hint:   (*ast.Hint)(nil),
-              As:     (*ast.AsAlias)(nil),
-              Sample: (*ast.TableSample)(nil),
             },
           },
           Where: &ast.Where{
@@ -81,8 +65,6 @@ ORDER BY
               },
             },
           },
-          GroupBy: (*ast.GroupBy)(nil),
-          Having:  (*ast.Having)(nil),
         },
       },
     },
@@ -96,13 +78,9 @@ ORDER BY
             NameEnd: 95,
             Name:    "FirstName",
           },
-          Collate: (*ast.Collate)(nil),
-          Dir:     "",
         },
       },
     },
-    Limit:         (*ast.Limit)(nil),
-    PipeOperators: []ast.PipeOperator(nil),
   },
 }
 

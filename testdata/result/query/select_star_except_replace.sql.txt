@@ -1,0 +1,86 @@
+--- select_star_except_replace.sql
+SELECT * EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star:   7,
+        Except: &ast.StarModifierExcept{
+          Except:  9,
+          Rparen:  26,
+          Columns: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 17,
+              NameEnd: 26,
+              Name:    "vegetable",
+            },
+          },
+        },
+        Replace: &ast.StarModifierReplace{
+          Replace: 28,
+          Rparen:  54,
+          Columns: []*ast.StarModifierReplaceItem{
+            &ast.StarModifierReplaceItem{
+              Expr: &ast.StringLiteral{
+                ValuePos: 37,
+                ValueEnd: 45,
+                Value:    "orange",
+              },
+              Name: &ast.Ident{
+                NamePos: 49,
+                NameEnd: 54,
+                Name:    "fruit",
+              },
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   56,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 61,
+        Rparen: 108,
+        Query:  &ast.Select{
+          Select:  62,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 69,
+                ValueEnd: 76,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    77,
+                Alias: &ast.Ident{
+                  NamePos: 80,
+                  NameEnd: 85,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 87,
+                ValueEnd: 95,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    96,
+                Alias: &ast.Ident{
+                  NamePos: 99,
+                  NameEnd: 108,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * EXCEPT (vegetable) REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

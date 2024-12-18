@@ -4,7 +4,6 @@
 --- AST
 &ast.QueryStatement{
   Hint: &ast.Hint{
-    Atmark:  0,
     Rbrace:  11,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
@@ -34,10 +33,8 @@
             Name:    "subq1",
           },
           QueryExpr: &ast.Select{
-            Select:        28,
-            AllOrDistinct: "",
-            As:            nil,
-            Results:       []ast.SelectItem{
+            Select:  28,
+            Results: []ast.SelectItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
                   NamePos: 35,
@@ -54,23 +51,15 @@
                   NameEnd: 46,
                   Name:    "foo",
                 },
-                Hint:   (*ast.Hint)(nil),
-                As:     (*ast.AsAlias)(nil),
-                Sample: (*ast.TableSample)(nil),
               },
             },
-            Where:   (*ast.Where)(nil),
-            GroupBy: (*ast.GroupBy)(nil),
-            Having:  (*ast.Having)(nil),
           },
         },
       },
     },
     Query: &ast.Select{
-      Select:        48,
-      AllOrDistinct: "",
-      As:            nil,
-      Results:       []ast.SelectItem{
+      Select:  48,
+      Results: []ast.SelectItem{
         &ast.Star{
           Star: 55,
         },
@@ -83,18 +72,9 @@
             NameEnd: 67,
             Name:    "subq1",
           },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
-          Sample: (*ast.TableSample)(nil),
         },
       },
-      Where:   (*ast.Where)(nil),
-      GroupBy: (*ast.GroupBy)(nil),
-      Having:  (*ast.Having)(nil),
     },
-    OrderBy:       (*ast.OrderBy)(nil),
-    Limit:         (*ast.Limit)(nil),
-    PipeOperators: []ast.PipeOperator(nil),
   },
 }
 

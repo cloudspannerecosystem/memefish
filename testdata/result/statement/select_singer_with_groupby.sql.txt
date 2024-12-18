@@ -8,12 +8,8 @@ GROUP BY
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 9,
@@ -37,12 +33,8 @@ GROUP BY
           NameEnd: 44,
           Name:    "Singers",
         },
-        Hint:   (*ast.Hint)(nil),
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
     GroupBy: &ast.GroupBy{
       Group: 45,
       Exprs: []ast.Expr{
@@ -58,7 +50,6 @@ GROUP BY
         },
       },
     },
-    Having: (*ast.Having)(nil),
   },
 }
 

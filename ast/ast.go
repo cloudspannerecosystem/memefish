@@ -64,6 +64,7 @@ func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
 func (CreateDatabase) isStatement()     {}
 func (AlterDatabase) isStatement()      {}
+func (CreatePlacement) isStatement()    {}
 func (CreateProtoBundle) isStatement()  {}
 func (AlterProtoBundle) isStatement()   {}
 func (DropProtoBundle) isStatement()    {}
@@ -90,6 +91,9 @@ func (CreateSequence) isStatement()     {}
 func (AlterSequence) isStatement()      {}
 func (DropSequence) isStatement()       {}
 func (AlterStatistics) isStatement()    {}
+func (CreateModel) isStatement()        {}
+func (AlterModel) isStatement()         {}
+func (DropModel) isStatement()          {}
 func (Analyze) isStatement()            {}
 func (CreateVectorIndex) isStatement()  {}
 func (DropVectorIndex) isStatement()    {}
@@ -165,6 +169,7 @@ func (PathTableExpr) isTableExpr()     {}
 func (SubQueryTableExpr) isTableExpr() {}
 func (ParenTableExpr) isTableExpr()    {}
 func (Join) isTableExpr()              {}
+func (TVFCallExpr) isTableExpr()       {}
 
 // JoinCondition represents condition part of JOIN expression.
 type JoinCondition interface {
@@ -193,7 +198,10 @@ func (CallExpr) isExpr()              {}
 func (CountStarExpr) isExpr()         {}
 func (CastExpr) isExpr()              {}
 func (ExtractExpr) isExpr()           {}
+func (WithExpr) isExpr()              {}
+func (ReplaceFieldsExpr) isExpr()     {}
 func (CaseExpr) isExpr()              {}
+func (IfExpr) isExpr()                {}
 func (ParenExpr) isExpr()             {}
 func (ScalarSubQuery) isExpr()        {}
 func (ArraySubQuery) isExpr()         {}
@@ -219,6 +227,15 @@ func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
 
+// SubscriptSpecifier represents specifier of subscript operators.
+type SubscriptSpecifier interface {
+	Node
+	isSubscriptSpecifier()
+}
+
+func (ExprArg) isSubscriptSpecifier()                   {}
+func (SubscriptSpecifierKeyword) isSubscriptSpecifier() {}
+
 // Arg represents argument of function call.
 type Arg interface {
 	Node
@@ -228,6 +245,16 @@ type Arg interface {
 func (ExprArg) isArg()     {}
 func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
+func (LambdaArg) isArg()   {}
+
+type TVFArg interface {
+	Node
+	isTVFArg()
+}
+
+func (ExprArg) isTVFArg()  {}
+func (ModelArg) isTVFArg() {}
+func (TableArg) isTVFArg() {}
 
 // NullHandlingModifier represents IGNORE/RESPECT NULLS of aggregate function calls
 type NullHandlingModifier interface {
@@ -332,6 +359,7 @@ func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
 func (AlterDatabase) isDDL()      {}
+func (CreatePlacement) isDDL()    {}
 func (CreateProtoBundle) isDDL()  {}
 func (AlterProtoBundle) isDDL()   {}
 func (DropProtoBundle) isDDL()    {}
@@ -358,6 +386,9 @@ func (CreateSequence) isDDL()     {}
 func (AlterSequence) isDDL()      {}
 func (DropSequence) isDDL()       {}
 func (AlterStatistics) isDDL()    {}
+func (CreateModel) isDDL()        {}
+func (AlterModel) isDDL()         {}
+func (DropModel) isDDL()          {}
 func (Analyze) isDDL()            {}
 func (CreateVectorIndex) isDDL()  {}
 func (DropVectorIndex) isDDL()    {}
@@ -670,26 +701,71 @@ type SubQuery struct {
 	Query QueryExpr
 }
 
+// StarModifierExcept is EXCEPT node in Star and DotStar of SelectItem.
+//
+//	EXCEPT ({{Columns | sqlJoin ", "}})
+type StarModifierExcept struct {
+	// pos = Except
+	// end = Rparen + 1
+
+	Except token.Pos
+	Rparen token.Pos
+
+	Columns []*Ident
+}
+
+// StarModifierReplaceItem is a single item of StarModifierReplace.
+//
+//	{{.Expr | sql}} AS {{.Name | sql}}
+type StarModifierReplaceItem struct {
+	// pos = Expr.pos
+	// end = Name.end
+
+	Expr Expr
+	Name *Ident
+}
+
+// StarModifierReplace is REPLACE node in Star and DotStar of SelectItem.
+//
+//	REPLACE ({{Columns | sqlJoin ", "}})
+type StarModifierReplace struct {
+	// pos = Replace
+	// end = Rparen + 1
+
+	Replace token.Pos
+	Rparen  token.Pos
+
+	Columns []*StarModifierReplaceItem
+}
+
 // Star is a single * in SELECT result columns list.
 //
-//	*
+//	{{"*"}} {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
+//
+// Note: The text/template notation escapes * to avoid normalize * to - by some formatters
+// because the prefix * is ambiguous with bulletin list.
 type Star struct {
 	// pos = Star
-	// end = Star + 1
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
+
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // DotStar is expression with * in SELECT result columns list.
 //
-//	{{.Expr | sql}}.*
+//	{{.Expr | sql}}.* {{.Except | sqlOpt}} {{.Replace | sqlOpt}}
 type DotStar struct {
 	// pos = Expr.pos
-	// end = Star + 1
+	// end = (Replace ?? Except).end || Star + 1
 
 	Star token.Pos // position of "*"
 
-	Expr Expr
+	Expr    Expr
+	Except  *StarModifierExcept  // optional
+	Replace *StarModifierReplace // optional
 }
 
 // Alias is aliased expression by AS clause.
@@ -1169,17 +1245,36 @@ type SelectorExpr struct {
 	Ident *Ident
 }
 
-// IndexExpr is array item access expression node.
+// IndexExpr is a subscript operator expression node.
+// This node can be:
+//	- array subscript operator
+//	- struct subscript operator
+//	- JSON subscript operator
+// Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
-//	{{.Expr | sql}}[{{if .Ordinal}}ORDINAL{{else}}OFFSET{{end}}({{.Index | sql}})]
+//	{{.Expr | sql}}[{{.Index | sql}}]
 type IndexExpr struct {
 	// pos = Expr.pos
 	// end = Rbrack + 1
 
 	Rbrack token.Pos // position of "]"
 
-	Ordinal     bool
-	Expr, Index Expr
+	Expr  Expr
+	Index SubscriptSpecifier
+}
+
+// SubscriptSpecifierKeyword is subscript specifier with position keyword.
+//
+//	{{string(.Keyword)}}({{.Expr | sql}})
+type SubscriptSpecifierKeyword struct {
+	// pos = KeywordPos
+	// end = Rparen + 1
+
+	KeywordPos token.Pos // position of Keyword
+	Rparen     token.Pos // position of ")"
+
+	Keyword PositionKeyword
+	Expr    Expr
 }
 
 // CallExpr is function call expression node.
@@ -1192,9 +1287,10 @@ type IndexExpr struct {
 //		{{.NullHandling | sqlOpt}}
 //		{{.Having | sqlOpt}}
 //	)
+//	{{.Hint | sqlOpt}}
 type CallExpr struct {
 	// pos = Func.pos
-	// end = Rparen + 1
+	// end = Hint.end || Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
@@ -1204,6 +1300,29 @@ type CallExpr struct {
 	NamedArgs    []*NamedArg
 	NullHandling NullHandlingModifier // optional
 	Having       HavingModifier       // optional
+	Hint         *Hint                // optional
+}
+
+// TVFCallExpr is table-valued function call expression node.
+//
+//	{{.Name | sql}}(
+//		{{.Args | sqlJoin ", "}}
+//		{{if len(.Args) > 0 && len(.NamedArgs) > 0}}, {{end}}
+//		{{.NamedArgs | sqlJoin ", "}}
+//	)
+//	{{.Hint | sqlOpt}}
+//	{{.Sample | sqlOpt}}
+type TVFCallExpr struct {
+	// pos = Name.pos
+	// end = (Sample ?? Hint).end || Rparen + 1
+
+	Rparen token.Pos // position of ")"
+
+	Name      *Path
+	Args      []TVFArg
+	NamedArgs []*NamedArg
+	Hint      *Hint        // optional
+	Sample    *TableSample // optional
 }
 
 // ExprArg is argument of the generic function call.
@@ -1239,6 +1358,45 @@ type SequenceArg struct {
 	Sequence token.Pos // position of "SEQUENCE" keyword
 
 	Expr Expr
+}
+
+// LambdaArg is lambda expression argument of the generic function call.
+//
+//	{{if .Lparen.Invalid}}{{.Args | sqlJoin ", "}}{{else}}({{.Args | sqlJoin ", "}}) -> {{.Expr | sql}}
+//
+// Note: Args won't be empty. If Lparen is not appeared, Args have exactly one element.
+type LambdaArg struct {
+	// pos = Lparen || Args[0].pos
+	// end = Expr.end
+
+	Lparen token.Pos // optional
+
+	Args []*Ident // if Lparen.Invalid() then len(Args) = 1 else len(Args) > 0
+	Expr Expr
+}
+
+// ModelArg is argument of model function call.
+//
+//	MODEL {{.Name | sql}}
+type ModelArg struct {
+	// pos = Model
+	// end = Name.end
+
+	Model token.Pos // position of "MODEL" keyword
+
+	Name *Path
+}
+
+// TableArg is TABLE table_name argument of table valued function call.
+//
+//	TABLE {{.Name | sql}}
+type TableArg struct {
+	// pos = Table
+	// end = Name.end
+
+	Table token.Pos // position of "TABLE" keyword
+
+	Name *Path
 }
 
 // NamedArg represents a name and value pair in named arguments
@@ -1322,6 +1480,31 @@ type ExtractExpr struct {
 	AtTimeZone *AtTimeZone // optional
 }
 
+// ReplaceFieldsArg is value AS field_path node in ReplaceFieldsExpr.
+//
+//	{{.Expr | sql}} AS {{.Field | sql}}
+type ReplaceFieldsArg struct {
+	// pos = Expr.pos
+	// end = Field.end
+
+	Expr  Expr
+	Field *Path
+}
+
+// ReplaceFieldsExpr is REPLACE_FIELDS call expression node.
+//
+//	REPLACE_FIELDS({{.Expr.| sql}}, {{.Fields | sqlJoin ", "}})
+type ReplaceFieldsExpr struct {
+	// pos = ReplaceFields
+	// end = Rparen + 1
+
+	ReplaceFields token.Pos // position of "REPLACE_FIELDS" keyword
+	Rparen        token.Pos // position of ")"
+
+	Expr   Expr
+	Fields []*ReplaceFieldsArg
+}
+
 // AtTimeZone is AT TIME ZONE clause in EXTRACT call.
 //
 //	AT TIME ZONE {{.Expr | sql}}
@@ -1331,6 +1514,31 @@ type AtTimeZone struct {
 
 	At token.Pos // position of "AT" keyword
 
+	Expr Expr
+}
+
+// WithExprVar is "name AS expr" node in WITH expression.
+//
+//	{{.Name | sql}} AS {{.Expr | sql}}
+type WithExprVar struct {
+	// pos = Name.pos
+	// end = Expr.end
+
+	Name *Ident
+	Expr Expr
+}
+
+// WithExpr is WITH expression node.
+//
+//	WITH({{.Vars | sqlJoin ", "}}, {{.Expr | sql}})
+type WithExpr struct {
+	// pos = With
+	// end = Rparen + 1
+
+	With   token.Pos // position of "WITH" keyword
+	Rparen token.Pos // position of ")"
+
+	Vars []*WithExprVar // len(Vars) > 0
 	Expr Expr
 }
 
@@ -1389,6 +1597,22 @@ type CaseElse struct {
 	Else token.Pos // position of "ELSE" keyword
 
 	Expr Expr
+}
+
+// IfExpr is IF conditional expression.
+// Because IF is SQL keyword, it can't be a normal CallExpr.
+//
+//	IF({{.Expr | sql}}, {{.TrueResult | sql}}, {{.ElseResult | sql}})
+type IfExpr struct {
+	// pos = If
+	// end = Rparen + 1
+
+	If     token.Pos // position of "IF" keyword
+	Rparen token.Pos // position of ")"
+
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
 }
 
 // ParenExpr is parenthesized expression node.
@@ -1913,20 +2137,24 @@ type AlterDatabase struct {
 	Options *Options
 }
 
+// CreatePlacement is CREATE PLACEMENT statement node.
+//
+//	CREATE PLACEMENT {{.Name | sql}} {{.Options | sqlOpt}}
+type CreatePlacement struct {
+	// pos = Create
+	// end = (Options ?? Name).end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name    *Ident
+	Options *Options // optional
+}
+
 // ================================================================================
 //
 // PROTO BUNDLE statements
 //
 // ================================================================================
-
-type ProtoBundleAlteration interface {
-	Node
-	isProtoBundleAlteration()
-}
-
-func (AlterProtoBundleInsert) isProtoBundleAlteration() {}
-func (AlterProtoBundleUpdate) isProtoBundleAlteration() {}
-func (AlterProtoBundleDelete) isProtoBundleAlteration() {}
 
 // ProtoBundleTypes is parenthesized Protocol Buffers type names node IN CREATE/ALTER PROTO BUNDLE statement.
 //
@@ -1953,14 +2181,17 @@ type CreateProtoBundle struct {
 
 // AlterProtoBundle is ALTER PROTO BUNDLE statement node.
 //
-//	ALTER PROTO BUNDLE {{.Alteration | sql}}
+//	ALTER PROTO BUNDLE {{.Insert | sqlOpt}} {{.Update | sqlOpt}} {{.Delete | sqlOpt}}
 type AlterProtoBundle struct {
 	// pos = Alter
-	// end = Alteration.end
+	// end = (Delete ?? Update ?? Insert).end || Bundle + 6
 
-	Alter token.Pos // position of "ALTER" keyword
+	Alter  token.Pos // position of "ALTER" keyword
+	Bundle token.Pos
 
-	Alteration ProtoBundleAlteration
+	Insert *AlterProtoBundleInsert // optional
+	Update *AlterProtoBundleUpdate // optional
+	Delete *AlterProtoBundleDelete // optional
 }
 
 // AlterProtoBundleInsert is INSERT (proto_type_name, ...) node in ALTER PROTO BUNDLE.
@@ -2964,6 +3195,79 @@ type Analyze struct {
 	Analyze token.Pos // position of "ANALYZE" keyword
 }
 
+// CreateModelColumn is a single column definition node in CREATE MODEL.
+//
+//	{{.Name | sql}} {{.DataType | sql}} {{.Options | sqlOpt}}
+type CreateModelColumn struct {
+	// pos = Name.pos
+	// end = (Options ?? DataType).end
+
+	Name     *Ident
+	DataType SchemaType
+	Options  *Options // optional
+}
+
+// CreateModelInputOutput is INPUT and OUTPUT column list node.
+//
+//	INPUT ({{.InputColumns | sqlJoin ", "}}) OUTPUT ({{.OutputColumns | sqlJoin ", "}})
+type CreateModelInputOutput struct {
+	// pos = Input
+	// end = Rparen + 1
+
+	Input  token.Pos
+	Rparen token.Pos // position of the last ")"
+
+	InputColumns  []*CreateModelColumn
+	OutputColumns []*CreateModelColumn
+}
+
+// CreateModel is CREATE MODEL statement node.
+//
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} MODEL {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	{{.InputOutput | sqlOpt}}
+//	REMOTE
+//	{{.Options | sqlOpt}}
+type CreateModel struct {
+	// pos = Create
+	// end = Options.end || Remote + 6
+
+	Create token.Pos // position of "CREATE" keyword
+	Remote token.Pos // position of "REMOTE" keyword
+
+	OrReplace   bool
+	IfNotExists bool
+	Name        *Ident
+	InputOutput *CreateModelInputOutput // optional
+	Options     *Options                // optional
+}
+
+// AlterModel is ALTER MODEL statement node.
+//
+//	ALTER MODEL {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}} SET {{.Options | sql}}
+type AlterModel struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos
+
+	IfExists bool
+	Name     *Ident
+	Options  *Options
+}
+
+// DropModel is DROP MODEL statement node.
+//
+//	DROP MODEL {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropModel struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	IfExists bool
+	Name     *Ident
+}
+
 // ================================================================================
 //
 // Types for Schema
@@ -3000,15 +3304,17 @@ type SizedSchemaType struct {
 
 // ArraySchemaType is array type node in schema.
 //
-//	ARRAY<{{.Item | sql}}>
+//	ARRAY<{{.Item | sql}}>{{if .NamedArgs}}({{.NamedArgs | sqlJoin ", "}}){{end}}
 type ArraySchemaType struct {
 	// pos = Array
-	// end = Gt + 1
+	// end = Rparen + 1 || Gt + 1
 
-	Array token.Pos // position of "ARRAY" keyword
-	Gt    token.Pos // position of ">"
+	Array  token.Pos // position of "ARRAY" keyword
+	Gt     token.Pos // position of ">"
+	Rparen token.Pos // position of ")" when len(NamedArgs) > 0
 
-	Item SchemaType // ScalarSchemaType or SizedSchemaType
+	Item      SchemaType // ScalarSchemaType or SizedSchemaType
+	NamedArgs []*NamedArg
 }
 
 // ================================================================================
@@ -3076,20 +3382,48 @@ type AlterSearchIndex struct {
 //
 // ================================================================================
 
+// WithAction is WITH ACTION clause in ThenReturn.
+//
+//	WITH ACTION {{.Alias | sqlOpt}}
+type WithAction struct {
+	// pos = With
+	// end = Alias.end || Action + 6
+
+	With   token.Pos // position of "WITH" keyword
+	Action token.Pos // position of "ACTION" keyword
+
+	Alias *AsAlias // optional
+}
+
+// ThenReturn is THEN RETURN clause in DML.
+//
+//	THEN RETURN {{.WithAction | sqlOpt}} {{.Items | sqlJoin ", "}}
+type ThenReturn struct {
+	// pos = Then
+	// end = Items[$].end
+
+	Then token.Pos // position of "THEN" keyword
+
+	WithAction *WithAction // optional
+	Items      []SelectItem
+}
+
 // Insert is INSERT statement node.
 //
 //	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Insert struct {
 	// pos = Insert
-	// end = Input.end
+	// end = (ThenReturn ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
-	TableName *Ident
-	Columns   []*Ident
-	Input     InsertInput
+	TableName  *Ident
+	Columns    []*Ident
+	Input      InsertInput
+	ThenReturn *ThenReturn // optional
 }
 
 // ValuesInput is VALUES clause in INSERT.
@@ -3142,31 +3476,35 @@ type SubQueryInput struct {
 // Delete is DELETE statement.
 //
 //	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Delete struct {
 	// pos = Delete
-	// end = Where.end
+	// end = (ThenReturn ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
-	TableName *Ident
-	As        *AsAlias // optional
-	Where     *Where
+	TableName  *Ident
+	As         *AsAlias // optional
+	Where      *Where
+	ThenReturn *ThenReturn // optional
 }
 
 // Update is UPDATE statement.
 //
 //	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
 //	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
+//	{{.ThenReturn | sqlOpt}}
 type Update struct {
 	// pos = Update
-	// end = Where.end
+	// end = (ThenReturn ?? Where).end
 
 	Update token.Pos // position of "UPDATE" keyword
 
-	TableName *Ident
-	As        *AsAlias      // optional
-	Updates   []*UpdateItem // len(Updates) > 0
-	Where     *Where
+	TableName  *Ident
+	As         *AsAlias      // optional
+	Updates    []*UpdateItem // len(Updates) > 0
+	Where      *Where
+	ThenReturn *ThenReturn // optional
 }
 
 // UpdateItem is SET clause items in UPDATE.

@@ -3,12 +3,8 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 51,
@@ -17,8 +13,7 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
             NameEnd: 30,
             Name:    "GET_NEXT_SEQUENCE_VALUE",
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.SequenceArg{
               Sequence: 31,
               Expr:     &ast.Ident{
@@ -28,9 +23,6 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    53,
@@ -42,10 +34,6 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

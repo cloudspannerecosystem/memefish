@@ -4,8 +4,8 @@ ALTER PROTO BUNDLE INSERT (
 )
 --- AST
 &ast.AlterProtoBundle{
-  Alter:      0,
-  Alteration: &ast.AlterProtoBundleInsert{
+  Bundle: 12,
+  Insert: &ast.AlterProtoBundleInsert{
     Insert: 19,
     Types:  &ast.ProtoBundleTypes{
       Lparen: 26,

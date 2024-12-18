@@ -25,16 +25,12 @@ UNION ALL
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.CompoundQuery{
     Op:            "UNION",
     AllOrDistinct: "ALL",
     Queries:       []ast.QueryExpr{
       &ast.Select{
-        Select:        0,
-        AllOrDistinct: "",
-        As:            nil,
-        Results:       []ast.SelectItem{
+        Results: []ast.SelectItem{
           &ast.Star{
             Star: 7,
           },
@@ -47,14 +43,8 @@ UNION ALL
               NameEnd: 21,
               Name:    "Singers",
             },
-            Hint:   (*ast.Hint)(nil),
-            As:     (*ast.AsAlias)(nil),
-            Sample: (*ast.TableSample)(nil),
           },
         },
-        Where:   (*ast.Where)(nil),
-        GroupBy: (*ast.GroupBy)(nil),
-        Having:  (*ast.Having)(nil),
       },
       &ast.SubQuery{
         Lparen: 32,
@@ -64,10 +54,8 @@ UNION ALL
           AllOrDistinct: "DISTINCT",
           Queries:       []ast.QueryExpr{
             &ast.Select{
-              Select:        36,
-              AllOrDistinct: "",
-              As:            nil,
-              Results:       []ast.SelectItem{
+              Select:  36,
+              Results: []ast.SelectItem{
                 &ast.Star{
                   Star: 43,
                 },
@@ -80,14 +68,8 @@ UNION ALL
                     NameEnd: 57,
                     Name:    "Singers",
                   },
-                  Hint:   (*ast.Hint)(nil),
-                  As:     (*ast.AsAlias)(nil),
-                  Sample: (*ast.TableSample)(nil),
                 },
               },
-              Where:   (*ast.Where)(nil),
-              GroupBy: (*ast.GroupBy)(nil),
-              Having:  (*ast.Having)(nil),
             },
             &ast.SubQuery{
               Lparen: 77,
@@ -97,10 +79,8 @@ UNION ALL
                 AllOrDistinct: "ALL",
                 Queries:       []ast.QueryExpr{
                   &ast.Select{
-                    Select:        83,
-                    AllOrDistinct: "",
-                    As:            nil,
-                    Results:       []ast.SelectItem{
+                    Select:  83,
+                    Results: []ast.SelectItem{
                       &ast.Star{
                         Star: 90,
                       },
@@ -113,14 +93,8 @@ UNION ALL
                           NameEnd: 104,
                           Name:    "Singers",
                         },
-                        Hint:   (*ast.Hint)(nil),
-                        As:     (*ast.AsAlias)(nil),
-                        Sample: (*ast.TableSample)(nil),
                       },
                     },
-                    Where:   (*ast.Where)(nil),
-                    GroupBy: (*ast.GroupBy)(nil),
-                    Having:  (*ast.Having)(nil),
                   },
                   &ast.SubQuery{
                     Lparen: 127,
@@ -130,10 +104,8 @@ UNION ALL
                       AllOrDistinct: "DISTINCT",
                       Queries:       []ast.QueryExpr{
                         &ast.Select{
-                          Select:        135,
-                          AllOrDistinct: "",
-                          As:            nil,
-                          Results:       []ast.SelectItem{
+                          Select:  135,
+                          Results: []ast.SelectItem{
                             &ast.Star{
                               Star: 142,
                             },
@@ -146,14 +118,8 @@ UNION ALL
                                 NameEnd: 156,
                                 Name:    "Singers",
                               },
-                              Hint:   (*ast.Hint)(nil),
-                              As:     (*ast.AsAlias)(nil),
-                              Sample: (*ast.TableSample)(nil),
                             },
                           },
-                          Where:   (*ast.Where)(nil),
-                          GroupBy: (*ast.GroupBy)(nil),
-                          Having:  (*ast.Having)(nil),
                         },
                         &ast.SubQuery{
                           Lparen: 188,
@@ -163,10 +129,8 @@ UNION ALL
                             AllOrDistinct: "ALL",
                             Queries:       []ast.QueryExpr{
                               &ast.Select{
-                                Select:        198,
-                                AllOrDistinct: "",
-                                As:            nil,
-                                Results:       []ast.SelectItem{
+                                Select:  198,
+                                Results: []ast.SelectItem{
                                   &ast.Star{
                                     Star: 205,
                                   },
@@ -179,14 +143,8 @@ UNION ALL
                                       NameEnd: 219,
                                       Name:    "Singers",
                                     },
-                                    Hint:   (*ast.Hint)(nil),
-                                    As:     (*ast.AsAlias)(nil),
-                                    Sample: (*ast.TableSample)(nil),
                                   },
                                 },
-                                Where:   (*ast.Where)(nil),
-                                GroupBy: (*ast.GroupBy)(nil),
-                                Having:  (*ast.Having)(nil),
                               },
                               &ast.SubQuery{
                                 Lparen: 247,
@@ -196,10 +154,8 @@ UNION ALL
                                   AllOrDistinct: "DISTINCT",
                                   Queries:       []ast.QueryExpr{
                                     &ast.Select{
-                                      Select:        259,
-                                      AllOrDistinct: "",
-                                      As:            nil,
-                                      Results:       []ast.SelectItem{
+                                      Select:  259,
+                                      Results: []ast.SelectItem{
                                         &ast.Star{
                                           Star: 266,
                                         },
@@ -212,20 +168,12 @@ UNION ALL
                                             NameEnd: 280,
                                             Name:    "Singers",
                                           },
-                                          Hint:   (*ast.Hint)(nil),
-                                          As:     (*ast.AsAlias)(nil),
-                                          Sample: (*ast.TableSample)(nil),
                                         },
                                       },
-                                      Where:   (*ast.Where)(nil),
-                                      GroupBy: (*ast.GroupBy)(nil),
-                                      Having:  (*ast.Having)(nil),
                                     },
                                     &ast.Select{
-                                      Select:        317,
-                                      AllOrDistinct: "",
-                                      As:            nil,
-                                      Results:       []ast.SelectItem{
+                                      Select:  317,
+                                      Results: []ast.SelectItem{
                                         &ast.Star{
                                           Star: 324,
                                         },
@@ -238,14 +186,8 @@ UNION ALL
                                             NameEnd: 338,
                                             Name:    "Singers",
                                           },
-                                          Hint:   (*ast.Hint)(nil),
-                                          As:     (*ast.AsAlias)(nil),
-                                          Sample: (*ast.TableSample)(nil),
                                         },
                                       },
-                                      Where:   (*ast.Where)(nil),
-                                      GroupBy: (*ast.GroupBy)(nil),
-                                      Having:  (*ast.Having)(nil),
                                     },
                                   },
                                 },

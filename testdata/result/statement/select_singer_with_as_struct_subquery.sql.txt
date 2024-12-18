@@ -10,12 +10,8 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        0,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.ArraySubQuery{
           Array:  9,
@@ -24,11 +20,9 @@ SELECT
             Lparen: 20,
             Rparen: 88,
             Query:  &ast.Query{
-              With:  (*ast.With)(nil),
               Query: &ast.Select{
-                Select:        28,
-                AllOrDistinct: "",
-                As:            &ast.AsStruct{
+                Select: 28,
+                As:     &ast.AsStruct{
                   As:     35,
                   Struct: 38,
                 },
@@ -45,17 +39,10 @@ SELECT
                       NameEnd: 73,
                       Name:    "Singers",
                     },
-                    Hint:   (*ast.Hint)(nil),
-                    As:     (*ast.AsAlias)(nil),
-                    Sample: (*ast.TableSample)(nil),
                   },
                 },
-                Where:   (*ast.Where)(nil),
-                GroupBy: (*ast.GroupBy)(nil),
-                Having:  (*ast.Having)(nil),
               },
-              OrderBy: (*ast.OrderBy)(nil),
-              Limit:   &ast.Limit{
+              Limit: &ast.Limit{
                 Limit: 74,
                 Count: &ast.IntLiteral{
                   ValuePos: 80,
@@ -63,18 +50,12 @@ SELECT
                   Base:     10,
                   Value:    "100",
                 },
-                Offset: (*ast.Offset)(nil),
               },
-              PipeOperators: []ast.PipeOperator(nil),
             },
           },
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

@@ -3,31 +3,22 @@ FROM Singers
 |> SELECT ALL *
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Query{
-    With:  (*ast.With)(nil),
     Query: &ast.FromQuery{
       From: &ast.From{
-        From:   0,
         Source: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 5,
             NameEnd: 12,
             Name:    "Singers",
           },
-          Hint:   (*ast.Hint)(nil),
-          As:     (*ast.AsAlias)(nil),
-          Sample: (*ast.TableSample)(nil),
         },
       },
     },
-    OrderBy:       (*ast.OrderBy)(nil),
-    Limit:         (*ast.Limit)(nil),
     PipeOperators: []ast.PipeOperator{
       &ast.PipeSelect{
         Pipe:          13,
         AllOrDistinct: "ALL",
-        As:            nil,
         Results:       []ast.SelectItem{
           &ast.Star{
             Star: 27,

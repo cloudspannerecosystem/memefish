@@ -4,12 +4,9 @@ select 1
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
   Query: &ast.Select{
-    Select:        10,
-    AllOrDistinct: "",
-    As:            nil,
-    Results:       []ast.SelectItem{
+    Select:  10,
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.IntLiteral{
           ValuePos: 17,
@@ -19,10 +16,6 @@ select 1
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
   },
 }
 

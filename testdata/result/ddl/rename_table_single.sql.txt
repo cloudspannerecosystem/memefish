@@ -2,8 +2,7 @@
 RENAME TABLE Singers TO Artists
 --- AST
 &ast.RenameTable{
-  Rename: 0,
-  Tos:    []*ast.RenameTableTo{
+  Tos: []*ast.RenameTableTo{
     &ast.RenameTableTo{
       Old: &ast.Ident{
         NamePos: 13,
