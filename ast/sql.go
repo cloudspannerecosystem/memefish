@@ -9,7 +9,8 @@ import (
 
 // indentLevel is the whitespace indentation level.
 // Currently, memefish does not perform pretty printing in general, it is only used by CreateTable.
-const indentLevel = 4
+// Note: The two-space indentation is the same as GetDatabaseDdl in an actual Spanner instance.
+const indentLevel = 2
 
 // indent is a whitespace indentation of indentLevel width.
 // You should use this rather than using indentLevel directly.
