@@ -35,7 +35,7 @@ func suitableQuote(b []byte) rune {
 	return '"'
 }
 
-// QuoteSQLString returns quoted string with SQL bytes escaping.
+// QuoteSQLBytes returns quoted string with SQL bytes escaping.
 func QuoteSQLBytes(bs []byte) string {
 	quote := suitableQuote(bs)
 
@@ -43,7 +43,7 @@ func QuoteSQLBytes(bs []byte) string {
 	buf.WriteString("b")
 	buf.WriteRune(quote)
 	for _, b := range bs {
-		q := quoteSingleEscape(rune(b), quote, false)
+		q := quoteSingleEscape(rune(b), quote, /* isString */ false)
 		if q != "" {
 			buf.WriteString(q)
 			continue
