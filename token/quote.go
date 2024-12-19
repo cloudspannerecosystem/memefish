@@ -96,9 +96,6 @@ func quoteSQLStringContent(s string, quote rune, buf *bytes.Buffer) {
 }
 
 func quoteSingleEscape(r, quote rune, isString bool) string {
-	if quote == r {
-	}
-
 	switch {
 	case r == quote:
 		return `\` + string(r)
