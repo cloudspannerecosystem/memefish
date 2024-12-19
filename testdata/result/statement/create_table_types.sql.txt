@@ -285,4 +285,19 @@ create table types (
 }
 
 --- SQL
-CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>, p examples.ProtoType, af32vl ARRAY<FLOAT32>(vector_length => 128)) PRIMARY KEY (i)
+CREATE TABLE types (
+  b BOOL,
+  i INT64,
+  f32 FLOAT32,
+  f FLOAT64,
+  d DATE,
+  t TIMESTAMP,
+  s STRING(256),
+  smax STRING(MAX),
+  bs BYTES(256),
+  bsmax BYTES(MAX),
+  ab ARRAY<BOOL>,
+  abs ARRAY<BYTES(MAX)>,
+  p examples.ProtoType,
+  af32vl ARRAY<FLOAT32>(vector_length => 128)
+) PRIMARY KEY (i)

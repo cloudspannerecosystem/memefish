@@ -109,8 +109,8 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull:       true,
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 172,
         Rparen: 170,
@@ -169,8 +169,8 @@ create table foo (
         NamePos: 501,
         Name:    "TIMESTAMP",
       },
-      NotNull:     true,
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 520,
         Rparen:  548,
         Expr:    &ast.CallExpr{
@@ -400,4 +400,17 @@ create table foo (
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE, FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION, CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (
+  foo INT64,
+  bar FLOAT64 NOT NULL,
+  baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null),
+  qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
+  quux JSON,
+  corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
+  FOREIGN KEY (foo) REFERENCES t2 (t2key1),
+  FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE,
+  FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION,
+  CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
+  CHECK (foo > 0),
+  CONSTRAINT cname CHECK (bar > 0)
+) PRIMARY KEY (foo, bar)

@@ -9,11 +9,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/k0kubun/pp/v3"
+	"github.com/pmezard/go-difflib/difflib"
+
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/k0kubun/pp/v3"
-	"github.com/pmezard/go-difflib/difflib"
 )
 
 var update = flag.Bool("update", false, "update result files")
@@ -168,6 +169,7 @@ func TestParseStatement(t *testing.T) {
 		"./testdata/input/query",
 		"./testdata/input/ddl",
 		"./testdata/input/dml",
+		"./testdata/input/statement",
 	}
 	resultPath := "./testdata/result/statement"
 

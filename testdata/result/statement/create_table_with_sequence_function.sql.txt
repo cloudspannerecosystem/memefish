@@ -30,7 +30,7 @@ CREATE TABLE foo
         NamePos: 27,
         Name:    "INT64",
       },
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 33,
         Rparen:  88,
         Expr:    &ast.CallExpr{
@@ -100,4 +100,8 @@ CREATE TABLE foo
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)), bar STRING(MAX), id INT64) PRIMARY KEY (id)
+CREATE TABLE foo (
+  foo INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(SEQUENCE foo_sequence)),
+  bar STRING(MAX),
+  id INT64
+) PRIMARY KEY (id)

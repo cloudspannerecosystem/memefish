@@ -106,7 +106,7 @@ CREATE TABLE Albums (
         NamePos: 417,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     427,
         Stored: -1,
         Rparen: 460,
@@ -145,7 +145,7 @@ CREATE TABLE Albums (
         NamePos: 508,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     518,
         Stored: -1,
         Rparen: 545,
@@ -187,4 +187,12 @@ CREATE TABLE Albums (
 }
 
 --- SQL
-CREATE TABLE Albums (AlbumId STRING(MAX) NOT NULL, SingerId INT64 NOT NULL, ReleaseTimestamp INT64 NOT NULL, AlbumTitle STRING(MAX), Rating FLOAT64, AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN, Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN) PRIMARY KEY (AlbumId)
+CREATE TABLE Albums (
+  AlbumId STRING(MAX) NOT NULL,
+  SingerId INT64 NOT NULL,
+  ReleaseTimestamp INT64 NOT NULL,
+  AlbumTitle STRING(MAX),
+  Rating FLOAT64,
+  AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN,
+  Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN
+) PRIMARY KEY (AlbumId)
