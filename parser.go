@@ -218,11 +218,41 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDML()
+	case p.Token.IsKeywordLike("CALL"):
+		return p.parseOtherStatement()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
 
+func (p *Parser) parseOtherStatement() ast.Statement {
+	switch {
+	case p.Token.IsKeywordLike("CALL"):
+		return p.parseCall()
+	}
+
+	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseCall() *ast.Call {
+	pos := p.expectKeywordLike("CALL").Pos
+	name := p.parsePath()
+	p.expect("(")
+
+	var args []ast.TVFArg
+	if p.Token.Kind != ")" {
+		args = parseCommaSeparatedList(p, p.parseTVFArg)
+	}
+
+	rparen := p.expect(")").Pos
+
+	return &ast.Call{
+		Call:   pos,
+		Rparen: rparen,
+		Name:   name,
+		Args:   args,
+	}
+}
 func (p *Parser) parseStatements(doParse func()) {
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ";" {
@@ -1726,7 +1756,7 @@ func (p *Parser) parseLit() ast.Expr {
 		p.nextToken()
 		switch p.Token.Kind {
 		case "(":
-			return p.parseCall(id)
+			return p.parseCallLike(id)
 		case token.TokenString:
 			if id.IsKeywordLike("DATE") {
 				return p.parseDateLiteral(id)
@@ -1751,7 +1781,8 @@ func (p *Parser) parseLit() ast.Expr {
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
 
-func (p *Parser) parseCall(id token.Token) ast.Expr {
+// parseCallLike parses after identifier part of function call like structures.
+func (p *Parser) parseCallLike(id token.Token) ast.Expr {
 	p.expect("(")
 	if id.IsIdent("COUNT") && p.Token.Kind == "*" {
 		p.nextToken()

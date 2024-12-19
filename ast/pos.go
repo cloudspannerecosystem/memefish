@@ -1765,3 +1765,11 @@ func (u *UpdateItem) Pos() token.Pos {
 func (u *UpdateItem) End() token.Pos {
 	return nodeEnd(wrapNode(u.DefaultExpr))
 }
+
+func (c *Call) Pos() token.Pos {
+	return c.Call
+}
+
+func (c *Call) End() token.Pos {
+	return posAdd(c.Rparen, 1)
+}
