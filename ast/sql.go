@@ -826,7 +826,7 @@ func (c *Cluster) SQL() string {
 }
 
 func (c *CreateRowDeletionPolicy) SQL() string {
-	return ",\n" + indent + c.RowDeletionPolicy.SQL()
+	return ", " + c.RowDeletionPolicy.SQL()
 }
 
 func (r *RowDeletionPolicy) SQL() string {
