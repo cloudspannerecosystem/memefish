@@ -110,4 +110,4 @@ SELECT
 }
 
 --- SQL
-SELECT b"abc", b"abc", b"abc", b"abc\n", b"abc+", b"abc+", b"abc", b"abc\\n", b"\x00", b"\?\?\?"
+SELECT b"abc", b"abc", b"abc", b"abc\x0a", b"abc+", b"abc+", b"abc", b"abc\n", b"\x00", b"???"

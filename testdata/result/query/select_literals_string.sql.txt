@@ -179,4 +179,4 @@ lines''',
 }
 
 --- SQL
-SELECT "abc!", "a\nb!", "=!", "=!", "=!", "=!", "=!", "‼!", "🐈!", "it's", "it's", 'Title: "Boy"', "abc", "it's", 'Title:"Boy"', "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)"
+SELECT "abc!", "a\nb!", "=!", "=!", "=!", "=!", "=!", "‼!", "🐈!", "it's", "it's", 'Title: "Boy"', "abc", "it's", 'Title:"Boy"', "two\nlines", "why?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)"
