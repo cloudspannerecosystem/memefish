@@ -108,7 +108,7 @@ func quoteSingleEscape(r, quote rune, isString bool) string {
 		return `\r`
 	case isString && r == '\t':
 		return `\t`
-	case isString && r == '\\':
+	case r == '\\':
 		return `\\`
 	}
 	return ""
