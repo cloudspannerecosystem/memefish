@@ -26,10 +26,14 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
             DefaultPos: -1,
             Expr:       &ast.CallExpr{
               Rparen: 73,
-              Func:   &ast.Ident{
-                NamePos: 29,
-                NameEnd: 52,
-                Name:    "GET_NEXT_SEQUENCE_VALUE",
+              Func:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 29,
+                    NameEnd: 52,
+                    Name:    "GET_NEXT_SEQUENCE_VALUE",
+                  },
+                },
               },
               Args: []ast.Arg{
                 &ast.SequenceArg{

@@ -7,10 +7,14 @@ select count(distinct x) from foo
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 23,
-          Func:   &ast.Ident{
-            NamePos: 7,
-            NameEnd: 12,
-            Name:    "count",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 7,
+                NameEnd: 12,
+                Name:    "count",
+              },
+            },
           },
           Distinct: true,
           Args:     []ast.Arg{

@@ -34,10 +34,14 @@ SELECT WITH(a AS '123',       -- a is '123'
               },
               Expr: &ast.CallExpr{
                 Rparen: 158,
-                Func:   &ast.Ident{
-                  NamePos: 143,
-                  NameEnd: 149,
-                  Name:    "CONCAT",
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 143,
+                      NameEnd: 149,
+                      Name:    "CONCAT",
+                    },
+                  },
                 },
                 Args: []ast.Arg{
                   &ast.ExprArg{
@@ -72,10 +76,14 @@ SELECT WITH(a AS '123',       -- a is '123'
           },
           Expr: &ast.CallExpr{
             Rparen: 240,
-            Func:   &ast.Ident{
-              NamePos: 229,
-              NameEnd: 235,
-              Name:    "CONCAT",
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 229,
+                  NameEnd: 235,
+                  Name:    "CONCAT",
+                },
+              },
             },
             Args: []ast.Arg{
               &ast.ExprArg{

@@ -116,10 +116,14 @@ create table if not exists foo (
         Rparen: 192,
         Expr:   &ast.CallExpr{
           Rparen: 191,
-          Func:   &ast.Ident{
-            NamePos: 176,
-            NameEnd: 182,
-            Name:    "concat",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 176,
+                NameEnd: 182,
+                Name:    "concat",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -158,10 +162,14 @@ create table if not exists foo (
         Rparen:  441,
         Expr:    &ast.CallExpr{
           Rparen: 440,
-          Func:   &ast.Ident{
-            NamePos: 422,
-            NameEnd: 439,
-            Name:    "current_timestamp",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 422,
+                NameEnd: 439,
+                Name:    "current_timestamp",
+              },
+            },
           },
         },
       },

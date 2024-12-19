@@ -28,10 +28,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 46,
-          Func:   &ast.Ident{
-            NamePos: 29,
-            NameEnd: 33,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 29,
+                NameEnd: 33,
+                Name:    "DATE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -87,10 +91,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 219,
-          Func:   &ast.Ident{
-            NamePos: 197,
-            NameEnd: 206,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 197,
+                NameEnd: 206,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -116,10 +124,14 @@ SELECT
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 268,
-          Func:   &ast.Ident{
-            NamePos: 251,
-            NameEnd: 255,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 251,
+                NameEnd: 255,
+                Name:    "DATE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -143,10 +155,14 @@ SELECT
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 302,
-          Func:   &ast.Ident{
-            NamePos: 280,
-            NameEnd: 289,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 280,
+                NameEnd: 289,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{

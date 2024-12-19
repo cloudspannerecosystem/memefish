@@ -1753,10 +1753,13 @@ func (p *Parser) parseLit() ast.Expr {
 		case id.IsKeywordLike("REPLACE_FIELDS"):
 			return p.parseReplaceFieldsExpr()
 		}
+
+		if p.lookaheadCallExpr() {
+			return p.parseCallLike()
+		}
+
 		p.nextToken()
 		switch p.Token.Kind {
-		case "(":
-			return p.parseCallLike(id)
 		case token.TokenString:
 			if id.IsKeywordLike("DATE") {
 				return p.parseDateLiteral(id)
@@ -1781,22 +1784,41 @@ func (p *Parser) parseLit() ast.Expr {
 	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
 
+func (p *Parser) lookaheadCallExpr() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	for {
+		if p.Token.Kind != token.TokenIdent {
+			return false
+		}
+
+		p.nextToken()
+		switch p.Token.Kind {
+		case "(":
+			return true
+		case ".":
+			p.nextToken()
+		default:
+			return false
+		}
+	}
+}
+
 // parseCallLike parses after identifier part of function call like structures.
-func (p *Parser) parseCallLike(id token.Token) ast.Expr {
+func (p *Parser) parseCallLike() ast.Expr {
+	id := p.Token
+	path := p.parsePath()
 	p.expect("(")
-	if id.IsIdent("COUNT") && p.Token.Kind == "*" {
+	if len(path.Idents) == 1 && id.IsIdent("COUNT") && p.Token.Kind == "*" {
 		p.nextToken()
 		rparen := p.expect(")").Pos
 		return &ast.CountStarExpr{
-			Count:  id.Pos,
+			Count:  path.Pos(),
 			Rparen: rparen,
 		}
-	}
-
-	fn := &ast.Ident{
-		NamePos: id.Pos,
-		NameEnd: id.End,
-		Name:    id.AsString,
 	}
 
 	distinct := false
@@ -1839,7 +1861,7 @@ func (p *Parser) parseCallLike(id token.Token) ast.Expr {
 
 	return &ast.CallExpr{
 		Rparen:       rparen,
-		Func:         fn,
+		Func:         path,
 		Distinct:     distinct,
 		Args:         args,
 		NamedArgs:    namedArgs,

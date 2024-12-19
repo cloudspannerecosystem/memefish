@@ -12,10 +12,14 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 143,
-          Func:   &ast.Ident{
-            NamePos: 110,
-            NameEnd: 119,
-            Name:    "SUBSTRING",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 110,
+                NameEnd: 119,
+                Name:    "SUBSTRING",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -63,10 +67,14 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 188,
-          Func:   &ast.Ident{
-            NamePos: 155,
-            NameEnd: 164,
-            Name:    "SUBSTRING",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 155,
+                NameEnd: 164,
+                Name:    "SUBSTRING",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -123,10 +131,14 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
             &ast.Alias{
               Expr: &ast.CallExpr{
                 Rparen: 216,
-                Func:   &ast.Ident{
-                  NamePos: 208,
-                  NameEnd: 214,
-                  Name:    "SHA512",
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 208,
+                      NameEnd: 214,
+                      Name:    "SHA512",
+                    },
+                  },
                 },
                 Args: []ast.Arg{
                   &ast.ExprArg{

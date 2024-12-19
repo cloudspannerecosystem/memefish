@@ -13,10 +13,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 43,
-          Func:   &ast.Ident{
-            NamePos: 11,
-            NameEnd: 20,
-            Name:    "ARRAY_AGG",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 11,
+                NameEnd: 20,
+                Name:    "ARRAY_AGG",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -40,10 +44,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 82,
-          Func:   &ast.Ident{
-            NamePos: 50,
-            NameEnd: 59,
-            Name:    "ARRAY_AGG",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 50,
+                NameEnd: 59,
+                Name:    "ARRAY_AGG",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -67,10 +75,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 118,
-          Func:   &ast.Ident{
-            NamePos: 89,
-            NameEnd: 98,
-            Name:    "ARRAY_AGG",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 89,
+                NameEnd: 98,
+                Name:    "ARRAY_AGG",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -90,10 +102,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 155,
-          Func:   &ast.Ident{
-            NamePos: 125,
-            NameEnd: 134,
-            Name:    "ARRAY_AGG",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 125,
+                NameEnd: 134,
+                Name:    "ARRAY_AGG",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -113,10 +129,14 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 208,
-          Func:   &ast.Ident{
-            NamePos: 162,
-            NameEnd: 171,
-            Name:    "ARRAY_AGG",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 162,
+                NameEnd: 171,
+                Name:    "ARRAY_AGG",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
