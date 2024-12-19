@@ -109,8 +109,8 @@ create table if not exists foo (
           Value:    "255",
         },
       },
-      NotNull:       true,
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     172,
         Stored: 194,
         Rparen: 192,
@@ -152,8 +152,8 @@ create table if not exists foo (
         NamePos: 394,
         Name:    "TIMESTAMP",
       },
-      NotNull:     true,
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 413,
         Rparen:  441,
         Expr:    &ast.CallExpr{
