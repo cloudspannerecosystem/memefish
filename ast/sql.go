@@ -7,6 +7,14 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
+// indentLevel is the whitespace indentation level.
+// Currently, memefish does not perform pretty printing in general, it is only used by CreateTable.
+const indentLevel = 4
+
+// indent is a whitespace indentation of indentLevel width.
+// You should use this rather than using indentLevel directly.
+var indent = strings.Repeat(" ", indentLevel)
+
 // ================================================================================
 //
 // Helper functions for SQL()
@@ -748,11 +756,11 @@ func (d *DropProtoBundle) SQL() string { return "DROP PROTO BUNDLE" }
 func (c *CreateTable) SQL() string {
 	return "CREATE TABLE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
-		c.Name.SQL() + " (" +
-		sqlJoin(c.Columns, ", ") + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ", ") +
-		sqlJoin(c.TableConstraints, ", ") + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ", ") +
-		sqlJoin(c.Synonyms, ", ") +
-		") PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		c.Name.SQL() + " (\n" +
+		indent + sqlJoin(c.Columns, ",\n"+indent) + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ",\n") +
+		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
+		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
+		"\n) PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "")
 }
@@ -812,12 +820,12 @@ func (i *IndexKey) SQL() string {
 }
 
 func (c *Cluster) SQL() string {
-	return ", INTERLEAVE IN PARENT " + c.TableName.SQL() +
+	return ",\nINTERLEAVE IN PARENT " + c.TableName.SQL() +
 		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
 }
 
 func (c *CreateRowDeletionPolicy) SQL() string {
-	return ", " + c.RowDeletionPolicy.SQL()
+	return ",\n" + c.RowDeletionPolicy.SQL()
 }
 
 func (r *RowDeletionPolicy) SQL() string {
