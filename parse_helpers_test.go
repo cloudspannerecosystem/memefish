@@ -87,8 +87,8 @@ func ExampleParseDDL() {
 
 	// Output:
 	// CREATE TABLE foo (
-	//     x INT64,
-	//     y INT64
+	//   x INT64,
+	//   y INT64
 	// ) PRIMARY KEY (x)
 }
 
@@ -114,12 +114,12 @@ func ExampleParseDDLs() {
 
 	// Output:
 	// CREATE TABLE foo (
-	//     x INT64,
-	//     y INT64
+	//   x INT64,
+	//   y INT64
 	// ) PRIMARY KEY (x);
 	// CREATE TABLE bar (
-	//     x INT64,
-	//     z INT64
+	//   x INT64,
+	//   z INT64
 	// ) PRIMARY KEY (x, z),
 	// INTERLEAVE IN PARENT foo;
 }
