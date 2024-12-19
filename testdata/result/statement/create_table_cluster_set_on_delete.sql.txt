@@ -59,6 +59,6 @@ create table foo (
 
 --- SQL
 CREATE TABLE foo (
-    foo INT64
+  foo INT64
 ) PRIMARY KEY (foo),
-INTERLEAVE IN PARENT foobar ON DELETE CASCADE
+  INTERLEAVE IN PARENT foobar ON DELETE CASCADE

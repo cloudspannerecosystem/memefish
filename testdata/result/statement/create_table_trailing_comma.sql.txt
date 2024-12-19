@@ -71,6 +71,6 @@ create table foo (
 
 --- SQL
 CREATE TABLE foo (
-    foo INT64,
-    bar INT64
+  foo INT64,
+  bar INT64
 ) PRIMARY KEY (foo ASC, bar DESC)

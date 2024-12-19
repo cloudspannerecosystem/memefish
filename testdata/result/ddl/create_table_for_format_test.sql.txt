@@ -339,15 +339,14 @@ create table if not exists foo (
 
 --- SQL
 CREATE TABLE IF NOT EXISTS foo (
-    foo INT64,
-    bar FLOAT64 NOT NULL,
-    baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null),
-    qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
-    corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
-    FOREIGN KEY (foo) REFERENCES t2 (t2key1),
-    CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
-    CHECK (foo > 0),
-    CONSTRAINT cname CHECK (bar > 0)
+  foo INT64,
+  bar FLOAT64 NOT NULL,
+  baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null),
+  qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
+  corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
+  FOREIGN KEY (foo) REFERENCES t2 (t2key1),
+  CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
+  CHECK (foo > 0),
+  CONSTRAINT cname CHECK (bar > 0)
 ) PRIMARY KEY (foo),
-INTERLEAVE IN PARENT foobar,
-ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))
+  INTERLEAVE IN PARENT foobar, ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))

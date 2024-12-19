@@ -9,7 +9,8 @@ import (
 
 // indentLevel is the whitespace indentation level.
 // Currently, memefish does not perform pretty printing in general, it is only used by CreateTable.
-const indentLevel = 4
+// Note: The two-space indentation is the same as GetDatabaseDdl in an actual Spanner instance.
+const indentLevel = 2
 
 // indent is a whitespace indentation of indentLevel width.
 // You should use this rather than using indentLevel directly.
@@ -820,12 +821,12 @@ func (i *IndexKey) SQL() string {
 }
 
 func (c *Cluster) SQL() string {
-	return ",\nINTERLEAVE IN PARENT " + c.TableName.SQL() +
+	return ",\n" + indent + "INTERLEAVE IN PARENT " + c.TableName.SQL() +
 		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
 }
 
 func (c *CreateRowDeletionPolicy) SQL() string {
-	return ",\n" + c.RowDeletionPolicy.SQL()
+	return ", " + c.RowDeletionPolicy.SQL()
 }
 
 func (r *RowDeletionPolicy) SQL() string {

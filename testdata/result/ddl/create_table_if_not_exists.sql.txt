@@ -68,6 +68,6 @@ create table if not exists foo (
 
 --- SQL
 CREATE TABLE IF NOT EXISTS foo (
-    foo INT64,
-    bar FLOAT64 NOT NULL
+  foo INT64,
+  bar FLOAT64 NOT NULL
 ) PRIMARY KEY (foo, bar)
