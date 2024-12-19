@@ -3447,7 +3447,7 @@ type ArraySchemaType struct {
 	Gt     token.Pos // position of ">"
 	Rparen token.Pos // position of ")" when len(NamedArgs) > 0
 
-	Item      SchemaType // ScalarSchemaType or SizedSchemaType
+	Item      SchemaType // ScalarSchemaType or SizedSchemaType or NamedType
 	NamedArgs []*NamedArg
 }
 

@@ -4424,9 +4424,6 @@ func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
 func (p *Parser) parseSchemaType() ast.SchemaType {
 	switch p.Token.Kind {
 	case token.TokenIdent:
-		if !p.lookaheadSimpleType() {
-			return p.parseNamedType()
-		}
 		return p.parseScalarSchemaType()
 	case "ARRAY":
 		pos := p.expect("ARRAY").Pos
@@ -4574,7 +4571,12 @@ var sizedSchemaTypes = []string{
 	"BYTES",
 }
 
+// parseScalarSchemaType parses ScalarSchemaType, SizedSchemaType and NamedType, but not ArraySchemaType.
 func (p *Parser) parseScalarSchemaType() ast.SchemaType {
+	if !p.lookaheadSimpleType() {
+		return p.parseNamedType()
+	}
+
 	id := p.expect(token.TokenIdent)
 	pos := id.Pos
 
