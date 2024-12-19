@@ -121,7 +121,7 @@ func ExampleParseDDLs() {
 	//   x INT64,
 	//   z INT64
 	// ) PRIMARY KEY (x, z),
-	// INTERLEAVE IN PARENT foo;
+	//   INTERLEAVE IN PARENT foo;
 }
 
 func ExampleParseDML() {
