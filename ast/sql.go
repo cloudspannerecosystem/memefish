@@ -821,12 +821,12 @@ func (i *IndexKey) SQL() string {
 }
 
 func (c *Cluster) SQL() string {
-	return ",\nINTERLEAVE IN PARENT " + c.TableName.SQL() +
+	return ",\n" + indent + "INTERLEAVE IN PARENT " + c.TableName.SQL() +
 		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
 }
 
 func (c *CreateRowDeletionPolicy) SQL() string {
-	return ",\n" + c.RowDeletionPolicy.SQL()
+	return ",\n" + indent + c.RowDeletionPolicy.SQL()
 }
 
 func (r *RowDeletionPolicy) SQL() string {
