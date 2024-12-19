@@ -106,7 +106,7 @@ CREATE TABLE Albums (
         NamePos: 417,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     427,
         Stored: -1,
         Rparen: 460,
@@ -141,7 +141,7 @@ CREATE TABLE Albums (
         NamePos: 508,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     518,
         Stored: -1,
         Rparen: 545,

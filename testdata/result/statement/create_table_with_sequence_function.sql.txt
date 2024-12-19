@@ -30,7 +30,7 @@ CREATE TABLE foo
         NamePos: 27,
         Name:    "INT64",
       },
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 33,
         Rparen:  88,
         Expr:    &ast.CallExpr{

@@ -109,8 +109,8 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull:       true,
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 172,
         Rparen: 170,
@@ -165,8 +165,8 @@ create table foo (
         NamePos: 501,
         Name:    "TIMESTAMP",
       },
-      NotNull:     true,
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 520,
         Rparen:  548,
         Expr:    &ast.CallExpr{

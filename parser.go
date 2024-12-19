@@ -3091,16 +3091,30 @@ func (p *Parser) parsePath() *ast.Path {
 	return &ast.Path{Idents: path}
 }
 
+func (p *Parser) parseSequenceParams() []ast.SequenceParam {
+	var params []ast.SequenceParam
+	for {
+		param := p.tryParseSequenceParam()
+		if param == nil {
+			return params
+		}
+
+		params = append(params, param)
+	}
+}
+
 func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	p.expectKeywordLike("SEQUENCE")
 	ifNotExists := p.parseIfNotExists()
 	name := p.parsePath()
+	params := p.parseSequenceParams()
 	options := p.parseOptions()
 
 	return &ast.CreateSequence{
 		Create:      pos,
 		Name:        name,
 		IfNotExists: ifNotExists,
+		Params:      params,
 		Options:     options,
 	}
 }
@@ -3147,11 +3161,42 @@ func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	}
 }
 
+func (p *Parser) parseIdentityColumn() *ast.IdentityColumn {
+	pos := p.expectKeywordLike("GENERATED").Pos
+	p.expect("BY")
+	p.expect("DEFAULT")
+	p.expect("AS")
+	identity := p.expectKeywordLike("IDENTITY").Pos
+
+	var params []ast.SequenceParam
+	rparen := token.InvalidPos
+	if p.Token.Kind == "(" {
+		p.nextToken()
+		params = p.parseSequenceParams()
+		rparen = p.expect(")").Pos
+	}
+
+	return &ast.IdentityColumn{
+		Generated: pos,
+		Identity:  identity,
+		Rparen:    rparen,
+		Params:    params,
+	}
+}
+
 func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	name := p.parseIdent()
 	t, notNull, null := p.parseTypeNotNull()
-	defaultExpr := p.tryParseColumnDefaultExpr()
-	generated := p.tryParseGeneratedColumnExpr()
+
+	var defaultSemantics ast.ColumnDefaultSemantics
+	switch {
+	case p.Token.Kind == "DEFAULT":
+		defaultSemantics = p.parseColumnDefaultExpr()
+	case p.Token.Kind == "AS":
+		defaultSemantics = p.parseGeneratedColumnExpr()
+	case p.Token.IsKeywordLike("GENERATED"):
+		defaultSemantics = p.parseIdentityColumn()
+	}
 
 	hiddenPos := token.InvalidPos
 	if p.Token.IsKeywordLike("HIDDEN") {
@@ -3161,14 +3206,13 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
-		Null:          null,
-		Name:          name,
-		Type:          t,
-		NotNull:       notNull,
-		DefaultExpr:   defaultExpr,
-		GeneratedExpr: generated,
-		Hidden:        hiddenPos,
-		Options:       options,
+		Null:             null,
+		Name:             name,
+		Type:             t,
+		NotNull:          notNull,
+		DefaultSemantics: defaultSemantics,
+		Hidden:           hiddenPos,
+		Options:          options,
 	}
 }
 
@@ -3260,6 +3304,10 @@ func (p *Parser) tryParseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 		return nil
 	}
 
+	return p.parseColumnDefaultExpr()
+}
+
+func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	def := p.expect("DEFAULT").Pos
 	p.expect("(")
 	expr := p.parseExpr()
@@ -3272,11 +3320,7 @@ func (p *Parser) tryParseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	}
 }
 
-func (p *Parser) tryParseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
-	if p.Token.Kind != "AS" {
-		return nil
-	}
-
+func (p *Parser) parseGeneratedColumnExpr() *ast.GeneratedColumnExpr {
 	pos := p.expect("AS").Pos
 	p.expect("(")
 	expr := p.parseExpr()
@@ -3899,7 +3943,7 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 	case p.Token.Kind == "SET":
 		set := p.expect("SET").Pos
 		if p.Token.Kind == "DEFAULT" {
-			defaultExpr := p.tryParseColumnDefaultExpr()
+			defaultExpr := p.parseColumnDefaultExpr()
 			return &ast.AlterColumnSetDefault{
 				Set:         set,
 				DefaultExpr: defaultExpr,
@@ -3918,6 +3962,14 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 			Drop:    drop,
 			Default: def,
 		}
+	case p.Token.IsKeywordLike("ALTER"):
+		alter := p.expectKeywordLike("ALTER").Pos
+		p.expectKeywordLike("IDENTITY")
+		alteration := p.parseIdentityAlteration()
+		return &ast.AlterColumnAlterIdentity{
+			Alter:      alter,
+			Alteration: alteration,
+		}
 	default:
 		t, notNull, null := p.parseTypeNotNull()
 		defaultExpr := p.tryParseColumnDefaultExpr()
@@ -3929,6 +3981,59 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		}
 	}
 
+}
+
+func (p *Parser) parseSkipRange() *ast.SkipRange {
+	pos := p.expectKeywordLike("SKIP").Pos
+	p.expect("RANGE")
+	min := p.parseIntLiteral()
+	p.expect(",")
+	max := p.parseIntLiteral()
+	return &ast.SkipRange{
+		Skip: pos,
+		Min:  min,
+		Max:  max,
+	}
+}
+
+func (p *Parser) parseNoSkipRange() *ast.NoSkipRange {
+	no := p.expect("NO").Pos
+	p.expectKeywordLike("SKIP")
+	rangePos := p.expect("RANGE").Pos
+
+	return &ast.NoSkipRange{
+		No:    no,
+		Range: rangePos,
+	}
+
+}
+func (p *Parser) parseIdentityAlteration() ast.IdentityAlteration {
+	pos := p.Token.Pos
+
+	switch {
+	case p.Token.Kind == "SET":
+		p.nextToken()
+		switch {
+		case p.Token.IsKeywordLike("SKIP"):
+			skipRange := p.parseSkipRange()
+			return &ast.SetSkipRange{
+				Set:       pos,
+				SkipRange: skipRange,
+			}
+		case p.Token.Kind == "NO":
+			noSkipRange := p.parseNoSkipRange()
+			return &ast.SetNoSkipRange{
+				Set:         pos,
+				NoSkipRange: noSkipRange,
+			}
+		default:
+			panic(p.errorfAtToken(&p.Token, "expect SKIP or NO, but: %s", p.Token.AsString))
+		}
+	case p.Token.IsKeywordLike("RESTART"):
+		return p.parseRestartCounterWith()
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected token: SET, RESTART, but: %s", p.Token.AsString))
+	}
 }
 func (p *Parser) parseAlterColumn() ast.TableAlteration {
 	pos := p.expectKeywordLike("ALTER").Pos
@@ -3957,16 +4062,96 @@ func (p *Parser) parseAlterIndex(pos token.Pos) *ast.AlterIndex {
 	}
 }
 
+func (p *Parser) parseRestartCounterWith() *ast.RestartCounterWith {
+	restart := p.expectKeywordLike("RESTART").Pos
+	p.expectKeywordLike("COUNTER")
+	p.expect("WITH")
+
+	counter := p.parseIntLiteral()
+
+	return &ast.RestartCounterWith{
+		Restart: restart,
+		Counter: counter,
+	}
+}
+
+func (p *Parser) tryParseSequenceParam() ast.SequenceParam {
+	if !p.Token.IsKeywordLike("BIT_REVERSED_POSITIVE") && !p.Token.IsKeywordLike("SKIP") && !p.Token.IsKeywordLike("START") {
+		return nil
+	}
+
+	return p.parseSequenceParam()
+}
+
+func (p *Parser) parseSequenceParam() ast.SequenceParam {
+	pos := p.Token.Pos
+
+	switch {
+	case p.Token.IsKeywordLike("SKIP"):
+		p.nextToken()
+		p.expect("RANGE")
+
+		min := p.parseIntLiteral()
+		p.expect(",")
+		max := p.parseIntLiteral()
+
+		return &ast.SkipRange{
+			Skip: pos,
+			Min:  min,
+			Max:  max,
+		}
+	case p.Token.IsKeywordLike("BIT_REVERSED_POSITIVE"):
+		p.nextToken()
+
+		return &ast.BitReversedPositive{BitReversedPositive: pos}
+	case p.Token.IsKeywordLike("START"):
+		p.nextToken()
+		p.expectKeywordLike("COUNTER")
+		p.expect("WITH")
+
+		counter := p.parseIntLiteral()
+
+		return &ast.StartCounterWith{
+			Start:   pos,
+			Counter: counter,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expect "BIT_REVERSED_POSITIVE", "SKIP", "START", but %q`, p.Token.AsString))
+	}
+}
+
 func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	p.expectKeywordLike("SEQUENCE")
 	name := p.parsePath()
-	p.expect("SET")
-	options := p.parseOptions()
+
+	var options *ast.Options
+	if p.Token.Kind == "SET" {
+		p.nextToken()
+		options = p.parseOptions()
+	}
+
+	var skipRange *ast.SkipRange
+	if p.Token.IsKeywordLike("SKIP") {
+		skipRange = p.parseSkipRange()
+	}
+
+	var noSkipRange *ast.NoSkipRange
+	if p.Token.Kind == "NO" {
+		noSkipRange = p.parseNoSkipRange()
+	}
+
+	var restartCounterWith *ast.RestartCounterWith
+	if p.Token.IsKeywordLike("RESTART") {
+		restartCounterWith = p.parseRestartCounterWith()
+	}
 
 	return &ast.AlterSequence{
-		Alter:   pos,
-		Name:    name,
-		Options: options,
+		Alter:              pos,
+		Name:               name,
+		Options:            options,
+		RestartCounterWith: restartCounterWith,
+		SkipRange:          skipRange,
+		NoSkipRange:        noSkipRange,
 	}
 }
 

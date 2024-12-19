@@ -1043,7 +1043,31 @@ func (c *CreateSequence) Pos() token.Pos {
 }
 
 func (c *CreateSequence) End() token.Pos {
-	return nodeEnd(wrapNode(c.Options))
+	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(nodeSliceLast(c.Params)), nodeEnd(wrapNode(c.Name)))
+}
+
+func (s *SkipRange) Pos() token.Pos {
+	return s.Skip
+}
+
+func (s *SkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.Max))
+}
+
+func (s *StartCounterWith) Pos() token.Pos {
+	return s.Start
+}
+
+func (s *StartCounterWith) End() token.Pos {
+	return nodeEnd(wrapNode(s.Counter))
+}
+
+func (b *BitReversedPositive) Pos() token.Pos {
+	return b.BitReversedPositive
+}
+
+func (b *BitReversedPositive) End() token.Pos {
+	return posAdd(b.BitReversedPositive, 21)
 }
 
 func (c *ColumnDef) Pos() token.Pos {
@@ -1051,7 +1075,7 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.GeneratedExpr)), nodeEnd(wrapNode(c.DefaultExpr)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
+	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.DefaultSemantics)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
 }
 
 func (c *ColumnDefaultExpr) Pos() token.Pos {
@@ -1068,6 +1092,14 @@ func (g *GeneratedColumnExpr) Pos() token.Pos {
 
 func (g *GeneratedColumnExpr) End() token.Pos {
 	return posChoice(posAdd(g.Stored, 6), posAdd(g.Rparen, 1))
+}
+
+func (i *IdentityColumn) Pos() token.Pos {
+	return i.Generated
+}
+
+func (i *IdentityColumn) End() token.Pos {
+	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
 }
 
 func (c *ColumnDefOptions) Pos() token.Pos {
@@ -1308,6 +1340,46 @@ func (a *AlterColumnDropDefault) Pos() token.Pos {
 
 func (a *AlterColumnDropDefault) End() token.Pos {
 	return posAdd(a.Default, 7)
+}
+
+func (a *AlterColumnAlterIdentity) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterColumnAlterIdentity) End() token.Pos {
+	return nodeEnd(wrapNode(a.Alteration))
+}
+
+func (r *RestartCounterWith) Pos() token.Pos {
+	return r.Restart
+}
+
+func (r *RestartCounterWith) End() token.Pos {
+	return nodeEnd(wrapNode(r.Counter))
+}
+
+func (s *SetSkipRange) Pos() token.Pos {
+	return s.Set
+}
+
+func (s *SetSkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.SkipRange))
+}
+
+func (n *NoSkipRange) Pos() token.Pos {
+	return n.No
+}
+
+func (n *NoSkipRange) End() token.Pos {
+	return posAdd(n.Range, 5)
+}
+
+func (s *SetNoSkipRange) Pos() token.Pos {
+	return s.Set
+}
+
+func (s *SetNoSkipRange) End() token.Pos {
+	return nodeEnd(wrapNode(s.NoSkipRange))
 }
 
 func (d *DropTable) Pos() token.Pos {
