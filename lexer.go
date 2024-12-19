@@ -59,11 +59,11 @@ func (l *Lexer) NextToken() (err error) {
 		}
 	}()
 
-	l.nextToken()
+	l.nextToken(false)
 	return
 }
 
-func (l *Lexer) nextToken() {
+func (l *Lexer) nextToken(noPanic bool) {
 	l.lastTokenKind = l.Token.Kind
 	l.Token = token.Token{}
 
@@ -75,7 +75,8 @@ func (l *Lexer) nextToken() {
 		space = l.Buffer[i:l.pos]
 
 		i = l.pos
-		l.skipComment()
+		hasError := l.skipComment(noPanic)
+
 		if l.pos == i {
 			break
 		}
@@ -85,6 +86,13 @@ func (l *Lexer) nextToken() {
 			Pos:   token.Pos(i),
 			End:   token.Pos(l.pos),
 		})
+
+		if hasError {
+			l.Token.Pos = token.Pos(l.pos)
+			l.Token.End = token.Pos(l.pos)
+			l.Token.Kind = token.TokenBad
+			return
+		}
 	}
 
 	l.Token.Space = space
@@ -93,16 +101,16 @@ func (l *Lexer) nextToken() {
 	l.Token.Pos = token.Pos(l.pos)
 	i := l.pos
 	if l.dotIdent {
-		l.consumeFieldToken()
+		l.consumeFieldToken(noPanic)
 		l.dotIdent = false
 	} else {
-		l.consumeToken()
+		l.consumeToken(noPanic)
 	}
 	l.Token.Raw = l.Buffer[i:l.pos]
 	l.Token.End = token.Pos(l.pos)
 }
 
-func (l *Lexer) consumeToken() {
+func (l *Lexer) consumeToken(noPanic bool) {
 	if l.eof() {
 		l.Token.Kind = token.TokenEOF
 		return
@@ -117,7 +125,7 @@ func (l *Lexer) consumeToken() {
 	case '.':
 		nextDotIdent := isNextDotIdent(l.lastTokenKind)
 		if !nextDotIdent && l.peekOk(1) && char.IsDigit(l.peek(1)) {
-			l.consumeNumber()
+			l.consumeNumber(noPanic)
 		} else {
 			l.skip()
 			l.Token.Kind = "."
@@ -233,10 +241,15 @@ func (l *Lexer) consumeToken() {
 		return
 	case '`':
 		l.Token.Kind = token.TokenIdent
-		l.Token.AsString = l.consumeQuotedContent("`", false, true, "identifier")
+
+		var hasError bool
+		l.Token.AsString, hasError = l.consumeQuotedContent("`", false, true, "identifier", noPanic)
+		if hasError {
+			l.Token.Kind = token.TokenBad
+		}
 		return
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		l.consumeNumber()
+		l.consumeNumber(noPanic)
 		return
 	case 'B', 'b', 'R', 'r', '"', '\'':
 		bytes, raw := false, false
@@ -251,13 +264,13 @@ func (l *Lexer) consumeToken() {
 				l.skipN(i)
 				switch {
 				case bytes && raw:
-					l.consumeRawBytes()
+					l.consumeRawBytes(noPanic)
 				case bytes:
-					l.consumeBytes()
+					l.consumeBytes(noPanic)
 				case raw:
-					l.consumeRawString()
+					l.consumeRawString(noPanic)
 				default:
-					l.consumeString()
+					l.consumeString(noPanic)
 				}
 				return
 			default:
@@ -283,10 +296,16 @@ func (l *Lexer) consumeToken() {
 		return
 	}
 
+	if noPanic {
+		l.skip()
+		l.Token.Kind = token.TokenBad
+		return
+	}
+
 	panic(l.errorf("illegal input character: %q", l.peek(0)))
 }
 
-func (l *Lexer) consumeFieldToken() {
+func (l *Lexer) consumeFieldToken(noPanic bool) {
 	if l.peekOk(0) && char.IsIdentPart(l.peek(0)) {
 		i := 0
 		for l.peekOk(i) && char.IsIdentPart(l.peek(i)) {
@@ -298,10 +317,10 @@ func (l *Lexer) consumeFieldToken() {
 		return
 	}
 
-	l.consumeToken()
+	l.consumeToken(noPanic)
 }
 
-func (l *Lexer) consumeNumber() {
+func (l *Lexer) consumeNumber(noPanic bool) {
 	// https://cloud.google.com/spanner/docs/lexical#integer-literals
 	// https://cloud.google.com/spanner/docs/lexical#floating-point-literals
 
@@ -354,35 +373,61 @@ func (l *Lexer) consumeNumber() {
 	}
 
 	if l.peekOk(0) && char.IsIdentPart(l.peek(0)) {
+		if noPanic {
+			l.Token.Kind = token.TokenBad
+			return
+		}
+
 		l.panicf("number literal cannot follow identifier without any spaces")
 	}
 }
 
-func (l *Lexer) consumeRawBytes() {
+func (l *Lexer) consumeRawBytes(noPanic bool) {
 	l.Token.Kind = token.TokenBytes
-	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), true, false, "raw bytes literal")
+
+	var hasError bool
+	l.Token.AsString, hasError = l.consumeQuotedContent(l.peekDelimiter(), true, false, "raw bytes literal", noPanic)
+	if hasError {
+		l.Token.Kind = token.TokenBad
+	}
 }
 
-func (l *Lexer) consumeBytes() {
+func (l *Lexer) consumeBytes(noPanic bool) {
 	l.Token.Kind = token.TokenBytes
-	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), false, false, "bytes literal")
+
+	var hasError bool
+	l.Token.AsString, hasError = l.consumeQuotedContent(l.peekDelimiter(), false, false, "bytes literal", noPanic)
+	if hasError {
+		l.Token.Kind = token.TokenBad
+	}
 }
 
-func (l *Lexer) consumeRawString() {
+func (l *Lexer) consumeRawString(noPanic bool) {
 	l.Token.Kind = token.TokenString
-	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), true, true, "raw string literal")
+
+	var hasError bool
+	l.Token.AsString, hasError = l.consumeQuotedContent(l.peekDelimiter(), true, true, "raw string literal", noPanic)
+	if hasError {
+		l.Token.Kind = token.TokenBad
+	}
 }
 
-func (l *Lexer) consumeString() {
+func (l *Lexer) consumeString(noPanic bool) {
 	l.Token.Kind = token.TokenString
-	l.Token.AsString = l.consumeQuotedContent(l.peekDelimiter(), false, true, "string literal")
+
+	var hasError bool
+	l.Token.AsString, hasError = l.consumeQuotedContent(l.peekDelimiter(), false, true, "string literal", noPanic)
+	if hasError {
+		l.Token.Kind = token.TokenBad
+	}
 }
 
 func (l *Lexer) peekDelimiter() string {
 	i := 0
 	c := l.peek(i)
 	if c != '"' && c != '\'' {
-		l.panicf("invalid delimiter: %v", c)
+		// This error is unreachable
+		panic(fmt.Sprintf("BUG: invalid delimiter: %v", c))
 	}
 	i++
 
@@ -405,7 +450,7 @@ func (l *Lexer) peekDelimiter() string {
 	}
 }
 
-func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) string {
+func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, noPanic bool) (string, bool) {
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
 	if len(q) == 3 {
@@ -414,20 +459,33 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 
 	i := len(q)
 	var content []byte
+	hasError := false
 
 	for l.peekOk(i) {
 		if l.slice(i, i+len(q)) == q {
 			if len(content) == 0 && name == "identifier" {
-				l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i+len(q)), "invalid empty identifier")
+				if noPanic {
+					hasError = true
+				} else {
+					l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i+len(q)), "invalid empty identifier")
+				}
 			}
 			l.skipN(i + len(q))
-			return string(content)
+
+			if hasError {
+				return "", true
+			}
+			return string(content), false
 		}
 
 		c := l.peek(i)
 		if c == '\\' {
 			i++
 			if !l.peekOk(i) {
+				if noPanic {
+					hasError = true
+					continue
+				}
 				l.panicfAtPosition(token.Pos(l.pos+i-1), token.Pos(l.pos+i), "invalid escape sequence: \\<eof>")
 			}
 
@@ -459,17 +517,29 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 			case 'x', 'X':
 				for j := 0; j < 2; j++ {
 					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+						if noPanic {
+							hasError = true
+							continue
+						}
 						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+2), 16, 8)
 				if err != nil {
+					if noPanic {
+						hasError = true
+						continue
+					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			case 'u', 'U':
 				if !unicode {
+					if noPanic {
+						hasError = true
+						continue
+					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i), "invalid escape sequence: \\%c is not allowed in %s", c, name)
 				}
 				size := 4
@@ -478,14 +548,26 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 				}
 				for j := 0; j < size; j++ {
 					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+						if noPanic {
+							hasError = true
+							continue
+						}
 						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+size), 16, 32)
 				if err != nil {
+					if noPanic {
+						hasError = true
+						continue
+					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+size), "invalid escape sequence: %v", err)
 				}
 				if 0xD800 <= u && u <= 0xDFFF || 0x10FFFF < u {
+					if noPanic {
+						hasError = true
+						continue
+					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+size), "invalid escape sequence: invalid code point: U+%04X", u)
 				}
 				var buf [utf8.MaxRune]byte
@@ -495,16 +577,28 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 			case '0', '1', '2', '3':
 				for j := 0; j < 2; j++ {
 					if !(l.peekOk(i+j) && char.IsOctalDigit(l.peek(i+j))) {
+						if noPanic {
+							hasError = true
+							continue
+						}
 						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i-1, i+2), 8, 8)
 				if err != nil {
+					if noPanic {
+						hasError = true
+						continue
+					}
 					l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+2), "invalid escape sequence: %v", err)
 				}
 				content = append(content, byte(u))
 				i += 2
 			default:
+				if noPanic {
+					hasError = true
+					continue
+				}
 				l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i), "invalid escape sequence: \\%c", c)
 			}
 
@@ -512,11 +606,21 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string) s
 		}
 
 		if c == '\n' && len(q) != 3 {
+			if noPanic {
+				hasError = true
+				i++
+				continue
+			}
 			l.panicfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i), "unclosed %s: newline appears in non triple-quoted", name)
 		}
 
 		content = append(content, c)
 		i++
+	}
+
+	if noPanic {
+		l.skipN(i)
+		return "", true
 	}
 
 	panic(l.errorfAtPosition(token.Pos(l.pos), token.Pos(l.pos+i), "unclosed %s", name))
@@ -534,30 +638,35 @@ func (l *Lexer) skipSpaces() {
 	}
 }
 
-func (l *Lexer) skipComment() {
+func (l *Lexer) skipComment(noPanic bool) bool {
 	r, _ := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 	switch {
 	case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
-		l.skipCommentUntil("\n", false)
+		return l.skipCommentUntil("\n", false, noPanic)
 	case r == '/' && l.peekIs(1, '*'):
-		l.skipCommentUntil("*/", true)
+		return l.skipCommentUntil("*/", true, noPanic)
 	default:
-		return
+		return false
 	}
 }
 
-func (l *Lexer) skipCommentUntil(end string, mustEnd bool) {
+func (l *Lexer) skipCommentUntil(end string, mustEnd bool, noPanic bool) bool {
 	pos := token.Pos(l.pos)
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
 			l.skipN(len(end))
-			return
+			return false
 		}
 		l.skip()
 	}
 	if mustEnd {
+		if noPanic {
+			return true
+		}
 		l.panicfAtPosition(pos, token.Pos(l.pos), "unclosed comment")
 	}
+
+	return false
 }
 
 func (l *Lexer) peek(i int) byte {

@@ -14,6 +14,7 @@
 //   - sqlIdentQuote x: Quotes the given identifier string if needed.
 //   - sqlStringQuote s: Returns the SQL quoted string of s.
 //   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - tokenJoin toks: Concateates the string representations of tokens.
 //   - isnil v: Checks whether v is nil or others.
 //
 // Each Node's documentation has pos and end information using the following EBNF.
@@ -59,6 +60,7 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
+func (BadNode) isStatement()            {}
 func (QueryStatement) isStatement()     {}
 func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
@@ -108,6 +110,7 @@ type QueryExpr interface {
 	isQueryExpr()
 }
 
+func (BadNode) isQueryExpr()       {}
 func (Select) isQueryExpr()        {}
 func (Query) isQueryExpr()         {}
 func (FromQuery) isQueryExpr()     {}
@@ -173,6 +176,7 @@ type Expr interface {
 	isExpr()
 }
 
+func (BadNode) isExpr()               {}
 func (BinaryExpr) isExpr()            {}
 func (UnaryExpr) isExpr()             {}
 func (InExpr) isExpr()                {}
@@ -295,6 +299,7 @@ type Type interface {
 	isType()
 }
 
+func (BadNode) isType()    {}
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
@@ -342,6 +347,7 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
+func (BadNode) isDDL()            {}
 func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
@@ -470,9 +476,10 @@ type DML interface {
 	isDML()
 }
 
-func (Insert) isDML() {}
-func (Delete) isDML() {}
-func (Update) isDML() {}
+func (BadNode) isDML() {}
+func (Insert) isDML()  {}
+func (Delete) isDML()  {}
+func (Update) isDML()  {}
 
 // InsertInput represents input values of INSERT statement.
 type InsertInput interface {
@@ -501,6 +508,24 @@ type ChangeStreamAlteration interface {
 func (ChangeStreamSetFor) isChangeStreamAlteration()     {}
 func (ChangeStreamDropForAll) isChangeStreamAlteration() {}
 func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
+
+// ================================================================================
+//
+// Bad Node
+//
+// ================================================================================
+
+// BadNode is a placeholder node for a source code containing syntax errors.
+//
+//	{{.Tokens | tokenJoin}}
+type BadNode struct {
+	// pos = NodePos
+	// end = NodeEnd
+
+	NodePos, NodeEnd token.Pos
+
+	Tokens []*token.Token
+}
 
 // ================================================================================
 //
@@ -1234,9 +1259,10 @@ type SelectorExpr struct {
 
 // IndexExpr is a subscript operator expression node.
 // This node can be:
-//	- array subscript operator
-//	- struct subscript operator
-//	- JSON subscript operator
+//   - array subscript operator
+//   - struct subscript operator
+//   - JSON subscript operator
+//
 // Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
 //	{{.Expr | sql}}[{{.Index | sql}}]
