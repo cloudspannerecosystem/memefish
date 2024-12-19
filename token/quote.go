@@ -14,7 +14,7 @@ func QuoteSQLString(s string) string {
 
 	var buf bytes.Buffer
 	buf.WriteRune(quote)
-	quoteSQLStringContent(quote, s, &buf)
+	quoteSQLStringContent(s, quote, &buf)
 	buf.WriteRune(quote)
 	return buf.String()
 }
@@ -68,12 +68,12 @@ func QuoteSQLIdent(s string) string {
 
 	var buf bytes.Buffer
 	buf.WriteByte('`')
-	quoteSQLStringContent('`', s, &buf)
+	quoteSQLStringContent(s, '`', &buf)
 	buf.WriteByte('`')
 	return buf.String()
 }
 
-func quoteSQLStringContent(quote rune, s string, buf *bytes.Buffer) {
+func quoteSQLStringContent(s string, quote rune, buf *bytes.Buffer) {
 	for _, r := range s {
 		q := quoteSingleEscape(r, quote, /* isString */ true)
 		if q != "" {
