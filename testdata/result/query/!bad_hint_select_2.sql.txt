@@ -31,9 +31,11 @@ syntax error: testdata/input/query/!bad_hint_select_2.sql:1:19: unexpected token
     Select:  12,
     Results: []ast.SelectItem{
       &ast.ExprSelectItem{
-        Expr: &ast.BadNode{
-          NodePos: 18,
-          NodeEnd: 18,
+        Expr: &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 18,
+            NodeEnd: 18,
+          },
         },
       },
     },

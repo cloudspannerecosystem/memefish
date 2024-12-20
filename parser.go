@@ -154,7 +154,7 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			stmt = p.handleParseStatementError(r, l)
+			stmt = &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
@@ -233,7 +233,7 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 			// When parsing is failed on tryParseHint or tryParseWith, the result of these methods are discarded
 			// becasue they are concrete structs and we cannot fill them with *ast.BadNode.
 			stmt = &ast.QueryStatement{
-				Query: p.handleParseStatementError(r, l),
+				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
 			}
 		}
 	}()
@@ -2771,7 +2771,7 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			ddl = p.handleParseStatementError(r, l)
+			ddl = &ast.BadDDL{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
@@ -4663,7 +4663,7 @@ func (p *Parser) parseDML() (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			dml = p.handleParseStatementError(r, l)
+			dml = &ast.BadDML{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
@@ -5094,7 +5094,7 @@ skip:
 	}
 }
 
-func (p *Parser) handleParseQueryExprError(simple bool, r any, l *Lexer) *ast.BadNode {
+func (p *Parser) handleParseQueryExprError(simple bool, r any, l *Lexer) *ast.BadQueryExpr {
 	p.handleError(r, l)
 
 	var tokens []*token.Token
@@ -5123,14 +5123,16 @@ skip:
 		p.Lexer.nextToken(true)
 	}
 
-	return &ast.BadNode{
-		NodePos: pos,
-		NodeEnd: end,
-		Tokens:  tokens,
+	return &ast.BadQueryExpr{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
 	}
 }
 
-func (p *Parser) handleParseExprError(r any, l *Lexer) *ast.BadNode {
+func (p *Parser) handleParseExprError(r any, l *Lexer) *ast.BadExpr {
 	p.handleError(r, l)
 
 	var tokens []*token.Token
@@ -5159,14 +5161,16 @@ skip:
 		p.Lexer.nextToken(true)
 	}
 
-	return &ast.BadNode{
-		NodePos: pos,
-		NodeEnd: end,
-		Tokens:  tokens,
+	return &ast.BadExpr{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
 	}
 }
 
-func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadNode {
+func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadType {
 	p.handleError(r, l)
 
 	var tokens []*token.Token
@@ -5205,10 +5209,12 @@ skip:
 		p.Lexer.nextToken(true)
 	}
 
-	return &ast.BadNode{
-		NodePos: pos,
-		NodeEnd: end,
-		Tokens:  tokens,
+	return &ast.BadType{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
 	}
 }
 

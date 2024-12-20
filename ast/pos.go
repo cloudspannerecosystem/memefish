@@ -14,6 +14,54 @@ func (b *BadNode) End() token.Pos {
 	return b.NodeEnd
 }
 
+func (b *BadStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadQueryExpr) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadQueryExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadExpr) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadType) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadType) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadDDL) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadDDL) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadDML) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadDML) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
 func (q *QueryStatement) Pos() token.Pos {
 	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.Query)))
 }

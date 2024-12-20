@@ -13,9 +13,11 @@ syntax error: testdata/input/query/!bad_select.sql:2:1: unexpected token: <eof>
   Query: &ast.Select{
     Results: []ast.SelectItem{
       &ast.ExprSelectItem{
-        Expr: &ast.BadNode{
-          NodePos: 7,
-          NodeEnd: 7,
+        Expr: &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 7,
+            NodeEnd: 7,
+          },
         },
       },
     },

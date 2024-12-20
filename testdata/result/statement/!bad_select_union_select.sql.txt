@@ -22,9 +22,11 @@ syntax error: testdata/input/query/!bad_select_union_select.sql:1:24: unexpected
       &ast.Select{
         Results: []ast.SelectItem{
           &ast.ExprSelectItem{
-            Expr: &ast.BadNode{
-              NodePos: 7,
-              NodeEnd: 7,
+            Expr: &ast.BadExpr{
+              BadNode: &ast.BadNode{
+                NodePos: 7,
+                NodeEnd: 7,
+              },
             },
           },
         },
@@ -33,9 +35,11 @@ syntax error: testdata/input/query/!bad_select_union_select.sql:1:24: unexpected
         Select:  17,
         Results: []ast.SelectItem{
           &ast.ExprSelectItem{
-            Expr: &ast.BadNode{
-              NodePos: 23,
-              NodeEnd: 23,
+            Expr: &ast.BadExpr{
+              BadNode: &ast.BadNode{
+                NodePos: 23,
+                NodeEnd: 23,
+              },
             },
           },
         },
