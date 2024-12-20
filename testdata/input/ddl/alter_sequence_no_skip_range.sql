@@ -1,0 +1,1 @@
+ALTER SEQUENCE my_sequence NO SKIP RANGE

@@ -466,10 +466,14 @@ lines''',
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 552,
-          Func:   &ast.Ident{
-            NamePos: 535,
-            NameEnd: 539,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 535,
+                NameEnd: 539,
+                Name:    "DATE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -515,10 +519,14 @@ lines''',
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 703,
-          Func:   &ast.Ident{
-            NamePos: 681,
-            NameEnd: 690,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 681,
+                NameEnd: 690,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -597,4 +605,4 @@ lines''',
 }
 
 --- SQL
-SELECT "abc", "it\'s", "it\'s", "Title: \"Boy\"", "abc", "it\'s", "Title:\"Boy\"", "two\nlines", "why\?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", B"abc", B"abc", B"abc", B"abc+", B"abc+", B"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE
+SELECT "abc", "it's", "it's", 'Title: "Boy"', "abc", "it's", 'Title:"Boy"', "two\nlines", "why?", "abc+", "abc+", "abc+", "f\\(abc,(.*),def\\)", b"abc", b"abc", b"abc", b"abc+", b"abc+", b"abc", 123, 0xABC, -123, -0xABC, 123.456e-67, .1E4, 58., 4e2, [1, 2, 3], ["x", "y", "xy"], ARRAY[1, 2, 3], ARRAY<STRING>["x", "y", "xy"], ARRAY<INT64>[], ARRAY(SELECT STRUCT(1, 2, 3)), ARRAY(SELECT (1, 2, 3)), DATE "2014-09-27", DATE("2014-09-27"), TIMESTAMP "2014-09-27 12:30:00.45-08", TIMESTAMP "2014-09-27 12:30:00.45 America/Los_Angeles", TIMESTAMP "2014-09-27", TIMESTAMP("2014-09-27"), JSON "1", JSON "[1, 2]", JSON "{}", NUMERIC "0", NUMERIC "0", TRUE, FALSE

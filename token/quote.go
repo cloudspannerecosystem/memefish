@@ -10,34 +10,56 @@ import (
 
 // QuoteSQLString returns quoted string with SQL string escaping.
 func QuoteSQLString(s string) string {
+	quote := suitableQuote([]byte(s))
+
 	var buf bytes.Buffer
-	buf.WriteByte('"')
-	quoteSQLStringContent(s, &buf)
-	buf.WriteByte('"')
+	buf.WriteRune(quote)
+	quoteSQLStringContent(s, quote, &buf)
+	buf.WriteRune(quote)
 	return buf.String()
 }
 
-// QuoteSQLString returns quoted string with SQL bytes escaping.
+func suitableQuote(b []byte) rune {
+	var hasSingle, hasDouble bool
+	for _, b := range b {
+		switch b {
+		case '\'':
+			hasSingle = true
+		case '"':
+			hasDouble = true
+		}
+	}
+	if !hasSingle && hasDouble {
+		return '\''
+	}
+	return '"'
+}
+
+// QuoteSQLBytes returns quoted string with SQL bytes escaping.
 func QuoteSQLBytes(bs []byte) string {
+	quote := suitableQuote(bs)
+
 	var buf bytes.Buffer
-	buf.WriteString("B\"")
+	buf.WriteString("b")
+	buf.WriteRune(quote)
 	for _, b := range bs {
-		q := quoteSingleEscape(rune(b))
+		q := quoteSingleEscape(rune(b), quote, /* isString */ false)
 		if q != "" {
 			buf.WriteString(q)
 			continue
 		}
+
 		if char.IsPrint(b) {
 			buf.WriteByte(b)
 			continue
 		}
-		fmt.Fprintf(&buf, "\\x%02X", uint64(b))
+		fmt.Fprintf(&buf, `\x%02x`, uint64(b))
 	}
-	buf.WriteRune('"')
+	buf.WriteRune(quote)
 	return buf.String()
 }
 
-// QuoteSQLString returns quoted string with SQL bytes escaping if needed,
+// QuoteSQLIdent returns quoted identifier if needed,
 // otherwise it returns the input string.
 func QuoteSQLIdent(s string) string {
 	if !needQuoteSQLIdent(s) {
@@ -46,14 +68,14 @@ func QuoteSQLIdent(s string) string {
 
 	var buf bytes.Buffer
 	buf.WriteByte('`')
-	quoteSQLStringContent(s, &buf)
+	quoteSQLStringContent(s, '`', &buf)
 	buf.WriteByte('`')
 	return buf.String()
 }
 
-func quoteSQLStringContent(s string, buf *bytes.Buffer) {
+func quoteSQLStringContent(s string, quote rune, buf *bytes.Buffer) {
 	for _, r := range s {
-		q := quoteSingleEscape(r)
+		q := quoteSingleEscape(r, quote, /* isString */ true)
 		if q != "" {
 			buf.WriteString(q)
 			continue
@@ -62,40 +84,29 @@ func quoteSQLStringContent(s string, buf *bytes.Buffer) {
 			buf.WriteRune(r)
 			continue
 		}
-		if r > 0xFFFF {
-			fmt.Fprintf(buf, "\\U%08X", uint64(r))
-		} else {
-			fmt.Fprintf(buf, "\\u%04X", uint64(r))
+		switch {
+		case r < 0x80:
+			fmt.Fprintf(buf, `\x%02x`, uint64(r))
+		case r > 0xFFFF:
+			fmt.Fprintf(buf, `\U%08x`, uint64(r))
+		default:
+			fmt.Fprintf(buf, `\u%04x`, uint64(r))
 		}
 	}
 }
 
-func quoteSingleEscape(r rune) string {
-	switch r {
-	case '\a':
-		return "\\a"
-	case '\b':
-		return "\\b"
-	case '\f':
-		return "\\f"
-	case '\n':
-		return "\\n"
-	case '\r':
-		return "\\r"
-	case '\t':
-		return "\\t"
-	case '\v':
-		return "\\v"
-	case '"':
-		return "\\\""
-	case '\'':
-		return "\\'"
-	case '`':
-		return "\\`"
-	case '?':
-		return "\\?"
-	case '\\':
-		return "\\\\"
+func quoteSingleEscape(r, quote rune, isString bool) string {
+	switch {
+	case r == quote:
+		return `\` + string(r)
+	case isString && r == '\n':
+		return `\n`
+	case isString && r == '\r':
+		return `\r`
+	case isString && r == '\t':
+		return `\t`
+	case r == '\\':
+		return `\\`
 	}
 	return ""
 }

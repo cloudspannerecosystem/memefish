@@ -2,7 +2,9 @@ package memefish_test
 
 import (
 	"fmt"
+
 	"github.com/MakeNowJust/heredoc/v2"
+
 	"github.com/cloudspannerecosystem/memefish"
 )
 
@@ -84,7 +86,10 @@ func ExampleParseDDL() {
 	fmt.Println(ddl.SQL())
 
 	// Output:
-	// CREATE TABLE foo (x INT64, y INT64) PRIMARY KEY (x)
+	// CREATE TABLE foo (
+	//   x INT64,
+	//   y INT64
+	// ) PRIMARY KEY (x)
 }
 
 func ExampleParseDDLs() {
@@ -108,8 +113,15 @@ func ExampleParseDDLs() {
 	}
 
 	// Output:
-	// CREATE TABLE foo (x INT64, y INT64) PRIMARY KEY (x);
-	// CREATE TABLE bar (x INT64, z INT64) PRIMARY KEY (x, z), INTERLEAVE IN PARENT foo;
+	// CREATE TABLE foo (
+	//   x INT64,
+	//   y INT64
+	// ) PRIMARY KEY (x);
+	// CREATE TABLE bar (
+	//   x INT64,
+	//   z INT64
+	// ) PRIMARY KEY (x, z),
+	//   INTERLEAVE IN PARENT foo;
 }
 
 func ExampleParseDML() {

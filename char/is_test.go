@@ -5,8 +5,12 @@ import (
 )
 
 func TestIsPrint(t *testing.T) {
-	if IsPrint(' ') {
-		t.Errorf("IsPrint(' ') != false")
+	if IsPrint('\x19') {
+		t.Errorf(`IsPrint('\x19') != false`)
+	}
+
+	if IsPrint('\x80') {
+		t.Errorf(`IsPrint('\x80') != false`)
 	}
 
 	if !IsPrint('a') {

@@ -24,7 +24,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
         NamePos: 38,
         Name:    "TIMESTAMP",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     48,
         Stored: 153,
         Rparen: 151,
@@ -62,10 +62,14 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
           },
           TrueResult: &ast.CallExpr{
             Rparen: 143,
-            Func:   &ast.Ident{
-              NamePos: 101,
-              NameEnd: 114,
-              Name:    "TIMESTAMP_ADD",
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 101,
+                  NameEnd: 114,
+                  Name:    "TIMESTAMP_ADD",
+                },
+              },
             },
             Args: []ast.Arg{
               &ast.ExprArg{

@@ -1,0 +1,22 @@
+--- alter_sequence_no_skip_range.sql
+ALTER SEQUENCE my_sequence NO SKIP RANGE
+
+--- AST
+&ast.AlterSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 26,
+        Name:    "my_sequence",
+      },
+    },
+  },
+  NoSkipRange: &ast.NoSkipRange{
+    No:    27,
+    Range: 35,
+  },
+}
+
+--- SQL
+ALTER SEQUENCE my_sequence NO SKIP RANGE

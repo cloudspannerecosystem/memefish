@@ -492,4 +492,4 @@ select
 }
 
 --- SQL
-SELECT [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], [1, 2, 3][SAFE_OFFSET(1)], [1, 2, 3][ORDINAL(1)], [1, 2, 3][1], STRUCT(1, 2, 3)[OFFSET(1)], STRUCT(1, 2, 3)[ORDINAL(1)], STRUCT(1, 2, 3)[SAFE_OFFSET(1)], STRUCT(1, 2, 3)[ORDINAL(1)], STRUCT(1, 2, 3)[1], JSON "[1, 2, 3]"[1], JSON "{\"a\": 1, \"b\": 2, \"c\": 3}"["a"]
+SELECT [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], [1, 2, 3][SAFE_OFFSET(1)], [1, 2, 3][ORDINAL(1)], [1, 2, 3][1], STRUCT(1, 2, 3)[OFFSET(1)], STRUCT(1, 2, 3)[ORDINAL(1)], STRUCT(1, 2, 3)[SAFE_OFFSET(1)], STRUCT(1, 2, 3)[ORDINAL(1)], STRUCT(1, 2, 3)[1], JSON "[1, 2, 3]"[1], JSON '{"a": 1, "b": 2, "c": 3}'["a"]

@@ -1,29 +1,43 @@
 --- create_table_types.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#data_types
 create table types (
   b bool,
   i int64,
   f32 float32,
   f float64,
-  d date,
-  t timestamp,
   s string(256),
+  sh string(0x100),
   smax string(max),
   bs bytes(256),
+  bh bytes(0x100),
   bsmax bytes(max),
+  j json,
+  d date,
+  t timestamp,
   ab array<bool>,
   abs array<bytes(max)>,
-  p examples.ProtoType,
   af32vl array<float32>(vector_length=>128),
+  p ProtoType,
+  p_quoted `ProtoType`,
+  p_path examples.ProtoType,
+  p_partly_quoted_path examples.shipping.`Order`,
+  p_fully_quoted_path `examples.shipping.Order`,
+  ap ARRAY<ProtoType>,
+  ap_quoted ARRAY<`ProtoType`>,
+  ap_path ARRAY<examples.ProtoType>,
+  ap_partly_quoted_path ARRAY<examples.shipping.`Order`>,
+  ap_fully_quoted_path ARRAY<`examples.shipping.Order`>,
 ) primary key (i)
 
 --- AST
 &ast.CreateTable{
-  Rparen: 297,
+  Create: 100,
+  Rparen: 796,
   Name:   &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
-        NamePos: 13,
-        NameEnd: 18,
+        NamePos: 113,
+        NameEnd: 118,
         Name:    "types",
       },
     },
@@ -32,12 +46,12 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 23,
-        NameEnd: 24,
+        NamePos: 123,
+        NameEnd: 124,
         Name:    "b",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 25,
+        NamePos: 125,
         Name:    "BOOL",
       },
       Hidden: -1,
@@ -45,12 +59,12 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 33,
-        NameEnd: 34,
+        NamePos: 133,
+        NameEnd: 134,
         Name:    "i",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 35,
+        NamePos: 135,
         Name:    "INT64",
       },
       Hidden: -1,
@@ -58,12 +72,12 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 44,
-        NameEnd: 47,
+        NamePos: 144,
+        NameEnd: 147,
         Name:    "f32",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 48,
+        NamePos: 148,
         Name:    "FLOAT32",
       },
       Hidden: -1,
@@ -71,12 +85,12 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 59,
-        NameEnd: 60,
+        NamePos: 159,
+        NameEnd: 160,
         Name:    "f",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 61,
+        NamePos: 161,
         Name:    "FLOAT64",
       },
       Hidden: -1,
@@ -84,113 +98,19 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 72,
-        NameEnd: 73,
-        Name:    "d",
-      },
-      Type: &ast.ScalarSchemaType{
-        NamePos: 74,
-        Name:    "DATE",
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 82,
-        NameEnd: 83,
-        Name:    "t",
-      },
-      Type: &ast.ScalarSchemaType{
-        NamePos: 84,
-        Name:    "TIMESTAMP",
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 97,
-        NameEnd: 98,
+        NamePos: 172,
+        NameEnd: 173,
         Name:    "s",
       },
       Type: &ast.SizedSchemaType{
-        NamePos: 99,
-        Rparen:  109,
+        NamePos: 174,
+        Rparen:  184,
         Name:    "STRING",
         Size:    &ast.IntLiteral{
-          ValuePos: 106,
-          ValueEnd: 109,
+          ValuePos: 181,
+          ValueEnd: 184,
           Base:     10,
           Value:    "256",
-        },
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 114,
-        NameEnd: 118,
-        Name:    "smax",
-      },
-      Type: &ast.SizedSchemaType{
-        NamePos: 119,
-        Rparen:  129,
-        Name:    "STRING",
-        Max:     true,
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 134,
-        NameEnd: 136,
-        Name:    "bs",
-      },
-      Type: &ast.SizedSchemaType{
-        NamePos: 137,
-        Rparen:  146,
-        Name:    "BYTES",
-        Size:    &ast.IntLiteral{
-          ValuePos: 143,
-          ValueEnd: 146,
-          Base:     10,
-          Value:    "256",
-        },
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 151,
-        NameEnd: 156,
-        Name:    "bsmax",
-      },
-      Type: &ast.SizedSchemaType{
-        NamePos: 157,
-        Rparen:  166,
-        Name:    "BYTES",
-        Max:     true,
-      },
-      Hidden: -1,
-    },
-    &ast.ColumnDef{
-      Null: -1,
-      Name: &ast.Ident{
-        NamePos: 171,
-        NameEnd: 173,
-        Name:    "ab",
-      },
-      Type: &ast.ArraySchemaType{
-        Array:  174,
-        Gt:     184,
-        Rparen: -1,
-        Item:   &ast.ScalarSchemaType{
-          NamePos: 180,
-          Name:    "BOOL",
         },
       },
       Hidden: -1,
@@ -199,16 +119,163 @@ create table types (
       Null: -1,
       Name: &ast.Ident{
         NamePos: 189,
-        NameEnd: 192,
+        NameEnd: 191,
+        Name:    "sh",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 192,
+        Rparen:  204,
+        Name:    "STRING",
+        Size:    &ast.IntLiteral{
+          ValuePos: 199,
+          ValueEnd: 204,
+          Base:     16,
+          Value:    "0x100",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 209,
+        NameEnd: 213,
+        Name:    "smax",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 214,
+        Rparen:  224,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 229,
+        NameEnd: 231,
+        Name:    "bs",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 232,
+        Rparen:  241,
+        Name:    "BYTES",
+        Size:    &ast.IntLiteral{
+          ValuePos: 238,
+          ValueEnd: 241,
+          Base:     10,
+          Value:    "256",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 246,
+        NameEnd: 248,
+        Name:    "bh",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 249,
+        Rparen:  260,
+        Name:    "BYTES",
+        Size:    &ast.IntLiteral{
+          ValuePos: 255,
+          ValueEnd: 260,
+          Base:     16,
+          Value:    "0x100",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 265,
+        NameEnd: 270,
+        Name:    "bsmax",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 271,
+        Rparen:  280,
+        Name:    "BYTES",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 285,
+        NameEnd: 286,
+        Name:    "j",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 287,
+        Name:    "JSON",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 295,
+        NameEnd: 296,
+        Name:    "d",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 297,
+        Name:    "DATE",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 305,
+        NameEnd: 306,
+        Name:    "t",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 307,
+        Name:    "TIMESTAMP",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 320,
+        NameEnd: 322,
+        Name:    "ab",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  323,
+        Gt:     333,
+        Rparen: -1,
+        Item:   &ast.ScalarSchemaType{
+          NamePos: 329,
+          Name:    "BOOL",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 338,
+        NameEnd: 341,
         Name:    "abs",
       },
       Type: &ast.ArraySchemaType{
-        Array:  193,
-        Gt:     209,
+        Array:  342,
+        Gt:     358,
         Rparen: -1,
         Item:   &ast.SizedSchemaType{
-          NamePos: 199,
-          Rparen:  208,
+          NamePos: 348,
+          Rparen:  357,
           Name:    "BYTES",
           Max:     true,
         },
@@ -218,20 +285,48 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 214,
-        NameEnd: 215,
+        NamePos: 363,
+        NameEnd: 369,
+        Name:    "af32vl",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  370,
+        Gt:     383,
+        Rparen: 403,
+        Item:   &ast.ScalarSchemaType{
+          NamePos: 376,
+          Name:    "FLOAT32",
+        },
+        NamedArgs: []*ast.NamedArg{
+          &ast.NamedArg{
+            Name: &ast.Ident{
+              NamePos: 385,
+              NameEnd: 398,
+              Name:    "vector_length",
+            },
+            Value: &ast.IntLiteral{
+              ValuePos: 400,
+              ValueEnd: 403,
+              Base:     10,
+              Value:    "128",
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 408,
+        NameEnd: 409,
         Name:    "p",
       },
       Type: &ast.NamedType{
         Path: []*ast.Ident{
           &ast.Ident{
-            NamePos: 216,
-            NameEnd: 224,
-            Name:    "examples",
-          },
-          &ast.Ident{
-            NamePos: 225,
-            NameEnd: 234,
+            NamePos: 410,
+            NameEnd: 419,
             Name:    "ProtoType",
           },
         },
@@ -241,30 +336,214 @@ create table types (
     &ast.ColumnDef{
       Null: -1,
       Name: &ast.Ident{
-        NamePos: 238,
-        NameEnd: 244,
-        Name:    "af32vl",
+        NamePos: 423,
+        NameEnd: 431,
+        Name:    "p_quoted",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 432,
+            NameEnd: 443,
+            Name:    "ProtoType",
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 447,
+        NameEnd: 453,
+        Name:    "p_path",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 454,
+            NameEnd: 462,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 463,
+            NameEnd: 472,
+            Name:    "ProtoType",
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 476,
+        NameEnd: 496,
+        Name:    "p_partly_quoted_path",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 497,
+            NameEnd: 505,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 506,
+            NameEnd: 514,
+            Name:    "shipping",
+          },
+          &ast.Ident{
+            NamePos: 515,
+            NameEnd: 522,
+            Name:    "Order",
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 526,
+        NameEnd: 545,
+        Name:    "p_fully_quoted_path",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 546,
+            NameEnd: 571,
+            Name:    "examples.shipping.Order",
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 575,
+        NameEnd: 577,
+        Name:    "ap",
       },
       Type: &ast.ArraySchemaType{
-        Array:  245,
-        Gt:     258,
-        Rparen: 278,
-        Item:   &ast.ScalarSchemaType{
-          NamePos: 251,
-          Name:    "FLOAT32",
-        },
-        NamedArgs: []*ast.NamedArg{
-          &ast.NamedArg{
-            Name: &ast.Ident{
-              NamePos: 260,
-              NameEnd: 273,
-              Name:    "vector_length",
+        Array:  578,
+        Gt:     593,
+        Rparen: -1,
+        Item:   &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 584,
+              NameEnd: 593,
+              Name:    "ProtoType",
             },
-            Value: &ast.IntLiteral{
-              ValuePos: 275,
-              ValueEnd: 278,
-              Base:     10,
-              Value:    "128",
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 598,
+        NameEnd: 607,
+        Name:    "ap_quoted",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  608,
+        Gt:     625,
+        Rparen: -1,
+        Item:   &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 614,
+              NameEnd: 625,
+              Name:    "ProtoType",
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 630,
+        NameEnd: 637,
+        Name:    "ap_path",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  638,
+        Gt:     662,
+        Rparen: -1,
+        Item:   &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 644,
+              NameEnd: 652,
+              Name:    "examples",
+            },
+            &ast.Ident{
+              NamePos: 653,
+              NameEnd: 662,
+              Name:    "ProtoType",
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 667,
+        NameEnd: 688,
+        Name:    "ap_partly_quoted_path",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  689,
+        Gt:     720,
+        Rparen: -1,
+        Item:   &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 695,
+              NameEnd: 703,
+              Name:    "examples",
+            },
+            &ast.Ident{
+              NamePos: 704,
+              NameEnd: 712,
+              Name:    "shipping",
+            },
+            &ast.Ident{
+              NamePos: 713,
+              NameEnd: 720,
+              Name:    "Order",
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Name: &ast.Ident{
+        NamePos: 725,
+        NameEnd: 745,
+        Name:    "ap_fully_quoted_path",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  746,
+        Gt:     777,
+        Rparen: -1,
+        Item:   &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 752,
+              NameEnd: 777,
+              Name:    "examples.shipping.Order",
             },
           },
         },
@@ -276,8 +555,8 @@ create table types (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 296,
-        NameEnd: 297,
+        NamePos: 795,
+        NameEnd: 796,
         Name:    "i",
       },
     },
@@ -285,4 +564,31 @@ create table types (
 }
 
 --- SQL
-CREATE TABLE types (b BOOL, i INT64, f32 FLOAT32, f FLOAT64, d DATE, t TIMESTAMP, s STRING(256), smax STRING(MAX), bs BYTES(256), bsmax BYTES(MAX), ab ARRAY<BOOL>, abs ARRAY<BYTES(MAX)>, p examples.ProtoType, af32vl ARRAY<FLOAT32>(vector_length => 128)) PRIMARY KEY (i)
+CREATE TABLE types (
+  b BOOL,
+  i INT64,
+  f32 FLOAT32,
+  f FLOAT64,
+  s STRING(256),
+  sh STRING(0x100),
+  smax STRING(MAX),
+  bs BYTES(256),
+  bh BYTES(0x100),
+  bsmax BYTES(MAX),
+  j JSON,
+  d DATE,
+  t TIMESTAMP,
+  ab ARRAY<BOOL>,
+  abs ARRAY<BYTES(MAX)>,
+  af32vl ARRAY<FLOAT32>(vector_length => 128),
+  p ProtoType,
+  p_quoted ProtoType,
+  p_path examples.ProtoType,
+  p_partly_quoted_path examples.shipping.`Order`,
+  p_fully_quoted_path `examples.shipping.Order`,
+  ap ARRAY<ProtoType>,
+  ap_quoted ARRAY<ProtoType>,
+  ap_path ARRAY<examples.ProtoType>,
+  ap_partly_quoted_path ARRAY<examples.shipping.`Order`>,
+  ap_fully_quoted_path ARRAY<`examples.shipping.Order`>
+) PRIMARY KEY (i)

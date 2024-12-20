@@ -106,16 +106,20 @@ CREATE TABLE Albums (
         NamePos: 417,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     427,
         Stored: -1,
         Rparen: 460,
         Expr:   &ast.CallExpr{
           Rparen: 459,
-          Func:   &ast.Ident{
-            NamePos: 431,
-            NameEnd: 448,
-            Name:    "TOKENIZE_FULLTEXT",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 431,
+                NameEnd: 448,
+                Name:    "TOKENIZE_FULLTEXT",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -141,16 +145,20 @@ CREATE TABLE Albums (
         NamePos: 508,
         Name:    "TOKENLIST",
       },
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     518,
         Stored: -1,
         Rparen: 545,
         Expr:   &ast.CallExpr{
           Rparen: 544,
-          Func:   &ast.Ident{
-            NamePos: 522,
-            NameEnd: 537,
-            Name:    "TOKENIZE_NUMBER",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 522,
+                NameEnd: 537,
+                Name:    "TOKENIZE_NUMBER",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -179,4 +187,12 @@ CREATE TABLE Albums (
 }
 
 --- SQL
-CREATE TABLE Albums (AlbumId STRING(MAX) NOT NULL, SingerId INT64 NOT NULL, ReleaseTimestamp INT64 NOT NULL, AlbumTitle STRING(MAX), Rating FLOAT64, AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN, Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN) PRIMARY KEY (AlbumId)
+CREATE TABLE Albums (
+  AlbumId STRING(MAX) NOT NULL,
+  SingerId INT64 NOT NULL,
+  ReleaseTimestamp INT64 NOT NULL,
+  AlbumTitle STRING(MAX),
+  Rating FLOAT64,
+  AlbumTitle_Tokens TOKENLIST AS (TOKENIZE_FULLTEXT(AlbumTitle)) HIDDEN,
+  Rating_Tokens TOKENLIST AS (TOKENIZE_NUMBER(Rating)) HIDDEN
+) PRIMARY KEY (AlbumId)

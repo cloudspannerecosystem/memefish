@@ -1,7 +1,7 @@
 package char
 
 func IsPrint(b byte) bool {
-	return 0x21 <= b && b <= 0x7D
+	return 0x20 <= b && b <= 0x7E // ' ' to '~'
 }
 
 func IsDigit(c byte) bool {

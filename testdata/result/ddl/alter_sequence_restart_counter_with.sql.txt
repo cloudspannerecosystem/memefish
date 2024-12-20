@@ -1,0 +1,26 @@
+--- alter_sequence_restart_counter_with.sql
+ALTER SEQUENCE my_sequence RESTART COUNTER WITH 1000
+--- AST
+&ast.AlterSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 15,
+        NameEnd: 26,
+        Name:    "my_sequence",
+      },
+    },
+  },
+  RestartCounterWith: &ast.RestartCounterWith{
+    Restart: 27,
+    Counter: &ast.IntLiteral{
+      ValuePos: 48,
+      ValueEnd: 52,
+      Base:     10,
+      Value:    "1000",
+    },
+  },
+}
+
+--- SQL
+ALTER SEQUENCE my_sequence RESTART COUNTER WITH 1000
