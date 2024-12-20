@@ -21,6 +21,8 @@ summaryLength = 30
     startLevel = 2
     endLevel = 6
     ordered = false
+  [markup.highlight]
+    style = 'catppuccin-frappe'
 
 [params]
   description = "Spanner SQL parser for Go"

@@ -15,7 +15,7 @@ import (
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/cloudspannerecosystem/memefish/tools/util/poslang"
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 )
 
 var usage = heredoc.Doc(`
@@ -121,8 +121,11 @@ func main() {
 	}
 
 	fmt.Println("--- AST")
-	_, _ = pp.Println(node)
+	pprinter := pp.New()
+	pprinter.SetOmitEmpty(true)
+	_, _ = pprinter.Println(node)
 	fmt.Println()
+
 	fmt.Println("--- SQL")
 	fmt.Println(node.SQL())
 
