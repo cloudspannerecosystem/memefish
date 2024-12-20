@@ -71,10 +71,9 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			if err != nil {
-				if bad {
-					fmt.Fprintln(&buf, "--- Error")
-					fmt.Fprint(&buf, err)
-					fmt.Fprintln(&buf)
+				list, ok := err.(memefish.MultiError)
+				if bad && ok {
+					fmt.Fprintf(&buf, "--- Error\n%s\n\n", list.FullError())
 				} else {
 					t.Errorf("unexpected error: %v", err)
 				}

@@ -6,7 +6,6 @@ syntax error: testdata/input/query/!bad_select_union_select.sql:1:8: unexpected 
   1:  select union all select
              ^~~~~
 
-
 syntax error: testdata/input/query/!bad_select_union_select.sql:1:24: unexpected token: <eof>
 
   1:  select union all select

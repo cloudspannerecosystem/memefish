@@ -24,7 +24,7 @@ func (p *Parser) ParseStatement() (ast.Statement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmt, ErrorList(p.errors)
+		return stmt, MultiError(p.errors)
 	}
 
 	return stmt, nil
@@ -39,7 +39,7 @@ func (p *Parser) ParseStatements() ([]ast.Statement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmts, ErrorList(p.errors)
+		return stmts, MultiError(p.errors)
 	}
 
 	return stmts, nil
@@ -54,7 +54,7 @@ func (p *Parser) ParseQuery() (*ast.QueryStatement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmt, ErrorList(p.errors)
+		return stmt, MultiError(p.errors)
 	}
 
 	return stmt, nil
@@ -69,7 +69,7 @@ func (p *Parser) ParseExpr() (ast.Expr, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return expr, ErrorList(p.errors)
+		return expr, MultiError(p.errors)
 	}
 
 	return expr, nil
@@ -84,7 +84,7 @@ func (p *Parser) ParseType() (ast.Type, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return t, ErrorList(p.errors)
+		return t, MultiError(p.errors)
 	}
 
 	return t, nil
@@ -99,7 +99,7 @@ func (p *Parser) ParseDDL() (ast.DDL, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return ddl, ErrorList(p.errors)
+		return ddl, MultiError(p.errors)
 	}
 
 	return ddl, nil
@@ -114,7 +114,7 @@ func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return ddls, ErrorList(p.errors)
+		return ddls, MultiError(p.errors)
 	}
 
 	return ddls, nil
@@ -129,7 +129,7 @@ func (p *Parser) ParseDML() (ast.DML, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return dml, ErrorList(p.errors)
+		return dml, MultiError(p.errors)
 	}
 
 	return dml, nil
@@ -144,7 +144,7 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return dmls, ErrorList(p.errors)
+		return dmls, MultiError(p.errors)
 	}
 
 	return dmls, nil

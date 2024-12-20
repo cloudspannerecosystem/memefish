@@ -90,7 +90,11 @@ func main() {
 
 	if err != nil {
 		fmt.Println("--- Error")
-		fmt.Print(err)
+		if list, ok := err.(memefish.MultiError); ok {
+			fmt.Print(list.FullError())
+		} else {
+			fmt.Print(err)
+		}
 		fmt.Println()
 	}
 

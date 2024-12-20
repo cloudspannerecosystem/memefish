@@ -7,7 +7,6 @@ syntax error: testdata/input/expr/!bad_plus2.sql:1:5: unexpected token: )
   1:  (1 +) + (2 +)
           ^
 
-
 syntax error: testdata/input/expr/!bad_plus2.sql:1:13: unexpected token: )
 
   1:  (1 +) + (2 +)

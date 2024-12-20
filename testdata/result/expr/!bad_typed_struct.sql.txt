@@ -7,7 +7,6 @@ syntax error: testdata/input/expr/!bad_typed_struct.sql:1:8: expected token: <id
   1:  STRUCT<1>(2 +)
              ^
 
-
 syntax error: testdata/input/expr/!bad_typed_struct.sql:1:14: unexpected token: )
 
   1:  STRUCT<1>(2 +)

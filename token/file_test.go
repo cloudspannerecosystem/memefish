@@ -114,7 +114,7 @@ func TestPosition(t *testing.T) {
 		if tc.endColumn != pos.EndColumn {
 			t.Errorf("EndColumn: %d (want) != %d (got)", tc.endColumn, pos.EndColumn)
 		}
-		if tc.source != pos.Source {
+		if strings.TrimRight(tc.source, "\n") != pos.Source {
 			t.Errorf("Source:\n-- want --\n%s\n-- got --\n%s\n", tc.source, pos.Source)
 		}
 	}
