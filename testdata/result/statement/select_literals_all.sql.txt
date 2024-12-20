@@ -466,10 +466,14 @@ lines''',
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 552,
-          Func:   &ast.Ident{
-            NamePos: 535,
-            NameEnd: 539,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 535,
+                NameEnd: 539,
+                Name:    "DATE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{
@@ -515,10 +519,14 @@ lines''',
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 703,
-          Func:   &ast.Ident{
-            NamePos: 681,
-            NameEnd: 690,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 681,
+                NameEnd: 690,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.ExprArg{

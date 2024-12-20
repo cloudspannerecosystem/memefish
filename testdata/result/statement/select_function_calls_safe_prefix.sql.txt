@@ -1,0 +1,128 @@
+--- select_function_calls_safe_prefix.sql
+SELECT SAFE.SUBSTR('foo', 0, -2) AS safe_output UNION ALL
+SELECT SAFE.SUBSTR('bar', 0, 2) AS safe_output
+--- AST
+&ast.QueryStatement{
+  Query: &ast.CompoundQuery{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
+      &ast.Select{
+        Results: []ast.SelectItem{
+          &ast.Alias{
+            Expr: &ast.CallExpr{
+              Rparen: 31,
+              Func:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 7,
+                    NameEnd: 11,
+                    Name:    "SAFE",
+                  },
+                  &ast.Ident{
+                    NamePos: 12,
+                    NameEnd: 18,
+                    Name:    "SUBSTR",
+                  },
+                },
+              },
+              Args: []ast.Arg{
+                &ast.ExprArg{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 19,
+                    ValueEnd: 24,
+                    Value:    "foo",
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 26,
+                    ValueEnd: 27,
+                    Base:     10,
+                    Value:    "0",
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 29,
+                    ValueEnd: 31,
+                    Base:     10,
+                    Value:    "-2",
+                  },
+                },
+              },
+            },
+            As: &ast.AsAlias{
+              As:    33,
+              Alias: &ast.Ident{
+                NamePos: 36,
+                NameEnd: 47,
+                Name:    "safe_output",
+              },
+            },
+          },
+        },
+      },
+      &ast.Select{
+        Select:  58,
+        Results: []ast.SelectItem{
+          &ast.Alias{
+            Expr: &ast.CallExpr{
+              Rparen: 88,
+              Func:   &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 65,
+                    NameEnd: 69,
+                    Name:    "SAFE",
+                  },
+                  &ast.Ident{
+                    NamePos: 70,
+                    NameEnd: 76,
+                    Name:    "SUBSTR",
+                  },
+                },
+              },
+              Args: []ast.Arg{
+                &ast.ExprArg{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 77,
+                    ValueEnd: 82,
+                    Value:    "bar",
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 84,
+                    ValueEnd: 85,
+                    Base:     10,
+                    Value:    "0",
+                  },
+                },
+                &ast.ExprArg{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 87,
+                    ValueEnd: 88,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+            As: &ast.AsAlias{
+              As:    90,
+              Alias: &ast.Ident{
+                NamePos: 93,
+                NameEnd: 104,
+                Name:    "safe_output",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT SAFE.SUBSTR("foo", 0, -2) AS safe_output UNION ALL SELECT SAFE.SUBSTR("bar", 0, 2) AS safe_output

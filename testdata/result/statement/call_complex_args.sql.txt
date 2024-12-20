@@ -68,10 +68,14 @@ call myprocedure(TABLE my.table, (SELECT * FROM my.another_table), mytvf(1, 2))
     &ast.ExprArg{
       Expr: &ast.CallExpr{
         Rparen: 206,
-        Func:   &ast.Ident{
-          NamePos: 196,
-          NameEnd: 201,
-          Name:    "mytvf",
+        Func:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 196,
+              NameEnd: 201,
+              Name:    "mytvf",
+            },
+          },
         },
         Args: []ast.Arg{
           &ast.ExprArg{

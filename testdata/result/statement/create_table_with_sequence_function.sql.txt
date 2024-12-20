@@ -35,10 +35,14 @@ CREATE TABLE foo
         Rparen:  88,
         Expr:    &ast.CallExpr{
           Rparen: 87,
-          Func:   &ast.Ident{
-            NamePos: 42,
-            NameEnd: 65,
-            Name:    "GET_NEXT_SEQUENCE_VALUE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 42,
+                NameEnd: 65,
+                Name:    "GET_NEXT_SEQUENCE_VALUE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.SequenceArg{

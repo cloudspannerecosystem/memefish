@@ -3,9 +3,13 @@ ARRAY_FILTER([1 ,2, 3], e -> e > 1)
 --- AST
 &ast.CallExpr{
   Rparen: 34,
-  Func:   &ast.Ident{
-    NameEnd: 12,
-    Name:    "ARRAY_FILTER",
+  Func:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NameEnd: 12,
+        Name:    "ARRAY_FILTER",
+      },
+    },
   },
   Args: []ast.Arg{
     &ast.ExprArg{

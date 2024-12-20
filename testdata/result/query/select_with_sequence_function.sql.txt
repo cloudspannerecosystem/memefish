@@ -8,10 +8,14 @@ SELECT GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence) as next_id
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 51,
-          Func:   &ast.Ident{
-            NamePos: 7,
-            NameEnd: 30,
-            Name:    "GET_NEXT_SEQUENCE_VALUE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 7,
+                NameEnd: 30,
+                Name:    "GET_NEXT_SEQUENCE_VALUE",
+              },
+            },
           },
           Args: []ast.Arg{
             &ast.SequenceArg{
