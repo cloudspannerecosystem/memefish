@@ -3,9 +3,8 @@ NEW foo { bar: 1 + }
 
 --- Error
 syntax error: testdata/input/expr/!bad_new_braced_constructor.sql:1:20: unexpected token: }
-
-  1:  NEW foo { bar: 1 + }
-                         ^
+  1|  NEW foo { bar: 1 + }
+   |                     ^
 
 
 --- AST

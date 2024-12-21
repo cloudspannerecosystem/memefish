@@ -3,9 +3,8 @@
 
 --- Error
 syntax error: testdata/input/expr/!bad_plus.sql:2:1: unexpected token: <eof>
-
-  2:  
-      ^
+  2|  
+   |  ^
 
 
 --- AST

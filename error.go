@@ -36,10 +36,7 @@ func (list MultiError) Error() string {
 // FullError returns a full error message.
 func (list MultiError) FullError() string {
 	var message bytes.Buffer
-	for i, err := range list {
-		if i > 0 {
-			fmt.Fprintln(&message)
-		}
+	for _, err := range list {
 		fmt.Fprintln(&message, err.Error())
 	}
 	return message.String()
@@ -58,7 +55,7 @@ func (e *Error) Error() string {
 	var message bytes.Buffer
 	fmt.Fprintf(&message, "syntax error: %s: %s", e.Position, e.Message)
 	if e.Position.Source != "" {
-		fmt.Fprintf(&message, "\n\n%s", e.Position.Source)
+		fmt.Fprintf(&message, "\n%s", e.Position.Source)
 	}
 	return message.String()
 }

@@ -3,9 +3,8 @@ select
 
 --- Error
 syntax error: testdata/input/query/!bad_select.sql:2:1: unexpected token: <eof>
-
-  2:  
-      ^
+  2|  
+   |  ^
 
 
 --- AST

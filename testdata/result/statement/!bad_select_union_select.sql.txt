@@ -2,14 +2,11 @@
 select union all select
 --- Error
 syntax error: testdata/input/query/!bad_select_union_select.sql:1:8: unexpected token: UNION
-
-  1:  select union all select
-             ^~~~~
-
+  1|  select union all select
+   |         ^~~~~
 syntax error: testdata/input/query/!bad_select_union_select.sql:1:24: unexpected token: <eof>
-
-  1:  select union all select
-                             ^
+  1|  select union all select
+   |                         ^
 
 
 --- AST

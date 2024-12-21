@@ -3,9 +3,8 @@
 
 --- Error
 syntax error: testdata/input/query/!bad_hint_select.sql:1:3: expected token: {, but: SELECT
-
-  1:  @ select 1
-        ^~~~~~
+  1|  @ select 1
+   |    ^~~~~~
 
 
 --- AST

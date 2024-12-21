@@ -3,9 +3,8 @@ select 1 order x asc
 
 --- Error
 syntax error: testdata/input/query/!bad_select_order.sql:1:16: expected token: BY, but: <ident>
-
-  1:  select 1 order x asc
-                     ^
+  1|  select 1 order x asc
+   |                 ^
 
 
 --- AST

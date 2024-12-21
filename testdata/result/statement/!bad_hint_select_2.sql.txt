@@ -2,9 +2,8 @@
 @{hint = 1} select
 --- Error
 syntax error: testdata/input/query/!bad_hint_select_2.sql:1:19: unexpected token: <eof>
-
-  1:  @{hint = 1} select
-                        ^
+  1|  @{hint = 1} select
+   |                    ^
 
 
 --- AST

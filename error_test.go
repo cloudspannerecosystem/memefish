@@ -19,7 +19,7 @@ func TestMultiError(t *testing.T) {
 			Column:    0,
 			EndLine:   0,
 			EndColumn: 1,
-			Source:    "  1: a b\n     ^",
+			Source:    "  1| a b\n   | ^",
 		},
 	}
 	err2 := &Error{
@@ -32,7 +32,7 @@ func TestMultiError(t *testing.T) {
 			Column:    2,
 			EndLine:   0,
 			EndColumn: 3,
-			Source:    "  1: a b\n       ^",
+			Source:    "  1| a b\n   |   ^",
 		},
 	}
 
@@ -50,36 +50,30 @@ func TestMultiError(t *testing.T) {
 			MultiError{err1},
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
-
-				  1: a b
-				     ^
+				  1| a b
+				   | ^
 			`),
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
-
-				  1: a b
-				     ^
+				  1| a b
+				   | ^
 			`),
 		},
 		{
 			MultiError{err1, err2},
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
-
-				  1: a b
-				     ^
+				  1| a b
+				   | ^
 				(and 1 other error)
 			`),
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
-
-				  1: a b
-				     ^
-
+				  1| a b
+				   | ^
 				syntax error: foo:1:3: error 2
-
-				  1: a b
-				       ^
+				  1| a b
+				   |   ^
 			`),
 		},
 	} {

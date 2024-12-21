@@ -15,15 +15,11 @@ Then, the following two errors are reported:
 
 ```sql
 syntax error: :1:12: unexpected token: )
-
-  1:  SELECT (1 +) + (* 2)
-                 ^
-
-
+  1|  SELECT (1 +) + (* 2)
+   |             ^
 syntax error: :1:17: unexpected token: *
-
-  1:  SELECT (1 +) + (* 2)
-                      ^
+  1|  SELECT (1 +) + (* 2)
+   |                  ^
 ```
 
 Hoever, the AST is also returned:
