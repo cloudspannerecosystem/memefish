@@ -61,12 +61,15 @@ func (f *File) Position(pos, end Pos) *Position {
 		if count < 0 {
 			count = 0
 		}
-		fmt.Fprintf(&source, "%3d:  %s\n", line+1, lineBuffer)
-		fmt.Fprintf(&source, "      %s^%s\n", strings.Repeat(" ", column), strings.Repeat("~", count))
+		fmt.Fprintf(&source, "%3d|  %s\n", line+1, lineBuffer)
+		fmt.Fprintf(&source, "   |  %s^%s", strings.Repeat(" ", column), strings.Repeat("~", count))
 	case line < endLine:
 		for l := line; l <= endLine; l++ {
+			if l > 0 {
+				fmt.Fprintln(&source)
+			}
 			lineBuffer := f.Buffer[f.lines[l] : f.lines[l+1]-1]
-			fmt.Fprintf(&source, "%3d:  %s\n", l+1, lineBuffer)
+			fmt.Fprintf(&source, "%3d|  %s", l+1, lineBuffer)
 		}
 	}
 

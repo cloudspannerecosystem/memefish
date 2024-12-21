@@ -1,0 +1,63 @@
+--- !bad_new_braced_constructor.sql
+NEW foo { bar: 1 + }
+
+--- Error
+syntax error: testdata/input/expr/!bad_new_braced_constructor.sql:1:20: unexpected token: }
+  1|  NEW foo { bar: 1 + }
+   |                     ^
+
+
+--- AST
+&ast.BracedNewConstructor{
+  Type: &ast.NamedType{
+    Path: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 4,
+        NameEnd: 7,
+        Name:    "foo",
+      },
+    },
+  },
+  Body: &ast.BracedConstructor{
+    Lbrace: 8,
+    Rbrace: 19,
+    Fields: []*ast.BracedConstructorField{
+      &ast.BracedConstructorField{
+        Name: &ast.Ident{
+          NamePos: 10,
+          NameEnd: 13,
+          Name:    "bar",
+        },
+        Value: &ast.BracedConstructorFieldValueExpr{
+          Colon: 13,
+          Expr:  &ast.BadExpr{
+            BadNode: &ast.BadNode{
+              NodePos: 15,
+              NodeEnd: 18,
+              Tokens:  []*token.Token{
+                &token.Token{
+                  Kind:  "<int>",
+                  Space: " ",
+                  Raw:   "1",
+                  Base:  10,
+                  Pos:   15,
+                  End:   16,
+                },
+                &token.Token{
+                  Kind:  "+",
+                  Space: " ",
+                  Raw:   "+",
+                  Pos:   17,
+                  End:   18,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+NEW foo {bar: 1 +}

@@ -1,0 +1,57 @@
+--- !bad_select_order.sql
+select 1 order x asc
+
+--- Error
+syntax error: testdata/input/query/!bad_select_order.sql:1:16: expected token: BY, but: <ident>
+  1|  select 1 order x asc
+   |                 ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 20,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "SELECT",
+          Raw:  "select",
+          End:  6,
+        },
+        &token.Token{
+          Kind:  "<int>",
+          Space: " ",
+          Raw:   "1",
+          Base:  10,
+          Pos:   7,
+          End:   8,
+        },
+        &token.Token{
+          Kind:  "ORDER",
+          Space: " ",
+          Raw:   "order",
+          Pos:   9,
+          End:   14,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "x",
+          AsString: "x",
+          Pos:      15,
+          End:      16,
+        },
+        &token.Token{
+          Kind:  "ASC",
+          Space: " ",
+          Raw:   "asc",
+          Pos:   17,
+          End:   20,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+select 1 order x asc

@@ -1,0 +1,27 @@
+--- !bad_select.sql
+select
+
+--- Error
+syntax error: testdata/input/query/!bad_select.sql:2:1: unexpected token: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.BadExpr{
+          BadNode: &ast.BadNode{
+            NodePos: 7,
+            NodeEnd: 7,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 

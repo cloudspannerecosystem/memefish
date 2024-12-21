@@ -15,7 +15,7 @@ import (
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/cloudspannerecosystem/memefish/tools/util/poslang"
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 )
 
 var usage = heredoc.Doc(`
@@ -77,15 +77,26 @@ func main() {
 		node, err = p.ParseQuery()
 	case "expr":
 		node, err = p.ParseExpr()
+	case "type":
+		node, err = p.ParseType()
 	case "ddl":
 		node, err = p.ParseDDL()
 	case "dml":
 		node, err = p.ParseDML()
-	}
-	if err != nil {
-		log.Fatal(err)
+	default:
+		log.Fatalf("unknown mode: %s", *mode)
 	}
 	logf("finish parsing successfully")
+
+	if err != nil {
+		fmt.Println("--- Error")
+		if list, ok := err.(memefish.MultiError); ok {
+			fmt.Print(list.FullError())
+		} else {
+			fmt.Print(err)
+		}
+		fmt.Println()
+	}
 
 	if *dig != "" {
 		value := reflect.ValueOf(node)
@@ -114,8 +125,11 @@ func main() {
 	}
 
 	fmt.Println("--- AST")
-	_, _ = pp.Println(node)
+	pprinter := pp.New()
+	pprinter.SetOmitEmpty(true)
+	_, _ = pprinter.Println(node)
 	fmt.Println()
+
 	fmt.Println("--- SQL")
 	fmt.Println(node.SQL())
 
