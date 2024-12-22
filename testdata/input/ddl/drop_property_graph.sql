@@ -1,0 +1,1 @@
+DROP PROPERTY GRAPH FinGraph
