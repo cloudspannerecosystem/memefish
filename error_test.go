@@ -48,11 +48,7 @@ func TestMultiError(t *testing.T) {
 		},
 		{
 			MultiError{err1},
-			heredoc.Doc(`
-				syntax error: foo:1:1: error 1
-				  1| a b
-				   | ^
-			`),
+			"syntax error: foo:1:1: error 1",
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
 				  1| a b
@@ -61,16 +57,26 @@ func TestMultiError(t *testing.T) {
 		},
 		{
 			MultiError{err1, err2},
+			"syntax error: foo:1:1: error 1 (and 1 other error)",
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
 				  1| a b
 				   | ^
-				(and 1 other error)
+				syntax error: foo:1:3: error 2
+				  1| a b
+				   |   ^
 			`),
+		},
+		{
+			MultiError{err1, err2, err2},
+			"syntax error: foo:1:1: error 1 (and 2 other errors)",
 			heredoc.Doc(`
 				syntax error: foo:1:1: error 1
 				  1| a b
 				   | ^
+				syntax error: foo:1:3: error 2
+				  1| a b
+				   |   ^
 				syntax error: foo:1:3: error 2
 				  1| a b
 				   |   ^

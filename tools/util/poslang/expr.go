@@ -43,7 +43,7 @@ type Expr interface {
 	Unparse() string
 }
 
-// Typed expression types has a method EvalXXX.
+// Typed expression types has a method Eval*.
 // This method evaluates the expression on the given any value.
 
 // PosExpr is a POS expression typed with token.Pos.
