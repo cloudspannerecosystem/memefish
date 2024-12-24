@@ -3150,9 +3150,9 @@ func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView 
 	id := p.expect(token.TokenIdent)
 	var securityType ast.SecurityType
 	switch {
-	case id.IsIdent("INVOKER"):
+	case id.IsKeywordLike("INVOKER"):
 		securityType = ast.SecurityTypeInvoker
-	case id.IsIdent("DEFINER"):
+	case id.IsKeywordLike("DEFINER"):
 		securityType = ast.SecurityTypeDefiner
 	default:
 		p.panicfAtToken(id, "expected identifier: INVOKER, DEFINER, but: %s", id.Raw)
