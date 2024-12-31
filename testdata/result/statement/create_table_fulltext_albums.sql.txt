@@ -25,6 +25,7 @@ CREATE TABLE Albums (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: 175,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 151,
         NameEnd: 158,
@@ -41,6 +42,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: 224,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 205,
         NameEnd: 213,
@@ -55,6 +57,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: 281,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 254,
         NameEnd: 270,
@@ -69,6 +72,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 311,
         NameEnd: 321,
@@ -84,6 +88,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 359,
         NameEnd: 365,
@@ -97,6 +102,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 399,
         NameEnd: 416,
@@ -136,6 +142,7 @@ CREATE TABLE Albums (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 494,
         NameEnd: 507,

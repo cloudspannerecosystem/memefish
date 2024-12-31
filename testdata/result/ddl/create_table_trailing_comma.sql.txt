@@ -22,6 +22,7 @@ create table foo (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
@@ -35,6 +36,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 34,
         NameEnd: 37,

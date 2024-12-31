@@ -21,6 +21,7 @@ syntax error: testdata/input/ddl/!bad_alter_table_add_column.sql:1:44: expected 
     Add:    16,
     Column: &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 27,
         NameEnd: 30,

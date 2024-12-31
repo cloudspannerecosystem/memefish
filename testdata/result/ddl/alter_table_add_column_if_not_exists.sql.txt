@@ -17,6 +17,7 @@ alter table foo add column if not exists baz string(max) not null
     IfNotExists: true,
     Column:      &ast.ColumnDef{
       Null: 61,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 41,
         NameEnd: 44,

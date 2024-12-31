@@ -29,6 +29,7 @@ create table if not exists foo (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 37,
         NameEnd: 40,
@@ -42,6 +43,7 @@ create table if not exists foo (
     },
     &ast.ColumnDef{
       Null: 68,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 52,
         NameEnd: 55,
@@ -56,6 +58,7 @@ create table if not exists foo (
     },
     &ast.ColumnDef{
       Null: 98,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 78,
         NameEnd: 81,
@@ -93,6 +96,7 @@ create table if not exists foo (
     },
     &ast.ColumnDef{
       Null: 167,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 147,
         NameEnd: 150,
@@ -147,6 +151,7 @@ create table if not exists foo (
     },
     &ast.ColumnDef{
       Null: 408,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 388,
         NameEnd: 393,
