@@ -3072,22 +3072,26 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 	p.expect(")")
 
-	p.expectKeywordLike("PRIMARY")
-	p.expectKeywordLike("KEY")
-
-	p.expect("(")
+	// PRIMARY KEY clause is now optional
 	var keys []*ast.IndexKey
-	for p.Token.Kind != token.TokenEOF {
-		if p.Token.Kind == ")" {
-			break
-		}
-		keys = append(keys, p.parseIndexKey())
-		if p.Token.Kind != "," {
-			break
-		}
+	rparen := token.InvalidPos
+	if p.Token.IsKeywordLike("PRIMARY") {
 		p.nextToken()
+		p.expectKeywordLike("KEY")
+
+		p.expect("(")
+		for p.Token.Kind != token.TokenEOF {
+			if p.Token.Kind == ")" {
+				break
+			}
+			keys = append(keys, p.parseIndexKey())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+		}
+		rparen = p.expect(")").Pos
 	}
-	rparen := p.expect(")").Pos
 
 	cluster := p.tryParseCluster()
 	rdp := p.tryParseCreateRowDeletionPolicy()
@@ -3223,13 +3227,21 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		hiddenPos = p.expectKeywordLike("HIDDEN").Pos
 	}
 
+	key := token.InvalidPos
+	if p.Token.IsKeywordLike("PRIMARY") {
+		p.nextToken()
+		key = p.expectKeywordLike("KEY").Pos
+	}
+
 	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
 		Null:             null,
+		Key:              key,
 		Name:             name,
 		Type:             t,
 		NotNull:          notNull,
+		PrimaryKey:       !key.Invalid(),
 		DefaultSemantics: defaultSemantics,
 		Hidden:           hiddenPos,
 		Options:          options,

@@ -2354,7 +2354,7 @@ type DropProtoBundle struct {
 //	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
 //	  {{.Synonym | sqlJoin ","}}
 //	)
-//	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
+//	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //
@@ -2372,7 +2372,7 @@ type CreateTable struct {
 	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
-	PrimaryKeys       []*IndexKey
+	PrimaryKeys       []*IndexKey // when omitted, len(PrimaryKeys) = 0
 	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
@@ -2442,22 +2442,26 @@ type BitReversedPositive struct {
 	BitReversedPositive token.Pos // position of "BIT_REVERSED_POSITIVE" keyword
 }
 
-// ColumnDef is column definition in CREATE TABLE.
+// ColumnDef is column definition in CREATE TABLE and ALTER TABLE ADD COLUMN.
+// Note: Some fields are not valid in ADD COLUMN.
 //
 //	{{.Name | sql}}
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultSemantics | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
+//	{{if .PrimaryKey}}PRIMARY KEY{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
+	// end = Options.end || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
+	Key  token.Pos // position of "KEY" of PRIMARY KEY
 
-	Name    *Ident
-	Type    SchemaType
-	NotNull bool
+	Name       *Ident
+	Type       SchemaType
+	NotNull    bool
+	PrimaryKey bool
 
 	DefaultSemantics ColumnDefaultSemantics // optional
 

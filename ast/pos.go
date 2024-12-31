@@ -1131,7 +1131,7 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.DefaultSemantics)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
+	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Key, 3), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.DefaultSemantics)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
 }
 
 func (c *ColumnDefaultExpr) Pos() token.Pos {

@@ -785,7 +785,8 @@ func (c *CreateTable) SQL() string {
 		indent + sqlJoin(c.Columns, ",\n"+indent) + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ",\n") +
 		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
 		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
-		"\n) PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		"\n)" +
+		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "")
 }
@@ -832,6 +833,7 @@ func (c *ColumnDef) SQL() string {
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultSemantics, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
+		strOpt(c.PrimaryKey, " PRIMARY KEY") +
 		sqlOpt(" ", c.Options, "")
 }
 
