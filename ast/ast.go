@@ -775,10 +775,6 @@ type FromQuery struct {
 	From *From
 }
 
-func (f *FromQuery) SQL() string {
-	return f.From.SQL()
-}
-
 // CompoundQuery is query expression node compounded by set operators.
 // Note: A single CompoundQuery can express query expressions compounded by the same set operator.
 // If there are mixed Op or Distinct in query expression, CompoundQuery will be nested.
