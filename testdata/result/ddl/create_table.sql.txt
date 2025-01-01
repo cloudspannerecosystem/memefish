@@ -29,6 +29,7 @@ create table foo (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
@@ -42,6 +43,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: 50,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 34,
         NameEnd: 37,
@@ -56,6 +58,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: 78,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 58,
         NameEnd: 61,
@@ -93,6 +96,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: 145,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 125,
         NameEnd: 128,
@@ -147,6 +151,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 482,
         NameEnd: 486,
@@ -160,6 +165,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: 515,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 495,
         NameEnd: 500,

@@ -15,6 +15,7 @@ alter table foo add column baz string(max) not null
     Add:    16,
     Column: &ast.ColumnDef{
       Null: 47,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 27,
         NameEnd: 30,

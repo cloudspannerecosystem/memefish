@@ -45,6 +45,7 @@ create table types (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 123,
         NameEnd: 124,
@@ -58,6 +59,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 133,
         NameEnd: 134,
@@ -71,6 +73,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 144,
         NameEnd: 147,
@@ -84,6 +87,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 159,
         NameEnd: 160,
@@ -97,6 +101,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 172,
         NameEnd: 173,
@@ -117,6 +122,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 189,
         NameEnd: 191,
@@ -137,6 +143,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 209,
         NameEnd: 213,
@@ -152,6 +159,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 229,
         NameEnd: 231,
@@ -172,6 +180,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 246,
         NameEnd: 248,
@@ -192,6 +201,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 265,
         NameEnd: 270,
@@ -207,6 +217,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 285,
         NameEnd: 286,
@@ -220,6 +231,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 295,
         NameEnd: 296,
@@ -233,6 +245,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 305,
         NameEnd: 306,
@@ -246,6 +259,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 320,
         NameEnd: 322,
@@ -264,6 +278,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 338,
         NameEnd: 341,
@@ -284,6 +299,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 363,
         NameEnd: 369,
@@ -317,6 +333,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 408,
         NameEnd: 409,
@@ -335,6 +352,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 423,
         NameEnd: 431,
@@ -353,6 +371,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 447,
         NameEnd: 453,
@@ -376,6 +395,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 476,
         NameEnd: 496,
@@ -404,6 +424,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 526,
         NameEnd: 545,
@@ -422,6 +443,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 575,
         NameEnd: 577,
@@ -445,6 +467,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 598,
         NameEnd: 607,
@@ -468,6 +491,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 630,
         NameEnd: 637,
@@ -496,6 +520,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 667,
         NameEnd: 688,
@@ -529,6 +554,7 @@ create table types (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 725,
         NameEnd: 745,

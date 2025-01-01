@@ -21,6 +21,7 @@ create table foo (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
@@ -34,6 +35,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 34,
         NameEnd: 37,
@@ -47,6 +49,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 47,
         NameEnd: 50,
@@ -84,4 +87,4 @@ CREATE TABLE foo (
   foo INT64,
   bar INT64,
   baz TIMESTAMP
-) PRIMARY KEY (), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))
+), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))

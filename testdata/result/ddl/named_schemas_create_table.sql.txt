@@ -25,6 +25,7 @@ CREATE TABLE sch1.Singers (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: 51,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 32,
         NameEnd: 40,
@@ -39,6 +40,7 @@ CREATE TABLE sch1.Singers (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 61,
         NameEnd: 70,
@@ -59,6 +61,7 @@ CREATE TABLE sch1.Singers (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 89,
         NameEnd: 97,
@@ -79,6 +82,7 @@ CREATE TABLE sch1.Singers (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 116,
         NameEnd: 126,
