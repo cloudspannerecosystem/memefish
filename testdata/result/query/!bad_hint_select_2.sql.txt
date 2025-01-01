@@ -12,10 +12,14 @@ syntax error: testdata/input/query/!bad_hint_select_2.sql:1:19: unexpected token
     Rbrace:  10,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
-        Key: &ast.Ident{
-          NamePos: 2,
-          NameEnd: 6,
-          Name:    "hint",
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 6,
+              Name:    "hint",
+            },
+          },
         },
         Value: &ast.IntLiteral{
           ValuePos: 9,

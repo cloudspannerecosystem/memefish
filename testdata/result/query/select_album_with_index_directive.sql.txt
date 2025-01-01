@@ -42,10 +42,14 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
           Rbrace:  87,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 57,
-                NameEnd: 68,
-                Name:    "FORCE_INDEX",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 57,
+                    NameEnd: 68,
+                    Name:    "FORCE_INDEX",
+                  },
+                },
               },
               Value: &ast.Ident{
                 NamePos: 69,

@@ -152,10 +152,14 @@ FROM ML.PREDICT(
           Rbrace:  322,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 293,
-                NameEnd: 320,
-                Name:    "remote_udf_max_rows_per_rpc",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 293,
+                    NameEnd: 320,
+                    Name:    "remote_udf_max_rows_per_rpc",
+                  },
+                },
               },
               Value: &ast.IntLiteral{
                 ValuePos: 321,

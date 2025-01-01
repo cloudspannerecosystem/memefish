@@ -154,10 +154,14 @@ FROM (SELECT SHA512(z) @{DISABLE_INLINE = TRUE} AS x FROM t)
                   Rbrace:  241,
                   Records: []*ast.HintRecord{
                     &ast.HintRecord{
-                      Key: &ast.Ident{
-                        NamePos: 220,
-                        NameEnd: 234,
-                        Name:    "DISABLE_INLINE",
+                      Key: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 220,
+                            NameEnd: 234,
+                            Name:    "DISABLE_INLINE",
+                          },
+                        },
                       },
                       Value: &ast.BoolLiteral{
                         ValuePos: 237,

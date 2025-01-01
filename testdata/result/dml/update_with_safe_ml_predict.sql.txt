@@ -135,10 +135,14 @@ WHERE products.desc_embed IS NULL
                   Rbrace:  327,
                   Records: []*ast.HintRecord{
                     &ast.HintRecord{
-                      Key: &ast.Ident{
-                        NamePos: 296,
-                        NameEnd: 323,
-                        Name:    "remote_udf_max_rows_per_rpc",
+                      Key: &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 296,
+                            NameEnd: 323,
+                            Name:    "remote_udf_max_rows_per_rpc",
+                          },
+                        },
                       },
                       Value: &ast.IntLiteral{
                         ValuePos: 324,
