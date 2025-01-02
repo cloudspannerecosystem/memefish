@@ -1,0 +1,48 @@
+--- select_hint_path.sql
+@{spanner.optimizer_version=5} SELECT 1
+--- AST
+&ast.QueryStatement{
+  Hint: &ast.Hint{
+    Rbrace:  29,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 9,
+              Name:    "spanner",
+            },
+            &ast.Ident{
+              NamePos: 10,
+              NameEnd: 27,
+              Name:    "optimizer_version",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 28,
+          ValueEnd: 29,
+          Base:     10,
+          Value:    "5",
+        },
+      },
+    },
+  },
+  Query: &ast.Select{
+    Select:  31,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 38,
+          ValueEnd: 39,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{spanner.optimizer_version=5} SELECT 1

@@ -680,7 +680,7 @@ type HintRecord struct {
 	// pos = Key.pos
 	// end = Value.end
 
-	Key   *Ident
+	Key   *Path
 	Value Expr
 }
 

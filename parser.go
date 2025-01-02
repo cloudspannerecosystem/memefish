@@ -347,7 +347,7 @@ func (p *Parser) tryParseHint() *ast.Hint {
 }
 
 func (p *Parser) parseHintRecord() *ast.HintRecord {
-	key := p.parseIdent()
+	key := p.parsePath()
 	p.expect("=")
 	value := p.parseExpr()
 	return &ast.HintRecord{

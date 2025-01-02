@@ -25,10 +25,14 @@ FROM
           Rbrace:  61,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 27,
-                NameEnd: 38,
-                Name:    "FORCE_INDEX",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 27,
+                    NameEnd: 38,
+                    Name:    "FORCE_INDEX",
+                  },
+                },
               },
               Value: &ast.Ident{
                 NamePos: 39,
