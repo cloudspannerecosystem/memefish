@@ -649,7 +649,7 @@ type QueryStatement struct {
 // https://cloud.google.com/spanner/docs/query-syntax
 type Query struct {
 	// pos = (With ?? Query).pos
-	// end = Query.end
+	// end = (PipeOperators[$] ?? Limit ?? OrderBy ?? Query).end
 
 	With  *With
 	Query QueryExpr
