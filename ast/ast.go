@@ -562,7 +562,7 @@ type BadNode struct {
 
 // BadStatement is a BadNode for Statement.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadStatement struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -572,7 +572,7 @@ type BadStatement struct {
 
 // BadQueryExpr is a BadNode for QueryExpr.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadQueryExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -582,7 +582,7 @@ type BadQueryExpr struct {
 
 // BadExpr is a BadNode for Expr.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -592,7 +592,7 @@ type BadExpr struct {
 
 // BadType is a BadNode for Type.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadType struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -602,7 +602,7 @@ type BadType struct {
 
 // BadDDL is a BadNode for DDL.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadDDL struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -612,7 +612,7 @@ type BadDDL struct {
 
 // BadDML is a BadNode for DML.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadDML struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -768,6 +768,8 @@ type AsTypeName struct {
 }
 
 // FromQuery is FROM query expression node.
+//
+//	FROM {{.From | sql}}
 type FromQuery struct {
 	// pos = From.pos
 	// end = From.end
@@ -1993,8 +1995,8 @@ type BracedConstructorFieldValue interface {
 	isBracedConstructorFieldValue()
 }
 
-func (*BracedConstructor) isBracedConstructorFieldValue()               {}
-func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+func (BracedConstructor) isBracedConstructorFieldValue()               {}
+func (BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 
 // NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
@@ -3019,7 +3021,6 @@ type CreateIndex struct {
 //	ON {{.TableName | sql}}({{.ColumnName | sql}})
 //	{{if .Where}}WHERE {{.Where | sql}}{{end}}
 //	{{.Options | sql}}
-
 type CreateVectorIndex struct {
 	// pos = Create
 	// end = Options.end
