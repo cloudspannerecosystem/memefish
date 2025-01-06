@@ -953,18 +953,16 @@ func (p *Parser) parseTableExpr(toplevel bool) ast.TableExpr {
 		hint := p.tryParseHint()
 		right := p.parseSimpleTableExpr()
 
-		if op == ast.CrossJoin || op == ast.CommaJoin {
-			join = &ast.Join{
-				Op:     op,
-				Method: method,
-				Hint:   hint,
-				Left:   join,
-				Right:  right,
+		var cond ast.JoinCondition
+		if op != ast.CrossJoin && op != ast.CommaJoin {
+			switch right.(type) {
+			case *ast.PathTableExpr, *ast.Unnest:
+				cond = p.tryParseJoinCondition()
+			default:
+				cond = p.parseJoinCondition()
 			}
-			continue
 		}
 
-		cond := p.parseJoinCondition()
 		join = &ast.Join{
 			Op:     op,
 			Method: method,
@@ -1153,6 +1151,13 @@ func (p *Parser) parseJoinCondition() ast.JoinCondition {
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: ON, USING, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) tryParseJoinCondition() ast.JoinCondition {
+	if p.Token.Kind != "ON" && p.Token.Kind != "USING" {
+		return nil
+	}
+	return p.parseJoinCondition()
 }
 
 func (p *Parser) parseOn() *ast.On {
