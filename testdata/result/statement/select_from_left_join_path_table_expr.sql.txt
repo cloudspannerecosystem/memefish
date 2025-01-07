@@ -1,0 +1,236 @@
+--- select_from_left_join_path_table_expr.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/query-syntax#correlated_join
+SELECT A.name, item, ARRAY_LENGTH(A.items) item_count_for_name
+FROM
+  UNNEST(
+    [
+      STRUCT(
+        'first' AS name,
+        [1, 2, 3, 4] AS items),
+      STRUCT(
+          'second' AS name,
+        [] AS items)]) AS A
+    LEFT JOIN
+  A.items AS item
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  93,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 100,
+              NameEnd: 101,
+              Name:    "A",
+            },
+            &ast.Ident{
+              NamePos: 102,
+              NameEnd: 106,
+              Name:    "name",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 108,
+          NameEnd: 112,
+          Name:    "item",
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 134,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 114,
+                NameEnd: 126,
+                Name:    "ARRAY_LENGTH",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 127,
+                    NameEnd: 128,
+                    Name:    "A",
+                  },
+                  &ast.Ident{
+                    NamePos: 129,
+                    NameEnd: 134,
+                    Name:    "items",
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 136,
+            NameEnd: 155,
+            Name:    "item_count_for_name",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   156,
+      Source: &ast.Join{
+        Op:   "LEFT OUTER JOIN",
+        Left: &ast.Unnest{
+          Unnest: 163,
+          Rparen: 311,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 175,
+            Rbrack: 310,
+            Values: []ast.Expr{
+              &ast.TypelessStructLiteral{
+                Struct: 183,
+                Rparen: 245,
+                Values: []ast.TypelessStructLiteralArg{
+                  &ast.Alias{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 199,
+                      ValueEnd: 206,
+                      Value:    "first",
+                    },
+                    As: &ast.AsAlias{
+                      As:    207,
+                      Alias: &ast.Ident{
+                        NamePos: 210,
+                        NameEnd: 214,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.ArrayLiteral{
+                      Array:  -1,
+                      Lbrack: 224,
+                      Rbrack: 235,
+                      Values: []ast.Expr{
+                        &ast.IntLiteral{
+                          ValuePos: 225,
+                          ValueEnd: 226,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 228,
+                          ValueEnd: 229,
+                          Base:     10,
+                          Value:    "2",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 231,
+                          ValueEnd: 232,
+                          Base:     10,
+                          Value:    "3",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 234,
+                          ValueEnd: 235,
+                          Base:     10,
+                          Value:    "4",
+                        },
+                      },
+                    },
+                    As: &ast.AsAlias{
+                      As:    237,
+                      Alias: &ast.Ident{
+                        NamePos: 240,
+                        NameEnd: 245,
+                        Name:    "items",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.TypelessStructLiteral{
+                Struct: 254,
+                Rparen: 309,
+                Values: []ast.TypelessStructLiteralArg{
+                  &ast.Alias{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 272,
+                      ValueEnd: 280,
+                      Value:    "second",
+                    },
+                    As: &ast.AsAlias{
+                      As:    281,
+                      Alias: &ast.Ident{
+                        NamePos: 284,
+                        NameEnd: 288,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.ArrayLiteral{
+                      Array:  -1,
+                      Lbrack: 298,
+                      Rbrack: 299,
+                    },
+                    As: &ast.AsAlias{
+                      As:    301,
+                      Alias: &ast.Ident{
+                        NamePos: 304,
+                        NameEnd: 309,
+                        Name:    "items",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    313,
+            Alias: &ast.Ident{
+              NamePos: 316,
+              NameEnd: 317,
+              Name:    "A",
+            },
+          },
+        },
+        Right: &ast.PathTableExpr{
+          Path: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 334,
+                NameEnd: 335,
+                Name:    "A",
+              },
+              &ast.Ident{
+                NamePos: 336,
+                NameEnd: 341,
+                Name:    "items",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    342,
+            Alias: &ast.Ident{
+              NamePos: 345,
+              NameEnd: 349,
+              Name:    "item",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT A.name, item, ARRAY_LENGTH(A.items) item_count_for_name FROM UNNEST([STRUCT("first" AS name, [1, 2, 3, 4] AS items), STRUCT("second" AS name, [] AS items)]) AS A LEFT OUTER JOIN A.items AS item

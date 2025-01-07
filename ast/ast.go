@@ -1163,7 +1163,11 @@ type Join struct {
 	Method      JoinMethod
 	Hint        *Hint // optional
 	Left, Right TableExpr
-	Cond        JoinCondition // nil when Op is CrossJoin, otherwise it must be set.
+
+	// nil when Op is CrossJoin
+	// optional when Right is PathTableExpr or Unnest
+	// otherwise it must be set.
+	Cond JoinCondition
 }
 
 // On is ON condition of JOIN expression.
