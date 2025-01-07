@@ -39,8 +39,9 @@ var (
 )
 
 var (
-	infile  = flag.String("infile", "", "input filename")
-	outfile = flag.String("outfile", "", "output filename (if it is not specified, the result is printed to stdout.)")
+	astfile   = flag.String("astfile", "ast/ast.go", "path to ast/ast.go")
+	constfile = flag.String("constfile", "ast/ast_const.go", "path to ast/ast_const.go")
+	outfile   = flag.String("outfile", "", "output filename (if it is not specified, the result is printed to stdout.)")
 )
 
 func main() {
@@ -51,41 +52,41 @@ func main() {
 
 	flag.Parse()
 
-	catalog, err := astcatalog.Load(*infile)
+	catalog, err := astcatalog.Load(*astfile, *constfile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	nodes := make([]*astcatalog.NodeDef, 0, len(catalog))
-	for _, node := range catalog {
-		nodes = append(nodes, node)
+	structs := make([]*astcatalog.NodeStructDef, 0, len(catalog.Structs))
+	for _, structDef := range catalog.Structs {
+		structs = append(structs, structDef)
 	}
-	sort.Slice(nodes, func(i, j int) bool {
-		return nodes[i].SourcePos < nodes[j].SourcePos
+	sort.Slice(structs, func(i, j int) bool {
+		return structs[i].SourcePos < structs[j].SourcePos
 	})
 
 	var buffer bytes.Buffer
 	buffer.WriteString(prologue)
 
-	for _, node := range nodes {
-		x := string(unicode.ToLower(rune(node.Name[0])))
+	for _, structDef := range structs {
+		x := string(unicode.ToLower(rune(structDef.Name[0])))
 
-		posExpr, err := poslang.Parse(node.Pos)
+		posExpr, err := poslang.Parse(structDef.Pos)
 		if err != nil {
 			log.Fatalf("error on parsing pos: %v", err)
 		}
 
-		endExpr, err := poslang.Parse(node.End)
+		endExpr, err := poslang.Parse(structDef.End)
 		if err != nil {
 			log.Fatalf("error on parsing pos: %v", err)
 		}
 
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, node.Name)
+		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, structDef.Name)
 		fmt.Fprintf(&buffer, "\treturn %s\n", posExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", x, node.Name)
+		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", x, structDef.Name)
 		fmt.Fprintf(&buffer, "\treturn %s\n", endExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 	}

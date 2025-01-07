@@ -32,9 +32,20 @@
 //	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
 
-// This file must contain only AST definitions.
-// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
-//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
+// NOTE: ast.go and ast_*.go are used for automatic generation, so these files are conventional.
+
+// NOTE: This file defines AST nodes and they are used for automatic generation,
+//       so this file is conventional.
+//
+// Conventions:
+//
+//   - Each node interface (except for Node) should have isXXX method (XXX must be a name of the interface itself).
+//   - `isXXX` methods should be defined after the interface definition
+//     and the receiver should be the non-pointer node struct type.
+//   - Each node struct should have pos and end comments.
+//   - Each node struct should have template lines in its doc comment.
+
+//go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"

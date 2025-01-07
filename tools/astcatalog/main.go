@@ -9,13 +9,14 @@ import (
 )
 
 var (
-	infile = flag.String("infile", "", "input filename")
+	astfile   = flag.String("astfile", "ast/ast.go", "path to ast/ast.go")
+	constfile = flag.String("constfile", "ast/ast_const.go", "path to ast/ast_const.go")
 )
 
 func main() {
 	flag.Parse()
 
-	catalog, err := astcatalog.Load(*infile)
+	catalog, err := astcatalog.Load(*astfile, *constfile)
 	if err != nil {
 		log.Fatalf("failed to load: %v", err)
 	}

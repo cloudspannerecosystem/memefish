@@ -1,5 +1,13 @@
 package ast
 
+// NOTE: This file defines constants used in AST nodes and they are used for automatic generation,
+//       so this file is conventional.
+//
+// Convention:
+//
+//   - Each const types should be defined as a string type.
+//   - Each value is defined as a string literal.
+
 // AllOrDistinct represents ALL or DISTINCT in SELECT or set operations, etc.
 // If it is optional, it may be an empty string, so handle it according to the context.
 type AllOrDistinct string

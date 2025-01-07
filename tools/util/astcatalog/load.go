@@ -9,21 +9,107 @@ import (
 	"strings"
 )
 
+// Load loads a catalog from the given AST files.
+func Load(astFilename, astConstFilename string) (*Catalog, error) {
+	fset := token.NewFileSet()
+
+	consts, err := loadConsts(fset, astConstFilename)
+	if err != nil {
+		return nil, err
+	}
+
+	structs, interfaces, err := loadStructs(fset, astFilename, consts)
+	if err != nil {
+		return nil, err
+	}
+
+	catalog := &Catalog{
+		Structs:    structs,
+		Interfaces: interfaces,
+		Consts:     consts,
+	}
+	return catalog, nil
+}
+
+func loadConsts(fset *token.FileSet, filename string) (map[ConstType]*ConstDef, error) {
+	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse '%s': %w", filename, err)
+	}
+
+	consts := make(map[ConstType]*ConstDef)
+
+	for _, decl := range f.Decls {
+		switch d := decl.(type) {
+		case *ast.GenDecl:
+			for _, spec := range d.Specs {
+				switch s := spec.(type) {
+				case *ast.TypeSpec:
+					name := ConstType(s.Name.Name)
+					if _, ok := consts[name]; ok {
+						return nil, fmt.Errorf("duplicated const: %s", name)
+					}
+
+					consts[name] = &ConstDef{
+						SourcePos: d.Pos(),
+						Name:      s.Name.Name,
+					}
+				case *ast.ValueSpec:
+					if s.Type == nil {
+						return nil, fmt.Errorf("unexpected value spec: %#v", s)
+					}
+					ty, err := loadType(s.Type, nil, consts)
+					if err != nil {
+						return nil, err
+					}
+					name, ok := ty.(ConstType)
+					if !ok {
+						return nil, fmt.Errorf("unexpected type: %#v", s.Type)
+					}
+
+					constDef, ok := consts[name]
+					if !ok {
+						return nil, fmt.Errorf("unknown const: %s", name)
+					}
+
+					if len(s.Values) != 1 {
+						return nil, fmt.Errorf("unexpected values: %#v", s.Values)
+					}
+					lit, ok := s.Values[0].(*ast.BasicLit)
+					if !(ok && lit.Kind == token.STRING) {
+						return nil, fmt.Errorf("unexpected value: %#v", s.Values[0])
+					}
+					v := strings.Trim(lit.Value, "\"")
+
+					for _, name := range s.Names {
+						constDef.Values = append(constDef.Values, &ConstValueDef{
+							Name:  name.Name,
+							Value: v,
+						})
+					}
+				}
+			}
+		}
+	}
+
+	return consts, nil
+}
+
+// Regular expressions to extract pos/end and template comments.
 var (
 	rePosLine   = regexp.MustCompile(`(?m)^\s*pos\s*=\s*(.*)`)
 	reEndLine   = regexp.MustCompile(`(?m)^\s*end\s*=\s*(.*)`)
 	reTmplLines = regexp.MustCompile(`(?m)((?:^\t.*\n)+)+`)
 )
 
-func Load(filename string) (Catalog, error) {
-	fset := token.NewFileSet()
+func loadStructs(fset *token.FileSet, filename string, consts map[ConstType]*ConstDef) (map[NodeStructType]*NodeStructDef, map[NodeInterfaceType]*NodeInterfaceDef, error) {
 	f, err := parser.ParseFile(fset, filename, nil, parser.ParseComments)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse file: %w", err)
+		return nil, nil, fmt.Errorf("failed to parse '%s': %w", filename, err)
 	}
 
-	catalog := make(Catalog)
-	interfaces := make(map[NodeInterfaceType]struct{})
+	structs := make(map[NodeStructType]*NodeStructDef)
+	interfaces := make(map[NodeInterfaceType]*NodeInterfaceDef)
 
 	commentMap := ast.NewCommentMap(fset, f, f.Comments)
 
@@ -36,44 +122,44 @@ func Load(filename string) (Catalog, error) {
 					switch t := s.Type.(type) {
 					case *ast.StructType:
 						name := NodeStructType(s.Name.Name)
-						if _, ok := catalog[name]; !ok {
-							catalog[name] = &NodeDef{
+						if _, ok := structs[name]; !ok {
+							structs[name] = &NodeStructDef{
 								Name: s.Name.Name,
 							}
 						}
 
-						node := catalog[name]
-						node.Doc = d.Doc.Text()
-						node.SourcePos = s.Pos()
+						structDef := structs[name]
+						structDef.SourcePos = s.Pos()
+						structDef.Doc = d.Doc.Text()
 
-						if m := reTmplLines.FindAllStringSubmatch(node.Doc, -1); m != nil {
-							node.Tmpl = m[len(m)-1][0]
+						if m := reTmplLines.FindAllStringSubmatch(structDef.Doc, -1); m != nil {
+							structDef.Tmpl = m[len(m)-1][0]
 						} else {
-							return nil, fmt.Errorf("no template found: %s", name)
+							return nil, nil, fmt.Errorf("no template found: %s", name)
 						}
 
 						comments := commentMap.Filter(t).Comments()
 						if len(comments) == 0 {
-							return nil, fmt.Errorf("no pos/end comment found: %s", name)
+							return nil, nil, fmt.Errorf("no pos/end comment found: %s", name)
 						}
 
-						// We assume the first comment group should a pos/end comment.
+						// We assume the first comment group in the struct should a pos/end comment.
 						posComment := comments[0].Text()
 						if m := rePosLine.FindStringSubmatch(posComment); m != nil {
-							node.Pos = m[1]
+							structDef.Pos = m[1]
 						} else {
-							return nil, fmt.Errorf("no pos comment found: %s", name)
+							return nil, nil, fmt.Errorf("no pos comment found: %s", name)
 						}
 						if m := reEndLine.FindStringSubmatch(posComment); m != nil {
-							node.End = m[1]
+							structDef.End = m[1]
 						} else {
-							return nil, fmt.Errorf("no end coment found: %s", name)
+							return nil, nil, fmt.Errorf("no end coment found: %s", name)
 						}
 
 						for _, f := range t.Fields.List {
-							ft, err := loadType(f.Type, interfaces)
+							ty, err := loadType(f.Type, interfaces, consts)
 							if err != nil {
-								return nil, err
+								return nil, nil, err
 							}
 
 							comment := ""
@@ -85,9 +171,9 @@ func Load(filename string) (Catalog, error) {
 								}
 							}
 							for _, name := range f.Names {
-								node.Fields = append(node.Fields, &FieldDef{
+								structDef.Fields = append(structDef.Fields, &FieldDef{
 									Name:    name.Name,
-									Type:    ft,
+									Type:    ty,
 									Comment: comment,
 								})
 							}
@@ -95,56 +181,68 @@ func Load(filename string) (Catalog, error) {
 					case *ast.InterfaceType:
 						name := NodeInterfaceType(s.Name.Name)
 						if _, ok := interfaces[name]; ok {
-							return nil, fmt.Errorf("duplicated interface: %s", name)
+							return nil, nil, fmt.Errorf("duplicated interface: %s", name)
 						}
 
-						interfaces[name] = struct{}{}
+						// Node interface is special, so we skip it.
+						if name == "Node" {
+							continue
+						}
+
+						interfaces[name] = &NodeInterfaceDef{
+							SourcePos: s.Pos(),
+							Name:      string(name),
+						}
 					default:
-						return nil, fmt.Errorf("unexpected spec: %#v", t)
+						return nil, nil, fmt.Errorf("unexpected spec: %#v", t)
 					}
 				}
 			}
+
 		case *ast.FuncDecl:
-			if d.Recv == nil {
-				return nil, fmt.Errorf("unexpected func decl: %#v", d)
+			if d.Recv == nil || len(d.Recv.List) != 1 {
+				return nil, nil, fmt.Errorf("unexpected func decl: %#v", d)
 			}
 
-			recv, err := loadType(d.Recv.List[0].Type, interfaces)
+			recv, err := loadType(d.Recv.List[0].Type, interfaces, consts)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
 			structName, ok := recv.(NodeStructType)
 			if !ok {
-				return nil, fmt.Errorf("unexpected receiver type: %#v", recv)
+				return nil, nil, fmt.Errorf("unexpected receiver type: %#v", recv)
 			}
 
 			funcName := d.Name.Name
 			cutName, found := strings.CutPrefix(funcName, "is")
 			if !found {
-				return nil, fmt.Errorf("unexpected func name: %s", funcName)
+				return nil, nil, fmt.Errorf("unexpected func name: %s", funcName)
 			}
 
 			interfaceName := NodeInterfaceType(cutName)
-			if _, ok := interfaces[interfaceName]; !ok {
-				return nil, fmt.Errorf("unknown interface: %s", interfaceName)
+			interfaceDef, ok := interfaces[interfaceName]
+			if !ok {
+				return nil, nil, fmt.Errorf("unknown interface: %s", interfaceName)
 			}
 
-			if _, ok := catalog[structName]; !ok {
-				catalog[structName] = &NodeDef{
+			interfaceDef.Implemented = append(interfaceDef.Implemented, structName)
+
+			if _, ok := structs[structName]; !ok {
+				structs[structName] = &NodeStructDef{
 					Name: string(structName),
 				}
 			}
 
-			node := catalog[structName]
-			node.Implements = append(node.Implements, interfaceName)
+			structDef := structs[structName]
+			structDef.Implements = append(structDef.Implements, interfaceName)
 		}
 	}
 
-	return catalog, nil
+	return structs, interfaces, nil
 }
 
-func loadType(t ast.Expr, interfaces map[NodeInterfaceType]struct{}) (FieldType, error) {
+func loadType(t ast.Expr, interfaces map[NodeInterfaceType]*NodeInterfaceDef, consts map[ConstType]*ConstDef) (Type, error) {
 	switch t := t.(type) {
 	case *ast.Ident:
 		switch t.Name {
@@ -155,6 +253,9 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]struct{}) (FieldType,
 		case "string":
 			return StringType, nil
 		default:
+			if _, ok := consts[ConstType(t.Name)]; ok {
+				return ConstType(t.Name), nil
+			}
 			if _, ok := interfaces[NodeInterfaceType(t.Name)]; ok {
 				return NodeInterfaceType(t.Name), nil
 			}
@@ -173,23 +274,23 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]struct{}) (FieldType,
 			return nil, fmt.Errorf("unexpected selector name: %#v", t)
 		}
 	case *ast.StarExpr:
-		ft, err := loadType(t.X, interfaces)
+		ty, err := loadType(t.X, interfaces, consts)
 		if err != nil {
 			return nil, err
 		}
 
-		return PointerType{Type: ft}, nil
+		return PointerType{Type: ty}, nil
 	case *ast.ArrayType:
 		if t.Len != nil {
 			return nil, fmt.Errorf("unexpected array type: %#v", t)
 		}
 
-		ft, err := loadType(t.Elt, interfaces)
+		ty, err := loadType(t.Elt, interfaces, consts)
 		if err != nil {
 			return nil, err
 		}
 
-		return SliceType{Type: ft}, nil
+		return SliceType{Type: ty}, nil
 	default:
 		return nil, fmt.Errorf("unexpected type: %#v", t)
 	}
