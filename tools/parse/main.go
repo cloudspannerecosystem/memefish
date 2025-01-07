@@ -11,11 +11,12 @@ import (
 	"unicode"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/k0kubun/pp/v3"
+
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
 	"github.com/cloudspannerecosystem/memefish/tools/util/poslang"
-	"github.com/k0kubun/pp/v3"
 )
 
 var usage = heredoc.Doc(`
@@ -29,6 +30,10 @@ var usage = heredoc.Doc(`
 	        Show the parse result of "SELECT 1 AS X".
 	  $ go run ./tools/parse/main.go -mode expr "(SELECT 1) + 2"
 	        Parse "(SELECT 1) + 2" on the expression mode.
+	  $ go run ./tools/parse/main.go -mode expr --output unparse "(SELECT 1) + 2"
+	        Parse "(SELECT 1) + 2" on the expression mode and show only unparsed SQL.
+	  $ go run ./tools/parse/main.go -mode expr --output ast "(SELECT 1) + 2"
+	        Parse "(SELECT 1) + 2" on the expression mode and show only AST.
 	  $ go run ./tools/parse/main.go -pos "Query.end" "SELECT 1 AS x"
 	        Evaluate the POS expression "Query.end" on "SELECT 1 AS x"
 	  $ go run ./tools/parse/main.go -pos "As.end" -dig "Query.Results.0" "SELECT 1 AS x"
@@ -42,6 +47,7 @@ var (
 	logging = flag.Bool("logging", false, "enable log (default: false)")
 	dig     = flag.String("dig", "", "digging the result node before printing")
 	pos     = flag.String("pos", "", "POS expression")
+	output  = flag.String("output", "ast,unparse", "comma separated outputs: {ast|unparse}")
 )
 
 func main() {
@@ -124,16 +130,22 @@ func main() {
 		}
 	}
 
-	fmt.Println("--- AST")
-	pprinter := pp.New()
-	pprinter.SetOmitEmpty(true)
-	_, _ = pprinter.Println(node)
-	fmt.Println()
-
-	fmt.Println("--- SQL")
-	fmt.Println(node.SQL())
+	for _, elem := range strings.Split(*output, ",") {
+		switch elem {
+		case "ast":
+			fmt.Println("--- AST")
+			pprinter := pp.New()
+			pprinter.SetOmitEmpty(true)
+			_, _ = pprinter.Println(node)
+		case "unparse":
+			fmt.Println("--- SQL")
+			fmt.Println(node.SQL())
+		}
+	}
 
 	if *pos != "" {
+		fmt.Println()
+
 		fmt.Println("--- POS")
 
 		expr, err := poslang.Parse(*pos)
