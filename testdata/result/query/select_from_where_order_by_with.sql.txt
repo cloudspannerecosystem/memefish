@@ -1,0 +1,409 @@
+--- select_from_where_order_by_with.sql
+-- https://cloud.google.com/spanner/docs/full-text-search/ranked-search#score_multiple_columns
+SELECT AlbumId
+FROM Albums
+WHERE SEARCH(Title_Tokens, @p1) AND SEARCH(Studio_Tokens, @p2)
+ORDER BY WITH(
+  TitleScore AS SCORE(Title_Tokens, @p1) * @titleweight,
+  StudioScore AS SCORE(Studio_Tokens, @p2) * @studioweight,
+  DaysOld AS (UNIX_MICROS(CURRENT_TIMESTAMP()) - ReleaseTimestamp) / 8.64e+10,
+  FreshnessBoost AS (1 + @freshnessweight * GREATEST(0, 30 - DaysOld) / 30),
+  PopularityBoost AS (1 + IF(HasGrammy, @grammyweight, 0)),
+  (TitleScore + StudioScore) * FreshnessBoost * PopularityBoost)
+LIMIT 2
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.Select{
+      Select:  95,
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.Ident{
+            NamePos: 102,
+            NameEnd: 109,
+            Name:    "AlbumId",
+          },
+        },
+      },
+      From: &ast.From{
+        From:   110,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 115,
+            NameEnd: 121,
+            Name:    "Albums",
+          },
+        },
+      },
+      Where: &ast.Where{
+        Where: 122,
+        Expr:  &ast.BinaryExpr{
+          Op:   "AND",
+          Left: &ast.CallExpr{
+            Rparen: 152,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 128,
+                  NameEnd: 134,
+                  Name:    "SEARCH",
+                },
+              },
+            },
+            Args: []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 135,
+                  NameEnd: 147,
+                  Name:    "Title_Tokens",
+                },
+              },
+              &ast.ExprArg{
+                Expr: &ast.Param{
+                  Atmark: 149,
+                  Name:   "p1",
+                },
+              },
+            },
+          },
+          Right: &ast.CallExpr{
+            Rparen: 183,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 158,
+                  NameEnd: 164,
+                  Name:    "SEARCH",
+                },
+              },
+            },
+            Args: []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 165,
+                  NameEnd: 178,
+                  Name:    "Studio_Tokens",
+                },
+              },
+              &ast.ExprArg{
+                Expr: &ast.Param{
+                  Atmark: 180,
+                  Name:   "p2",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    OrderBy: &ast.OrderBy{
+      Order: 185,
+      Items: []*ast.OrderByItem{
+        &ast.OrderByItem{
+          DirPos: -1,
+          Expr:   &ast.WithExpr{
+            With:   194,
+            Rparen: 596,
+            Vars:   []*ast.WithExprVar{
+              &ast.WithExprVar{
+                Name: &ast.Ident{
+                  NamePos: 202,
+                  NameEnd: 212,
+                  Name:    "TitleScore",
+                },
+                Expr: &ast.BinaryExpr{
+                  Op:   "*",
+                  Left: &ast.CallExpr{
+                    Rparen: 239,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 216,
+                          NameEnd: 221,
+                          Name:    "SCORE",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 222,
+                          NameEnd: 234,
+                          Name:    "Title_Tokens",
+                        },
+                      },
+                      &ast.ExprArg{
+                        Expr: &ast.Param{
+                          Atmark: 236,
+                          Name:   "p1",
+                        },
+                      },
+                    },
+                  },
+                  Right: &ast.Param{
+                    Atmark: 243,
+                    Name:   "titleweight",
+                  },
+                },
+              },
+              &ast.WithExprVar{
+                Name: &ast.Ident{
+                  NamePos: 259,
+                  NameEnd: 270,
+                  Name:    "StudioScore",
+                },
+                Expr: &ast.BinaryExpr{
+                  Op:   "*",
+                  Left: &ast.CallExpr{
+                    Rparen: 298,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 274,
+                          NameEnd: 279,
+                          Name:    "SCORE",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 280,
+                          NameEnd: 293,
+                          Name:    "Studio_Tokens",
+                        },
+                      },
+                      &ast.ExprArg{
+                        Expr: &ast.Param{
+                          Atmark: 295,
+                          Name:   "p2",
+                        },
+                      },
+                    },
+                  },
+                  Right: &ast.Param{
+                    Atmark: 302,
+                    Name:   "studioweight",
+                  },
+                },
+              },
+              &ast.WithExprVar{
+                Name: &ast.Ident{
+                  NamePos: 319,
+                  NameEnd: 326,
+                  Name:    "DaysOld",
+                },
+                Expr: &ast.BinaryExpr{
+                  Op:   "/",
+                  Left: &ast.ParenExpr{
+                    Lparen: 330,
+                    Rparen: 382,
+                    Expr:   &ast.BinaryExpr{
+                      Op:   "-",
+                      Left: &ast.CallExpr{
+                        Rparen: 362,
+                        Func:   &ast.Path{
+                          Idents: []*ast.Ident{
+                            &ast.Ident{
+                              NamePos: 331,
+                              NameEnd: 342,
+                              Name:    "UNIX_MICROS",
+                            },
+                          },
+                        },
+                        Args: []ast.Arg{
+                          &ast.ExprArg{
+                            Expr: &ast.CallExpr{
+                              Rparen: 361,
+                              Func:   &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 343,
+                                    NameEnd: 360,
+                                    Name:    "CURRENT_TIMESTAMP",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      Right: &ast.Ident{
+                        NamePos: 366,
+                        NameEnd: 382,
+                        Name:    "ReleaseTimestamp",
+                      },
+                    },
+                  },
+                  Right: &ast.FloatLiteral{
+                    ValuePos: 386,
+                    ValueEnd: 394,
+                    Value:    "8.64e+10",
+                  },
+                },
+              },
+              &ast.WithExprVar{
+                Name: &ast.Ident{
+                  NamePos: 398,
+                  NameEnd: 412,
+                  Name:    "FreshnessBoost",
+                },
+                Expr: &ast.ParenExpr{
+                  Lparen: 416,
+                  Rparen: 470,
+                  Expr:   &ast.BinaryExpr{
+                    Op:   "+",
+                    Left: &ast.IntLiteral{
+                      ValuePos: 417,
+                      ValueEnd: 418,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Right: &ast.BinaryExpr{
+                      Op:   "/",
+                      Left: &ast.BinaryExpr{
+                        Op:   "*",
+                        Left: &ast.Param{
+                          Atmark: 421,
+                          Name:   "freshnessweight",
+                        },
+                        Right: &ast.CallExpr{
+                          Rparen: 464,
+                          Func:   &ast.Path{
+                            Idents: []*ast.Ident{
+                              &ast.Ident{
+                                NamePos: 440,
+                                NameEnd: 448,
+                                Name:    "GREATEST",
+                              },
+                            },
+                          },
+                          Args: []ast.Arg{
+                            &ast.ExprArg{
+                              Expr: &ast.IntLiteral{
+                                ValuePos: 449,
+                                ValueEnd: 450,
+                                Base:     10,
+                                Value:    "0",
+                              },
+                            },
+                            &ast.ExprArg{
+                              Expr: &ast.BinaryExpr{
+                                Op:   "-",
+                                Left: &ast.IntLiteral{
+                                  ValuePos: 452,
+                                  ValueEnd: 454,
+                                  Base:     10,
+                                  Value:    "30",
+                                },
+                                Right: &ast.Ident{
+                                  NamePos: 457,
+                                  NameEnd: 464,
+                                  Name:    "DaysOld",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      Right: &ast.IntLiteral{
+                        ValuePos: 468,
+                        ValueEnd: 470,
+                        Base:     10,
+                        Value:    "30",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.WithExprVar{
+                Name: &ast.Ident{
+                  NamePos: 475,
+                  NameEnd: 490,
+                  Name:    "PopularityBoost",
+                },
+                Expr: &ast.ParenExpr{
+                  Lparen: 494,
+                  Rparen: 530,
+                  Expr:   &ast.BinaryExpr{
+                    Op:   "+",
+                    Left: &ast.IntLiteral{
+                      ValuePos: 495,
+                      ValueEnd: 496,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Right: &ast.IfExpr{
+                      If:     499,
+                      Rparen: 529,
+                      Expr:   &ast.Ident{
+                        NamePos: 502,
+                        NameEnd: 511,
+                        Name:    "HasGrammy",
+                      },
+                      TrueResult: &ast.Param{
+                        Atmark: 513,
+                        Name:   "grammyweight",
+                      },
+                      ElseResult: &ast.IntLiteral{
+                        ValuePos: 528,
+                        ValueEnd: 529,
+                        Base:     10,
+                        Value:    "0",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            Expr: &ast.BinaryExpr{
+              Op:   "*",
+              Left: &ast.BinaryExpr{
+                Op:   "*",
+                Left: &ast.ParenExpr{
+                  Lparen: 535,
+                  Rparen: 560,
+                  Expr:   &ast.BinaryExpr{
+                    Op:   "+",
+                    Left: &ast.Ident{
+                      NamePos: 536,
+                      NameEnd: 546,
+                      Name:    "TitleScore",
+                    },
+                    Right: &ast.Ident{
+                      NamePos: 549,
+                      NameEnd: 560,
+                      Name:    "StudioScore",
+                    },
+                  },
+                },
+                Right: &ast.Ident{
+                  NamePos: 564,
+                  NameEnd: 578,
+                  Name:    "FreshnessBoost",
+                },
+              },
+              Right: &ast.Ident{
+                NamePos: 581,
+                NameEnd: 596,
+                Name:    "PopularityBoost",
+              },
+            },
+          },
+        },
+      },
+    },
+    Limit: &ast.Limit{
+      Limit: 598,
+      Count: &ast.IntLiteral{
+        ValuePos: 604,
+        ValueEnd: 605,
+        Base:     10,
+        Value:    "2",
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT AlbumId FROM Albums WHERE SEARCH(Title_Tokens, @p1) AND SEARCH(Studio_Tokens, @p2) ORDER BY WITH(TitleScore AS SCORE(Title_Tokens, @p1) * @titleweight, StudioScore AS SCORE(Studio_Tokens, @p2) * @studioweight, DaysOld AS (UNIX_MICROS(CURRENT_TIMESTAMP()) - ReleaseTimestamp) / 8.64e+10, FreshnessBoost AS (1 + @freshnessweight * GREATEST(0, 30 - DaysOld) / 30), PopularityBoost AS (1 + IF(HasGrammy, @grammyweight, 0)), (TitleScore + StudioScore) * FreshnessBoost * PopularityBoost) LIMIT 2
