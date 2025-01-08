@@ -2234,6 +2234,10 @@ func (p *Parser) lookaheadWithExprVar() bool {
 		p.Lexer = lexer
 	}()
 
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
 	p.parseIdent()
 	return p.Token.Kind == "AS"
 }
