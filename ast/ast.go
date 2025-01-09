@@ -538,6 +538,15 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
+// UpdateItem represents SET clause items in UPDATE.
+type UpdateItem interface {
+	Node
+	isUpdateItem()
+}
+
+func (UpdateItemAssign) isUpdateItem() {}
+func (UpdateItemNested) isUpdateItem() {}
+
 // ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
 	Node
@@ -4053,15 +4062,6 @@ type Update struct {
 	Where      *Where
 	ThenReturn *ThenReturn // optional
 }
-
-// UpdateItem represents SET clause items in UPDATE.
-type UpdateItem interface {
-	Node
-	isUpdateItem()
-}
-
-func (UpdateItemAssign) isUpdateItem() {}
-func (UpdateItemNested) isUpdateItem() {}
 
 // UpdateItemNested is nested update node in UPDATE statement.
 //
