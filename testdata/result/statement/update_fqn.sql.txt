@@ -16,8 +16,8 @@ update sch1.foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
       },
     },
   },
-  Updates: []*ast.UpdateItem{
-    &ast.UpdateItem{
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 20,
@@ -34,7 +34,7 @@ update sch1.foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
         },
       },
     },
-    &ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 31,
@@ -51,7 +51,7 @@ update sch1.foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
         },
       },
     },
-    &ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 42,

@@ -1,0 +1,159 @@
+--- nested_update_update_nested_insert.sql
+UPDATE Singers s
+SET (UPDATE s.AlbumInfo.Song so
+    SET (INSERT INTO so.Chart
+         VALUES ("chartname: 'Galaxy Top 100', rank: 5"))
+    WHERE so.songtitle = "Bonus Track")
+WHERE s.SingerId = 5
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 14,
+        Name:    "Singers",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 15,
+      NameEnd: 16,
+      Name:    "s",
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemNested{
+      Lparen: 21,
+      Rparen: 175,
+      DML:    &ast.Update{
+        Update:    22,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 31,
+              NameEnd: 40,
+              Name:    "AlbumInfo",
+            },
+            &ast.Ident{
+              NamePos: 41,
+              NameEnd: 45,
+              Name:    "Song",
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 46,
+            NameEnd: 48,
+            Name:    "so",
+          },
+        },
+        Updates: []ast.UpdateItem{
+          &ast.UpdateItemNested{
+            Lparen: 57,
+            Rparen: 135,
+            DML:    &ast.Insert{
+              Insert:    58,
+              TableName: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 70,
+                    NameEnd: 72,
+                    Name:    "so",
+                  },
+                  &ast.Ident{
+                    NamePos: 73,
+                    NameEnd: 78,
+                    Name:    "Chart",
+                  },
+                },
+              },
+              Input: &ast.ValuesInput{
+                Values: 88,
+                Rows:   []*ast.ValuesRow{
+                  &ast.ValuesRow{
+                    Lparen: 95,
+                    Rparen: 134,
+                    Exprs:  []*ast.DefaultExpr{
+                      &ast.DefaultExpr{
+                        DefaultPos: -1,
+                        Expr:       &ast.StringLiteral{
+                          ValuePos: 96,
+                          ValueEnd: 134,
+                          Value:    "chartname: 'Galaxy Top 100', rank: 5",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Where: &ast.Where{
+          Where: 141,
+          Expr:  &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 147,
+                  NameEnd: 149,
+                  Name:    "so",
+                },
+                &ast.Ident{
+                  NamePos: 150,
+                  NameEnd: 159,
+                  Name:    "songtitle",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 162,
+              ValueEnd: 175,
+              Value:    "Bonus Track",
+            },
+          },
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 177,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 183,
+            NameEnd: 184,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 185,
+            NameEnd: 193,
+            Name:    "SingerId",
+          },
+        },
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 196,
+        ValueEnd: 197,
+        Base:     10,
+        Value:    "5",
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Singers s SET (UPDATE s.AlbumInfo.Song so SET (INSERT INTO so.Chart () VALUES ("chartname: 'Galaxy Top 100', rank: 5")) WHERE so.songtitle = "Bonus Track") WHERE s.SingerId = 5

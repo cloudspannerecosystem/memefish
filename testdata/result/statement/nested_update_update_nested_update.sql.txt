@@ -1,0 +1,199 @@
+--- nested_update_update_nested_update.sql
+UPDATE Singers s
+SET (UPDATE s.AlbumInfo.Song so
+     SET (UPDATE so.Chart c
+          SET c.rank = 2
+          WHERE c.chartname = "Galaxy Top 100")
+     WHERE so.songtitle = "Bonus Track")
+WHERE s.SingerId = 5
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 14,
+        Name:    "Singers",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 15,
+      NameEnd: 16,
+      Name:    "s",
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemNested{
+      Lparen: 21,
+      Rparen: 189,
+      DML:    &ast.Update{
+        Update:    22,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 31,
+              NameEnd: 40,
+              Name:    "AlbumInfo",
+            },
+            &ast.Ident{
+              NamePos: 41,
+              NameEnd: 45,
+              Name:    "Song",
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 46,
+            NameEnd: 48,
+            Name:    "so",
+          },
+        },
+        Updates: []ast.UpdateItem{
+          &ast.UpdateItemNested{
+            Lparen: 58,
+            Rparen: 148,
+            DML:    &ast.Update{
+              Update:    59,
+              TableName: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 66,
+                    NameEnd: 68,
+                    Name:    "so",
+                  },
+                  &ast.Ident{
+                    NamePos: 69,
+                    NameEnd: 74,
+                    Name:    "Chart",
+                  },
+                },
+              },
+              As: &ast.AsAlias{
+                As:    -1,
+                Alias: &ast.Ident{
+                  NamePos: 75,
+                  NameEnd: 76,
+                  Name:    "c",
+                },
+              },
+              Updates: []ast.UpdateItem{
+                &ast.UpdateItemAssign{
+                  Path: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 91,
+                      NameEnd: 92,
+                      Name:    "c",
+                    },
+                    &ast.Ident{
+                      NamePos: 93,
+                      NameEnd: 97,
+                      Name:    "rank",
+                    },
+                  },
+                  DefaultExpr: &ast.DefaultExpr{
+                    DefaultPos: -1,
+                    Expr:       &ast.IntLiteral{
+                      ValuePos: 100,
+                      ValueEnd: 101,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 112,
+                Expr:  &ast.BinaryExpr{
+                  Op:   "=",
+                  Left: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 118,
+                        NameEnd: 119,
+                        Name:    "c",
+                      },
+                      &ast.Ident{
+                        NamePos: 120,
+                        NameEnd: 129,
+                        Name:    "chartname",
+                      },
+                    },
+                  },
+                  Right: &ast.StringLiteral{
+                    ValuePos: 132,
+                    ValueEnd: 148,
+                    Value:    "Galaxy Top 100",
+                  },
+                },
+              },
+            },
+          },
+        },
+        Where: &ast.Where{
+          Where: 155,
+          Expr:  &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 161,
+                  NameEnd: 163,
+                  Name:    "so",
+                },
+                &ast.Ident{
+                  NamePos: 164,
+                  NameEnd: 173,
+                  Name:    "songtitle",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 176,
+              ValueEnd: 189,
+              Value:    "Bonus Track",
+            },
+          },
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 191,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 197,
+            NameEnd: 198,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 199,
+            NameEnd: 207,
+            Name:    "SingerId",
+          },
+        },
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 210,
+        ValueEnd: 211,
+        Base:     10,
+        Value:    "5",
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Singers s SET (UPDATE s.AlbumInfo.Song so SET (UPDATE so.Chart c SET c.rank = 2 WHERE c.chartname = "Galaxy Top 100") WHERE so.songtitle = "Bonus Track") WHERE s.SingerId = 5

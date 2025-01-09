@@ -19,8 +19,8 @@ update foo as F set F.foo = F.bar + 1 where foo = F.bar
       Name:    "F",
     },
   },
-  Updates: []*ast.UpdateItem{
-    &ast.UpdateItem{
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 20,

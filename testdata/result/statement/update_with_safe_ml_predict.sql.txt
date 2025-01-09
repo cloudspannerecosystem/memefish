@@ -23,8 +23,8 @@ WHERE products.desc_embed IS NULL
       },
     },
   },
-  Updates: []*ast.UpdateItem{
-    &ast.UpdateItem{
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 100,
@@ -163,7 +163,7 @@ WHERE products.desc_embed IS NULL
         },
       },
     },
-    &ast.UpdateItem{
+    &ast.UpdateItemAssign{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 340,
