@@ -5004,7 +5004,7 @@ func (p *Parser) parseDML(nested bool) (dml ast.DML) {
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		return p.parseInsert(nested, pos)
+		return p.parseInsert(pos, nested)
 	case id.IsKeywordLike("DELETE"):
 		return p.parseDelete(pos)
 	case id.IsKeywordLike("UPDATE"):
@@ -5047,7 +5047,7 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 	}
 }
 
-func (p *Parser) parseInsert(nested bool, pos token.Pos) *ast.Insert {
+func (p *Parser) parseInsert(pos token.Pos, nested bool) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
 		p.nextToken()
