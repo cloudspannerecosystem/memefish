@@ -4,10 +4,14 @@ with cte AS (select 1 as foo, 2 as bar)
 select *
 --- AST
 &ast.Insert{
-  TableName: &ast.Ident{
-    NamePos: 7,
-    NameEnd: 10,
-    Name:    "foo",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 10,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.Ident{
     &ast.Ident{
