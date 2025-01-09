@@ -1351,11 +1351,11 @@ func (u *Update) SQL() string {
 		sqlOpt(" ", u.ThenReturn, "")
 }
 
-func (u *UpdateItemAssign) SQL() string {
+func (u *UpdateItemSetValue) SQL() string {
 	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
 }
 
-func (u *UpdateItemNested) SQL() string {
+func (u *UpdateItemDML) SQL() string {
 	return "(" + u.DML.SQL() + ")"
 }
 

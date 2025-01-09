@@ -26,7 +26,7 @@ WHERE s.SingerId = 5
     },
   },
   Updates: []ast.UpdateItem{
-    &ast.UpdateItemNested{
+    &ast.UpdateItemDML{
       Lparen: 21,
       Rparen: 189,
       DML:    &ast.Update{
@@ -59,7 +59,7 @@ WHERE s.SingerId = 5
           },
         },
         Updates: []ast.UpdateItem{
-          &ast.UpdateItemNested{
+          &ast.UpdateItemDML{
             Lparen: 58,
             Rparen: 148,
             DML:    &ast.Update{
@@ -87,7 +87,7 @@ WHERE s.SingerId = 5
                 },
               },
               Updates: []ast.UpdateItem{
-                &ast.UpdateItemAssign{
+                &ast.UpdateItemSetValue{
                   Path: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 91,

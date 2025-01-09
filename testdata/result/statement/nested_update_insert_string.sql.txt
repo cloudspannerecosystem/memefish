@@ -23,7 +23,7 @@ WHERE s.SingerId = 5 AND s.AlbumInfo.title = "Fire is Hot"
     },
   },
   Updates: []ast.UpdateItem{
-    &ast.UpdateItemNested{
+    &ast.UpdateItemDML{
       Lparen: 21,
       Rparen: 73,
       DML:    &ast.Insert{

@@ -544,8 +544,8 @@ type UpdateItem interface {
 	isUpdateItem()
 }
 
-func (UpdateItemAssign) isUpdateItem() {}
-func (UpdateItemNested) isUpdateItem() {}
+func (UpdateItemSetValue) isUpdateItem() {}
+func (UpdateItemDML) isUpdateItem()      {}
 
 // ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
@@ -4063,10 +4063,10 @@ type Update struct {
 	ThenReturn *ThenReturn // optional
 }
 
-// UpdateItemNested is nested update node in UPDATE statement.
+// UpdateItemDML is nested update UpdateItem node in UPDATE statement.
 //
 //	({{.DML | sql}})
-type UpdateItemNested struct {
+type UpdateItemDML struct {
 	// pos = Lparen
 	// end = Rparen + 1
 
@@ -4074,10 +4074,10 @@ type UpdateItemNested struct {
 	DML            DML
 }
 
-// UpdateItemAssign is assignment node in UPDATE statement .
+// UpdateItemSetValue is assignment style UpdateItem node in UPDATE statement .
 //
 //	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
-type UpdateItemAssign struct {
+type UpdateItemSetValue struct {
 	// pos = Path[0].pos
 	// end = DefaultExpr.end
 

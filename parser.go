@@ -5204,7 +5204,7 @@ func (p *Parser) parseUpdateItem() ast.UpdateItem {
 		lparen := p.expect("(").Pos
 		dml := p.parseDML(true)
 		rparen := p.expect(")").Pos
-		return &ast.UpdateItemNested{
+		return &ast.UpdateItemDML{
 			Lparen: lparen,
 			Rparen: rparen,
 			DML:    dml,
@@ -5215,7 +5215,7 @@ func (p *Parser) parseUpdateItem() ast.UpdateItem {
 	p.expect("=")
 	defaultExpr := p.parseDefaultExpr()
 
-	return &ast.UpdateItemAssign{
+	return &ast.UpdateItemSetValue{
 		Path:        path,
 		DefaultExpr: defaultExpr,
 	}
