@@ -123,7 +123,7 @@ func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
 // ParseDML parses a INSERT/DELETE/UPDATE statement.
 func (p *Parser) ParseDML() (ast.DML, error) {
 	p.nextToken()
-	dml := p.parseDML()
+	dml := p.parseDMLTopLevel()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -138,7 +138,7 @@ func (p *Parser) ParseDML() (ast.DML, error) {
 // ParseDMLs parses INSERT/DELETE/UPDATE statements list separated by semi-colon.
 func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	p.nextToken()
-	dmls := parseStatements(p, p.parseDML)
+	dmls := parseStatements(p, p.parseDMLTopLevel)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -166,7 +166,7 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
-		return p.parseDML()
+		return p.parseDMLTopLevel()
 	case p.Token.IsKeywordLike("CALL"):
 		return p.parseOtherStatement()
 	}
@@ -4987,7 +4987,12 @@ func (p *Parser) parseIfExists() bool {
 //
 // ================================================================================
 
-func (p *Parser) parseDML() (dml ast.DML) {
+// parseDMLTopLevel parses non-nested DML. This function is added for parseStatements friendly.
+func (p *Parser) parseDMLTopLevel() (dml ast.DML) {
+	return p.parseDML(false)
+}
+
+func (p *Parser) parseDML(nested bool) (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
@@ -4999,7 +5004,7 @@ func (p *Parser) parseDML() (dml ast.DML) {
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		return p.parseInsert(pos)
+		return p.parseInsert(nested, pos)
 	case id.IsKeywordLike("DELETE"):
 		return p.parseDelete(pos)
 	case id.IsKeywordLike("UPDATE"):
@@ -5042,7 +5047,7 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 	}
 }
 
-func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
+func (p *Parser) parseInsert(nested bool, pos token.Pos) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
 		p.nextToken()
@@ -5063,18 +5068,21 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 
 	name := p.parsePath()
 
-	p.expect("(")
+	// optional when nested
 	var columns []*ast.Ident
-	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
-			columns = append(columns, p.parseIdent())
-			if p.Token.Kind != "," {
-				break
+	if !nested || p.Token.Kind == "(" {
+		p.expect("(")
+		if p.Token.Kind != ")" {
+			for p.Token.Kind != token.TokenEOF {
+				columns = append(columns, p.parseIdent())
+				if p.Token.Kind != "," {
+					break
+				}
+				p.nextToken()
 			}
-			p.nextToken()
 		}
+		p.expect(")")
 	}
-	p.expect(")")
 
 	var input ast.InsertInput
 	if p.Token.IsKeywordLike("VALUES") {
@@ -5191,12 +5199,23 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 	}
 }
 
-func (p *Parser) parseUpdateItem() *ast.UpdateItem {
+func (p *Parser) parseUpdateItem() ast.UpdateItem {
+	if p.Token.Kind == "(" {
+		lparen := p.expect("(").Pos
+		dml := p.parseDML(true)
+		rparen := p.expect(")").Pos
+		return &ast.UpdateItemNested{
+			Lparen: lparen,
+			Rparen: rparen,
+			DML:    dml,
+		}
+	}
+
 	path := p.parseIdentOrPath()
 	p.expect("=")
 	defaultExpr := p.parseDefaultExpr()
 
-	return &ast.UpdateItem{
+	return &ast.UpdateItemAssign{
 		Path:        path,
 		DefaultExpr: defaultExpr,
 	}

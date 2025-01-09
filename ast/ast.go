@@ -3968,7 +3968,7 @@ type Insert struct {
 	InsertOrType InsertOrType
 
 	TableName  *Path
-	Columns    []*Ident
+	Columns    []*Ident // optional when nested
 	Input      InsertInput
 	ThenReturn *ThenReturn // optional
 }
@@ -4048,16 +4048,36 @@ type Update struct {
 	Update token.Pos // position of "UPDATE" keyword
 
 	TableName  *Path
-	As         *AsAlias      // optional
-	Updates    []*UpdateItem // len(Updates) > 0
+	As         *AsAlias     // optional
+	Updates    []UpdateItem // len(Updates) > 0
 	Where      *Where
 	ThenReturn *ThenReturn // optional
 }
 
-// UpdateItem is SET clause items in UPDATE.
+// UpdateItem represents SET clause items in UPDATE.
+type UpdateItem interface {
+	Node
+	isUpdateItem()
+}
+
+func (UpdateItemAssign) isUpdateItem() {}
+func (UpdateItemNested) isUpdateItem() {}
+
+// UpdateItemNested is nested update node in UPDATE statement.
+//
+//	({{.DML | sql}})
+type UpdateItemNested struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos // position of "(", ")"
+	DML            DML
+}
+
+// UpdateItemAssign is assignment node in UPDATE statement .
 //
 //	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
-type UpdateItem struct {
+type UpdateItemAssign struct {
 	// pos = Path[0].pos
 	// end = DefaultExpr.end
 

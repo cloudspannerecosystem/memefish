@@ -2062,11 +2062,19 @@ func (u *Update) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(u.ThenReturn), wrapNode(u.Where)))
 }
 
-func (u *UpdateItem) Pos() token.Pos {
+func (u *UpdateItemNested) Pos() token.Pos {
+	return u.Lparen
+}
+
+func (u *UpdateItemNested) End() token.Pos {
+	return posAdd(u.Rparen, 1)
+}
+
+func (u *UpdateItemAssign) Pos() token.Pos {
 	return nodePos(nodeSliceIndex(u.Path, 0))
 }
 
-func (u *UpdateItem) End() token.Pos {
+func (u *UpdateItemAssign) End() token.Pos {
 	return nodeEnd(wrapNode(u.DefaultExpr))
 }
 
