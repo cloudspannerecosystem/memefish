@@ -483,7 +483,7 @@ func (s *SelectorExpr) Pos() token.Pos {
 }
 
 func (s *SelectorExpr) End() token.Pos {
-	return nodePos(wrapNode(s.Ident))
+	return nodeEnd(wrapNode(s.Ident))
 }
 
 func (i *IndexExpr) Pos() token.Pos {
@@ -1011,7 +1011,7 @@ func (a *AlterDatabase) Pos() token.Pos {
 }
 
 func (a *AlterDatabase) End() token.Pos {
-	return nodeEnd(wrapNode(a.Name))
+	return nodeEnd(wrapNode(a.Options))
 }
 
 func (c *CreatePlacement) Pos() token.Pos {
@@ -1259,7 +1259,7 @@ func (a *AlterSequence) Pos() token.Pos {
 }
 
 func (a *AlterSequence) End() token.Pos {
-	return nodeEnd(wrapNode(a.Options))
+	return nodeEnd(nodeChoice(wrapNode(a.NoSkipRange), wrapNode(a.SkipRange), wrapNode(a.RestartCounterWith), wrapNode(a.Options)))
 }
 
 func (a *AlterChangeStream) Pos() token.Pos {
