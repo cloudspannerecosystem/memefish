@@ -1232,7 +1232,7 @@ type TableSampleSize struct {
 //	{{.Left | sql}} {{.Op}} {{.Right | sql}}
 type BinaryExpr struct {
 	// pos = Left.pos
-	// end = Right.pos
+	// end = Right.end
 
 	Op BinaryOp
 
