@@ -1174,7 +1174,7 @@ type ParenTableExpr struct {
 //	{{.Cond | sqlOpt}}
 type Join struct {
 	// pos = Left.pos
-	// end = (Cond ?? Right).pos
+	// end = (Cond ?? Right).end
 
 	Op          JoinOp
 	Method      JoinMethod

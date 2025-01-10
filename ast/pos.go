@@ -371,7 +371,7 @@ func (j *Join) Pos() token.Pos {
 }
 
 func (j *Join) End() token.Pos {
-	return nodePos(nodeChoice(wrapNode(j.Cond), wrapNode(j.Right)))
+	return nodeEnd(nodeChoice(wrapNode(j.Cond), wrapNode(j.Right)))
 }
 
 func (o *On) Pos() token.Pos {
