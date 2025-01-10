@@ -1499,7 +1499,7 @@ func (c *ChangeStreamForAll) Pos() token.Pos {
 }
 
 func (c *ChangeStreamForAll) End() token.Pos {
-	return c.All
+	return posAdd(c.All, 3)
 }
 
 func (c *ChangeStreamForTables) Pos() token.Pos {
@@ -1515,7 +1515,7 @@ func (c *ChangeStreamForTable) Pos() token.Pos {
 }
 
 func (c *ChangeStreamForTable) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.TableName)), posAdd(c.Rparen, 1))
+	return posChoice(posAdd(c.Rparen, 1), nodeEnd(wrapNode(c.TableName)))
 }
 
 func (c *ChangeStreamSetFor) Pos() token.Pos {

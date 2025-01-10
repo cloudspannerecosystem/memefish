@@ -3752,6 +3752,7 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 		tname := p.parseIdent()
 		forTable := ast.ChangeStreamForTable{
 			TableName: tname,
+			Rparen:    token.InvalidPos,
 		}
 
 		if p.Token.Kind == "(" {

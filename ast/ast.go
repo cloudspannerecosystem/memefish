@@ -3074,7 +3074,7 @@ type CreateChangeStream struct {
 //	FOR ALL
 type ChangeStreamForAll struct {
 	// pos = For
-	// end = All
+	// end = All + 3
 
 	For token.Pos // position of "FOR" keyword
 	All token.Pos // position of "ALL" keyword
@@ -3097,7 +3097,7 @@ type ChangeStreamForTables struct {
 //	{{.TableName | sql}}{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
 type ChangeStreamForTable struct {
 	// pos = TableName.pos
-	// end = TableName.end || Rparen + 1
+	// end = Rparen + 1 || TableName.end
 
 	Rparen token.Pos // position of ")"
 
