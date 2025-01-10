@@ -119,7 +119,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 					}
 
 					if child.Pos() < node.Pos() || node.End() < child.End() {
-						t.Errorf("pos must be in (%v, %v], but got [%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
+						t.Errorf("pos must be in (%v, %v], but got (%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
 					}
 					return false
 				})
