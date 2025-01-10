@@ -3874,7 +3874,8 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 		alteration = &ast.AddTableConstraint{
 			Add: pos,
 			TableConstraint: &ast.TableConstraint{
-				Constraint: fk,
+				ConstraintPos: token.InvalidPos,
+				Constraint:    fk,
 			},
 		}
 	case p.Token.IsKeywordLike("CHECK"):
@@ -3882,7 +3883,8 @@ func (p *Parser) parseAlterTableAdd() ast.TableAlteration {
 		alteration = &ast.AddTableConstraint{
 			Add: pos,
 			TableConstraint: &ast.TableConstraint{
-				Constraint: c,
+				ConstraintPos: token.InvalidPos,
+				Constraint:    c,
 			},
 		}
 	case p.Token.IsKeywordLike("ROW"):
