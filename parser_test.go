@@ -85,6 +85,37 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				}
 			}
 
+			// pos/end test
+			if !bad {
+				internal.Inspect(node, func(path []string, node ast.Node) bool {
+					if node == nil {
+						return false
+					}
+
+					if node.End() <= node.Pos() {
+						t.Errorf("pos must be smaller than end, but got pos: %v, end: %v on %v: %v", node.Pos(), node.End(), strings.Join(path, ""), node.SQL())
+						return false
+					}
+
+					internal.Inspect(node, func(childPath []string, child ast.Node) bool {
+						if child == nil {
+							return false
+						}
+
+						// skip itself
+						if node == child {
+							return true
+						}
+
+						if child.Pos() < node.Pos() || node.End() < child.End() {
+							t.Errorf("child position must be in node position (%v, %v], but got (%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
+						}
+						return false
+					})
+					return true
+				})
+			}
+
 			fmt.Fprintf(&buf, "--- AST\n")
 			_, _ = pprinter.Fprintln(&buf, node)
 			fmt.Fprintln(&buf)
@@ -102,29 +133,6 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				}
 				return
 			}
-
-			internal.Inspect(node, func(path []string, node ast.Node) bool {
-				if node == nil {
-					return false
-				}
-
-				internal.Inspect(node, func(childPath []string, child ast.Node) bool {
-					if child == nil {
-						return false
-					}
-
-					// skip itself
-					if node == child {
-						return true
-					}
-
-					if child.Pos() < node.Pos() || node.End() < child.End() {
-						t.Errorf("pos must be in (%v, %v], but got (%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
-					}
-					return false
-				})
-				return true
-			})
 
 			expected, err := os.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
 			if err != nil {
