@@ -7,8 +7,9 @@ CREATE TABLE sch1.Singers (
 ) PRIMARY KEY(SingerId)
 --- AST
 &ast.CreateTable{
-  Rparen: 161,
-  Name:   &ast.Path{
+  Rparen:           139,
+  PrimaryKeyRparen: 161,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

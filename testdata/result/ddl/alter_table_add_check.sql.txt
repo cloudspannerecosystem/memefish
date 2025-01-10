@@ -15,7 +15,8 @@ alter table foo add check (c1 > 0)
   TableAlteration: &ast.AddTableConstraint{
     Add:             16,
     TableConstraint: &ast.TableConstraint{
-      Constraint: &ast.Check{
+      ConstraintPos: -1,
+      Constraint:    &ast.Check{
         Check:  20,
         Rparen: 33,
         Expr:   &ast.BinaryExpr{
