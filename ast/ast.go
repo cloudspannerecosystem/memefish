@@ -2252,7 +2252,7 @@ type CreateDatabase struct {
 //	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
 type AlterDatabase struct {
 	// pos = Alter
-	// end = Name.end
+	// end = Options.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
