@@ -11,9 +11,10 @@ CREATE TABLE Albums (
 ) PRIMARY KEY(AlbumId)
 --- AST
 &ast.CreateTable{
-  Create: 105,
-  Rparen: 575,
-  Name:   &ast.Path{
+  Create:           105,
+  Rparen:           554,
+  PrimaryKeyRparen: 575,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 118,

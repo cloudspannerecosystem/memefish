@@ -6,9 +6,10 @@ create table if not exists foo (
 
 --- AST
 &ast.CreateTable{
-  Rparen:      93,
-  IfNotExists: true,
-  Name:        &ast.Path{
+  Rparen:           70,
+  PrimaryKeyRparen: 93,
+  IfNotExists:      true,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 27,

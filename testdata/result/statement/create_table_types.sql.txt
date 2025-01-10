@@ -31,9 +31,10 @@ create table types (
 
 --- AST
 &ast.CreateTable{
-  Create: 100,
-  Rparen: 796,
-  Name:   &ast.Path{
+  Create:           100,
+  Rparen:           780,
+  PrimaryKeyRparen: 796,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 113,

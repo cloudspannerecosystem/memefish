@@ -9,8 +9,9 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Rparen: 83,
-  Name:   &ast.Path{
+  Rparen:           45,
+  PrimaryKeyRparen: 83,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,
