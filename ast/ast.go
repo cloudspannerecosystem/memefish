@@ -2380,10 +2380,11 @@ type DropProtoBundle struct {
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
 
-	Create token.Pos // position of "CREATE" keyword
-	Rparen token.Pos // position of ")" of PRIMARY KEY clause
+	Create           token.Pos // position of "CREATE" keyword
+	Rparen           token.Pos // position of ")" of end of column definitions
+	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause, optional
 
 	IfNotExists       bool
 	Name              *Path
