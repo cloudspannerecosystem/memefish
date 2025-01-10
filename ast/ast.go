@@ -2684,7 +2684,7 @@ type AlterIndex struct {
 //	{{.NoSkipRange | sqlOpt}}
 type AlterSequence struct {
 	// pos = Alter
-	// end = Options.end
+	// end = (NoSkipRange ?? SkipRange ?? RestartCounterWith ?? Options).end
 
 	Alter token.Pos // position of "ALTER" keyword
 
