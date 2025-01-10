@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -15,6 +16,7 @@ import (
 
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
+	"github.com/cloudspannerecosystem/memefish/internal"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
@@ -100,6 +102,29 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				}
 				return
 			}
+
+			internal.Inspect(node, func(path []string, node ast.Node) bool {
+				if node == nil {
+					return false
+				}
+
+				internal.Inspect(node, func(childPath []string, child ast.Node) bool {
+					if child == nil {
+						return false
+					}
+
+					// skip itself
+					if node == child {
+						return true
+					}
+
+					if child.Pos() < node.Pos() || node.End() < child.End() {
+						t.Errorf("pos must be in (%v, %v], but got [%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
+					}
+					return false
+				})
+				return true
+			})
 
 			expected, err := os.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
 			if err != nil {
