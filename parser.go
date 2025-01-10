@@ -3079,11 +3079,11 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		}
 		p.nextToken()
 	}
-	p.expect(")")
+	rparen := p.expect(")").Pos
 
 	// PRIMARY KEY clause is now optional
 	var keys []*ast.IndexKey
-	rparen := token.InvalidPos
+	primaryKeyRparen := token.InvalidPos
 	if p.Token.IsKeywordLike("PRIMARY") {
 		p.nextToken()
 		p.expectKeywordLike("KEY")
@@ -3099,7 +3099,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 			}
 			p.nextToken()
 		}
-		rparen = p.expect(")").Pos
+		primaryKeyRparen = p.expect(")").Pos
 	}
 
 	cluster := p.tryParseCluster()
@@ -3108,6 +3108,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	return &ast.CreateTable{
 		Create:            pos,
 		Rparen:            rparen,
+		PrimaryKeyRparen:  primaryKeyRparen,
 		IfNotExists:       ifNotExists,
 		Name:              name,
 		Columns:           columns,
