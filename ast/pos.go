@@ -411,7 +411,7 @@ func (b *BinaryExpr) Pos() token.Pos {
 }
 
 func (b *BinaryExpr) End() token.Pos {
-	return nodePos(wrapNode(b.Right))
+	return nodeEnd(wrapNode(b.Right))
 }
 
 func (u *UnaryExpr) Pos() token.Pos {
