@@ -1361,7 +1361,7 @@ type BetweenExpr struct {
 //	{{.Expr | sql}}.{{.Ident | sql}}
 type SelectorExpr struct {
 	// pos = Expr.pos
-	// end = Ident.pos
+	// end = Ident.end
 
 	Expr  Expr
 	Ident *Ident
