@@ -1176,10 +1176,11 @@ type Join struct {
 	// pos = Left.pos
 	// end = (Cond ?? Right).end
 
-	Op          JoinOp
-	Method      JoinMethod
-	Hint        *Hint // optional
-	Left, Right TableExpr
+	Left   TableExpr
+	Op     JoinOp
+	Method JoinMethod
+	Hint   *Hint // optional
+	Right  TableExpr
 
 	// nil when Op is CrossJoin
 	// optional when Right is PathTableExpr or Unnest

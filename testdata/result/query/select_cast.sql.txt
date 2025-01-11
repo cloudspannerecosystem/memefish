@@ -156,9 +156,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
       From: &ast.From{
         From:   149,
         Source: &ast.Join{
-          Op:   ",",
           Left: &ast.Join{
-            Op:   ",",
             Left: &ast.TableName{
               Table: &ast.Ident{
                 NamePos: 154,
@@ -185,6 +183,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
                 },
               },
             },
+            Op:    ",",
             Right: &ast.TableName{
               Table: &ast.Ident{
                 NamePos: 215,
@@ -213,6 +212,7 @@ limit cast(1 as INT64) offset cast(@foo as INT64)
               },
             },
           },
+          Op:    ",",
           Right: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 269,
