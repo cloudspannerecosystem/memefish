@@ -66,7 +66,7 @@ func main() {
 	buffer.WriteString(prologue)
 
 	for i, structDef := range structs {
-		fmt.Fprintf(&buffer, "\t\tcase *%s:\n", structDef.Name)
+		fmt.Fprintf(&buffer, "\tcase *%s:\n", structDef.Name)
 
 		output := false
 
@@ -74,36 +74,36 @@ func main() {
 			field := structDef.Fields[i]
 
 			if _, ok := extractNodeStructPointer(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeStructSlice(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\t}\n")
+				fmt.Fprintf(&buffer, "\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\t}\n")
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeInterface(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeInterfaceSlice(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\t}\n")
+				fmt.Fprintf(&buffer, "\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\t}\n")
 				output = true
 				continue
 			}
 		}
 
 		if !output {
-			fmt.Fprintln(&buffer, "\t\t\t// nothing to do")
+			fmt.Fprintln(&buffer, "\t\t// nothing to do")
 		}
 
 		if i < len(structs)-1 {

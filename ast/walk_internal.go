@@ -4,997 +4,997 @@ package ast
 
 func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	switch n := node.(type) {
-		case *BadNode:
-			// nothing to do
-
-		case *BadStatement:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *BadQueryExpr:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *BadExpr:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *BadType:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *BadDDL:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *BadDML:
-			stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
-
-		case *QueryStatement:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-
-		case *Query:
-			for i := len(n.PipeOperators) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.PipeOperators[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Limit, visitor: v})
-			stack = append(stack, &stackItem{node: n.OrderBy, visitor: v})
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-			stack = append(stack, &stackItem{node: n.With, visitor: v})
-
-		case *Hint:
-			for i := len(n.Records) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Records[i], visitor: v})
-			}
-
-		case *HintRecord:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-			stack = append(stack, &stackItem{node: n.Key, visitor: v})
-
-		case *With:
-			for i := len(n.CTEs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.CTEs[i], visitor: v})
-			}
-
-		case *CTE:
-			stack = append(stack, &stackItem{node: n.QueryExpr, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *Select:
-			stack = append(stack, &stackItem{node: n.Having, visitor: v})
-			stack = append(stack, &stackItem{node: n.GroupBy, visitor: v})
-			stack = append(stack, &stackItem{node: n.Where, visitor: v})
-			stack = append(stack, &stackItem{node: n.From, visitor: v})
-			for i := len(n.Results) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Results[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-
-		case *AsStruct:
-			// nothing to do
-
-		case *AsValue:
-			// nothing to do
-
-		case *AsTypeName:
-			stack = append(stack, &stackItem{node: n.TypeName, visitor: v})
-
-		case *FromQuery:
-			stack = append(stack, &stackItem{node: n.From, visitor: v})
-
-		case *CompoundQuery:
-			for i := len(n.Queries) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Queries[i], visitor: v})
-			}
-
-		case *SubQuery:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *StarModifierExcept:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *StarModifierReplaceItem:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *StarModifierReplace:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *Star:
-			stack = append(stack, &stackItem{node: n.Replace, visitor: v})
-			stack = append(stack, &stackItem{node: n.Except, visitor: v})
-
-		case *DotStar:
-			stack = append(stack, &stackItem{node: n.Replace, visitor: v})
-			stack = append(stack, &stackItem{node: n.Except, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *Alias:
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *AsAlias:
-			stack = append(stack, &stackItem{node: n.Alias, visitor: v})
-
-		case *ExprSelectItem:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *From:
-			stack = append(stack, &stackItem{node: n.Source, visitor: v})
-
-		case *Where:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *GroupBy:
-			for i := len(n.Exprs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
-			}
-
-		case *Having:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *OrderBy:
-			for i := len(n.Items) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Items[i], visitor: v})
-			}
-
-		case *OrderByItem:
-			stack = append(stack, &stackItem{node: n.Collate, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *Collate:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *Limit:
-			stack = append(stack, &stackItem{node: n.Offset, visitor: v})
-			stack = append(stack, &stackItem{node: n.Count, visitor: v})
-
-		case *Offset:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *PipeSelect:
-			for i := len(n.Results) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Results[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-
-		case *PipeWhere:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *Unnest:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.WithOffset, visitor: v})
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *WithOffset:
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-
-		case *TableName:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-			stack = append(stack, &stackItem{node: n.Table, visitor: v})
-
-		case *PathTableExpr:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.WithOffset, visitor: v})
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-			stack = append(stack, &stackItem{node: n.Path, visitor: v})
-
-		case *SubQueryTableExpr:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *ParenTableExpr:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.Source, visitor: v})
-
-		case *Join:
-			stack = append(stack, &stackItem{node: n.Cond, visitor: v})
-			stack = append(stack, &stackItem{node: n.Right, visitor: v})
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-
-		case *On:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *Using:
-			for i := len(n.Idents) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Idents[i], visitor: v})
-			}
-
-		case *TableSample:
-			stack = append(stack, &stackItem{node: n.Size, visitor: v})
-
-		case *TableSampleSize:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *BinaryExpr:
-			stack = append(stack, &stackItem{node: n.Right, visitor: v})
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-
-		case *UnaryExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *InExpr:
-			stack = append(stack, &stackItem{node: n.Right, visitor: v})
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-
-		case *UnnestInCondition:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *SubQueryInCondition:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *ValuesInCondition:
-			for i := len(n.Exprs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
-			}
-
-		case *IsNullExpr:
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-
-		case *IsBoolExpr:
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-
-		case *BetweenExpr:
-			stack = append(stack, &stackItem{node: n.RightEnd, visitor: v})
-			stack = append(stack, &stackItem{node: n.RightStart, visitor: v})
-			stack = append(stack, &stackItem{node: n.Left, visitor: v})
-
-		case *SelectorExpr:
-			stack = append(stack, &stackItem{node: n.Ident, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *IndexExpr:
-			stack = append(stack, &stackItem{node: n.Index, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *SubscriptSpecifierKeyword:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *CallExpr:
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-			stack = append(stack, &stackItem{node: n.Having, visitor: v})
-			stack = append(stack, &stackItem{node: n.NullHandling, visitor: v})
-			for i := len(n.NamedArgs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
-			}
-			for i := len(n.Args) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Func, visitor: v})
-
-		case *TVFCallExpr:
-			stack = append(stack, &stackItem{node: n.Sample, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-			for i := len(n.NamedArgs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
-			}
-			for i := len(n.Args) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ExprArg:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *IntervalArg:
-			stack = append(stack, &stackItem{node: n.Unit, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *SequenceArg:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *LambdaArg:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-			for i := len(n.Args) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
-			}
-
-		case *ModelArg:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *TableArg:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *NamedArg:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *IgnoreNulls:
-			// nothing to do
-
-		case *RespectNulls:
-			// nothing to do
-
-		case *HavingMax:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *HavingMin:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *CountStarExpr:
-			// nothing to do
-
-		case *ExtractExpr:
-			stack = append(stack, &stackItem{node: n.AtTimeZone, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-			stack = append(stack, &stackItem{node: n.Part, visitor: v})
-
-		case *ReplaceFieldsArg:
-			stack = append(stack, &stackItem{node: n.Field, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *ReplaceFieldsExpr:
-			for i := len(n.Fields) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *AtTimeZone:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *WithExprVar:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *WithExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-			for i := len(n.Vars) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Vars[i], visitor: v})
-			}
-
-		case *CastExpr:
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *CaseExpr:
-			stack = append(stack, &stackItem{node: n.Else, visitor: v})
-			for i := len(n.Whens) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Whens[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *CaseWhen:
-			stack = append(stack, &stackItem{node: n.Then, visitor: v})
-			stack = append(stack, &stackItem{node: n.Cond, visitor: v})
-
-		case *CaseElse:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *IfExpr:
-			stack = append(stack, &stackItem{node: n.ElseResult, visitor: v})
-			stack = append(stack, &stackItem{node: n.TrueResult, visitor: v})
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *ParenExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *ScalarSubQuery:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *ArraySubQuery:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *ExistsSubQuery:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-			stack = append(stack, &stackItem{node: n.Hint, visitor: v})
-
-		case *Param:
-			// nothing to do
-
-		case *Ident:
-			// nothing to do
-
-		case *Path:
-			for i := len(n.Idents) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Idents[i], visitor: v})
-			}
-
-		case *ArrayLiteral:
-			for i := len(n.Values) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-
-		case *TupleStructLiteral:
-			for i := len(n.Values) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
-			}
-
-		case *TypedStructLiteral:
-			for i := len(n.Values) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
-			}
-			for i := len(n.Fields) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
-			}
-
-		case *TypelessStructLiteral:
-			for i := len(n.Values) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
-			}
-
-		case *NullLiteral:
-			// nothing to do
-
-		case *BoolLiteral:
-			// nothing to do
-
-		case *IntLiteral:
-			// nothing to do
-
-		case *FloatLiteral:
-			// nothing to do
-
-		case *StringLiteral:
-			// nothing to do
-
-		case *BytesLiteral:
-			// nothing to do
-
-		case *DateLiteral:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *TimestampLiteral:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *NumericLiteral:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *JSONLiteral:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-
-		case *NewConstructor:
-			for i := len(n.Args) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-
-		case *BracedNewConstructor:
-			stack = append(stack, &stackItem{node: n.Body, visitor: v})
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-
-		case *BracedConstructor:
-			for i := len(n.Fields) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
-			}
-
-		case *BracedConstructorField:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *BracedConstructorFieldValueExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *SimpleType:
-			// nothing to do
-
-		case *ArrayType:
-			stack = append(stack, &stackItem{node: n.Item, visitor: v})
-
-		case *StructType:
-			for i := len(n.Fields) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
-			}
-
-		case *StructField:
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-			stack = append(stack, &stackItem{node: n.Ident, visitor: v})
-
-		case *NamedType:
-			for i := len(n.Path) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Path[i], visitor: v})
-			}
-
-		case *CastIntValue:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *CastNumValue:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *Options:
-			for i := len(n.Records) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Records[i], visitor: v})
-			}
-
-		case *OptionsDef:
-			stack = append(stack, &stackItem{node: n.Value, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateSchema:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropSchema:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateDatabase:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterDatabase:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreatePlacement:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ProtoBundleTypes:
-			for i := len(n.Types) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Types[i], visitor: v})
-			}
-
-		case *CreateProtoBundle:
-			stack = append(stack, &stackItem{node: n.Types, visitor: v})
-
-		case *AlterProtoBundle:
-			stack = append(stack, &stackItem{node: n.Delete, visitor: v})
-			stack = append(stack, &stackItem{node: n.Update, visitor: v})
-			stack = append(stack, &stackItem{node: n.Insert, visitor: v})
-
-		case *AlterProtoBundleInsert:
-			stack = append(stack, &stackItem{node: n.Types, visitor: v})
-
-		case *AlterProtoBundleUpdate:
-			stack = append(stack, &stackItem{node: n.Types, visitor: v})
-
-		case *AlterProtoBundleDelete:
-			stack = append(stack, &stackItem{node: n.Types, visitor: v})
-
-		case *DropProtoBundle:
-			// nothing to do
-
-		case *CreateTable:
-			stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
-			stack = append(stack, &stackItem{node: n.Cluster, visitor: v})
-			for i := len(n.Synonyms) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Synonyms[i], visitor: v})
-			}
-			for i := len(n.PrimaryKeys) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.PrimaryKeys[i], visitor: v})
-			}
-			for i := len(n.TableConstraints) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.TableConstraints[i], visitor: v})
-			}
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *Synonym:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateSequence:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			for i := len(n.Params) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Params[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *SkipRange:
-			stack = append(stack, &stackItem{node: n.Max, visitor: v})
-			stack = append(stack, &stackItem{node: n.Min, visitor: v})
-
-		case *StartCounterWith:
-			stack = append(stack, &stackItem{node: n.Counter, visitor: v})
-
-		case *BitReversedPositive:
-			// nothing to do
-
-		case *ColumnDef:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.DefaultSemantics, visitor: v})
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ColumnDefaultExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *GeneratedColumnExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *IdentityColumn:
-			for i := len(n.Params) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Params[i], visitor: v})
-			}
-
-		case *TableConstraint:
-			stack = append(stack, &stackItem{node: n.Constraint, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ForeignKey:
-			for i := len(n.ReferenceColumns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.ReferenceColumns[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.ReferenceTable, visitor: v})
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *Check:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *IndexKey:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *Cluster:
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *CreateRowDeletionPolicy:
-			stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
-
-		case *RowDeletionPolicy:
-			stack = append(stack, &stackItem{node: n.NumDays, visitor: v})
-			stack = append(stack, &stackItem{node: n.ColumnName, visitor: v})
-
-		case *CreateView:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropView:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterTable:
-			stack = append(stack, &stackItem{node: n.TableAlteration, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterIndex:
-			stack = append(stack, &stackItem{node: n.IndexAlteration, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterSequence:
-			stack = append(stack, &stackItem{node: n.NoSkipRange, visitor: v})
-			stack = append(stack, &stackItem{node: n.SkipRange, visitor: v})
-			stack = append(stack, &stackItem{node: n.RestartCounterWith, visitor: v})
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterChangeStream:
-			stack = append(stack, &stackItem{node: n.ChangeStreamAlteration, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AddSynonym:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropSynonym:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *RenameTo:
-			stack = append(stack, &stackItem{node: n.AddSynonym, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AddColumn:
-			stack = append(stack, &stackItem{node: n.Column, visitor: v})
-
-		case *AddTableConstraint:
-			stack = append(stack, &stackItem{node: n.TableConstraint, visitor: v})
-
-		case *AddRowDeletionPolicy:
-			stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
-
-		case *DropColumn:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropConstraint:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropRowDeletionPolicy:
-			// nothing to do
-
-		case *ReplaceRowDeletionPolicy:
-			stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
-
-		case *SetOnDelete:
-			// nothing to do
-
-		case *AlterColumn:
-			stack = append(stack, &stackItem{node: n.Alteration, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterColumnType:
-			stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
-			stack = append(stack, &stackItem{node: n.Type, visitor: v})
-
-		case *AlterColumnSetOptions:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-
-		case *AlterColumnSetDefault:
-			stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
-
-		case *AlterColumnDropDefault:
-			// nothing to do
-
-		case *AlterColumnAlterIdentity:
-			stack = append(stack, &stackItem{node: n.Alteration, visitor: v})
-
-		case *RestartCounterWith:
-			stack = append(stack, &stackItem{node: n.Counter, visitor: v})
-
-		case *SetSkipRange:
-			stack = append(stack, &stackItem{node: n.SkipRange, visitor: v})
-
-		case *NoSkipRange:
-			// nothing to do
-
-		case *SetNoSkipRange:
-			stack = append(stack, &stackItem{node: n.NoSkipRange, visitor: v})
-
-		case *DropTable:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *RenameTable:
-			for i := len(n.Tos) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Tos[i], visitor: v})
-			}
-
-		case *RenameTableTo:
-			stack = append(stack, &stackItem{node: n.New, visitor: v})
-			stack = append(stack, &stackItem{node: n.Old, visitor: v})
-
-		case *CreateIndex:
-			stack = append(stack, &stackItem{node: n.InterleaveIn, visitor: v})
-			stack = append(stack, &stackItem{node: n.Storing, visitor: v})
-			for i := len(n.Keys) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Keys[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateVectorIndex:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Where, visitor: v})
-			stack = append(stack, &stackItem{node: n.ColumnName, visitor: v})
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateChangeStream:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.For, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ChangeStreamForAll:
-			// nothing to do
-
-		case *ChangeStreamForTables:
-			for i := len(n.Tables) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Tables[i], visitor: v})
-			}
-
-		case *ChangeStreamForTable:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *ChangeStreamSetFor:
-			stack = append(stack, &stackItem{node: n.For, visitor: v})
-
-		case *ChangeStreamDropForAll:
-			// nothing to do
-
-		case *ChangeStreamSetOptions:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-
-		case *Storing:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *InterleaveIn:
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *AddStoredColumn:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropStoredColumn:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropIndex:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropVectorIndex:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropSequence:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateRole:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropRole:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropChangeStream:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *Grant:
-			for i := len(n.Roles) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Roles[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Privilege, visitor: v})
-
-		case *Revoke:
-			for i := len(n.Roles) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Roles[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Privilege, visitor: v})
-
-		case *PrivilegeOnTable:
-			for i := len(n.Names) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
-			}
-			for i := len(n.Privileges) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Privileges[i], visitor: v})
-			}
-
-		case *SelectPrivilege:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *InsertPrivilege:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *UpdatePrivilege:
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-
-		case *DeletePrivilege:
-			// nothing to do
-
-		case *SelectPrivilegeOnChangeStream:
-			for i := len(n.Names) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
-			}
-
-		case *SelectPrivilegeOnView:
-			for i := len(n.Names) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
-			}
-
-		case *ExecutePrivilegeOnTableFunction:
-			for i := len(n.Names) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
-			}
-
-		case *RolePrivilege:
-			for i := len(n.Names) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
-			}
-
-		case *AlterStatistics:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *Analyze:
-			// nothing to do
-
-		case *CreateModelColumn:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.DataType, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *CreateModelInputOutput:
-			for i := len(n.OutputColumns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.OutputColumns[i], visitor: v})
-			}
-			for i := len(n.InputColumns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.InputColumns[i], visitor: v})
-			}
-
-		case *CreateModel:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.InputOutput, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterModel:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropModel:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *ScalarSchemaType:
-			// nothing to do
-
-		case *SizedSchemaType:
-			stack = append(stack, &stackItem{node: n.Size, visitor: v})
-
-		case *ArraySchemaType:
-			for i := len(n.NamedArgs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Item, visitor: v})
-
-		case *CreateSearchIndex:
-			stack = append(stack, &stackItem{node: n.Options, visitor: v})
-			stack = append(stack, &stackItem{node: n.Interleave, visitor: v})
-			stack = append(stack, &stackItem{node: n.Where, visitor: v})
-			stack = append(stack, &stackItem{node: n.OrderBy, visitor: v})
-			for i := len(n.PartitionColumns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.PartitionColumns[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Storing, visitor: v})
-			for i := len(n.TokenListPart) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.TokenListPart[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *DropSearchIndex:
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *AlterSearchIndex:
-			stack = append(stack, &stackItem{node: n.IndexAlteration, visitor: v})
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
-
-		case *WithAction:
-			stack = append(stack, &stackItem{node: n.Alias, visitor: v})
-
-		case *ThenReturn:
-			for i := len(n.Items) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Items[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.WithAction, visitor: v})
-
-		case *Insert:
-			stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
-			stack = append(stack, &stackItem{node: n.Input, visitor: v})
-			for i := len(n.Columns) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *ValuesInput:
-			for i := len(n.Rows) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Rows[i], visitor: v})
-			}
-
-		case *ValuesRow:
-			for i := len(n.Exprs) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
-			}
-
-		case *DefaultExpr:
-			stack = append(stack, &stackItem{node: n.Expr, visitor: v})
-
-		case *SubQueryInput:
-			stack = append(stack, &stackItem{node: n.Query, visitor: v})
-
-		case *Delete:
-			stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
-			stack = append(stack, &stackItem{node: n.Where, visitor: v})
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *Update:
-			stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
-			stack = append(stack, &stackItem{node: n.Where, visitor: v})
-			for i := len(n.Updates) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Updates[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.As, visitor: v})
-			stack = append(stack, &stackItem{node: n.TableName, visitor: v})
-
-		case *UpdateItem:
-			stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
-			for i := len(n.Path) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Path[i], visitor: v})
-			}
-
-		case *Call:
-			for i := len(n.Args) - 1; i >= 0; i -- {
-				stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
-			}
-			stack = append(stack, &stackItem{node: n.Name, visitor: v})
+	case *BadNode:
+		// nothing to do
+
+	case *BadStatement:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *BadQueryExpr:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *BadExpr:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *BadType:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *BadDDL:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *BadDML:
+		stack = append(stack, &stackItem{node: n.BadNode, visitor: v})
+
+	case *QueryStatement:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+
+	case *Query:
+		for i := len(n.PipeOperators) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.PipeOperators[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Limit, visitor: v})
+		stack = append(stack, &stackItem{node: n.OrderBy, visitor: v})
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+		stack = append(stack, &stackItem{node: n.With, visitor: v})
+
+	case *Hint:
+		for i := len(n.Records) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Records[i], visitor: v})
+		}
+
+	case *HintRecord:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+		stack = append(stack, &stackItem{node: n.Key, visitor: v})
+
+	case *With:
+		for i := len(n.CTEs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.CTEs[i], visitor: v})
+		}
+
+	case *CTE:
+		stack = append(stack, &stackItem{node: n.QueryExpr, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *Select:
+		stack = append(stack, &stackItem{node: n.Having, visitor: v})
+		stack = append(stack, &stackItem{node: n.GroupBy, visitor: v})
+		stack = append(stack, &stackItem{node: n.Where, visitor: v})
+		stack = append(stack, &stackItem{node: n.From, visitor: v})
+		for i := len(n.Results) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Results[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+
+	case *AsStruct:
+		// nothing to do
+
+	case *AsValue:
+		// nothing to do
+
+	case *AsTypeName:
+		stack = append(stack, &stackItem{node: n.TypeName, visitor: v})
+
+	case *FromQuery:
+		stack = append(stack, &stackItem{node: n.From, visitor: v})
+
+	case *CompoundQuery:
+		for i := len(n.Queries) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Queries[i], visitor: v})
+		}
+
+	case *SubQuery:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *StarModifierExcept:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *StarModifierReplaceItem:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *StarModifierReplace:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *Star:
+		stack = append(stack, &stackItem{node: n.Replace, visitor: v})
+		stack = append(stack, &stackItem{node: n.Except, visitor: v})
+
+	case *DotStar:
+		stack = append(stack, &stackItem{node: n.Replace, visitor: v})
+		stack = append(stack, &stackItem{node: n.Except, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *Alias:
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *AsAlias:
+		stack = append(stack, &stackItem{node: n.Alias, visitor: v})
+
+	case *ExprSelectItem:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *From:
+		stack = append(stack, &stackItem{node: n.Source, visitor: v})
+
+	case *Where:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *GroupBy:
+		for i := len(n.Exprs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
+		}
+
+	case *Having:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *OrderBy:
+		for i := len(n.Items) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Items[i], visitor: v})
+		}
+
+	case *OrderByItem:
+		stack = append(stack, &stackItem{node: n.Collate, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *Collate:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *Limit:
+		stack = append(stack, &stackItem{node: n.Offset, visitor: v})
+		stack = append(stack, &stackItem{node: n.Count, visitor: v})
+
+	case *Offset:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *PipeSelect:
+		for i := len(n.Results) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Results[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+
+	case *PipeWhere:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *Unnest:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.WithOffset, visitor: v})
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *WithOffset:
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+
+	case *TableName:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+		stack = append(stack, &stackItem{node: n.Table, visitor: v})
+
+	case *PathTableExpr:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.WithOffset, visitor: v})
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+		stack = append(stack, &stackItem{node: n.Path, visitor: v})
+
+	case *SubQueryTableExpr:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *ParenTableExpr:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.Source, visitor: v})
+
+	case *Join:
+		stack = append(stack, &stackItem{node: n.Cond, visitor: v})
+		stack = append(stack, &stackItem{node: n.Right, visitor: v})
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+
+	case *On:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *Using:
+		for i := len(n.Idents) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Idents[i], visitor: v})
+		}
+
+	case *TableSample:
+		stack = append(stack, &stackItem{node: n.Size, visitor: v})
+
+	case *TableSampleSize:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *BinaryExpr:
+		stack = append(stack, &stackItem{node: n.Right, visitor: v})
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+
+	case *UnaryExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *InExpr:
+		stack = append(stack, &stackItem{node: n.Right, visitor: v})
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+
+	case *UnnestInCondition:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *SubQueryInCondition:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *ValuesInCondition:
+		for i := len(n.Exprs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
+		}
+
+	case *IsNullExpr:
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+
+	case *IsBoolExpr:
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+
+	case *BetweenExpr:
+		stack = append(stack, &stackItem{node: n.RightEnd, visitor: v})
+		stack = append(stack, &stackItem{node: n.RightStart, visitor: v})
+		stack = append(stack, &stackItem{node: n.Left, visitor: v})
+
+	case *SelectorExpr:
+		stack = append(stack, &stackItem{node: n.Ident, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *IndexExpr:
+		stack = append(stack, &stackItem{node: n.Index, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *SubscriptSpecifierKeyword:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *CallExpr:
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+		stack = append(stack, &stackItem{node: n.Having, visitor: v})
+		stack = append(stack, &stackItem{node: n.NullHandling, visitor: v})
+		for i := len(n.NamedArgs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
+		}
+		for i := len(n.Args) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Func, visitor: v})
+
+	case *TVFCallExpr:
+		stack = append(stack, &stackItem{node: n.Sample, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+		for i := len(n.NamedArgs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
+		}
+		for i := len(n.Args) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ExprArg:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *IntervalArg:
+		stack = append(stack, &stackItem{node: n.Unit, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *SequenceArg:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *LambdaArg:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+		for i := len(n.Args) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
+		}
+
+	case *ModelArg:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *TableArg:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *NamedArg:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *IgnoreNulls:
+		// nothing to do
+
+	case *RespectNulls:
+		// nothing to do
+
+	case *HavingMax:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *HavingMin:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *CountStarExpr:
+		// nothing to do
+
+	case *ExtractExpr:
+		stack = append(stack, &stackItem{node: n.AtTimeZone, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+		stack = append(stack, &stackItem{node: n.Part, visitor: v})
+
+	case *ReplaceFieldsArg:
+		stack = append(stack, &stackItem{node: n.Field, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *ReplaceFieldsExpr:
+		for i := len(n.Fields) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *AtTimeZone:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *WithExprVar:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *WithExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+		for i := len(n.Vars) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Vars[i], visitor: v})
+		}
+
+	case *CastExpr:
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *CaseExpr:
+		stack = append(stack, &stackItem{node: n.Else, visitor: v})
+		for i := len(n.Whens) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Whens[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *CaseWhen:
+		stack = append(stack, &stackItem{node: n.Then, visitor: v})
+		stack = append(stack, &stackItem{node: n.Cond, visitor: v})
+
+	case *CaseElse:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *IfExpr:
+		stack = append(stack, &stackItem{node: n.ElseResult, visitor: v})
+		stack = append(stack, &stackItem{node: n.TrueResult, visitor: v})
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *ParenExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *ScalarSubQuery:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *ArraySubQuery:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *ExistsSubQuery:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+		stack = append(stack, &stackItem{node: n.Hint, visitor: v})
+
+	case *Param:
+		// nothing to do
+
+	case *Ident:
+		// nothing to do
+
+	case *Path:
+		for i := len(n.Idents) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Idents[i], visitor: v})
+		}
+
+	case *ArrayLiteral:
+		for i := len(n.Values) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+
+	case *TupleStructLiteral:
+		for i := len(n.Values) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
+		}
+
+	case *TypedStructLiteral:
+		for i := len(n.Values) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
+		}
+		for i := len(n.Fields) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
+		}
+
+	case *TypelessStructLiteral:
+		for i := len(n.Values) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Values[i], visitor: v})
+		}
+
+	case *NullLiteral:
+		// nothing to do
+
+	case *BoolLiteral:
+		// nothing to do
+
+	case *IntLiteral:
+		// nothing to do
+
+	case *FloatLiteral:
+		// nothing to do
+
+	case *StringLiteral:
+		// nothing to do
+
+	case *BytesLiteral:
+		// nothing to do
+
+	case *DateLiteral:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *TimestampLiteral:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *NumericLiteral:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *JSONLiteral:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+
+	case *NewConstructor:
+		for i := len(n.Args) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+
+	case *BracedNewConstructor:
+		stack = append(stack, &stackItem{node: n.Body, visitor: v})
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+
+	case *BracedConstructor:
+		for i := len(n.Fields) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
+		}
+
+	case *BracedConstructorField:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *BracedConstructorFieldValueExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *SimpleType:
+		// nothing to do
+
+	case *ArrayType:
+		stack = append(stack, &stackItem{node: n.Item, visitor: v})
+
+	case *StructType:
+		for i := len(n.Fields) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Fields[i], visitor: v})
+		}
+
+	case *StructField:
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+		stack = append(stack, &stackItem{node: n.Ident, visitor: v})
+
+	case *NamedType:
+		for i := len(n.Path) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Path[i], visitor: v})
+		}
+
+	case *CastIntValue:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *CastNumValue:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *Options:
+		for i := len(n.Records) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Records[i], visitor: v})
+		}
+
+	case *OptionsDef:
+		stack = append(stack, &stackItem{node: n.Value, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateSchema:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropSchema:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateDatabase:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterDatabase:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreatePlacement:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ProtoBundleTypes:
+		for i := len(n.Types) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Types[i], visitor: v})
+		}
+
+	case *CreateProtoBundle:
+		stack = append(stack, &stackItem{node: n.Types, visitor: v})
+
+	case *AlterProtoBundle:
+		stack = append(stack, &stackItem{node: n.Delete, visitor: v})
+		stack = append(stack, &stackItem{node: n.Update, visitor: v})
+		stack = append(stack, &stackItem{node: n.Insert, visitor: v})
+
+	case *AlterProtoBundleInsert:
+		stack = append(stack, &stackItem{node: n.Types, visitor: v})
+
+	case *AlterProtoBundleUpdate:
+		stack = append(stack, &stackItem{node: n.Types, visitor: v})
+
+	case *AlterProtoBundleDelete:
+		stack = append(stack, &stackItem{node: n.Types, visitor: v})
+
+	case *DropProtoBundle:
+		// nothing to do
+
+	case *CreateTable:
+		stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
+		stack = append(stack, &stackItem{node: n.Cluster, visitor: v})
+		for i := len(n.Synonyms) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Synonyms[i], visitor: v})
+		}
+		for i := len(n.PrimaryKeys) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.PrimaryKeys[i], visitor: v})
+		}
+		for i := len(n.TableConstraints) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.TableConstraints[i], visitor: v})
+		}
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *Synonym:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateSequence:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		for i := len(n.Params) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Params[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *SkipRange:
+		stack = append(stack, &stackItem{node: n.Max, visitor: v})
+		stack = append(stack, &stackItem{node: n.Min, visitor: v})
+
+	case *StartCounterWith:
+		stack = append(stack, &stackItem{node: n.Counter, visitor: v})
+
+	case *BitReversedPositive:
+		// nothing to do
+
+	case *ColumnDef:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.DefaultSemantics, visitor: v})
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ColumnDefaultExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *GeneratedColumnExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *IdentityColumn:
+		for i := len(n.Params) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Params[i], visitor: v})
+		}
+
+	case *TableConstraint:
+		stack = append(stack, &stackItem{node: n.Constraint, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ForeignKey:
+		for i := len(n.ReferenceColumns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.ReferenceColumns[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.ReferenceTable, visitor: v})
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *Check:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *IndexKey:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *Cluster:
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *CreateRowDeletionPolicy:
+		stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
+
+	case *RowDeletionPolicy:
+		stack = append(stack, &stackItem{node: n.NumDays, visitor: v})
+		stack = append(stack, &stackItem{node: n.ColumnName, visitor: v})
+
+	case *CreateView:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropView:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterTable:
+		stack = append(stack, &stackItem{node: n.TableAlteration, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterIndex:
+		stack = append(stack, &stackItem{node: n.IndexAlteration, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterSequence:
+		stack = append(stack, &stackItem{node: n.NoSkipRange, visitor: v})
+		stack = append(stack, &stackItem{node: n.SkipRange, visitor: v})
+		stack = append(stack, &stackItem{node: n.RestartCounterWith, visitor: v})
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterChangeStream:
+		stack = append(stack, &stackItem{node: n.ChangeStreamAlteration, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AddSynonym:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropSynonym:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *RenameTo:
+		stack = append(stack, &stackItem{node: n.AddSynonym, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AddColumn:
+		stack = append(stack, &stackItem{node: n.Column, visitor: v})
+
+	case *AddTableConstraint:
+		stack = append(stack, &stackItem{node: n.TableConstraint, visitor: v})
+
+	case *AddRowDeletionPolicy:
+		stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
+
+	case *DropColumn:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropConstraint:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropRowDeletionPolicy:
+		// nothing to do
+
+	case *ReplaceRowDeletionPolicy:
+		stack = append(stack, &stackItem{node: n.RowDeletionPolicy, visitor: v})
+
+	case *SetOnDelete:
+		// nothing to do
+
+	case *AlterColumn:
+		stack = append(stack, &stackItem{node: n.Alteration, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterColumnType:
+		stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
+		stack = append(stack, &stackItem{node: n.Type, visitor: v})
+
+	case *AlterColumnSetOptions:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+
+	case *AlterColumnSetDefault:
+		stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
+
+	case *AlterColumnDropDefault:
+		// nothing to do
+
+	case *AlterColumnAlterIdentity:
+		stack = append(stack, &stackItem{node: n.Alteration, visitor: v})
+
+	case *RestartCounterWith:
+		stack = append(stack, &stackItem{node: n.Counter, visitor: v})
+
+	case *SetSkipRange:
+		stack = append(stack, &stackItem{node: n.SkipRange, visitor: v})
+
+	case *NoSkipRange:
+		// nothing to do
+
+	case *SetNoSkipRange:
+		stack = append(stack, &stackItem{node: n.NoSkipRange, visitor: v})
+
+	case *DropTable:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *RenameTable:
+		for i := len(n.Tos) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Tos[i], visitor: v})
+		}
+
+	case *RenameTableTo:
+		stack = append(stack, &stackItem{node: n.New, visitor: v})
+		stack = append(stack, &stackItem{node: n.Old, visitor: v})
+
+	case *CreateIndex:
+		stack = append(stack, &stackItem{node: n.InterleaveIn, visitor: v})
+		stack = append(stack, &stackItem{node: n.Storing, visitor: v})
+		for i := len(n.Keys) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Keys[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateVectorIndex:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Where, visitor: v})
+		stack = append(stack, &stackItem{node: n.ColumnName, visitor: v})
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateChangeStream:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.For, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ChangeStreamForAll:
+		// nothing to do
+
+	case *ChangeStreamForTables:
+		for i := len(n.Tables) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Tables[i], visitor: v})
+		}
+
+	case *ChangeStreamForTable:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *ChangeStreamSetFor:
+		stack = append(stack, &stackItem{node: n.For, visitor: v})
+
+	case *ChangeStreamDropForAll:
+		// nothing to do
+
+	case *ChangeStreamSetOptions:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+
+	case *Storing:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *InterleaveIn:
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *AddStoredColumn:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropStoredColumn:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropIndex:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropVectorIndex:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropSequence:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateRole:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropRole:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropChangeStream:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *Grant:
+		for i := len(n.Roles) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Roles[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Privilege, visitor: v})
+
+	case *Revoke:
+		for i := len(n.Roles) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Roles[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Privilege, visitor: v})
+
+	case *PrivilegeOnTable:
+		for i := len(n.Names) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
+		}
+		for i := len(n.Privileges) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Privileges[i], visitor: v})
+		}
+
+	case *SelectPrivilege:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *InsertPrivilege:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *UpdatePrivilege:
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+
+	case *DeletePrivilege:
+		// nothing to do
+
+	case *SelectPrivilegeOnChangeStream:
+		for i := len(n.Names) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
+		}
+
+	case *SelectPrivilegeOnView:
+		for i := len(n.Names) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
+		}
+
+	case *ExecutePrivilegeOnTableFunction:
+		for i := len(n.Names) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
+		}
+
+	case *RolePrivilege:
+		for i := len(n.Names) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Names[i], visitor: v})
+		}
+
+	case *AlterStatistics:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *Analyze:
+		// nothing to do
+
+	case *CreateModelColumn:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.DataType, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *CreateModelInputOutput:
+		for i := len(n.OutputColumns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.OutputColumns[i], visitor: v})
+		}
+		for i := len(n.InputColumns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.InputColumns[i], visitor: v})
+		}
+
+	case *CreateModel:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.InputOutput, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterModel:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropModel:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *ScalarSchemaType:
+		// nothing to do
+
+	case *SizedSchemaType:
+		stack = append(stack, &stackItem{node: n.Size, visitor: v})
+
+	case *ArraySchemaType:
+		for i := len(n.NamedArgs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.NamedArgs[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Item, visitor: v})
+
+	case *CreateSearchIndex:
+		stack = append(stack, &stackItem{node: n.Options, visitor: v})
+		stack = append(stack, &stackItem{node: n.Interleave, visitor: v})
+		stack = append(stack, &stackItem{node: n.Where, visitor: v})
+		stack = append(stack, &stackItem{node: n.OrderBy, visitor: v})
+		for i := len(n.PartitionColumns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.PartitionColumns[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Storing, visitor: v})
+		for i := len(n.TokenListPart) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.TokenListPart[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *DropSearchIndex:
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *AlterSearchIndex:
+		stack = append(stack, &stackItem{node: n.IndexAlteration, visitor: v})
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
+
+	case *WithAction:
+		stack = append(stack, &stackItem{node: n.Alias, visitor: v})
+
+	case *ThenReturn:
+		for i := len(n.Items) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Items[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.WithAction, visitor: v})
+
+	case *Insert:
+		stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
+		stack = append(stack, &stackItem{node: n.Input, visitor: v})
+		for i := len(n.Columns) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Columns[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *ValuesInput:
+		for i := len(n.Rows) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Rows[i], visitor: v})
+		}
+
+	case *ValuesRow:
+		for i := len(n.Exprs) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Exprs[i], visitor: v})
+		}
+
+	case *DefaultExpr:
+		stack = append(stack, &stackItem{node: n.Expr, visitor: v})
+
+	case *SubQueryInput:
+		stack = append(stack, &stackItem{node: n.Query, visitor: v})
+
+	case *Delete:
+		stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
+		stack = append(stack, &stackItem{node: n.Where, visitor: v})
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *Update:
+		stack = append(stack, &stackItem{node: n.ThenReturn, visitor: v})
+		stack = append(stack, &stackItem{node: n.Where, visitor: v})
+		for i := len(n.Updates) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Updates[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.As, visitor: v})
+		stack = append(stack, &stackItem{node: n.TableName, visitor: v})
+
+	case *UpdateItem:
+		stack = append(stack, &stackItem{node: n.DefaultExpr, visitor: v})
+		for i := len(n.Path) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Path[i], visitor: v})
+		}
+
+	case *Call:
+		for i := len(n.Args) - 1; i >= 0; i -- {
+			stack = append(stack, &stackItem{node: n.Args[i], visitor: v})
+		}
+		stack = append(stack, &stackItem{node: n.Name, visitor: v})
 	}
 	return stack
 }
