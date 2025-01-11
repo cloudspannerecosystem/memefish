@@ -248,6 +248,8 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]*NodeInterfaceDef, co
 		switch t.Name {
 		case "bool":
 			return BoolType, nil
+		case "byte":
+			return ByteType, nil
 		case "int":
 			return IntType, nil
 		case "string":

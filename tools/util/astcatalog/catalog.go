@@ -86,6 +86,7 @@ type PrimitiveType string
 // PrimitiveType values.
 const (
 	BoolType       PrimitiveType = "bool"
+	ByteType       PrimitiveType = "byte"
 	IntType        PrimitiveType = "int"
 	StringType     PrimitiveType = "string"
 	TokenPosType   PrimitiveType = "token.Pos"
