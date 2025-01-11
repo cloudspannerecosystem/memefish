@@ -1943,11 +1943,11 @@ func (p *PropertyGraphDestinationKey) End() token.Pos {
 }
 
 func (p *PropertyGraphColumnNameList) Pos() token.Pos {
-	return p.LParen
+	return p.Lparen
 }
 
 func (p *PropertyGraphColumnNameList) End() token.Pos {
-	return posAdd(p.RParen, 1)
+	return posAdd(p.Rparen, 1)
 }
 
 func (p *PropertyGraphNoProperties) Pos() token.Pos {

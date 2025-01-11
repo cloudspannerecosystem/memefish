@@ -4740,8 +4740,8 @@ func (p *Parser) parsePropertyGraphColumnNameList() *ast.PropertyGraphColumnName
 	rparen := p.expect(")").Pos
 
 	return &ast.PropertyGraphColumnNameList{
-		LParen:         lparen,
-		RParen:         rparen,
+		Lparen:         lparen,
+		Rparen:         rparen,
 		ColumnNameList: list,
 	}
 }

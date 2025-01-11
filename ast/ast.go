@@ -3754,7 +3754,7 @@ type PropertyGraphLabelAndPropertiesList struct {
 	// pos = LabelAndProperties[0].pos
 	// end = LabelAndProperties[$].end
 
-	LabelAndProperties []*PropertyGraphLabelAndProperties
+	LabelAndProperties []*PropertyGraphLabelAndProperties // len(LabelAndProperties) > 0
 }
 
 // PropertyGraphLabelAndProperties represents label and properties definition for a single label.
@@ -3855,9 +3855,11 @@ type PropertyGraphDestinationKey struct {
 //
 //	({{.ColumnNameList | sqlJoin ", "}})
 type PropertyGraphColumnNameList struct {
-	// pos = LParen
-	// end = RParen + 1
-	LParen, RParen token.Pos
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+
 	ColumnNameList []*Ident
 }
 
@@ -3878,8 +3880,9 @@ type PropertyGraphPropertiesAre struct {
 	// pos = Properties
 	// end = ExceptColumns.end || Columns + 7
 
-	Properties    token.Pos                    // position of "PROPERTIES"
-	Columns       token.Pos                    // position of "COLUMNS"
+	Properties token.Pos // position of "PROPERTIES"
+	Columns    token.Pos // position of "COLUMNS"
+
 	ExceptColumns *PropertyGraphColumnNameList // optional
 }
 
@@ -3914,7 +3917,8 @@ type DropPropertyGraph struct {
 	// pos = Drop
 	// end = Name.end
 
-	Drop     token.Pos
+	Drop token.Pos
+
 	IfExists bool
 	Name     *Ident
 }
