@@ -281,7 +281,7 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]*NodeInterfaceDef, co
 			return nil, err
 		}
 
-		return PointerType{Type: ty}, nil
+		return &PointerType{Type: ty}, nil
 	case *ast.ArrayType:
 		if t.Len != nil {
 			return nil, fmt.Errorf("unexpected array type: %#v", t)
@@ -292,7 +292,7 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]*NodeInterfaceDef, co
 			return nil, err
 		}
 
-		return SliceType{Type: ty}, nil
+		return &SliceType{Type: ty}, nil
 	default:
 		return nil, fmt.Errorf("unexpected type: %#v", t)
 	}

@@ -2527,19 +2527,6 @@ type IdentityColumn struct {
 	Params []SequenceParam //  if Rparen.Invalid() then len(Param) = 0 else len(Param) > 0
 }
 
-// ColumnDefOption is options for column definition.
-//
-//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
-type ColumnDefOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	AllowCommitTimestamp bool
-}
-
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
 //
 //	{{if .Name}}CONSTRAINT {{.Name}}{{end}}{{.Constraint | sql}}
@@ -3057,17 +3044,6 @@ type CreateVectorIndex struct {
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
 	Options *Options
-}
-
-// VectorIndexOption is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type VectorIndexOption struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
 }
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.

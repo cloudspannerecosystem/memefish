@@ -1158,14 +1158,6 @@ func (i *IdentityColumn) End() token.Pos {
 	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
 }
 
-func (c *ColumnDefOptions) Pos() token.Pos {
-	return c.Options
-}
-
-func (c *ColumnDefOptions) End() token.Pos {
-	return posAdd(c.Rparen, 1)
-}
-
 func (t *TableConstraint) Pos() token.Pos {
 	return posChoice(t.ConstraintPos, nodePos(wrapNode(t.Constraint)))
 }
@@ -1476,14 +1468,6 @@ func (c *CreateVectorIndex) Pos() token.Pos {
 
 func (c *CreateVectorIndex) End() token.Pos {
 	return nodeEnd(wrapNode(c.Options))
-}
-
-func (v *VectorIndexOption) Pos() token.Pos {
-	return nodePos(wrapNode(v.Key))
-}
-
-func (v *VectorIndexOption) End() token.Pos {
-	return nodeEnd(wrapNode(v.Value))
 }
 
 func (c *CreateChangeStream) Pos() token.Pos {
