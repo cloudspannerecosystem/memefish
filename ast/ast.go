@@ -3904,7 +3904,7 @@ type PropertyGraphDerivedProperty struct {
 	// end = (Alias ?? Expr).end
 
 	Expr  Expr
-	Alias *Ident //optional
+	Alias *Ident // optional
 }
 
 // DropPropertyGraph is DROP PROPERTY GRAPH statement node.
