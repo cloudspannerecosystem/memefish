@@ -22,7 +22,7 @@ var (
 
 		Example:
 
-		  $ go run ./tools/gen-ast-pos/main.go -infile ast/ast.go
+		  $ go run ./tools/gen-ast-pos/main.go -astfile ast/ast.go -constfile ast/ast_const.go
 		        Print the generated ast/pos.go to stdout.
 
 		Flags:
