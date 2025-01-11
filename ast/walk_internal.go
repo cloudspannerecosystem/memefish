@@ -30,27 +30,21 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Query:
-		for v, i := v.Field("PipeOperators"), len(n.PipeOperators) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.PipeOperators[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PipeOperators), visitor: v.Field("PipeOperators")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
 		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 		stack = append(stack, &stackItem{node: wrapNode(n.With), visitor: v.Field("With")})
 
 	case *Hint:
-		for v, i := v.Field("Records"), len(n.Records) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Records[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Records), visitor: v.Field("Records")})
 
 	case *HintRecord:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Key), visitor: v.Field("Key")})
 
 	case *With:
-		for v, i := v.Field("CTEs"), len(n.CTEs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.CTEs[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.CTEs), visitor: v.Field("CTEs")})
 
 	case *CTE:
 		stack = append(stack, &stackItem{node: wrapNode(n.QueryExpr), visitor: v.Field("QueryExpr")})
@@ -61,9 +55,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.GroupBy), visitor: v.Field("GroupBy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.From), visitor: v.Field("From")})
-		for v, i := v.Field("Results"), len(n.Results) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Results[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Results), visitor: v.Field("Results")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 
 	case *AsStruct:
@@ -79,26 +71,20 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.From), visitor: v.Field("From")})
 
 	case *CompoundQuery:
-		for v, i := v.Field("Queries"), len(n.Queries) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Queries[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Queries), visitor: v.Field("Queries")})
 
 	case *SubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *StarModifierExcept:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *StarModifierReplaceItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *StarModifierReplace:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *Star:
 		stack = append(stack, &stackItem{node: wrapNode(n.Replace), visitor: v.Field("Replace")})
@@ -126,17 +112,13 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GroupBy:
-		for v, i := v.Field("Exprs"), len(n.Exprs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Exprs[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *Having:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *OrderBy:
-		for v, i := v.Field("Items"), len(n.Items) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Items[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *OrderByItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
@@ -153,9 +135,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *PipeSelect:
-		for v, i := v.Field("Results"), len(n.Results) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Results[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Results), visitor: v.Field("Results")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 
 	case *PipeWhere:
@@ -196,16 +176,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *Join:
 		stack = append(stack, &stackItem{node: wrapNode(n.Cond), visitor: v.Field("Cond")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
-		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *On:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Using:
-		for v, i := v.Field("Idents"), len(n.Idents) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Idents[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Idents), visitor: v.Field("Idents")})
 
 	case *TableSample:
 		stack = append(stack, &stackItem{node: wrapNode(n.Size), visitor: v.Field("Size")})
@@ -231,9 +209,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ValuesInCondition:
-		for v, i := v.Field("Exprs"), len(n.Exprs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Exprs[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *IsNullExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
@@ -261,23 +237,15 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Having), visitor: v.Field("Having")})
 		stack = append(stack, &stackItem{node: wrapNode(n.NullHandling), visitor: v.Field("NullHandling")})
-		for v, i := v.Field("NamedArgs"), len(n.NamedArgs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.NamedArgs[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("Args"), len(n.Args) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Args[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Func), visitor: v.Field("Func")})
 
 	case *TVFCallExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
-		for v, i := v.Field("NamedArgs"), len(n.NamedArgs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.NamedArgs[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("Args"), len(n.Args) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Args[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ExprArg:
@@ -292,9 +260,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *LambdaArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
-		for v, i := v.Field("Args"), len(n.Args) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Args[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 
 	case *ModelArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
@@ -331,9 +297,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *ReplaceFieldsExpr:
-		for v, i := v.Field("Fields"), len(n.Fields) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Fields[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *AtTimeZone:
@@ -345,9 +309,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *WithExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
-		for v, i := v.Field("Vars"), len(n.Vars) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Vars[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Vars), visitor: v.Field("Vars")})
 
 	case *CastExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
@@ -355,9 +317,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *CaseExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Else), visitor: v.Field("Else")})
-		for v, i := v.Field("Whens"), len(n.Whens) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Whens[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Whens), visitor: v.Field("Whens")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *CaseWhen:
@@ -392,33 +352,21 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *Path:
-		for v, i := v.Field("Idents"), len(n.Idents) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Idents[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Idents), visitor: v.Field("Idents")})
 
 	case *ArrayLiteral:
-		for v, i := v.Field("Values"), len(n.Values) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Values[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *TupleStructLiteral:
-		for v, i := v.Field("Values"), len(n.Values) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Values[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 
 	case *TypedStructLiteral:
-		for v, i := v.Field("Values"), len(n.Values) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Values[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("Fields"), len(n.Fields) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Fields[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *TypelessStructLiteral:
-		for v, i := v.Field("Values"), len(n.Values) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Values[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 
 	case *NullLiteral:
 		// nothing to do
@@ -451,9 +399,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *NewConstructor:
-		for v, i := v.Field("Args"), len(n.Args) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Args[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *BracedNewConstructor:
@@ -461,9 +407,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *BracedConstructor:
-		for v, i := v.Field("Fields"), len(n.Fields) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Fields[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *BracedConstructorField:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
@@ -479,18 +423,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
 
 	case *StructType:
-		for v, i := v.Field("Fields"), len(n.Fields) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Fields[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *StructField:
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Ident), visitor: v.Field("Ident")})
 
 	case *NamedType:
-		for v, i := v.Field("Path"), len(n.Path) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Path[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Path), visitor: v.Field("Path")})
 
 	case *CastIntValue:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -499,9 +439,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Options:
-		for v, i := v.Field("Records"), len(n.Records) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Records[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Records), visitor: v.Field("Records")})
 
 	case *OptionsDef:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
@@ -525,9 +463,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ProtoBundleTypes:
-		for v, i := v.Field("Types"), len(n.Types) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Types[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Types), visitor: v.Field("Types")})
 
 	case *CreateProtoBundle:
 		stack = append(stack, &stackItem{node: wrapNode(n.Types), visitor: v.Field("Types")})
@@ -552,18 +488,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *CreateTable:
 		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Cluster), visitor: v.Field("Cluster")})
-		for v, i := v.Field("Synonyms"), len(n.Synonyms) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Synonyms[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("PrimaryKeys"), len(n.PrimaryKeys) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.PrimaryKeys[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("TableConstraints"), len(n.TableConstraints) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.TableConstraints[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Synonyms), visitor: v.Field("Synonyms")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PrimaryKeys), visitor: v.Field("PrimaryKeys")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TableConstraints), visitor: v.Field("TableConstraints")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Synonym:
@@ -571,9 +499,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *CreateSequence:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
-		for v, i := v.Field("Params"), len(n.Params) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Params[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *SkipRange:
@@ -599,22 +525,16 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IdentityColumn:
-		for v, i := v.Field("Params"), len(n.Params) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Params[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
 
 	case *TableConstraint:
 		stack = append(stack, &stackItem{node: wrapNode(n.Constraint), visitor: v.Field("Constraint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ForeignKey:
-		for v, i := v.Field("ReferenceColumns"), len(n.ReferenceColumns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.ReferenceColumns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceTable), visitor: v.Field("ReferenceTable")})
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *Check:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -728,9 +648,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *RenameTable:
-		for v, i := v.Field("Tos"), len(n.Tos) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Tos[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Tos), visitor: v.Field("Tos")})
 
 	case *RenameTableTo:
 		stack = append(stack, &stackItem{node: wrapNode(n.New), visitor: v.Field("New")})
@@ -739,9 +657,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *CreateIndex:
 		stack = append(stack, &stackItem{node: wrapNode(n.InterleaveIn), visitor: v.Field("InterleaveIn")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
-		for v, i := v.Field("Keys"), len(n.Keys) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Keys[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Keys), visitor: v.Field("Keys")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
@@ -761,14 +677,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *ChangeStreamForTables:
-		for v, i := v.Field("Tables"), len(n.Tables) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Tables[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Tables), visitor: v.Field("Tables")})
 
 	case *ChangeStreamForTable:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *ChangeStreamSetFor:
@@ -781,9 +693,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
 	case *Storing:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *InterleaveIn:
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
@@ -813,62 +723,40 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Grant:
-		for v, i := v.Field("Roles"), len(n.Roles) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Roles[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Roles), visitor: v.Field("Roles")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Privilege), visitor: v.Field("Privilege")})
 
 	case *Revoke:
-		for v, i := v.Field("Roles"), len(n.Roles) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Roles[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Roles), visitor: v.Field("Roles")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Privilege), visitor: v.Field("Privilege")})
 
 	case *PrivilegeOnTable:
-		for v, i := v.Field("Names"), len(n.Names) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Names[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("Privileges"), len(n.Privileges) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Privileges[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
 
 	case *SelectPrivilege:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *InsertPrivilege:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *UpdatePrivilege:
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *DeletePrivilege:
 		// nothing to do
 
 	case *SelectPrivilegeOnChangeStream:
-		for v, i := v.Field("Names"), len(n.Names) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Names[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *SelectPrivilegeOnView:
-		for v, i := v.Field("Names"), len(n.Names) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Names[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *ExecutePrivilegeOnTableFunction:
-		for v, i := v.Field("Names"), len(n.Names) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Names[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *RolePrivilege:
-		for v, i := v.Field("Names"), len(n.Names) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Names[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *AlterStatistics:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
@@ -883,12 +771,8 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateModelInputOutput:
-		for v, i := v.Field("OutputColumns"), len(n.OutputColumns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.OutputColumns[i]), visitor: v.Index(i)})
-		}
-		for v, i := v.Field("InputColumns"), len(n.InputColumns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.InputColumns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.OutputColumns), visitor: v.Field("OutputColumns")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.InputColumns), visitor: v.Field("InputColumns")})
 
 	case *CreateModel:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
@@ -909,9 +793,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Size), visitor: v.Field("Size")})
 
 	case *ArraySchemaType:
-		for v, i := v.Field("NamedArgs"), len(n.NamedArgs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.NamedArgs[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
 
 	case *CreateSearchIndex:
@@ -919,13 +801,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Interleave), visitor: v.Field("Interleave")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
-		for v, i := v.Field("PartitionColumns"), len(n.PartitionColumns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.PartitionColumns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PartitionColumns), visitor: v.Field("PartitionColumns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
-		for v, i := v.Field("TokenListPart"), len(n.TokenListPart) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.TokenListPart[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TokenListPart), visitor: v.Field("TokenListPart")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
@@ -940,28 +818,20 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
 	case *ThenReturn:
-		for v, i := v.Field("Items"), len(n.Items) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Items[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithAction), visitor: v.Field("WithAction")})
 
 	case *Insert:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Input), visitor: v.Field("Input")})
-		for v, i := v.Field("Columns"), len(n.Columns) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Columns[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *ValuesInput:
-		for v, i := v.Field("Rows"), len(n.Rows) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Rows[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Rows), visitor: v.Field("Rows")})
 
 	case *ValuesRow:
-		for v, i := v.Field("Exprs"), len(n.Exprs) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Exprs[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *DefaultExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -978,22 +848,16 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *Update:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
-		for v, i := v.Field("Updates"), len(n.Updates) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Updates[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Updates), visitor: v.Field("Updates")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *UpdateItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
-		for v, i := v.Field("Path"), len(n.Path) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Path[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Path), visitor: v.Field("Path")})
 
 	case *Call:
-		for v, i := v.Field("Args"), len(n.Args) - 1; i >= 0; i -- {
-			stack = append(stack, &stackItem{node: wrapNode(n.Args[i]), visitor: v.Index(i)})
-		}
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 	}
 	return stack
