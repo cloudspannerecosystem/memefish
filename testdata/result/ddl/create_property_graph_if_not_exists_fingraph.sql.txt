@@ -62,8 +62,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               Source: &ast.PropertyGraphSourceKey{
                 Source: 132,
                 Keys:   &ast.PropertyGraphColumnNameList{
-                  LParen:         143,
-                  RParen:         146,
+                  Lparen:         143,
+                  Rparen:         146,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 144,
@@ -78,8 +78,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                   Name:    "Person",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         166,
-                  RParen:         169,
+                  Lparen:         166,
+                  Rparen:         169,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 167,
@@ -92,8 +92,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               Destination: &ast.PropertyGraphDestinationKey{
                 Destination: 177,
                 Keys:        &ast.PropertyGraphColumnNameList{
-                  LParen:         193,
-                  RParen:         204,
+                  Lparen:         193,
+                  Rparen:         204,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 194,
@@ -108,8 +108,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                   Name:    "Account",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         225,
-                  RParen:         228,
+                  Lparen:         225,
+                  Rparen:         228,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 226,
@@ -145,8 +145,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               Source: &ast.PropertyGraphSourceKey{
                 Source: 281,
                 Keys:   &ast.PropertyGraphColumnNameList{
-                  LParen:         292,
-                  RParen:         295,
+                  Lparen:         292,
+                  Rparen:         295,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 293,
@@ -161,8 +161,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                   Name:    "Account",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         316,
-                  RParen:         319,
+                  Lparen:         316,
+                  Rparen:         319,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 317,
@@ -175,8 +175,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
               Destination: &ast.PropertyGraphDestinationKey{
                 Destination: 327,
                 Keys:        &ast.PropertyGraphColumnNameList{
-                  LParen:         343,
-                  RParen:         349,
+                  Lparen:         343,
+                  Rparen:         349,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 344,
@@ -191,8 +191,8 @@ CREATE PROPERTY GRAPH IF NOT EXISTS FinGraph
                   Name:    "Account",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         370,
-                  RParen:         373,
+                  Lparen:         370,
+                  Rparen:         373,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 371,

@@ -57,8 +57,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Key: &ast.PropertyGraphElementKey{
                 Key:  104,
                 Keys: &ast.PropertyGraphColumnNameList{
-                  LParen:         108,
-                  RParen:         111,
+                  Lparen:         108,
+                  Rparen:         111,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 109,
@@ -137,8 +137,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                 Properties:    577,
                 Columns:       596,
                 ExceptColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         611,
-                  RParen:         616,
+                  Lparen:         611,
+                  Rparen:         616,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 612,
@@ -174,8 +174,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Element: &ast.PropertyGraphElementKey{
                 Key:  703,
                 Keys: &ast.PropertyGraphColumnNameList{
-                  LParen:         707,
-                  RParen:         722,
+                  Lparen:         707,
+                  Rparen:         722,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 708,
@@ -193,8 +193,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Source: &ast.PropertyGraphSourceKey{
                 Source: 730,
                 Keys:   &ast.PropertyGraphColumnNameList{
-                  LParen:         741,
-                  RParen:         744,
+                  Lparen:         741,
+                  Rparen:         744,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 742,
@@ -212,8 +212,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Destination: &ast.PropertyGraphDestinationKey{
                 Destination: 809,
                 Keys:        &ast.PropertyGraphColumnNameList{
-                  LParen:         825,
-                  RParen:         836,
+                  Lparen:         825,
+                  Rparen:         836,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 826,
@@ -258,8 +258,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Source: &ast.PropertyGraphSourceKey{
                 Source: 983,
                 Keys:   &ast.PropertyGraphColumnNameList{
-                  LParen:         994,
-                  RParen:         997,
+                  Lparen:         994,
+                  Rparen:         997,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 995,
@@ -274,8 +274,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                   Name:    "Account",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         1018,
-                  RParen:         1021,
+                  Lparen:         1018,
+                  Rparen:         1021,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 1019,
@@ -288,8 +288,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
               Destination: &ast.PropertyGraphDestinationKey{
                 Destination: 1043,
                 Keys:        &ast.PropertyGraphColumnNameList{
-                  LParen:         1059,
-                  RParen:         1065,
+                  Lparen:         1059,
+                  Rparen:         1065,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 1060,
@@ -304,8 +304,8 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                   Name:    "Account",
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
-                  LParen:         1086,
-                  RParen:         1089,
+                  Lparen:         1086,
+                  Rparen:         1089,
                   ColumnNameList: []*ast.Ident{
                     &ast.Ident{
                       NamePos: 1087,
