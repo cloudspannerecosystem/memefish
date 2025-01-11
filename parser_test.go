@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"testing"
 
@@ -16,11 +15,51 @@ import (
 
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
-	"github.com/cloudspannerecosystem/memefish/internal"
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
 var update = flag.Bool("update", false, "update result files")
+
+type pathVisitor struct {
+	f      func(path string, node ast.Node, parent ast.Node) bool
+	path   string
+	parent ast.Node
+}
+
+func (v *pathVisitor) Visit(node ast.Node) ast.Visitor {
+	ok := v.f(v.path, node, v.parent)
+	if !ok {
+		return nil
+	}
+
+	return &pathVisitor{
+		f:      v.f,
+		path:   v.path,
+		parent: node,
+	}
+}
+
+func (v *pathVisitor) Field(name string) ast.Visitor {
+	path := v.path
+	if len(path) > 0 {
+		path = path + "."
+	}
+	path = path + name
+
+	return &pathVisitor{
+		f:      v.f,
+		path:   path,
+		parent: v.parent,
+	}
+}
+
+func (v *pathVisitor) Index(index int) ast.Visitor {
+	return &pathVisitor{
+		f:      v.f,
+		path:   fmt.Sprintf("%s[%d]", v.path, index),
+		parent: v.parent,
+	}
+}
 
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
 	if *update {
@@ -87,32 +126,24 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 
 			// pos/end test
 			if !bad {
-				internal.Inspect(node, func(path []string, node ast.Node) bool {
-					if node == nil {
-						return false
-					}
-
-					if node.End() <= node.Pos() {
-						t.Errorf("pos must be smaller than end, but got pos: %v, end: %v on %v: %v", node.Pos(), node.End(), strings.Join(path, ""), node.SQL())
-						return false
-					}
-
-					internal.Inspect(node, func(childPath []string, child ast.Node) bool {
-						if child == nil {
+				ast.Walk(node, &pathVisitor{
+					f: func(path string, node ast.Node, parent ast.Node) bool {
+						if node.End() <= node.Pos() {
+							t.Errorf("pos must be smaller than end, but got pos: %v, end: %v on %v: %v", node.Pos(), node.End(), path, node.SQL())
 							return false
 						}
 
-						// skip itself
-						if node == child {
+						if parent == nil {
 							return true
 						}
 
-						if child.Pos() < node.Pos() || node.End() < child.End() {
-							t.Errorf("child position must be in node position (%v, %v], but got (%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), strings.Join(slices.Concat(path, childPath[1:]), ""), child.SQL())
+						if node.Pos() < parent.Pos() || parent.End() < node.End() {
+							t.Errorf("child position must be in parent position [%v, %v], but got: [%v, %v] on %v: %v", parent.Pos(), parent.End(), node.Pos(), node.End(), path, node.SQL())
+							return false
 						}
-						return false
-					})
-					return true
+
+						return true
+					},
 				})
 			}
 

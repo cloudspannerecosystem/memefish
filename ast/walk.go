@@ -10,6 +10,8 @@ import (
 // If the result of Visit is nil, the node will not be traversed.
 type Visitor interface {
 	Visit(node Node) Visitor
+	Field(name string) Visitor
+	Index(index int) Visitor
 }
 
 type stackItem struct {
@@ -20,6 +22,7 @@ type stackItem struct {
 // Walk traverses an AST in depth-first order.
 func Walk(node Node, v Visitor) {
 	var stack []*stackItem
+	stack = append(stack, &stackItem{node: node, visitor: v})
 
 	for len(stack) > 0 {
 		last := stack[len(stack)-1]
@@ -44,6 +47,14 @@ func (f inspector) Visit(node Node) Visitor {
 		return f
 	}
 	return nil
+}
+
+func (f inspector) Field(name string) Visitor {
+	return f
+}
+
+func (f inspector) Index(index int) Visitor {
+	return f
 }
 
 // Inspect traverses an AST in depth-first order and calls f for each node.

@@ -74,28 +74,28 @@ func main() {
 			field := structDef.Fields[i]
 
 			if _, ok := extractNodeStructPointer(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: wrapNode(n.%s), visitor: v.Field(%q)})\n", field.Name, field.Name)
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeStructSlice(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tfor v, i := v.Field(%q), len(n.%s) - 1; i >= 0; i -- {\n", field.Name, field.Name)
+				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: wrapNode(n.%s[i]), visitor: v.Index(i)})\n", field.Name)
 				fmt.Fprintf(&buffer, "\t\t}\n")
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeInterface(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: n.%s, visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tstack = append(stack, &stackItem{node: wrapNode(n.%s), visitor: v.Field(%q)})\n", field.Name, field.Name)
 				output = true
 				continue
 			}
 
 			if _, ok := extractNodeInterfaceSlice(field.Type); ok {
-				fmt.Fprintf(&buffer, "\t\tfor i := len(n.%s) - 1; i >= 0; i -- {\n", field.Name)
-				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: n.%s[i], visitor: v})\n", field.Name)
+				fmt.Fprintf(&buffer, "\t\tfor v, i := v.Field(%q), len(n.%s) - 1; i >= 0; i -- {\n", field.Name, field.Name)
+				fmt.Fprintf(&buffer, "\t\t\tstack = append(stack, &stackItem{node: wrapNode(n.%s[i]), visitor: v.Index(i)})\n", field.Name)
 				fmt.Fprintf(&buffer, "\t\t}\n")
 				output = true
 				continue
