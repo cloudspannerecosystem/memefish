@@ -1,0 +1,33 @@
+--- !bad_plus.sql
+1 +
+
+--- Error
+syntax error: testdata/input/expr/!bad_plus.sql:2:1: unexpected token: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 3,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "1",
+        Base: 10,
+        End:  1,
+      },
+      &token.Token{
+        Kind:  "+",
+        Space: " ",
+        Raw:   "+",
+        Pos:   2,
+        End:   3,
+      },
+    },
+  },
+}
+
+--- SQL
+1 +

@@ -19,6 +19,7 @@ CREATE TABLE Singers (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: 46,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 27,
         NameEnd: 35,
@@ -33,6 +34,7 @@ CREATE TABLE Singers (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 56,
         NameEnd: 66,

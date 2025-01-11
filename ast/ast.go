@@ -14,6 +14,7 @@
 //   - sqlIdentQuote x: Quotes the given identifier string if needed.
 //   - sqlStringQuote s: Returns the SQL quoted string of s.
 //   - sqlBytesQuote bs: Returns the SQL quotes bytes of bs.
+//   - tokenJoin toks: Concateates the string representations of tokens.
 //   - isnil v: Checks whether v is nil or others.
 //
 // Each Node's documentation has pos and end information using the following EBNF.
@@ -31,9 +32,20 @@
 //	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
 
-// This file must contain only AST definitions.
-// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
-//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
+// NOTE: ast.go and ast_*.go are used for automatic generation, so these files are conventional.
+
+// NOTE: This file defines AST nodes and they are used for automatic generation,
+//       so this file is conventional.
+//
+// Conventions:
+//
+//   - Each node interface (except for Node) should have isXXX method (XXX must be a name of the interface itself).
+//   - `isXXX` methods should be defined after the interface definition
+//     and the receiver should be the non-pointer node struct type.
+//   - Each node struct should have pos and end comments.
+//   - Each node struct should have template lines in its doc comment.
+
+//go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -59,6 +71,9 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
+func (BadStatement) isStatement()       {}
+func (BadDDL) isStatement()             {}
+func (BadDML) isStatement()             {}
 func (QueryStatement) isStatement()     {}
 func (CreateSchema) isStatement()       {}
 func (DropSchema) isStatement()         {}
@@ -111,6 +126,7 @@ type QueryExpr interface {
 	isQueryExpr()
 }
 
+func (BadQueryExpr) isQueryExpr()  {}
 func (Select) isQueryExpr()        {}
 func (Query) isQueryExpr()         {}
 func (FromQuery) isQueryExpr()     {}
@@ -176,6 +192,7 @@ type Expr interface {
 	isExpr()
 }
 
+func (BadExpr) isExpr()               {}
 func (BinaryExpr) isExpr()            {}
 func (UnaryExpr) isExpr()             {}
 func (InExpr) isExpr()                {}
@@ -298,6 +315,7 @@ type Type interface {
 	isType()
 }
 
+func (BadType) isType()    {}
 func (SimpleType) isType() {}
 func (ArrayType) isType()  {}
 func (StructType) isType() {}
@@ -345,6 +363,7 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
+func (BadDDL) isDDL()             {}
 func (CreateSchema) isDDL()       {}
 func (DropSchema) isDDL()         {}
 func (CreateDatabase) isDDL()     {}
@@ -505,6 +524,7 @@ type DML interface {
 	isDML()
 }
 
+func (BadDML) isDML() {}
 func (Insert) isDML() {}
 func (Delete) isDML() {}
 func (Update) isDML() {}
@@ -539,6 +559,84 @@ func (ChangeStreamSetOptions) isChangeStreamAlteration() {}
 
 // ================================================================================
 //
+// Bad Node
+//
+// ================================================================================
+
+// BadNode is a placeholder node for a source code containing syntax errors.
+//
+//	{{.Tokens | tokenJoin}}
+type BadNode struct {
+	// pos = NodePos
+	// end = NodeEnd
+
+	NodePos, NodeEnd token.Pos
+
+	Tokens []*token.Token
+}
+
+// BadStatement is a BadNode for Statement.
+//
+//	{{.BadNode | sql}}
+type BadStatement struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// BadQueryExpr is a BadNode for QueryExpr.
+//
+//	{{.BadNode | sql}}
+type BadQueryExpr struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// BadExpr is a BadNode for Expr.
+//
+//	{{.BadNode | sql}}
+type BadExpr struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// BadType is a BadNode for Type.
+//
+//	{{.BadNode | sql}}
+type BadType struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// BadDDL is a BadNode for DDL.
+//
+//	{{.BadNode | sql}}
+type BadDDL struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// BadDML is a BadNode for DML.
+//
+//	{{.BadNode | sql}}
+type BadDML struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// ================================================================================
+//
 // SELECT
 //
 // ================================================================================
@@ -566,7 +664,7 @@ type QueryStatement struct {
 // https://cloud.google.com/spanner/docs/query-syntax
 type Query struct {
 	// pos = (With ?? Query).pos
-	// end = Query.end
+	// end = (PipeOperators[$] ?? Limit ?? OrderBy ?? Query).end
 
 	With  *With
 	Query QueryExpr
@@ -597,7 +695,7 @@ type HintRecord struct {
 	// pos = Key.pos
 	// end = Value.end
 
-	Key   *Ident
+	Key   *Path
 	Value Expr
 }
 
@@ -685,15 +783,13 @@ type AsTypeName struct {
 }
 
 // FromQuery is FROM query expression node.
+//
+//	FROM {{.From | sql}}
 type FromQuery struct {
 	// pos = From.pos
 	// end = From.end
 
 	From *From
-}
-
-func (f *FromQuery) SQL() string {
-	return f.From.SQL()
 }
 
 // CompoundQuery is query expression node compounded by set operators.
@@ -1084,7 +1180,11 @@ type Join struct {
 	Method      JoinMethod
 	Hint        *Hint // optional
 	Left, Right TableExpr
-	Cond        JoinCondition // nil when Op is CrossJoin, otherwise it must be set.
+
+	// nil when Op is CrossJoin
+	// optional when Right is PathTableExpr or Unnest
+	// otherwise it must be set.
+	Cond JoinCondition
 }
 
 // On is ON condition of JOIN expression.
@@ -1269,9 +1369,10 @@ type SelectorExpr struct {
 
 // IndexExpr is a subscript operator expression node.
 // This node can be:
-//	- array subscript operator
-//	- struct subscript operator
-//	- JSON subscript operator
+//   - array subscript operator
+//   - struct subscript operator
+//   - JSON subscript operator
+//
 // Note: The name IndexExpr is a historical reason, maybe better to rename to SubscriptExpr.
 //
 //	{{.Expr | sql}}[{{.Index | sql}}]
@@ -1913,8 +2014,8 @@ type BracedConstructorFieldValue interface {
 	isBracedConstructorFieldValue()
 }
 
-func (*BracedConstructor) isBracedConstructorFieldValue()               {}
-func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+func (BracedConstructor) isBracedConstructorFieldValue()               {}
+func (BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 
 // NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
@@ -2263,8 +2364,6 @@ type DropProtoBundle struct {
 	Bundle token.Pos // position of "BUNDLE" pseudo keyword
 }
 
-// end of PROTO BUNDLE statements
-
 // CreateTable is CREATE TABLE statement node.
 //
 //	CREATE TABLE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} (
@@ -2272,7 +2371,7 @@ type DropProtoBundle struct {
 //	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
 //	  {{.Synonym | sqlJoin ","}}
 //	)
-//	PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}})
+//	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //
@@ -2290,7 +2389,7 @@ type CreateTable struct {
 	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
-	PrimaryKeys       []*IndexKey
+	PrimaryKeys       []*IndexKey // when omitted, len(PrimaryKeys) = 0
 	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
@@ -2360,22 +2459,26 @@ type BitReversedPositive struct {
 	BitReversedPositive token.Pos // position of "BIT_REVERSED_POSITIVE" keyword
 }
 
-// ColumnDef is column definition in CREATE TABLE.
+// ColumnDef is column definition in CREATE TABLE and ALTER TABLE ADD COLUMN.
+// Note: Some fields are not valid in ADD COLUMN.
 //
 //	{{.Name | sql}}
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultSemantics | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
+//	{{if .PrimaryKey}}PRIMARY KEY{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
+	// end = Options.end || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
+	Key  token.Pos // position of "KEY" of PRIMARY KEY
 
-	Name    *Ident
-	Type    SchemaType
-	NotNull bool
+	Name       *Ident
+	Type       SchemaType
+	NotNull    bool
+	PrimaryKey bool
 
 	DefaultSemantics ColumnDefaultSemantics // optional
 
@@ -2937,7 +3040,6 @@ type CreateIndex struct {
 //	ON {{.TableName | sql}}({{.ColumnName | sql}})
 //	{{if .Where}}WHERE {{.Where | sql}}{{end}}
 //	{{.Options | sql}}
-
 type CreateVectorIndex struct {
 	// pos = Create
 	// end = Options.end

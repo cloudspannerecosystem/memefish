@@ -1,0 +1,70 @@
+--- !bad_plus2.sql
+(1 +) + (2 +)
+
+--- Error
+syntax error: testdata/input/expr/!bad_plus2.sql:1:5: unexpected token: )
+  1|  (1 +) + (2 +)
+   |      ^
+syntax error: testdata/input/expr/!bad_plus2.sql:1:13: unexpected token: )
+  1|  (1 +) + (2 +)
+   |              ^
+
+
+--- AST
+&ast.BinaryExpr{
+  Op:   "+",
+  Left: &ast.ParenExpr{
+    Rparen: 4,
+    Expr:   &ast.BadExpr{
+      BadNode: &ast.BadNode{
+        NodePos: 1,
+        NodeEnd: 4,
+        Tokens:  []*token.Token{
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "1",
+            Base: 10,
+            Pos:  1,
+            End:  2,
+          },
+          &token.Token{
+            Kind:  "+",
+            Space: " ",
+            Raw:   "+",
+            Pos:   3,
+            End:   4,
+          },
+        },
+      },
+    },
+  },
+  Right: &ast.ParenExpr{
+    Lparen: 8,
+    Rparen: 12,
+    Expr:   &ast.BadExpr{
+      BadNode: &ast.BadNode{
+        NodePos: 9,
+        NodeEnd: 12,
+        Tokens:  []*token.Token{
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "2",
+            Base: 10,
+            Pos:  9,
+            End:  10,
+          },
+          &token.Token{
+            Kind:  "+",
+            Space: " ",
+            Raw:   "+",
+            Pos:   11,
+            End:   12,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(1 +) + (2 +)

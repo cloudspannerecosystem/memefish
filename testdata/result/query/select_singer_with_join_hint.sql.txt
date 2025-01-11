@@ -33,10 +33,14 @@ FROM
           Rbrace:  279,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 260,
-                NameEnd: 269,
-                Name:    "JOIN_TYPE",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 260,
+                    NameEnd: 269,
+                    Name:    "JOIN_TYPE",
+                  },
+                },
               },
               Value: &ast.Ident{
                 NamePos: 270,
@@ -53,10 +57,14 @@ FROM
             Rbrace:  209,
             Records: []*ast.HintRecord{
               &ast.HintRecord{
-                Key: &ast.Ident{
-                  NamePos: 189,
-                  NameEnd: 198,
-                  Name:    "JOIN_TYPE",
+                Key: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 189,
+                      NameEnd: 198,
+                      Name:    "JOIN_TYPE",
+                    },
+                  },
                 },
                 Value: &ast.Ident{
                   NamePos: 199,
@@ -73,10 +81,14 @@ FROM
               Rbrace:  138,
               Records: []*ast.HintRecord{
                 &ast.HintRecord{
-                  Key: &ast.Ident{
-                    NamePos: 119,
-                    NameEnd: 128,
-                    Name:    "JOIN_TYPE",
+                  Key: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 119,
+                        NameEnd: 128,
+                        Name:    "JOIN_TYPE",
+                      },
+                    },
                   },
                   Value: &ast.Ident{
                     NamePos: 129,
@@ -93,10 +105,14 @@ FROM
                 Rbrace:  68,
                 Records: []*ast.HintRecord{
                   &ast.HintRecord{
-                    Key: &ast.Ident{
-                      NamePos: 47,
-                      NameEnd: 63,
-                      Name:    "FORCE_JOIN_ORDER",
+                    Key: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 47,
+                          NameEnd: 63,
+                          Name:    "FORCE_JOIN_ORDER",
+                        },
+                      },
                     },
                     Value: &ast.BoolLiteral{
                       ValuePos: 64,

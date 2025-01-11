@@ -11,204 +11,153 @@ import (
 
 type Parser struct {
 	*Lexer
+
+	errors []*Error
 }
 
 // ParseStatement parses a SQL statement.
-func (p *Parser) ParseStatement() (stmt ast.Statement, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			stmt = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseStatement() (ast.Statement, error) {
 	p.nextToken()
-	stmt = p.parseStatement()
+	stmt := p.parseStatement()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return stmt, MultiError(p.errors)
+	}
+
+	return stmt, nil
 }
 
 // ParseStatements parses SQL statements list separated by semi-colon.
-func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			stmts = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseStatements() ([]ast.Statement, error) {
 	p.nextToken()
-	p.parseStatements(func() {
-		stmts = append(stmts, p.parseStatement())
-	})
+	stmts := parseStatements(p, p.parseStatement)
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return stmts, MultiError(p.errors)
+	}
+
+	return stmts, nil
 }
 
 // ParseQuery parses a query statement.
-func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			stmt = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseQuery() (*ast.QueryStatement, error) {
 	p.nextToken()
-	stmt = p.parseQueryStatement()
+	stmt := p.parseQueryStatement()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return stmt, MultiError(p.errors)
+	}
+
+	return stmt, nil
 }
 
 // ParseExpr parses a SQL expression.
-func (p *Parser) ParseExpr() (expr ast.Expr, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			expr = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseExpr() (ast.Expr, error) {
 	p.nextToken()
-	expr = p.parseExpr()
+	expr := p.parseExpr()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return expr, MultiError(p.errors)
+	}
+
+	return expr, nil
 }
 
 // ParseType parses a type name.
-func (p *Parser) ParseType() (typ ast.Type, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			typ = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseType() (ast.Type, error) {
 	p.nextToken()
-	typ = p.parseType()
+	t := p.parseType()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return t, MultiError(p.errors)
+	}
+
+	return t, nil
 }
 
 // ParseDDL parses a CREATE/ALTER/DROP statement.
-func (p *Parser) ParseDDL() (ddl ast.DDL, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			ddl = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseDDL() (ast.DDL, error) {
 	p.nextToken()
-	ddl = p.parseDDL()
+	ddl := p.parseDDL()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return ddl, MultiError(p.errors)
+	}
+
+	return ddl, nil
 }
 
 // ParseDDLs parses CREATE/ALTER/DROP statements list separated by semi-colon.
-func (p *Parser) ParseDDLs() (ddls []ast.DDL, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			ddls = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
 	p.nextToken()
-	p.parseStatements(func() {
-		ddls = append(ddls, p.parseDDL())
-	})
+	ddls := parseStatements(p, p.parseDDL)
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return ddls, MultiError(p.errors)
+	}
+
+	return ddls, nil
 }
 
 // ParseDML parses a INSERT/DELETE/UPDATE statement.
-func (p *Parser) ParseDML() (dml ast.DML, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			dml = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
-		}
-	}()
-
+func (p *Parser) ParseDML() (ast.DML, error) {
 	p.nextToken()
-	dml = p.parseDML()
+	dml := p.parseDML()
 	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
-	return
+
+	if len(p.errors) > 0 {
+		return dml, MultiError(p.errors)
+	}
+
+	return dml, nil
 }
 
 // ParseDMLs parses INSERT/DELETE/UPDATE statements list separated by semi-colon.
-func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
+func (p *Parser) ParseDMLs() ([]ast.DML, error) {
+	p.nextToken()
+	dmls := parseStatements(p, p.parseDML)
+	if p.Token.Kind != token.TokenEOF {
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
+	}
+
+	if len(p.errors) > 0 {
+		return dmls, MultiError(p.errors)
+	}
+
+	return dmls, nil
+}
+
+func (p *Parser) parseStatement() (stmt ast.Statement) {
+	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			dmls = nil
-			if e, ok := r.(*Error); ok {
-				err = e
-			} else {
-				panic(r)
-			}
+			stmt = &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
-	p.nextToken()
-	p.parseStatements(func() {
-		dmls = append(dmls, p.parseDML())
-	})
-	if p.Token.Kind != token.TokenEOF {
-		p.panicfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind)
-	}
-	return
-}
-
-func (p *Parser) parseStatement() ast.Statement {
 	switch {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatement()
@@ -253,19 +202,22 @@ func (p *Parser) parseCall() *ast.Call {
 		Args:   args,
 	}
 }
-func (p *Parser) parseStatements(doParse func()) {
+
+func parseStatements[T ast.Node](p *Parser, doParse func() T) []T {
+	var nodes []T
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ";" {
 			p.nextToken()
 			continue
 		}
 
-		doParse()
+		nodes = append(nodes, doParse())
 
 		if p.Token.Kind != ";" {
 			break
 		}
 	}
+	return nodes
 }
 
 // ================================================================================
@@ -274,7 +226,18 @@ func (p *Parser) parseStatements(doParse func()) {
 //
 // ================================================================================
 
-func (p *Parser) parseQueryStatement() *ast.QueryStatement {
+func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			// When parsing is failed on tryParseHint or tryParseWith, the result of these methods are discarded
+			// becasue they are concrete structs and we cannot fill them with *ast.BadNode.
+			stmt = &ast.QueryStatement{
+				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
+			}
+		}
+	}()
+
 	hint := p.tryParseHint()
 	query := p.parseQueryExpr()
 
@@ -384,7 +347,7 @@ func (p *Parser) tryParseHint() *ast.Hint {
 }
 
 func (p *Parser) parseHintRecord() *ast.HintRecord {
-	key := p.parseIdent()
+	key := p.parsePath()
 	p.expect("=")
 	value := p.parseExpr()
 	return &ast.HintRecord{
@@ -420,13 +383,20 @@ func (p *Parser) parseCTE() *ast.CTE {
 	}
 }
 
-func (p *Parser) parseQueryExpr() ast.QueryExpr {
+func (p *Parser) parseQueryExpr() (query ast.QueryExpr) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			query = p.handleParseQueryExprError(false, r, l)
+		}
+	}()
+
 	// If WITH is appeared, it is treated as an outer node than compound query.
 	if p.Token.Kind == "WITH" {
 		return p.parseQuery()
 	}
 
-	query := p.parseSimpleQueryExpr()
+	query = p.parseSimpleQueryExpr()
 
 	// If the query is directly followed by ORDER BY, LIMIT or pipe operators, it won't be a compound query
 	switch p.Token.Kind {
@@ -491,52 +461,31 @@ func (p *Parser) parseFromQuery() *ast.FromQuery {
 }
 
 // parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
-func (p *Parser) parseSimpleQueryExpr() ast.QueryExpr {
+func (p *Parser) parseSimpleQueryExpr() (query ast.QueryExpr) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			query = p.handleParseQueryExprError(true, r, l)
+		}
+	}()
+
 	switch p.Token.Kind {
 	// FROM and SELECT are the most primitive query form
 	case "FROM":
 		return p.parseFromQuery()
 	case "SELECT":
 		return p.parseSelect()
-	// Query with paren
-	case "(":
+	case "(": // Query with paren
 		lparen := p.expect("(").Pos
-		query := p.parseQueryExpr()
+		q := p.parseQueryExpr()
 		rparen := p.expect(")").Pos
 		return &ast.SubQuery{
 			Lparen: lparen,
 			Rparen: rparen,
-			Query:  query,
+			Query:  q,
 		}
 	default:
 		panic(p.errorfAtToken(&p.Token, `expected beginning of simple query "(", SELECT, FROM, but: %q`, p.Token.AsString))
-	}
-}
-
-func (p *Parser) tryParseSelectAs() ast.SelectAs {
-	if p.Token.Kind != "AS" {
-		return nil
-	}
-	asPos := p.expect("AS").Pos
-	switch {
-	case p.Token.Kind == "STRUCT":
-		structPos := p.expect("STRUCT").Pos
-		return &ast.AsStruct{
-			As:     asPos,
-			Struct: structPos,
-		}
-	case p.Token.IsKeywordLike("VALUE"):
-		valuePos := p.expectKeywordLike("VALUE").Pos
-		return &ast.AsValue{
-			As:    asPos,
-			Value: valuePos,
-		}
-	default:
-		namedType := p.parseNamedType()
-		return &ast.AsTypeName{
-			As:       asPos,
-			TypeName: namedType,
-		}
 	}
 }
 
@@ -559,6 +508,34 @@ func (p *Parser) parseSelect() *ast.Select {
 		Where:         where,
 		GroupBy:       groupBy,
 		Having:        having,
+	}
+}
+
+func (p *Parser) tryParseSelectAs() ast.SelectAs {
+	if p.Token.Kind != "AS" {
+		return nil
+	}
+	pos := p.expect("AS").Pos
+
+	switch {
+	case p.Token.Kind == "STRUCT":
+		structPos := p.expect("STRUCT").Pos
+		return &ast.AsStruct{
+			As:     pos,
+			Struct: structPos,
+		}
+	case p.Token.IsKeywordLike("VALUE"):
+		valuePos := p.expectKeywordLike("VALUE").Pos
+		return &ast.AsValue{
+			As:    pos,
+			Value: valuePos,
+		}
+	default:
+		namedType := p.parseNamedType()
+		return &ast.AsTypeName{
+			As:       pos,
+			TypeName: namedType,
+		}
 	}
 }
 
@@ -976,18 +953,16 @@ func (p *Parser) parseTableExpr(toplevel bool) ast.TableExpr {
 		hint := p.tryParseHint()
 		right := p.parseSimpleTableExpr()
 
-		if op == ast.CrossJoin || op == ast.CommaJoin {
-			join = &ast.Join{
-				Op:     op,
-				Method: method,
-				Hint:   hint,
-				Left:   join,
-				Right:  right,
+		var cond ast.JoinCondition
+		if op != ast.CrossJoin && op != ast.CommaJoin {
+			switch right.(type) {
+			case *ast.PathTableExpr, *ast.Unnest:
+				cond = p.tryParseJoinCondition()
+			default:
+				cond = p.parseJoinCondition()
 			}
-			continue
 		}
 
-		cond := p.parseJoinCondition()
 		join = &ast.Join{
 			Op:     op,
 			Method: method,
@@ -1178,6 +1153,13 @@ func (p *Parser) parseJoinCondition() ast.JoinCondition {
 	panic(p.errorfAtToken(&p.Token, "expected token: ON, USING, but: %s", p.Token.Kind))
 }
 
+func (p *Parser) tryParseJoinCondition() ast.JoinCondition {
+	if p.Token.Kind != "ON" && p.Token.Kind != "USING" {
+		return nil
+	}
+	return p.parseJoinCondition()
+}
+
 func (p *Parser) parseOn() *ast.On {
 	pos := p.expect("ON").Pos
 	expr := p.parseExpr()
@@ -1274,7 +1256,14 @@ func (p *Parser) parseTableSampleSize() *ast.TableSampleSize {
 //
 // ================================================================================
 
-func (p *Parser) parseExpr() ast.Expr {
+func (p *Parser) parseExpr() (expr ast.Expr) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			expr = p.handleParseExprError(r, l)
+		}
+	}()
+
 	return p.parseOr()
 }
 
@@ -2245,6 +2234,10 @@ func (p *Parser) lookaheadWithExprVar() bool {
 		p.Lexer = lexer
 	}()
 
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
 	p.parseIdent()
 	return p.Token.Kind == "AS"
 }
@@ -2524,7 +2517,14 @@ func (p *Parser) parseNamedType() *ast.NamedType {
 	return &ast.NamedType{Path: path}
 }
 
-func (p *Parser) parseType() ast.Type {
+func (p *Parser) parseType() (t ast.Type) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			t = p.handleParseTypeError(r, l)
+		}
+	}()
+
 	switch p.Token.Kind {
 	case token.TokenIdent:
 		if !p.lookaheadSimpleType() {
@@ -2776,7 +2776,14 @@ func (p *Parser) lookaheadSimpleType() bool {
 //
 // ================================================================================
 
-func (p *Parser) parseDDL() ast.DDL {
+func (p *Parser) parseDDL() (ddl ast.DDL) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			ddl = &ast.BadDDL{BadNode: p.handleParseStatementError(r, l)}
+		}
+	}()
+
 	pos := p.Token.Pos
 	switch {
 	case p.Token.Kind == "CREATE":
@@ -3080,22 +3087,26 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	}
 	p.expect(")")
 
-	p.expectKeywordLike("PRIMARY")
-	p.expectKeywordLike("KEY")
-
-	p.expect("(")
+	// PRIMARY KEY clause is now optional
 	var keys []*ast.IndexKey
-	for p.Token.Kind != token.TokenEOF {
-		if p.Token.Kind == ")" {
-			break
-		}
-		keys = append(keys, p.parseIndexKey())
-		if p.Token.Kind != "," {
-			break
-		}
+	rparen := token.InvalidPos
+	if p.Token.IsKeywordLike("PRIMARY") {
 		p.nextToken()
+		p.expectKeywordLike("KEY")
+
+		p.expect("(")
+		for p.Token.Kind != token.TokenEOF {
+			if p.Token.Kind == ")" {
+				break
+			}
+			keys = append(keys, p.parseIndexKey())
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+		}
+		rparen = p.expect(")").Pos
 	}
-	rparen := p.expect(")").Pos
 
 	cluster := p.tryParseCluster()
 	rdp := p.tryParseCreateRowDeletionPolicy()
@@ -3158,9 +3169,9 @@ func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView 
 	id := p.expect(token.TokenIdent)
 	var securityType ast.SecurityType
 	switch {
-	case id.IsIdent("INVOKER"):
+	case id.IsKeywordLike("INVOKER"):
 		securityType = ast.SecurityTypeInvoker
-	case id.IsIdent("DEFINER"):
+	case id.IsKeywordLike("DEFINER"):
 		securityType = ast.SecurityTypeDefiner
 	default:
 		p.panicfAtToken(id, "expected identifier: INVOKER, DEFINER, but: %s", id.Raw)
@@ -3231,13 +3242,21 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		hiddenPos = p.expectKeywordLike("HIDDEN").Pos
 	}
 
+	key := token.InvalidPos
+	if p.Token.IsKeywordLike("PRIMARY") {
+		p.nextToken()
+		key = p.expectKeywordLike("KEY").Pos
+	}
+
 	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
 		Null:             null,
+		Key:              key,
 		Name:             name,
 		Type:             t,
 		NotNull:          notNull,
+		PrimaryKey:       !key.Invalid(),
 		DefaultSemantics: defaultSemantics,
 		Hidden:           hiddenPos,
 		Options:          options,
@@ -4967,7 +4986,14 @@ func (p *Parser) parseIfExists() bool {
 //
 // ================================================================================
 
-func (p *Parser) parseDML() ast.DML {
+func (p *Parser) parseDML() (dml ast.DML) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			dml = &ast.BadDML{BadNode: p.handleParseStatementError(r, l)}
+		}
+	}()
+
 	id := p.expect(token.TokenIdent)
 	pos := id.Pos
 	switch {
@@ -5355,6 +5381,176 @@ func (p *Parser) parseStringValue() ast.StringValue {
 	panic(p.errorfAtToken(&p.Token, "expected token: <param>, <string>, but: %s", p.Token.Kind))
 }
 
+// ================================================================================
+//
+// Error Handlers
+//
+// ================================================================================
+
+func (p *Parser) handleError(r any, l *Lexer) {
+	e, ok := r.(*Error)
+	if !ok {
+		panic(r)
+	}
+
+	p.errors = append(p.errors, e)
+	p.Lexer = l
+}
+
+func (p *Parser) handleParseStatementError(r any, l *Lexer) *ast.BadNode {
+	p.handleError(r, l)
+
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+skip:
+	for p.Token.Kind != token.TokenEOF {
+		switch p.Token.Kind {
+		case ";":
+			break skip
+		}
+		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadNode{
+		NodePos: pos,
+		NodeEnd: end,
+		Tokens:  tokens,
+	}
+}
+
+func (p *Parser) handleParseQueryExprError(simple bool, r any, l *Lexer) *ast.BadQueryExpr {
+	p.handleError(r, l)
+
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+	nesting := 0
+skip:
+	for p.Token.Kind != token.TokenEOF {
+		switch p.Token.Kind {
+		case ";":
+			break skip
+		case "(":
+			nesting += 1
+		case ")":
+			if nesting == 0 {
+				break skip
+			}
+			nesting -= 1
+		case "UNION", "INTERSECT", "EXCEPT":
+			if simple && nesting == 0 {
+				break skip
+			}
+		}
+		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadQueryExpr{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
+	}
+}
+
+func (p *Parser) handleParseExprError(r any, l *Lexer) *ast.BadExpr {
+	p.handleError(r, l)
+
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+	nesting := 0
+skip:
+	for p.Token.Kind != token.TokenEOF {
+		switch p.Token.Kind {
+		case ";":
+			break skip
+		case "(", "[", "CASE", "WHEN":
+			nesting += 1
+		case ")", "]", "}", "END", "THEN":
+			if nesting == 0 {
+				break skip
+			}
+			nesting -= 1
+		case ",", "AS", "FROM", "GROUP", "HAVING", "ORDER", "LIMIT", "OFFSET", "AT", "UNION", "INTERSECT", "EXCEPT":
+			if nesting == 0 {
+				break skip
+			}
+		}
+		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadExpr{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
+	}
+}
+
+func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadType {
+	p.handleError(r, l)
+
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+	nesting := 0
+skip:
+	for p.Token.Kind != token.TokenEOF {
+		switch p.Token.Kind {
+		case ";", ")":
+			break skip
+		case "<":
+			nesting += 1
+		case ">":
+			if nesting == 0 {
+				break skip
+			}
+			nesting -= 1
+		case ">>":
+			if nesting == 0 {
+				break skip
+			}
+			if nesting == 1 {
+				p.Token.Kind = ">"
+				p.Token.Pos += 1
+				break skip
+			}
+			nesting -= 2
+		case ",":
+			if nesting == 0 {
+				break skip
+			}
+		}
+		tokens = append(tokens, p.Token.Clone())
+		end = p.Token.End
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadType{
+		BadNode: &ast.BadNode{
+			NodePos: pos,
+			NodeEnd: end,
+			Tokens:  tokens,
+		},
+	}
+}
+
+// ================================================================================
+//
+// Utilities
+//
+// ================================================================================
+
 // parseCommaSeparatedList parses a comma separated list of nodes parsed by `doParse`.
 //
 // `doParse` should be a reference to a method of `Parser`. That is, this function should always be used on a single line, e.g.:
@@ -5431,4 +5627,8 @@ func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 		Tos:    tos,
 	}
 
+}
+
+func (p *Parser) nextToken() {
+	p.Lexer.nextToken(false)
 }

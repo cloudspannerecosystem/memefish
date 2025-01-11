@@ -15,6 +15,7 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
     Add:    16,
     Column: &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 27,
         NameEnd: 37,

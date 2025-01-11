@@ -16,7 +16,7 @@ func stripMargin(s string) string {
 			lines[i] = line
 		}
 	}
-	return strings.Join(lines, "\n")
+	return strings.TrimRight(strings.Join(lines, "\n"), "\n")
 }
 
 var file = &File{
@@ -56,8 +56,8 @@ var positionTestCases = []struct {
 		line: 0, column: 0,
 		endLine: 0, endColumn: 0,
 		source: stripMargin(heredoc.Doc(`
-			|  1:  select 1 union all
-			|      ^
+			|  1|  select 1 union all
+			|   |  ^
 		`)),
 	},
 	{
@@ -65,8 +65,8 @@ var positionTestCases = []struct {
 		line: 0, column: 0,
 		endLine: 0, endColumn: 1,
 		source: stripMargin(heredoc.Doc(`
-			|  1:  select 1 union all
-			|      ^
+			|  1|  select 1 union all
+			|   |  ^
 		`)),
 	},
 	{
@@ -74,8 +74,8 @@ var positionTestCases = []struct {
 		line: 0, column: 0,
 		endLine: 0, endColumn: 6,
 		source: stripMargin(heredoc.Doc(`
-			|  1:  select 1 union all
-			|      ^~~~~~
+			|  1|  select 1 union all
+			|   |  ^~~~~~
 		`)),
 	},
 	{
@@ -83,8 +83,8 @@ var positionTestCases = []struct {
 		line: 0, column: 9,
 		endLine: 0, endColumn: 18,
 		source: stripMargin(heredoc.Doc(`
-			|  1:  select 1 union all
-			|               ^~~~~~~~~
+			|  1|  select 1 union all
+			|   |           ^~~~~~~~~
 		`)),
 	},
 	{
@@ -92,8 +92,8 @@ var positionTestCases = []struct {
 		line: 0, column: 18,
 		endLine: 1, endColumn: 0,
 		source: stripMargin(heredoc.Doc(`
-			|  1:  select 1 union all
-			|  2:  select 2
+			|  1|  select 1 union all
+			|  2|  select 2
 		`)),
 	},
 }

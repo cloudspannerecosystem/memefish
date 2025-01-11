@@ -157,6 +157,30 @@ func paren(p prec, e Expr) string {
 
 // ================================================================================
 //
+// Bad Node
+//
+// ================================================================================
+
+func (b *BadNode) SQL() string {
+	var sql string
+	for _, tok := range b.Tokens {
+		if sql != "" && len(tok.Space) > 0 {
+			sql += " "
+		}
+		sql += tok.Raw
+	}
+	return sql
+}
+
+func (b *BadStatement) SQL() string { return b.BadNode.SQL() }
+func (b *BadQueryExpr) SQL() string { return b.BadNode.SQL() }
+func (b *BadExpr) SQL() string      { return b.BadNode.SQL() }
+func (b *BadType) SQL() string      { return b.BadNode.SQL() }
+func (b *BadDDL) SQL() string       { return b.BadNode.SQL() }
+func (b *BadDML) SQL() string       { return b.BadNode.SQL() }
+
+// ================================================================================
+//
 // SELECT
 //
 // ================================================================================
@@ -206,6 +230,10 @@ func (a *AsStruct) SQL() string { return "AS STRUCT" }
 func (a *AsValue) SQL() string { return "AS VALUE" }
 
 func (a *AsTypeName) SQL() string { return "AS " + a.TypeName.SQL() }
+
+func (f *FromQuery) SQL() string {
+	return f.From.SQL()
+}
 
 func (c *CompoundQuery) SQL() string {
 	return sqlJoin(c.Queries, " "+string(c.Op)+" "+strOpt(c.AllOrDistinct != "", string(c.AllOrDistinct)+" "))
@@ -761,7 +789,8 @@ func (c *CreateTable) SQL() string {
 		indent + sqlJoin(c.Columns, ",\n"+indent) + strOpt(len(c.Columns) > 0 && (len(c.TableConstraints) > 0 || len(c.Synonyms) > 0), ",\n") +
 		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
 		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
-		"\n) PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		"\n)" +
+		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "")
 }
@@ -808,6 +837,7 @@ func (c *ColumnDef) SQL() string {
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultSemantics, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
+		strOpt(c.PrimaryKey, " PRIMARY KEY") +
 		sqlOpt(" ", c.Options, "")
 }
 

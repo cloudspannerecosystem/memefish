@@ -1,0 +1,138 @@
+--- select_from_join_unnest.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/query-syntax#correlated_join
+SELECT *
+FROM
+  Roster
+    JOIN
+  UNNEST(
+      ARRAY(
+        SELECT AS STRUCT *
+      FROM PlayerStats
+      WHERE PlayerStats.OpponentID = Roster.SchoolID
+    )) AS PlayerMatches
+  ON PlayerMatches.LastName = 'Buchanan'
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  93,
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 100,
+      },
+    },
+    From: &ast.From{
+      From:   102,
+      Source: &ast.Join{
+        Op:   "INNER JOIN",
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 109,
+            NameEnd: 115,
+            Name:    "Roster",
+          },
+        },
+        Right: &ast.Unnest{
+          Unnest: 127,
+          Rparen: 256,
+          Expr:   &ast.ArraySubQuery{
+            Array:  141,
+            Rparen: 255,
+            Query:  &ast.Select{
+              Select: 156,
+              As:     &ast.AsStruct{
+                As:     163,
+                Struct: 166,
+              },
+              Results: []ast.SelectItem{
+                &ast.Star{
+                  Star: 173,
+                },
+              },
+              From: &ast.From{
+                From:   181,
+                Source: &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 186,
+                    NameEnd: 197,
+                    Name:    "PlayerStats",
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 204,
+                Expr:  &ast.BinaryExpr{
+                  Op:   "=",
+                  Left: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 210,
+                        NameEnd: 221,
+                        Name:    "PlayerStats",
+                      },
+                      &ast.Ident{
+                        NamePos: 222,
+                        NameEnd: 232,
+                        Name:    "OpponentID",
+                      },
+                    },
+                  },
+                  Right: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 235,
+                        NameEnd: 241,
+                        Name:    "Roster",
+                      },
+                      &ast.Ident{
+                        NamePos: 242,
+                        NameEnd: 250,
+                        Name:    "SchoolID",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    258,
+            Alias: &ast.Ident{
+              NamePos: 261,
+              NameEnd: 274,
+              Name:    "PlayerMatches",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   277,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 280,
+                  NameEnd: 293,
+                  Name:    "PlayerMatches",
+                },
+                &ast.Ident{
+                  NamePos: 294,
+                  NameEnd: 302,
+                  Name:    "LastName",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 305,
+              ValueEnd: 315,
+              Value:    "Buchanan",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM Roster INNER JOIN UNNEST(ARRAY(SELECT AS STRUCT * FROM PlayerStats WHERE PlayerStats.OpponentID = Roster.SchoolID)) AS PlayerMatches ON PlayerMatches.LastName = "Buchanan"

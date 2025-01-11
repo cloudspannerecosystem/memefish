@@ -1,0 +1,196 @@
+--- select_from_inner_join_path_table_expr.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/query-syntax#correlated_join
+SELECT A.name, item
+FROM
+  UNNEST(
+    [
+      STRUCT(
+        'first' AS name,
+        [1, 2, 3, 4] AS items),
+      STRUCT(
+          'second' AS name,
+        [] AS items)]) AS A
+    INNER JOIN
+  A.items AS item
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  93,
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 100,
+              NameEnd: 101,
+              Name:    "A",
+            },
+            &ast.Ident{
+              NamePos: 102,
+              NameEnd: 106,
+              Name:    "name",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 108,
+          NameEnd: 112,
+          Name:    "item",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   113,
+      Source: &ast.Join{
+        Op:   "INNER JOIN",
+        Left: &ast.Unnest{
+          Unnest: 120,
+          Rparen: 268,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 132,
+            Rbrack: 267,
+            Values: []ast.Expr{
+              &ast.TypelessStructLiteral{
+                Struct: 140,
+                Rparen: 202,
+                Values: []ast.TypelessStructLiteralArg{
+                  &ast.Alias{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 156,
+                      ValueEnd: 163,
+                      Value:    "first",
+                    },
+                    As: &ast.AsAlias{
+                      As:    164,
+                      Alias: &ast.Ident{
+                        NamePos: 167,
+                        NameEnd: 171,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.ArrayLiteral{
+                      Array:  -1,
+                      Lbrack: 181,
+                      Rbrack: 192,
+                      Values: []ast.Expr{
+                        &ast.IntLiteral{
+                          ValuePos: 182,
+                          ValueEnd: 183,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 185,
+                          ValueEnd: 186,
+                          Base:     10,
+                          Value:    "2",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 188,
+                          ValueEnd: 189,
+                          Base:     10,
+                          Value:    "3",
+                        },
+                        &ast.IntLiteral{
+                          ValuePos: 191,
+                          ValueEnd: 192,
+                          Base:     10,
+                          Value:    "4",
+                        },
+                      },
+                    },
+                    As: &ast.AsAlias{
+                      As:    194,
+                      Alias: &ast.Ident{
+                        NamePos: 197,
+                        NameEnd: 202,
+                        Name:    "items",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.TypelessStructLiteral{
+                Struct: 211,
+                Rparen: 266,
+                Values: []ast.TypelessStructLiteralArg{
+                  &ast.Alias{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 229,
+                      ValueEnd: 237,
+                      Value:    "second",
+                    },
+                    As: &ast.AsAlias{
+                      As:    238,
+                      Alias: &ast.Ident{
+                        NamePos: 241,
+                        NameEnd: 245,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                  &ast.Alias{
+                    Expr: &ast.ArrayLiteral{
+                      Array:  -1,
+                      Lbrack: 255,
+                      Rbrack: 256,
+                    },
+                    As: &ast.AsAlias{
+                      As:    258,
+                      Alias: &ast.Ident{
+                        NamePos: 261,
+                        NameEnd: 266,
+                        Name:    "items",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    270,
+            Alias: &ast.Ident{
+              NamePos: 273,
+              NameEnd: 274,
+              Name:    "A",
+            },
+          },
+        },
+        Right: &ast.PathTableExpr{
+          Path: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 292,
+                NameEnd: 293,
+                Name:    "A",
+              },
+              &ast.Ident{
+                NamePos: 294,
+                NameEnd: 299,
+                Name:    "items",
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    300,
+            Alias: &ast.Ident{
+              NamePos: 303,
+              NameEnd: 307,
+              Name:    "item",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT A.name, item FROM UNNEST([STRUCT("first" AS name, [1, 2, 3, 4] AS items), STRUCT("second" AS name, [] AS items)]) AS A INNER JOIN A.items AS item

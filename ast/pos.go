@@ -6,6 +6,62 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
+func (b *BadNode) Pos() token.Pos {
+	return b.NodePos
+}
+
+func (b *BadNode) End() token.Pos {
+	return b.NodeEnd
+}
+
+func (b *BadStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadQueryExpr) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadQueryExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadExpr) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadExpr) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadType) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadType) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadDDL) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadDDL) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (b *BadDML) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadDML) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
 func (q *QueryStatement) Pos() token.Pos {
 	return nodePos(nodeChoice(wrapNode(q.Hint), wrapNode(q.Query)))
 }
@@ -19,7 +75,7 @@ func (q *Query) Pos() token.Pos {
 }
 
 func (q *Query) End() token.Pos {
-	return nodeEnd(wrapNode(q.Query))
+	return nodeEnd(nodeChoice(nodeSliceLast(q.PipeOperators), wrapNode(q.Limit), wrapNode(q.OrderBy), wrapNode(q.Query)))
 }
 
 func (h *Hint) Pos() token.Pos {
@@ -1075,7 +1131,7 @@ func (c *ColumnDef) Pos() token.Pos {
 }
 
 func (c *ColumnDef) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.DefaultSemantics)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
+	return posChoice(nodeEnd(wrapNode(c.Options)), posAdd(c.Key, 3), posAdd(c.Hidden, 6), nodeEnd(wrapNode(c.DefaultSemantics)), posAdd(c.Null, 4), nodeEnd(wrapNode(c.Type)))
 }
 
 func (c *ColumnDefaultExpr) Pos() token.Pos {

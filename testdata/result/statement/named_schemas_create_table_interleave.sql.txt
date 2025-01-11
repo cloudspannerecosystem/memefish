@@ -25,6 +25,7 @@ CREATE TABLE sch1.Albums (
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: 48,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 29,
         NameEnd: 37,
@@ -39,6 +40,7 @@ CREATE TABLE sch1.Albums (
     },
     &ast.ColumnDef{
       Null: 74,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 56,
         NameEnd: 63,
@@ -53,6 +55,7 @@ CREATE TABLE sch1.Albums (
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 82,
         NameEnd: 92,

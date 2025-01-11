@@ -1,0 +1,220 @@
+--- !bad_create_view.sql
+create view singernames
+sql security `invoker`
+as select
+    singers.singerid as singerid,
+    singers.firstname || ' ' || singers.lastname as name
+from singers
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_view.sql:2:14: expected identifier: INVOKER, DEFINER, but: `invoker`
+  2|  sql security `invoker`
+   |               ^~~~~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 160,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "create",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "view",
+        AsString: "view",
+        Pos:      7,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "singernames",
+        AsString: "singernames",
+        Pos:      12,
+        End:      23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "sql",
+        AsString: "sql",
+        Pos:      24,
+        End:      27,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "security",
+        AsString: "security",
+        Pos:      28,
+        End:      36,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "`invoker`",
+        AsString: "invoker",
+        Pos:      37,
+        End:      46,
+      },
+      &token.Token{
+        Kind:  "AS",
+        Space: "\n",
+        Raw:   "as",
+        Pos:   47,
+        End:   49,
+      },
+      &token.Token{
+        Kind:  "SELECT",
+        Space: " ",
+        Raw:   "select",
+        Pos:   50,
+        End:   56,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n    ",
+        Raw:      "singers",
+        AsString: "singers",
+        Pos:      61,
+        End:      68,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  68,
+        End:  69,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "singerid",
+        AsString: "singerid",
+        Pos:      69,
+        End:      77,
+      },
+      &token.Token{
+        Kind:  "AS",
+        Space: " ",
+        Raw:   "as",
+        Pos:   78,
+        End:   80,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "singerid",
+        AsString: "singerid",
+        Pos:      81,
+        End:      89,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  89,
+        End:  90,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n    ",
+        Raw:      "singers",
+        AsString: "singers",
+        Pos:      95,
+        End:      102,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  102,
+        End:  103,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "firstname",
+        AsString: "firstname",
+        Pos:      103,
+        End:      112,
+      },
+      &token.Token{
+        Kind:  "||",
+        Space: " ",
+        Raw:   "||",
+        Pos:   113,
+        End:   115,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Space:    " ",
+        Raw:      "' '",
+        AsString: " ",
+        Pos:      116,
+        End:      119,
+      },
+      &token.Token{
+        Kind:  "||",
+        Space: " ",
+        Raw:   "||",
+        Pos:   120,
+        End:   122,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "singers",
+        AsString: "singers",
+        Pos:      123,
+        End:      130,
+      },
+      &token.Token{
+        Kind: ".",
+        Raw:  ".",
+        Pos:  130,
+        End:  131,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "lastname",
+        AsString: "lastname",
+        Pos:      131,
+        End:      139,
+      },
+      &token.Token{
+        Kind:  "AS",
+        Space: " ",
+        Raw:   "as",
+        Pos:   140,
+        End:   142,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "name",
+        AsString: "name",
+        Pos:      143,
+        End:      147,
+      },
+      &token.Token{
+        Kind:  "FROM",
+        Space: "\n",
+        Raw:   "from",
+        Pos:   148,
+        End:   152,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "singers",
+        AsString: "singers",
+        Pos:      153,
+        End:      160,
+      },
+    },
+  },
+}
+
+--- SQL
+create view singernames sql security `invoker` as select singers.singerid as singerid, singers.firstname || ' ' || singers.lastname as name from singers

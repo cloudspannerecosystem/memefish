@@ -1,0 +1,1 @@
+@{spanner.optimizer_version=5} SELECT 1

@@ -1,0 +1,158 @@
+--- !bad_insert.sql
+insert foo (foo, bar, baz)
+vales (1, 2, 3),
+      (4, 5, 6)
+--- Error
+syntax error: testdata/input/dml/!bad_insert.sql:2:1: expected beginning of simple query "(", SELECT, FROM, but: "vales"
+  2|  vales (1, 2, 3),
+   |  ^~~~~
+
+
+--- AST
+&ast.Insert{
+  TableName: &ast.Ident{
+    NamePos: 7,
+    NameEnd: 10,
+    Name:    "foo",
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
+    },
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 25,
+      Name:    "baz",
+    },
+  },
+  Input: &ast.SubQueryInput{
+    Query: &ast.BadQueryExpr{
+      BadNode: &ast.BadNode{
+        NodePos: 27,
+        NodeEnd: 59,
+        Tokens:  []*token.Token{
+          &token.Token{
+            Kind:     "<ident>",
+            Space:    "\n",
+            Raw:      "vales",
+            AsString: "vales",
+            Pos:      27,
+            End:      32,
+          },
+          &token.Token{
+            Kind:  "(",
+            Space: " ",
+            Raw:   "(",
+            Pos:   33,
+            End:   34,
+          },
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "1",
+            Base: 10,
+            Pos:  34,
+            End:  35,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  35,
+            End:  36,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "2",
+            Base:  10,
+            Pos:   37,
+            End:   38,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  38,
+            End:  39,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "3",
+            Base:  10,
+            Pos:   40,
+            End:   41,
+          },
+          &token.Token{
+            Kind: ")",
+            Raw:  ")",
+            Pos:  41,
+            End:  42,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  42,
+            End:  43,
+          },
+          &token.Token{
+            Kind:  "(",
+            Space: "\n      ",
+            Raw:   "(",
+            Pos:   50,
+            End:   51,
+          },
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "4",
+            Base: 10,
+            Pos:  51,
+            End:  52,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  52,
+            End:  53,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "5",
+            Base:  10,
+            Pos:   54,
+            End:   55,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  55,
+            End:  56,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "6",
+            Base:  10,
+            Pos:   57,
+            End:   58,
+          },
+          &token.Token{
+            Kind: ")",
+            Raw:  ")",
+            Pos:  58,
+            End:  59,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar, baz) vales (1, 2, 3), (4, 5, 6)

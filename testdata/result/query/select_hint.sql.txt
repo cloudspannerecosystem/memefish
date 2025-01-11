@@ -6,10 +6,14 @@
     Rbrace:  22,
     Records: []*ast.HintRecord{
       &ast.HintRecord{
-        Key: &ast.Ident{
-          NamePos: 2,
-          NameEnd: 7,
-          Name:    "hint1",
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 7,
+              Name:    "hint1",
+            },
+          },
         },
         Value: &ast.IntLiteral{
           ValuePos: 10,
@@ -19,10 +23,14 @@
         },
       },
       &ast.HintRecord{
-        Key: &ast.Ident{
-          NamePos: 13,
-          NameEnd: 18,
-          Name:    "hint2",
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 13,
+              NameEnd: 18,
+              Name:    "hint2",
+            },
+          },
         },
         Value: &ast.IntLiteral{
           ValuePos: 21,
