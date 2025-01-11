@@ -71,53 +71,53 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
-func (BadStatement) isStatement()       {}
-func (BadDDL) isStatement()             {}
-func (BadDML) isStatement()             {}
-func (QueryStatement) isStatement()     {}
-func (CreateSchema) isStatement()       {}
-func (DropSchema) isStatement()         {}
-func (CreateDatabase) isStatement()     {}
-func (AlterDatabase) isStatement()      {}
-func (CreatePlacement) isStatement()    {}
-func (CreateProtoBundle) isStatement()  {}
-func (AlterProtoBundle) isStatement()   {}
-func (DropProtoBundle) isStatement()    {}
-func (CreateTable) isStatement()        {}
-func (AlterTable) isStatement()         {}
-func (DropTable) isStatement()          {}
-func (RenameTable) isStatement()        {}
-func (CreateIndex) isStatement()        {}
-func (AlterIndex) isStatement()         {}
-func (DropIndex) isStatement()          {}
-func (CreateSearchIndex) isStatement()  {}
-func (DropSearchIndex) isStatement()    {}
-func (AlterSearchIndex) isStatement()   {}
-func (CreateView) isStatement()         {}
-func (DropView) isStatement()           {}
-func (CreateChangeStream) isStatement() {}
-func (AlterChangeStream) isStatement()  {}
-func (DropChangeStream) isStatement()   {}
-func (CreateRole) isStatement()         {}
-func (DropRole) isStatement()           {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
-func (CreateSequence) isStatement()     {}
-func (AlterSequence) isStatement()      {}
-func (DropSequence) isStatement()       {}
-func (AlterStatistics) isStatement()    {}
-func (CreateModel) isStatement()        {}
-func (AlterModel) isStatement()         {}
-func (DropModel) isStatement()          {}
-func (Analyze) isStatement()            {}
-func (CreateVectorIndex) isStatement()  {}
-func (DropVectorIndex) isStatement()    {}
+func (BadStatement) isStatement()        {}
+func (BadDDL) isStatement()              {}
+func (BadDML) isStatement()              {}
+func (QueryStatement) isStatement()      {}
+func (CreateSchema) isStatement()        {}
+func (DropSchema) isStatement()          {}
+func (CreateDatabase) isStatement()      {}
+func (AlterDatabase) isStatement()       {}
+func (CreatePlacement) isStatement()     {}
+func (CreateProtoBundle) isStatement()   {}
+func (AlterProtoBundle) isStatement()    {}
+func (DropProtoBundle) isStatement()     {}
+func (CreateTable) isStatement()         {}
+func (AlterTable) isStatement()          {}
+func (DropTable) isStatement()           {}
+func (RenameTable) isStatement()         {}
+func (CreateIndex) isStatement()         {}
+func (AlterIndex) isStatement()          {}
+func (DropIndex) isStatement()           {}
+func (CreateSearchIndex) isStatement()   {}
+func (DropSearchIndex) isStatement()     {}
+func (AlterSearchIndex) isStatement()    {}
+func (CreateView) isStatement()          {}
+func (DropView) isStatement()            {}
+func (CreateChangeStream) isStatement()  {}
+func (AlterChangeStream) isStatement()   {}
+func (DropChangeStream) isStatement()    {}
+func (CreateRole) isStatement()          {}
+func (DropRole) isStatement()            {}
+func (Grant) isStatement()               {}
+func (Revoke) isStatement()              {}
+func (CreateSequence) isStatement()      {}
+func (AlterSequence) isStatement()       {}
+func (DropSequence) isStatement()        {}
+func (AlterStatistics) isStatement()     {}
+func (CreateModel) isStatement()         {}
+func (AlterModel) isStatement()          {}
+func (DropModel) isStatement()           {}
+func (Analyze) isStatement()             {}
+func (CreateVectorIndex) isStatement()   {}
+func (DropVectorIndex) isStatement()     {}
 func (CreatePropertyGraph) isStatement() {}
 func (DropPropertyGraph) isStatement()   {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Call) isStatement()               {}
+func (Insert) isStatement()              {}
+func (Delete) isStatement()              {}
+func (Update) isStatement()              {}
+func (Call) isStatement()                {}
 
 // QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
 // Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
@@ -363,44 +363,44 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
-func (BadDDL) isDDL()             {}
-func (CreateSchema) isDDL()       {}
-func (DropSchema) isDDL()         {}
-func (CreateDatabase) isDDL()     {}
-func (AlterDatabase) isDDL()      {}
-func (CreatePlacement) isDDL()    {}
-func (CreateProtoBundle) isDDL()  {}
-func (AlterProtoBundle) isDDL()   {}
-func (DropProtoBundle) isDDL()    {}
-func (CreateTable) isDDL()        {}
-func (AlterTable) isDDL()         {}
-func (DropTable) isDDL()          {}
-func (RenameTable) isDDL()        {}
-func (CreateIndex) isDDL()        {}
-func (AlterIndex) isDDL()         {}
-func (DropIndex) isDDL()          {}
-func (CreateView) isDDL()         {}
-func (CreateSearchIndex) isDDL()  {}
-func (DropSearchIndex) isDDL()    {}
-func (AlterSearchIndex) isDDL()   {}
-func (DropView) isDDL()           {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
-func (CreateRole) isDDL()         {}
-func (DropRole) isDDL()           {}
-func (Grant) isDDL()              {}
-func (Revoke) isDDL()             {}
-func (CreateSequence) isDDL()     {}
-func (AlterSequence) isDDL()      {}
-func (DropSequence) isDDL()       {}
-func (AlterStatistics) isDDL()    {}
-func (CreateModel) isDDL()        {}
-func (AlterModel) isDDL()         {}
-func (DropModel) isDDL()          {}
-func (Analyze) isDDL()            {}
-func (CreateVectorIndex) isDDL()  {}
-func (DropVectorIndex) isDDL()    {}
+func (BadDDL) isDDL()              {}
+func (CreateSchema) isDDL()        {}
+func (DropSchema) isDDL()          {}
+func (CreateDatabase) isDDL()      {}
+func (AlterDatabase) isDDL()       {}
+func (CreatePlacement) isDDL()     {}
+func (CreateProtoBundle) isDDL()   {}
+func (AlterProtoBundle) isDDL()    {}
+func (DropProtoBundle) isDDL()     {}
+func (CreateTable) isDDL()         {}
+func (AlterTable) isDDL()          {}
+func (DropTable) isDDL()           {}
+func (RenameTable) isDDL()         {}
+func (CreateIndex) isDDL()         {}
+func (AlterIndex) isDDL()          {}
+func (DropIndex) isDDL()           {}
+func (CreateView) isDDL()          {}
+func (CreateSearchIndex) isDDL()   {}
+func (DropSearchIndex) isDDL()     {}
+func (AlterSearchIndex) isDDL()    {}
+func (DropView) isDDL()            {}
+func (CreateChangeStream) isDDL()  {}
+func (AlterChangeStream) isDDL()   {}
+func (DropChangeStream) isDDL()    {}
+func (CreateRole) isDDL()          {}
+func (DropRole) isDDL()            {}
+func (Grant) isDDL()               {}
+func (Revoke) isDDL()              {}
+func (CreateSequence) isDDL()      {}
+func (AlterSequence) isDDL()       {}
+func (DropSequence) isDDL()        {}
+func (AlterStatistics) isDDL()     {}
+func (CreateModel) isDDL()         {}
+func (AlterModel) isDDL()          {}
+func (DropModel) isDDL()           {}
+func (Analyze) isDDL()             {}
+func (CreateVectorIndex) isDDL()   {}
+func (DropVectorIndex) isDDL()     {}
 func (CreatePropertyGraph) isDDL() {}
 func (DropPropertyGraph) isDDL()   {}
 
@@ -3628,8 +3628,8 @@ type PropertyGraphLabelsOrProperties interface {
 	isPropertyGraphLabelsOrProperties()
 }
 
-func (*PropertyGraphSingleProperties) isPropertyGraphLabelsOrProperties()       {}
-func (*PropertyGraphLabelAndPropertiesList) isPropertyGraphLabelsOrProperties() {}
+func (PropertyGraphSingleProperties) isPropertyGraphLabelsOrProperties()       {}
+func (PropertyGraphLabelAndPropertiesList) isPropertyGraphLabelsOrProperties() {}
 
 // PropertyGraphElementLabel represents a element label definition.
 type PropertyGraphElementLabel interface {
@@ -3637,8 +3637,8 @@ type PropertyGraphElementLabel interface {
 	isPropertyGraphElementLabel()
 }
 
-func (*PropertyGraphElementLabelLabelName) isPropertyGraphElementLabel()    {}
-func (*PropertyGraphElementLabelDefaultLabel) isPropertyGraphElementLabel() {}
+func (PropertyGraphElementLabelLabelName) isPropertyGraphElementLabel()    {}
+func (PropertyGraphElementLabelDefaultLabel) isPropertyGraphElementLabel() {}
 
 // PropertyGraphElementKeys represents PropertyGraphNodeElementKey or PropertyGraphEdgeElementKeys.
 type PropertyGraphElementKeys interface {
@@ -3646,8 +3646,8 @@ type PropertyGraphElementKeys interface {
 	isPropertyGraphElementKeys()
 }
 
-func (*PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
-func (*PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
+func (PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
+func (PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
 
 // PropertyGraphElementProperties represents a definition of properties.
 // See https://cloud.google.com/spanner/docs/reference/standard-sql/graph-schema-statements#element_table_property_definition.
@@ -3656,9 +3656,9 @@ type PropertyGraphElementProperties interface {
 	isPropertyGraphElementProperties()
 }
 
-func (*PropertyGraphNoProperties) isPropertyGraphElementProperties()        {}
-func (*PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
-func (*PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
+func (PropertyGraphNoProperties) isPropertyGraphElementProperties()        {}
+func (PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
+func (PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
 
 // CreatePropertyGraph is CREATE PROPERTY GRAPH statement node.
 //
@@ -3689,6 +3689,8 @@ type PropertyGraphContent struct {
 }
 
 // PropertyGraphNodeTables is NODE TABLES node in CREATE PROPERTY GRAPH statement.
+//
+//	NODE TABLES {{.Tables | sql}}
 type PropertyGraphNodeTables struct {
 	// pos = Node
 	// end = Tables.end
@@ -3698,6 +3700,8 @@ type PropertyGraphNodeTables struct {
 }
 
 // PropertyGraphEdgeTables is EDGE TABLES node in CREATE PROPERTY GRAPH statement.
+//
+//	EDGE TABLES {{.Tables | sql}}
 type PropertyGraphEdgeTables struct {
 	// pos = Edge
 	// end = Tables.end
