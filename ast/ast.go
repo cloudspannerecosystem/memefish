@@ -32,9 +32,20 @@
 //	(PosVar, NodeVar, NodeSliceVar, and BoolVar are derived by its struct definition.)
 package ast
 
-// This file must contain only AST definitions.
-// We use the following go:generate directive for generating pos.go. Thus, all AST definitions must have pos and end lines.
-//go:generate go run ../tools/gen-ast-pos/main.go -infile ast.go -outfile pos.go
+// NOTE: ast.go and ast_*.go are used for automatic generation, so these files are conventional.
+
+// NOTE: This file defines AST nodes and they are used for automatic generation,
+//       so this file is conventional.
+//
+// Conventions:
+//
+//   - Each node interface (except for Node) should have isXXX method (XXX must be a name of the interface itself).
+//   - `isXXX` methods should be defined after the interface definition
+//     and the receiver should be the non-pointer node struct type.
+//   - Each node struct should have pos and end comments.
+//   - Each node struct should have template lines in its doc comment.
+
+//go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -562,7 +573,7 @@ type BadNode struct {
 
 // BadStatement is a BadNode for Statement.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadStatement struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -572,7 +583,7 @@ type BadStatement struct {
 
 // BadQueryExpr is a BadNode for QueryExpr.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadQueryExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -582,7 +593,7 @@ type BadQueryExpr struct {
 
 // BadExpr is a BadNode for Expr.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -592,7 +603,7 @@ type BadExpr struct {
 
 // BadType is a BadNode for Type.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadType struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -602,7 +613,7 @@ type BadType struct {
 
 // BadDDL is a BadNode for DDL.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadDDL struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -612,7 +623,7 @@ type BadDDL struct {
 
 // BadDML is a BadNode for DML.
 //
-// {{.BadNode | sql}}
+//	{{.BadNode | sql}}
 type BadDML struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
@@ -768,6 +779,8 @@ type AsTypeName struct {
 }
 
 // FromQuery is FROM query expression node.
+//
+//	FROM {{.From | sql}}
 type FromQuery struct {
 	// pos = From.pos
 	// end = From.end
@@ -1997,8 +2010,8 @@ type BracedConstructorFieldValue interface {
 	isBracedConstructorFieldValue()
 }
 
-func (*BracedConstructor) isBracedConstructorFieldValue()               {}
-func (*BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
+func (BracedConstructor) isBracedConstructorFieldValue()               {}
+func (BracedConstructorFieldValueExpr) isBracedConstructorFieldValue() {}
 
 // NewConstructor represents NEW operator which creates a protocol buffer using a parenthesized list of arguments.
 //
@@ -3023,7 +3036,6 @@ type CreateIndex struct {
 //	ON {{.TableName | sql}}({{.ColumnName | sql}})
 //	{{if .Where}}WHERE {{.Where | sql}}{{end}}
 //	{{.Options | sql}}
-
 type CreateVectorIndex struct {
 	// pos = Create
 	// end = Options.end
