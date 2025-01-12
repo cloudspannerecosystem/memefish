@@ -261,7 +261,7 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 }
 
 func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QueryStatement) {
-	// Can be BadQueryExpr and won't panic
+	// Can be a *ast.BadQueryExpr and won't panic
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
