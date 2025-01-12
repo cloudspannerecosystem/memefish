@@ -2007,7 +2007,7 @@ func (t *ThenReturn) End() token.Pos {
 }
 
 func (i *Insert) Pos() token.Pos {
-	return i.Insert
+	return posChoice(nodePos(wrapNode(i.Hint)), i.Insert)
 }
 
 func (i *Insert) End() token.Pos {
@@ -2047,7 +2047,7 @@ func (s *SubQueryInput) End() token.Pos {
 }
 
 func (d *Delete) Pos() token.Pos {
-	return d.Delete
+	return posChoice(nodePos(wrapNode(d.Hint)), d.Delete)
 }
 
 func (d *Delete) End() token.Pos {
@@ -2055,7 +2055,7 @@ func (d *Delete) End() token.Pos {
 }
 
 func (u *Update) Pos() token.Pos {
-	return u.Update
+	return posChoice(nodePos(wrapNode(u.Hint)), u.Update)
 }
 
 func (u *Update) End() token.Pos {
