@@ -44,7 +44,7 @@ package ast
 //     and the receiver must be the non-pointer node struct type.
 //   - Each node struct must have pos and end comments.
 //   - Each node struct must have template lines in its doc comment.
-//   - The fields of each node must be oredered by the position.
+//   - The fields of each node must be ordered by the position.
 
 //go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
