@@ -189,7 +189,7 @@ func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
 		return p.parseOtherStatement()
 	}
 
-	panic(p.errorfAtToken(&p.Token, "unexpected p.Token: %s", p.Token.Kind))
+	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
 }
 
 func (p *Parser) parseOtherStatement() ast.Statement {
