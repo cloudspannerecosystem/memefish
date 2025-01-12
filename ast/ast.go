@@ -39,11 +39,12 @@ package ast
 //
 // Conventions:
 //
-//   - Each node interface (except for Node) should have isXXX method (XXX must be a name of the interface itself).
-//   - `isXXX` methods should be defined after the interface definition
-//     and the receiver should be the non-pointer node struct type.
-//   - Each node struct should have pos and end comments.
-//   - Each node struct should have template lines in its doc comment.
+//   - Each node interface (except for Node) must have isXXX method (XXX is a name of the interface itself).
+//   - `isXXX` methods must be defined after the interface definition
+//     and the receiver must be the non-pointer node struct type.
+//   - Each node struct must have pos and end comments.
+//   - Each node struct must have template lines in its doc comment.
+//   - The fields of each node must be oredered by the position.
 
 //go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
