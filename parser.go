@@ -261,17 +261,7 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 }
 
 func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QueryStatement) {
-	l := p.Lexer.Clone()
-	defer func() {
-		if r := recover(); r != nil {
-			// When parsing is failed on tryParseWith, the result of these methods are discarded
-			// because they are concrete structs and we cannot fill them with *ast.BadNode.
-			stmt = &ast.QueryStatement{
-				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
-			}
-		}
-	}()
-
+	// Can be BadQueryExpr and won't panic
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
