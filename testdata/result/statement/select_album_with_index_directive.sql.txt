@@ -5,13 +5,8 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Ident{
           NamePos: 7,
@@ -47,10 +42,14 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
           Rbrace:  87,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 57,
-                NameEnd: 68,
-                Name:    "FORCE_INDEX",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 57,
+                    NameEnd: 68,
+                    Name:    "FORCE_INDEX",
+                  },
+                },
               },
               Value: &ast.Ident{
                 NamePos: 69,
@@ -60,8 +59,6 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
             },
           },
         },
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -94,10 +91,6 @@ WHERE AlbumTitle >= @startTitle AND AlbumTitle < @endTitle
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

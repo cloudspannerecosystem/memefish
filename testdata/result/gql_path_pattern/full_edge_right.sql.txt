@@ -4,18 +4,11 @@
 &ast.GQLPathPattern{
   PathTermList: []*ast.GQLQuantifiablePathTerm{
     &ast.GQLQuantifiablePathTerm{
-      Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLFullEdgeRight{
         Hyphen:        1,
         Gt:            4,
-        PatternFiller: &ast.GQLPatternFiller{
-          Hint:                 (*ast.Hint)(nil),
-          GraphPatternVariable: (*ast.Ident)(nil),
-          IsLabelCondition:     (*ast.GQLIsLabelCondition)(nil),
-          Filter:               nil,
-        },
+        PatternFiller: &ast.GQLPatternFiller{},
       },
-      Quantifier: nil,
     },
   },
 }

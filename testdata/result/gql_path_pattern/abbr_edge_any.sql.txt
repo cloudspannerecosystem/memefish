@@ -4,11 +4,9 @@
 &ast.GQLPathPattern{
   PathTermList: []*ast.GQLQuantifiablePathTerm{
     &ast.GQLQuantifiablePathTerm{
-      Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLAbbreviatedEdgeAny{
         Hyphen: 1,
       },
-      Quantifier: nil,
     },
   },
 }

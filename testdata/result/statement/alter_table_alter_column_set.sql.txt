@@ -2,11 +2,14 @@
 alter table foo alter column foo set options(allow_commit_timestamp = true)
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 15,
-    Name:    "foo",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
   },
   TableAlteration: &ast.AlterColumn{
     Alter: 16,

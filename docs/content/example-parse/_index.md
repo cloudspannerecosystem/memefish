@@ -6,10 +6,6 @@ weight: 1
 
 This example shows how to parse a Spanner SQL and unparse it.
 
- <!--more--> 
-
- ## Code
-
 ```go
 package main
 

@@ -2,13 +2,8 @@
 SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 7,
       },
@@ -30,7 +25,6 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
               PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturnStatement{
                   Return:         35,
-                  AllOrDistinct:  "",
                   ReturnItemList: []ast.GQLReturnItem{
                     &ast.Alias{
                       Expr: &ast.IntLiteral{
@@ -49,22 +43,13 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
                       },
                     },
                   },
-                  GroupByClause:        (*ast.GroupBy)(nil),
-                  OrderByClause:        (*ast.OrderBy)(nil),
-                  LimitAndOffsetClause: nil,
                 },
               },
             },
           },
         },
-        As: (*ast.AsAlias)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

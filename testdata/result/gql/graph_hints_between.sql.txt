@@ -8,7 +8,6 @@ RETURN oa.id
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -22,21 +21,16 @@ RETURN oa.id
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        23,
                           RParen:        40,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 24,
                               NameEnd: 25,
@@ -46,7 +40,6 @@ RETURN oa.id
                               IsOrColon:       25,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  26,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 26,
                                   NameEnd: 32,
@@ -75,15 +68,12 @@ RETURN oa.id
                             },
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        41,
                           Gt:            50,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 43,
                               NameEnd: 44,
@@ -93,7 +83,6 @@ RETURN oa.id
                               IsOrColon:       44,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  45,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 45,
                                   NameEnd: 49,
@@ -101,10 +90,8 @@ RETURN oa.id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
                         Hint: &ast.Hint{
@@ -112,10 +99,14 @@ RETURN oa.id
                           Rbrace:  79,
                           Records: []*ast.HintRecord{
                             &ast.HintRecord{
-                              Key: &ast.Ident{
-                                NamePos: 57,
-                                NameEnd: 68,
-                                Name:    "JOIN_METHOD",
+                              Key: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 57,
+                                    NameEnd: 68,
+                                    Name:    "JOIN_METHOD",
+                                  },
+                                },
                               },
                               Value: &ast.Ident{
                                 NamePos: 69,
@@ -128,16 +119,13 @@ RETURN oa.id
                         PathTerm: &ast.GQLSubpathPattern{
                           LParen:      83,
                           RParen:      123,
-                          PathMode:    (*ast.GQLPathMode)(nil),
                           PathPattern: &ast.GQLPathPattern{
                             PathTermList: []*ast.GQLQuantifiablePathTerm{
                               &ast.GQLQuantifiablePathTerm{
-                                Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLNodePattern{
                                   LParen:        84,
                                   RParen:        94,
                                   PatternFiller: &ast.GQLPatternFiller{
-                                    Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 85,
                                       NameEnd: 86,
@@ -147,7 +135,6 @@ RETURN oa.id
                                       IsOrColon:       86,
                                       LabelExpression: &ast.GQLLabelName{
                                         StartPos:  87,
-                                        IsPercent: false,
                                         LabelName: &ast.Ident{
                                           NamePos: 87,
                                           NameEnd: 94,
@@ -155,18 +142,14 @@ RETURN oa.id
                                         },
                                       },
                                     },
-                                    Filter: nil,
                                   },
                                 },
-                                Quantifier: nil,
                               },
                               &ast.GQLQuantifiablePathTerm{
-                                Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   Hyphen:        95,
                                   Gt:            109,
                                   PatternFiller: &ast.GQLPatternFiller{
-                                    Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 97,
                                       NameEnd: 98,
@@ -176,7 +159,6 @@ RETURN oa.id
                                       IsOrColon:       98,
                                       LabelExpression: &ast.GQLLabelName{
                                         StartPos:  99,
-                                        IsPercent: false,
                                         LabelName: &ast.Ident{
                                           NamePos: 99,
                                           NameEnd: 108,
@@ -184,18 +166,14 @@ RETURN oa.id
                                         },
                                       },
                                     },
-                                    Filter: nil,
                                   },
                                 },
-                                Quantifier: nil,
                               },
                               &ast.GQLQuantifiablePathTerm{
-                                Hint:     (*ast.Hint)(nil),
                                 PathTerm: &ast.GQLNodePattern{
                                   LParen:        111,
                                   RParen:        122,
                                   PatternFiller: &ast.GQLPatternFiller{
-                                    Hint:                 (*ast.Hint)(nil),
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 112,
                                       NameEnd: 114,
@@ -205,7 +183,6 @@ RETURN oa.id
                                       IsOrColon:       114,
                                       LabelExpression: &ast.GQLLabelName{
                                         StartPos:  115,
-                                        IsPercent: false,
                                         LabelName: &ast.Ident{
                                           NamePos: 115,
                                           NameEnd: 122,
@@ -213,27 +190,21 @@ RETURN oa.id
                                         },
                                       },
                                     },
-                                    Filter: nil,
                                   },
                                 },
-                                Quantifier: nil,
                               },
                             },
                           },
-                          WhereClause: (*ast.Where)(nil),
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{
@@ -252,9 +223,6 @@ RETURN oa.id
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

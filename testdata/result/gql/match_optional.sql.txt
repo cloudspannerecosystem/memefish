@@ -6,7 +6,6 @@ RETURN n.name, a.id AS blocked_account_id
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -20,21 +19,16 @@ RETURN n.name, a.id AS blocked_account_id
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        21,
                           RParen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
                               NameEnd: 23,
@@ -44,7 +38,6 @@ RETURN n.name, a.id AS blocked_account_id
                               IsOrColon:       23,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  24,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,
@@ -52,36 +45,28 @@ RETURN n.name, a.id AS blocked_account_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLMatchStatement{
             Optional:     32,
             Match:        41,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        47,
                           RParen:        56,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 48,
                               NameEnd: 49,
@@ -91,7 +76,6 @@ RETURN n.name, a.id AS blocked_account_id
                               IsOrColon:       49,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  50,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 50,
                                   NameEnd: 56,
@@ -99,24 +83,18 @@ RETURN n.name, a.id AS blocked_account_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        57,
                           Gt:            65,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
-                            GraphPatternVariable: (*ast.Ident)(nil),
-                            IsLabelCondition:     &ast.GQLIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       59,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  60,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 60,
                                   NameEnd: 64,
@@ -124,18 +102,14 @@ RETURN n.name, a.id AS blocked_account_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        67,
                           RParen:        96,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 68,
                               NameEnd: 69,
@@ -145,7 +119,6 @@ RETURN n.name, a.id AS blocked_account_id
                               IsOrColon:       69,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  70,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 70,
                                   NameEnd: 77,
@@ -172,18 +145,15 @@ RETURN n.name, a.id AS blocked_account_id
                             },
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLReturnStatement{
             Return:         98,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{
@@ -226,9 +196,6 @@ RETURN n.name, a.id AS blocked_account_id
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

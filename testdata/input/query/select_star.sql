@@ -1,0 +1,1 @@
+SELECT * FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

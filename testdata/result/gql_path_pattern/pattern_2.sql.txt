@@ -4,12 +4,9 @@
 &ast.GQLPathPattern{
   PathTermList: []*ast.GQLQuantifiablePathTerm{
     &ast.GQLQuantifiablePathTerm{
-      Hint:     (*ast.Hint)(nil),
       PathTerm: &ast.GQLNodePattern{
-        LParen:        0,
         RParen:        31,
         PatternFiller: &ast.GQLPatternFiller{
-          Hint:                 (*ast.Hint)(nil),
           GraphPatternVariable: &ast.Ident{
             NamePos: 1,
             NameEnd: 2,
@@ -23,7 +20,6 @@
               LabelExpr: &ast.GQLLabelOrExpression{
                 Left: &ast.GQLLabelName{
                   StartPos:  4,
-                  IsPercent: false,
                   LabelName: &ast.Ident{
                     NamePos: 4,
                     NameEnd: 10,
@@ -38,7 +34,6 @@
                     LabelExpression: &ast.GQLLabelAndExpression{
                       Left: &ast.GQLLabelName{
                         StartPos:  13,
-                        IsPercent: false,
                         LabelName: &ast.Ident{
                           NamePos: 13,
                           NameEnd: 19,
@@ -49,7 +44,6 @@
                         Not:             20,
                         LabelExpression: &ast.GQLLabelName{
                           StartPos:  21,
-                          IsPercent: false,
                           LabelName: &ast.Ident{
                             NamePos: 21,
                             NameEnd: 29,
@@ -63,10 +57,8 @@
               },
             },
           },
-          Filter: nil,
         },
       },
-      Quantifier: nil,
     },
   },
 }

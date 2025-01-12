@@ -1,0 +1,56 @@
+--- delete_fqn.sql
+delete sch1.foo where foo = 1 and bar = 2
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 11,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 16,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 22,
+          NameEnd: 25,
+          Name:    "foo",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 28,
+          ValueEnd: 29,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 34,
+          NameEnd: 37,
+          Name:    "bar",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 40,
+          ValueEnd: 41,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+DELETE FROM sch1.foo WHERE foo = 1 AND bar = 2

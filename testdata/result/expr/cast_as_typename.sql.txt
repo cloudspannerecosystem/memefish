@@ -2,9 +2,7 @@
 CAST('order_number: "123"' AS examples.shipping.`Order`)
 --- AST
 &ast.CastExpr{
-  Cast:   0,
   Rparen: 55,
-  Safe:   false,
   Expr:   &ast.StringLiteral{
     ValuePos: 5,
     ValueEnd: 26,
@@ -32,4 +30,4 @@ CAST('order_number: "123"' AS examples.shipping.`Order`)
 }
 
 --- SQL
-CAST("order_number: \"123\"" AS examples.shipping.`Order`)
+CAST('order_number: "123"' AS examples.shipping.`Order`)

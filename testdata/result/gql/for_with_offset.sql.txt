@@ -8,7 +8,6 @@ ORDER BY p.name, element, offset
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -22,21 +21,16 @@ ORDER BY p.name, element, offset
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        21,
                           RParen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
                               NameEnd: 23,
@@ -46,7 +40,6 @@ ORDER BY p.name, element, offset
                               IsOrColon:       23,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  24,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,
@@ -54,18 +47,14 @@ ORDER BY p.name, element, offset
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        31,
                           Gt:            40,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 33,
                               NameEnd: 34,
@@ -75,7 +64,6 @@ ORDER BY p.name, element, offset
                               IsOrColon:       34,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  35,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 35,
                                   NameEnd: 39,
@@ -83,18 +71,14 @@ ORDER BY p.name, element, offset
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        42,
                           RParen:        52,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 43,
                               NameEnd: 44,
@@ -104,7 +88,6 @@ ORDER BY p.name, element, offset
                               IsOrColon:       44,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  45,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 45,
                                   NameEnd: 52,
@@ -112,16 +95,13 @@ ORDER BY p.name, element, offset
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLForStatement{
@@ -135,7 +115,6 @@ ORDER BY p.name, element, offset
               Array:  -1,
               Lbrack: 69,
               Rbrack: 82,
-              Type:   nil,
               Values: []ast.Expr{
                 &ast.StringLiteral{
                   ValuePos: 70,
@@ -150,14 +129,12 @@ ORDER BY p.name, element, offset
               },
             },
             WithOffsetClause: &ast.GQLWithOffsetClause{
-              With:       84,
-              Offset:     89,
-              OffsetName: (*ast.AsAlias)(nil),
+              With:   84,
+              Offset: 89,
             },
           },
           &ast.GQLReturnStatement{
             Return:         96,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Path{
@@ -198,7 +175,6 @@ ORDER BY p.name, element, offset
                 },
               },
             },
-            GroupByClause: (*ast.GroupBy)(nil),
             OrderByClause: &ast.OrderBy{
               Order: 141,
               Items: []*ast.OrderByItem{
@@ -218,8 +194,6 @@ ORDER BY p.name, element, offset
                       },
                     },
                   },
-                  Collate: (*ast.Collate)(nil),
-                  Dir:     "",
                 },
                 &ast.OrderByItem{
                   DirPos: -1,
@@ -228,8 +202,6 @@ ORDER BY p.name, element, offset
                     NameEnd: 165,
                     Name:    "element",
                   },
-                  Collate: (*ast.Collate)(nil),
-                  Dir:     "",
                 },
                 &ast.OrderByItem{
                   DirPos: -1,
@@ -238,12 +210,9 @@ ORDER BY p.name, element, offset
                     NameEnd: 173,
                     Name:    "offset",
                   },
-                  Collate: (*ast.Collate)(nil),
-                  Dir:     "",
                 },
               },
             },
-            LimitAndOffsetClause: nil,
           },
         },
       },

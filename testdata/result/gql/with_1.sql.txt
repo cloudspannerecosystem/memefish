@@ -6,7 +6,6 @@ RETURN account.id AS account_id, num_incoming_transfers
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -20,27 +19,20 @@ RETURN account.id AS account_id, num_incoming_transfers
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        21,
                           RParen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
-                            GraphPatternVariable: (*ast.Ident)(nil),
-                            IsLabelCondition:     &ast.GQLIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       22,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  23,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 23,
                                   NameEnd: 30,
@@ -48,24 +40,18 @@ RETURN account.id AS account_id, num_incoming_transfers
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        31,
                           Gt:            44,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
-                            GraphPatternVariable: (*ast.Ident)(nil),
-                            IsLabelCondition:     &ast.GQLIsLabelCondition{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  34,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 43,
@@ -73,18 +59,14 @@ RETURN account.id AS account_id, num_incoming_transfers
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        46,
                           RParen:        62,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,
                               NameEnd: 54,
@@ -94,7 +76,6 @@ RETURN account.id AS account_id, num_incoming_transfers
                               IsOrColon:       54,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  55,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 55,
                                   NameEnd: 62,
@@ -102,21 +83,17 @@ RETURN account.id AS account_id, num_incoming_transfers
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLWithStatement{
             With:           64,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.ExprSelectItem{
                 Expr: &ast.Ident{
@@ -153,7 +130,6 @@ RETURN account.id AS account_id, num_incoming_transfers
           },
           &ast.GQLReturnStatement{
             Return:         130,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{
@@ -187,9 +163,6 @@ RETURN account.id AS account_id, num_incoming_transfers
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

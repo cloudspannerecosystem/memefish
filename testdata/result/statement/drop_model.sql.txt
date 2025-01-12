@@ -1,0 +1,13 @@
+--- drop_model.sql
+DROP MODEL MyClassificationModel
+--- AST
+&ast.DropModel{
+  Name: &ast.Ident{
+    NamePos: 11,
+    NameEnd: 32,
+    Name:    "MyClassificationModel",
+  },
+}
+
+--- SQL
+DROP MODEL MyClassificationModel

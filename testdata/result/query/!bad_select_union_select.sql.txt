@@ -1,0 +1,48 @@
+--- !bad_select_union_select.sql
+select union all select
+--- Error
+syntax error: testdata/input/query/!bad_select_union_select.sql:1:8: unexpected token: UNION
+  1|  select union all select
+   |         ^~~~~
+syntax error: testdata/input/query/!bad_select_union_select.sql:1:24: unexpected token: <eof>
+  1|  select union all select
+   |                         ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.CompoundQuery{
+    Op:            "UNION",
+    AllOrDistinct: "ALL",
+    Queries:       []ast.QueryExpr{
+      &ast.Select{
+        Results: []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.BadExpr{
+              BadNode: &ast.BadNode{
+                NodePos: 7,
+                NodeEnd: 7,
+              },
+            },
+          },
+        },
+      },
+      &ast.Select{
+        Select:  17,
+        Results: []ast.SelectItem{
+          &ast.ExprSelectItem{
+            Expr: &ast.BadExpr{
+              BadNode: &ast.BadNode{
+                NodePos: 23,
+                NodeEnd: 23,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT  UNION ALL SELECT 

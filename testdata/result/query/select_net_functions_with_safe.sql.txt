@@ -1,0 +1,609 @@
+--- select_net_functions_with_safe.sql
+-- original: https://cloud.google.com/spanner/docs/reference/standard-sql/net_functions#nethost
+SELECT
+  FORMAT("%T", input) AS input,
+  description,
+  FORMAT("%T", NET.HOST(input)) AS host,
+  FORMAT("%T", NET.PUBLIC_SUFFIX(input)) AS suffix,
+  FORMAT("%T", NET.REG_DOMAIN(input)) AS domain,
+  FORMAT("%T", SAFE.NET.HOST(input)) AS safe_host,
+  FORMAT("%T", SAFE.NET.PUBLIC_SUFFIX(input)) AS safe_suffix,
+  FORMAT("%T", SAFE.NET.REG_DOMAIN(input)) AS safe_domain
+FROM (
+    SELECT "" AS input, "invalid input" AS description
+    UNION ALL SELECT "http://abc.xyz", "standard URL"
+    UNION ALL SELECT "//user:password@a.b:80/path?query",
+    "standard URL with relative scheme, port, path and query, but no public suffix"
+    UNION ALL SELECT "https://[::1]:80", "standard URL with IPv6 host"
+    UNION ALL SELECT "http://例子.卷筒纸.中国", "standard URL with internationalized domain name"
+    UNION ALL SELECT "    www.Example.Co.UK    ",
+    "non-standard URL with spaces, upper case letters, and without scheme"
+    UNION ALL SELECT "mailto:?to=&subject=&body=", "URI rather than URL--unsupported"
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  96,
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 123,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 105,
+                NameEnd: 111,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 112,
+                ValueEnd: 116,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 118,
+                NameEnd: 123,
+                Name:    "input",
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    125,
+          Alias: &ast.Ident{
+            NamePos: 128,
+            NameEnd: 133,
+            Name:    "input",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 137,
+          NameEnd: 148,
+          Name:    "description",
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 180,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 152,
+                NameEnd: 158,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 159,
+                ValueEnd: 163,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 179,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 165,
+                      NameEnd: 168,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 169,
+                      NameEnd: 173,
+                      Name:    "HOST",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 174,
+                      NameEnd: 179,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    182,
+          Alias: &ast.Ident{
+            NamePos: 185,
+            NameEnd: 189,
+            Name:    "host",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 230,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 193,
+                NameEnd: 199,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 200,
+                ValueEnd: 204,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 229,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 206,
+                      NameEnd: 209,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 210,
+                      NameEnd: 223,
+                      Name:    "PUBLIC_SUFFIX",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 224,
+                      NameEnd: 229,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    232,
+          Alias: &ast.Ident{
+            NamePos: 235,
+            NameEnd: 241,
+            Name:    "suffix",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 279,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 245,
+                NameEnd: 251,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 252,
+                ValueEnd: 256,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 278,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 258,
+                      NameEnd: 261,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 262,
+                      NameEnd: 272,
+                      Name:    "REG_DOMAIN",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 273,
+                      NameEnd: 278,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    281,
+          Alias: &ast.Ident{
+            NamePos: 284,
+            NameEnd: 290,
+            Name:    "domain",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 327,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 294,
+                NameEnd: 300,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 301,
+                ValueEnd: 305,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 326,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 307,
+                      NameEnd: 311,
+                      Name:    "SAFE",
+                    },
+                    &ast.Ident{
+                      NamePos: 312,
+                      NameEnd: 315,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 316,
+                      NameEnd: 320,
+                      Name:    "HOST",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 321,
+                      NameEnd: 326,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    329,
+          Alias: &ast.Ident{
+            NamePos: 332,
+            NameEnd: 341,
+            Name:    "safe_host",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 387,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 345,
+                NameEnd: 351,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 352,
+                ValueEnd: 356,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 386,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 358,
+                      NameEnd: 362,
+                      Name:    "SAFE",
+                    },
+                    &ast.Ident{
+                      NamePos: 363,
+                      NameEnd: 366,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 367,
+                      NameEnd: 380,
+                      Name:    "PUBLIC_SUFFIX",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 381,
+                      NameEnd: 386,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    389,
+          Alias: &ast.Ident{
+            NamePos: 392,
+            NameEnd: 403,
+            Name:    "safe_suffix",
+          },
+        },
+      },
+      &ast.Alias{
+        Expr: &ast.CallExpr{
+          Rparen: 446,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 407,
+                NameEnd: 413,
+                Name:    "FORMAT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 414,
+                ValueEnd: 418,
+                Value:    "%T",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.CallExpr{
+                Rparen: 445,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 420,
+                      NameEnd: 424,
+                      Name:    "SAFE",
+                    },
+                    &ast.Ident{
+                      NamePos: 425,
+                      NameEnd: 428,
+                      Name:    "NET",
+                    },
+                    &ast.Ident{
+                      NamePos: 429,
+                      NameEnd: 439,
+                      Name:    "REG_DOMAIN",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 440,
+                      NameEnd: 445,
+                      Name:    "input",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    448,
+          Alias: &ast.Ident{
+            NamePos: 451,
+            NameEnd: 462,
+            Name:    "safe_domain",
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   463,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 468,
+        Rparen: 1108,
+        Query:  &ast.CompoundQuery{
+          Op:            "UNION",
+          AllOrDistinct: "ALL",
+          Queries:       []ast.QueryExpr{
+            &ast.Select{
+              Select:  474,
+              Results: []ast.SelectItem{
+                &ast.Alias{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 481,
+                    ValueEnd: 483,
+                  },
+                  As: &ast.AsAlias{
+                    As:    484,
+                    Alias: &ast.Ident{
+                      NamePos: 487,
+                      NameEnd: 492,
+                      Name:    "input",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 494,
+                    ValueEnd: 509,
+                    Value:    "invalid input",
+                  },
+                  As: &ast.AsAlias{
+                    As:    510,
+                    Alias: &ast.Ident{
+                      NamePos: 513,
+                      NameEnd: 524,
+                      Name:    "description",
+                    },
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  539,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 546,
+                    ValueEnd: 562,
+                    Value:    "http://abc.xyz",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 564,
+                    ValueEnd: 578,
+                    Value:    "standard URL",
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  593,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 600,
+                    ValueEnd: 635,
+                    Value:    "//user:password@a.b:80/path?query",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 641,
+                    ValueEnd: 720,
+                    Value:    "standard URL with relative scheme, port, path and query, but no public suffix",
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  735,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 742,
+                    ValueEnd: 760,
+                    Value:    "https://[::1]:80",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 762,
+                    ValueEnd: 791,
+                    Value:    "standard URL with IPv6 host",
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  806,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 813,
+                    ValueEnd: 845,
+                    Value:    "http://例子.卷筒纸.中国",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 847,
+                    ValueEnd: 896,
+                    Value:    "standard URL with internationalized domain name",
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  911,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 918,
+                    ValueEnd: 945,
+                    Value:    "    www.Example.Co.UK    ",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 951,
+                    ValueEnd: 1021,
+                    Value:    "non-standard URL with spaces, upper case letters, and without scheme",
+                  },
+                },
+              },
+            },
+            &ast.Select{
+              Select:  1036,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 1043,
+                    ValueEnd: 1071,
+                    Value:    "mailto:?to=&subject=&body=",
+                  },
+                },
+                &ast.ExprSelectItem{
+                  Expr: &ast.StringLiteral{
+                    ValuePos: 1073,
+                    ValueEnd: 1107,
+                    Value:    "URI rather than URL--unsupported",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT FORMAT("%T", input) AS input, description, FORMAT("%T", NET.HOST(input)) AS host, FORMAT("%T", NET.PUBLIC_SUFFIX(input)) AS suffix, FORMAT("%T", NET.REG_DOMAIN(input)) AS domain, FORMAT("%T", SAFE.NET.HOST(input)) AS safe_host, FORMAT("%T", SAFE.NET.PUBLIC_SUFFIX(input)) AS safe_suffix, FORMAT("%T", SAFE.NET.REG_DOMAIN(input)) AS safe_domain FROM (SELECT "" AS input, "invalid input" AS description UNION ALL SELECT "http://abc.xyz", "standard URL" UNION ALL SELECT "//user:password@a.b:80/path?query", "standard URL with relative scheme, port, path and query, but no public suffix" UNION ALL SELECT "https://[::1]:80", "standard URL with IPv6 host" UNION ALL SELECT "http://例子.卷筒纸.中国", "standard URL with internationalized domain name" UNION ALL SELECT "    www.Example.Co.UK    ", "non-standard URL with spaces, upper case letters, and without scheme" UNION ALL SELECT "mailto:?to=&subject=&body=", "URI rather than URL--unsupported")

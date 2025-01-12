@@ -7,7 +7,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -21,21 +20,16 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        21,
                           RParen:        41,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
                               NameEnd: 33,
@@ -45,7 +39,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                               IsOrColon:       33,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  34,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 41,
@@ -53,18 +46,14 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        42,
                           Gt:            63,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 44,
                               NameEnd: 52,
@@ -74,7 +63,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                               IsOrColon:       52,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  53,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 53,
                                   NameEnd: 62,
@@ -82,18 +70,14 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        65,
                           RParen:        85,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 66,
                               NameEnd: 77,
@@ -103,7 +87,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                               IsOrColon:       77,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  78,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 78,
                                   NameEnd: 85,
@@ -111,16 +94,13 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
                 },
               },
-              WhereClause: (*ast.Where)(nil),
             },
           },
           &ast.GQLOrderByStatement{
@@ -141,9 +121,8 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                     },
                   },
                 },
-                CollationSpecification: (*ast.GQLCollationSpecification)(nil),
-                DirectionPos:           112,
-                Direction:              "DESC",
+                DirectionPos: 112,
+                Direction:    "DESC",
               },
             },
           },
@@ -158,7 +137,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{
@@ -209,9 +187,6 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

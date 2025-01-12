@@ -149,8 +149,8 @@ var lexerWrongTestCase = []struct {
 	{"\b", 0, 0, "illegal input character: '\\b'"},
 	{`"foo`, 0, 4, "unclosed string literal"},
 	{`R"foo`, 1, 5, "unclosed raw string literal"},
-	{"'foo\n", 0, 5, "unclosed string literal: newline appears in non triple-quoted"},
-	{"R'foo\n", 1, 6, "unclosed raw string literal: newline appears in non triple-quoted"},
+	{"'foo\n", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
+	{"R'foo\n", 1, 5, "unclosed raw string literal: newline appears in non triple-quoted"},
 	{"R'foo\\", 5, 6, "invalid escape sequence: \\<eof>"},
 	{`"\400"`, 1, 3, "invalid escape sequence: \\4"},
 	{`"\3xx"`, 1, 4, "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits"},
@@ -248,6 +248,26 @@ func TestLexerWrong(t *testing.T) {
 				}
 			} else {
 				t.Errorf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
+func TestLexerWrongNoError(t *testing.T) {
+	for _, tc := range lexerWrongTestCase {
+		t.Run(fmt.Sprintf("testcase/%q", tc.source), func(t *testing.T) {
+			l := &Lexer{
+				File: &File{FilePath: "[test]", Buffer: tc.source},
+			}
+			hasBad := false
+			for l.Token.Kind != TokenEOF {
+				l.nextToken(true)
+				if l.Token.Kind == TokenBad {
+					hasBad = true
+				}
+			}
+			if !hasBad {
+				t.Errorf("expected <bad>")
 			}
 		})
 	}

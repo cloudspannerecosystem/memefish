@@ -16,17 +16,20 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Create:      0,
-  Rparen:      573,
-  IfNotExists: false,
-  Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 16,
-    Name:    "foo",
+  Rparen: 573,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.ColumnDef{
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 21,
         NameEnd: 24,
@@ -36,14 +39,11 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 50,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 34,
         NameEnd: 37,
@@ -53,14 +53,12 @@ create table foo (
         NamePos: 38,
         Name:    "FLOAT64",
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 78,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 58,
         NameEnd: 61,
@@ -70,7 +68,6 @@ create table foo (
         NamePos: 62,
         Rparen:  72,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 69,
           ValueEnd: 72,
@@ -78,11 +75,9 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       &ast.Options{
+      NotNull: true,
+      Hidden:  -1,
+      Options: &ast.Options{
         Options: 83,
         Rparen:  120,
         Records: []*ast.OptionsDef{
@@ -101,6 +96,7 @@ create table foo (
     },
     &ast.ColumnDef{
       Null: 145,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 125,
         NameEnd: 128,
@@ -110,7 +106,6 @@ create table foo (
         NamePos: 129,
         Rparen:  139,
         Name:    "STRING",
-        Max:     false,
         Size:    &ast.IntLiteral{
           ValuePos: 136,
           ValueEnd: 139,
@@ -118,21 +113,23 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull:       true,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: &ast.GeneratedColumnExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.GeneratedColumnExpr{
         As:     150,
         Stored: 172,
         Rparen: 170,
         Expr:   &ast.CallExpr{
           Rparen: 169,
-          Func:   &ast.Ident{
-            NamePos: 154,
-            NameEnd: 160,
-            Name:    "concat",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 154,
+                NameEnd: 160,
+                Name:    "concat",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Ident{
                 NamePos: 161,
@@ -148,16 +145,13 @@ create table foo (
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      Hidden:  -1,
-      Options: (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 482,
         NameEnd: 486,
@@ -167,14 +161,11 @@ create table foo (
         NamePos: 487,
         Name:    "JSON",
       },
-      NotNull:       false,
-      DefaultExpr:   (*ast.ColumnDefaultExpr)(nil),
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 515,
+      Key:  -1,
       Name: &ast.Ident{
         NamePos: 495,
         NameEnd: 500,
@@ -184,33 +175,29 @@ create table foo (
         NamePos: 501,
         Name:    "TIMESTAMP",
       },
-      NotNull:     true,
-      DefaultExpr: &ast.ColumnDefaultExpr{
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
         Default: 520,
         Rparen:  548,
         Expr:    &ast.CallExpr{
           Rparen: 547,
-          Func:   &ast.Ident{
-            NamePos: 529,
-            NameEnd: 546,
-            Name:    "current_timestamp",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 529,
+                NameEnd: 546,
+                Name:    "current_timestamp",
+              },
+            },
           },
-          Distinct:     false,
-          Args:         []ast.Arg(nil),
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
-      GeneratedExpr: (*ast.GeneratedColumnExpr)(nil),
-      Hidden:        -1,
-      Options:       (*ast.Options)(nil),
+      Hidden: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     182,
         Rparen:      221,
@@ -222,10 +209,14 @@ create table foo (
             Name:    "foo",
           },
         },
-        ReferenceTable: &ast.Ident{
-          NamePos: 211,
-          NameEnd: 213,
-          Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 211,
+              NameEnd: 213,
+              Name:    "t2",
+            },
+          },
         },
         ReferenceColumns: []*ast.Ident{
           &ast.Ident{
@@ -234,12 +225,10 @@ create table foo (
             Name:    "t2key1",
           },
         },
-        OnDelete: "",
       },
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     226,
         Rparen:      265,
@@ -251,10 +240,14 @@ create table foo (
             Name:    "bar",
           },
         },
-        ReferenceTable: &ast.Ident{
-          NamePos: 255,
-          NameEnd: 257,
-          Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 255,
+              NameEnd: 257,
+              Name:    "t2",
+            },
+          },
         },
         ReferenceColumns: []*ast.Ident{
           &ast.Ident{
@@ -268,7 +261,6 @@ create table foo (
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.ForeignKey{
         Foreign:     288,
         Rparen:      327,
@@ -280,10 +272,14 @@ create table foo (
             Name:    "baz",
           },
         },
-        ReferenceTable: &ast.Ident{
-          NamePos: 317,
-          NameEnd: 319,
-          Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 317,
+              NameEnd: 319,
+              Name:    "t2",
+            },
+          },
         },
         ReferenceColumns: []*ast.Ident{
           &ast.Ident{
@@ -318,10 +314,14 @@ create table foo (
             Name:    "bar",
           },
         },
-        ReferenceTable: &ast.Ident{
-          NamePos: 404,
-          NameEnd: 406,
-          Name:    "t2",
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 404,
+              NameEnd: 406,
+              Name:    "t2",
+            },
+          },
         },
         ReferenceColumns: []*ast.Ident{
           &ast.Ident{
@@ -335,12 +335,10 @@ create table foo (
             Name:    "t2key2",
           },
         },
-        OnDelete: "",
       },
     },
     &ast.TableConstraint{
       ConstraintPos: -1,
-      Name:          (*ast.Ident)(nil),
       Constraint:    &ast.Check{
         Check:  427,
         Rparen: 441,
@@ -395,7 +393,6 @@ create table foo (
         NameEnd: 568,
         Name:    "foo",
       },
-      Dir: "",
     },
     &ast.IndexKey{
       DirPos: -1,
@@ -404,13 +401,22 @@ create table foo (
         NameEnd: 573,
         Name:    "bar",
       },
-      Dir: "",
     },
   },
-  Synonyms:          []*ast.Synonym(nil),
-  Cluster:           (*ast.Cluster)(nil),
-  RowDeletionPolicy: (*ast.CreateRowDeletionPolicy)(nil),
 }
 
 --- SQL
-CREATE TABLE foo (foo INT64, bar FLOAT64 NOT NULL, baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null), qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED, quux JSON, corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()), FOREIGN KEY (foo) REFERENCES t2 (t2key1), FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE, FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION, CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2), CHECK (foo > 0), CONSTRAINT cname CHECK (bar > 0)) PRIMARY KEY (foo, bar)
+CREATE TABLE foo (
+  foo INT64,
+  bar FLOAT64 NOT NULL,
+  baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null),
+  qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
+  quux JSON,
+  corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
+  FOREIGN KEY (foo) REFERENCES t2 (t2key1),
+  FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE,
+  FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION,
+  CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
+  CHECK (foo > 0),
+  CONSTRAINT cname CHECK (bar > 0)
+) PRIMARY KEY (foo, bar)

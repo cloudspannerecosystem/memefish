@@ -1,0 +1,1 @@
+SELECT (SELECT T.* EXCEPT (s)) AS n FROM (SELECT 1 AS n, "foo" AS s) AS T

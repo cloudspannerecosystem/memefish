@@ -1,0 +1,1 @@
+DROP SEQUENCE sch1.sequence

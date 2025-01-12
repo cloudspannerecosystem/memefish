@@ -13,13 +13,8 @@ SELECT
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.DateLiteral{
           Date:  9,
@@ -33,13 +28,16 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 46,
-          Func:   &ast.Ident{
-            NamePos: 29,
-            NameEnd: 33,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 29,
+                NameEnd: 33,
+                Name:    "DATE",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 34,
@@ -48,9 +46,6 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -96,13 +91,16 @@ SELECT
       &ast.ExprSelectItem{
         Expr: &ast.CallExpr{
           Rparen: 219,
-          Func:   &ast.Ident{
-            NamePos: 197,
-            NameEnd: 206,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 197,
+                NameEnd: 206,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 207,
@@ -111,9 +109,6 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
       },
       &ast.ExprSelectItem{
@@ -129,13 +124,16 @@ SELECT
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 268,
-          Func:   &ast.Ident{
-            NamePos: 251,
-            NameEnd: 255,
-            Name:    "DATE",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 251,
+                NameEnd: 255,
+                Name:    "DATE",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 256,
@@ -144,9 +142,6 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    270,
@@ -160,13 +155,16 @@ SELECT
       &ast.Alias{
         Expr: &ast.CallExpr{
           Rparen: 302,
-          Func:   &ast.Ident{
-            NamePos: 280,
-            NameEnd: 289,
-            Name:    "TIMESTAMP",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 280,
+                NameEnd: 289,
+                Name:    "TIMESTAMP",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.StringLiteral{
                 ValuePos: 290,
@@ -175,9 +173,6 @@ SELECT
               },
             },
           },
-          NamedArgs:    []*ast.NamedArg(nil),
-          NullHandling: nil,
-          Having:       nil,
         },
         As: &ast.AsAlias{
           As:    304,
@@ -189,12 +184,6 @@ SELECT
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

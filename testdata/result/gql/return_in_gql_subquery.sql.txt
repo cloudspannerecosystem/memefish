@@ -7,7 +7,6 @@ RETURN 'Dana' IN {
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -20,11 +19,9 @@ RETURN 'Dana' IN {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.InExpr{
-                  Not:  false,
                   Left: &ast.StringLiteral{
                     ValuePos: 22,
                     ValueEnd: 28,
@@ -34,7 +31,6 @@ RETURN 'Dana' IN {
                     LBrace: 32,
                     RBrace: 91,
                     Query:  &ast.GQLQueryExpr{
-                      GraphClause:               (*ast.GQLGraphClause)(nil),
                       MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
                         LinearQueryStatementList: []ast.GQLLinearQueryStatement{
                           &ast.GQLSimpleLinearQueryStatement{
@@ -42,21 +38,16 @@ RETURN 'Dana' IN {
                               &ast.GQLMatchStatement{
                                 Optional:     -1,
                                 Match:        36,
-                                MatchHint:    (*ast.Hint)(nil),
-                                PrefixOrMode: nil,
                                 GraphPattern: &ast.GQLGraphPattern{
                                   PathPatternList: []*ast.GQLTopLevelPathPattern{
                                     &ast.GQLTopLevelPathPattern{
-                                      PathSearchPrefixOrPathMode: nil,
-                                      PathPattern:                &ast.GQLPathPattern{
+                                      PathPattern: &ast.GQLPathPattern{
                                         PathTermList: []*ast.GQLQuantifiablePathTerm{
                                           &ast.GQLQuantifiablePathTerm{
-                                            Hint:     (*ast.Hint)(nil),
                                             PathTerm: &ast.GQLNodePattern{
                                               LParen:        42,
                                               RParen:        51,
                                               PatternFiller: &ast.GQLPatternFiller{
-                                                Hint:                 (*ast.Hint)(nil),
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 43,
                                                   NameEnd: 44,
@@ -66,7 +57,6 @@ RETURN 'Dana' IN {
                                                   IsOrColon:       44,
                                                   LabelExpression: &ast.GQLLabelName{
                                                     StartPos:  45,
-                                                    IsPercent: false,
                                                     LabelName: &ast.Ident{
                                                       NamePos: 45,
                                                       NameEnd: 51,
@@ -74,18 +64,14 @@ RETURN 'Dana' IN {
                                                     },
                                                   },
                                                 },
-                                                Filter: nil,
                                               },
                                             },
-                                            Quantifier: nil,
                                           },
                                           &ast.GQLQuantifiablePathTerm{
-                                            Hint:     (*ast.Hint)(nil),
                                             PathTerm: &ast.GQLFullEdgeRight{
                                               Hyphen:        52,
                                               Gt:            61,
                                               PatternFiller: &ast.GQLPatternFiller{
-                                                Hint:                 (*ast.Hint)(nil),
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 54,
                                                   NameEnd: 55,
@@ -95,7 +81,6 @@ RETURN 'Dana' IN {
                                                   IsOrColon:       55,
                                                   LabelExpression: &ast.GQLLabelName{
                                                     StartPos:  56,
-                                                    IsPercent: false,
                                                     LabelName: &ast.Ident{
                                                       NamePos: 56,
                                                       NameEnd: 60,
@@ -103,18 +88,14 @@ RETURN 'Dana' IN {
                                                     },
                                                   },
                                                 },
-                                                Filter: nil,
                                               },
                                             },
-                                            Quantifier: nil,
                                           },
                                           &ast.GQLQuantifiablePathTerm{
-                                            Hint:     (*ast.Hint)(nil),
                                             PathTerm: &ast.GQLNodePattern{
                                               LParen:        63,
                                               RParen:        73,
                                               PatternFiller: &ast.GQLPatternFiller{
-                                                Hint:                 (*ast.Hint)(nil),
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 64,
                                                   NameEnd: 65,
@@ -124,7 +105,6 @@ RETURN 'Dana' IN {
                                                   IsOrColon:       65,
                                                   LabelExpression: &ast.GQLLabelName{
                                                     StartPos:  66,
-                                                    IsPercent: false,
                                                     LabelName: &ast.Ident{
                                                       NamePos: 66,
                                                       NameEnd: 73,
@@ -132,21 +112,17 @@ RETURN 'Dana' IN {
                                                     },
                                                   },
                                                 },
-                                                Filter: nil,
                                               },
                                             },
-                                            Quantifier: nil,
                                           },
                                         },
                                       },
                                     },
                                   },
-                                  WhereClause: (*ast.Where)(nil),
                                 },
                               },
                               &ast.GQLReturnStatement{
                                 Return:         77,
-                                AllOrDistinct:  "",
                                 ReturnItemList: []ast.GQLReturnItem{
                                   &ast.ExprSelectItem{
                                     Expr: &ast.Path{
@@ -165,9 +141,6 @@ RETURN 'Dana' IN {
                                     },
                                   },
                                 },
-                                GroupByClause:        (*ast.GroupBy)(nil),
-                                OrderByClause:        (*ast.OrderBy)(nil),
-                                LimitAndOffsetClause: nil,
                               },
                             },
                           },
@@ -186,9 +159,6 @@ RETURN 'Dana' IN {
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

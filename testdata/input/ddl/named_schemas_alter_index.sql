@@ -1,0 +1,1 @@
+ALTER INDEX sch1.indexOnSingers ADD STORED COLUMN SingerInfo

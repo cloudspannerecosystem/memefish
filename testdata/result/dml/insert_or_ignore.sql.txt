@@ -3,12 +3,15 @@ INSERT OR IGNORE INTO foo
 (foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
-  Insert:       0,
   InsertOrType: "IGNORE",
-  TableName:    &ast.Ident{
-    NamePos: 22,
-    NameEnd: 25,
-    Name:    "foo",
+  TableName:    &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 25,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.Ident{
     &ast.Ident{
@@ -31,7 +34,6 @@ INSERT OR IGNORE INTO foo
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 45,
               ValueEnd: 46,
@@ -41,7 +43,6 @@ INSERT OR IGNORE INTO foo
           },
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 48,
               ValueEnd: 49,

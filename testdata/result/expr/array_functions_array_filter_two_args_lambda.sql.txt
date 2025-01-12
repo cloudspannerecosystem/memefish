@@ -1,0 +1,74 @@
+--- array_functions_array_filter_two_args_lambda.sql
+ARRAY_FILTER([0, 2, 3], (e, i) -> e > i)
+--- AST
+&ast.CallExpr{
+  Rparen: 39,
+  Func:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NameEnd: 12,
+        Name:    "ARRAY_FILTER",
+      },
+    },
+  },
+  Args: []ast.Arg{
+    &ast.ExprArg{
+      Expr: &ast.ArrayLiteral{
+        Array:  -1,
+        Lbrack: 13,
+        Rbrack: 21,
+        Values: []ast.Expr{
+          &ast.IntLiteral{
+            ValuePos: 14,
+            ValueEnd: 15,
+            Base:     10,
+            Value:    "0",
+          },
+          &ast.IntLiteral{
+            ValuePos: 17,
+            ValueEnd: 18,
+            Base:     10,
+            Value:    "2",
+          },
+          &ast.IntLiteral{
+            ValuePos: 20,
+            ValueEnd: 21,
+            Base:     10,
+            Value:    "3",
+          },
+        },
+      },
+    },
+    &ast.LambdaArg{
+      Lparen: 24,
+      Args:   []*ast.Ident{
+        &ast.Ident{
+          NamePos: 25,
+          NameEnd: 26,
+          Name:    "e",
+        },
+        &ast.Ident{
+          NamePos: 28,
+          NameEnd: 29,
+          Name:    "i",
+        },
+      },
+      Expr: &ast.BinaryExpr{
+        Op:   ">",
+        Left: &ast.Ident{
+          NamePos: 34,
+          NameEnd: 35,
+          Name:    "e",
+        },
+        Right: &ast.Ident{
+          NamePos: 38,
+          NameEnd: 39,
+          Name:    "i",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ARRAY_FILTER([0, 2, 3], (e, i) -> e > i)

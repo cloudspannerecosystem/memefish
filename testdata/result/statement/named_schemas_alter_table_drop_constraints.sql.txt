@@ -1,0 +1,30 @@
+--- named_schemas_alter_table_drop_constraints.sql
+ALTER TABLE sch1.ShoppingCarts DROP CONSTRAINT FKShoppingCartsCustomers
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 16,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 17,
+        NameEnd: 30,
+        Name:    "ShoppingCarts",
+      },
+    },
+  },
+  TableAlteration: &ast.DropConstraint{
+    Drop: 31,
+    Name: &ast.Ident{
+      NamePos: 47,
+      NameEnd: 71,
+      Name:    "FKShoppingCartsCustomers",
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE sch1.ShoppingCarts DROP CONSTRAINT FKShoppingCartsCustomers

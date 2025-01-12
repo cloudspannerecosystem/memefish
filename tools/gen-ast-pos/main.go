@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
-	"strings"
+	"sort"
 	"unicode"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/cloudspannerecosystem/memefish/tools/util/astcatalog"
 	"github.com/cloudspannerecosystem/memefish/tools/util/poslang"
 )
 
@@ -22,7 +22,7 @@ var (
 
 		Example:
 
-		  $ go run ./tools/gen-ast-pos/main.go -infile ast/ast.go
+		  $ go run ./tools/gen-ast-pos/main.go -astfile ast/ast.go -constfile ast/ast_const.go
 		        Print the generated ast/pos.go to stdout.
 
 		Flags:
@@ -39,20 +39,10 @@ var (
 )
 
 var (
-	infile  = flag.String("infile", "", "input filename")
-	outfile = flag.String("outfile", "", "output filename (if it is not specified, the result is printed to stdout.)")
+	astfile   = flag.String("astfile", "ast/ast.go", "path to ast/ast.go")
+	constfile = flag.String("constfile", "ast/ast_const.go", "path to ast/ast_const.go")
+	outfile   = flag.String("outfile", "", "output filename (if it is not specified, the result is printed to stdout.)")
 )
-
-var (
-	reNameLine = regexp.MustCompile(`^\s*type\s+(\w+)\s+struct\s*\{`)
-	rePosLine  = regexp.MustCompile(`^\s*//\s*pos\s*=\s*(.*)`)
-	reEndLine  = regexp.MustCompile(`^\s*//\s*end\s*=\s*(.*)`)
-)
-
-type astNode struct {
-	name             string
-	posExpr, endExpr poslang.PosExpr
-}
 
 func main() {
 	flag.Usage = func() {
@@ -62,57 +52,42 @@ func main() {
 
 	flag.Parse()
 
-	source, err := os.ReadFile(*infile)
+	catalog, err := astcatalog.Load(*astfile, *constfile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var nodes []*astNode
-
-	for _, line := range strings.Split(string(source), "\n") {
-		if m := reNameLine.FindStringSubmatch(line); m != nil {
-			name := m[1]
-			nodes = append(nodes, &astNode{name: name})
-			continue
-		}
-
-		if m := rePosLine.FindStringSubmatch(line); m != nil {
-			e := m[1]
-			expr, err := poslang.Parse(e)
-			if err != nil {
-				log.Fatal(err)
-			}
-			nodes[len(nodes)-1].posExpr = expr
-			continue
-		}
-
-		if m := reEndLine.FindStringSubmatch(line); m != nil {
-			e := m[1]
-			expr, err := poslang.Parse(e)
-			if err != nil {
-				log.Fatal(err)
-			}
-			nodes[len(nodes)-1].endExpr = expr
-			continue
-		}
+	structs := make([]*astcatalog.NodeStructDef, 0, len(catalog.Structs))
+	for _, structDef := range catalog.Structs {
+		structs = append(structs, structDef)
 	}
+	sort.Slice(structs, func(i, j int) bool {
+		return structs[i].SourcePos < structs[j].SourcePos
+	})
 
 	var buffer bytes.Buffer
 	buffer.WriteString(prologue)
 
-	for _, node := range nodes {
-		x := string(unicode.ToLower(rune(node.name[0])))
-		if node.posExpr == nil || node.endExpr == nil {
-			log.Fatalf("pos/end is not defined: node %s", node.name)
+	for _, structDef := range structs {
+		x := string(unicode.ToLower(rune(structDef.Name[0])))
+
+		posExpr, err := poslang.Parse(structDef.Pos)
+		if err != nil {
+			log.Fatalf("error on parsing pos: %v", err)
+		}
+
+		endExpr, err := poslang.Parse(structDef.End)
+		if err != nil {
+			log.Fatalf("error on parsing pos: %v", err)
 		}
 
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, node.name)
-		fmt.Fprintf(&buffer, "\treturn %s\n", node.posExpr.PosExprToGo(x))
+		fmt.Fprintf(&buffer, "func (%s *%s) Pos() token.Pos {\n", x, structDef.Name)
+		fmt.Fprintf(&buffer, "\treturn %s\n", posExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 		fmt.Fprintln(&buffer)
-		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", x, node.name)
-		fmt.Fprintf(&buffer, "\treturn %s\n", node.endExpr.PosExprToGo(x))
+		fmt.Fprintf(&buffer, "func (%s *%s) End() token.Pos {\n", x, structDef.Name)
+		fmt.Fprintf(&buffer, "\treturn %s\n", endExpr.PosExprToGo(x))
 		fmt.Fprintf(&buffer, "}\n")
 	}
 

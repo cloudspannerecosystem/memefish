@@ -6,20 +6,24 @@ create index foo_bar on foo (
 
 --- AST
 &ast.CreateIndex{
-  Create:       0,
-  Rparen:       53,
-  Unique:       false,
-  NullFiltered: false,
-  IfNotExists:  false,
-  Name:         &ast.Ident{
-    NamePos: 13,
-    NameEnd: 20,
-    Name:    "foo_bar",
+  Rparen: 53,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "foo_bar",
+      },
+    },
   },
-  TableName: &ast.Ident{
-    NamePos: 24,
-    NameEnd: 27,
-    Name:    "foo",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 24,
+        NameEnd: 27,
+        Name:    "foo",
+      },
+    },
   },
   Keys: []*ast.IndexKey{
     &ast.IndexKey{
@@ -41,9 +45,7 @@ create index foo_bar on foo (
       Dir: "ASC",
     },
   },
-  Storing:      (*ast.Storing)(nil),
-  InterleaveIn: (*ast.InterleaveIn)(nil),
 }
 
 --- SQL
-CREATE INDEX foo_bar ON foo (bar DESC, baz ASC)
+CREATE INDEX foo_bar ON foo(bar DESC, baz ASC)

@@ -1,0 +1,18 @@
+--- edge_case_backquote_non_keyword.sql
+`DATABASE` + `SCHEMA`
+--- AST
+&ast.BinaryExpr{
+  Op:   "+",
+  Left: &ast.Ident{
+    NameEnd: 10,
+    Name:    "DATABASE",
+  },
+  Right: &ast.Ident{
+    NamePos: 13,
+    NameEnd: 21,
+    Name:    "SCHEMA",
+  },
+}
+
+--- SQL
+DATABASE + SCHEMA

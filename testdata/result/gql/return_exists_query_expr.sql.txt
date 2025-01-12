@@ -9,7 +9,6 @@ RETURN EXISTS {
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -22,14 +21,12 @@ RETURN EXISTS {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.ExistsGQLSubQuery{
                   Exists: 22,
                   RBrace: 123,
                   Query:  &ast.GQLQueryExpr{
-                    GraphClause:               (*ast.GQLGraphClause)(nil),
                     MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
                       LinearQueryStatementList: []ast.GQLLinearQueryStatement{
                         &ast.GQLSimpleLinearQueryStatement{
@@ -37,21 +34,16 @@ RETURN EXISTS {
                             &ast.GQLMatchStatement{
                               Optional:     -1,
                               Match:        33,
-                              MatchHint:    (*ast.Hint)(nil),
-                              PrefixOrMode: nil,
                               GraphPattern: &ast.GQLGraphPattern{
                                 PathPatternList: []*ast.GQLTopLevelPathPattern{
                                   &ast.GQLTopLevelPathPattern{
-                                    PathSearchPrefixOrPathMode: nil,
-                                    PathPattern:                &ast.GQLPathPattern{
+                                    PathPattern: &ast.GQLPathPattern{
                                       PathTermList: []*ast.GQLQuantifiablePathTerm{
                                         &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
                                           PathTerm: &ast.GQLNodePattern{
                                             LParen:        39,
                                             RParen:        48,
                                             PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
                                               GraphPatternVariable: &ast.Ident{
                                                 NamePos: 40,
                                                 NameEnd: 41,
@@ -61,7 +53,6 @@ RETURN EXISTS {
                                                 IsOrColon:       41,
                                                 LabelExpression: &ast.GQLLabelName{
                                                   StartPos:  42,
-                                                  IsPercent: false,
                                                   LabelName: &ast.Ident{
                                                     NamePos: 42,
                                                     NameEnd: 48,
@@ -69,18 +60,14 @@ RETURN EXISTS {
                                                   },
                                                 },
                                               },
-                                              Filter: nil,
                                             },
                                           },
-                                          Quantifier: nil,
                                         },
                                         &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
                                           PathTerm: &ast.GQLFullEdgeRight{
                                             Hyphen:        49,
                                             Gt:            58,
                                             PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
                                               GraphPatternVariable: &ast.Ident{
                                                 NamePos: 51,
                                                 NameEnd: 52,
@@ -90,7 +77,6 @@ RETURN EXISTS {
                                                 IsOrColon:       52,
                                                 LabelExpression: &ast.GQLLabelName{
                                                   StartPos:  53,
-                                                  IsPercent: false,
                                                   LabelName: &ast.Ident{
                                                     NamePos: 53,
                                                     NameEnd: 57,
@@ -98,18 +84,14 @@ RETURN EXISTS {
                                                   },
                                                 },
                                               },
-                                              Filter: nil,
                                             },
                                           },
-                                          Quantifier: nil,
                                         },
                                         &ast.GQLQuantifiablePathTerm{
-                                          Hint:     (*ast.Hint)(nil),
                                           PathTerm: &ast.GQLNodePattern{
                                             LParen:        60,
                                             RParen:        70,
                                             PatternFiller: &ast.GQLPatternFiller{
-                                              Hint:                 (*ast.Hint)(nil),
                                               GraphPatternVariable: &ast.Ident{
                                                 NamePos: 61,
                                                 NameEnd: 62,
@@ -119,7 +101,6 @@ RETURN EXISTS {
                                                 IsOrColon:       62,
                                                 LabelExpression: &ast.GQLLabelName{
                                                   StartPos:  63,
-                                                  IsPercent: false,
                                                   LabelName: &ast.Ident{
                                                     NamePos: 63,
                                                     NameEnd: 70,
@@ -127,10 +108,8 @@ RETURN EXISTS {
                                                   },
                                                 },
                                               },
-                                              Filter: nil,
                                             },
                                           },
-                                          Quantifier: nil,
                                         },
                                       },
                                     },
@@ -165,7 +144,6 @@ RETURN EXISTS {
                             },
                             &ast.GQLReturnStatement{
                               Return:         99,
-                              AllOrDistinct:  "",
                               ReturnItemList: []ast.GQLReturnItem{
                                 &ast.ExprSelectItem{
                                   Expr: &ast.Path{
@@ -184,8 +162,6 @@ RETURN EXISTS {
                                   },
                                 },
                               },
-                              GroupByClause:        (*ast.GroupBy)(nil),
-                              OrderByClause:        (*ast.OrderBy)(nil),
                               LimitAndOffsetClause: &ast.GQLLimitClause{
                                 Limit: &ast.Limit{
                                   Limit: 115,
@@ -195,7 +171,6 @@ RETURN EXISTS {
                                     Base:     10,
                                     Value:    "1",
                                   },
-                                  Offset: (*ast.Offset)(nil),
                                 },
                               },
                             },
@@ -215,9 +190,6 @@ RETURN EXISTS {
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

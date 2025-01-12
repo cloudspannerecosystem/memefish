@@ -1,0 +1,9 @@
+--- drop_proto_bunldle.sql
+DROP PROTO BUNDLE
+--- AST
+&ast.DropProtoBundle{
+  Bundle: 11,
+}
+
+--- SQL
+DROP PROTO BUNDLE

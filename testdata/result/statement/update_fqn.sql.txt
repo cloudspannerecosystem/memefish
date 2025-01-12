@@ -1,0 +1,88 @@
+--- update_fqn.sql
+update sch1.foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 11,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 20,
+          NameEnd: 23,
+          Name:    "foo",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.Ident{
+          NamePos: 26,
+          NameEnd: 29,
+          Name:    "bar",
+        },
+      },
+    },
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 31,
+          NameEnd: 34,
+          Name:    "bar",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.Ident{
+          NamePos: 37,
+          NameEnd: 40,
+          Name:    "foo",
+        },
+      },
+    },
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 42,
+          NameEnd: 45,
+          Name:    "baz",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: 48,
+        Default:    true,
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 56,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 62,
+        NameEnd: 65,
+        Name:    "foo",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 68,
+        ValueEnd: 69,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE sch1.foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1

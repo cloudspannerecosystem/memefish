@@ -6,16 +6,10 @@ SELECT 'Dana' IN {
 } AS results
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Alias{
         Expr: &ast.InExpr{
-          Not:  false,
           Left: &ast.StringLiteral{
             ValuePos: 7,
             ValueEnd: 13,
@@ -40,21 +34,16 @@ SELECT 'Dana' IN {
                       &ast.GQLMatchStatement{
                         Optional:     -1,
                         Match:        38,
-                        MatchHint:    (*ast.Hint)(nil),
-                        PrefixOrMode: nil,
                         GraphPattern: &ast.GQLGraphPattern{
                           PathPatternList: []*ast.GQLTopLevelPathPattern{
                             &ast.GQLTopLevelPathPattern{
-                              PathSearchPrefixOrPathMode: nil,
-                              PathPattern:                &ast.GQLPathPattern{
+                              PathPattern: &ast.GQLPathPattern{
                                 PathTermList: []*ast.GQLQuantifiablePathTerm{
                                   &ast.GQLQuantifiablePathTerm{
-                                    Hint:     (*ast.Hint)(nil),
                                     PathTerm: &ast.GQLNodePattern{
                                       LParen:        44,
                                       RParen:        53,
                                       PatternFiller: &ast.GQLPatternFiller{
-                                        Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 45,
                                           NameEnd: 46,
@@ -64,7 +53,6 @@ SELECT 'Dana' IN {
                                           IsOrColon:       46,
                                           LabelExpression: &ast.GQLLabelName{
                                             StartPos:  47,
-                                            IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 47,
                                               NameEnd: 53,
@@ -72,18 +60,14 @@ SELECT 'Dana' IN {
                                             },
                                           },
                                         },
-                                        Filter: nil,
                                       },
                                     },
-                                    Quantifier: nil,
                                   },
                                   &ast.GQLQuantifiablePathTerm{
-                                    Hint:     (*ast.Hint)(nil),
                                     PathTerm: &ast.GQLFullEdgeRight{
                                       Hyphen:        54,
                                       Gt:            63,
                                       PatternFiller: &ast.GQLPatternFiller{
-                                        Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 56,
                                           NameEnd: 57,
@@ -93,7 +77,6 @@ SELECT 'Dana' IN {
                                           IsOrColon:       57,
                                           LabelExpression: &ast.GQLLabelName{
                                             StartPos:  58,
-                                            IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 58,
                                               NameEnd: 62,
@@ -101,18 +84,14 @@ SELECT 'Dana' IN {
                                             },
                                           },
                                         },
-                                        Filter: nil,
                                       },
                                     },
-                                    Quantifier: nil,
                                   },
                                   &ast.GQLQuantifiablePathTerm{
-                                    Hint:     (*ast.Hint)(nil),
                                     PathTerm: &ast.GQLNodePattern{
                                       LParen:        65,
                                       RParen:        75,
                                       PatternFiller: &ast.GQLPatternFiller{
-                                        Hint:                 (*ast.Hint)(nil),
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 66,
                                           NameEnd: 67,
@@ -122,7 +101,6 @@ SELECT 'Dana' IN {
                                           IsOrColon:       67,
                                           LabelExpression: &ast.GQLLabelName{
                                             StartPos:  68,
-                                            IsPercent: false,
                                             LabelName: &ast.Ident{
                                               NamePos: 68,
                                               NameEnd: 75,
@@ -130,21 +108,17 @@ SELECT 'Dana' IN {
                                             },
                                           },
                                         },
-                                        Filter: nil,
                                       },
                                     },
-                                    Quantifier: nil,
                                   },
                                 },
                               },
                             },
                           },
-                          WhereClause: (*ast.Where)(nil),
                         },
                       },
                       &ast.GQLReturnStatement{
                         Return:         79,
-                        AllOrDistinct:  "",
                         ReturnItemList: []ast.GQLReturnItem{
                           &ast.ExprSelectItem{
                             Expr: &ast.Path{
@@ -163,9 +137,6 @@ SELECT 'Dana' IN {
                             },
                           },
                         },
-                        GroupByClause:        (*ast.GroupBy)(nil),
-                        OrderByClause:        (*ast.OrderBy)(nil),
-                        LimitAndOffsetClause: nil,
                       },
                     },
                   },
@@ -184,12 +155,6 @@ SELECT 'Dana' IN {
         },
       },
     },
-    From:    (*ast.From)(nil),
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

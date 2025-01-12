@@ -6,13 +6,8 @@ FROM
 
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.Star{
         Star: 9,
       },
@@ -30,10 +25,14 @@ FROM
           Rbrace:  61,
           Records: []*ast.HintRecord{
             &ast.HintRecord{
-              Key: &ast.Ident{
-                NamePos: 27,
-                NameEnd: 38,
-                Name:    "FORCE_INDEX",
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 27,
+                    NameEnd: 38,
+                    Name:    "FORCE_INDEX",
+                  },
+                },
               },
               Value: &ast.Ident{
                 NamePos: 39,
@@ -43,15 +42,8 @@ FROM
             },
           },
         },
-        As:     (*ast.AsAlias)(nil),
-        Sample: (*ast.TableSample)(nil),
       },
     },
-    Where:   (*ast.Where)(nil),
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 

@@ -1,0 +1,118 @@
+--- named_schemas_create_table_interleave.sql
+CREATE TABLE sch1.Albums (
+  SingerId INT64 NOT NULL,
+  AlbumId INT64 NOT NULL,
+  AlbumTitle STRING(MAX),
+) PRIMARY KEY(SingerId, AlbumId),
+  INTERLEAVE IN PARENT sch1.Singers ON DELETE CASCADE
+--- AST
+&ast.CreateTable{
+  Rparen: 137,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 17,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 24,
+        Name:    "Albums",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 48,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 29,
+        NameEnd: 37,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 74,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 56,
+        NameEnd: 63,
+        Name:    "AlbumId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 64,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 82,
+        NameEnd: 92,
+        Name:    "AlbumTitle",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 93,
+        Rparen:  103,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 120,
+        NameEnd: 128,
+        Name:    "SingerId",
+      },
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 130,
+        NameEnd: 137,
+        Name:    "AlbumId",
+      },
+    },
+  },
+  Cluster: &ast.Cluster{
+    Comma:       138,
+    OnDeleteEnd: 193,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 163,
+          NameEnd: 167,
+          Name:    "sch1",
+        },
+        &ast.Ident{
+          NamePos: 168,
+          NameEnd: 175,
+          Name:    "Singers",
+        },
+      },
+    },
+    OnDelete: "ON DELETE CASCADE",
+  },
+}
+
+--- SQL
+CREATE TABLE sch1.Albums (
+  SingerId INT64 NOT NULL,
+  AlbumId INT64 NOT NULL,
+  AlbumTitle STRING(MAX)
+) PRIMARY KEY (SingerId, AlbumId),
+  INTERLEAVE IN PARENT sch1.Singers ON DELETE CASCADE

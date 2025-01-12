@@ -1,0 +1,120 @@
+--- select_with.sql
+-- https://cloud.google.com/spanner/docs/reference/standard-sql/operators#with_expression
+SELECT WITH(a AS '123',       -- a is '123'
+    b AS CONCAT(a, '456'),    -- b is '123456'
+    c AS '789',               -- c is '789'
+    CONCAT(b, c)) AS result   -- b + c is '123456789'
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Select:  90,
+    Results: []ast.SelectItem{
+      &ast.Alias{
+        Expr: &ast.WithExpr{
+          With:   97,
+          Rparen: 241,
+          Vars:   []*ast.WithExprVar{
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 102,
+                NameEnd: 103,
+                Name:    "a",
+              },
+              Expr: &ast.StringLiteral{
+                ValuePos: 107,
+                ValueEnd: 112,
+                Value:    "123",
+              },
+            },
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 138,
+                NameEnd: 139,
+                Name:    "b",
+              },
+              Expr: &ast.CallExpr{
+                Rparen: 158,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 143,
+                      NameEnd: 149,
+                      Name:    "CONCAT",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 150,
+                      NameEnd: 151,
+                      Name:    "a",
+                    },
+                  },
+                  &ast.ExprArg{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 153,
+                      ValueEnd: 158,
+                      Value:    "456",
+                    },
+                  },
+                },
+              },
+            },
+            &ast.WithExprVar{
+              Name: &ast.Ident{
+                NamePos: 185,
+                NameEnd: 186,
+                Name:    "c",
+              },
+              Expr: &ast.StringLiteral{
+                ValuePos: 190,
+                ValueEnd: 195,
+                Value:    "789",
+              },
+            },
+          },
+          Expr: &ast.CallExpr{
+            Rparen: 240,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 229,
+                  NameEnd: 235,
+                  Name:    "CONCAT",
+                },
+              },
+            },
+            Args: []ast.Arg{
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 236,
+                  NameEnd: 237,
+                  Name:    "b",
+                },
+              },
+              &ast.ExprArg{
+                Expr: &ast.Ident{
+                  NamePos: 239,
+                  NameEnd: 240,
+                  Name:    "c",
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    243,
+          Alias: &ast.Ident{
+            NamePos: 246,
+            NameEnd: 252,
+            Name:    "result",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT WITH(a AS "123", b AS CONCAT(a, "456"), c AS "789", CONCAT(b, c)) AS result

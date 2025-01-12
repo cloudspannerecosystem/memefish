@@ -1,0 +1,35 @@
+--- alter_table_alter_column_alter_identity_set_no_skip_range.sql
+ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY SET NO SKIP RANGE
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "actions",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 20,
+    Name:  &ast.Ident{
+      NamePos: 33,
+      NameEnd: 35,
+      Name:    "id",
+    },
+    Alteration: &ast.AlterColumnAlterIdentity{
+      Alter:      36,
+      Alteration: &ast.SetNoSkipRange{
+        Set:         51,
+        NoSkipRange: &ast.NoSkipRange{
+          No:    55,
+          Range: 63,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE actions ALTER COLUMN id ALTER IDENTITY SET NO SKIP RANGE

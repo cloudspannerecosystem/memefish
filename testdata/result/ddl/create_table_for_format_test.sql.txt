@@ -1,0 +1,365 @@
+--- create_table_for_format_test.sql
+create table if not exists foo (
+    foo int64,
+    bar float64 not null,
+    baz string(255) not null options(allow_commit_timestamp = null),
+    qux string(255) not null as (concat(baz, "a")) stored,
+    foreign key (foo) references t2 (t2key1),
+    constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+    check (foo > 0),
+    constraint cname check (bar > 0),
+    corge timestamp not null default (current_timestamp())
+) primary key (foo),
+  interleave in parent foobar,
+  row deletion policy ( older_than ( baz, INTERVAL 30 DAY ) )
+
+--- AST
+&ast.CreateTable{
+  Rparen:      461,
+  IfNotExists: true,
+  Name:        &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 30,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 37,
+        NameEnd: 40,
+        Name:    "foo",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 41,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: 68,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 52,
+        NameEnd: 55,
+        Name:    "bar",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 56,
+        Name:    "FLOAT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 98,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 78,
+        NameEnd: 81,
+        Name:    "baz",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 82,
+        Rparen:  92,
+        Name:    "STRING",
+        Size:    &ast.IntLiteral{
+          ValuePos: 89,
+          ValueEnd: 92,
+          Base:     10,
+          Value:    "255",
+        },
+      },
+      NotNull: true,
+      Hidden:  -1,
+      Options: &ast.Options{
+        Options: 103,
+        Rparen:  140,
+        Records: []*ast.OptionsDef{
+          &ast.OptionsDef{
+            Name: &ast.Ident{
+              NamePos: 111,
+              NameEnd: 133,
+              Name:    "allow_commit_timestamp",
+            },
+            Value: &ast.NullLiteral{
+              Null: 136,
+            },
+          },
+        },
+      },
+    },
+    &ast.ColumnDef{
+      Null: 167,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 147,
+        NameEnd: 150,
+        Name:    "qux",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 151,
+        Rparen:  161,
+        Name:    "STRING",
+        Size:    &ast.IntLiteral{
+          ValuePos: 158,
+          ValueEnd: 161,
+          Base:     10,
+          Value:    "255",
+        },
+      },
+      NotNull:          true,
+      DefaultSemantics: &ast.GeneratedColumnExpr{
+        As:     172,
+        Stored: 194,
+        Rparen: 192,
+        Expr:   &ast.CallExpr{
+          Rparen: 191,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 176,
+                NameEnd: 182,
+                Name:    "concat",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 183,
+                NameEnd: 186,
+                Name:    "baz",
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.StringLiteral{
+                ValuePos: 188,
+                ValueEnd: 191,
+                Value:    "a",
+              },
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: 408,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 388,
+        NameEnd: 393,
+        Name:    "corge",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 394,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
+        Default: 413,
+        Rparen:  441,
+        Expr:    &ast.CallExpr{
+          Rparen: 440,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 422,
+                NameEnd: 439,
+                Name:    "current_timestamp",
+              },
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: -1,
+      Constraint:    &ast.ForeignKey{
+        Foreign:     206,
+        Rparen:      245,
+        OnDeleteEnd: -1,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 219,
+            NameEnd: 222,
+            Name:    "foo",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 235,
+              NameEnd: 237,
+              Name:    "t2",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 239,
+            NameEnd: 245,
+            Name:    "t2key1",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 252,
+      Name:          &ast.Ident{
+        NamePos: 263,
+        NameEnd: 269,
+        Name:    "fkname",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     270,
+        Rparen:      322,
+        OnDeleteEnd: -1,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 283,
+            NameEnd: 286,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 288,
+            NameEnd: 291,
+            Name:    "bar",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 304,
+              NameEnd: 306,
+              Name:    "t2",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 308,
+            NameEnd: 314,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 316,
+            NameEnd: 322,
+            Name:    "t2key2",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: -1,
+      Constraint:    &ast.Check{
+        Check:  329,
+        Rparen: 343,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 336,
+            NameEnd: 339,
+            Name:    "foo",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 342,
+            ValueEnd: 343,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 350,
+      Name:          &ast.Ident{
+        NamePos: 361,
+        NameEnd: 366,
+        Name:    "cname",
+      },
+      Constraint: &ast.Check{
+        Check:  367,
+        Rparen: 381,
+        Expr:   &ast.BinaryExpr{
+          Op:   ">",
+          Left: &ast.Ident{
+            NamePos: 374,
+            NameEnd: 377,
+            Name:    "bar",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 380,
+            ValueEnd: 381,
+            Base:     10,
+            Value:    "0",
+          },
+        },
+      },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 458,
+        NameEnd: 461,
+        Name:    "foo",
+      },
+    },
+  },
+  Cluster: &ast.Cluster{
+    Comma:       462,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 487,
+          NameEnd: 493,
+          Name:    "foobar",
+        },
+      },
+    },
+  },
+  RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
+    Comma:             493,
+    RowDeletionPolicy: &ast.RowDeletionPolicy{
+      Row:        497,
+      Rparen:     555,
+      ColumnName: &ast.Ident{
+        NamePos: 532,
+        NameEnd: 535,
+        Name:    "baz",
+      },
+      NumDays: &ast.IntLiteral{
+        ValuePos: 546,
+        ValueEnd: 548,
+        Base:     10,
+        Value:    "30",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE IF NOT EXISTS foo (
+  foo INT64,
+  bar FLOAT64 NOT NULL,
+  baz STRING(255) NOT NULL OPTIONS (allow_commit_timestamp = null),
+  qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
+  corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
+  FOREIGN KEY (foo) REFERENCES t2 (t2key1),
+  CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
+  CHECK (foo > 0),
+  CONSTRAINT cname CHECK (bar > 0)
+) PRIMARY KEY (foo),
+  INTERLEAVE IN PARENT foobar, ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))

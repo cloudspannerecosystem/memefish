@@ -1,0 +1,1 @@
+DROP VIEW sch1.SingerView

@@ -6,7 +6,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -20,21 +19,16 @@ RETURN src.id AS source_id, dest.id AS destination_id
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
-            PrefixOrMode: nil,
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        21,
                           RParen:        33,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
                               NameEnd: 25,
@@ -44,7 +38,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
                               IsOrColon:       25,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  26,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 26,
                                   NameEnd: 33,
@@ -52,18 +45,14 @@ RETURN src.id AS source_id, dest.id AS destination_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeLeft{
                           Lt:            34,
                           Hyphen:        56,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 37,
                               NameEnd: 45,
@@ -73,7 +62,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
                               IsOrColon:       45,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  46,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 46,
                                   NameEnd: 55,
@@ -81,18 +69,14 @@ RETURN src.id AS source_id, dest.id AS destination_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        57,
                           RParen:        70,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 58,
                               NameEnd: 62,
@@ -102,7 +86,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
                               IsOrColon:       62,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  63,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 63,
                                   NameEnd: 70,
@@ -110,10 +93,8 @@ RETURN src.id AS source_id, dest.id AS destination_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
@@ -126,13 +107,16 @@ RETURN src.id AS source_id, dest.id AS destination_id
                   Op:    "NOT",
                   Expr:  &ast.CallExpr{
                     Rparen: 96,
-                    Func:   &ast.Ident{
-                      NamePos: 82,
-                      NameEnd: 86,
-                      Name:    "SAME",
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 82,
+                          NameEnd: 86,
+                          Name:    "SAME",
+                        },
+                      },
                     },
-                    Distinct: false,
-                    Args:     []ast.Arg{
+                    Args: []ast.Arg{
                       &ast.ExprArg{
                         Expr: &ast.Ident{
                           NamePos: 87,
@@ -148,9 +132,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
                         },
                       },
                     },
-                    NamedArgs:    []*ast.NamedArg(nil),
-                    NullHandling: nil,
-                    Having:       nil,
                   },
                 },
               },
@@ -158,7 +139,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
           },
           &ast.GQLReturnStatement{
             Return:         98,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{
@@ -209,9 +189,6 @@ RETURN src.id AS source_id, dest.id AS destination_id
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

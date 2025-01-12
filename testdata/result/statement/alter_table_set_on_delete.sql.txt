@@ -2,11 +2,14 @@
 alter table foo set on delete cascade
 --- AST
 &ast.AlterTable{
-  Alter: 0,
-  Name:  &ast.Ident{
-    NamePos: 12,
-    NameEnd: 15,
-    Name:    "foo",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
   },
   TableAlteration: &ast.SetOnDelete{
     Set:         16,

@@ -7,7 +7,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
 --- AST
 &ast.GQLGraphQuery{
   GraphClause: &ast.GQLGraphClause{
-    Graph:             0,
     PropertyGraphName: &ast.Ident{
       NamePos: 6,
       NameEnd: 14,
@@ -21,7 +20,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
           &ast.GQLMatchStatement{
             Optional:     -1,
             Match:        15,
-            MatchHint:    (*ast.Hint)(nil),
             PrefixOrMode: &ast.GQLPathSearchPrefix{
               StartPos:     21,
               LastEnd:      33,
@@ -30,16 +28,13 @@ RETURN a.id AS a_id, total, b.id AS b_id
             GraphPattern: &ast.GQLGraphPattern{
               PathPatternList: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
-                  PathSearchPrefixOrPathMode: nil,
-                  PathPattern:                &ast.GQLPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        34,
                           RParen:        44,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 35,
                               NameEnd: 36,
@@ -49,7 +44,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
                               IsOrColon:       36,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  37,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 37,
                                   NameEnd: 44,
@@ -57,18 +51,14 @@ RETURN a.id AS a_id, total, b.id AS b_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        45,
                           Gt:            59,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,
                               NameEnd: 48,
@@ -78,7 +68,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
                               IsOrColon:       48,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  49,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 49,
                                   NameEnd: 58,
@@ -86,7 +75,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
                         Quantifier: &ast.GQLBoundedQuantifier{
@@ -107,12 +95,10 @@ RETURN a.id AS a_id, total, b.id AS b_id
                         },
                       },
                       &ast.GQLQuantifiablePathTerm{
-                        Hint:     (*ast.Hint)(nil),
                         PathTerm: &ast.GQLNodePattern{
                           LParen:        68,
                           RParen:        78,
                           PatternFiller: &ast.GQLPatternFiller{
-                            Hint:                 (*ast.Hint)(nil),
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 69,
                               NameEnd: 70,
@@ -122,7 +108,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
                               IsOrColon:       70,
                               LabelExpression: &ast.GQLLabelName{
                                 StartPos:  71,
-                                IsPercent: false,
                                 LabelName: &ast.Ident{
                                   NamePos: 71,
                                   NameEnd: 78,
@@ -130,10 +115,8 @@ RETURN a.id AS a_id, total, b.id AS b_id
                                 },
                               },
                             },
-                            Filter: nil,
                           },
                         },
-                        Quantifier: nil,
                       },
                     },
                   },
@@ -169,13 +152,16 @@ RETURN a.id AS a_id, total, b.id AS b_id
                 },
                 Value: &ast.CallExpr{
                   Rparen: 123,
-                  Func:   &ast.Ident{
-                    NamePos: 111,
-                    NameEnd: 114,
-                    Name:    "SUM",
+                  Func:   &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 111,
+                        NameEnd: 114,
+                        Name:    "SUM",
+                      },
+                    },
                   },
-                  Distinct: false,
-                  Args:     []ast.Arg{
+                  Args: []ast.Arg{
                     &ast.ExprArg{
                       Expr: &ast.Path{
                         Idents: []*ast.Ident{
@@ -193,16 +179,12 @@ RETURN a.id AS a_id, total, b.id AS b_id
                       },
                     },
                   },
-                  NamedArgs:    []*ast.NamedArg(nil),
-                  NullHandling: nil,
-                  Having:       nil,
                 },
               },
             },
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            AllOrDistinct:  "",
             ReturnItemList: []ast.GQLReturnItem{
               &ast.Alias{
                 Expr: &ast.Path{
@@ -260,9 +242,6 @@ RETURN a.id AS a_id, total, b.id AS b_id
                 },
               },
             },
-            GroupByClause:        (*ast.GroupBy)(nil),
-            OrderByClause:        (*ast.OrderBy)(nil),
-            LimitAndOffsetClause: nil,
           },
         },
       },

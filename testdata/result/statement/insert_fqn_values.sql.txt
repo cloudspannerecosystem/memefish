@@ -1,0 +1,112 @@
+--- insert_fqn_values.sql
+insert sch1.foo (foo, bar, baz)
+values (1, 2, 3),
+       (4, 5, 6)
+--- AST
+&ast.Insert{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 11,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 25,
+      Name:    "bar",
+    },
+    &ast.Ident{
+      NamePos: 27,
+      NameEnd: 30,
+      Name:    "baz",
+    },
+  },
+  Input: &ast.ValuesInput{
+    Values: 32,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 39,
+        Rparen: 47,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 40,
+              ValueEnd: 41,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 43,
+              ValueEnd: 44,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 46,
+              ValueEnd: 47,
+              Base:     10,
+              Value:    "3",
+            },
+          },
+        },
+      },
+      &ast.ValuesRow{
+        Lparen: 57,
+        Rparen: 65,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 58,
+              ValueEnd: 59,
+              Base:     10,
+              Value:    "4",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 61,
+              ValueEnd: 62,
+              Base:     10,
+              Value:    "5",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 64,
+              ValueEnd: 65,
+              Base:     10,
+              Value:    "6",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO sch1.foo (foo, bar, baz) VALUES (1, 2, 3), (4, 5, 6)

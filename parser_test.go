@@ -7,21 +7,20 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/k0kubun/pp/v3"
+	"github.com/pmezard/go-difflib/difflib"
 
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/ast"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/k0kubun/pp"
-	"github.com/pmezard/go-difflib/difflib"
 )
 
 var update = flag.Bool("update", false, "update result files")
 
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
-	printer := pp.New()
-	printer.SetColoringEnabled(false)
-
 	if *update {
 		_, err := os.Stat(resultPath)
 		if err == nil {
@@ -43,6 +42,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 
 	for _, in := range inputs {
 		in := in
+		bad := strings.HasPrefix(in.Name(), "!bad_")
 		t.Run(in.Name(), func(t *testing.T) {
 			t.Parallel()
 
@@ -59,9 +59,10 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			}
 
 			node, err := parse(p)
-			if err != nil {
-				log.Fatalf("error on parsing input file: %v", err)
-			}
+
+			pprinter := pp.New()
+			pprinter.SetColoringEnabled(false)
+			pprinter.SetOmitEmpty(true)
 
 			var buf bytes.Buffer
 
@@ -69,8 +70,21 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprint(&buf, string(b))
 			fmt.Fprintln(&buf)
 
+			if err != nil {
+				list, ok := err.(memefish.MultiError)
+				if bad && ok {
+					fmt.Fprintf(&buf, "--- Error\n%s\n\n", list.FullError())
+				} else {
+					t.Errorf("unexpected error: %v", err)
+				}
+			} else {
+				if bad {
+					t.Errorf("error is expected, but parsing succeeded")
+				}
+			}
+
 			fmt.Fprintf(&buf, "--- AST\n")
-			_, _ = printer.Fprintln(&buf, node)
+			_, _ = pprinter.Fprintln(&buf, node)
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
@@ -113,10 +127,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				},
 			}
 
-			node1, err := parse(p1)
-			if err != nil {
-				log.Fatalf("error on parsing unparsed SQL: %v", err)
-			}
+			node1, _ := parse(p1)
 
 			s2 := node1.SQL()
 			if s1 != s2 {
@@ -185,6 +196,7 @@ func TestParseStatement(t *testing.T) {
 		"./testdata/input/query",
 		"./testdata/input/ddl",
 		"./testdata/input/dml",
+		"./testdata/input/statement",
 	}
 	resultPath := "./testdata/result/statement"
 

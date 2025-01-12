@@ -1,0 +1,1 @@
+SELECT T.* REPLACE ("orange" AS fruit) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable) AS T

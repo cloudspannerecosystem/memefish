@@ -3,8 +3,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table
 
 --- AST
 &ast.CreateChangeStream{
-  Create: 0,
-  Name:   &ast.Ident{
+  Name: &ast.Ident{
     NamePos: 21,
     NameEnd: 39,
     Name:    "change_stream_name",
@@ -54,7 +53,6 @@ CREATE CHANGE STREAM change_stream_name FOR table_name1(column1, column2), table
       },
     },
   },
-  Options: (*ast.Options)(nil),
 }
 
 --- SQL

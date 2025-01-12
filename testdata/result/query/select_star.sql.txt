@@ -1,0 +1,57 @@
+--- select_star.sql
+SELECT * FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 61,
+        Query:  &ast.Select{
+          Select:  15,
+          Results: []ast.SelectItem{
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 22,
+                ValueEnd: 29,
+                Value:    "apple",
+              },
+              As: &ast.AsAlias{
+                As:    30,
+                Alias: &ast.Ident{
+                  NamePos: 33,
+                  NameEnd: 38,
+                  Name:    "fruit",
+                },
+              },
+            },
+            &ast.Alias{
+              Expr: &ast.StringLiteral{
+                ValuePos: 40,
+                ValueEnd: 48,
+                Value:    "carrot",
+              },
+              As: &ast.AsAlias{
+                As:    49,
+                Alias: &ast.Ident{
+                  NamePos: 52,
+                  NameEnd: 61,
+                  Name:    "vegetable",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT "apple" AS fruit, "carrot" AS vegetable)

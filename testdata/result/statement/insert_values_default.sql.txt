@@ -3,12 +3,14 @@ insert foo (foo, bar)
 values (1, default)
 --- AST
 &ast.Insert{
-  Insert:       0,
-  InsertOrType: "",
-  TableName:    &ast.Ident{
-    NamePos: 7,
-    NameEnd: 10,
-    Name:    "foo",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 10,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.Ident{
     &ast.Ident{
@@ -31,7 +33,6 @@ values (1, default)
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
-            Default:    false,
             Expr:       &ast.IntLiteral{
               ValuePos: 30,
               ValueEnd: 31,
@@ -42,7 +43,6 @@ values (1, default)
           &ast.DefaultExpr{
             DefaultPos: 33,
             Default:    true,
-            Expr:       nil,
           },
         },
       },

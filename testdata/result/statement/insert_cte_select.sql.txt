@@ -1,0 +1,93 @@
+--- insert_cte_select.sql
+insert foo (foo, bar)
+with cte AS (select 1 as foo, 2 as bar)
+select *
+--- AST
+&ast.Insert{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 10,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
+    },
+  },
+  Input: &ast.SubQueryInput{
+    Query: &ast.Query{
+      With: &ast.With{
+        With: 22,
+        CTEs: []*ast.CTE{
+          &ast.CTE{
+            Rparen: 60,
+            Name:   &ast.Ident{
+              NamePos: 27,
+              NameEnd: 30,
+              Name:    "cte",
+            },
+            QueryExpr: &ast.Select{
+              Select:  35,
+              Results: []ast.SelectItem{
+                &ast.Alias{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 42,
+                    ValueEnd: 43,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  As: &ast.AsAlias{
+                    As:    44,
+                    Alias: &ast.Ident{
+                      NamePos: 47,
+                      NameEnd: 50,
+                      Name:    "foo",
+                    },
+                  },
+                },
+                &ast.Alias{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 52,
+                    ValueEnd: 53,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                  As: &ast.AsAlias{
+                    As:    54,
+                    Alias: &ast.Ident{
+                      NamePos: 57,
+                      NameEnd: 60,
+                      Name:    "bar",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      Query: &ast.Select{
+        Select:  62,
+        Results: []ast.SelectItem{
+          &ast.Star{
+            Star: 69,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar) WITH cte AS (SELECT 1 AS foo, 2 AS bar) SELECT *

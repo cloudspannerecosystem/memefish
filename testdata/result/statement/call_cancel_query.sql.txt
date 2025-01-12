@@ -1,0 +1,27 @@
+--- call_cancel_query.sql
+CALL cancel_query("12345")
+--- AST
+&ast.Call{
+  Rparen: 25,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 5,
+        NameEnd: 17,
+        Name:    "cancel_query",
+      },
+    },
+  },
+  Args: []ast.TVFArg{
+    &ast.ExprArg{
+      Expr: &ast.StringLiteral{
+        ValuePos: 18,
+        ValueEnd: 25,
+        Value:    "12345",
+      },
+    },
+  },
+}
+
+--- SQL
+CALL cancel_query("12345")

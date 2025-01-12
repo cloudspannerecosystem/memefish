@@ -4,13 +4,8 @@ FROM Albums a
 WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_query => TRUE)
 --- AST
 &ast.QueryStatement{
-  Hint:  (*ast.Hint)(nil),
-  With:  (*ast.With)(nil),
   Query: &ast.Select{
-    Select:   0,
-    Distinct: false,
-    As:       nil,
-    Results:  []ast.SelectItem{
+    Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.Path{
           Idents: []*ast.Ident{
@@ -52,8 +47,7 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
           NameEnd: 43,
           Name:    "Albums",
         },
-        Hint: (*ast.Hint)(nil),
-        As:   &ast.AsAlias{
+        As: &ast.AsAlias{
           As:    -1,
           Alias: &ast.Ident{
             NamePos: 44,
@@ -61,7 +55,6 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
             Name:    "a",
           },
         },
-        Sample: (*ast.TableSample)(nil),
       },
     },
     Where: &ast.Where{
@@ -93,13 +86,16 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
         },
         Right: &ast.CallExpr{
           Rparen: 138,
-          Func:   &ast.Ident{
-            NamePos: 71,
-            NameEnd: 77,
-            Name:    "SEARCH",
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 71,
+                NameEnd: 77,
+                Name:    "SEARCH",
+              },
+            },
           },
-          Distinct: false,
-          Args:     []ast.Arg{
+          Args: []ast.Arg{
             &ast.ExprArg{
               Expr: &ast.Path{
                 Idents: []*ast.Ident{
@@ -137,15 +133,9 @@ WHERE a.SingerId = 1 AND SEARCH(a.DescriptionTokens, 'classic albums', enhance_q
               },
             },
           },
-          NullHandling: nil,
-          Having:       nil,
         },
       },
     },
-    GroupBy: (*ast.GroupBy)(nil),
-    Having:  (*ast.Having)(nil),
-    OrderBy: (*ast.OrderBy)(nil),
-    Limit:   (*ast.Limit)(nil),
   },
 }
 
