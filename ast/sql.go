@@ -172,12 +172,12 @@ func (b *BadNode) SQL() string {
 	return sql
 }
 
-func (b *BadStatement) SQL() string { return b.BadNode.SQL() }
+func (b *BadStatement) SQL() string { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
 func (b *BadQueryExpr) SQL() string { return b.BadNode.SQL() }
 func (b *BadExpr) SQL() string      { return b.BadNode.SQL() }
 func (b *BadType) SQL() string      { return b.BadNode.SQL() }
 func (b *BadDDL) SQL() string       { return b.BadNode.SQL() }
-func (b *BadDML) SQL() string       { return b.BadNode.SQL() }
+func (b *BadDML) SQL() string       { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
 
 // ================================================================================
 //

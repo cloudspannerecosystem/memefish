@@ -163,26 +163,43 @@ func (p *Parser) lookaheadTokenAfterOptionalHint() token.Token {
 func (p *Parser) parseStatement() (stmt ast.Statement) {
 	l := p.Lexer.Clone()
 	defer func() {
+		// Panic on tryParseHint()
 		if r := recover(); r != nil {
 			stmt = &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
-	tok := p.lookaheadTokenAfterOptionalHint()
+	hint := p.tryParseHint()
+	return p.parseStatementInternal(hint)
+}
+
+func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = &ast.BadStatement{
+				Hint:    hint,
+				BadNode: p.handleParseStatementError(r, l),
+			}
+		}
+	}()
+
 	switch {
-	case tok.Kind == "SELECT" || tok.Kind == "WITH" || tok.Kind == "(" || tok.Kind == "FROM":
-		return p.parseQueryStatement()
-	case tok.IsKeywordLike("INSERT") || tok.IsKeywordLike("DELETE") || tok.IsKeywordLike("UPDATE"):
-		return p.parseDML()
-	case tok.Kind == "CREATE" || tok.IsKeywordLike("ALTER") || tok.IsKeywordLike("DROP") ||
-		tok.IsKeywordLike("RENAME") || tok.IsKeywordLike("GRANT") || tok.IsKeywordLike("REVOKE") ||
-		tok.IsKeywordLike("ANALYZE"):
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
+		return p.parseQueryStatementInternal(hint)
+	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
+		return p.parseDMLInternal(hint)
+	case hint != nil:
+		panic(p.errorfAtToken(&p.Token, "statement hint is only permitted before query or DML, but got: %s", p.Token.Raw))
+	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
+		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
+		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
-	case tok.IsKeywordLike("CALL"):
+	case p.Token.IsKeywordLike("CALL"):
 		return p.parseOtherStatement()
 	}
 
-	panic(p.errorfAtToken(&tok, "unexpected token: %s", tok.Kind))
+	panic(p.errorfAtToken(&p.Token, "unexpected p.Token: %s", p.Token.Kind))
 }
 
 func (p *Parser) parseOtherStatement() ast.Statement {
@@ -241,8 +258,8 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			// When parsing is failed on tryParseHint or tryParseWith, the result of these methods are discarded
-			// becasue they are concrete structs and we cannot fill them with *ast.BadNode.
+			// When parsing is failed on tryParseHint, the result of these methods are discarded
+			// because they are concrete structs and we cannot fill them with *ast.BadNode.
 			stmt = &ast.QueryStatement{
 				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
 			}
@@ -250,6 +267,21 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 	}()
 
 	hint := p.tryParseHint()
+	return p.parseQueryStatementInternal(hint)
+}
+
+func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QueryStatement) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			// When parsing is failed on tryParseWith, the result of these methods are discarded
+			// because they are concrete structs and we cannot fill them with *ast.BadNode.
+			stmt = &ast.QueryStatement{
+				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
+			}
+		}
+	}()
+
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
@@ -5001,12 +5033,27 @@ func (p *Parser) parseIfExists() bool {
 func (p *Parser) parseDML() (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
+		// Panic on tryParseHint()
 		if r := recover(); r != nil {
 			dml = &ast.BadDML{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
 	hint := p.tryParseHint()
+	return p.parseDMLInternal(hint)
+}
+
+func (p *Parser) parseDMLInternal(hint *ast.Hint) (dml ast.DML) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			dml = &ast.BadDML{
+				Hint:    hint,
+				BadNode: p.handleParseStatementError(r, l),
+			}
+		}
+	}()
+
 	id := p.expect(token.TokenIdent)
 	pos := id.Pos
 	switch {

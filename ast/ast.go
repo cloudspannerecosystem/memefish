@@ -577,11 +577,12 @@ type BadNode struct {
 
 // BadStatement is a BadNode for Statement.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadStatement struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -592,6 +593,7 @@ type BadQueryExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -627,11 +629,12 @@ type BadDDL struct {
 
 // BadDML is a BadNode for DML.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadDML struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint // optional
 	BadNode *BadNode
 }
 

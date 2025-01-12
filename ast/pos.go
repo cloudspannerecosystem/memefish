@@ -15,7 +15,7 @@ func (b *BadNode) End() token.Pos {
 }
 
 func (b *BadStatement) Pos() token.Pos {
-	return nodePos(wrapNode(b.BadNode))
+	return nodePos(nodeChoice(wrapNode(b.Hint), wrapNode(b.BadNode)))
 }
 
 func (b *BadStatement) End() token.Pos {
@@ -55,7 +55,7 @@ func (b *BadDDL) End() token.Pos {
 }
 
 func (b *BadDML) Pos() token.Pos {
-	return nodePos(wrapNode(b.BadNode))
+	return nodePos(nodeChoice(wrapNode(b.Hint), wrapNode(b.BadNode)))
 }
 
 func (b *BadDML) End() token.Pos {
