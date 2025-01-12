@@ -4525,6 +4525,7 @@ func (p *Parser) parsePropertyGraphElementList() *ast.PropertyGraphElementList {
 	}
 
 }
+
 func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 	name := p.parseIdent()
 
