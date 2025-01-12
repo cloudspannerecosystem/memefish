@@ -1306,7 +1306,8 @@ func (t *ThenReturn) SQL() string {
 }
 
 func (i *Insert) SQL() string {
-	return "INSERT " +
+	return sqlOpt("", i.Hint, " ") +
+		"INSERT " +
 		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
 		"INTO " + i.TableName.SQL() + " (" +
 		sqlJoin(i.Columns, ", ") +
@@ -1335,7 +1336,8 @@ func (s *SubQueryInput) SQL() string {
 }
 
 func (d *Delete) SQL() string {
-	return "DELETE FROM " +
+	return sqlOpt("", d.Hint, " ") +
+		"DELETE FROM " +
 		d.TableName.SQL() + " " +
 		sqlOpt("", d.As, " ") +
 		d.Where.SQL() +
@@ -1343,7 +1345,8 @@ func (d *Delete) SQL() string {
 }
 
 func (u *Update) SQL() string {
-	return "UPDATE " + u.TableName.SQL() + " " +
+	return sqlOpt("", u.Hint, " ") +
+		"UPDATE " + u.TableName.SQL() + " " +
 		sqlOpt("", u.As, " ") +
 		"SET " +
 		sqlJoin(u.Updates, ", ") +

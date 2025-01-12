@@ -150,6 +150,16 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	return dmls, nil
 }
 
+func (p *Parser) lookaheadTokenAfterOptionalHint() token.Token {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	p.tryParseHint()
+	return p.Token
+}
+
 func (p *Parser) parseStatement() (stmt ast.Statement) {
 	l := p.Lexer.Clone()
 	defer func() {
@@ -158,20 +168,21 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 		}
 	}()
 
+	tok := p.lookaheadTokenAfterOptionalHint()
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
+	case tok.Kind == "SELECT" || tok.Kind == "WITH" || tok.Kind == "(" || tok.Kind == "FROM":
 		return p.parseQueryStatement()
-	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
-		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
-		p.Token.IsKeywordLike("ANALYZE"):
-		return p.parseDDL()
-	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
+	case tok.IsKeywordLike("INSERT") || tok.IsKeywordLike("DELETE") || tok.IsKeywordLike("UPDATE"):
 		return p.parseDML()
-	case p.Token.IsKeywordLike("CALL"):
+	case tok.Kind == "CREATE" || tok.IsKeywordLike("ALTER") || tok.IsKeywordLike("DROP") ||
+		tok.IsKeywordLike("RENAME") || tok.IsKeywordLike("GRANT") || tok.IsKeywordLike("REVOKE") ||
+		tok.IsKeywordLike("ANALYZE"):
+		return p.parseDDL()
+	case tok.IsKeywordLike("CALL"):
 		return p.parseOtherStatement()
 	}
 
-	panic(p.errorfAtToken(&p.Token, "unexpected token: %s", p.Token.Kind))
+	panic(p.errorfAtToken(&tok, "unexpected token: %s", tok.Kind))
 }
 
 func (p *Parser) parseOtherStatement() ast.Statement {
@@ -4995,15 +5006,16 @@ func (p *Parser) parseDML() (dml ast.DML) {
 		}
 	}()
 
+	hint := p.tryParseHint()
 	id := p.expect(token.TokenIdent)
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		return p.parseInsert(pos)
+		return p.parseInsert(pos, hint)
 	case id.IsKeywordLike("DELETE"):
-		return p.parseDelete(pos)
+		return p.parseDelete(pos, hint)
 	case id.IsKeywordLike("UPDATE"):
-		return p.parseUpdate(pos)
+		return p.parseUpdate(pos, hint)
 	}
 
 	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
@@ -5042,7 +5054,7 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 	}
 }
 
-func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
+func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
 		p.nextToken()
@@ -5087,6 +5099,7 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 
 	return &ast.Insert{
 		Insert:       pos,
+		Hint:         hint,
 		InsertOrType: insertOrType,
 		TableName:    name,
 		Columns:      columns,
@@ -5151,7 +5164,7 @@ func (p *Parser) parseSubQueryInput() *ast.SubQueryInput {
 	}
 }
 
-func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
+func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 	if p.Token.Kind == "FROM" {
 		p.nextToken()
 	}
@@ -5163,6 +5176,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 
 	return &ast.Delete{
 		Delete:     pos,
+		Hint:       hint,
 		TableName:  name,
 		As:         as,
 		Where:      where,
@@ -5170,7 +5184,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	}
 }
 
-func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
+func (p *Parser) parseUpdate(pos token.Pos, hint *ast.Hint) *ast.Update {
 	name := p.parsePath()
 	as := p.tryParseAsAlias(withOptionalAs)
 
@@ -5183,6 +5197,7 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 
 	return &ast.Update{
 		Update:     pos,
+		Hint:       hint,
 		TableName:  name,
 		As:         as,
 		Updates:    items,

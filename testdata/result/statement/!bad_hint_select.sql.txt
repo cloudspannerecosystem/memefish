@@ -8,31 +8,29 @@ syntax error: testdata/input/query/!bad_hint_select.sql:1:3: expected token: {, 
 
 
 --- AST
-&ast.QueryStatement{
-  Query: &ast.BadQueryExpr{
-    BadNode: &ast.BadNode{
-      NodeEnd: 10,
-      Tokens:  []*token.Token{
-        &token.Token{
-          Kind: "@",
-          Raw:  "@",
-          End:  1,
-        },
-        &token.Token{
-          Kind:  "SELECT",
-          Space: " ",
-          Raw:   "select",
-          Pos:   2,
-          End:   8,
-        },
-        &token.Token{
-          Kind:  "<int>",
-          Space: " ",
-          Raw:   "1",
-          Base:  10,
-          Pos:   9,
-          End:   10,
-        },
+&ast.BadStatement{
+  BadNode: &ast.BadNode{
+    NodeEnd: 10,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "@",
+        Raw:  "@",
+        End:  1,
+      },
+      &token.Token{
+        Kind:  "SELECT",
+        Space: " ",
+        Raw:   "select",
+        Pos:   2,
+        End:   8,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   9,
+        End:   10,
       },
     },
   },
