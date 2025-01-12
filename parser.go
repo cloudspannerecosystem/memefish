@@ -153,20 +153,38 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 func (p *Parser) parseStatement() (stmt ast.Statement) {
 	l := p.Lexer.Clone()
 	defer func() {
+		// Panic on tryParseHint()
 		if r := recover(); r != nil {
 			stmt = &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)}
 		}
 	}()
 
+	hint := p.tryParseHint()
+	return p.parseStatementInternal(hint)
+}
+
+func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = &ast.BadStatement{
+				Hint:    hint,
+				BadNode: p.handleParseStatementError(r, l),
+			}
+		}
+	}()
+
 	switch {
-	case p.Token.Kind == "SELECT" || p.Token.Kind == "@" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
-		return p.parseQueryStatement()
+	case p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
+		return p.parseQueryStatementInternal(hint)
+	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
+		return p.parseDMLInternal(hint)
+	case hint != nil:
+		panic(p.errorfAtPosition(hint.Pos(), p.Token.End, "statement hint is only permitted before query or DML, but got: %s", p.Token.Raw))
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
 		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
 		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
-	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
-		return p.parseDML()
 	case p.Token.IsKeywordLike("CALL"):
 		return p.parseOtherStatement()
 	}
@@ -230,8 +248,8 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
-			// When parsing is failed on tryParseHint or tryParseWith, the result of these methods are discarded
-			// becasue they are concrete structs and we cannot fill them with *ast.BadNode.
+			// When parsing is failed on tryParseHint, the result of these methods are discarded
+			// because they are concrete structs and we cannot fill them with *ast.BadNode.
 			stmt = &ast.QueryStatement{
 				Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)},
 			}
@@ -239,6 +257,11 @@ func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
 	}()
 
 	hint := p.tryParseHint()
+	return p.parseQueryStatementInternal(hint)
+}
+
+func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QueryStatement) {
+	// Can be a *ast.BadQueryExpr and won't panic
 	query := p.parseQueryExpr()
 
 	return &ast.QueryStatement{
@@ -4990,8 +5013,24 @@ func (p *Parser) parseIfExists() bool {
 func (p *Parser) parseDML() (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
+		// Panic on tryParseHint()
 		if r := recover(); r != nil {
 			dml = &ast.BadDML{BadNode: p.handleParseStatementError(r, l)}
+		}
+	}()
+
+	hint := p.tryParseHint()
+	return p.parseDMLInternal(hint)
+}
+
+func (p *Parser) parseDMLInternal(hint *ast.Hint) (dml ast.DML) {
+	l := p.Lexer.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			dml = &ast.BadDML{
+				Hint:    hint,
+				BadNode: p.handleParseStatementError(r, l),
+			}
 		}
 	}()
 
@@ -4999,11 +5038,11 @@ func (p *Parser) parseDML() (dml ast.DML) {
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		return p.parseInsert(pos)
+		return p.parseInsert(pos, hint)
 	case id.IsKeywordLike("DELETE"):
-		return p.parseDelete(pos)
+		return p.parseDelete(pos, hint)
 	case id.IsKeywordLike("UPDATE"):
-		return p.parseUpdate(pos)
+		return p.parseUpdate(pos, hint)
 	}
 
 	panic(p.errorfAtToken(id, "expect pseudo keyword: INSERT, DELETE,  UPDATE but: %s", id.AsString))
@@ -5042,7 +5081,7 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 	}
 }
 
-func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
+func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
 		p.nextToken()
@@ -5087,6 +5126,7 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 
 	return &ast.Insert{
 		Insert:       pos,
+		Hint:         hint,
 		InsertOrType: insertOrType,
 		TableName:    name,
 		Columns:      columns,
@@ -5151,7 +5191,7 @@ func (p *Parser) parseSubQueryInput() *ast.SubQueryInput {
 	}
 }
 
-func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
+func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 	if p.Token.Kind == "FROM" {
 		p.nextToken()
 	}
@@ -5163,6 +5203,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 
 	return &ast.Delete{
 		Delete:     pos,
+		Hint:       hint,
 		TableName:  name,
 		As:         as,
 		Where:      where,
@@ -5170,7 +5211,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 	}
 }
 
-func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
+func (p *Parser) parseUpdate(pos token.Pos, hint *ast.Hint) *ast.Update {
 	name := p.parsePath()
 	as := p.tryParseAsAlias(withOptionalAs)
 
@@ -5183,6 +5224,7 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 
 	return &ast.Update{
 		Update:     pos,
+		Hint:       hint,
 		TableName:  name,
 		As:         as,
 		Updates:    items,

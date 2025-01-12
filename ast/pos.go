@@ -15,7 +15,7 @@ func (b *BadNode) End() token.Pos {
 }
 
 func (b *BadStatement) Pos() token.Pos {
-	return nodePos(wrapNode(b.BadNode))
+	return nodePos(nodeChoice(wrapNode(b.Hint), wrapNode(b.BadNode)))
 }
 
 func (b *BadStatement) End() token.Pos {
@@ -55,7 +55,7 @@ func (b *BadDDL) End() token.Pos {
 }
 
 func (b *BadDML) Pos() token.Pos {
-	return nodePos(wrapNode(b.BadNode))
+	return nodePos(nodeChoice(wrapNode(b.Hint), wrapNode(b.BadNode)))
 }
 
 func (b *BadDML) End() token.Pos {
@@ -2007,7 +2007,7 @@ func (t *ThenReturn) End() token.Pos {
 }
 
 func (i *Insert) Pos() token.Pos {
-	return i.Insert
+	return posChoice(nodePos(wrapNode(i.Hint)), i.Insert)
 }
 
 func (i *Insert) End() token.Pos {
@@ -2047,7 +2047,7 @@ func (s *SubQueryInput) End() token.Pos {
 }
 
 func (d *Delete) Pos() token.Pos {
-	return d.Delete
+	return posChoice(nodePos(wrapNode(d.Hint)), d.Delete)
 }
 
 func (d *Delete) End() token.Pos {
@@ -2055,7 +2055,7 @@ func (d *Delete) End() token.Pos {
 }
 
 func (u *Update) Pos() token.Pos {
-	return u.Update
+	return posChoice(nodePos(wrapNode(u.Hint)), u.Update)
 }
 
 func (u *Update) End() token.Pos {

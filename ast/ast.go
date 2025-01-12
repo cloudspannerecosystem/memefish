@@ -577,11 +577,12 @@ type BadNode struct {
 
 // BadStatement is a BadNode for Statement.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadStatement struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -592,6 +593,7 @@ type BadQueryExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -627,11 +629,12 @@ type BadDDL struct {
 
 // BadDML is a BadNode for DML.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadDML struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint // optional
 	BadNode *BadNode
 }
 
@@ -3957,16 +3960,18 @@ type ThenReturn struct {
 
 // Insert is INSERT statement node.
 //
+//	{{.Hint | sqlOpt}}
 //	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Insert struct {
-	// pos = Insert
+	// pos = Hint.pos || Insert
 	// end = (ThenReturn ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
+	Hint       *Hint // optional
 	TableName  *Path
 	Columns    []*Ident
 	Input      InsertInput
@@ -4022,14 +4027,16 @@ type SubQueryInput struct {
 
 // Delete is DELETE statement.
 //
+//	{{.Hint | sqlOpt}}
 //	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Delete struct {
-	// pos = Delete
+	// pos = Hint.pos || Delete
 	// end = (ThenReturn ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
+	Hint       *Hint // optional
 	TableName  *Path
 	As         *AsAlias // optional
 	Where      *Where
@@ -4038,15 +4045,17 @@ type Delete struct {
 
 // Update is UPDATE statement.
 //
+//	{{.Hint | sqlOpt}}
 //	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
 //	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Update struct {
-	// pos = Update
+	// pos = Hint.pos || Update
 	// end = (ThenReturn ?? Where).end
 
 	Update token.Pos // position of "UPDATE" keyword
 
+	Hint       *Hint // optional
 	TableName  *Path
 	As         *AsAlias      // optional
 	Updates    []*UpdateItem // len(Updates) > 0
