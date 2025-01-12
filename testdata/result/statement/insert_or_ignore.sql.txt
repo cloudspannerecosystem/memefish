@@ -4,10 +4,14 @@ INSERT OR IGNORE INTO foo
 --- AST
 &ast.Insert{
   InsertOrType: "IGNORE",
-  TableName:    &ast.Ident{
-    NamePos: 22,
-    NameEnd: 25,
-    Name:    "foo",
+  TableName:    &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 25,
+        Name:    "foo",
+      },
+    },
   },
   Columns: []*ast.Ident{
     &ast.Ident{

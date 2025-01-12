@@ -4754,7 +4754,7 @@ func (p *Parser) parseInsert(pos token.Pos) *ast.Insert {
 		p.nextToken()
 	}
 
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("(")
 	var columns []*ast.Ident
@@ -4849,7 +4849,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 		p.nextToken()
 	}
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
 	thenReturn := p.tryParseThenReturn()
@@ -4864,7 +4864,7 @@ func (p *Parser) parseDelete(pos token.Pos) *ast.Delete {
 }
 
 func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
-	name := p.parseIdent()
+	name := p.parsePath()
 	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("SET")

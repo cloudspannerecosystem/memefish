@@ -1,5 +1,5 @@
---- insert_values.sql
-insert foo (foo, bar, baz)
+--- insert_fqn_values.sql
+insert sch1.foo (foo, bar, baz)
 values (1, 2, 3),
        (4, 5, 6)
 --- AST
@@ -8,40 +8,45 @@ values (1, 2, 3),
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 7,
-        NameEnd: 10,
+        NameEnd: 11,
+        Name:    "sch1",
+      },
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
         Name:    "foo",
       },
     },
   },
   Columns: []*ast.Ident{
     &ast.Ident{
-      NamePos: 12,
-      NameEnd: 15,
-      Name:    "foo",
-    },
-    &ast.Ident{
       NamePos: 17,
       NameEnd: 20,
-      Name:    "bar",
+      Name:    "foo",
     },
     &ast.Ident{
       NamePos: 22,
       NameEnd: 25,
+      Name:    "bar",
+    },
+    &ast.Ident{
+      NamePos: 27,
+      NameEnd: 30,
       Name:    "baz",
     },
   },
   Input: &ast.ValuesInput{
-    Values: 27,
+    Values: 32,
     Rows:   []*ast.ValuesRow{
       &ast.ValuesRow{
-        Lparen: 34,
-        Rparen: 42,
+        Lparen: 39,
+        Rparen: 47,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 35,
-              ValueEnd: 36,
+              ValuePos: 40,
+              ValueEnd: 41,
               Base:     10,
               Value:    "1",
             },
@@ -49,8 +54,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 38,
-              ValueEnd: 39,
+              ValuePos: 43,
+              ValueEnd: 44,
               Base:     10,
               Value:    "2",
             },
@@ -58,8 +63,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 41,
-              ValueEnd: 42,
+              ValuePos: 46,
+              ValueEnd: 47,
               Base:     10,
               Value:    "3",
             },
@@ -67,14 +72,14 @@ values (1, 2, 3),
         },
       },
       &ast.ValuesRow{
-        Lparen: 52,
-        Rparen: 60,
+        Lparen: 57,
+        Rparen: 65,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 53,
-              ValueEnd: 54,
+              ValuePos: 58,
+              ValueEnd: 59,
               Base:     10,
               Value:    "4",
             },
@@ -82,8 +87,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 56,
-              ValueEnd: 57,
+              ValuePos: 61,
+              ValueEnd: 62,
               Base:     10,
               Value:    "5",
             },
@@ -91,8 +96,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 59,
-              ValueEnd: 60,
+              ValuePos: 64,
+              ValueEnd: 65,
               Base:     10,
               Value:    "6",
             },
@@ -104,4 +109,4 @@ values (1, 2, 3),
 }
 
 --- SQL
-INSERT INTO foo (foo, bar, baz) VALUES (1, 2, 3), (4, 5, 6)
+INSERT INTO sch1.foo (foo, bar, baz) VALUES (1, 2, 3), (4, 5, 6)

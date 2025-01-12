@@ -3656,7 +3656,7 @@ type Insert struct {
 
 	InsertOrType InsertOrType
 
-	TableName  *Ident
+	TableName  *Path
 	Columns    []*Ident
 	Input      InsertInput
 	ThenReturn *ThenReturn // optional
@@ -3719,7 +3719,7 @@ type Delete struct {
 
 	Delete token.Pos // position of "DELETE" keyword
 
-	TableName  *Ident
+	TableName  *Path
 	As         *AsAlias // optional
 	Where      *Where
 	ThenReturn *ThenReturn // optional
@@ -3736,7 +3736,7 @@ type Update struct {
 
 	Update token.Pos // position of "UPDATE" keyword
 
-	TableName  *Ident
+	TableName  *Path
 	As         *AsAlias      // optional
 	Updates    []*UpdateItem // len(Updates) > 0
 	Where      *Where
