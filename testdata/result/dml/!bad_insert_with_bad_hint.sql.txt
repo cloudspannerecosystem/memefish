@@ -1,0 +1,220 @@
+--- !bad_insert_with_bad_hint.sql
+@{invalid}
+insert foo (foo, bar, baz)
+vales (1, 2, 3),
+      (4, 5, 6)
+--- Error
+syntax error: testdata/input/dml/!bad_insert_with_bad_hint.sql:1:10: expected token: =, but: }
+  1|  @{invalid}
+   |           ^
+
+
+--- AST
+&ast.BadDML{
+  BadNode: &ast.BadNode{
+    NodeEnd: 70,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "@",
+        Raw:  "@",
+        End:  1,
+      },
+      &token.Token{
+        Kind: "{",
+        Raw:  "{",
+        Pos:  1,
+        End:  2,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "invalid",
+        AsString: "invalid",
+        Pos:      2,
+        End:      9,
+      },
+      &token.Token{
+        Kind: "}",
+        Raw:  "}",
+        Pos:  9,
+        End:  10,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "insert",
+        AsString: "insert",
+        Pos:      11,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      18,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   22,
+        End:   23,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      23,
+        End:      26,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  26,
+        End:  27,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      28,
+        End:      31,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  31,
+        End:  32,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "baz",
+        AsString: "baz",
+        Pos:      33,
+        End:      36,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  36,
+        End:  37,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "vales",
+        AsString: "vales",
+        Pos:      38,
+        End:      43,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   44,
+        End:   45,
+      },
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "1",
+        Base: 10,
+        Pos:  45,
+        End:  46,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  46,
+        End:  47,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "2",
+        Base:  10,
+        Pos:   48,
+        End:   49,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  49,
+        End:  50,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "3",
+        Base:  10,
+        Pos:   51,
+        End:   52,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  52,
+        End:  53,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  53,
+        End:  54,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: "\n      ",
+        Raw:   "(",
+        Pos:   61,
+        End:   62,
+      },
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "4",
+        Base: 10,
+        Pos:  62,
+        End:  63,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  63,
+        End:  64,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "5",
+        Base:  10,
+        Pos:   65,
+        End:   66,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  66,
+        End:  67,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "6",
+        Base:  10,
+        Pos:   68,
+        End:   69,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  69,
+        End:  70,
+      },
+    },
+  },
+}
+
+--- SQL
+@{invalid} insert foo (foo, bar, baz) vales (1, 2, 3), (4, 5, 6)

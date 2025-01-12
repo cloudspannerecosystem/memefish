@@ -1,0 +1,186 @@
+--- !bad_insert_with_hint.sql
+@{pdml_max_parallelism=1}
+insert foo (foo, bar, baz)
+vales (1, 2, 3),
+      (4, 5, 6)
+--- Error
+syntax error: testdata/input/dml/!bad_insert_with_hint.sql:3:1: expected beginning of simple query "(", SELECT, FROM, but: "vales"
+  3|  vales (1, 2, 3),
+   |  ^~~~~
+
+
+--- AST
+&ast.Insert{
+  Insert: 26,
+  Hint:   &ast.Hint{
+    Rbrace:  24,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 22,
+              Name:    "pdml_max_parallelism",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 36,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 38,
+      NameEnd: 41,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 43,
+      NameEnd: 46,
+      Name:    "bar",
+    },
+    &ast.Ident{
+      NamePos: 48,
+      NameEnd: 51,
+      Name:    "baz",
+    },
+  },
+  Input: &ast.SubQueryInput{
+    Query: &ast.BadQueryExpr{
+      BadNode: &ast.BadNode{
+        NodePos: 53,
+        NodeEnd: 85,
+        Tokens:  []*token.Token{
+          &token.Token{
+            Kind:     "<ident>",
+            Space:    "\n",
+            Raw:      "vales",
+            AsString: "vales",
+            Pos:      53,
+            End:      58,
+          },
+          &token.Token{
+            Kind:  "(",
+            Space: " ",
+            Raw:   "(",
+            Pos:   59,
+            End:   60,
+          },
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "1",
+            Base: 10,
+            Pos:  60,
+            End:  61,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  61,
+            End:  62,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "2",
+            Base:  10,
+            Pos:   63,
+            End:   64,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  64,
+            End:  65,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "3",
+            Base:  10,
+            Pos:   66,
+            End:   67,
+          },
+          &token.Token{
+            Kind: ")",
+            Raw:  ")",
+            Pos:  67,
+            End:  68,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  68,
+            End:  69,
+          },
+          &token.Token{
+            Kind:  "(",
+            Space: "\n      ",
+            Raw:   "(",
+            Pos:   76,
+            End:   77,
+          },
+          &token.Token{
+            Kind: "<int>",
+            Raw:  "4",
+            Base: 10,
+            Pos:  77,
+            End:  78,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  78,
+            End:  79,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "5",
+            Base:  10,
+            Pos:   80,
+            End:   81,
+          },
+          &token.Token{
+            Kind: ",",
+            Raw:  ",",
+            Pos:  81,
+            End:  82,
+          },
+          &token.Token{
+            Kind:  "<int>",
+            Space: " ",
+            Raw:   "6",
+            Base:  10,
+            Pos:   83,
+            End:   84,
+          },
+          &token.Token{
+            Kind: ")",
+            Raw:  ")",
+            Pos:  84,
+            End:  85,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{pdml_max_parallelism=1} INSERT INTO foo (foo, bar, baz) vales (1, 2, 3), (4, 5, 6)

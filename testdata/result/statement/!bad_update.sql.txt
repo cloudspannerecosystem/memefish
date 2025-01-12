@@ -1,0 +1,78 @@
+--- !bad_update.sql
+update foo set invalid where foo = 1
+--- Error
+syntax error: testdata/input/dml/!bad_update.sql:1:24: expected token: =, but: WHERE
+  1|  update foo set invalid where foo = 1
+   |                         ^~~~~
+
+
+--- AST
+&ast.BadDML{
+  BadNode: &ast.BadNode{
+    NodeEnd: 36,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "update",
+        AsString: "update",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      7,
+        End:      10,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "set",
+        Pos:   11,
+        End:   14,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "invalid",
+        AsString: "invalid",
+        Pos:      15,
+        End:      22,
+      },
+      &token.Token{
+        Kind:  "WHERE",
+        Space: " ",
+        Raw:   "where",
+        Pos:   23,
+        End:   28,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      29,
+        End:      32,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   33,
+        End:   34,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   35,
+        End:   36,
+      },
+    },
+  },
+}
+
+--- SQL
+update foo set invalid where foo = 1

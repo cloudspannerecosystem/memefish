@@ -1,0 +1,109 @@
+--- !bad_create_table_with_hint.sql
+@{unknown_hint=1}
+create table tbl(pk int64 primary key)
+--- Error
+syntax error: testdata/input/ddl/!bad_create_table_with_hint.sql:2:1: statement hint is only permitted before query or DML, but got: create
+  2|  create table tbl(pk int64 primary key)
+   |  ^~~~~~
+
+
+--- AST
+&ast.BadStatement{
+  Hint: &ast.Hint{
+    Rbrace:  16,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 14,
+              Name:    "unknown_hint",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 15,
+          ValueEnd: 16,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  BadNode: &ast.BadNode{
+    NodePos: 18,
+    NodeEnd: 56,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:  "CREATE",
+        Space: "\n",
+        Raw:   "create",
+        Pos:   18,
+        End:   24,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "table",
+        AsString: "table",
+        Pos:      25,
+        End:      30,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "tbl",
+        AsString: "tbl",
+        Pos:      31,
+        End:      34,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  34,
+        End:  35,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "pk",
+        AsString: "pk",
+        Pos:      35,
+        End:      37,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "int64",
+        AsString: "int64",
+        Pos:      38,
+        End:      43,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "primary",
+        AsString: "primary",
+        Pos:      44,
+        End:      51,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "key",
+        AsString: "key",
+        Pos:      52,
+        End:      55,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  55,
+        End:  56,
+      },
+    },
+  },
+}
+
+--- SQL
+@{unknown_hint=1} create table tbl(pk int64 primary key)
