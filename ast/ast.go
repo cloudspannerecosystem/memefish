@@ -3786,6 +3786,7 @@ type PropertyGraphNodeElementKey struct {
 type PropertyGraphEdgeElementKeys struct {
 	// pos = (Element ?? Source).pos
 	// end = Destination.end
+
 	Element     *PropertyGraphElementKey // optional
 	Source      *PropertyGraphSourceKey
 	Destination *PropertyGraphDestinationKey
