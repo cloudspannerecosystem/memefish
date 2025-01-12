@@ -123,7 +123,7 @@ func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
 // ParseDML parses a INSERT/DELETE/UPDATE statement.
 func (p *Parser) ParseDML() (ast.DML, error) {
 	p.nextToken()
-	dml := p.parseDMLTopLevel()
+	dml := p.parseDML()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -138,7 +138,7 @@ func (p *Parser) ParseDML() (ast.DML, error) {
 // ParseDMLs parses INSERT/DELETE/UPDATE statements list separated by semi-colon.
 func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	p.nextToken()
-	dmls := parseStatements(p, p.parseDMLTopLevel)
+	dmls := parseStatements(p, p.parseDML)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -166,7 +166,7 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 		p.Token.IsKeywordLike("ANALYZE"):
 		return p.parseDDL()
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
-		return p.parseDMLTopLevel()
+		return p.parseDML()
 	case p.Token.IsKeywordLike("CALL"):
 		return p.parseOtherStatement()
 	}
@@ -4987,12 +4987,13 @@ func (p *Parser) parseIfExists() bool {
 //
 // ================================================================================
 
-// parseDMLTopLevel parses non-nested DML. This function is added for parseStatements friendly.
-func (p *Parser) parseDMLTopLevel() (dml ast.DML) {
-	return p.parseDML(false)
+// parseDML parses non-nested DML. This function is added for parseStatements friendly.
+func (p *Parser) parseDML() (dml ast.DML) {
+	return p.parseDMLInternal(false)
 }
 
-func (p *Parser) parseDML(nested bool) (dml ast.DML) {
+// parseDMLInternal can parse nested and non-nested DML. This behavior is controlled by nested flag.
+func (p *Parser) parseDMLInternal(nested bool) (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
@@ -5202,7 +5203,7 @@ func (p *Parser) parseUpdate(pos token.Pos) *ast.Update {
 func (p *Parser) parseUpdateItem() ast.UpdateItem {
 	if p.Token.Kind == "(" {
 		lparen := p.expect("(").Pos
-		dml := p.parseDML(true)
+		dml := p.parseDMLInternal(true)
 		rparen := p.expect(")").Pos
 		return &ast.UpdateItemDML{
 			Lparen: lparen,
