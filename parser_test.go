@@ -129,6 +129,18 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 							return false
 						}
 
+						if node.Pos().Invalid() {
+							t.Errorf("pos must be valid, but got invalid on %v: %v", path, node.SQL())
+							ok = false
+							return false
+						}
+
+						if node.End().Invalid() {
+							t.Errorf("end must be valid, but got invalid on %v: %v", path, node.SQL())
+							ok = false
+							return false
+						}
+
 						if node.End() <= node.Pos() {
 							t.Errorf("pos must be smaller than end, but got pos: %v, end: %v on %v: %v", node.Pos(), node.End(), path, node.SQL())
 							ok = false

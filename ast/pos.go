@@ -1895,7 +1895,7 @@ func (p *PropertyGraphNodeElementKey) End() token.Pos {
 }
 
 func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos {
-	return nodePos(wrapNode(p.Element))
+	return nodePos(nodeChoice(wrapNode(p.Element), wrapNode(p.Source)))
 }
 
 func (p *PropertyGraphEdgeElementKeys) End() token.Pos {

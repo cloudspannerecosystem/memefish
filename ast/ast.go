@@ -3784,7 +3784,7 @@ type PropertyGraphNodeElementKey struct {
 //
 //	{{.Element | sqlOpt}} {{.Source | sql}} {{.Destination | sql}}
 type PropertyGraphEdgeElementKeys struct {
-	// pos = Element.pos
+	// pos = (Element ?? Source).pos
 	// end = Destination.end
 	Element     *PropertyGraphElementKey // optional
 	Source      *PropertyGraphSourceKey
