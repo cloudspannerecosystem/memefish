@@ -150,16 +150,6 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	return dmls, nil
 }
 
-func (p *Parser) lookaheadTokenAfterOptionalHint() token.Token {
-	lexer := p.Lexer.Clone()
-	defer func() {
-		p.Lexer = lexer
-	}()
-
-	p.tryParseHint()
-	return p.Token
-}
-
 func (p *Parser) parseStatement() (stmt ast.Statement) {
 	l := p.Lexer.Clone()
 	defer func() {
