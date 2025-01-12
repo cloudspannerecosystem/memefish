@@ -814,6 +814,85 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.IndexAlteration), visitor: v.Field("IndexAlteration")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *CreatePropertyGraph:
+		stack = append(stack, &stackItem{node: wrapNode(n.Content), visitor: v.Field("Content")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *PropertyGraphContent:
+		stack = append(stack, &stackItem{node: wrapNode(n.EdgeTables), visitor: v.Field("EdgeTables")})
+		stack = append(stack, &stackItem{node: wrapNode(n.NodeTables), visitor: v.Field("NodeTables")})
+
+	case *PropertyGraphNodeTables:
+		stack = append(stack, &stackItem{node: wrapNode(n.Tables), visitor: v.Field("Tables")})
+
+	case *PropertyGraphEdgeTables:
+		stack = append(stack, &stackItem{node: wrapNode(n.Tables), visitor: v.Field("Tables")})
+
+	case *PropertyGraphElementList:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Elements), visitor: v.Field("Elements")})
+
+	case *PropertyGraphElement:
+		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *PropertyGraphSingleProperties:
+		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
+
+	case *PropertyGraphLabelAndPropertiesList:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.LabelAndProperties), visitor: v.Field("LabelAndProperties")})
+
+	case *PropertyGraphLabelAndProperties:
+		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Label), visitor: v.Field("Label")})
+
+	case *PropertyGraphElementLabelLabelName:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *PropertyGraphElementLabelDefaultLabel:
+		// nothing to do
+
+	case *PropertyGraphNodeElementKey:
+		stack = append(stack, &stackItem{node: wrapNode(n.Key), visitor: v.Field("Key")})
+
+	case *PropertyGraphEdgeElementKeys:
+		stack = append(stack, &stackItem{node: wrapNode(n.Destination), visitor: v.Field("Destination")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Source), visitor: v.Field("Source")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Element), visitor: v.Field("Element")})
+
+	case *PropertyGraphElementKey:
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
+
+	case *PropertyGraphSourceKey:
+		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementReference), visitor: v.Field("ElementReference")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
+
+	case *PropertyGraphDestinationKey:
+		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementReference), visitor: v.Field("ElementReference")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
+
+	case *PropertyGraphColumnNameList:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ColumnNameList), visitor: v.Field("ColumnNameList")})
+
+	case *PropertyGraphNoProperties:
+		// nothing to do
+
+	case *PropertyGraphPropertiesAre:
+		stack = append(stack, &stackItem{node: wrapNode(n.ExceptColumns), visitor: v.Field("ExceptColumns")})
+
+	case *PropertyGraphDerivedPropertyList:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.DerivedProperties), visitor: v.Field("DerivedProperties")})
+
+	case *PropertyGraphDerivedProperty:
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *DropPropertyGraph:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
 	case *WithAction:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
