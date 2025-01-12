@@ -1814,6 +1814,182 @@ func (a *AlterSearchIndex) End() token.Pos {
 	return nodeEnd(wrapNode(a.IndexAlteration))
 }
 
+func (c *CreatePropertyGraph) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreatePropertyGraph) End() token.Pos {
+	return nodeEnd(wrapNode(c.Content))
+}
+
+func (p *PropertyGraphContent) Pos() token.Pos {
+	return nodePos(wrapNode(p.NodeTables))
+}
+
+func (p *PropertyGraphContent) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.EdgeTables), wrapNode(p.NodeTables)))
+}
+
+func (p *PropertyGraphNodeTables) Pos() token.Pos {
+	return p.Node
+}
+
+func (p *PropertyGraphNodeTables) End() token.Pos {
+	return nodeEnd(wrapNode(p.Tables))
+}
+
+func (p *PropertyGraphEdgeTables) Pos() token.Pos {
+	return p.Edge
+}
+
+func (p *PropertyGraphEdgeTables) End() token.Pos {
+	return nodeEnd(wrapNode(p.Tables))
+}
+
+func (p *PropertyGraphElementList) Pos() token.Pos {
+	return p.Lparen
+}
+
+func (p *PropertyGraphElementList) End() token.Pos {
+	return posAdd(p.Rparen, 1)
+}
+
+func (p *PropertyGraphElement) Pos() token.Pos {
+	return nodePos(wrapNode(p.Name))
+}
+
+func (p *PropertyGraphElement) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Properties), wrapNode(p.Keys), wrapNode(p.Alias), wrapNode(p.Name)))
+}
+
+func (p *PropertyGraphSingleProperties) Pos() token.Pos {
+	return nodePos(wrapNode(p.Properties))
+}
+
+func (p *PropertyGraphSingleProperties) End() token.Pos {
+	return nodeEnd(wrapNode(p.Properties))
+}
+
+func (p *PropertyGraphLabelAndPropertiesList) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(p.LabelAndProperties, 0))
+}
+
+func (p *PropertyGraphLabelAndPropertiesList) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.LabelAndProperties))
+}
+
+func (p *PropertyGraphLabelAndProperties) Pos() token.Pos {
+	return nodePos(wrapNode(p.Label))
+}
+
+func (p *PropertyGraphLabelAndProperties) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Properties), wrapNode(p.Label)))
+}
+
+func (p *PropertyGraphElementLabelLabelName) Pos() token.Pos {
+	return p.Label
+}
+
+func (p *PropertyGraphElementLabelLabelName) End() token.Pos {
+	return nodeEnd(wrapNode(p.Name))
+}
+
+func (p *PropertyGraphElementLabelDefaultLabel) Pos() token.Pos {
+	return p.Default
+}
+
+func (p *PropertyGraphElementLabelDefaultLabel) End() token.Pos {
+	return posAdd(p.Label, 5)
+}
+
+func (p *PropertyGraphNodeElementKey) Pos() token.Pos {
+	return nodePos(wrapNode(p.Key))
+}
+
+func (p *PropertyGraphNodeElementKey) End() token.Pos {
+	return nodeEnd(wrapNode(p.Key))
+}
+
+func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos {
+	return nodePos(wrapNode(p.Element))
+}
+
+func (p *PropertyGraphEdgeElementKeys) End() token.Pos {
+	return nodeEnd(wrapNode(p.Destination))
+}
+
+func (p *PropertyGraphElementKey) Pos() token.Pos {
+	return p.Key
+}
+
+func (p *PropertyGraphElementKey) End() token.Pos {
+	return nodeEnd(wrapNode(p.Keys))
+}
+
+func (p *PropertyGraphSourceKey) Pos() token.Pos {
+	return p.Source
+}
+
+func (p *PropertyGraphSourceKey) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.ReferenceColumns), wrapNode(p.ElementReference)))
+}
+
+func (p *PropertyGraphDestinationKey) Pos() token.Pos {
+	return p.Destination
+}
+
+func (p *PropertyGraphDestinationKey) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.ReferenceColumns), wrapNode(p.ElementReference)))
+}
+
+func (p *PropertyGraphColumnNameList) Pos() token.Pos {
+	return p.Lparen
+}
+
+func (p *PropertyGraphColumnNameList) End() token.Pos {
+	return posAdd(p.Rparen, 1)
+}
+
+func (p *PropertyGraphNoProperties) Pos() token.Pos {
+	return p.No
+}
+
+func (p *PropertyGraphNoProperties) End() token.Pos {
+	return posAdd(p.Properties, 10)
+}
+
+func (p *PropertyGraphPropertiesAre) Pos() token.Pos {
+	return p.Properties
+}
+
+func (p *PropertyGraphPropertiesAre) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(p.ExceptColumns)), posAdd(p.Columns, 7))
+}
+
+func (p *PropertyGraphDerivedPropertyList) Pos() token.Pos {
+	return p.Properties
+}
+
+func (p *PropertyGraphDerivedPropertyList) End() token.Pos {
+	return p.Rparen
+}
+
+func (p *PropertyGraphDerivedProperty) Pos() token.Pos {
+	return nodePos(wrapNode(p.Expr))
+}
+
+func (p *PropertyGraphDerivedProperty) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(p.Alias), wrapNode(p.Expr)))
+}
+
+func (d *DropPropertyGraph) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropPropertyGraph) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (w *WithAction) Pos() token.Pos {
 	return w.With
 }

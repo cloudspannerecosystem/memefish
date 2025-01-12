@@ -1151,6 +1151,104 @@ func (d *DropModel) SQL() string {
 
 // ================================================================================
 //
+// GQL schema statements
+//
+// ================================================================================
+
+func (c *CreatePropertyGraph) SQL() string {
+	return "CREATE " +
+		strOpt(c.OrReplace, "OR REPLACE ") +
+		"PROPERTY GRAPH " +
+		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " " + c.Content.SQL()
+}
+
+func (p *PropertyGraphContent) SQL() string {
+	return p.NodeTables.SQL() + sqlOpt(" ", p.EdgeTables, "")
+}
+
+func (p *PropertyGraphNodeTables) SQL() string {
+	return "NODE TABLES " + p.Tables.SQL()
+}
+
+func (p *PropertyGraphEdgeTables) SQL() string {
+	return "EDGE TABLES " + p.Tables.SQL()
+}
+
+func (p *PropertyGraphElementList) SQL() string {
+	return "(" + sqlJoin(p.Elements, ", ") + ")"
+}
+
+func (p *PropertyGraphElement) SQL() string {
+	return p.Name.SQL() +
+		sqlOpt(" AS ", p.Alias, "") +
+		sqlOpt(" ", p.Keys, "") +
+		sqlOpt(" ", p.Properties, "")
+}
+
+func (p *PropertyGraphSingleProperties) SQL() string { return p.Properties.SQL() }
+
+func (p *PropertyGraphLabelAndPropertiesList) SQL() string {
+	return sqlJoin(p.LabelAndProperties, " ")
+}
+
+func (p *PropertyGraphLabelAndProperties) SQL() string {
+	return p.Label.SQL() + sqlOpt(" ", p.Properties, "")
+}
+
+func (p *PropertyGraphElementLabelLabelName) SQL() string { return "LABEL " + p.Name.SQL() }
+
+func (p *PropertyGraphElementLabelDefaultLabel) SQL() string { return "DEFAULT LABEL" }
+
+func (p *PropertyGraphNodeElementKey) SQL() string { return p.Key.SQL() }
+
+func (p *PropertyGraphEdgeElementKeys) SQL() string {
+	return sqlOpt("", p.Element, " ") +
+		p.Source.SQL() + " " + p.Destination.SQL()
+}
+
+func (p *PropertyGraphElementKey) SQL() string { return "KEY " + p.Keys.SQL() }
+
+func (p *PropertyGraphSourceKey) SQL() string {
+	return "SOURCE KEY " + p.Keys.SQL() +
+		" REFERENCES " + p.ElementReference.SQL() +
+		sqlOpt(" ", p.ReferenceColumns, "")
+}
+
+func (p *PropertyGraphDestinationKey) SQL() string {
+	return "DESTINATION KEY " + p.Keys.SQL() +
+		" REFERENCES " + p.ElementReference.SQL() +
+		sqlOpt(" ", p.ReferenceColumns, "")
+}
+
+func (p *PropertyGraphColumnNameList) SQL() string {
+	return "(" + sqlJoin(p.ColumnNameList, ", ") + ")"
+}
+
+func (p *PropertyGraphNoProperties) SQL() string {
+	return "NO PROPERTIES"
+}
+
+func (p *PropertyGraphPropertiesAre) SQL() string {
+	return "PROPERTIES ARE ALL COLUMNS" + sqlOpt(" EXCEPT ", p.ExceptColumns, "")
+}
+
+func (p *PropertyGraphDerivedPropertyList) SQL() string {
+	return "PROPERTIES (" + sqlJoin(p.DerivedProperties, ", ") + ")"
+}
+
+func (p *PropertyGraphDerivedProperty) SQL() string {
+	return p.Expr.SQL() + sqlOpt(" AS ", p.Alias, "")
+}
+
+func (g *DropPropertyGraph) SQL() string {
+	return "DROP PROPERTY GRAPH " +
+		strOpt(g.IfExists, "IF EXISTS ") +
+		g.Name.SQL()
+}
+
+// ================================================================================
+//
 // Types for Schema
 //
 // ================================================================================

@@ -71,51 +71,53 @@ type Statement interface {
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
 
-func (BadStatement) isStatement()       {}
-func (BadDDL) isStatement()             {}
-func (BadDML) isStatement()             {}
-func (QueryStatement) isStatement()     {}
-func (CreateSchema) isStatement()       {}
-func (DropSchema) isStatement()         {}
-func (CreateDatabase) isStatement()     {}
-func (AlterDatabase) isStatement()      {}
-func (CreatePlacement) isStatement()    {}
-func (CreateProtoBundle) isStatement()  {}
-func (AlterProtoBundle) isStatement()   {}
-func (DropProtoBundle) isStatement()    {}
-func (CreateTable) isStatement()        {}
-func (AlterTable) isStatement()         {}
-func (DropTable) isStatement()          {}
-func (RenameTable) isStatement()        {}
-func (CreateIndex) isStatement()        {}
-func (AlterIndex) isStatement()         {}
-func (DropIndex) isStatement()          {}
-func (CreateSearchIndex) isStatement()  {}
-func (DropSearchIndex) isStatement()    {}
-func (AlterSearchIndex) isStatement()   {}
-func (CreateView) isStatement()         {}
-func (DropView) isStatement()           {}
-func (CreateChangeStream) isStatement() {}
-func (AlterChangeStream) isStatement()  {}
-func (DropChangeStream) isStatement()   {}
-func (CreateRole) isStatement()         {}
-func (DropRole) isStatement()           {}
-func (Grant) isStatement()              {}
-func (Revoke) isStatement()             {}
-func (CreateSequence) isStatement()     {}
-func (AlterSequence) isStatement()      {}
-func (DropSequence) isStatement()       {}
-func (AlterStatistics) isStatement()    {}
-func (CreateModel) isStatement()        {}
-func (AlterModel) isStatement()         {}
-func (DropModel) isStatement()          {}
-func (Analyze) isStatement()            {}
-func (CreateVectorIndex) isStatement()  {}
-func (DropVectorIndex) isStatement()    {}
-func (Insert) isStatement()             {}
-func (Delete) isStatement()             {}
-func (Update) isStatement()             {}
-func (Call) isStatement()               {}
+func (BadStatement) isStatement()        {}
+func (BadDDL) isStatement()              {}
+func (BadDML) isStatement()              {}
+func (QueryStatement) isStatement()      {}
+func (CreateSchema) isStatement()        {}
+func (DropSchema) isStatement()          {}
+func (CreateDatabase) isStatement()      {}
+func (AlterDatabase) isStatement()       {}
+func (CreatePlacement) isStatement()     {}
+func (CreateProtoBundle) isStatement()   {}
+func (AlterProtoBundle) isStatement()    {}
+func (DropProtoBundle) isStatement()     {}
+func (CreateTable) isStatement()         {}
+func (AlterTable) isStatement()          {}
+func (DropTable) isStatement()           {}
+func (RenameTable) isStatement()         {}
+func (CreateIndex) isStatement()         {}
+func (AlterIndex) isStatement()          {}
+func (DropIndex) isStatement()           {}
+func (CreateSearchIndex) isStatement()   {}
+func (DropSearchIndex) isStatement()     {}
+func (AlterSearchIndex) isStatement()    {}
+func (CreateView) isStatement()          {}
+func (DropView) isStatement()            {}
+func (CreateChangeStream) isStatement()  {}
+func (AlterChangeStream) isStatement()   {}
+func (DropChangeStream) isStatement()    {}
+func (CreateRole) isStatement()          {}
+func (DropRole) isStatement()            {}
+func (Grant) isStatement()               {}
+func (Revoke) isStatement()              {}
+func (CreateSequence) isStatement()      {}
+func (AlterSequence) isStatement()       {}
+func (DropSequence) isStatement()        {}
+func (AlterStatistics) isStatement()     {}
+func (CreateModel) isStatement()         {}
+func (AlterModel) isStatement()          {}
+func (DropModel) isStatement()           {}
+func (Analyze) isStatement()             {}
+func (CreateVectorIndex) isStatement()   {}
+func (DropVectorIndex) isStatement()     {}
+func (CreatePropertyGraph) isStatement() {}
+func (DropPropertyGraph) isStatement()   {}
+func (Insert) isStatement()              {}
+func (Delete) isStatement()              {}
+func (Update) isStatement()              {}
+func (Call) isStatement()                {}
 
 // QueryExpr represents query expression, which can be body of QueryStatement or subqueries.
 // Select and FromQuery are leaf QueryExpr and others wrap other QueryExpr.
@@ -361,44 +363,46 @@ type DDL interface {
 //
 // - https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language
 
-func (BadDDL) isDDL()             {}
-func (CreateSchema) isDDL()       {}
-func (DropSchema) isDDL()         {}
-func (CreateDatabase) isDDL()     {}
-func (AlterDatabase) isDDL()      {}
-func (CreatePlacement) isDDL()    {}
-func (CreateProtoBundle) isDDL()  {}
-func (AlterProtoBundle) isDDL()   {}
-func (DropProtoBundle) isDDL()    {}
-func (CreateTable) isDDL()        {}
-func (AlterTable) isDDL()         {}
-func (DropTable) isDDL()          {}
-func (RenameTable) isDDL()        {}
-func (CreateIndex) isDDL()        {}
-func (AlterIndex) isDDL()         {}
-func (DropIndex) isDDL()          {}
-func (CreateView) isDDL()         {}
-func (CreateSearchIndex) isDDL()  {}
-func (DropSearchIndex) isDDL()    {}
-func (AlterSearchIndex) isDDL()   {}
-func (DropView) isDDL()           {}
-func (CreateChangeStream) isDDL() {}
-func (AlterChangeStream) isDDL()  {}
-func (DropChangeStream) isDDL()   {}
-func (CreateRole) isDDL()         {}
-func (DropRole) isDDL()           {}
-func (Grant) isDDL()              {}
-func (Revoke) isDDL()             {}
-func (CreateSequence) isDDL()     {}
-func (AlterSequence) isDDL()      {}
-func (DropSequence) isDDL()       {}
-func (AlterStatistics) isDDL()    {}
-func (CreateModel) isDDL()        {}
-func (AlterModel) isDDL()         {}
-func (DropModel) isDDL()          {}
-func (Analyze) isDDL()            {}
-func (CreateVectorIndex) isDDL()  {}
-func (DropVectorIndex) isDDL()    {}
+func (BadDDL) isDDL()              {}
+func (CreateSchema) isDDL()        {}
+func (DropSchema) isDDL()          {}
+func (CreateDatabase) isDDL()      {}
+func (AlterDatabase) isDDL()       {}
+func (CreatePlacement) isDDL()     {}
+func (CreateProtoBundle) isDDL()   {}
+func (AlterProtoBundle) isDDL()    {}
+func (DropProtoBundle) isDDL()     {}
+func (CreateTable) isDDL()         {}
+func (AlterTable) isDDL()          {}
+func (DropTable) isDDL()           {}
+func (RenameTable) isDDL()         {}
+func (CreateIndex) isDDL()         {}
+func (AlterIndex) isDDL()          {}
+func (DropIndex) isDDL()           {}
+func (CreateView) isDDL()          {}
+func (CreateSearchIndex) isDDL()   {}
+func (DropSearchIndex) isDDL()     {}
+func (AlterSearchIndex) isDDL()    {}
+func (DropView) isDDL()            {}
+func (CreateChangeStream) isDDL()  {}
+func (AlterChangeStream) isDDL()   {}
+func (DropChangeStream) isDDL()    {}
+func (CreateRole) isDDL()          {}
+func (DropRole) isDDL()            {}
+func (Grant) isDDL()               {}
+func (Revoke) isDDL()              {}
+func (CreateSequence) isDDL()      {}
+func (AlterSequence) isDDL()       {}
+func (DropSequence) isDDL()        {}
+func (AlterStatistics) isDDL()     {}
+func (CreateModel) isDDL()         {}
+func (AlterModel) isDDL()          {}
+func (DropModel) isDDL()           {}
+func (Analyze) isDDL()             {}
+func (CreateVectorIndex) isDDL()   {}
+func (DropVectorIndex) isDDL()     {}
+func (CreatePropertyGraph) isDDL() {}
+func (DropPropertyGraph) isDDL()   {}
 
 // Constraint represents table constraint of CONSTARINT clause.
 type Constraint interface {
@@ -3610,6 +3614,313 @@ type AlterSearchIndex struct {
 	Alter           token.Pos
 	Name            *Ident
 	IndexAlteration IndexAlteration
+}
+
+// ================================================================================
+//
+// GQL schema statements
+//
+// ================================================================================
+
+// PropertyGraphLabelsOrProperties represents labels with properties or a single properties of node or edge.
+type PropertyGraphLabelsOrProperties interface {
+	Node
+	isPropertyGraphLabelsOrProperties()
+}
+
+func (PropertyGraphSingleProperties) isPropertyGraphLabelsOrProperties()       {}
+func (PropertyGraphLabelAndPropertiesList) isPropertyGraphLabelsOrProperties() {}
+
+// PropertyGraphElementLabel represents a element label definition.
+type PropertyGraphElementLabel interface {
+	Node
+	isPropertyGraphElementLabel()
+}
+
+func (PropertyGraphElementLabelLabelName) isPropertyGraphElementLabel()    {}
+func (PropertyGraphElementLabelDefaultLabel) isPropertyGraphElementLabel() {}
+
+// PropertyGraphElementKeys represents PropertyGraphNodeElementKey or PropertyGraphEdgeElementKeys.
+type PropertyGraphElementKeys interface {
+	Node
+	isPropertyGraphElementKeys()
+}
+
+func (PropertyGraphNodeElementKey) isPropertyGraphElementKeys()  {}
+func (PropertyGraphEdgeElementKeys) isPropertyGraphElementKeys() {}
+
+// PropertyGraphElementProperties represents a definition of properties.
+// See https://cloud.google.com/spanner/docs/reference/standard-sql/graph-schema-statements#element_table_property_definition.
+type PropertyGraphElementProperties interface {
+	Node
+	isPropertyGraphElementProperties()
+}
+
+func (PropertyGraphNoProperties) isPropertyGraphElementProperties()        {}
+func (PropertyGraphPropertiesAre) isPropertyGraphElementProperties()       {}
+func (PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
+
+// CreatePropertyGraph is CREATE PROPERTY GRAPH statement node.
+//
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} PROPERTY GRAPH
+//	{{if .IfNotExists}}IF NOT EXISTS{{end}}
+//	{{.Name | sql}}
+//	{{.Content | sql}}
+type CreatePropertyGraph struct {
+	// pos = Create
+	// end = Content.end
+
+	Create      token.Pos // position of "CREATE" keyword
+	OrReplace   bool
+	IfNotExists bool
+	Name        *Ident
+	Content     *PropertyGraphContent
+}
+
+// PropertyGraphContent represents body of CREATE PROPERTY GRAPH statement.
+//
+//	NODE TABLES {{.NodeTables | sql}} {{.EdgeTables | sqlOpt}}
+type PropertyGraphContent struct {
+	// pos = NodeTables.pos
+	// end = (EdgeTables ?? NodeTables).end
+
+	NodeTables *PropertyGraphNodeTables
+	EdgeTables *PropertyGraphEdgeTables //optional
+}
+
+// PropertyGraphNodeTables is NODE TABLES node in CREATE PROPERTY GRAPH statement.
+//
+//	NODE TABLES {{.Tables | sql}}
+type PropertyGraphNodeTables struct {
+	// pos = Node
+	// end = Tables.end
+
+	Node   token.Pos
+	Tables *PropertyGraphElementList
+}
+
+// PropertyGraphEdgeTables is EDGE TABLES node in CREATE PROPERTY GRAPH statement.
+//
+//	EDGE TABLES {{.Tables | sql}}
+type PropertyGraphEdgeTables struct {
+	// pos = Edge
+	// end = Tables.end
+
+	Edge   token.Pos
+	Tables *PropertyGraphElementList
+}
+
+// PropertyGraphElementList represents element list in NODE TABLES or EDGE TABLES.
+//
+//	({{.Elements | sqlJoin ", "}})
+type PropertyGraphElementList struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Elements       []*PropertyGraphElement
+}
+
+// PropertyGraphElement represents a single element in NODE TABLES or EDGE TABLES.
+//
+//	{{.Name | sql}} {{if .Alias | isnil | not)}}AS {{.Alias | sql}}{{end}}
+//	{{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
+type PropertyGraphElement struct {
+	// pos = Name.pos
+	// end = (Properties ?? Keys ?? Alias ?? Name).end
+
+	Name       *Ident
+	Alias      *Ident                          // optional
+	Keys       PropertyGraphElementKeys        // optional
+	Properties PropertyGraphLabelsOrProperties // optional
+}
+
+// PropertyGraphSingleProperties is wrapper node for PropertyGraphElementProperties in PropertyGraphElement.
+// It implements PropertyGraphLabelsOrProperties.
+//
+//	{{.Properties | sql}}
+type PropertyGraphSingleProperties struct {
+	// pos = Properties.pos
+	// end = Properties.end
+
+	Properties PropertyGraphElementProperties
+}
+
+// PropertyGraphLabelAndPropertiesList represents whitespace-separated list of PropertyGraphLabelAndProperties.
+// It implements PropertyGraphLabelsOrProperties.
+//
+//	{{.LabelAndProperties | sqlJoin " "}}
+type PropertyGraphLabelAndPropertiesList struct {
+	// pos = LabelAndProperties[0].pos
+	// end = LabelAndProperties[$].end
+
+	LabelAndProperties []*PropertyGraphLabelAndProperties // len(LabelAndProperties) > 0
+}
+
+// PropertyGraphLabelAndProperties represents label and properties definition for a single label.
+//
+//	{{.Label | sql}} {{.Properties | sqlOpt}}
+type PropertyGraphLabelAndProperties struct {
+	// pos = Label.pos
+	// end = (Properties ?? Label).end
+
+	Label      PropertyGraphElementLabel
+	Properties PropertyGraphElementProperties // optional
+}
+
+// PropertyGraphElementLabelLabelName represents LABEL label_name node.
+//
+//	LABEL {{.Name | sql}}
+type PropertyGraphElementLabelLabelName struct {
+	// pos = Label
+	// end = Name.end
+
+	Label token.Pos
+	Name  *Ident
+}
+
+// PropertyGraphElementLabelDefaultLabel represents DEFAULT LABEL node.
+//
+//	DEFAULT LABEL
+type PropertyGraphElementLabelDefaultLabel struct {
+	// pos = Default
+	// end = Label + 5
+
+	Default token.Pos
+	Label   token.Pos
+}
+
+// PropertyGraphNodeElementKey is a wrapper of PropertyGraphElementKey to implement PropertyGraphElementKeys
+// without deeper AST hierarchy.
+//
+//	{{.Key | sql}}
+type PropertyGraphNodeElementKey struct {
+	// pos = Key.pos
+	// end = Key.end
+
+	Key *PropertyGraphElementKey
+}
+
+// PropertyGraphEdgeElementKeys represents PropertyGraphSourceKey and PropertyGraphDestinationKey with optional PropertyGraphElementKey.
+//
+//	{{.Element | sqlOpt}} {{.Source | sql}} {{.Destination | sql}}
+type PropertyGraphEdgeElementKeys struct {
+	// pos = Element.pos
+	// end = Destination.end
+	Element     *PropertyGraphElementKey // optional
+	Source      *PropertyGraphSourceKey
+	Destination *PropertyGraphDestinationKey
+}
+
+// PropertyGraphElementKey represents the key that identifies the node or edge element.
+//
+//	KEY {{.Keys | sql}}
+type PropertyGraphElementKey struct {
+	// pos = Key
+	// end = Keys.end
+
+	Key  token.Pos
+	Keys *PropertyGraphColumnNameList
+}
+
+// PropertyGraphSourceKey represents the key for the source node of the edge.
+//
+//	SOURCE KEY {{.Keys | sql}}
+//	REFERENCES {{.ElementReference | sql}} {{.ReferenceColumns | sqlOpt}}
+type PropertyGraphSourceKey struct {
+	// pos = Source
+	// end = (ReferenceColumns ?? ElementReference).end
+
+	Source           token.Pos
+	Keys             *PropertyGraphColumnNameList
+	ElementReference *Ident
+	ReferenceColumns *PropertyGraphColumnNameList // optional
+}
+
+// PropertyGraphDestinationKey represents the key for the destination node of the edge.
+//
+//	DESTINATION KEY {{.Keys | sql}}
+//	REFERENCES {{.ElementReference | sql}} {{.ReferenceColumns | sqlOpt}}
+type PropertyGraphDestinationKey struct {
+	// pos = Destination
+	// end = (ReferenceColumns ?? ElementReference).end
+
+	Destination      token.Pos
+	Keys             *PropertyGraphColumnNameList
+	ElementReference *Ident
+	ReferenceColumns *PropertyGraphColumnNameList // optional
+}
+
+// PropertyGraphColumnNameList represents one or more columns to assign to a key.
+//
+//	({{.ColumnNameList | sqlJoin ", "}})
+type PropertyGraphColumnNameList struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+
+	ColumnNameList []*Ident
+}
+
+// PropertyGraphNoProperties represents the element doesn't have properties.
+//
+//	NO PROPERTIES
+type PropertyGraphNoProperties struct {
+	// pos = No
+	// end = Properties + 10
+
+	No, Properties token.Pos // position of "NO" and "PROPERTIES"
+}
+
+// PropertyGraphPropertiesAre defines which columns to include as element properties.
+//
+//	PROPERTIES ARE ALL COLUMNS{{if .ExceptColumns | isnil | not}} EXCEPT {{.ExceptColumns | sql}}{{end}}
+type PropertyGraphPropertiesAre struct {
+	// pos = Properties
+	// end = ExceptColumns.end || Columns + 7
+
+	Properties token.Pos // position of "PROPERTIES"
+	Columns    token.Pos // position of "COLUMNS"
+
+	ExceptColumns *PropertyGraphColumnNameList // optional
+}
+
+// PropertyGraphDerivedPropertyList represents a list of PropertyGraphDerivedProperty.
+// NOTE: In current syntax reference, "(" and ")" are missing.
+//
+//	PROPERTIES ({{.DerivedProperties | sqlJoin ", "}})
+type PropertyGraphDerivedPropertyList struct {
+	// pos = Properties
+	// end = Rparen
+
+	Properties        token.Pos                       // position of "PROPERTIES"
+	Rparen            token.Pos                       // position of ")"
+	DerivedProperties []*PropertyGraphDerivedProperty // len(DerivedProperties) > 0
+}
+
+// PropertyGraphDerivedProperty represents an expression that defines a property and can optionally reference the input table columns.
+//
+//	{{.Expr | sql}} {{if .Alias}}AS {{.Alias | sql}}{{end}}
+type PropertyGraphDerivedProperty struct {
+	// pos = Expr.pos
+	// end = (Alias ?? Expr).end
+
+	Expr  Expr
+	Alias *Ident // optional
+}
+
+// DropPropertyGraph is DROP PROPERTY GRAPH statement node.
+//
+//	DROP PROPERTY GRAPH {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropPropertyGraph struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	IfExists bool
+	Name     *Ident
 }
 
 // ================================================================================
