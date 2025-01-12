@@ -180,7 +180,7 @@ func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDMLInternal(hint)
 	case hint != nil:
-		panic(p.errorfAtToken(&p.Token, "statement hint is only permitted before query or DML, but got: %s", p.Token.Raw))
+		panic(p.errorfAtPosition(hint.Pos(), p.Token.End, "statement hint is only permitted before query or DML, but got: %s", p.Token.Raw))
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
 		p.Token.IsKeywordLike("RENAME") || p.Token.IsKeywordLike("GRANT") || p.Token.IsKeywordLike("REVOKE") ||
 		p.Token.IsKeywordLike("ANALYZE"):

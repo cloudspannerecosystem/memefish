@@ -2,9 +2,9 @@
 @{unknown_hint=1}
 create table tbl(pk int64 primary key)
 --- Error
-syntax error: testdata/input/ddl/!bad_create_table_with_hint.sql:2:1: statement hint is only permitted before query or DML, but got: create
+syntax error: testdata/input/ddl/!bad_create_table_with_hint.sql:1:1: statement hint is only permitted before query or DML, but got: create
+  1|  @{unknown_hint=1}
   2|  create table tbl(pk int64 primary key)
-   |  ^~~~~~
 
 
 --- AST

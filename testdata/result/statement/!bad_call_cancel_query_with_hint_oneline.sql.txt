@@ -1,10 +1,9 @@
---- !bad_call_cancel_query_with_hint.sql
-@{unknown_hint=1}
-CALL cancel_query("12345")
+--- !bad_call_cancel_query_with_hint_oneline.sql
+@{unknown_hint=1} CALL cancel_query("12345")
 --- Error
-syntax error: testdata/input/statement/!bad_call_cancel_query_with_hint.sql:1:1: statement hint is only permitted before query or DML, but got: CALL
-  1|  @{unknown_hint=1}
-  2|  CALL cancel_query("12345")
+syntax error: testdata/input/statement/!bad_call_cancel_query_with_hint_oneline.sql:1:1: statement hint is only permitted before query or DML, but got: CALL
+  1|  @{unknown_hint=1} CALL cancel_query("12345")
+   |  ^~~~~~~~~~~~~~~~~~~~~~
 
 
 --- AST
@@ -37,7 +36,7 @@ syntax error: testdata/input/statement/!bad_call_cancel_query_with_hint.sql:1:1:
     Tokens:  []*token.Token{
       &token.Token{
         Kind:     "<ident>",
-        Space:    "\n",
+        Space:    " ",
         Raw:      "CALL",
         AsString: "CALL",
         Pos:      18,
