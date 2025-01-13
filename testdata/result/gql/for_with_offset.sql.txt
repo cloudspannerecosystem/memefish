@@ -135,43 +135,49 @@ ORDER BY p.name, element, offset
           },
           &ast.GQLReturnStatement{
             Return:         96,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 103,
-                      NameEnd: 104,
-                      Name:    "p",
-                    },
-                    &ast.Ident{
-                      NamePos: 105,
-                      NameEnd: 109,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 103,
+                        NameEnd: 104,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 105,
+                        NameEnd: 109,
+                        Name:    "name",
+                      },
                     },
                   },
                 },
               },
-              &ast.Alias{
-                Expr: &ast.Ident{
-                  NamePos: 111,
-                  NameEnd: 118,
-                  Name:    "element",
-                },
-                As: &ast.AsAlias{
-                  As:    119,
-                  Alias: &ast.Ident{
-                    NamePos: 122,
-                    NameEnd: 132,
-                    Name:    "alert_type",
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Ident{
+                    NamePos: 111,
+                    NameEnd: 118,
+                    Name:    "element",
+                  },
+                  As: &ast.AsAlias{
+                    As:    119,
+                    Alias: &ast.Ident{
+                      NamePos: 122,
+                      NameEnd: 132,
+                      Name:    "alert_type",
+                    },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 134,
-                  NameEnd: 140,
-                  Name:    "offset",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 134,
+                    NameEnd: 140,
+                    Name:    "offset",
+                  },
                 },
               },
             },

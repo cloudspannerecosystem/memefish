@@ -119,19 +119,21 @@ SELECT 'Dana' IN {
                       },
                       &ast.GQLReturnStatement{
                         Return:         79,
-                        ReturnItemList: []ast.GQLReturnItem{
-                          &ast.ExprSelectItem{
-                            Expr: &ast.Path{
-                              Idents: []*ast.Ident{
-                                &ast.Ident{
-                                  NamePos: 86,
-                                  NameEnd: 87,
-                                  Name:    "p",
-                                },
-                                &ast.Ident{
-                                  NamePos: 88,
-                                  NameEnd: 92,
-                                  Name:    "name",
+                        ReturnItemList: []*ast.GQLReturnItem{
+                          &ast.GQLReturnItem{
+                            Item: &ast.ExprSelectItem{
+                              Expr: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 86,
+                                    NameEnd: 87,
+                                    Name:    "p",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 88,
+                                    NameEnd: 92,
+                                    Name:    "name",
+                                  },
                                 },
                               },
                             },

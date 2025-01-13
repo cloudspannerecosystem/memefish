@@ -76,36 +76,38 @@ RETURN COUNT(1) as num_paths
           },
           &ast.GQLReturnStatement{
             Return:         50,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.CallExpr{
-                  Rparen: 64,
-                  Func:   &ast.Path{
-                    Idents: []*ast.Ident{
-                      &ast.Ident{
-                        NamePos: 57,
-                        NameEnd: 62,
-                        Name:    "COUNT",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.CallExpr{
+                    Rparen: 64,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 57,
+                          NameEnd: 62,
+                          Name:    "COUNT",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.IntLiteral{
+                          ValuePos: 63,
+                          ValueEnd: 64,
+                          Base:     10,
+                          Value:    "1",
+                        },
                       },
                     },
                   },
-                  Args: []ast.Arg{
-                    &ast.ExprArg{
-                      Expr: &ast.IntLiteral{
-                        ValuePos: 63,
-                        ValueEnd: 64,
-                        Base:     10,
-                        Value:    "1",
-                      },
+                  As: &ast.AsAlias{
+                    As:    66,
+                    Alias: &ast.Ident{
+                      NamePos: 69,
+                      NameEnd: 78,
+                      Name:    "num_paths",
                     },
-                  },
-                },
-                As: &ast.AsAlias{
-                  As:    66,
-                  Alias: &ast.Ident{
-                    NamePos: 69,
-                    NameEnd: 78,
-                    Name:    "num_paths",
                   },
                 },
               },

@@ -65,35 +65,39 @@ RETURN p.name, p.id
           },
           &ast.GQLReturnStatement{
             Return:         41,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 48,
-                      NameEnd: 49,
-                      Name:    "p",
-                    },
-                    &ast.Ident{
-                      NamePos: 50,
-                      NameEnd: 54,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 48,
+                        NameEnd: 49,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 50,
+                        NameEnd: 54,
+                        Name:    "name",
+                      },
                     },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 56,
-                      NameEnd: 57,
-                      Name:    "p",
-                    },
-                    &ast.Ident{
-                      NamePos: 58,
-                      NameEnd: 60,
-                      Name:    "id",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 56,
+                        NameEnd: 57,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 58,
+                        NameEnd: 60,
+                        Name:    "id",
+                      },
                     },
                   },
                 },

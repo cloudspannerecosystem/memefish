@@ -236,19 +236,21 @@ RETURN c.id
           },
           &ast.GQLReturnStatement{
             Return:         258,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 265,
-                      NameEnd: 266,
-                      Name:    "c",
-                    },
-                    &ast.Ident{
-                      NamePos: 267,
-                      NameEnd: 269,
-                      Name:    "id",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 265,
+                        NameEnd: 266,
+                        Name:    "c",
+                      },
+                      &ast.Ident{
+                        NamePos: 267,
+                        NameEnd: 269,
+                        Name:    "id",
+                      },
                     },
                   },
                 },

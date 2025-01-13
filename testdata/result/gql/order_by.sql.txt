@@ -137,52 +137,56 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 132,
-                      NameEnd: 143,
-                      Name:    "src_account",
-                    },
-                    &ast.Ident{
-                      NamePos: 144,
-                      NameEnd: 146,
-                      Name:    "id",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 132,
+                        NameEnd: 143,
+                        Name:    "src_account",
+                      },
+                      &ast.Ident{
+                        NamePos: 144,
+                        NameEnd: 146,
+                        Name:    "id",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    147,
-                  Alias: &ast.Ident{
-                    NamePos: 150,
-                    NameEnd: 160,
-                    Name:    "account_id",
+                  As: &ast.AsAlias{
+                    As:    147,
+                    Alias: &ast.Ident{
+                      NamePos: 150,
+                      NameEnd: 160,
+                      Name:    "account_id",
+                    },
                   },
                 },
               },
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 162,
-                      NameEnd: 170,
-                      Name:    "transfer",
-                    },
-                    &ast.Ident{
-                      NamePos: 171,
-                      NameEnd: 177,
-                      Name:    "amount",
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 162,
+                        NameEnd: 170,
+                        Name:    "transfer",
+                      },
+                      &ast.Ident{
+                        NamePos: 171,
+                        NameEnd: 177,
+                        Name:    "amount",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    178,
-                  Alias: &ast.Ident{
-                    NamePos: 181,
-                    NameEnd: 196,
-                    Name:    "transfer_amount",
+                  As: &ast.AsAlias{
+                    As:    178,
+                    Alias: &ast.Ident{
+                      NamePos: 181,
+                      NameEnd: 196,
+                      Name:    "transfer_amount",
+                    },
                   },
                 },
               },

@@ -25,20 +25,22 @@ SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
               PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
                 &ast.GQLReturnStatement{
                   Return:         35,
-                  ReturnItemList: []ast.GQLReturnItem{
-                    &ast.Alias{
-                      Expr: &ast.IntLiteral{
-                        ValuePos: 42,
-                        ValueEnd: 43,
-                        Base:     10,
-                        Value:    "1",
-                      },
-                      As: &ast.AsAlias{
-                        As:    44,
-                        Alias: &ast.Ident{
-                          NamePos: 47,
-                          NameEnd: 48,
-                          Name:    "a",
+                  ReturnItemList: []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Item: &ast.Alias{
+                        Expr: &ast.IntLiteral{
+                          ValuePos: 42,
+                          ValueEnd: 43,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                        As: &ast.AsAlias{
+                          As:    44,
+                          Alias: &ast.Ident{
+                            NamePos: 47,
+                            NameEnd: 48,
+                            Name:    "a",
+                          },
                         },
                       },
                     },

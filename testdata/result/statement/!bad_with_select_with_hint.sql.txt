@@ -1,0 +1,66 @@
+--- !bad_with_select_with_hint.sql
+@{hint = 1} WITH SELECT 1
+--- Error
+syntax error: testdata/input/query/!bad_with_select_with_hint.sql:1:18: expected token: <ident>, but: SELECT
+  1|  @{hint = 1} WITH SELECT 1
+   |                   ^~~~~~
+
+
+--- AST
+&ast.QueryStatement{
+  Hint: &ast.Hint{
+    Rbrace:  10,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 6,
+              Name:    "hint",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 9,
+          ValueEnd: 10,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodePos: 12,
+      NodeEnd: 25,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind:  "WITH",
+          Space: " ",
+          Raw:   "WITH",
+          Pos:   12,
+          End:   16,
+        },
+        &token.Token{
+          Kind:  "SELECT",
+          Space: " ",
+          Raw:   "SELECT",
+          Pos:   17,
+          End:   23,
+        },
+        &token.Token{
+          Kind:  "<int>",
+          Space: " ",
+          Raw:   "1",
+          Base:  10,
+          Pos:   24,
+          End:   25,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{hint=1} WITH SELECT 1

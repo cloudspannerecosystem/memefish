@@ -83,19 +83,21 @@ GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE 'und:ci' RETURN a.name
           },
           &ast.GQLReturnStatement{
             Return:         65,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 72,
-                      NameEnd: 73,
-                      Name:    "a",
-                    },
-                    &ast.Ident{
-                      NamePos: 74,
-                      NameEnd: 78,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 72,
+                        NameEnd: 73,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 74,
+                        NameEnd: 78,
+                        Name:    "name",
+                      },
                     },
                   },
                 },

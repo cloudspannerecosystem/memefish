@@ -1,0 +1,104 @@
+--- !bad_update_with_hint.sql
+@{pdml_max_parallelism=1}
+update foo set invalid where foo = 1
+--- Error
+syntax error: testdata/input/dml/!bad_update_with_hint.sql:2:24: expected token: =, but: WHERE
+  2|  update foo set invalid where foo = 1
+   |                         ^~~~~
+
+
+--- AST
+&ast.BadDML{
+  Hint: &ast.Hint{
+    Rbrace:  24,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 22,
+              Name:    "pdml_max_parallelism",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  BadNode: &ast.BadNode{
+    NodePos: 26,
+    NodeEnd: 62,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "update",
+        AsString: "update",
+        Pos:      26,
+        End:      32,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      33,
+        End:      36,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "set",
+        Pos:   37,
+        End:   40,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "invalid",
+        AsString: "invalid",
+        Pos:      41,
+        End:      48,
+      },
+      &token.Token{
+        Kind:  "WHERE",
+        Space: " ",
+        Raw:   "where",
+        Pos:   49,
+        End:   54,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      55,
+        End:      58,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   59,
+        End:   60,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   61,
+        End:   62,
+      },
+    },
+  },
+}
+
+--- SQL
+@{pdml_max_parallelism=1} update foo set invalid where foo = 1

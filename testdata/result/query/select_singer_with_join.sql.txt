@@ -18,7 +18,6 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:   "LEFT OUTER JOIN",
         Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
@@ -34,6 +33,7 @@ FROM
             },
           },
         },
+        Op:    "LEFT OUTER JOIN",
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 48,

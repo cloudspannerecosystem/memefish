@@ -1,0 +1,120 @@
+--- !bad_delete_with_hint.sql
+@{pdml_max_parallelism=1}
+delete foo filter foo = 1 and bar = 2
+--- Error
+syntax error: testdata/input/dml/!bad_delete_with_hint.sql:2:19: expected token: WHERE, but: <ident>
+  2|  delete foo filter foo = 1 and bar = 2
+   |                    ^~~
+
+
+--- AST
+&ast.BadDML{
+  Hint: &ast.Hint{
+    Rbrace:  24,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 22,
+              Name:    "pdml_max_parallelism",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  BadNode: &ast.BadNode{
+    NodePos: 26,
+    NodeEnd: 63,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "delete",
+        AsString: "delete",
+        Pos:      26,
+        End:      32,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      33,
+        End:      36,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "filter",
+        AsString: "filter",
+        Pos:      37,
+        End:      43,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      44,
+        End:      47,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   48,
+        End:   49,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   50,
+        End:   51,
+      },
+      &token.Token{
+        Kind:  "AND",
+        Space: " ",
+        Raw:   "and",
+        Pos:   52,
+        End:   55,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      56,
+        End:      59,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   60,
+        End:   61,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "2",
+        Base:  10,
+        Pos:   62,
+        End:   63,
+      },
+    },
+  },
+}
+
+--- SQL
+@{pdml_max_parallelism=1} delete foo filter foo = 1 and bar = 2

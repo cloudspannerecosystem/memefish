@@ -136,19 +136,21 @@ RETURN source.nick_name
           },
           &ast.GQLReturnStatement{
             Return:         109,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 116,
-                      NameEnd: 122,
-                      Name:    "source",
-                    },
-                    &ast.Ident{
-                      NamePos: 123,
-                      NameEnd: 132,
-                      Name:    "nick_name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 116,
+                        NameEnd: 122,
+                        Name:    "source",
+                      },
+                      &ast.Ident{
+                        NamePos: 123,
+                        NameEnd: 132,
+                        Name:    "nick_name",
+                      },
                     },
                   },
                 },

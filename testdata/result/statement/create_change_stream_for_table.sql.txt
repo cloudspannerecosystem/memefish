@@ -12,6 +12,7 @@ CREATE CHANGE STREAM change_stream_name FOR table_name
     For:    40,
     Tables: []*ast.ChangeStreamForTable{
       &ast.ChangeStreamForTable{
+        Rparen:    -1,
         TableName: &ast.Ident{
           NamePos: 44,
           NameEnd: 54,

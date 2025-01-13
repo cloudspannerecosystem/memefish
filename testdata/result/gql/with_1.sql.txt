@@ -94,25 +94,29 @@ RETURN account.id AS account_id, num_incoming_transfers
           },
           &ast.GQLWithStatement{
             With:           64,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 69,
-                  NameEnd: 76,
-                  Name:    "account",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 69,
+                    NameEnd: 76,
+                    Name:    "account",
+                  },
                 },
               },
-              &ast.Alias{
-                Expr: &ast.CountStarExpr{
-                  Count:  78,
-                  Rparen: 85,
-                },
-                As: &ast.AsAlias{
-                  As:    87,
-                  Alias: &ast.Ident{
-                    NamePos: 90,
-                    NameEnd: 112,
-                    Name:    "num_incoming_transfers",
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.CountStarExpr{
+                    Count:  78,
+                    Rparen: 85,
+                  },
+                  As: &ast.AsAlias{
+                    As:    87,
+                    Alias: &ast.Ident{
+                      NamePos: 90,
+                      NameEnd: 112,
+                      Name:    "num_incoming_transfers",
+                    },
                   },
                 },
               },
@@ -130,36 +134,40 @@ RETURN account.id AS account_id, num_incoming_transfers
           },
           &ast.GQLReturnStatement{
             Return:         130,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 137,
-                      NameEnd: 144,
-                      Name:    "account",
-                    },
-                    &ast.Ident{
-                      NamePos: 145,
-                      NameEnd: 147,
-                      Name:    "id",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 137,
+                        NameEnd: 144,
+                        Name:    "account",
+                      },
+                      &ast.Ident{
+                        NamePos: 145,
+                        NameEnd: 147,
+                        Name:    "id",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    148,
-                  Alias: &ast.Ident{
-                    NamePos: 151,
-                    NameEnd: 161,
-                    Name:    "account_id",
+                  As: &ast.AsAlias{
+                    As:    148,
+                    Alias: &ast.Ident{
+                      NamePos: 151,
+                      NameEnd: 161,
+                      Name:    "account_id",
+                    },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 163,
-                  NameEnd: 185,
-                  Name:    "num_incoming_transfers",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 163,
+                    NameEnd: 185,
+                    Name:    "num_incoming_transfers",
+                  },
                 },
               },
             },

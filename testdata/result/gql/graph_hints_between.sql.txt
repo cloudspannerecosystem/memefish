@@ -205,19 +205,21 @@ RETURN oa.id
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 132,
-                      NameEnd: 134,
-                      Name:    "oa",
-                    },
-                    &ast.Ident{
-                      NamePos: 135,
-                      NameEnd: 137,
-                      Name:    "id",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 132,
+                        NameEnd: 134,
+                        Name:    "oa",
+                      },
+                      &ast.Ident{
+                        NamePos: 135,
+                        NameEnd: 137,
+                        Name:    "id",
+                      },
                     },
                   },
                 },

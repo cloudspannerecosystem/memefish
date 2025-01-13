@@ -81,35 +81,41 @@ RETURN p.name, element, off
           },
           &ast.GQLReturnStatement{
             Return:         69,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 76,
-                      NameEnd: 77,
-                      Name:    "p",
-                    },
-                    &ast.Ident{
-                      NamePos: 78,
-                      NameEnd: 82,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 76,
+                        NameEnd: 77,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 78,
+                        NameEnd: 82,
+                        Name:    "name",
+                      },
                     },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 84,
-                  NameEnd: 91,
-                  Name:    "element",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 84,
+                    NameEnd: 91,
+                    Name:    "element",
+                  },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 93,
-                  NameEnd: 96,
-                  Name:    "off",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 93,
+                    NameEnd: 96,
+                    Name:    "off",
+                  },
                 },
               },
             },

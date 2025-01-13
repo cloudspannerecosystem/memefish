@@ -154,44 +154,48 @@ RETURN n.name, a.id AS blocked_account_id
           },
           &ast.GQLReturnStatement{
             Return:         98,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 105,
-                      NameEnd: 106,
-                      Name:    "n",
-                    },
-                    &ast.Ident{
-                      NamePos: 107,
-                      NameEnd: 111,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 105,
+                        NameEnd: 106,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 107,
+                        NameEnd: 111,
+                        Name:    "name",
+                      },
                     },
                   },
                 },
               },
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 113,
-                      NameEnd: 114,
-                      Name:    "a",
-                    },
-                    &ast.Ident{
-                      NamePos: 115,
-                      NameEnd: 117,
-                      Name:    "id",
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 113,
+                        NameEnd: 114,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 115,
+                        NameEnd: 117,
+                        Name:    "id",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    118,
-                  Alias: &ast.Ident{
-                    NamePos: 121,
-                    NameEnd: 139,
-                    Name:    "blocked_account_id",
+                  As: &ast.AsAlias{
+                    As:    118,
+                    Alias: &ast.Ident{
+                      NamePos: 121,
+                      NameEnd: 139,
+                      Name:    "blocked_account_id",
+                    },
                   },
                 },
               },

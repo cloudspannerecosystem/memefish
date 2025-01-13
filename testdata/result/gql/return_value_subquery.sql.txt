@@ -21,42 +21,44 @@ RETURN VALUE {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.ValueGQLSubQuery{
-                  Array:  22,
-                  RBrace: 101,
-                  Query:  &ast.GQLQueryExpr{
-                    MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
-                      LinearQueryStatementList: []ast.GQLLinearQueryStatement{
-                        &ast.GQLSimpleLinearQueryStatement{
-                          PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-                            &ast.GQLMatchStatement{
-                              Optional:     -1,
-                              Match:        32,
-                              GraphPattern: &ast.GQLGraphPattern{
-                                PathPatternList: []*ast.GQLTopLevelPathPattern{
-                                  &ast.GQLTopLevelPathPattern{
-                                    PathPattern: &ast.GQLPathPattern{
-                                      PathTermList: []*ast.GQLQuantifiablePathTerm{
-                                        &ast.GQLQuantifiablePathTerm{
-                                          PathTerm: &ast.GQLNodePattern{
-                                            LParen:        38,
-                                            RParen:        47,
-                                            PatternFiller: &ast.GQLPatternFiller{
-                                              GraphPatternVariable: &ast.Ident{
-                                                NamePos: 39,
-                                                NameEnd: 40,
-                                                Name:    "p",
-                                              },
-                                              IsLabelCondition: &ast.GQLIsLabelCondition{
-                                                IsOrColon:       40,
-                                                LabelExpression: &ast.GQLLabelName{
-                                                  StartPos:  41,
-                                                  LabelName: &ast.Ident{
-                                                    NamePos: 41,
-                                                    NameEnd: 47,
-                                                    Name:    "Person",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.ValueGQLSubQuery{
+                    Array:  22,
+                    RBrace: 101,
+                    Query:  &ast.GQLQueryExpr{
+                      MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+                        LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+                          &ast.GQLSimpleLinearQueryStatement{
+                            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                              &ast.GQLMatchStatement{
+                                Optional:     -1,
+                                Match:        32,
+                                GraphPattern: &ast.GQLGraphPattern{
+                                  PathPatternList: []*ast.GQLTopLevelPathPattern{
+                                    &ast.GQLTopLevelPathPattern{
+                                      PathPattern: &ast.GQLPathPattern{
+                                        PathTermList: []*ast.GQLQuantifiablePathTerm{
+                                          &ast.GQLQuantifiablePathTerm{
+                                            PathTerm: &ast.GQLNodePattern{
+                                              LParen:        38,
+                                              RParen:        47,
+                                              PatternFiller: &ast.GQLPatternFiller{
+                                                GraphPatternVariable: &ast.Ident{
+                                                  NamePos: 39,
+                                                  NameEnd: 40,
+                                                  Name:    "p",
+                                                },
+                                                IsLabelCondition: &ast.GQLIsLabelCondition{
+                                                  IsOrColon:       40,
+                                                  LabelExpression: &ast.GQLLabelName{
+                                                    StartPos:  41,
+                                                    LabelName: &ast.Ident{
+                                                      NamePos: 41,
+                                                      NameEnd: 47,
+                                                      Name:    "Person",
+                                                    },
                                                   },
                                                 },
                                               },
@@ -66,62 +68,64 @@ RETURN VALUE {
                                       },
                                     },
                                   },
-                                },
-                                WhereClause: &ast.Where{
-                                  Where: 51,
-                                  Expr:  &ast.BinaryExpr{
-                                    Op:   "LIKE",
-                                    Left: &ast.Path{
-                                      Idents: []*ast.Ident{
-                                        &ast.Ident{
-                                          NamePos: 57,
-                                          NameEnd: 58,
-                                          Name:    "p",
-                                        },
-                                        &ast.Ident{
-                                          NamePos: 59,
-                                          NameEnd: 63,
-                                          Name:    "name",
+                                  WhereClause: &ast.Where{
+                                    Where: 51,
+                                    Expr:  &ast.BinaryExpr{
+                                      Op:   "LIKE",
+                                      Left: &ast.Path{
+                                        Idents: []*ast.Ident{
+                                          &ast.Ident{
+                                            NamePos: 57,
+                                            NameEnd: 58,
+                                            Name:    "p",
+                                          },
+                                          &ast.Ident{
+                                            NamePos: 59,
+                                            NameEnd: 63,
+                                            Name:    "name",
+                                          },
                                         },
                                       },
-                                    },
-                                    Right: &ast.StringLiteral{
-                                      ValuePos: 69,
-                                      ValueEnd: 74,
-                                      Value:    "%e%",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                            &ast.GQLReturnStatement{
-                              Return:         77,
-                              ReturnItemList: []ast.GQLReturnItem{
-                                &ast.ExprSelectItem{
-                                  Expr: &ast.Path{
-                                    Idents: []*ast.Ident{
-                                      &ast.Ident{
-                                        NamePos: 84,
-                                        NameEnd: 85,
-                                        Name:    "p",
-                                      },
-                                      &ast.Ident{
-                                        NamePos: 86,
-                                        NameEnd: 90,
-                                        Name:    "name",
+                                      Right: &ast.StringLiteral{
+                                        ValuePos: 69,
+                                        ValueEnd: 74,
+                                        Value:    "%e%",
                                       },
                                     },
                                   },
                                 },
                               },
-                              LimitAndOffsetClause: &ast.GQLLimitClause{
-                                Limit: &ast.Limit{
-                                  Limit: 93,
-                                  Count: &ast.IntLiteral{
-                                    ValuePos: 99,
-                                    ValueEnd: 100,
-                                    Base:     10,
-                                    Value:    "1",
+                              &ast.GQLReturnStatement{
+                                Return:         77,
+                                ReturnItemList: []*ast.GQLReturnItem{
+                                  &ast.GQLReturnItem{
+                                    Item: &ast.ExprSelectItem{
+                                      Expr: &ast.Path{
+                                        Idents: []*ast.Ident{
+                                          &ast.Ident{
+                                            NamePos: 84,
+                                            NameEnd: 85,
+                                            Name:    "p",
+                                          },
+                                          &ast.Ident{
+                                            NamePos: 86,
+                                            NameEnd: 90,
+                                            Name:    "name",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                LimitAndOffsetClause: &ast.GQLLimitClause{
+                                  Limit: &ast.Limit{
+                                    Limit: 93,
+                                    Count: &ast.IntLiteral{
+                                      ValuePos: 99,
+                                      ValueEnd: 100,
+                                      Base:     10,
+                                      Value:    "1",
+                                    },
                                   },
                                 },
                               },
@@ -131,13 +135,13 @@ RETURN VALUE {
                       },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    103,
-                  Alias: &ast.Ident{
-                    NamePos: 106,
-                    NameEnd: 113,
-                    Name:    "results",
+                  As: &ast.AsAlias{
+                    As:    103,
+                    Alias: &ast.Ident{
+                      NamePos: 106,
+                      NameEnd: 113,
+                      Name:    "results",
+                    },
                   },
                 },
               },

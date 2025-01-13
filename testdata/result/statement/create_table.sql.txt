@@ -16,8 +16,9 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Rparen: 573,
-  Name:   &ast.Path{
+  Rparen:           550,
+  PrimaryKeyRparen: 573,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

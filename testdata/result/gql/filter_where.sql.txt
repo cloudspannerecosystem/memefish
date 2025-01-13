@@ -130,19 +130,21 @@ RETURN p.name
           },
           &ast.GQLReturnStatement{
             Return:         93,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 100,
-                      NameEnd: 101,
-                      Name:    "p",
-                    },
-                    &ast.Ident{
-                      NamePos: 102,
-                      NameEnd: 106,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 100,
+                        NameEnd: 101,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 102,
+                        NameEnd: 106,
+                        Name:    "name",
+                      },
                     },
                   },
                 },

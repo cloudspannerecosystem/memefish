@@ -19,85 +19,87 @@ RETURN EXISTS {
         PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturnStatement{
             Return:         15,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.ExistsGQLSubQuery{
-                  Exists: 22,
-                  RBrace: 97,
-                  Query:  &ast.GQLMatchStatement{
-                    Optional:     -1,
-                    Match:        33,
-                    GraphPattern: &ast.GQLGraphPattern{
-                      PathPatternList: []*ast.GQLTopLevelPathPattern{
-                        &ast.GQLTopLevelPathPattern{
-                          PathPattern: &ast.GQLPathPattern{
-                            PathTermList: []*ast.GQLQuantifiablePathTerm{
-                              &ast.GQLQuantifiablePathTerm{
-                                PathTerm: &ast.GQLNodePattern{
-                                  LParen:        39,
-                                  RParen:        48,
-                                  PatternFiller: &ast.GQLPatternFiller{
-                                    GraphPatternVariable: &ast.Ident{
-                                      NamePos: 40,
-                                      NameEnd: 41,
-                                      Name:    "p",
-                                    },
-                                    IsLabelCondition: &ast.GQLIsLabelCondition{
-                                      IsOrColon:       41,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  42,
-                                        LabelName: &ast.Ident{
-                                          NamePos: 42,
-                                          NameEnd: 48,
-                                          Name:    "Person",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.ExistsGQLSubQuery{
+                    Exists: 22,
+                    RBrace: 97,
+                    Query:  &ast.GQLMatchStatement{
+                      Optional:     -1,
+                      Match:        33,
+                      GraphPattern: &ast.GQLGraphPattern{
+                        PathPatternList: []*ast.GQLTopLevelPathPattern{
+                          &ast.GQLTopLevelPathPattern{
+                            PathPattern: &ast.GQLPathPattern{
+                              PathTermList: []*ast.GQLQuantifiablePathTerm{
+                                &ast.GQLQuantifiablePathTerm{
+                                  PathTerm: &ast.GQLNodePattern{
+                                    LParen:        39,
+                                    RParen:        48,
+                                    PatternFiller: &ast.GQLPatternFiller{
+                                      GraphPatternVariable: &ast.Ident{
+                                        NamePos: 40,
+                                        NameEnd: 41,
+                                        Name:    "p",
+                                      },
+                                      IsLabelCondition: &ast.GQLIsLabelCondition{
+                                        IsOrColon:       41,
+                                        LabelExpression: &ast.GQLLabelName{
+                                          StartPos:  42,
+                                          LabelName: &ast.Ident{
+                                            NamePos: 42,
+                                            NameEnd: 48,
+                                            Name:    "Person",
+                                          },
                                         },
                                       },
                                     },
                                   },
                                 },
-                              },
-                              &ast.GQLQuantifiablePathTerm{
-                                PathTerm: &ast.GQLFullEdgeRight{
-                                  Hyphen:        49,
-                                  Gt:            58,
-                                  PatternFiller: &ast.GQLPatternFiller{
-                                    GraphPatternVariable: &ast.Ident{
-                                      NamePos: 51,
-                                      NameEnd: 52,
-                                      Name:    "o",
-                                    },
-                                    IsLabelCondition: &ast.GQLIsLabelCondition{
-                                      IsOrColon:       52,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  53,
-                                        LabelName: &ast.Ident{
-                                          NamePos: 53,
-                                          NameEnd: 57,
-                                          Name:    "Owns",
+                                &ast.GQLQuantifiablePathTerm{
+                                  PathTerm: &ast.GQLFullEdgeRight{
+                                    Hyphen:        49,
+                                    Gt:            58,
+                                    PatternFiller: &ast.GQLPatternFiller{
+                                      GraphPatternVariable: &ast.Ident{
+                                        NamePos: 51,
+                                        NameEnd: 52,
+                                        Name:    "o",
+                                      },
+                                      IsLabelCondition: &ast.GQLIsLabelCondition{
+                                        IsOrColon:       52,
+                                        LabelExpression: &ast.GQLLabelName{
+                                          StartPos:  53,
+                                          LabelName: &ast.Ident{
+                                            NamePos: 53,
+                                            NameEnd: 57,
+                                            Name:    "Owns",
+                                          },
                                         },
                                       },
                                     },
                                   },
                                 },
-                              },
-                              &ast.GQLQuantifiablePathTerm{
-                                PathTerm: &ast.GQLNodePattern{
-                                  LParen:        60,
-                                  RParen:        70,
-                                  PatternFiller: &ast.GQLPatternFiller{
-                                    GraphPatternVariable: &ast.Ident{
-                                      NamePos: 61,
-                                      NameEnd: 62,
-                                      Name:    "a",
-                                    },
-                                    IsLabelCondition: &ast.GQLIsLabelCondition{
-                                      IsOrColon:       62,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  63,
-                                        LabelName: &ast.Ident{
-                                          NamePos: 63,
-                                          NameEnd: 70,
-                                          Name:    "Account",
+                                &ast.GQLQuantifiablePathTerm{
+                                  PathTerm: &ast.GQLNodePattern{
+                                    LParen:        60,
+                                    RParen:        70,
+                                    PatternFiller: &ast.GQLPatternFiller{
+                                      GraphPatternVariable: &ast.Ident{
+                                        NamePos: 61,
+                                        NameEnd: 62,
+                                        Name:    "a",
+                                      },
+                                      IsLabelCondition: &ast.GQLIsLabelCondition{
+                                        IsOrColon:       62,
+                                        LabelExpression: &ast.GQLLabelName{
+                                          StartPos:  63,
+                                          LabelName: &ast.Ident{
+                                            NamePos: 63,
+                                            NameEnd: 70,
+                                            Name:    "Account",
+                                          },
                                         },
                                       },
                                     },
@@ -107,41 +109,41 @@ RETURN EXISTS {
                             },
                           },
                         },
-                      },
-                      WhereClause: &ast.Where{
-                        Where: 74,
-                        Expr:  &ast.BinaryExpr{
-                          Op:   "LIKE",
-                          Left: &ast.Path{
-                            Idents: []*ast.Ident{
-                              &ast.Ident{
-                                NamePos: 80,
-                                NameEnd: 81,
-                                Name:    "p",
-                              },
-                              &ast.Ident{
-                                NamePos: 82,
-                                NameEnd: 86,
-                                Name:    "Name",
+                        WhereClause: &ast.Where{
+                          Where: 74,
+                          Expr:  &ast.BinaryExpr{
+                            Op:   "LIKE",
+                            Left: &ast.Path{
+                              Idents: []*ast.Ident{
+                                &ast.Ident{
+                                  NamePos: 80,
+                                  NameEnd: 81,
+                                  Name:    "p",
+                                },
+                                &ast.Ident{
+                                  NamePos: 82,
+                                  NameEnd: 86,
+                                  Name:    "Name",
+                                },
                               },
                             },
-                          },
-                          Right: &ast.StringLiteral{
-                            ValuePos: 92,
-                            ValueEnd: 96,
-                            Value:    "D%",
+                            Right: &ast.StringLiteral{
+                              ValuePos: 92,
+                              ValueEnd: 96,
+                              Value:    "D%",
+                            },
                           },
                         },
                       },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    99,
-                  Alias: &ast.Ident{
-                    NamePos: 102,
-                    NameEnd: 109,
-                    Name:    "results",
+                  As: &ast.AsAlias{
+                    As:    99,
+                    Alias: &ast.Ident{
+                      NamePos: 102,
+                      NameEnd: 109,
+                      Name:    "results",
+                    },
                   },
                 },
               },

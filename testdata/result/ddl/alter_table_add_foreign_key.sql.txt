@@ -15,7 +15,8 @@ alter table foo add foreign key (bar) references t2 (t2key1)
   TableAlteration: &ast.AddTableConstraint{
     Add:             16,
     TableConstraint: &ast.TableConstraint{
-      Constraint: &ast.ForeignKey{
+      ConstraintPos: -1,
+      Constraint:    &ast.ForeignKey{
         Foreign:     20,
         Rparen:      59,
         OnDeleteEnd: -1,

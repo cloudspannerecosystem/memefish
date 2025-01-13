@@ -20,6 +20,41 @@ import (
 
 var update = flag.Bool("update", false, "update result files")
 
+type pathVisitor struct {
+	f    func(path string, node ast.Node) bool
+	path string
+}
+
+func (v *pathVisitor) Visit(node ast.Node) ast.Visitor {
+	ok := v.f(v.path, node)
+	if !ok {
+		return nil
+	}
+
+	return &pathVisitor{
+		f:    v.f,
+		path: v.path,
+	}
+}
+
+func (v *pathVisitor) VisitMany(nodes []ast.Node) ast.Visitor {
+	return v
+}
+
+func (v *pathVisitor) Field(name string) ast.Visitor {
+	return &pathVisitor{
+		f:    v.f,
+		path: fmt.Sprintf("%s.%s", v.path, name),
+	}
+}
+
+func (v *pathVisitor) Index(index int) ast.Visitor {
+	return &pathVisitor{
+		f:    v.f,
+		path: fmt.Sprintf("%s[%d]", v.path, index),
+	}
+}
+
 func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
 	if *update {
 		_, err := os.Stat(resultPath)
@@ -81,6 +116,76 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				if bad {
 					t.Errorf("error is expected, but parsing succeeded")
 				}
+			}
+
+			// pos/end test
+			if !bad {
+				ok := true
+
+				ast.Walk(node, &pathVisitor{
+					path: "",
+					f: func(path string, node ast.Node) bool {
+						if !ok {
+							return false
+						}
+
+						if node.Pos().Invalid() {
+							t.Errorf("pos must be valid, but got invalid on %v: %v", path, node.SQL())
+							ok = false
+							return false
+						}
+
+						if node.End().Invalid() {
+							t.Errorf("end must be valid, but got invalid on %v: %v", path, node.SQL())
+							ok = false
+							return false
+						}
+
+						if node.End() <= node.Pos() {
+							t.Errorf("pos must be smaller than end, but got pos: %v, end: %v on %v: %v", node.Pos(), node.End(), path, node.SQL())
+							ok = false
+							return false
+						}
+
+						// FIXME: The fields of `CreateTable` are not ordered by position for now,
+						// so we skips to check the order of positions of `CreateTable` fields.
+						_, isCreateTable := node.(*ast.CreateTable)
+
+						lastEnd := token.InvalidPos
+						ast.Walk(node, &pathVisitor{
+							path: path,
+							f: func(childPath string, child ast.Node) bool {
+								if !ok {
+									return false
+								}
+
+								if node == child {
+									return true
+								}
+
+								if child.Pos() < lastEnd {
+									if !isCreateTable {
+										t.Errorf("pos must be larger or equal than end of last node pos %v, but got pos: %v on %v: %v", lastEnd, child.Pos(), childPath, child.SQL())
+									} else {
+										t.Logf("pos must be larger or equal than end of last node pos %v, but got pos: %v on %v: %v", lastEnd, child.Pos(), childPath, child.SQL())
+									}
+									ok = false
+									return false
+								}
+								lastEnd = child.End()
+
+								if child.Pos() < node.Pos() || node.End() < child.End() {
+									t.Errorf("child position must be in node position [%v, %v], but got [%v, %v] on %v: %v", node.Pos(), node.End(), child.Pos(), child.End(), childPath, child.SQL())
+									ok = false
+								}
+
+								return false
+							},
+						})
+
+						return ok
+					},
+				})
 			}
 
 			fmt.Fprintf(&buf, "--- AST\n")

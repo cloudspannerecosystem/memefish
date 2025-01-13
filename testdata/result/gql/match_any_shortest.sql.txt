@@ -185,59 +185,65 @@ RETURN a.id AS a_id, total, b.id AS b_id
           },
           &ast.GQLReturnStatement{
             Return:         125,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 132,
-                      NameEnd: 133,
-                      Name:    "a",
-                    },
-                    &ast.Ident{
-                      NamePos: 134,
-                      NameEnd: 136,
-                      Name:    "id",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 132,
+                        NameEnd: 133,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 134,
+                        NameEnd: 136,
+                        Name:    "id",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    137,
-                  Alias: &ast.Ident{
-                    NamePos: 140,
-                    NameEnd: 144,
-                    Name:    "a_id",
+                  As: &ast.AsAlias{
+                    As:    137,
+                    Alias: &ast.Ident{
+                      NamePos: 140,
+                      NameEnd: 144,
+                      Name:    "a_id",
+                    },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 146,
-                  NameEnd: 151,
-                  Name:    "total",
-                },
-              },
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 153,
-                      NameEnd: 154,
-                      Name:    "b",
-                    },
-                    &ast.Ident{
-                      NamePos: 155,
-                      NameEnd: 157,
-                      Name:    "id",
-                    },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 146,
+                    NameEnd: 151,
+                    Name:    "total",
                   },
                 },
-                As: &ast.AsAlias{
-                  As:    158,
-                  Alias: &ast.Ident{
-                    NamePos: 161,
-                    NameEnd: 165,
-                    Name:    "b_id",
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 153,
+                        NameEnd: 154,
+                        Name:    "b",
+                      },
+                      &ast.Ident{
+                        NamePos: 155,
+                        NameEnd: 157,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                  As: &ast.AsAlias{
+                    As:    158,
+                    Alias: &ast.Ident{
+                      NamePos: 161,
+                      NameEnd: 165,
+                      Name:    "b_id",
+                    },
                   },
                 },
               },

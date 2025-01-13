@@ -100,25 +100,29 @@ ORDER BY num_incoming_transfers DESC
           },
           &ast.GQLReturnStatement{
             Return:         64,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 71,
-                  NameEnd: 78,
-                  Name:    "account",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 71,
+                    NameEnd: 78,
+                    Name:    "account",
+                  },
                 },
               },
-              &ast.Alias{
-                Expr: &ast.CountStarExpr{
-                  Count:  80,
-                  Rparen: 87,
-                },
-                As: &ast.AsAlias{
-                  As:    89,
-                  Alias: &ast.Ident{
-                    NamePos: 92,
-                    NameEnd: 114,
-                    Name:    "num_incoming_transfers",
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.CountStarExpr{
+                    Count:  80,
+                    Rparen: 87,
+                  },
+                  As: &ast.AsAlias{
+                    As:    89,
+                    Alias: &ast.Ident{
+                      NamePos: 92,
+                      NameEnd: 114,
+                      Name:    "num_incoming_transfers",
+                    },
                   },
                 },
               },
@@ -221,36 +225,40 @@ ORDER BY num_incoming_transfers DESC
           },
           &ast.GQLReturnStatement{
             Return:         187,
-            ReturnItemList: []ast.GQLReturnItem{
-              &ast.Alias{
-                Expr: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 194,
-                      NameEnd: 199,
-                      Name:    "owner",
-                    },
-                    &ast.Ident{
-                      NamePos: 200,
-                      NameEnd: 204,
-                      Name:    "name",
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 194,
+                        NameEnd: 199,
+                        Name:    "owner",
+                      },
+                      &ast.Ident{
+                        NamePos: 200,
+                        NameEnd: 204,
+                        Name:    "name",
+                      },
                     },
                   },
-                },
-                As: &ast.AsAlias{
-                  As:    205,
-                  Alias: &ast.Ident{
-                    NamePos: 208,
-                    NameEnd: 218,
-                    Name:    "owner_name",
+                  As: &ast.AsAlias{
+                    As:    205,
+                    Alias: &ast.Ident{
+                      NamePos: 208,
+                      NameEnd: 218,
+                      Name:    "owner_name",
+                    },
                   },
                 },
               },
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 220,
-                  NameEnd: 242,
-                  Name:    "num_incoming_transfers",
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 220,
+                    NameEnd: 242,
+                    Name:    "num_incoming_transfers",
+                  },
                 },
               },
             },
