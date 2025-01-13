@@ -8,42 +8,57 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *BadStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *BadQueryExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *BadExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
 	case *BadType:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
 	case *BadDDL:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
 	case *BadDML:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *QueryStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Query:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PipeOperators), visitor: v.Field("PipeOperators")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.With), visitor: v.Field("With")})
 
 	case *Hint:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Records), visitor: v.Field("Records")})
 
 	case *HintRecord:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Key), visitor: v.Field("Key")})
 
 	case *With:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.CTEs), visitor: v.Field("CTEs")})
 
 	case *CTE:
 		stack = append(stack, &stackItem{node: wrapNode(n.QueryExpr), visitor: v.Field("QueryExpr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Select:
+		stack = append(stack, &stackItem{node: wrapNode(n.Having), visitor: v.Field("Having")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupBy), visitor: v.Field("GroupBy")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.From), visitor: v.Field("From")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Results), visitor: v.Field("Results")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 
 	case *AsStruct:
@@ -53,37 +68,42 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *AsTypeName:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.TypeName), visitor: v.Field("TypeName")})
 
 	case *FromQuery:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.From), visitor: v.Field("From")})
 
 	case *CompoundQuery:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Queries), visitor: v.Field("Queries")})
 
 	case *SubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *StarModifierExcept:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *StarModifierReplaceItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *StarModifierReplace:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *Star:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Replace), visitor: v.Field("Replace")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Except), visitor: v.Field("Except")})
 
 	case *DotStar:
+		stack = append(stack, &stackItem{node: wrapNode(n.Replace), visitor: v.Field("Replace")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Except), visitor: v.Field("Except")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Alias:
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *AsAlias:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
 	case *ExprSelectItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -95,66 +115,86 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GroupBy:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *Having:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *OrderBy:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *OrderByItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Collate:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *Limit:
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
 
 	case *Offset:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *PipeSelect:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Results), visitor: v.Field("Results")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 
 	case *PipeWhere:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Unnest:
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
+		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *WithOffset:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 
 	case *TableName:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Table), visitor: v.Field("Table")})
 
 	case *PathTableExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
+		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Path), visitor: v.Field("Path")})
 
 	case *SubQueryTableExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ParenTableExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Source), visitor: v.Field("Source")})
 
 	case *GraphTableExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PropertyGraphName), visitor: v.Field("PropertyGraphName")})
 
 	case *Join:
 		stack = append(stack, &stackItem{node: wrapNode(n.Cond), visitor: v.Field("Cond")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *On:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Using:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Idents), visitor: v.Field("Idents")})
 
 	case *TableSample:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Size), visitor: v.Field("Size")})
 
 	case *TableSampleSize:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
@@ -177,10 +217,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ValuesInCondition:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *GQLSubQueryInCondition:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *IsNullExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
@@ -202,6 +242,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *SelectorExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Ident), visitor: v.Field("Ident")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IndexExpr:
@@ -212,16 +253,25 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *CallExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Having), visitor: v.Field("Having")})
 		stack = append(stack, &stackItem{node: wrapNode(n.NullHandling), visitor: v.Field("NullHandling")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Func), visitor: v.Field("Func")})
 
 	case *TVFCallExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ExprArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IntervalArg:
+		stack = append(stack, &stackItem{node: wrapNode(n.Unit), visitor: v.Field("Unit")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *SequenceArg:
@@ -229,15 +279,17 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *LambdaArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 
 	case *ModelArg:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *TableArg:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *NamedArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *IgnoreNulls:
 		// nothing to do
@@ -255,12 +307,16 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *ExtractExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.AtTimeZone), visitor: v.Field("AtTimeZone")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Part), visitor: v.Field("Part")})
 
 	case *ReplaceFieldsArg:
+		stack = append(stack, &stackItem{node: wrapNode(n.Field), visitor: v.Field("Field")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *ReplaceFieldsExpr:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *AtTimeZone:
@@ -268,15 +324,19 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *WithExprVar:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *WithExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Vars), visitor: v.Field("Vars")})
 
 	case *CastExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *CaseExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Else), visitor: v.Field("Else")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Whens), visitor: v.Field("Whens")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *CaseWhen:
@@ -301,16 +361,17 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ArrayGQLSubQuery:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ValueGQLSubQuery:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *ExistsGQLSubQuery:
 		// nothing to do
 
 	case *ExistsSubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Param:
 		// nothing to do
@@ -319,19 +380,21 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *Path:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Idents), visitor: v.Field("Idents")})
 
 	case *ArrayLiteral:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *TupleStructLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 
 	case *TypedStructLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *TypelessStructLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Values), visitor: v.Field("Values")})
 
 	case *NullLiteral:
 		// nothing to do
@@ -352,28 +415,31 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *DateLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *TimestampLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *NumericLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *JSONLiteral:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *NewConstructor:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *BracedNewConstructor:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Body), visitor: v.Field("Body")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *BracedConstructor:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *BracedConstructorField:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *BracedConstructorFieldValueExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -385,13 +451,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
 
 	case *StructType:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
 
 	case *StructField:
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Ident), visitor: v.Field("Ident")})
 
 	case *NamedType:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Path), visitor: v.Field("Path")})
 
 	case *CastIntValue:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -400,68 +467,84 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *Options:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Records), visitor: v.Field("Records")})
 
 	case *OptionsDef:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateSchema:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropSchema:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateDatabase:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterDatabase:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreatePlacement:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ProtoBundleTypes:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Types), visitor: v.Field("Types")})
 
 	case *CreateProtoBundle:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Types), visitor: v.Field("Types")})
 
 	case *AlterProtoBundle:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Delete), visitor: v.Field("Delete")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Update), visitor: v.Field("Update")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Insert), visitor: v.Field("Insert")})
 
 	case *AlterProtoBundleInsert:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Types), visitor: v.Field("Types")})
 
 	case *AlterProtoBundleUpdate:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Types), visitor: v.Field("Types")})
 
 	case *AlterProtoBundleDelete:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Types), visitor: v.Field("Types")})
 
 	case *DropProtoBundle:
 		// nothing to do
 
 	case *CreateTable:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Cluster), visitor: v.Field("Cluster")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Synonyms), visitor: v.Field("Synonyms")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PrimaryKeys), visitor: v.Field("PrimaryKeys")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TableConstraints), visitor: v.Field("TableConstraints")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Synonym:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateSequence:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *SkipRange:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Max), visitor: v.Field("Max")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Min), visitor: v.Field("Min")})
 
 	case *StartCounterWith:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Counter), visitor: v.Field("Counter")})
 
 	case *BitReversedPositive:
 		// nothing to do
 
 	case *ColumnDef:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultSemantics), visitor: v.Field("DefaultSemantics")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ColumnDefaultExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -470,91 +553,106 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IdentityColumn:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
 
 	case *TableConstraint:
 		stack = append(stack, &stackItem{node: wrapNode(n.Constraint), visitor: v.Field("Constraint")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ForeignKey:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceTable), visitor: v.Field("ReferenceTable")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *Check:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *IndexKey:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Cluster:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *CreateRowDeletionPolicy:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
 
 	case *RowDeletionPolicy:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.NumDays), visitor: v.Field("NumDays")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ColumnName), visitor: v.Field("ColumnName")})
 
 	case *CreateView:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropView:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterTable:
 		stack = append(stack, &stackItem{node: wrapNode(n.TableAlteration), visitor: v.Field("TableAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterIndex:
 		stack = append(stack, &stackItem{node: wrapNode(n.IndexAlteration), visitor: v.Field("IndexAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterSequence:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.NoSkipRange), visitor: v.Field("NoSkipRange")})
+		stack = append(stack, &stackItem{node: wrapNode(n.SkipRange), visitor: v.Field("SkipRange")})
+		stack = append(stack, &stackItem{node: wrapNode(n.RestartCounterWith), visitor: v.Field("RestartCounterWith")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterChangeStream:
 		stack = append(stack, &stackItem{node: wrapNode(n.ChangeStreamAlteration), visitor: v.Field("ChangeStreamAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AddSynonym:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropSynonym:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *RenameTo:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.AddSynonym), visitor: v.Field("AddSynonym")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AddColumn:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Column), visitor: v.Field("Column")})
 
 	case *AddTableConstraint:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.TableConstraint), visitor: v.Field("TableConstraint")})
 
 	case *AddRowDeletionPolicy:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
 
 	case *DropColumn:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropConstraint:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropRowDeletionPolicy:
 		// nothing to do
 
 	case *ReplaceRowDeletionPolicy:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
 
 	case *SetOnDelete:
 		// nothing to do
 
 	case *AlterColumn:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alteration), visitor: v.Field("Alteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterColumnType:
+		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 
 	case *AlterColumnSetOptions:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
 	case *AlterColumnSetDefault:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 
 	case *AlterColumnDropDefault:
 		// nothing to do
@@ -563,43 +661,55 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Alteration), visitor: v.Field("Alteration")})
 
 	case *RestartCounterWith:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Counter), visitor: v.Field("Counter")})
 
 	case *SetSkipRange:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.SkipRange), visitor: v.Field("SkipRange")})
 
 	case *NoSkipRange:
 		// nothing to do
 
 	case *SetNoSkipRange:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.NoSkipRange), visitor: v.Field("NoSkipRange")})
 
 	case *DropTable:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *RenameTable:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Tos), visitor: v.Field("Tos")})
 
 	case *RenameTableTo:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.New), visitor: v.Field("New")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Old), visitor: v.Field("Old")})
 
 	case *CreateIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.InterleaveIn), visitor: v.Field("InterleaveIn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Keys), visitor: v.Field("Keys")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateVectorIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ColumnName), visitor: v.Field("ColumnName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateChangeStream:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.For), visitor: v.Field("For")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ChangeStreamForAll:
 		// nothing to do
 
 	case *ChangeStreamForTables:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Tables), visitor: v.Field("Tables")})
 
 	case *ChangeStreamForTable:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *ChangeStreamSetFor:
 		stack = append(stack, &stackItem{node: wrapNode(n.For), visitor: v.Field("For")})
@@ -608,91 +718,101 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *ChangeStreamSetOptions:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
 	case *Storing:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *InterleaveIn:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 
 	case *AddStoredColumn:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropStoredColumn:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropVectorIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropSequence:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateRole:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropRole:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropChangeStream:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Grant:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Roles), visitor: v.Field("Roles")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Privilege), visitor: v.Field("Privilege")})
 
 	case *Revoke:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Roles), visitor: v.Field("Roles")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Privilege), visitor: v.Field("Privilege")})
 
 	case *PrivilegeOnTable:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
 
 	case *SelectPrivilege:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *InsertPrivilege:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *UpdatePrivilege:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
 	case *DeletePrivilege:
 		// nothing to do
 
 	case *SelectPrivilegeOnChangeStream:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *SelectPrivilegeOnView:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *ExecutePrivilegeOnTableFunction:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *RolePrivilege:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
 	case *AlterStatistics:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *Analyze:
 		// nothing to do
 
 	case *CreateModelColumn:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.DataType), visitor: v.Field("DataType")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreateModelInputOutput:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.OutputColumns), visitor: v.Field("OutputColumns")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.InputColumns), visitor: v.Field("InputColumns")})
 
 	case *CreateModel:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.InputOutput), visitor: v.Field("InputOutput")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterModel:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropModel:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ScalarSchemaType:
 		// nothing to do
@@ -701,99 +821,125 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Size), visitor: v.Field("Size")})
 
 	case *ArraySchemaType:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
 
 	case *CreateSearchIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Interleave), visitor: v.Field("Interleave")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PartitionColumns), visitor: v.Field("PartitionColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TokenListPart), visitor: v.Field("TokenListPart")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *DropSearchIndex:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *AlterSearchIndex:
 		stack = append(stack, &stackItem{node: wrapNode(n.IndexAlteration), visitor: v.Field("IndexAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *CreatePropertyGraph:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Content), visitor: v.Field("Content")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *PropertyGraphContent:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.EdgeTables), visitor: v.Field("EdgeTables")})
+		stack = append(stack, &stackItem{node: wrapNode(n.NodeTables), visitor: v.Field("NodeTables")})
 
 	case *PropertyGraphNodeTables:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Tables), visitor: v.Field("Tables")})
 
 	case *PropertyGraphEdgeTables:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Tables), visitor: v.Field("Tables")})
 
 	case *PropertyGraphElementList:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Elements), visitor: v.Field("Elements")})
 
 	case *PropertyGraphElement:
 		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *PropertyGraphSingleProperties:
 		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
 
 	case *PropertyGraphLabelAndPropertiesList:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.LabelAndProperties), visitor: v.Field("LabelAndProperties")})
 
 	case *PropertyGraphLabelAndProperties:
 		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Label), visitor: v.Field("Label")})
 
 	case *PropertyGraphElementLabelLabelName:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *PropertyGraphElementLabelDefaultLabel:
 		// nothing to do
 
 	case *PropertyGraphNodeElementKey:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Key), visitor: v.Field("Key")})
 
 	case *PropertyGraphEdgeElementKeys:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Destination), visitor: v.Field("Destination")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Source), visitor: v.Field("Source")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Element), visitor: v.Field("Element")})
 
 	case *PropertyGraphElementKey:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
 
 	case *PropertyGraphSourceKey:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementReference), visitor: v.Field("ElementReference")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
 
 	case *PropertyGraphDestinationKey:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementReference), visitor: v.Field("ElementReference")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
 
 	case *PropertyGraphColumnNameList:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ColumnNameList), visitor: v.Field("ColumnNameList")})
 
 	case *PropertyGraphNoProperties:
 		// nothing to do
 
 	case *PropertyGraphPropertiesAre:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.ExceptColumns), visitor: v.Field("ExceptColumns")})
 
 	case *PropertyGraphDerivedPropertyList:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.DerivedProperties), visitor: v.Field("DerivedProperties")})
 
 	case *PropertyGraphDerivedProperty:
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *DropPropertyGraph:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *WithAction:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 
 	case *ThenReturn:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+		stack = append(stack, &stackItem{node: wrapNode(n.WithAction), visitor: v.Field("WithAction")})
 
 	case *Insert:
+		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Input), visitor: v.Field("Input")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *ValuesInput:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Rows), visitor: v.Field("Rows")})
 
 	case *ValuesRow:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
 	case *DefaultExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -802,25 +948,38 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 
 	case *Delete:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Update:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Updates), visitor: v.Field("Updates")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *UpdateItem:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Path), visitor: v.Field("Path")})
 
 	case *Call:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *GQLGraphQuery:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
 
 	case *GQLQueryExpr:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
 
 	case *GQLGraphClause:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PropertyGraphName), visitor: v.Field("PropertyGraphName")})
 
 	case *GQLMultiLinearQueryStatement:
 		// nothing to do
@@ -829,31 +988,36 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *GQLSimpleLinearQueryStatementWithSetOperator:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Statement), visitor: v.Field("Statement")})
 
 	case *GQLCompositeLinearQueryStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TailSimpleLinearQueryStatementList), visitor: v.Field("TailSimpleLinearQueryStatementList")})
+		stack = append(stack, &stackItem{node: wrapNode(n.HeadSimpleLinearQueryStatement), visitor: v.Field("HeadSimpleLinearQueryStatement")})
 
 	case *GQLMatchStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphPattern), visitor: v.Field("GraphPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.MatchHint), visitor: v.Field("MatchHint")})
 
 	case *GQLFilterStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GQLForStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.WithOffsetClause), visitor: v.Field("WithOffsetClause")})
 		stack = append(stack, &stackItem{node: wrapNode(n.ArrayExpression), visitor: v.Field("ArrayExpression")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementName), visitor: v.Field("ElementName")})
 
 	case *GQLWithOffsetClause:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.OffsetName), visitor: v.Field("OffsetName")})
 
 	case *GQLLimitClause:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
 
 	case *GQLOffsetClause:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 
 	case *GQLLimitWithOffsetClause:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
 
 	case *GQLLimitStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
@@ -862,43 +1026,50 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
 
 	case *GQLOrderByStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.OrderBySpecificationList), visitor: v.Field("OrderBySpecificationList")})
 
 	case *GQLOrderBySpecification:
+		stack = append(stack, &stackItem{node: wrapNode(n.CollationSpecification), visitor: v.Field("CollationSpecification")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GQLCollationSpecification:
 		stack = append(stack, &stackItem{node: wrapNode(n.Specification), visitor: v.Field("Specification")})
 
 	case *GQLWithStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupByClause), visitor: v.Field("GroupByClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReturnItemList), visitor: v.Field("ReturnItemList")})
 
 	case *GQLReturnItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
 
 	case *GQLReturnStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.LimitAndOffsetClause), visitor: v.Field("LimitAndOffsetClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderByClause), visitor: v.Field("OrderByClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupByClause), visitor: v.Field("GroupByClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReturnItemList), visitor: v.Field("ReturnItemList")})
 
 	case *GQLLinearGraphVariable:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.VariableName), visitor: v.Field("VariableName")})
 
 	case *GQLLetStatement:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.LinearGraphVariableList), visitor: v.Field("LinearGraphVariableList")})
 
 	case *GQLGraphPattern:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.WhereClause), visitor: v.Field("WhereClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PathPatternList), visitor: v.Field("PathPatternList")})
 
 	case *GQLTopLevelPathPattern:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PathPattern), visitor: v.Field("PathPattern")})
 
 	case *GQLFullEdgeAny:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
 
 	case *GQLFullEdgeLeft:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
 
 	case *GQLFullEdgeRight:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
 
 	case *GQLAbbreviatedEdgeAny:
 		// nothing to do
@@ -910,16 +1081,17 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *GQLQuantifiablePathTerm:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *GQLPathPattern:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PathTermList), visitor: v.Field("PathTermList")})
 
 	case *GQLWhereClause:
 		stack = append(stack, &stackItem{node: wrapNode(n.BoolExpression), visitor: v.Field("BoolExpression")})
 
 	case *GQLPathMode:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PathOrPathsToken), visitor: v.Field("PathOrPathsToken")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ModeToken), visitor: v.Field("ModeToken")})
 
 	case *GQLFixedQuantifier:
 		stack = append(stack, &stackItem{node: wrapNode(n.Bound), visitor: v.Field("Bound")})
@@ -929,13 +1101,17 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.LowerBound), visitor: v.Field("LowerBound")})
 
 	case *GQLSubpathPattern:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.WhereClause), visitor: v.Field("WhereClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PathPattern), visitor: v.Field("PathPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PathMode), visitor: v.Field("PathMode")})
 
 	case *GQLNodePattern:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
 
 	case *GQLPatternFiller:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.IsLabelCondition), visitor: v.Field("IsLabelCondition")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphPatternVariable), visitor: v.Field("GraphPatternVariable")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *GQLIsLabelCondition:
 		// nothing to do
@@ -955,13 +1131,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.LabelExpression), visitor: v.Field("LabelExpression")})
 
 	case *GQLLabelName:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.LabelName), visitor: v.Field("LabelName")})
 
 	case *GQLPropertyFilters:
-		// nothing to do
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PropertyFilterElemList), visitor: v.Field("PropertyFilterElemList")})
 
 	case *GQLElementProperty:
 		stack = append(stack, &stackItem{node: wrapNode(n.ElementPropertyValue), visitor: v.Field("ElementPropertyValue")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementPropertyName), visitor: v.Field("ElementPropertyName")})
 
 	case *GQLPathSearchPrefix:
 		// nothing to do
