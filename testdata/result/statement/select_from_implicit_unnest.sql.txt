@@ -24,7 +24,6 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
     From: &ast.From{
       From:   14,
       Source: &ast.Join{
-        Op:   ",",
         Left: &ast.Unnest{
           Unnest: 19,
           Rparen: 62,
@@ -79,6 +78,7 @@ FROM UNNEST([STRUCT<arr ARRAY<STRING>>(["foo"])]) AS t,
             },
           },
         },
+        Op:    ",",
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
             Idents: []*ast.Ident{

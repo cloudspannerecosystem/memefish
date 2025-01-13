@@ -27,78 +27,24 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:   "INNER JOIN",
-        Hint: &ast.Hint{
-          Atmark:  258,
-          Rbrace:  279,
-          Records: []*ast.HintRecord{
-            &ast.HintRecord{
-              Key: &ast.Path{
-                Idents: []*ast.Ident{
-                  &ast.Ident{
-                    NamePos: 260,
-                    NameEnd: 269,
-                    Name:    "JOIN_TYPE",
-                  },
-                },
-              },
-              Value: &ast.Ident{
-                NamePos: 270,
-                NameEnd: 279,
-                Name:    "LOOP_JOIN",
-              },
-            },
-          },
-        },
         Left: &ast.Join{
-          Op:   "INNER JOIN",
-          Hint: &ast.Hint{
-            Atmark:  187,
-            Rbrace:  209,
-            Records: []*ast.HintRecord{
-              &ast.HintRecord{
-                Key: &ast.Path{
-                  Idents: []*ast.Ident{
-                    &ast.Ident{
-                      NamePos: 189,
-                      NameEnd: 198,
-                      Name:    "JOIN_TYPE",
-                    },
-                  },
-                },
-                Value: &ast.Ident{
-                  NamePos: 199,
-                  NameEnd: 209,
-                  Name:    "APPLY_JOIN",
-                },
-              },
-            },
-          },
           Left: &ast.Join{
-            Op:   "INNER JOIN",
-            Hint: &ast.Hint{
-              Atmark:  117,
-              Rbrace:  138,
-              Records: []*ast.HintRecord{
-                &ast.HintRecord{
-                  Key: &ast.Path{
-                    Idents: []*ast.Ident{
-                      &ast.Ident{
-                        NamePos: 119,
-                        NameEnd: 128,
-                        Name:    "JOIN_TYPE",
-                      },
-                    },
-                  },
-                  Value: &ast.Ident{
-                    NamePos: 129,
-                    NameEnd: 138,
-                    Name:    "HASH_JOIN",
+            Left: &ast.Join{
+              Left: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 18,
+                  NameEnd: 25,
+                  Name:    "Singers",
+                },
+                As: &ast.AsAlias{
+                  As:    -1,
+                  Alias: &ast.Ident{
+                    NamePos: 26,
+                    NameEnd: 27,
+                    Name:    "A",
                   },
                 },
               },
-            },
-            Left: &ast.Join{
               Op:   "LEFT OUTER JOIN",
               Hint: &ast.Hint{
                 Atmark:  45,
@@ -118,21 +64,6 @@ FROM
                       ValuePos: 64,
                       Value:    true,
                     },
-                  },
-                },
-              },
-              Left: &ast.TableName{
-                Table: &ast.Ident{
-                  NamePos: 18,
-                  NameEnd: 25,
-                  Name:    "Singers",
-                },
-                As: &ast.AsAlias{
-                  As:    -1,
-                  Alias: &ast.Ident{
-                    NamePos: 26,
-                    NameEnd: 27,
-                    Name:    "A",
                   },
                 },
               },
@@ -182,6 +113,29 @@ FROM
                         Name:    "SingerID",
                       },
                     },
+                  },
+                },
+              },
+            },
+            Op:   "INNER JOIN",
+            Hint: &ast.Hint{
+              Atmark:  117,
+              Rbrace:  138,
+              Records: []*ast.HintRecord{
+                &ast.HintRecord{
+                  Key: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 119,
+                        NameEnd: 128,
+                        Name:    "JOIN_TYPE",
+                      },
+                    },
+                  },
+                  Value: &ast.Ident{
+                    NamePos: 129,
+                    NameEnd: 138,
+                    Name:    "HASH_JOIN",
                   },
                 },
               },
@@ -236,6 +190,29 @@ FROM
               },
             },
           },
+          Op:   "INNER JOIN",
+          Hint: &ast.Hint{
+            Atmark:  187,
+            Rbrace:  209,
+            Records: []*ast.HintRecord{
+              &ast.HintRecord{
+                Key: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 189,
+                      NameEnd: 198,
+                      Name:    "JOIN_TYPE",
+                    },
+                  },
+                },
+                Value: &ast.Ident{
+                  NamePos: 199,
+                  NameEnd: 209,
+                  Name:    "APPLY_JOIN",
+                },
+              },
+            },
+          },
           Right: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 213,
@@ -282,6 +259,29 @@ FROM
                     Name:    "SingerID",
                   },
                 },
+              },
+            },
+          },
+        },
+        Op:   "INNER JOIN",
+        Hint: &ast.Hint{
+          Atmark:  258,
+          Rbrace:  279,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 260,
+                    NameEnd: 269,
+                    Name:    "JOIN_TYPE",
+                  },
+                },
+              },
+              Value: &ast.Ident{
+                NamePos: 270,
+                NameEnd: 279,
+                Name:    "LOOP_JOIN",
               },
             },
           },

@@ -17,9 +17,7 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:     "INNER JOIN",
-        Method: "HASH",
-        Left:   &ast.TableName{
+        Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 18,
             NameEnd: 25,
@@ -34,7 +32,9 @@ FROM
             },
           },
         },
-        Right: &ast.TableName{
+        Op:     "INNER JOIN",
+        Method: "HASH",
+        Right:  &ast.TableName{
           Table: &ast.Ident{
             NamePos: 42,
             NameEnd: 49,

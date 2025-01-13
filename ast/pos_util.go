@@ -6,11 +6,6 @@ import (
 
 // This file contains utility types/functions for pos.go.
 
-type comparableNode = interface {
-	comparable
-	Node
-}
-
 func nodePos(n Node) token.Pos {
 	if n == nil {
 		return token.InvalidPos
@@ -40,14 +35,6 @@ func posAdd(p token.Pos, x int) token.Pos {
 	}
 
 	return token.Pos(int(p) + x)
-}
-
-func wrapNode[T comparableNode](node T) Node {
-	var zero T
-	if node == zero {
-		return nil
-	}
-	return node
 }
 
 func nodeChoice(ns ...Node) Node {

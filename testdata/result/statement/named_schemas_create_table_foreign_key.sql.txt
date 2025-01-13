@@ -8,8 +8,9 @@ CREATE TABLE sch1.ShoppingCarts (
 ) PRIMARY KEY(CartId)
 --- AST
 &ast.CreateTable{
-  Rparen: 296,
-  Name:   &ast.Path{
+  Rparen:           276,
+  PrimaryKeyRparen: 296,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

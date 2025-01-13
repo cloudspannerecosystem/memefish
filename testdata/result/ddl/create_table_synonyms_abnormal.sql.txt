@@ -8,9 +8,10 @@ CREATE TABLE Singers (
 ) PRIMARY KEY (SingerId)
 --- AST
 &ast.CreateTable{
-  Create: 45,
-  Rparen: 194,
-  Name:   &ast.Path{
+  Create:           45,
+  Rparen:           171,
+  PrimaryKeyRparen: 194,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 58,

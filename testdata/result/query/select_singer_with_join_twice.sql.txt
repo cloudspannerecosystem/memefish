@@ -21,9 +21,7 @@ FROM
     From: &ast.From{
       From:   11,
       Source: &ast.Join{
-        Op:   "INNER JOIN",
         Left: &ast.Join{
-          Op:   "INNER JOIN",
           Left: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 18,
@@ -39,6 +37,7 @@ FROM
               },
             },
           },
+          Op:    "INNER JOIN",
           Right: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 37,
@@ -89,6 +88,7 @@ FROM
             },
           },
         },
+        Op:    "INNER JOIN",
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 91,

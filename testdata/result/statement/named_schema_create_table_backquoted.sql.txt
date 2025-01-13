@@ -2,8 +2,9 @@
 CREATE TABLE `ORDER`.`ORDER`(PK INT64) PRIMARY KEY(PK)
 --- AST
 &ast.CreateTable{
-  Rparen: 53,
-  Name:   &ast.Path{
+  Rparen:           37,
+  PrimaryKeyRparen: 53,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

@@ -371,7 +371,7 @@ func (j *Join) Pos() token.Pos {
 }
 
 func (j *Join) End() token.Pos {
-	return nodePos(nodeChoice(wrapNode(j.Cond), wrapNode(j.Right)))
+	return nodeEnd(nodeChoice(wrapNode(j.Cond), wrapNode(j.Right)))
 }
 
 func (o *On) Pos() token.Pos {
@@ -411,7 +411,7 @@ func (b *BinaryExpr) Pos() token.Pos {
 }
 
 func (b *BinaryExpr) End() token.Pos {
-	return nodePos(wrapNode(b.Right))
+	return nodeEnd(wrapNode(b.Right))
 }
 
 func (u *UnaryExpr) Pos() token.Pos {
@@ -483,7 +483,7 @@ func (s *SelectorExpr) Pos() token.Pos {
 }
 
 func (s *SelectorExpr) End() token.Pos {
-	return nodePos(wrapNode(s.Ident))
+	return nodeEnd(wrapNode(s.Ident))
 }
 
 func (i *IndexExpr) Pos() token.Pos {
@@ -1011,7 +1011,7 @@ func (a *AlterDatabase) Pos() token.Pos {
 }
 
 func (a *AlterDatabase) End() token.Pos {
-	return nodeEnd(wrapNode(a.Name))
+	return nodeEnd(wrapNode(a.Options))
 }
 
 func (c *CreatePlacement) Pos() token.Pos {
@@ -1083,7 +1083,7 @@ func (c *CreateTable) Pos() token.Pos {
 }
 
 func (c *CreateTable) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.Rparen, 1))
+	return posChoice(nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1), posAdd(c.Rparen, 1))
 }
 
 func (s *Synonym) Pos() token.Pos {
@@ -1156,14 +1156,6 @@ func (i *IdentityColumn) Pos() token.Pos {
 
 func (i *IdentityColumn) End() token.Pos {
 	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
-}
-
-func (c *ColumnDefOptions) Pos() token.Pos {
-	return c.Options
-}
-
-func (c *ColumnDefOptions) End() token.Pos {
-	return posAdd(c.Rparen, 1)
 }
 
 func (t *TableConstraint) Pos() token.Pos {
@@ -1259,7 +1251,7 @@ func (a *AlterSequence) Pos() token.Pos {
 }
 
 func (a *AlterSequence) End() token.Pos {
-	return nodeEnd(wrapNode(a.Options))
+	return nodeEnd(nodeChoice(wrapNode(a.NoSkipRange), wrapNode(a.SkipRange), wrapNode(a.RestartCounterWith), wrapNode(a.Options)))
 }
 
 func (a *AlterChangeStream) Pos() token.Pos {
@@ -1478,14 +1470,6 @@ func (c *CreateVectorIndex) End() token.Pos {
 	return nodeEnd(wrapNode(c.Options))
 }
 
-func (v *VectorIndexOption) Pos() token.Pos {
-	return nodePos(wrapNode(v.Key))
-}
-
-func (v *VectorIndexOption) End() token.Pos {
-	return nodeEnd(wrapNode(v.Value))
-}
-
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }
@@ -1499,7 +1483,7 @@ func (c *ChangeStreamForAll) Pos() token.Pos {
 }
 
 func (c *ChangeStreamForAll) End() token.Pos {
-	return c.All
+	return posAdd(c.All, 3)
 }
 
 func (c *ChangeStreamForTables) Pos() token.Pos {
@@ -1515,7 +1499,7 @@ func (c *ChangeStreamForTable) Pos() token.Pos {
 }
 
 func (c *ChangeStreamForTable) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.TableName)), posAdd(c.Rparen, 1))
+	return posChoice(posAdd(c.Rparen, 1), nodeEnd(wrapNode(c.TableName)))
 }
 
 func (c *ChangeStreamSetFor) Pos() token.Pos {
@@ -1911,7 +1895,7 @@ func (p *PropertyGraphNodeElementKey) End() token.Pos {
 }
 
 func (p *PropertyGraphEdgeElementKeys) Pos() token.Pos {
-	return nodePos(wrapNode(p.Element))
+	return nodePos(nodeChoice(wrapNode(p.Element), wrapNode(p.Source)))
 }
 
 func (p *PropertyGraphEdgeElementKeys) End() token.Pos {
