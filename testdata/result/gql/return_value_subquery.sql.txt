@@ -52,8 +52,7 @@ RETURN VALUE {
                                                 },
                                                 IsLabelCondition: &ast.GQLIsLabelCondition{
                                                   IsOrColon:       40,
-                                                  LabelExpression: &ast.GQLLabelName{
-                                                    StartPos:  41,
+                                                  LabelExpression: &ast.GQLElementLabel{
                                                     LabelName: &ast.Ident{
                                                       NamePos: 41,
                                                       NameEnd: 47,

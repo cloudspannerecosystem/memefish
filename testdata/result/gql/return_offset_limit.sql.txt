@@ -37,8 +37,7 @@ LIMIT 1
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       23,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  24,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,

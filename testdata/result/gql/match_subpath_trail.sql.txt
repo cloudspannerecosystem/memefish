@@ -51,8 +51,7 @@ RETURN COUNT(1) as num_paths
                                     },
                                     IsLabelCondition: &ast.GQLIsLabelCondition{
                                       IsOrColon:       33,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  34,
+                                      LabelExpression: &ast.GQLElementLabel{
                                         LabelName: &ast.Ident{
                                           NamePos: 34,
                                           NameEnd: 41,
@@ -75,8 +74,7 @@ RETURN COUNT(1) as num_paths
                                     },
                                     IsLabelCondition: &ast.GQLIsLabelCondition{
                                       IsOrColon:       46,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  47,
+                                      LabelExpression: &ast.GQLElementLabel{
                                         LabelName: &ast.Ident{
                                           NamePos: 47,
                                           NameEnd: 56,
@@ -109,8 +107,7 @@ RETURN COUNT(1) as num_paths
                                     },
                                     IsLabelCondition: &ast.GQLIsLabelCondition{
                                       IsOrColon:       65,
-                                      LabelExpression: &ast.GQLLabelName{
-                                        StartPos:  66,
+                                      LabelExpression: &ast.GQLElementLabel{
                                         LabelName: &ast.Ident{
                                           NamePos: 66,
                                           NameEnd: 73,
@@ -137,8 +134,7 @@ RETURN COUNT(1) as num_paths
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       82,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  83,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 83,
                                   NameEnd: 92,
@@ -161,8 +157,7 @@ RETURN COUNT(1) as num_paths
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       98,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  99,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 99,
                                   NameEnd: 106,

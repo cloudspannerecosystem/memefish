@@ -36,8 +36,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       25,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  26,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 26,
                                   NameEnd: 33,
@@ -60,8 +59,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       45,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  46,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 46,
                                   NameEnd: 55,
@@ -84,8 +82,7 @@ RETURN src.id AS source_id, dest.id AS destination_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       62,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  63,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 63,
                                   NameEnd: 70,

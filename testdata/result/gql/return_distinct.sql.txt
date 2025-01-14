@@ -35,8 +35,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       25,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  26,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 26,
                                   NameEnd: 33,
@@ -78,8 +77,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       45,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  46,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 46,
                                   NameEnd: 55,
@@ -118,8 +116,7 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       68,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  69,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 69,
                                   NameEnd: 76,

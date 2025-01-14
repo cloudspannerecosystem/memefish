@@ -45,8 +45,7 @@ RETURN EXISTS {
                                       },
                                       IsLabelCondition: &ast.GQLIsLabelCondition{
                                         IsOrColon:       41,
-                                        LabelExpression: &ast.GQLLabelName{
-                                          StartPos:  42,
+                                        LabelExpression: &ast.GQLElementLabel{
                                           LabelName: &ast.Ident{
                                             NamePos: 42,
                                             NameEnd: 48,
@@ -69,8 +68,7 @@ RETURN EXISTS {
                                       },
                                       IsLabelCondition: &ast.GQLIsLabelCondition{
                                         IsOrColon:       52,
-                                        LabelExpression: &ast.GQLLabelName{
-                                          StartPos:  53,
+                                        LabelExpression: &ast.GQLElementLabel{
                                           LabelName: &ast.Ident{
                                             NamePos: 53,
                                             NameEnd: 57,
@@ -93,8 +91,7 @@ RETURN EXISTS {
                                       },
                                       IsLabelCondition: &ast.GQLIsLabelCondition{
                                         IsOrColon:       62,
-                                        LabelExpression: &ast.GQLLabelName{
-                                          StartPos:  63,
+                                        LabelExpression: &ast.GQLElementLabel{
                                           LabelName: &ast.Ident{
                                             NamePos: 63,
                                             NameEnd: 70,

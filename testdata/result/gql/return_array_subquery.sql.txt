@@ -41,8 +41,7 @@ RETURN
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       23,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  24,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,
@@ -60,8 +59,7 @@ RETURN
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  34,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 38,
@@ -84,8 +82,7 @@ RETURN
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       49,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  50,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 50,
                                   NameEnd: 57,
@@ -179,8 +176,7 @@ RETURN
                                                 },
                                                 IsLabelCondition: &ast.GQLIsLabelCondition{
                                                   IsOrColon:       121,
-                                                  LabelExpression: &ast.GQLLabelName{
-                                                    StartPos:  122,
+                                                  LabelExpression: &ast.GQLElementLabel{
                                                     LabelName: &ast.Ident{
                                                       NamePos: 122,
                                                       NameEnd: 129,
@@ -203,8 +199,7 @@ RETURN
                                                 },
                                                 IsLabelCondition: &ast.GQLIsLabelCondition{
                                                   IsOrColon:       140,
-                                                  LabelExpression: &ast.GQLLabelName{
-                                                    StartPos:  141,
+                                                  LabelExpression: &ast.GQLElementLabel{
                                                     LabelName: &ast.Ident{
                                                       NamePos: 141,
                                                       NameEnd: 150,
@@ -222,8 +217,7 @@ RETURN
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 IsLabelCondition: &ast.GQLIsLabelCondition{
                                                   IsOrColon:       154,
-                                                  LabelExpression: &ast.GQLLabelName{
-                                                    StartPos:  155,
+                                                  LabelExpression: &ast.GQLElementLabel{
                                                     LabelName: &ast.Ident{
                                                       NamePos: 155,
                                                       NameEnd: 162,

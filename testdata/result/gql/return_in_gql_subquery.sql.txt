@@ -56,8 +56,7 @@ RETURN 'Dana' IN {
                                                   },
                                                   IsLabelCondition: &ast.GQLIsLabelCondition{
                                                     IsOrColon:       44,
-                                                    LabelExpression: &ast.GQLLabelName{
-                                                      StartPos:  45,
+                                                    LabelExpression: &ast.GQLElementLabel{
                                                       LabelName: &ast.Ident{
                                                         NamePos: 45,
                                                         NameEnd: 51,
@@ -80,8 +79,7 @@ RETURN 'Dana' IN {
                                                   },
                                                   IsLabelCondition: &ast.GQLIsLabelCondition{
                                                     IsOrColon:       55,
-                                                    LabelExpression: &ast.GQLLabelName{
-                                                      StartPos:  56,
+                                                    LabelExpression: &ast.GQLElementLabel{
                                                       LabelName: &ast.Ident{
                                                         NamePos: 56,
                                                         NameEnd: 60,
@@ -104,8 +102,7 @@ RETURN 'Dana' IN {
                                                   },
                                                   IsLabelCondition: &ast.GQLIsLabelCondition{
                                                     IsOrColon:       65,
-                                                    LabelExpression: &ast.GQLLabelName{
-                                                      StartPos:  66,
+                                                    LabelExpression: &ast.GQLElementLabel{
                                                       LabelName: &ast.Ident{
                                                         NamePos: 66,
                                                         NameEnd: 73,

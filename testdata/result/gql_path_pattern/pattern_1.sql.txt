@@ -14,9 +14,8 @@
           },
           IsLabelCondition: &ast.GQLIsLabelCondition{
             IsOrColon:       2,
-            LabelExpression: &ast.GQLLabelName{
-              StartPos:  3,
-              IsPercent: true,
+            LabelExpression: &ast.GQLWildcardLabel{
+              Percent: 3,
             },
           },
         },

@@ -2486,12 +2486,20 @@ func (g *GQLLabelNotExpression) End() token.Pos {
 	return nodeEnd(wrapNode(g.LabelExpression))
 }
 
-func (g *GQLLabelName) Pos() token.Pos {
-	return g.StartPos
+func (g *GQLWildcardLabel) Pos() token.Pos {
+	return g.Percent
 }
 
-func (g *GQLLabelName) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(g.LabelName)), posAdd(g.StartPos, 1))
+func (g *GQLWildcardLabel) End() token.Pos {
+	return posAdd(g.Percent, 1)
+}
+
+func (g *GQLElementLabel) Pos() token.Pos {
+	return nodePos(wrapNode(g.LabelName))
+}
+
+func (g *GQLElementLabel) End() token.Pos {
+	return nodeEnd(wrapNode(g.LabelName))
 }
 
 func (g *GQLPropertyFilters) Pos() token.Pos {

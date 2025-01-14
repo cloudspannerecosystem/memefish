@@ -42,8 +42,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       36,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  37,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 37,
                                   NameEnd: 44,
@@ -66,8 +65,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       48,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  49,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 49,
                                   NameEnd: 58,
@@ -106,8 +104,7 @@ RETURN a.id AS a_id, total, b.id AS b_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       70,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  71,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 71,
                                   NameEnd: 78,

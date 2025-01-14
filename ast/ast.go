@@ -4456,9 +4456,7 @@ type GQLCollationSpecification struct {
 
 // GQLWithStatement represents WITH statement.
 //
-//	WITH {{.GQLAllOrDistinctEnum | sql}} {{.ReturnItemList | sqlJoin}} {{.GroupBy | sql}}
-//
-// TODO: Refactor
+//	WITH {{string(.GQLAllOrDistinctEnum)}} {{.ReturnItemList | sqlJoin}} {{.GroupBy | sqlOpt}}
 type GQLWithStatement struct {
 	// pos = With
 	// end = (GroupByClause ?? ReturnItemList[$]).end
@@ -4780,26 +4778,6 @@ type GQLNodePattern struct {
 	PatternFiller  *GQLPatternFiller
 }
 
-// EdgePattern TODO
-/*
-edge_pattern:
-  {
-    full_edge_any |
-    full_edge_left |
-    full_edge_right |
-    abbreviated_edge_any |
-    abbreviated_edge_left |
-    abbreviated_edge_right
-  }
-*/
-/*
-type EdgePattern interface {
-	Node
-	isEdgePattern()
-}
-
-*/
-
 // GQLPatternFiller represents specifications on the node or edge pattern that you want to match.
 //
 //	{{.Hint | sqlOpt}}
@@ -4842,7 +4820,8 @@ func (GQLLabelParenExpression) isGQLLabelExpression() {}
 func (GQLLabelOrExpression) isGQLLabelExpression()    {}
 func (GQLLabelAndExpression) isGQLLabelExpression()   {}
 func (GQLLabelNotExpression) isGQLLabelExpression()   {}
-func (GQLLabelName) isGQLLabelExpression()            {}
+func (GQLWildcardLabel) isGQLLabelExpression()        {}
+func (GQLElementLabel) isGQLLabelExpression()         {}
 
 // GQLLabelOrExpression represents `label_expression|label_expression`.
 //
@@ -4886,17 +4865,31 @@ type GQLLabelNotExpression struct {
 	LabelExpression GQLLabelExpression
 }
 
-// GQLLabelName represents the label to match.
+type GQLLabelPrimary interface {
+	GQLLabelExpression
+	isGQLLabelPrimary()
+}
+
+func (GQLElementLabel) isGQLLabelPrimary()  {}
+func (GQLWildcardLabel) isGQLLabelPrimary() {}
+
+// GQLWildcardLabel is % node in label expression.
 //
-//	{{if .IsPercent}}%{{else}}{{.LabelName | sql}}{{end}}
-type GQLLabelName struct {
-	// pos = StartPos
-	// end = LabelName.end || StartPos + 1
+//	%
+type GQLWildcardLabel struct {
+	// pos = Percent
+	// end = Percent + 1
 
-	// TODO: Make it interaface
+	Percent token.Pos // position of "%"
+}
 
-	StartPos  token.Pos // position of "%" or LabelName
-	IsPercent bool
+// GQLElementLabel represents the label to match.
+//
+//	{{.LabelName | sql}}
+type GQLElementLabel struct {
+	// pos = LabelName.pos
+	// end = LabelName.end
+
 	LabelName *Ident // optional
 }
 
@@ -4936,13 +4929,12 @@ type GQLElementProperty struct {
 // GQLPathSearchPrefix represents `{"ALL" | "ANY" | "ANY SHORTEST"}`.
 //
 //	{{string(.SearchPrefix)}}
-//
-// TODO: Make it interface
 type GQLPathSearchPrefix struct {
 	// pos = StartPos
 	// end = LastEnd
 
-	StartPos     token.Pos
-	LastEnd      token.Pos // end of last token
+	StartPos token.Pos // position of "ALL" or "ANY"
+	LastEnd  token.Pos // end of last token("ALL" or "ANY" or "SHORTEST")
+
 	SearchPrefix GQLSearchPrefixEnum
 }

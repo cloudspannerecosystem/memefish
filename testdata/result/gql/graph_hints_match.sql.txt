@@ -36,8 +36,7 @@ RETURN oa.id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       23,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  24,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,
@@ -74,8 +73,7 @@ RETURN oa.id
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       41,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  42,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 42,
                                   NameEnd: 46,
@@ -98,8 +96,7 @@ RETURN oa.id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       51,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  52,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 52,
                                   NameEnd: 59,
@@ -158,8 +155,7 @@ RETURN oa.id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       94,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  95,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 95,
                                   NameEnd: 102,
@@ -182,8 +178,7 @@ RETURN oa.id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       106,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  107,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 107,
                                   NameEnd: 116,
@@ -206,8 +201,7 @@ RETURN oa.id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       122,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  123,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 123,
                                   NameEnd: 130,

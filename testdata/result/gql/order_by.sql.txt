@@ -37,8 +37,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  34,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 41,
@@ -61,8 +60,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       52,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  53,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 53,
                                   NameEnd: 62,
@@ -85,8 +83,7 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       77,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  78,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 78,
                                   NameEnd: 85,

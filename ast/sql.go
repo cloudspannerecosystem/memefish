@@ -1644,10 +1644,10 @@ func (g *GQLLabelAndExpression) SQL() string { return g.Left.SQL() + "&" + g.Rig
 
 func (g *GQLLabelNotExpression) SQL() string { return "!" + g.LabelExpression.SQL() }
 
-func (g *GQLLabelName) SQL() string {
-	if g.IsPercent {
-		return "%"
-	}
+func (g *GQLWildcardLabel) SQL() string {
+	return "%"
+}
+func (g *GQLElementLabel) SQL() string {
 	return g.LabelName.SQL()
 }
 

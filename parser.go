@@ -5982,20 +5982,18 @@ func (p *Parser) parseGQLMatchStatement() *ast.GQLMatchStatement {
 	}
 }
 
-func (p *Parser) parseGQLLabelName() *ast.GQLLabelName {
+func (p *Parser) parseGQLLabelName() ast.GQLLabelPrimary {
 	pos := p.Token.Pos
 
 	if p.Token.Kind == "%" {
 		p.nextToken()
-		return &ast.GQLLabelName{
-			StartPos:  pos,
-			IsPercent: true,
+		return &ast.GQLWildcardLabel{
+			Percent: pos,
 		}
 	}
 
 	ident := p.parseIdent()
-	return &ast.GQLLabelName{
-		StartPos:  pos,
+	return &ast.GQLElementLabel{
 		LabelName: ident,
 	}
 }

@@ -1132,7 +1132,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *GQLLabelNotExpression:
 		stack = append(stack, &stackItem{node: wrapNode(n.LabelExpression), visitor: v.Field("LabelExpression")})
 
-	case *GQLLabelName:
+	case *GQLWildcardLabel:
+		// nothing to do
+
+	case *GQLElementLabel:
 		stack = append(stack, &stackItem{node: wrapNode(n.LabelName), visitor: v.Field("LabelName")})
 
 	case *GQLPropertyFilters:

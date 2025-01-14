@@ -36,8 +36,7 @@ RETURN n.name, a.id AS blocked_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       23,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  24,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 24,
                                   NameEnd: 30,
@@ -74,8 +73,7 @@ RETURN n.name, a.id AS blocked_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       49,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  50,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 50,
                                   NameEnd: 56,
@@ -93,8 +91,7 @@ RETURN n.name, a.id AS blocked_account_id
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       59,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  60,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 60,
                                   NameEnd: 64,
@@ -117,8 +114,7 @@ RETURN n.name, a.id AS blocked_account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       69,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  70,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 70,
                                   NameEnd: 77,

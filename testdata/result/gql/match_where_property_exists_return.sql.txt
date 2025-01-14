@@ -36,16 +36,14 @@ RETURN n.name
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       23,
                               LabelExpression: &ast.GQLLabelOrExpression{
-                                Left: &ast.GQLLabelName{
-                                  StartPos:  24,
+                                Left: &ast.GQLElementLabel{
                                   LabelName: &ast.Ident{
                                     NamePos: 24,
                                     NameEnd: 30,
                                     Name:    "Person",
                                   },
                                 },
-                                Right: &ast.GQLLabelName{
-                                  StartPos:  31,
+                                Right: &ast.GQLElementLabel{
                                   LabelName: &ast.Ident{
                                     NamePos: 31,
                                     NameEnd: 38,

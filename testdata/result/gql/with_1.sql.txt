@@ -31,8 +31,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       22,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  23,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 23,
                                   NameEnd: 30,
@@ -50,8 +49,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  34,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 43,
@@ -74,8 +72,7 @@ RETURN account.id AS account_id, num_incoming_transfers
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       54,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  55,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 55,
                                   NameEnd: 62,

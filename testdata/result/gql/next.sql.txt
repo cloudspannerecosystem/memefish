@@ -45,8 +45,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       22,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  23,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 23,
                                   NameEnd: 30,
@@ -64,8 +63,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  34,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 34,
                                   NameEnd: 43,
@@ -88,8 +86,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       54,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  55,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 55,
                                   NameEnd: 62,
@@ -170,8 +167,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       153,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  154,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 154,
                                   NameEnd: 161,
@@ -189,8 +185,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       165,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  166,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 166,
                                   NameEnd: 170,
@@ -213,8 +208,7 @@ RETURN "Bob" AS owner_name, 100 AS account_id
                             },
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       178,
-                              LabelExpression: &ast.GQLLabelName{
-                                StartPos:  179,
+                              LabelExpression: &ast.GQLElementLabel{
                                 LabelName: &ast.Ident{
                                   NamePos: 179,
                                   NameEnd: 185,
