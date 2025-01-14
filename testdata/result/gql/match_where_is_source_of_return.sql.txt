@@ -180,6 +180,4 @@ RETURN a.id AS a_id, b.id AS b_id
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (a:Account)-[transfer:Transfers]-(b:Account) WHERE a IS SOURCE OF transfer
-RETURN a.id AS a_id, b.id AS b_id
+GRAPH FinGraph MATCH (a:Account)-[transfer:Transfers]-(b:Account) WHERE a IS SOURCE OF transfer RETURN a.id AS a_id, b.id AS b_id

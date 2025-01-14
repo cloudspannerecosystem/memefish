@@ -156,7 +156,4 @@ RETURN a.id AS a_id
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (source:Account)-[e:Transfers]->(destination:Account)
-LET a = source
-RETURN a.id AS a_id
+GRAPH FinGraph MATCH (source:Account)-[e:Transfers]->(destination:Account) LET a = source RETURN a.id AS a_id

@@ -126,7 +126,4 @@ RETURN p.name, element, off
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (p:Person)
-FOR element IN [] WITH OFFSET AS off
-RETURN p.name, element, off
+GRAPH FinGraph MATCH (p:Person) FOR element IN [] WITH OFFSET AS off RETURN p.name, element, off

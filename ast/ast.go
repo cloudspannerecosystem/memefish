@@ -4264,7 +4264,7 @@ type GQLSimpleLinearQueryStatementWithSetOperator struct {
 
 	StartPos      token.Pos
 	SetOperator   GQLSetOperatorEnum
-	DistinctOrAll GQLAllOrDistinctEnum
+	AllOrDistinct AllOrDistinct
 	Statement     *GQLSimpleLinearQueryStatement
 }
 
@@ -4462,7 +4462,7 @@ type GQLWithStatement struct {
 	// end = (GroupByClause ?? ReturnItemList[$]).end
 
 	With           token.Pos
-	AllOrDistinct  GQLAllOrDistinctEnum
+	AllOrDistinct  AllOrDistinct
 	ReturnItemList []*GQLReturnItem
 	GroupByClause  *GroupBy // optional
 }
@@ -4489,7 +4489,7 @@ type GQLReturnStatement struct {
 	// end = (LimitAndOffsetClause ?? OrderByClause ?? GroupByClause ?? ReturnItemList[$]).end
 
 	Return         token.Pos // position of "RETURN" keyword
-	AllOrDistinct  GQLAllOrDistinctEnum
+	AllOrDistinct  AllOrDistinct
 	ReturnItemList []*GQLReturnItem
 
 	// Use GoogleSQL GroupBy because it is referenced in docs

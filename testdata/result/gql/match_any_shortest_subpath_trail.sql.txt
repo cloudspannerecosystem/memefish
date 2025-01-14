@@ -120,6 +120,4 @@ RETURN COUNT(1) as num_paths
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH ANY SHORTEST (TRAIL ->{1,4})
-RETURN COUNT(1) AS num_paths
+GRAPH FinGraph MATCH ANY SHORTEST (TRAIL ->{1,4}) RETURN COUNT(1) AS num_paths

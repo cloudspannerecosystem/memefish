@@ -5662,16 +5662,13 @@ func (p *Parser) parseGQLSimpleLinearQueryStatementWithSetOperator() *ast.GQLSim
 		panic("unknown SetOperatorEnum")
 	}
 
-	allOrDistinct := p.tryParseGQLAllOrDistinctEnum()
-	if allOrDistinct == ast.GQLAllOrDistinctImplicitAll {
-		p.panicfAtToken(&p.Token, `expect "ALL" or "DISTINCT, but: %v`, p.Token.Kind)
-	}
-
+	allOrDistinct := p.parseAllOrDistinct()
 	stmt := p.parseGQLSimpleLinearQueryStatement()
+
 	return &ast.GQLSimpleLinearQueryStatementWithSetOperator{
 		StartPos:      pos,
 		SetOperator:   op,
-		DistinctOrAll: allOrDistinct,
+		AllOrDistinct: allOrDistinct,
 		Statement:     stmt,
 	}
 }
@@ -6377,7 +6374,7 @@ GQL RETURN statement
 func (p *Parser) parseGQLReturnStatement() *ast.GQLReturnStatement {
 	ret := p.expectKeywordLike("RETURN").Pos
 
-	allOrDistinct := p.tryParseGQLAllOrDistinctEnum()
+	allOrDistinct := p.tryParseAllOrDistinct()
 	returnItems := p.parseGQLReturnItemList()
 	groupBy := p.tryParseGroupBy()
 	orderBy := p.tryParseOrderBy()
@@ -6412,22 +6409,9 @@ func (p *Parser) parseGQLReturnItemList() []*ast.GQLReturnItem {
 	return parseCommaSeparatedList(p, p.parseGQLReturnItem)
 }
 
-func (p *Parser) tryParseGQLAllOrDistinctEnum() ast.GQLAllOrDistinctEnum {
-	switch p.Token.Kind {
-	case "ALL":
-		p.nextToken()
-		return ast.GQLAllOrDistinctAll
-	case "DISTINCT":
-		p.nextToken()
-		return ast.GQLAllOrDistinctDistinct
-	default:
-		return ast.GQLAllOrDistinctImplicitAll
-	}
-}
-
 func (p *Parser) parseGQLWithStatement() *ast.GQLWithStatement {
 	with := p.expect("WITH").Pos
-	allOrDistinct := p.tryParseGQLAllOrDistinctEnum()
+	allOrDistinct := p.tryParseAllOrDistinct()
 	returnItems := p.parseGQLReturnItemList()
 	groupBy := p.tryParseGroupBy()
 

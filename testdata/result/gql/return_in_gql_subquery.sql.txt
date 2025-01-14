@@ -170,6 +170,4 @@ RETURN 'Dana' IN {
 }
 
 --- SQL
-GRAPH FinGraph
-RETURN "Dana" IN {MATCH (p:Person)-[o:Owns]->(a:Account)
-RETURN p.name} AS results
+GRAPH FinGraph RETURN "Dana" IN {MATCH (p:Person)-[o:Owns]->(a:Account) RETURN p.name} AS results

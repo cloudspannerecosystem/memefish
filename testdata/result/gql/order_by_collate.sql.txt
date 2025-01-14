@@ -110,7 +110,4 @@ GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE 'und:ci' RETURN a.name
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (a:Person)
-ORDER BY a.name COLLATE "und:ci"
-RETURN a.name
+GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE "und:ci" RETURN a.name

@@ -392,9 +392,9 @@ func (t *TableSampleSize) SQL() string {
 }
 
 func (g *GraphTableExpr) SQL() string {
-	return "GRAPH_TABLE(\n" +
-		g.PropertyGraphName.SQL() + "\n" +
-		g.Query.SQL() + "\n" +
+	return "GRAPH_TABLE(" +
+		g.PropertyGraphName.SQL() + " " +
+		g.Query.SQL() +
 		")" + sqlOpt(" ", g.As, "")
 }
 
@@ -765,15 +765,15 @@ func (c *CastNumValue) SQL() string {
 // ================================================================================
 
 func (a *ArrayGQLSubQuery) SQL() string {
-	return "ARRAY {\n" + a.Query.SQL() + "\n}"
+	return "ARRAY {" + a.Query.SQL() + "}"
 }
 
 func (v *ValueGQLSubQuery) SQL() string {
-	return "VALUE {\n" + v.Query.SQL() + "\n}"
+	return "VALUE {" + v.Query.SQL() + "}"
 }
 
 func (v *ExistsGQLSubQuery) SQL() string {
-	return "EXISTS {\n" + v.Query.SQL() + "\n}"
+	return "EXISTS {" + v.Query.SQL() + "}"
 }
 
 // ================================================================================
@@ -1419,61 +1419,49 @@ func (c *Call) SQL() string {
 	return "CALL " + c.Name.SQL() + "(" + sqlJoin(c.Args, ", ") + ")"
 }
 
+// ================================================================================
+//
 // GQL
+//
+// ================================================================================
 
 func (s *GQLGraphQuery) SQL() string {
-	return sqlOpt("", s.Hint, " ") + s.GraphClause.SQL() + "\n" + s.MultiLinearQueryStatement.SQL()
+	return sqlOpt("", s.Hint, " ") + s.GraphClause.SQL() + " " + s.MultiLinearQueryStatement.SQL()
 }
 
 func (g *GQLQueryExpr) SQL() string {
-	return sqlOpt("", g.GraphClause, "\n") + g.MultiLinearQueryStatement.SQL()
+	return sqlOpt("", g.GraphClause, " ") + g.MultiLinearQueryStatement.SQL()
 }
 
 func (s *GQLGraphClause) SQL() string { return "GRAPH " + s.PropertyGraphName.SQL() }
 
 func (s *GQLMultiLinearQueryStatement) SQL() string {
-	return sqlJoin(s.LinearQueryStatementList, "\nNEXT\n")
+	return sqlJoin(s.LinearQueryStatementList, " NEXT ")
 }
 
 func (s *GQLSimpleLinearQueryStatement) SQL() string {
-	return sqlJoin(s.PrimitiveQueryStatementList, "\n")
+	return sqlJoin(s.PrimitiveQueryStatementList, " ")
 }
 
 func (s *GQLCompositeLinearQueryStatement) SQL() string {
-	sql := s.HeadSimpleLinearQueryStatement.SQL()
-	if len(s.TailSimpleLinearQueryStatementList) > 0 {
-		sql += "\n" + sqlJoin(s.TailSimpleLinearQueryStatementList, "\n")
-	}
-	return sql
+	return s.HeadSimpleLinearQueryStatement.SQL() +
+		strOpt(len(s.TailSimpleLinearQueryStatementList) > 0, " ") +
+		sqlJoin(s.TailSimpleLinearQueryStatementList, " ")
 }
 
 func (g *GQLSimpleLinearQueryStatementWithSetOperator) SQL() string {
-	var sql string
-	switch g.SetOperator {
-	case GQLSetOperatorUnion:
-		sql += "UNION"
-	case GQLSetOperatorIntersect:
-		sql += "INTERSECT"
-	case GQLSetOperatorExcept:
-		sql += "EXCEPT"
-	}
-
-	switch g.DistinctOrAll {
-	case GQLAllOrDistinctAll:
-		sql += " " + "ALL"
-	case GQLAllOrDistinctDistinct:
-		sql += " " + "DISTINCT"
-	default:
-		// no action
-	}
-
-	sql += "\n" + g.Statement.SQL()
-	return sql
+	return string(g.SetOperator) +
+		strOpt(g.AllOrDistinct != "", " "+string(g.AllOrDistinct)) +
+		" " + g.Statement.SQL()
 }
 
 func (s *GQLLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " = " + s.Value.SQL() }
 
+// ================================================================================
+//
 // GQL statements
+//
+// ================================================================================
 
 func (g *GQLMatchStatement) SQL() string {
 	return strIfElse(g.Optional.Invalid(), "MATCH", "OPTIONAL MATCH") +
@@ -1515,11 +1503,8 @@ func (g *GQLOrderByStatement) SQL() string {
 }
 
 func (g *GQLOrderBySpecification) SQL() string {
-	sql := g.Expr.SQL() + sqlOpt(" ", g.CollationSpecification, "")
-	if g.Direction != GQLSortOrderUnspecified {
-		sql += " " + string(g.Direction)
-	}
-	return sql
+	return g.Expr.SQL() + sqlOpt(" ", g.CollationSpecification, "") +
+		strOpt(g.Direction != "", " "+string(g.Direction))
 }
 
 func (g *GQLCollationSpecification) SQL() string {
@@ -1527,16 +1512,7 @@ func (g *GQLCollationSpecification) SQL() string {
 }
 
 func (g *GQLWithStatement) SQL() string {
-	var allOrDistinctStr string
-	switch g.AllOrDistinct {
-	case GQLAllOrDistinctDistinct:
-		allOrDistinctStr = "DISTINCT "
-	case GQLAllOrDistinctAll:
-		allOrDistinctStr = "ALL "
-	case GQLAllOrDistinctImplicitAll:
-		allOrDistinctStr = ""
-	}
-	return "WITH " + allOrDistinctStr +
+	return "WITH " + strOpt(g.AllOrDistinct != "", string(g.AllOrDistinct)+" ") +
 		sqlJoin(g.ReturnItemList, ", ") +
 		sqlOpt(" ", g.GroupByClause, "")
 }
@@ -1548,21 +1524,12 @@ func (g *GQLReturnItem) SQL() string {
 }
 
 func (g *GQLReturnStatement) SQL() string {
-	sql := "RETURN "
-	switch g.AllOrDistinct {
-	case GQLAllOrDistinctAll:
-		sql += "ALL "
-	case GQLAllOrDistinctDistinct:
-		sql += "DISTINCT "
-	case GQLAllOrDistinctImplicitAll:
-		// empty
-	}
-
-	sql += sqlJoin(g.ReturnItemList, ", ") +
+	return "RETURN " +
+		strOpt(g.AllOrDistinct != "", string(g.AllOrDistinct)+" ") +
+		sqlJoin(g.ReturnItemList, ", ") +
 		sqlOpt(" ", g.GroupByClause, "") +
 		sqlOpt(" ", g.OrderByClause, "") +
 		sqlOpt(" ", g.LimitAndOffsetClause, "")
-	return sql
 }
 
 // GQL graph patterns
@@ -1616,15 +1583,12 @@ func (g *GQLSubpathPattern) SQL() string {
 func (g *GQLNodePattern) SQL() string { return "(" + g.PatternFiller.SQL() + ")" }
 
 func (g *GQLPatternFiller) SQL() string {
-	sql := sqlOpt("", g.Hint, "") +
+	return sqlOpt("", g.Hint, "") +
 		sqlOpt("", g.GraphPatternVariable, "") +
-		sqlOpt("", g.IsLabelCondition, "")
-
-	if sql == "" {
-		return sqlOpt("", g.Filter, "")
-	}
-
-	return sql + sqlOpt(" ", g.Filter, "")
+		sqlOpt("", g.IsLabelCondition, "") +
+		sqlOpt(
+			strOpt(g.Hint != nil || g.GraphPatternVariable != nil || g.IsLabelCondition != nil, " "),
+			g.Filter, "")
 }
 
 func (g *GQLIsLabelCondition) SQL() string { return ":" + g.LabelExpression.SQL() }
@@ -1661,6 +1625,6 @@ func (p *GQLPathSearchPrefix) SQL() string {
 	case GQLPathSearchPrefixAll:
 		return "ALL"
 	default:
-		panic("invalid GQLPathSearchPrefix")
+		panic("unreached condition: invalid GQLPathSearchPrefix")
 	}
 }

@@ -122,6 +122,4 @@ RETURN n.name
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (n:Person|Account WHERE PROPERTY_EXISTS(n, name))
-RETURN n.name
+GRAPH FinGraph MATCH (n:Person|Account WHERE PROPERTY_EXISTS(n, name)) RETURN n.name

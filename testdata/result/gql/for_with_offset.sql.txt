@@ -226,7 +226,4 @@ ORDER BY p.name, element, offset
 }
 
 --- SQL
-GRAPH FinGraph
-MATCH (p:Person)-[o:Owns]->(a:Account)
-FOR element IN ["all", "some"] WITH OFFSET
-RETURN p.name, element AS alert_type, offset ORDER BY p.name, element, offset
+GRAPH FinGraph MATCH (p:Person)-[o:Owns]->(a:Account) FOR element IN ["all", "some"] WITH OFFSET RETURN p.name, element AS alert_type, offset ORDER BY p.name, element, offset
