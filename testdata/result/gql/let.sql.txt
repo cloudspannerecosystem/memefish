@@ -50,7 +50,9 @@ RETURN a.id AS a_id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        37,
-                          Gt:            51,
+                          Lbrack:        38,
+                          Rbrack:        50,
+                          Arrow:         51,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 39,

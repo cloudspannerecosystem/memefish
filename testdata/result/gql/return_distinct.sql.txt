@@ -68,7 +68,9 @@ RETURN DISTINCT ARRAY_LENGTH(e) AS hops, dst.id AS destination_account_id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        42,
-                          Gt:            56,
+                          Lbrack:        43,
+                          Rbrack:        55,
+                          Arrow:         56,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 44,

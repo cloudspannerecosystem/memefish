@@ -2347,7 +2347,7 @@ func (g *GQLFullEdgeRight) Pos() token.Pos {
 }
 
 func (g *GQLFullEdgeRight) End() token.Pos {
-	return posAdd(g.Gt, 1)
+	return posAdd(g.Arrow, 2)
 }
 
 func (g *GQLAbbreviatedEdgeAny) Pos() token.Pos {
@@ -2371,7 +2371,7 @@ func (g *GQLAbbreviatedEdgeRight) Pos() token.Pos {
 }
 
 func (g *GQLAbbreviatedEdgeRight) End() token.Pos {
-	return posAdd(g.Gt, 1)
+	return posAdd(g.Arrow, 2)
 }
 
 func (g *GQLQuantifiablePathTerm) Pos() token.Pos {

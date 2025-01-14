@@ -50,6 +50,8 @@ RETURN src.id AS source_id, dest.id AS destination_id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeLeft{
                           Lt:            34,
+                          Lbrack:        36,
+                          Rbrack:        55,
                           Hyphen:        56,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{

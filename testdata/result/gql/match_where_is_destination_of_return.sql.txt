@@ -51,6 +51,8 @@ RETURN a.id AS a_id, b.id AS b_id
                         PathTerm: &ast.GQLFullEdgeAny{
                           FirstHyphen:   32,
                           LastHyphen:    53,
+                          Lbrack:        33,
+                          Rbrack:        52,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 34,

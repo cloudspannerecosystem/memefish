@@ -66,7 +66,9 @@ RETURN EXISTS {
                                           &ast.GQLQuantifiablePathTerm{
                                             PathTerm: &ast.GQLFullEdgeRight{
                                               Hyphen:        49,
-                                              Gt:            58,
+                                              Lbrack:        50,
+                                              Rbrack:        57,
+                                              Arrow:         58,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 51,

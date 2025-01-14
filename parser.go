@@ -6059,6 +6059,7 @@ func (p *Parser) parseGQLPatternFiller() *ast.GQLPatternFiller {
 	if p.Token.Kind == token.TokenIdent {
 		patternVar = p.parseIdent()
 	}
+
 	var isLabelCondition *ast.GQLIsLabelCondition
 	if p.Token.Kind == ":" || p.Token.Kind == "IS" {
 		isLabelCondition = p.parseGQLIsLabelCondition()
@@ -6067,9 +6068,9 @@ func (p *Parser) parseGQLPatternFiller() *ast.GQLPatternFiller {
 	filter := p.tryParseGQLPatternFillerFilter()
 	return &ast.GQLPatternFiller{
 		Hint:                 hint,
-		GraphPatternVariable: patternVar,       // TODO
-		IsLabelCondition:     isLabelCondition, // TODO
-		Filter:               filter,           // TODO
+		GraphPatternVariable: patternVar,
+		IsLabelCondition:     isLabelCondition,
+		Filter:               filter,
 	}
 }
 
@@ -6188,10 +6189,19 @@ func (p *Parser) parseGQLSubPathPattern() *ast.GQLSubpathPattern {
 	}
 }
 
+// parseGQLFullEdgeBody parses [pattern_fillter].
+// If pattern_filler is empty, second return value is nil.
+func (p *Parser) parseGQLFullEdgeBody() (lbrack token.Pos, filler *ast.GQLPatternFiller, rbrack token.Pos) {
+	lbrack = p.expect("[").Pos
+	if p.Token.Kind != "]" {
+		filler = p.parseGQLPatternFiller()
+	}
+	rbrack = p.expect("]").Pos
+
+	return lbrack, filler, rbrack
+}
+
 func (p *Parser) parseGQLEdgePattern() ast.GQLEdgePattern {
-	// NOTE: Currently, this implementation allows whitespace in any place of "<-["  and "]->".
-	// It is more relaxed syntax than spec.
-	// It will be fixed when we are sure that the modification of lexer is safe.
 	firstPos := p.Token.Pos
 	switch p.Token.Kind {
 	case "<":
@@ -6203,43 +6213,49 @@ func (p *Parser) parseGQLEdgePattern() ast.GQLEdgePattern {
 				Hyphen: firstHyphenPos,
 			}
 		}
-		p.nextToken()
-		patternFilter := p.parseGQLPatternFiller()
-		p.expect("]")
+
+		lbrack, filler, rbrack := p.parseGQLFullEdgeBody()
 		lastPos := p.expect("-").Pos
+
 		return &ast.GQLFullEdgeLeft{
 			Lt:            firstPos,
+			Lbrack:        lbrack,
+			Rbrack:        rbrack,
 			Hyphen:        lastPos,
-			PatternFiller: patternFilter,
+			PatternFiller: filler,
 		}
 	case "->":
 		lastPos := p.expect("->").Pos
+
 		return &ast.GQLAbbreviatedEdgeRight{
 			Hyphen: firstPos,
-			Gt:     lastPos,
+			Arrow:  lastPos,
 		}
 	case "-":
 		p.nextToken()
 		switch p.Token.Kind {
 		case "[":
-			p.nextToken()
-			patternFiller := p.parseGQLPatternFiller()
-			p.expect("]")
+			lbrack, filler, rbrack := p.parseGQLFullEdgeBody()
+
 			switch p.Token.Kind {
 			case "->":
 				lastPos := p.Token.Pos
 				p.nextToken()
 				return &ast.GQLFullEdgeRight{
 					Hyphen:        firstPos,
-					Gt:            lastPos,
-					PatternFiller: patternFiller,
+					Lbrack:        lbrack,
+					Rbrack:        rbrack,
+					Arrow:         lastPos,
+					PatternFiller: filler,
 				}
 			case "-":
 				lastPos := p.expect("-").Pos
 				return &ast.GQLFullEdgeAny{
 					FirstHyphen:   firstPos,
+					Lbrack:        lbrack,
+					Rbrack:        rbrack,
 					LastHyphen:    lastPos,
-					PatternFiller: patternFiller,
+					PatternFiller: filler,
 				}
 			default:
 				panic(p.errorfAtToken(&p.Token, `expected "-", "->", but: %v`, p.Token.AsString))

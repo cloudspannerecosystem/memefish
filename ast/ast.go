@@ -4576,40 +4576,43 @@ func (GQLAbbreviatedEdgeRight) isGQLEdgePattern() {}
 
 // GQLFullEdgeAny is node representing`-[pattern_filler]-` .
 //
-//	-[{{.PatternFiller | sql}}]-
+//	-[{{.PatternFiller | sqlOpt}}]-
 type GQLFullEdgeAny struct {
 	// pos = FirstHyphen
 	// end = LastHyphen + 1
 
 	FirstHyphen, LastHyphen token.Pos // position of "-"
+	Lbrack, Rbrack          token.Pos // position of "[" and "]"
 
-	PatternFiller *GQLPatternFiller
+	PatternFiller *GQLPatternFiller // optional
 }
 
 // GQLFullEdgeLeft represents `<-[pattern_filler]-`
 //
-//	<-[{{.PatternFiller | sql}}]-
+//	<-[{{.PatternFiller | sqlOpt}}]-
 type GQLFullEdgeLeft struct {
 	// pos = Lt
 	// end = Hyphen + 1
 
-	Lt     token.Pos // position of "<"
-	Hyphen token.Pos // position of the last "-"
+	Lt             token.Pos // position of "<"
+	Lbrack, Rbrack token.Pos // position of "[" and "]"
+	Hyphen         token.Pos // position of the last "-"
 
-	PatternFiller *GQLPatternFiller
+	PatternFiller *GQLPatternFiller // optional
 }
 
 // GQLFullEdgeRight represents “-[pattern_filler]->
 //
-//	-[{{.PatternFiller | sql}}]->
+//	-[{{.PatternFiller | sqlOpt}}]->
 type GQLFullEdgeRight struct {
 	// pos = Hyphen
-	// end = Gt + 1
+	// end = Arrow + 2
 
-	Hyphen token.Pos // position of the first "-"
-	Gt     token.Pos // position of ">"
+	Hyphen         token.Pos // position of the first "-"
+	Lbrack, Rbrack token.Pos // position of "[" and "]"
+	Arrow          token.Pos // position of "->"
 
-	PatternFiller *GQLPatternFiller
+	PatternFiller *GQLPatternFiller // optional
 }
 
 // GQLAbbreviatedEdgeAny represents `-`.
@@ -4638,10 +4641,10 @@ type GQLAbbreviatedEdgeLeft struct {
 //	->
 type GQLAbbreviatedEdgeRight struct {
 	// pos = Hyphen
-	// end = Gt + 1
+	// end = Arrow + 2
 
 	Hyphen token.Pos // position of "-"
-	Gt     token.Pos // position of ">"
+	Arrow  token.Pos // position of "->"
 }
 
 // GQLQuantifiablePathTerm represents GQLPathTerm with optional Hint and optional GQLQuantifier..
@@ -4779,6 +4782,7 @@ type GQLNodePattern struct {
 }
 
 // GQLPatternFiller represents specifications on the node or edge pattern that you want to match.
+// Note: All fields are optional, but all non-nil pattern filler must have at least one non-nil field.
 //
 //	{{.Hint | sqlOpt}}
 //	{{.GraphPatternVariable | sqlOpt}}

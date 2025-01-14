@@ -70,7 +70,9 @@ RETURN 'Dana' IN {
                                             &ast.GQLQuantifiablePathTerm{
                                               PathTerm: &ast.GQLFullEdgeRight{
                                                 Hyphen:        52,
-                                                Gt:            61,
+                                                Lbrack:        53,
+                                                Rbrack:        60,
+                                                Arrow:         61,
                                                 PatternFiller: &ast.GQLPatternFiller{
                                                   GraphPatternVariable: &ast.Ident{
                                                     NamePos: 54,

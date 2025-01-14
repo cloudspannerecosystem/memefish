@@ -65,7 +65,9 @@ SELECT 'Dana' IN {
                                   &ast.GQLQuantifiablePathTerm{
                                     PathTerm: &ast.GQLFullEdgeRight{
                                       Hyphen:        54,
-                                      Gt:            63,
+                                      Lbrack:        55,
+                                      Rbrack:        62,
+                                      Arrow:         63,
                                       PatternFiller: &ast.GQLPatternFiller{
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 56,

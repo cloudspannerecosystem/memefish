@@ -5,9 +5,10 @@
   PathTermList: []*ast.GQLQuantifiablePathTerm{
     &ast.GQLQuantifiablePathTerm{
       PathTerm: &ast.GQLFullEdgeRight{
-        Hyphen:        1,
-        Gt:            4,
-        PatternFiller: &ast.GQLPatternFiller{},
+        Hyphen: 1,
+        Lbrack: 2,
+        Rbrack: 3,
+        Arrow:  4,
       },
     },
   },

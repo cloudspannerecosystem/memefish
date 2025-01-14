@@ -65,7 +65,9 @@ RETURN COUNT(1) as num_paths
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   Hyphen:        42,
-                                  Gt:            57,
+                                  Lbrack:        43,
+                                  Rbrack:        56,
+                                  Arrow:         57,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 44,
@@ -125,7 +127,9 @@ RETURN COUNT(1) as num_paths
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        78,
-                          Gt:            93,
+                          Lbrack:        79,
+                          Rbrack:        92,
+                          Arrow:         93,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 80,

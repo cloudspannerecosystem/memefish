@@ -71,7 +71,9 @@ RETURN COUNT(1) as num_paths
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   Hyphen:        45,
-                                  Gt:            60,
+                                  Lbrack:        46,
+                                  Rbrack:        59,
+                                  Arrow:         60,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 47,

@@ -71,7 +71,9 @@ RETURN oa.id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        41,
-                          Gt:            50,
+                          Lbrack:        42,
+                          Rbrack:        49,
+                          Arrow:         50,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 43,
@@ -145,7 +147,9 @@ RETURN oa.id
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLFullEdgeRight{
                                   Hyphen:        95,
-                                  Gt:            109,
+                                  Lbrack:        96,
+                                  Rbrack:        108,
+                                  Arrow:         109,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 97,

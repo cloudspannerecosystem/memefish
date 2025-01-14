@@ -55,7 +55,9 @@ RETURN
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        31,
-                          Gt:            39,
+                          Lbrack:        32,
+                          Rbrack:        38,
+                          Arrow:         39,
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,
@@ -190,7 +192,9 @@ RETURN
                                           &ast.GQLQuantifiablePathTerm{
                                             PathTerm: &ast.GQLFullEdgeRight{
                                               Hyphen:        130,
-                                              Gt:            151,
+                                              Lbrack:        131,
+                                              Rbrack:        150,
+                                              Arrow:         151,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 132,

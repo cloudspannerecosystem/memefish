@@ -50,7 +50,9 @@ RETURN p.name
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        31,
-                          Gt:            40,
+                          Lbrack:        32,
+                          Rbrack:        39,
+                          Arrow:         40,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 33,

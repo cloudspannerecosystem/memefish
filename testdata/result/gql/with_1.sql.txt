@@ -45,7 +45,9 @@ RETURN account.id AS account_id, num_incoming_transfers
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        31,
-                          Gt:            44,
+                          Lbrack:        32,
+                          Rbrack:        43,
+                          Arrow:         44,
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       33,

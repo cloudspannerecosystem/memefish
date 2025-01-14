@@ -56,7 +56,9 @@ RETURN a.id AS a_id, total, b.id AS b_id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        45,
-                          Gt:            59,
+                          Lbrack:        46,
+                          Rbrack:        58,
+                          Arrow:         59,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,

@@ -45,7 +45,7 @@ RETURN COUNT(1) as num_paths
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLAbbreviatedEdgeRight{
                                   Hyphen: 41,
-                                  Gt:     41,
+                                  Arrow:  41,
                                 },
                                 Quantifier: &ast.GQLBoundedQuantifier{
                                   Lbrace:     43,

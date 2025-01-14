@@ -87,7 +87,9 @@ RETURN n.name, a.id AS blocked_account_id
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLFullEdgeRight{
                           Hyphen:        57,
-                          Gt:            65,
+                          Lbrack:        58,
+                          Rbrack:        64,
+                          Arrow:         65,
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       59,

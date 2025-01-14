@@ -1575,11 +1575,11 @@ func (g *GQLTopLevelPathPattern) SQL() string {
 	return sqlOpt("", g.Var, " = ") + sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
 }
 
-func (g *GQLFullEdgeAny) SQL() string { return "-[" + g.PatternFiller.SQL() + "]-" }
+func (g *GQLFullEdgeAny) SQL() string { return "-[" + sqlOpt("", g.PatternFiller, "") + "]-" }
 
-func (g *GQLFullEdgeLeft) SQL() string { return "<-[" + g.PatternFiller.SQL() + "]-" }
+func (g *GQLFullEdgeLeft) SQL() string { return "<-[" + sqlOpt("", g.PatternFiller, "") + "]-" }
 
-func (g *GQLFullEdgeRight) SQL() string { return "-[" + g.PatternFiller.SQL() + "]->" }
+func (g *GQLFullEdgeRight) SQL() string { return "-[" + sqlOpt("", g.PatternFiller, "") + "]->" }
 
 func (g *GQLAbbreviatedEdgeAny) SQL() string { return "-" }
 
