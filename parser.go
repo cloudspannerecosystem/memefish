@@ -6291,10 +6291,11 @@ func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
 		p.expect("=")
 	}
 
+	pathMode := p.tryParseGQLPathSearchPrefixOrPathMode()
 	pattern := p.parseGQLPathPattern()
 	return &ast.GQLTopLevelPathPattern{
 		Var:                        varName,
-		PathSearchPrefixOrPathMode: nil, // TODO
+		PathSearchPrefixOrPathMode: pathMode,
 		PathPattern:                pattern,
 	}
 }

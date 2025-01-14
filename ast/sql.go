@@ -1476,16 +1476,10 @@ func (s *GQLLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " 
 // GQL statements
 
 func (g *GQLMatchStatement) SQL() string {
-	var sql string
-	if !g.Optional.Invalid() {
-		sql = "OPTIONAL MATCH"
-	} else {
-		sql = "MATCH"
-	}
-	sql += sqlOpt("", g.MatchHint, "")
-	sql += sqlOpt(" ", g.PrefixOrMode, "")
-	sql += " " + g.GraphPattern.SQL()
-	return sql
+	return strIfElse(g.Optional.Invalid(), "MATCH", "OPTIONAL MATCH") +
+		sqlOpt("", g.MatchHint, "") +
+		sqlOpt(" ", g.PrefixOrMode, "") +
+		" " + g.GraphPattern.SQL()
 }
 
 func (g *GQLFilterStatement) SQL() string {
