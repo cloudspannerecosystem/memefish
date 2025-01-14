@@ -5596,10 +5596,15 @@ func (p *Parser) parseStringValue() ast.StringValue {
 // ================================================================================
 
 func (p *Parser) parseGQLQuery() *ast.GQLGraphQuery {
+	hint := p.tryParseHint()
+	return p.parseGQLQueryInternal(hint)
+}
+
+func (p *Parser) parseGQLQueryInternal(hint *ast.Hint) *ast.GQLGraphQuery {
 	graphClause := p.parseGQLGraphClause()
 	multiQueryStatement := p.parseGQLMultiLinearQueryStatement()
 
-	return &ast.GQLGraphQuery{GraphClause: graphClause, MultiLinearQueryStatement: multiQueryStatement}
+	return &ast.GQLGraphQuery{Hint: hint, GraphClause: graphClause, MultiLinearQueryStatement: multiQueryStatement}
 }
 
 func (p *Parser) parseGQLSubQueryInCondition() *ast.GQLSubQueryInCondition {
