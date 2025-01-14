@@ -32,8 +32,8 @@ ORDER BY num_incoming_transfers DESC
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        30,
+                          Lparen:        21,
+                          Rparen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       22,
@@ -68,8 +68,8 @@ ORDER BY num_incoming_transfers DESC
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        46,
-                          RParen:        62,
+                          Lparen:        46,
+                          Rparen:        62,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,
@@ -149,8 +149,8 @@ ORDER BY num_incoming_transfers DESC
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        145,
-                          RParen:        161,
+                          Lparen:        145,
+                          Rparen:        161,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 146,
@@ -190,8 +190,8 @@ ORDER BY num_incoming_transfers DESC
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        172,
-                          RParen:        185,
+                          Lparen:        172,
+                          Rparen:        185,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 173,

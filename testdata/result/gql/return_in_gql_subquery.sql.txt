@@ -29,8 +29,8 @@ RETURN 'Dana' IN {
                       Value:    "Dana",
                     },
                     Right: &ast.GQLSubQueryInCondition{
-                      LBrace: 32,
-                      RBrace: 91,
+                      Lbrace: 32,
+                      Rbrace: 91,
                       Query:  &ast.GQLQueryExpr{
                         MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
                           LinearQueryStatementList: []ast.GQLLinearQueryStatement{
@@ -46,8 +46,8 @@ RETURN 'Dana' IN {
                                           PathTermList: []*ast.GQLQuantifiablePathTerm{
                                             &ast.GQLQuantifiablePathTerm{
                                               PathTerm: &ast.GQLNodePattern{
-                                                LParen:        42,
-                                                RParen:        51,
+                                                Lparen:        42,
+                                                Rparen:        51,
                                                 PatternFiller: &ast.GQLPatternFiller{
                                                   GraphPatternVariable: &ast.Ident{
                                                     NamePos: 43,
@@ -92,8 +92,8 @@ RETURN 'Dana' IN {
                                             },
                                             &ast.GQLQuantifiablePathTerm{
                                               PathTerm: &ast.GQLNodePattern{
-                                                LParen:        63,
-                                                RParen:        73,
+                                                Lparen:        63,
+                                                Rparen:        73,
                                                 PatternFiller: &ast.GQLPatternFiller{
                                                   GraphPatternVariable: &ast.Ident{
                                                     NamePos: 64,

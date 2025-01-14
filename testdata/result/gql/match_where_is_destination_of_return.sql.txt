@@ -26,8 +26,8 @@ RETURN a.id AS a_id, b.id AS b_id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        31,
+                          Lparen:        21,
+                          Rparen:        31,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -72,8 +72,8 @@ RETURN a.id AS a_id, b.id AS b_id
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        54,
-                          RParen:        64,
+                          Lparen:        54,
+                          Rparen:        64,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 55,

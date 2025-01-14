@@ -1352,10 +1352,10 @@ type ValuesInCondition struct {
 //
 //	{{"{"}}{{.Query | sql}}}{{"}"}}
 type GQLSubQueryInCondition struct {
-	// pos = LBrace
-	// end = RBrace + 1
+	// pos = Lbrace
+	// end = Rbrace + 1
 
-	LBrace, RBrace token.Pos // position of "{" and "}"
+	Lbrace, Rbrace token.Pos // position of "{" and "}"
 
 	Query *GQLQueryExpr
 }
@@ -1844,10 +1844,10 @@ type ArraySubQuery struct {
 //	ARRAY {{"{"}}{{.Query | sql}}{{"}"}}
 type ArrayGQLSubQuery struct {
 	// pos = Array
-	// end = RBrace + 1
+	// end = Rbrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
-	RBrace token.Pos // position of "}"
+	Rbrace token.Pos // position of "}"
 	Query  *GQLQueryExpr
 }
 
@@ -1856,10 +1856,10 @@ type ArrayGQLSubQuery struct {
 //	VALUE {{"{"}}{{.Query | sql}}{{"}"}}
 type ValueGQLSubQuery struct {
 	// pos = Array
-	// end = RBrace + 1
+	// end = Rbrace + 1
 
 	Array  token.Pos // position of "ARRAY" keyword
-	RBrace token.Pos // position of "}"
+	Rbrace token.Pos // position of "}"
 	Query  *GQLQueryExpr
 }
 
@@ -1868,10 +1868,10 @@ type ValueGQLSubQuery struct {
 //	EXISTS{{"{"}}{{.Expr | sql}}{{"}"}}
 type ExistsGQLSubQuery struct {
 	// pos = Exists
-	// end = RBrace + 1
+	// end = Rbrace + 1
 
 	Exists token.Pos // position of "EXISTS" keyword
-	RBrace token.Pos // "}"
+	Rbrace token.Pos // "}"
 	Query  GQLExistsExpr
 }
 
@@ -4735,10 +4735,10 @@ func (GQLBoundedQuantifier) isGQLQuantifier() {}
 //
 //	{{"{"}}{{.Bound | sql}}{{"}"}}
 type GQLFixedQuantifier struct {
-	// pos = LBrace
-	// end = RBrace + 1
+	// pos = Lbrace
+	// end = Rbrace + 1
 
-	LBrace, RBrace token.Pos
+	Lbrace, Rbrace token.Pos
 	Bound          IntValue
 }
 
@@ -4746,10 +4746,10 @@ type GQLFixedQuantifier struct {
 //
 //	{{"{"}}{{.LowerBound | sqlOpt}}, {{.UpperBound | sql}}{{"}"}}
 type GQLBoundedQuantifier struct {
-	// pos = LBrace
-	// end = RBrace + 1
+	// pos = Lbrace
+	// end = Rbrace + 1
 
-	LBrace, RBrace token.Pos
+	Lbrace, Rbrace token.Pos
 	LowerBound     IntValue // optional
 	UpperBound     IntValue
 }
@@ -4758,10 +4758,10 @@ type GQLBoundedQuantifier struct {
 //
 //	({{.PathMode | sqlOpt}} {{.PathPattern | sql}} {{.WhereClause | sqlOpt}})
 type GQLSubpathPattern struct {
-	// pos = LParen
-	// end = RParen + 1
+	// pos = Lparen
+	// end = Rparen + 1
 
-	LParen, RParen token.Pos    // position of "(" and ")"
+	Lparen, Rparen token.Pos    // position of "(" and ")"
 	PathMode       *GQLPathMode // optional
 	PathPattern    *GQLPathPattern
 	WhereClause    *Where // optional
@@ -4771,10 +4771,10 @@ type GQLSubpathPattern struct {
 //
 //	({{.PatternFiller | sql}})
 type GQLNodePattern struct {
-	// pos = LParen
-	// end = RParen + 1
+	// pos = Lparen
+	// end = Rparen + 1
 
-	LParen, RParen token.Pos
+	Lparen, Rparen token.Pos
 	PatternFiller  *GQLPatternFiller
 }
 
@@ -4837,10 +4837,10 @@ type GQLLabelOrExpression struct {
 //
 //	({{.LabelExpr | sql}})
 type GQLLabelParenExpression struct {
-	// pos = LParen
-	// end = RParen + 1
+	// pos = Lparen
+	// end = Rparen + 1
 
-	LParen, RParen token.Pos
+	Lparen, Rparen token.Pos
 	LabelExpr      GQLLabelExpression
 }
 
@@ -4907,12 +4907,12 @@ func (Where) isGQLPatternFillerFilter()              {}
 //
 //	{{"{"}}{{.PropertyFilterElemList | sqlJoin ", "}}{{"}"}}
 type GQLPropertyFilters struct {
-	// pos = LBrace
-	// end = RBrace + 1
+	// pos = Lbrace
+	// end = Rbrace + 1
 
-	LBrace                 token.Pos // position of "{"
+	Lbrace                 token.Pos // position of "{"
 	PropertyFilterElemList []*GQLElementProperty
-	RBrace                 token.Pos // position of "}"
+	Rbrace                 token.Pos // position of "}"
 }
 
 // GQLElementProperty represents an element of GQLPropertyFilters.

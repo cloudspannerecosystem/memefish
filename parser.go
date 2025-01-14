@@ -1869,7 +1869,7 @@ func (p *Parser) parseLit() ast.Expr {
 			rbrace := p.expect("}").Pos
 			return &ast.ValueGQLSubQuery{
 				Array:  id.Pos,
-				RBrace: rbrace,
+				Rbrace: rbrace,
 				Query:  query,
 			}
 		}
@@ -2343,7 +2343,7 @@ func (p *Parser) parseExistsSubQuery() ast.Expr {
 		rbrace := p.expect("}").Pos
 		return &ast.ExistsGQLSubQuery{
 			Exists: exists,
-			RBrace: rbrace,
+			Rbrace: rbrace,
 			Query:  expr,
 		}
 	}
@@ -2498,7 +2498,7 @@ func (p *Parser) parseArrayLiteralOrSubQuery() ast.Expr {
 		rbrace := p.expect("}").Pos
 		return &ast.ArrayGQLSubQuery{
 			Array:  pos,
-			RBrace: rbrace,
+			Rbrace: rbrace,
 			Query:  query,
 		}
 	}
@@ -5612,7 +5612,7 @@ func (p *Parser) parseGQLSubQueryInCondition() *ast.GQLSubQueryInCondition {
 	query := p.parseGQLQueryExpr()
 	rbrace := p.expect("}").Pos
 
-	return &ast.GQLSubQueryInCondition{LBrace: lbrace, RBrace: rbrace, Query: query}
+	return &ast.GQLSubQueryInCondition{Lbrace: lbrace, Rbrace: rbrace, Query: query}
 }
 func (p *Parser) parseGQLQueryExpr() *ast.GQLQueryExpr {
 	var graphClause *ast.GQLGraphClause
@@ -5982,7 +5982,7 @@ func (p *Parser) parseGQLMatchStatement() *ast.GQLMatchStatement {
 	}
 }
 
-func (p *Parser) parseGQLLabelName() ast.GQLLabelPrimary {
+func (p *Parser) parseGQLLabelPrimary() ast.GQLLabelPrimary {
 	pos := p.Token.Pos
 
 	if p.Token.Kind == "%" {
@@ -5998,61 +5998,56 @@ func (p *Parser) parseGQLLabelName() ast.GQLLabelPrimary {
 	}
 }
 
-func (p *Parser) parseGQLLabelExpression() ast.GQLLabelExpression {
-	// TODO
-	/*
-		label_expression:
-		  {
-		    label_name
-		    | or_expression
-		    | and_expression
-		    | not_expression
-		  }
-	*/
-	var labelTerm ast.GQLLabelExpression
-	switch {
-	case p.Token.Kind == "!":
-		notPos := p.expect("!").Pos
-		expr := p.parseGQLLabelExpression()
-		labelTerm = &ast.GQLLabelNotExpression{Not: notPos, LabelExpression: expr}
-	case p.Token.Kind == "(":
-		lparen := p.expect("(").Pos
-		expr := p.parseGQLLabelExpression()
-		rparen := p.expect(")").Pos
-		labelTerm = &ast.GQLLabelParenExpression{
-			LParen:    lparen,
-			RParen:    rparen,
-			LabelExpr: expr,
-		}
-	case p.Token.Kind == token.TokenIdent || p.Token.Kind == "%":
-		labelTerm = p.parseGQLLabelName()
-	default:
-		p.panicfAtToken(&p.Token, `expected token: ",", "(", or "<ident>", but: %v`, p.Token.Kind)
-		return nil
-	}
+func (p *Parser) parseGQLLabelExpressionBinary() ast.GQLLabelExpression {
+	labelTerm := p.parseLabelUnary()
+
 	switch {
 	case p.Token.Kind == "|":
 		p.nextToken()
-		right := p.parseGQLLabelExpression()
+		right := p.parseGQLLabelExpressionBinary()
 		return &ast.GQLLabelOrExpression{
 			Left:  labelTerm,
 			Right: right,
 		}
 	case p.Token.Kind == "&":
 		p.nextToken()
-		right := p.parseGQLLabelExpression()
+		right := p.parseGQLLabelExpressionBinary()
 		return &ast.GQLLabelAndExpression{
 			Left:  labelTerm,
 			Right: right,
 		}
+	default:
+		return labelTerm
 	}
-	return labelTerm
 }
+
+func (p *Parser) parseLabelUnary() ast.GQLLabelExpression {
+	switch {
+	case p.Token.Kind == "!":
+		notPos := p.expect("!").Pos
+		expr := p.parseGQLLabelExpressionBinary()
+		return &ast.GQLLabelNotExpression{Not: notPos, LabelExpression: expr}
+	case p.Token.Kind == "(":
+		lparen := p.expect("(").Pos
+		expr := p.parseGQLLabelExpressionBinary()
+		rparen := p.expect(")").Pos
+		return &ast.GQLLabelParenExpression{
+			Lparen:    lparen,
+			Rparen:    rparen,
+			LabelExpr: expr,
+		}
+	case p.Token.Kind == token.TokenIdent || p.Token.Kind == "%":
+		return p.parseGQLLabelPrimary()
+	default:
+		panic(p.errorfAtToken(&p.Token, `expected token: ",", "(", or "<ident>", but: %v`, p.Token.Kind))
+	}
+}
+
 func (p *Parser) parseGQLIsLabelCondition() *ast.GQLIsLabelCondition {
 
 	pos := p.Token.Pos
 	p.nextToken()
-	labelExpr := p.parseGQLLabelExpression()
+	labelExpr := p.parseGQLLabelExpressionBinary()
 	return &ast.GQLIsLabelCondition{
 		IsOrColon:       pos,
 		LabelExpression: labelExpr,
@@ -6099,8 +6094,8 @@ func (p *Parser) parseGQLNodePattern() *ast.GQLNodePattern {
 	filter := p.parseGQLPatternFiller()
 	rparen := p.expect(")").Pos
 	return &ast.GQLNodePattern{
-		LParen:        lparen,
-		RParen:        rparen,
+		Lparen:        lparen,
+		Rparen:        rparen,
 		PatternFiller: filter,
 	}
 }
@@ -6109,13 +6104,14 @@ func (p *Parser) tryParseGQLQuantifier() ast.GQLQuantifier {
 	if p.Token.Kind != "{" {
 		return nil
 	}
+
 	lbrace := p.expect("{").Pos
 	if p.Token.Kind == "," {
 		upperBound := p.parseIntValue()
 		rbrace := p.expect("}").Pos
 		return &ast.GQLBoundedQuantifier{
-			LBrace:     lbrace,
-			RBrace:     rbrace,
+			Lbrace:     lbrace,
+			Rbrace:     rbrace,
 			UpperBound: upperBound,
 		}
 	}
@@ -6123,8 +6119,8 @@ func (p *Parser) tryParseGQLQuantifier() ast.GQLQuantifier {
 	if p.Token.Kind != "," {
 		rbrace := p.expect("}").Pos
 		return &ast.GQLFixedQuantifier{
-			LBrace: lbrace,
-			RBrace: rbrace,
+			Lbrace: lbrace,
+			Rbrace: rbrace,
 			Bound:  bound,
 		}
 	}
@@ -6133,8 +6129,8 @@ func (p *Parser) tryParseGQLQuantifier() ast.GQLQuantifier {
 	rbrace := p.expect("}").Pos
 
 	return &ast.GQLBoundedQuantifier{
-		LBrace:     lbrace,
-		RBrace:     rbrace,
+		Lbrace:     lbrace,
+		Rbrace:     rbrace,
 		LowerBound: bound,
 		UpperBound: upperBound,
 	}
@@ -6184,8 +6180,8 @@ func (p *Parser) parseGQLSubPathPattern() *ast.GQLSubpathPattern {
 	rparen := p.expect(")").Pos
 
 	return &ast.GQLSubpathPattern{
-		LParen:      lparen,
-		RParen:      rparen,
+		Lparen:      lparen,
+		Rparen:      rparen,
 		PathMode:    pathMode,
 		PathPattern: pattern,
 		WhereClause: where,
@@ -6320,9 +6316,9 @@ func (p *Parser) parseGQLPropertyFilters() *ast.GQLPropertyFilters {
 
 	rbrace := p.expect("}").Pos
 	return &ast.GQLPropertyFilters{
-		LBrace:                 lbrace,
+		Lbrace:                 lbrace,
 		PropertyFilterElemList: elementPropertyList,
-		RBrace:                 rbrace,
+		Rbrace:                 rbrace,
 	}
 }
 

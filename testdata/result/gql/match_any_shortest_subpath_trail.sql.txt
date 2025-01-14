@@ -30,8 +30,8 @@ RETURN COUNT(1) as num_paths
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLSubpathPattern{
-                          LParen:   34,
-                          RParen:   48,
+                          Lparen:   34,
+                          Rparen:   48,
                           PathMode: &ast.GQLPathMode{
                             Mode:      "TRAIL",
                             ModeToken: &ast.Ident{
@@ -48,8 +48,8 @@ RETURN COUNT(1) as num_paths
                                   Gt:     41,
                                 },
                                 Quantifier: &ast.GQLBoundedQuantifier{
-                                  LBrace:     43,
-                                  RBrace:     47,
+                                  Lbrace:     43,
+                                  Rbrace:     47,
                                   LowerBound: &ast.IntLiteral{
                                     ValuePos: 44,
                                     ValueEnd: 45,

@@ -16,8 +16,8 @@ SELECT 'Dana' IN {
             Value:    "Dana",
           },
           Right: &ast.GQLSubQueryInCondition{
-            LBrace: 17,
-            RBrace: 93,
+            Lbrace: 17,
+            Rbrace: 93,
             Query:  &ast.GQLQueryExpr{
               GraphClause: &ast.GQLGraphClause{
                 Graph:             21,
@@ -41,8 +41,8 @@ SELECT 'Dana' IN {
                                 PathTermList: []*ast.GQLQuantifiablePathTerm{
                                   &ast.GQLQuantifiablePathTerm{
                                     PathTerm: &ast.GQLNodePattern{
-                                      LParen:        44,
-                                      RParen:        53,
+                                      Lparen:        44,
+                                      Rparen:        53,
                                       PatternFiller: &ast.GQLPatternFiller{
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 45,
@@ -87,8 +87,8 @@ SELECT 'Dana' IN {
                                   },
                                   &ast.GQLQuantifiablePathTerm{
                                     PathTerm: &ast.GQLNodePattern{
-                                      LParen:        65,
-                                      RParen:        75,
+                                      Lparen:        65,
+                                      Rparen:        75,
                                       PatternFiller: &ast.GQLPatternFiller{
                                         GraphPatternVariable: &ast.Ident{
                                           NamePos: 66,

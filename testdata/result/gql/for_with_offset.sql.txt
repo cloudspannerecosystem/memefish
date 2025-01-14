@@ -28,8 +28,8 @@ ORDER BY p.name, element, offset
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        30,
+                          Lparen:        21,
+                          Rparen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -74,8 +74,8 @@ ORDER BY p.name, element, offset
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        42,
-                          RParen:        52,
+                          Lparen:        42,
+                          Rparen:        52,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 43,

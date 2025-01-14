@@ -26,8 +26,8 @@ RETURN oa.id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        38,
+                          Lparen:        21,
+                          Rparen:        38,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -45,7 +45,7 @@ RETURN oa.id
                               },
                             },
                             Filter: &ast.GQLPropertyFilters{
-                              LBrace:                 31,
+                              Lbrace:                 31,
                               PropertyFilterElemList: []*ast.GQLElementProperty{
                                 &ast.GQLElementProperty{
                                   ElementPropertyName: &ast.Ident{
@@ -61,7 +61,7 @@ RETURN oa.id
                                   },
                                 },
                               },
-                              RBrace: 37,
+                              Rbrace: 37,
                             },
                           },
                         },
@@ -86,8 +86,8 @@ RETURN oa.id
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        49,
-                          RParen:        59,
+                          Lparen:        49,
+                          Rparen:        59,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 50,
@@ -145,8 +145,8 @@ RETURN oa.id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        92,
-                          RParen:        102,
+                          Lparen:        92,
+                          Rparen:        102,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 93,
@@ -191,8 +191,8 @@ RETURN oa.id
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        119,
-                          RParen:        130,
+                          Lparen:        119,
+                          Rparen:        130,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 120,

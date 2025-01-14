@@ -27,8 +27,8 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        41,
+                          Lparen:        21,
+                          Rparen:        41,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -73,8 +73,8 @@ RETURN src_account.id AS account_id, transfer.amount AS transfer_amount
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        65,
-                          RParen:        85,
+                          Lparen:        65,
+                          Rparen:        85,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 66,

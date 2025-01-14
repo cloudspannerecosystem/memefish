@@ -26,7 +26,7 @@ RETURN EXISTS {
                 Item: &ast.Alias{
                   Expr: &ast.ExistsGQLSubQuery{
                     Exists: 22,
-                    RBrace: 123,
+                    Rbrace: 123,
                     Query:  &ast.GQLQueryExpr{
                       MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
                         LinearQueryStatementList: []ast.GQLLinearQueryStatement{
@@ -42,8 +42,8 @@ RETURN EXISTS {
                                         PathTermList: []*ast.GQLQuantifiablePathTerm{
                                           &ast.GQLQuantifiablePathTerm{
                                             PathTerm: &ast.GQLNodePattern{
-                                              LParen:        39,
-                                              RParen:        48,
+                                              Lparen:        39,
+                                              Rparen:        48,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 40,
@@ -88,8 +88,8 @@ RETURN EXISTS {
                                           },
                                           &ast.GQLQuantifiablePathTerm{
                                             PathTerm: &ast.GQLNodePattern{
-                                              LParen:        60,
-                                              RParen:        70,
+                                              Lparen:        60,
+                                              Rparen:        70,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 61,

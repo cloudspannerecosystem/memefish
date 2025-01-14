@@ -26,7 +26,7 @@ RETURN VALUE {
                 Item: &ast.Alias{
                   Expr: &ast.ValueGQLSubQuery{
                     Array:  22,
-                    RBrace: 101,
+                    Rbrace: 101,
                     Query:  &ast.GQLQueryExpr{
                       MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
                         LinearQueryStatementList: []ast.GQLLinearQueryStatement{
@@ -42,8 +42,8 @@ RETURN VALUE {
                                         PathTermList: []*ast.GQLQuantifiablePathTerm{
                                           &ast.GQLQuantifiablePathTerm{
                                             PathTerm: &ast.GQLNodePattern{
-                                              LParen:        38,
-                                              RParen:        47,
+                                              Lparen:        38,
+                                              Rparen:        47,
                                               PatternFiller: &ast.GQLPatternFiller{
                                                 GraphPatternVariable: &ast.Ident{
                                                   NamePos: 39,

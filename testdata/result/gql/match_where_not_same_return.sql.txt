@@ -26,8 +26,8 @@ RETURN src.id AS source_id, dest.id AS destination_id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        33,
+                          Lparen:        21,
+                          Rparen:        33,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -72,8 +72,8 @@ RETURN src.id AS source_id, dest.id AS destination_id
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        57,
-                          RParen:        70,
+                          Lparen:        57,
+                          Rparen:        70,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 58,

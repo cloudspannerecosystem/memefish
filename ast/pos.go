@@ -463,11 +463,11 @@ func (v *ValuesInCondition) End() token.Pos {
 }
 
 func (g *GQLSubQueryInCondition) Pos() token.Pos {
-	return g.LBrace
+	return g.Lbrace
 }
 
 func (g *GQLSubQueryInCondition) End() token.Pos {
-	return posAdd(g.RBrace, 1)
+	return posAdd(g.Rbrace, 1)
 }
 
 func (i *IsNullExpr) Pos() token.Pos {
@@ -763,7 +763,7 @@ func (a *ArrayGQLSubQuery) Pos() token.Pos {
 }
 
 func (a *ArrayGQLSubQuery) End() token.Pos {
-	return posAdd(a.RBrace, 1)
+	return posAdd(a.Rbrace, 1)
 }
 
 func (v *ValueGQLSubQuery) Pos() token.Pos {
@@ -771,7 +771,7 @@ func (v *ValueGQLSubQuery) Pos() token.Pos {
 }
 
 func (v *ValueGQLSubQuery) End() token.Pos {
-	return posAdd(v.RBrace, 1)
+	return posAdd(v.Rbrace, 1)
 }
 
 func (e *ExistsGQLSubQuery) Pos() token.Pos {
@@ -779,7 +779,7 @@ func (e *ExistsGQLSubQuery) Pos() token.Pos {
 }
 
 func (e *ExistsGQLSubQuery) End() token.Pos {
-	return posAdd(e.RBrace, 1)
+	return posAdd(e.Rbrace, 1)
 }
 
 func (e *ExistsSubQuery) Pos() token.Pos {
@@ -2407,35 +2407,35 @@ func (g *GQLPathMode) End() token.Pos {
 }
 
 func (g *GQLFixedQuantifier) Pos() token.Pos {
-	return g.LBrace
+	return g.Lbrace
 }
 
 func (g *GQLFixedQuantifier) End() token.Pos {
-	return posAdd(g.RBrace, 1)
+	return posAdd(g.Rbrace, 1)
 }
 
 func (g *GQLBoundedQuantifier) Pos() token.Pos {
-	return g.LBrace
+	return g.Lbrace
 }
 
 func (g *GQLBoundedQuantifier) End() token.Pos {
-	return posAdd(g.RBrace, 1)
+	return posAdd(g.Rbrace, 1)
 }
 
 func (g *GQLSubpathPattern) Pos() token.Pos {
-	return g.LParen
+	return g.Lparen
 }
 
 func (g *GQLSubpathPattern) End() token.Pos {
-	return posAdd(g.RParen, 1)
+	return posAdd(g.Rparen, 1)
 }
 
 func (g *GQLNodePattern) Pos() token.Pos {
-	return g.LParen
+	return g.Lparen
 }
 
 func (g *GQLNodePattern) End() token.Pos {
-	return posAdd(g.RParen, 1)
+	return posAdd(g.Rparen, 1)
 }
 
 func (g *GQLPatternFiller) Pos() token.Pos {
@@ -2463,11 +2463,11 @@ func (g *GQLLabelOrExpression) End() token.Pos {
 }
 
 func (g *GQLLabelParenExpression) Pos() token.Pos {
-	return g.LParen
+	return g.Lparen
 }
 
 func (g *GQLLabelParenExpression) End() token.Pos {
-	return posAdd(g.RParen, 1)
+	return posAdd(g.Rparen, 1)
 }
 
 func (g *GQLLabelAndExpression) Pos() token.Pos {
@@ -2503,11 +2503,11 @@ func (g *GQLElementLabel) End() token.Pos {
 }
 
 func (g *GQLPropertyFilters) Pos() token.Pos {
-	return g.LBrace
+	return g.Lbrace
 }
 
 func (g *GQLPropertyFilters) End() token.Pos {
-	return posAdd(g.RBrace, 1)
+	return posAdd(g.Rbrace, 1)
 }
 
 func (g *GQLElementProperty) Pos() token.Pos {

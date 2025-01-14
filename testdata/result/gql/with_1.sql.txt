@@ -26,8 +26,8 @@ RETURN account.id AS account_id, num_incoming_transfers
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        30,
+                          Lparen:        21,
+                          Rparen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
                             IsLabelCondition: &ast.GQLIsLabelCondition{
                               IsOrColon:       22,
@@ -62,8 +62,8 @@ RETURN account.id AS account_id, num_incoming_transfers
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        46,
-                          RParen:        62,
+                          Lparen:        46,
+                          Rparen:        62,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 47,

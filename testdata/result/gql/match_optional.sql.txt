@@ -26,8 +26,8 @@ RETURN n.name, a.id AS blocked_account_id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        21,
-                          RParen:        30,
+                          Lparen:        21,
+                          Rparen:        30,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 22,
@@ -63,8 +63,8 @@ RETURN n.name, a.id AS blocked_account_id
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        47,
-                          RParen:        56,
+                          Lparen:        47,
+                          Rparen:        56,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 48,
@@ -104,8 +104,8 @@ RETURN n.name, a.id AS blocked_account_id
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        67,
-                          RParen:        96,
+                          Lparen:        67,
+                          Rparen:        96,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 68,
@@ -123,7 +123,7 @@ RETURN n.name, a.id AS blocked_account_id
                               },
                             },
                             Filter: &ast.GQLPropertyFilters{
-                              LBrace:                 78,
+                              Lbrace:                 78,
                               PropertyFilterElemList: []*ast.GQLElementProperty{
                                 &ast.GQLElementProperty{
                                   ElementPropertyName: &ast.Ident{
@@ -137,7 +137,7 @@ RETURN n.name, a.id AS blocked_account_id
                                   },
                                 },
                               },
-                              RBrace: 95,
+                              Rbrace: 95,
                             },
                           },
                         },

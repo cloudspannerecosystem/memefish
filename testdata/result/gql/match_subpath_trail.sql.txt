@@ -27,8 +27,8 @@ RETURN COUNT(1) as num_paths
                     PathTermList: []*ast.GQLQuantifiablePathTerm{
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLSubpathPattern{
-                          LParen:   23,
-                          RParen:   74,
+                          Lparen:   23,
+                          Rparen:   74,
                           PathMode: &ast.GQLPathMode{
                             Mode:      "TRAIL",
                             ModeToken: &ast.Ident{
@@ -41,8 +41,8 @@ RETURN COUNT(1) as num_paths
                             PathTermList: []*ast.GQLQuantifiablePathTerm{
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLNodePattern{
-                                  LParen:        30,
-                                  RParen:        41,
+                                  Lparen:        30,
+                                  Rparen:        41,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 31,
@@ -85,8 +85,8 @@ RETURN COUNT(1) as num_paths
                                   },
                                 },
                                 Quantifier: &ast.GQLFixedQuantifier{
-                                  LBrace: 59,
-                                  RBrace: 61,
+                                  Lbrace: 59,
+                                  Rbrace: 61,
                                   Bound:  &ast.IntLiteral{
                                     ValuePos: 60,
                                     ValueEnd: 61,
@@ -97,8 +97,8 @@ RETURN COUNT(1) as num_paths
                               },
                               &ast.GQLQuantifiablePathTerm{
                                 PathTerm: &ast.GQLNodePattern{
-                                  LParen:        62,
-                                  RParen:        73,
+                                  Lparen:        62,
+                                  Rparen:        73,
                                   PatternFiller: &ast.GQLPatternFiller{
                                     GraphPatternVariable: &ast.Ident{
                                       NamePos: 63,
@@ -147,8 +147,8 @@ RETURN COUNT(1) as num_paths
                       },
                       &ast.GQLQuantifiablePathTerm{
                         PathTerm: &ast.GQLNodePattern{
-                          LParen:        95,
-                          RParen:        106,
+                          Lparen:        95,
+                          Rparen:        106,
                           PatternFiller: &ast.GQLPatternFiller{
                             GraphPatternVariable: &ast.Ident{
                               NamePos: 96,

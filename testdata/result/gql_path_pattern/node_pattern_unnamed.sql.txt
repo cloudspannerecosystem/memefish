@@ -5,8 +5,8 @@
   PathTermList: []*ast.GQLQuantifiablePathTerm{
     &ast.GQLQuantifiablePathTerm{
       PathTerm: &ast.GQLNodePattern{
-        LParen:        1,
-        RParen:        2,
+        Lparen:        1,
+        Rparen:        2,
         PatternFiller: &ast.GQLPatternFiller{},
       },
     },
