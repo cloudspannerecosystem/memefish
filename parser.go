@@ -6269,9 +6269,31 @@ func (p *Parser) parseGQLPathPattern() *ast.GQLPathPattern {
 		PathTermList: list,
 	}
 }
+
+func (p *Parser) lookaheadGQLPathVariable() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+	p.nextToken()
+
+	return p.Token.Kind == "="
+}
+
 func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
+	var varName *ast.Ident
+	if p.lookaheadGQLPathVariable() {
+		varName = p.parseIdent()
+		p.expect("=")
+	}
+
 	pattern := p.parseGQLPathPattern()
 	return &ast.GQLTopLevelPathPattern{
+		Var:                        varName,
 		PathSearchPrefixOrPathMode: nil, // TODO
 		PathPattern:                pattern,
 	}

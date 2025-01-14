@@ -1422,7 +1422,7 @@ func (c *Call) SQL() string {
 // GQL
 
 func (s *GQLGraphQuery) SQL() string {
-	return s.GraphClause.SQL() + "\n" + s.MultiLinearQueryStatement.SQL()
+	return sqlOpt("", s.Hint, " ") + s.GraphClause.SQL() + "\n" + s.MultiLinearQueryStatement.SQL()
 }
 
 func (g *GQLQueryExpr) SQL() string {
@@ -1578,7 +1578,7 @@ func (g *GQLGraphPattern) SQL() string {
 }
 
 func (g *GQLTopLevelPathPattern) SQL() string {
-	return sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
+	return sqlOpt("", g.Var, " = ") + sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
 }
 
 func (g *GQLFullEdgeAny) SQL() string { return "-[" + g.PatternFiller.SQL() + "]-" }

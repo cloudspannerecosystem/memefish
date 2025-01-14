@@ -4188,12 +4188,14 @@ type Call struct {
 
 // GQLGraphQuery is toplevel node of GRAPH query.
 //
+//	{{.Hint | sqlOpt}}
 //	{{.Graph | sql}}
 //	{{.MultiLinearQueryStatement | sql}}
 type GQLGraphQuery struct {
-	// pos = (GraphClause ?? MultiLinearQueryStatement).pos
+	// pos = (Hint ?? GraphClause ?? MultiLinearQueryStatement).pos
 	// end = MultiLinearQueryStatement.end
 
+	Hint                      *Hint
 	GraphClause               *GQLGraphClause
 	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
 }
@@ -4542,11 +4544,12 @@ type GQLGraphPattern struct {
 
 // GQLTopLevelPathPattern is a PathPattern optionally prefixed by PathSearchPrefixOrPathMode.
 //
-//	{{.PathSearchPrefixOrPathMode | sqlOpt}} {{.PathPattern | sql}}
+//	{{if .Var}}{{.Var}} = {{end}}{{.PathSearchPrefixOrPathMode | sqlOpt}} {{.PathPattern | sql}}
 type GQLTopLevelPathPattern struct {
 	// pos = (PathSearchPrefixOrPathMode ?? PathPattern).pos
 	// end = PathPattern.end
 
+	Var                        *Ident
 	PathSearchPrefixOrPathMode GQLPathSearchPrefixOrPathMode // optional
 	PathPattern                *GQLPathPattern
 }

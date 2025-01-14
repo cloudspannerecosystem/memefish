@@ -2119,7 +2119,7 @@ func (c *Call) End() token.Pos {
 }
 
 func (g *GQLGraphQuery) Pos() token.Pos {
-	return nodePos(nodeChoice(wrapNode(g.GraphClause), wrapNode(g.MultiLinearQueryStatement)))
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.GraphClause), wrapNode(g.MultiLinearQueryStatement)))
 }
 
 func (g *GQLGraphQuery) End() token.Pos {

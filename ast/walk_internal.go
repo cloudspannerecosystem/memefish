@@ -973,6 +973,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *GQLGraphQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
 		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *GQLQueryExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
@@ -1061,6 +1062,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *GQLTopLevelPathPattern:
 		stack = append(stack, &stackItem{node: wrapNode(n.PathPattern), visitor: v.Field("PathPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Var), visitor: v.Field("Var")})
 
 	case *GQLFullEdgeAny:
 		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
