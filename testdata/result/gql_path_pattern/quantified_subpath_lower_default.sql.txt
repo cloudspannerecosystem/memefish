@@ -1,0 +1,146 @@
+--- quantified_subpath_lower_default.sql
+(source_person:Person)((p:Person)-[k:Knows]->(f:Person)){, 4}(dest_person:Person)
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLNodePattern{
+        Rparen:        21,
+        PatternFiller: &ast.GQLPatternFiller{
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 1,
+            NameEnd: 14,
+            Name:    "source_person",
+          },
+          IsLabelCondition: &ast.GQLIsLabelCondition{
+            IsOrColon:       14,
+            LabelExpression: &ast.GQLElementLabel{
+              LabelName: &ast.Ident{
+                NamePos: 15,
+                NameEnd: 21,
+                Name:    "Person",
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLSubpathPattern{
+        Lparen:      22,
+        Rparen:      55,
+        PathPattern: &ast.GQLPathPattern{
+          PathTermList: []*ast.GQLQuantifiablePathTerm{
+            &ast.GQLQuantifiablePathTerm{
+              PathTerm: &ast.GQLNodePattern{
+                Lparen:        23,
+                Rparen:        32,
+                PatternFiller: &ast.GQLPatternFiller{
+                  GraphPatternVariable: &ast.Ident{
+                    NamePos: 24,
+                    NameEnd: 25,
+                    Name:    "p",
+                  },
+                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                    IsOrColon:       25,
+                    LabelExpression: &ast.GQLElementLabel{
+                      LabelName: &ast.Ident{
+                        NamePos: 26,
+                        NameEnd: 32,
+                        Name:    "Person",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            &ast.GQLQuantifiablePathTerm{
+              PathTerm: &ast.GQLFullEdgeRight{
+                Hyphen:        33,
+                Lbrack:        34,
+                Rbrack:        42,
+                Arrow:         43,
+                PatternFiller: &ast.GQLPatternFiller{
+                  GraphPatternVariable: &ast.Ident{
+                    NamePos: 35,
+                    NameEnd: 36,
+                    Name:    "k",
+                  },
+                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                    IsOrColon:       36,
+                    LabelExpression: &ast.GQLElementLabel{
+                      LabelName: &ast.Ident{
+                        NamePos: 37,
+                        NameEnd: 42,
+                        Name:    "Knows",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            &ast.GQLQuantifiablePathTerm{
+              PathTerm: &ast.GQLNodePattern{
+                Lparen:        45,
+                Rparen:        54,
+                PatternFiller: &ast.GQLPatternFiller{
+                  GraphPatternVariable: &ast.Ident{
+                    NamePos: 46,
+                    NameEnd: 47,
+                    Name:    "f",
+                  },
+                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                    IsOrColon:       47,
+                    LabelExpression: &ast.GQLElementLabel{
+                      LabelName: &ast.Ident{
+                        NamePos: 48,
+                        NameEnd: 54,
+                        Name:    "Person",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      Quantifier: &ast.GQLBoundedQuantifier{
+        Lbrace:     56,
+        Rbrace:     60,
+        UpperBound: &ast.IntLiteral{
+          ValuePos: 59,
+          ValueEnd: 60,
+          Base:     10,
+          Value:    "4",
+        },
+      },
+    },
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLNodePattern{
+        Lparen:        61,
+        Rparen:        80,
+        PatternFiller: &ast.GQLPatternFiller{
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 62,
+            NameEnd: 73,
+            Name:    "dest_person",
+          },
+          IsLabelCondition: &ast.GQLIsLabelCondition{
+            IsOrColon:       73,
+            LabelExpression: &ast.GQLElementLabel{
+              LabelName: &ast.Ident{
+                NamePos: 74,
+                NameEnd: 80,
+                Name:    "Person",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(source_person:Person)((p:Person)-[k:Knows]->(f:Person)){,4}(dest_person:Person)

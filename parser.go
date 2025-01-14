@@ -6108,8 +6108,10 @@ func (p *Parser) tryParseGQLQuantifier() ast.GQLQuantifier {
 
 	lbrace := p.expect("{").Pos
 	if p.Token.Kind == "," {
+		p.nextToken()
 		upperBound := p.parseIntValue()
 		rbrace := p.expect("}").Pos
+
 		return &ast.GQLBoundedQuantifier{
 			Lbrace:     lbrace,
 			Rbrace:     rbrace,
