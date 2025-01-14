@@ -1499,7 +1499,7 @@ func (g *GQLLimitClause) SQL() string { return g.Limit.SQL() }
 
 func (g *GQLOffsetClause) SQL() string { return g.Offset.SQL() }
 
-func (g *GQLLimitWithOffsetClause) SQL() string { return g.Limit.SQL() + " " + g.Offset.SQL() }
+func (g *GQLLimitWithOffsetClause) SQL() string { return g.Offset.SQL() + " " + g.Limit.SQL() }
 
 func (g *GQLLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
 

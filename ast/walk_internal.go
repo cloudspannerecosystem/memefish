@@ -1017,8 +1017,8 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 
 	case *GQLLimitWithOffsetClause:
-		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
 
 	case *GQLLimitStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})

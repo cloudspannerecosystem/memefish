@@ -6369,16 +6369,16 @@ func (p *Parser) parseGQLReturnStatement() *ast.GQLReturnStatement {
 	returnItems := p.parseGQLReturnItemList()
 	groupBy := p.tryParseGroupBy()
 	orderBy := p.tryParseOrderBy()
-	limit := p.tryParseLimit()
 	offset := p.tryParseOffset()
+	limit := p.tryParseLimit()
 
 	// TODO: refactor
 	var limitAndOffset ast.GQLLimitAndOffsetClause
 	switch {
 	case limit != nil && offset != nil:
 		limitAndOffset = &ast.GQLLimitWithOffsetClause{
-			Limit:  limit,
 			Offset: offset,
+			Limit:  limit,
 		}
 	case limit != nil:
 		limitAndOffset = &ast.GQLLimitClause{Limit: limit}

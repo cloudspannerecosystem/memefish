@@ -4387,11 +4387,11 @@ type GQLOffsetClause struct {
 //
 //	{{.Offset | sql}} {{.Offset | sql}}
 type GQLLimitWithOffsetClause struct {
-	// pos = Limit.pos
-	// end = Offset.end
+	// pos = Offset.pos
+	// end = Limit.end
 
-	Limit  *Limit
 	Offset *Offset
+	Limit  *Limit
 }
 
 // GQLLimitStatement represents LIMIT statement

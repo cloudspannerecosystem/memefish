@@ -2223,11 +2223,11 @@ func (g *GQLOffsetClause) End() token.Pos {
 }
 
 func (g *GQLLimitWithOffsetClause) Pos() token.Pos {
-	return nodePos(wrapNode(g.Limit))
+	return nodePos(wrapNode(g.Offset))
 }
 
 func (g *GQLLimitWithOffsetClause) End() token.Pos {
-	return nodeEnd(wrapNode(g.Offset))
+	return nodeEnd(wrapNode(g.Limit))
 }
 
 func (g *GQLLimitStatement) Pos() token.Pos {
