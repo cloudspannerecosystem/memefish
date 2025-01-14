@@ -188,9 +188,9 @@ const (
 type GQLPathModeEnum string
 
 const (
-	GQLPathModeUnspecified GQLPathModeEnum = ""
-	GQLPathModeWalk        GQLPathModeEnum = "WALK"
-	GQLPathModeTrail       GQLPathModeEnum = "TRAIL"
+	GQLPathModeWalk    GQLPathModeEnum = "WALK"
+	GQLPathModeTrail   GQLPathModeEnum = "TRAIL"
+	GQLPathModeAcyclic GQLPathModeEnum = "ACYCLIC"
 )
 
 type GQLSearchPrefixEnum string

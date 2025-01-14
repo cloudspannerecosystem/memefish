@@ -5901,28 +5901,30 @@ func (p *Parser) tryParseGQLPathModePathOrPaths() *ast.Ident {
 }
 
 func (p *Parser) tryParseGQLPathMode() *ast.GQLPathMode {
+	var pathModeToken *ast.Ident
+	var mode ast.GQLPathModeEnum
 	switch {
 	case p.Token.IsKeywordLike("WALK"):
-		pathModeToken := p.parseIdent()
-		pathOrPathsToken := p.tryParseGQLPathModePathOrPaths()
-		return &ast.GQLPathMode{
-			ModeToken:        pathModeToken,
-			PathOrPathsToken: pathOrPathsToken,
-			Mode:             ast.GQLPathModeWalk,
-		}
-
+		pathModeToken = p.parseIdent()
+		mode = ast.GQLPathModeWalk
 	case p.Token.IsKeywordLike("TRAIL"):
-		pathModeToken := p.parseIdent()
-		pathOrPathsToken := p.tryParseGQLPathModePathOrPaths()
-		return &ast.GQLPathMode{
-			ModeToken:        pathModeToken,
-			PathOrPathsToken: pathOrPathsToken,
-			Mode:             ast.GQLPathModeTrail,
-		}
+		pathModeToken = p.parseIdent()
+		mode = ast.GQLPathModeTrail
+	case p.Token.IsKeywordLike("ACYCLIC"):
+		pathModeToken = p.parseIdent()
+		mode = ast.GQLPathModeAcyclic
 	default:
 		return nil
 	}
+
+	pathOrPathsToken := p.tryParseGQLPathModePathOrPaths()
+	return &ast.GQLPathMode{
+		ModeToken:        pathModeToken,
+		PathOrPathsToken: pathOrPathsToken,
+		Mode:             mode,
+	}
 }
+
 func (p *Parser) tryParseGQLPathSearchPrefixOrPathMode() ast.GQLPathSearchPrefixOrPathMode {
 	startPos := p.Token.Pos
 	switch {
