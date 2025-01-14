@@ -1596,14 +1596,7 @@ func (g *GQLPathPattern) SQL() string { return sqlJoin(g.PathTermList, "") }
 func (g *GQLWhereClause) SQL() string { return "WHERE " + g.BoolExpression.SQL() }
 
 func (g *GQLPathMode) SQL() string {
-	switch g.Mode {
-	case GQLPathModeTrail:
-		return "TRAIL"
-	case GQLPathModeWalk:
-		return "WALK"
-	default:
-		panic("UNKNOWN GQLPathMode")
-	}
+	return string(g.Mode) + sqlOpt(" ", g.PathOrPathsToken, "")
 }
 
 func (g *GQLFixedQuantifier) SQL() string { return "{" + g.Bound.SQL() + "}" }
