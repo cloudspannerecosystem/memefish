@@ -45,7 +45,6 @@ FROM
     From: &ast.From{
       From:   113,
       Source: &ast.Join{
-        Op:   "INNER JOIN",
         Left: &ast.Unnest{
           Unnest: 120,
           Rparen: 268,
@@ -163,6 +162,7 @@ FROM
             },
           },
         },
+        Op:    "INNER JOIN",
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
             Idents: []*ast.Ident{

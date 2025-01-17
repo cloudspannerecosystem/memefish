@@ -1,0 +1,1 @@
+update foo set invalid where foo = 1

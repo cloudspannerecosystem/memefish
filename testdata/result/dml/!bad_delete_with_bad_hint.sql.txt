@@ -1,0 +1,120 @@
+--- !bad_delete_with_bad_hint.sql
+@{invalid}
+delete foo where foo = 1 and bar = 2
+--- Error
+syntax error: testdata/input/dml/!bad_delete_with_bad_hint.sql:1:10: expected token: =, but: }
+  1|  @{invalid}
+   |           ^
+
+
+--- AST
+&ast.BadDML{
+  BadNode: &ast.BadNode{
+    NodeEnd: 47,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "@",
+        Raw:  "@",
+        End:  1,
+      },
+      &token.Token{
+        Kind: "{",
+        Raw:  "{",
+        Pos:  1,
+        End:  2,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "invalid",
+        AsString: "invalid",
+        Pos:      2,
+        End:      9,
+      },
+      &token.Token{
+        Kind: "}",
+        Raw:  "}",
+        Pos:  9,
+        End:  10,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "delete",
+        AsString: "delete",
+        Pos:      11,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      18,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "WHERE",
+        Space: " ",
+        Raw:   "where",
+        Pos:   22,
+        End:   27,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      28,
+        End:      31,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   32,
+        End:   33,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   34,
+        End:   35,
+      },
+      &token.Token{
+        Kind:  "AND",
+        Space: " ",
+        Raw:   "and",
+        Pos:   36,
+        End:   39,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      40,
+        End:      43,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   44,
+        End:   45,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "2",
+        Base:  10,
+        Pos:   46,
+        End:   47,
+      },
+    },
+  },
+}
+
+--- SQL
+@{invalid} delete foo where foo = 1 and bar = 2

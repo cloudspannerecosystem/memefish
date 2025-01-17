@@ -7,8 +7,9 @@ CREATE TABLE sch1.Albums (
   INTERLEAVE IN PARENT sch1.Singers ON DELETE CASCADE
 --- AST
 &ast.CreateTable{
-  Rparen: 137,
-  Name:   &ast.Path{
+  Rparen:           106,
+  PrimaryKeyRparen: 137,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

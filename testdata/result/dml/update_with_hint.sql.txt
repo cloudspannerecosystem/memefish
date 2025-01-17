@@ -1,0 +1,107 @@
+--- update_with_hint.sql
+@{pdml_max_parallelism=1}
+update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
+--- AST
+&ast.Update{
+  Update: 26,
+  Hint:   &ast.Hint{
+    Rbrace:  24,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 22,
+              Name:    "pdml_max_parallelism",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 36,
+        Name:    "foo",
+      },
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemSetValue{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 41,
+          NameEnd: 44,
+          Name:    "foo",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.Ident{
+          NamePos: 47,
+          NameEnd: 50,
+          Name:    "bar",
+        },
+      },
+    },
+    &ast.UpdateItemSetValue{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 52,
+          NameEnd: 55,
+          Name:    "bar",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.Ident{
+          NamePos: 58,
+          NameEnd: 61,
+          Name:    "foo",
+        },
+      },
+    },
+    &ast.UpdateItemSetValue{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 63,
+          NameEnd: 66,
+          Name:    "baz",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: 69,
+        Default:    true,
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 77,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 83,
+        NameEnd: 86,
+        Name:    "foo",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 89,
+        ValueEnd: 90,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+}
+
+--- SQL
+@{pdml_max_parallelism=1} UPDATE foo SET foo = bar, bar = foo, baz = DEFAULT WHERE foo = 1

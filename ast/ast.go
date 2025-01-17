@@ -39,11 +39,12 @@ package ast
 //
 // Conventions:
 //
-//   - Each node interface (except for Node) should have isXXX method (XXX must be a name of the interface itself).
-//   - `isXXX` methods should be defined after the interface definition
-//     and the receiver should be the non-pointer node struct type.
-//   - Each node struct should have pos and end comments.
-//   - Each node struct should have template lines in its doc comment.
+//   - Each node interface (except for Node) must have isXXX method (XXX is a name of the interface itself).
+//   - `isXXX` methods must be defined after the interface definition
+//     and the receiver must be the non-pointer node struct type.
+//   - Each node struct must have pos and end comments.
+//   - Each node struct must have template lines in its doc comment.
+//   - The fields of each node must be ordered by the position.
 
 //go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
 
@@ -586,11 +587,12 @@ type BadNode struct {
 
 // BadStatement is a BadNode for Statement.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadStatement struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -601,6 +603,7 @@ type BadQueryExpr struct {
 	// pos = BadNode.pos
 	// end = BadNode.end
 
+	Hint    *Hint
 	BadNode *BadNode
 }
 
@@ -636,11 +639,12 @@ type BadDDL struct {
 
 // BadDML is a BadNode for DML.
 //
-//	{{.BadNode | sql}}
+//	{{.Hint | sqlOpt}} {{.BadNode | sql}}
 type BadDML struct {
-	// pos = BadNode.pos
+	// pos = (Hint ?? BadNode).pos
 	// end = BadNode.end
 
+	Hint    *Hint // optional
 	BadNode *BadNode
 }
 
@@ -1183,12 +1187,13 @@ type ParenTableExpr struct {
 //	{{.Cond | sqlOpt}}
 type Join struct {
 	// pos = Left.pos
-	// end = (Cond ?? Right).pos
+	// end = (Cond ?? Right).end
 
-	Op          JoinOp
-	Method      JoinMethod
-	Hint        *Hint // optional
-	Left, Right TableExpr
+	Left   TableExpr
+	Op     JoinOp
+	Method JoinMethod
+	Hint   *Hint // optional
+	Right  TableExpr
 
 	// nil when Op is CrossJoin
 	// optional when Right is PathTableExpr or Unnest
@@ -1258,7 +1263,7 @@ type TableSampleSize struct {
 //	{{.Left | sql}} {{.Op}} {{.Right | sql}}
 type BinaryExpr struct {
 	// pos = Left.pos
-	// end = Right.pos
+	// end = Right.end
 
 	Op BinaryOp
 
@@ -1370,7 +1375,7 @@ type BetweenExpr struct {
 //	{{.Expr | sql}}.{{.Ident | sql}}
 type SelectorExpr struct {
 	// pos = Expr.pos
-	// end = Ident.pos
+	// end = Ident.end
 
 	Expr  Expr
 	Ident *Ident
@@ -2261,7 +2266,7 @@ type CreateDatabase struct {
 //	ALTER DATABASE {{.Name | sql}} SET {{.Options | sql}}
 type AlterDatabase struct {
 	// pos = Alter
-	// end = Name.end
+	// end = Options.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
@@ -2389,10 +2394,11 @@ type DropProtoBundle struct {
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = RowDeletionPolicy.end || Cluster.end || Rparen + 1
+	// end = RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
 
-	Create token.Pos // position of "CREATE" keyword
-	Rparen token.Pos // position of ")" of PRIMARY KEY clause
+	Create           token.Pos // position of "CREATE" keyword
+	Rparen           token.Pos // position of ")" of end of column definitions
+	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause, optional
 
 	IfNotExists       bool
 	Name              *Path
@@ -2534,19 +2540,6 @@ type IdentityColumn struct {
 	Rparen    token.Pos // position of ")", optional
 
 	Params []SequenceParam //  if Rparen.Invalid() then len(Param) = 0 else len(Param) > 0
-}
-
-// ColumnDefOption is options for column definition.
-//
-//	OPTIONS(allow_commit_timestamp = {{if .AllowCommitTimestamp}}true{{else}null{{end}}})
-type ColumnDefOptions struct {
-	// pos = Options
-	// end = Rparen + 1
-
-	Options token.Pos // position of "OPTIONS" keyword
-	Rparen  token.Pos // position of ")"
-
-	AllowCommitTimestamp bool
 }
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.
@@ -2709,7 +2702,7 @@ type AlterIndex struct {
 //	{{.NoSkipRange | sqlOpt}}
 type AlterSequence struct {
 	// pos = Alter
-	// end = Options.end
+	// end = (NoSkipRange ?? SkipRange ?? RestartCounterWith ?? Options).end
 
 	Alter token.Pos // position of "ALTER" keyword
 
@@ -3068,17 +3061,6 @@ type CreateVectorIndex struct {
 	Options *Options
 }
 
-// VectorIndexOption is OPTIONS record node.
-//
-//	{{.Key | sql}}={{.Expr | sql}}
-type VectorIndexOption struct {
-	// pos = Key.pos
-	// end = Value.end
-
-	Key   *Ident
-	Value Expr
-}
-
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
 //	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
@@ -3098,7 +3080,7 @@ type CreateChangeStream struct {
 //	FOR ALL
 type ChangeStreamForAll struct {
 	// pos = For
-	// end = All
+	// end = All + 3
 
 	For token.Pos // position of "FOR" keyword
 	All token.Pos // position of "ALL" keyword
@@ -3121,7 +3103,7 @@ type ChangeStreamForTables struct {
 //	{{.TableName | sql}}{{if .Columns}}({{.Columns | sqlJoin ","}}){{end}}
 type ChangeStreamForTable struct {
 	// pos = TableName.pos
-	// end = TableName.end || Rparen + 1
+	// end = Rparen + 1 || TableName.end
 
 	Rparen token.Pos // position of ")"
 
@@ -3814,8 +3796,9 @@ type PropertyGraphNodeElementKey struct {
 //
 //	{{.Element | sqlOpt}} {{.Source | sql}} {{.Destination | sql}}
 type PropertyGraphEdgeElementKeys struct {
-	// pos = Element.pos
+	// pos = (Element ?? Source).pos
 	// end = Destination.end
+
 	Element     *PropertyGraphElementKey // optional
 	Source      *PropertyGraphSourceKey
 	Destination *PropertyGraphDestinationKey
@@ -3966,16 +3949,18 @@ type ThenReturn struct {
 
 // Insert is INSERT statement node.
 //
+//	{{.Hint | sqlOpt}}
 //	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Insert struct {
-	// pos = Insert
+	// pos = Hint.pos || Insert
 	// end = (ThenReturn ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
+	Hint       *Hint // optional
 	TableName  *Path
 	Columns    []*Ident // optional when nested
 	Input      InsertInput
@@ -4031,14 +4016,16 @@ type SubQueryInput struct {
 
 // Delete is DELETE statement.
 //
+//	{{.Hint | sqlOpt}}
 //	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Delete struct {
-	// pos = Delete
+	// pos = Hint.pos || Delete
 	// end = (ThenReturn ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
+	Hint       *Hint // optional
 	TableName  *Path
 	As         *AsAlias // optional
 	Where      *Where
@@ -4047,15 +4034,17 @@ type Delete struct {
 
 // Update is UPDATE statement.
 //
+//	{{.Hint | sqlOpt}}
 //	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
 //	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Update struct {
-	// pos = Update
+	// pos = Hint.pos || Update
 	// end = (ThenReturn ?? Where).end
 
 	Update token.Pos // position of "UPDATE" keyword
 
+	Hint       *Hint // optional
 	TableName  *Path
 	As         *AsAlias     // optional
 	Updates    []UpdateItem // len(Updates) > 0

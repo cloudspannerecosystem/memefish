@@ -1,0 +1,94 @@
+--- !bad_delete.sql
+delete foo filter foo = 1 and bar = 2
+--- Error
+syntax error: testdata/input/dml/!bad_delete.sql:1:19: expected token: WHERE, but: <ident>
+  1|  delete foo filter foo = 1 and bar = 2
+   |                    ^~~
+
+
+--- AST
+&ast.BadDML{
+  BadNode: &ast.BadNode{
+    NodeEnd: 37,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "delete",
+        AsString: "delete",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      7,
+        End:      10,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "filter",
+        AsString: "filter",
+        Pos:      11,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      18,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   22,
+        End:   23,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   24,
+        End:   25,
+      },
+      &token.Token{
+        Kind:  "AND",
+        Space: " ",
+        Raw:   "and",
+        Pos:   26,
+        End:   29,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      30,
+        End:      33,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   34,
+        End:   35,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "2",
+        Base:  10,
+        Pos:   36,
+        End:   37,
+      },
+    },
+  },
+}
+
+--- SQL
+delete foo filter foo = 1 and bar = 2

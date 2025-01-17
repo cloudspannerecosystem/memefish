@@ -20,7 +20,6 @@ from (
         Lparen: 14,
         Rparen: 131,
         Source: &ast.Join{
-          Op:   "INNER JOIN",
           Left: &ast.SubQueryTableExpr{
             Lparen: 20,
             Rparen: 90,
@@ -111,6 +110,7 @@ from (
               },
             },
           },
+          Op:    "INNER JOIN",
           Right: &ast.SubQueryTableExpr{
             Lparen: 103,
             Rparen: 119,

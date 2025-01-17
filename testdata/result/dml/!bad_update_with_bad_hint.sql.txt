@@ -1,0 +1,178 @@
+--- !bad_update_with_bad_hint.sql
+@{invalid}
+update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1
+
+--- Error
+syntax error: testdata/input/dml/!bad_update_with_bad_hint.sql:1:10: expected token: =, but: }
+  1|  @{invalid}
+   |           ^
+
+
+--- AST
+&ast.BadDML{
+  BadNode: &ast.BadNode{
+    NodeEnd: 75,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "@",
+        Raw:  "@",
+        End:  1,
+      },
+      &token.Token{
+        Kind: "{",
+        Raw:  "{",
+        Pos:  1,
+        End:  2,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "invalid",
+        AsString: "invalid",
+        Pos:      2,
+        End:      9,
+      },
+      &token.Token{
+        Kind: "}",
+        Raw:  "}",
+        Pos:  9,
+        End:  10,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "update",
+        AsString: "update",
+        Pos:      11,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      18,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "set",
+        Pos:   22,
+        End:   25,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      26,
+        End:      29,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   30,
+        End:   31,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      32,
+        End:      35,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  35,
+        End:  36,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      37,
+        End:      40,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   41,
+        End:   42,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      43,
+        End:      46,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  46,
+        End:  47,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "baz",
+        AsString: "baz",
+        Pos:      48,
+        End:      51,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   52,
+        End:   53,
+      },
+      &token.Token{
+        Kind:  "DEFAULT",
+        Space: " ",
+        Raw:   "DEFAULT",
+        Pos:   54,
+        End:   61,
+      },
+      &token.Token{
+        Kind:  "WHERE",
+        Space: " ",
+        Raw:   "where",
+        Pos:   62,
+        End:   67,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      68,
+        End:      71,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   72,
+        End:   73,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "1",
+        Base:  10,
+        Pos:   74,
+        End:   75,
+      },
+    },
+  },
+}
+
+--- SQL
+@{invalid} update foo set foo = bar, bar = foo, baz = DEFAULT where foo = 1

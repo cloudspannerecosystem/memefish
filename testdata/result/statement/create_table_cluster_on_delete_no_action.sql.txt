@@ -6,8 +6,9 @@ create table foo (
              on delete no action
 --- AST
 &ast.CreateTable{
-  Rparen: 50,
-  Name:   &ast.Path{
+  Rparen:           32,
+  PrimaryKeyRparen: 50,
+  Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
         NamePos: 13,

@@ -1,0 +1,78 @@
+--- !bad_call_cancel_query_with_hint.sql
+@{unknown_hint=1}
+CALL cancel_query("12345")
+--- Error
+syntax error: testdata/input/statement/!bad_call_cancel_query_with_hint.sql:1:1: statement hint is only permitted before query or DML, but got: CALL
+  1|  @{unknown_hint=1}
+  2|  CALL cancel_query("12345")
+
+
+--- AST
+&ast.BadStatement{
+  Hint: &ast.Hint{
+    Rbrace:  16,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 14,
+              Name:    "unknown_hint",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 15,
+          ValueEnd: 16,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  BadNode: &ast.BadNode{
+    NodePos: 18,
+    NodeEnd: 44,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n",
+        Raw:      "CALL",
+        AsString: "CALL",
+        Pos:      18,
+        End:      22,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "cancel_query",
+        AsString: "cancel_query",
+        Pos:      23,
+        End:      35,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  35,
+        End:  36,
+      },
+      &token.Token{
+        Kind:     "<string>",
+        Raw:      "\"12345\"",
+        AsString: "12345",
+        Pos:      36,
+        End:      43,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  43,
+        End:  44,
+      },
+    },
+  },
+}
+
+--- SQL
+@{unknown_hint=1} CALL cancel_query("12345")

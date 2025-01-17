@@ -24,7 +24,6 @@ FROM
     From: &ast.From{
       From:   102,
       Source: &ast.Join{
-        Op:   "INNER JOIN",
         Left: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 109,
@@ -32,6 +31,7 @@ FROM
             Name:    "Roster",
           },
         },
+        Op:    "INNER JOIN",
         Right: &ast.Unnest{
           Unnest: 127,
           Rparen: 256,

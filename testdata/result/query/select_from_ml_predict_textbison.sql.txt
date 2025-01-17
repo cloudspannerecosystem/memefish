@@ -251,7 +251,6 @@ FROM ML.PREDICT(
                 From: &ast.From{
                   From:   410,
                   Source: &ast.Join{
-                    Op:   "INNER JOIN",
                     Left: &ast.TableName{
                       Table: &ast.Ident{
                         NamePos: 424,
@@ -267,6 +266,7 @@ FROM ML.PREDICT(
                         },
                       },
                     },
+                    Op:    "INNER JOIN",
                     Right: &ast.TableName{
                       Table: &ast.Ident{
                         NamePos: 449,

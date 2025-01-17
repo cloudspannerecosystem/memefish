@@ -1,0 +1,74 @@
+--- delete_with_hint.sql
+@{pdml_max_parallelism=1} delete foo where foo = 1 and bar = 2
+--- AST
+&ast.Delete{
+  Delete: 26,
+  Hint:   &ast.Hint{
+    Rbrace:  24,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 22,
+              Name:    "pdml_max_parallelism",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 23,
+          ValueEnd: 24,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 36,
+        Name:    "foo",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 37,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 43,
+          NameEnd: 46,
+          Name:    "foo",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 49,
+          ValueEnd: 50,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 55,
+          NameEnd: 58,
+          Name:    "bar",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 61,
+          ValueEnd: 62,
+          Base:     10,
+          Value:    "2",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{pdml_max_parallelism=1} DELETE FROM foo WHERE foo = 1 AND bar = 2
