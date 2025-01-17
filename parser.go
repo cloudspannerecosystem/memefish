@@ -5031,7 +5031,7 @@ func (p *Parser) parseDML() (dml ast.DML) {
 
 // parseDMLInternal can parse nested and non-nested DML with parsed hints.
 // The behavior is controlled by nested flag.
-// Note: Usually, it is recommended to use parseDML if you want to parse a DML statement.
+// Note: It is recommended to use parseDML if you want to parse a complete DML statement.
 func (p *Parser) parseDMLInternal(hint *ast.Hint, nested bool) (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
