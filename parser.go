@@ -5111,9 +5111,10 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.In
 
 	name := p.parsePath()
 
-	// optional when nested
+	// Column list is optional only when nested update(not top-level DML).
+	// Note: There is a ambiguity between column list and parenthesized query.
 	var columns []*ast.Ident
-	if !nested || p.Token.Kind == "(" {
+	if !nested || (p.Token.Kind == "(" && !p.lookaheadSubQuery()) {
 		p.expect("(")
 		if p.Token.Kind != ")" {
 			for p.Token.Kind != token.TokenEOF {
