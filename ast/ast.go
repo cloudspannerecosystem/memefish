@@ -539,6 +539,15 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
+// UpdateItem represents SET clause items in UPDATE.
+type UpdateItem interface {
+	Node
+	isUpdateItem()
+}
+
+func (UpdateItemSetValue) isUpdateItem() {}
+func (UpdateItemDML) isUpdateItem()      {}
+
 // ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
 	Node
@@ -3953,7 +3962,7 @@ type Insert struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
-	Columns    []*Ident
+	Columns    []*Ident // optional when nested
 	Input      InsertInput
 	ThenReturn *ThenReturn // optional
 }
@@ -4037,16 +4046,27 @@ type Update struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
-	As         *AsAlias      // optional
-	Updates    []*UpdateItem // len(Updates) > 0
+	As         *AsAlias     // optional
+	Updates    []UpdateItem // len(Updates) > 0
 	Where      *Where
 	ThenReturn *ThenReturn // optional
 }
 
-// UpdateItem is SET clause items in UPDATE.
+// UpdateItemDML is nested update UpdateItem node in UPDATE statement.
+//
+//	({{.DML | sql}})
+type UpdateItemDML struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos // position of "(", ")"
+	DML            DML
+}
+
+// UpdateItemSetValue is assignment style UpdateItem node in UPDATE statement .
 //
 //	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
-type UpdateItem struct {
+type UpdateItemSetValue struct {
 	// pos = Path[0].pos
 	// end = DefaultExpr.end
 

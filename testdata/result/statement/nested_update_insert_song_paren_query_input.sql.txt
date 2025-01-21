@@ -1,0 +1,115 @@
+--- nested_update_insert_song_paren_query_input.sql
+-- In nested query, column list is optional so there is ambiguity between parenthesized query input and column list.
+-- I believe Spanner hasn't yet supported this kind of query, but it can be parsed.
+UPDATE Singers s
+SET (INSERT s.AlbumInfo.Song (SELECT AS VALUE CAST("songtitle: 'The Second Best Song'" AS googlesql.example.Album.Song)))
+WHERE TRUE
+--- AST
+&ast.Update{
+  Update:    201,
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 208,
+        NameEnd: 215,
+        Name:    "Singers",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 216,
+      NameEnd: 217,
+      Name:    "s",
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemDML{
+      Lparen: 222,
+      Rparen: 338,
+      DML:    &ast.Insert{
+        Insert:    223,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 230,
+              NameEnd: 231,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 232,
+              NameEnd: 241,
+              Name:    "AlbumInfo",
+            },
+            &ast.Ident{
+              NamePos: 242,
+              NameEnd: 246,
+              Name:    "Song",
+            },
+          },
+        },
+        Input: &ast.SubQueryInput{
+          Query: &ast.SubQuery{
+            Lparen: 247,
+            Rparen: 337,
+            Query:  &ast.Select{
+              Select: 248,
+              As:     &ast.AsValue{
+                As:    255,
+                Value: 258,
+              },
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.CastExpr{
+                    Cast:   264,
+                    Rparen: 336,
+                    Expr:   &ast.StringLiteral{
+                      ValuePos: 269,
+                      ValueEnd: 304,
+                      Value:    "songtitle: 'The Second Best Song'",
+                    },
+                    Type: &ast.NamedType{
+                      Path: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 308,
+                          NameEnd: 317,
+                          Name:    "googlesql",
+                        },
+                        &ast.Ident{
+                          NamePos: 318,
+                          NameEnd: 325,
+                          Name:    "example",
+                        },
+                        &ast.Ident{
+                          NamePos: 326,
+                          NameEnd: 331,
+                          Name:    "Album",
+                        },
+                        &ast.Ident{
+                          NamePos: 332,
+                          NameEnd: 336,
+                          Name:    "Song",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 340,
+    Expr:  &ast.BoolLiteral{
+      ValuePos: 346,
+      Value:    true,
+    },
+  },
+}
+
+--- SQL
+UPDATE Singers s SET (INSERT INTO s.AlbumInfo.Song () (SELECT AS VALUE CAST("songtitle: 'The Second Best Song'" AS googlesql.example.Album.Song))) WHERE TRUE

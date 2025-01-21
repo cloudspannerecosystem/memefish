@@ -1,0 +1,160 @@
+--- nested_update_insert_song_path.sql
+UPDATE Singers s
+SET (INSERT s.AlbumInfo.Song
+     VALUES ('''songtitle: 'Bonus Track', length:180''')),
+    s.Albums.tracks = 16
+WHERE s.SingerId = 5 and s.AlbumInfo.title = "Fire is Hot"
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 14,
+        Name:    "Singers",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 15,
+      NameEnd: 16,
+      Name:    "s",
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemDML{
+      Lparen: 21,
+      Rparen: 102,
+      DML:    &ast.Insert{
+        Insert:    22,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 31,
+              NameEnd: 40,
+              Name:    "AlbumInfo",
+            },
+            &ast.Ident{
+              NamePos: 41,
+              NameEnd: 45,
+              Name:    "Song",
+            },
+          },
+        },
+        Input: &ast.ValuesInput{
+          Values: 51,
+          Rows:   []*ast.ValuesRow{
+            &ast.ValuesRow{
+              Lparen: 58,
+              Rparen: 101,
+              Exprs:  []*ast.DefaultExpr{
+                &ast.DefaultExpr{
+                  DefaultPos: -1,
+                  Expr:       &ast.StringLiteral{
+                    ValuePos: 59,
+                    ValueEnd: 101,
+                    Value:    "songtitle: 'Bonus Track', length:180",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.UpdateItemSetValue{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 109,
+          NameEnd: 110,
+          Name:    "s",
+        },
+        &ast.Ident{
+          NamePos: 111,
+          NameEnd: 117,
+          Name:    "Albums",
+        },
+        &ast.Ident{
+          NamePos: 118,
+          NameEnd: 124,
+          Name:    "tracks",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.IntLiteral{
+          ValuePos: 127,
+          ValueEnd: 129,
+          Base:     10,
+          Value:    "16",
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 130,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 136,
+              NameEnd: 137,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 138,
+              NameEnd: 146,
+              Name:    "SingerId",
+            },
+          },
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 149,
+          ValueEnd: 150,
+          Base:     10,
+          Value:    "5",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 155,
+              NameEnd: 156,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 157,
+              NameEnd: 166,
+              Name:    "AlbumInfo",
+            },
+            &ast.Ident{
+              NamePos: 167,
+              NameEnd: 172,
+              Name:    "title",
+            },
+          },
+        },
+        Right: &ast.StringLiteral{
+          ValuePos: 175,
+          ValueEnd: 188,
+          Value:    "Fire is Hot",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Singers s SET (INSERT INTO s.AlbumInfo.Song () VALUES ("songtitle: 'Bonus Track', length:180")), s.Albums.tracks = 16 WHERE s.SingerId = 5 AND s.AlbumInfo.title = "Fire is Hot"
