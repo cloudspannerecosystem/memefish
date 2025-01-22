@@ -1,1 +1,1 @@
-@{pdml_max_parallelism=1} delete foo where foo = 1 and bar = 2
+@{pdml_max_parallelism=1} delete foo@{force_index=_base_table} where foo = 1 and bar = 2

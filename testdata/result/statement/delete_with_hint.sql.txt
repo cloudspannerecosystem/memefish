@@ -1,5 +1,5 @@
 --- delete_with_hint.sql
-@{pdml_max_parallelism=1} delete foo where foo = 1 and bar = 2
+@{pdml_max_parallelism=1} delete foo@{force_index=_base_table} where foo = 1 and bar = 2
 --- AST
 &ast.Delete{
   Delete: 26,
@@ -34,20 +34,42 @@
       },
     },
   },
+  TableHint: &ast.Hint{
+    Atmark:  36,
+    Rbrace:  61,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 38,
+              NameEnd: 49,
+              Name:    "force_index",
+            },
+          },
+        },
+        Value: &ast.Ident{
+          NamePos: 50,
+          NameEnd: 61,
+          Name:    "_base_table",
+        },
+      },
+    },
+  },
   Where: &ast.Where{
-    Where: 37,
+    Where: 63,
     Expr:  &ast.BinaryExpr{
       Op:   "AND",
       Left: &ast.BinaryExpr{
         Op:   "=",
         Left: &ast.Ident{
-          NamePos: 43,
-          NameEnd: 46,
+          NamePos: 69,
+          NameEnd: 72,
           Name:    "foo",
         },
         Right: &ast.IntLiteral{
-          ValuePos: 49,
-          ValueEnd: 50,
+          ValuePos: 75,
+          ValueEnd: 76,
           Base:     10,
           Value:    "1",
         },
@@ -55,13 +77,13 @@
       Right: &ast.BinaryExpr{
         Op:   "=",
         Left: &ast.Ident{
-          NamePos: 55,
-          NameEnd: 58,
+          NamePos: 81,
+          NameEnd: 84,
           Name:    "bar",
         },
         Right: &ast.IntLiteral{
-          ValuePos: 61,
-          ValueEnd: 62,
+          ValuePos: 87,
+          ValueEnd: 88,
           Base:     10,
           Value:    "2",
         },
@@ -71,4 +93,4 @@
 }
 
 --- SQL
-@{pdml_max_parallelism=1} DELETE FROM foo WHERE foo = 1 AND bar = 2
+@{pdml_max_parallelism=1} DELETE FROM foo@{force_index=_base_table} WHERE foo = 1 AND bar = 2
