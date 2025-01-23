@@ -17,21 +17,6 @@ const (
 	AllOrDistinctDistinct AllOrDistinct = "DISTINCT"
 )
 
-type TableHintKey string
-
-const (
-	ForceIndexTableHint     TableHintKey = "FORCE_INDEX"
-	GroupScanByOptimization TableHintKey = "GROUPBY_SCAN_OPTIMIZATION"
-)
-
-type JoinHintKey string
-
-const (
-	ForceJoinOrderJoinHint JoinHintKey = "FORCE_JOIN_ORDER"
-	JoinTypeJoinHint       JoinHintKey = "JOIN_TYPE"
-)
-
-// JoinMethod is used for prefix of JOIN, not for hint.
 type JoinMethod string
 
 const (
