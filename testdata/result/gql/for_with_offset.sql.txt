@@ -1,0 +1,229 @@
+--- for_with_offset.sql
+GRAPH FinGraph
+MATCH (p:Person)-[o:Owns]->(a:Account)
+FOR element in ["all","some"] WITH OFFSET
+RETURN p.name, element as alert_type, offset
+ORDER BY p.name, element, offset
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        30,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLFullEdgeRight{
+                          Hyphen:        31,
+                          Lbrack:        32,
+                          Rbrack:        39,
+                          Arrow:         40,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 33,
+                              NameEnd: 34,
+                              Name:    "o",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       34,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 35,
+                                  NameEnd: 39,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        42,
+                          Rparen:        52,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 43,
+                              NameEnd: 44,
+                              Name:    "a",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       44,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 45,
+                                  NameEnd: 52,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLForStatement{
+            For:         54,
+            ElementName: &ast.Ident{
+              NamePos: 58,
+              NameEnd: 65,
+              Name:    "element",
+            },
+            ArrayExpression: &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 69,
+              Rbrack: 82,
+              Values: []ast.Expr{
+                &ast.StringLiteral{
+                  ValuePos: 70,
+                  ValueEnd: 75,
+                  Value:    "all",
+                },
+                &ast.StringLiteral{
+                  ValuePos: 76,
+                  ValueEnd: 82,
+                  Value:    "some",
+                },
+              },
+            },
+            WithOffsetClause: &ast.GQLWithOffsetClause{
+              With:   84,
+              Offset: 89,
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         96,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 103,
+                        NameEnd: 104,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 105,
+                        NameEnd: 109,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Ident{
+                    NamePos: 111,
+                    NameEnd: 118,
+                    Name:    "element",
+                  },
+                  As: &ast.AsAlias{
+                    As:    119,
+                    Alias: &ast.Ident{
+                      NamePos: 122,
+                      NameEnd: 132,
+                      Name:    "alert_type",
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 134,
+                    NameEnd: 140,
+                    Name:    "offset",
+                  },
+                },
+              },
+            },
+            OrderByClause: &ast.OrderBy{
+              Order: 141,
+              Items: []*ast.OrderByItem{
+                &ast.OrderByItem{
+                  DirPos: -1,
+                  Expr:   &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 150,
+                        NameEnd: 151,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 152,
+                        NameEnd: 156,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+                &ast.OrderByItem{
+                  DirPos: -1,
+                  Expr:   &ast.Ident{
+                    NamePos: 158,
+                    NameEnd: 165,
+                    Name:    "element",
+                  },
+                },
+                &ast.OrderByItem{
+                  DirPos: -1,
+                  Expr:   &ast.Ident{
+                    NamePos: 167,
+                    NameEnd: 173,
+                    Name:    "offset",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person)-[o:Owns]->(a:Account) FOR element IN ["all", "some"] WITH OFFSET RETURN p.name, element AS alert_type, offset ORDER BY p.name, element, offset

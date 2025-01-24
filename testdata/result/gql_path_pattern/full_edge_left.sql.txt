@@ -1,0 +1,25 @@
+--- full_edge_left.sql
+  <-[a]-
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLFullEdgeLeft{
+        Lt:            2,
+        Lbrack:        4,
+        Rbrack:        6,
+        Hyphen:        7,
+        PatternFiller: &ast.GQLPatternFiller{
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 6,
+            Name:    "a",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+<-[a]-
