@@ -328,12 +328,14 @@ func (p *Parser) parseQuery() *ast.Query {
 			Query:         q.Query,
 			OrderBy:       q.OrderBy,
 			Limit:         q.Limit,
+			ForUpdate:     q.ForUpdate,
 			PipeOperators: q.PipeOperators,
 		}
 	}
 
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
+	forUpdate := p.tryParseForUpdate()
 	pipeOps := p.parsePipeOperators()
 
 	return &ast.Query{
@@ -341,7 +343,22 @@ func (p *Parser) parseQuery() *ast.Query {
 		Query:         query,
 		OrderBy:       orderBy,
 		Limit:         limit,
+		ForUpdate:     forUpdate,
 		PipeOperators: pipeOps,
+	}
+}
+
+func (p *Parser) tryParseForUpdate() *ast.ForUpdate {
+	if p.Token.Kind != "FOR" {
+		return nil
+	}
+
+	forPos := p.expect("FOR").Pos
+	update := p.expectKeywordLike("UPDATE").Pos
+
+	return &ast.ForUpdate{
+		For:    forPos,
+		Update: update,
 	}
 }
 
@@ -423,7 +440,7 @@ func (p *Parser) parseQueryExpr() (query ast.QueryExpr) {
 
 	// If the query is directly followed by ORDER BY, LIMIT or pipe operators, it won't be a compound query
 	switch p.Token.Kind {
-	case "ORDER", "LIMIT", "|>":
+	case "ORDER", "LIMIT", "FOR", "|>":
 		return p.parseQueryExprSuffix(query)
 	}
 
@@ -776,6 +793,8 @@ func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 
 	orderBy := p.tryParseOrderBy()
 	limit := p.tryParseLimit()
+	forUpdate := p.tryParseForUpdate()
+
 	pipeOps := p.parsePipeOperators()
 
 	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
@@ -785,6 +804,7 @@ func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 		Query:         e,
 		OrderBy:       orderBy,
 		Limit:         limit,
+		ForUpdate:     forUpdate,
 		PipeOperators: pipeOps,
 	}
 }

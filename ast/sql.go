@@ -198,6 +198,8 @@ func (q *Query) SQL() string {
 		sqlJoin(q.PipeOperators, " ")
 }
 
+func (f *ForUpdate) SQL() string { return "FOR UPDATE" }
+
 func (h *Hint) SQL() string {
 	return "@{" + sqlJoin(h.Records, ", ") + "}"
 }
