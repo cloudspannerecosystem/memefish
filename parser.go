@@ -797,7 +797,7 @@ func (p *Parser) parseQueryExprSuffix(e ast.QueryExpr) ast.QueryExpr {
 
 	pipeOps := p.parsePipeOperators()
 
-	if orderBy == nil && limit == nil && len(pipeOps) == 0 {
+	if orderBy == nil && limit == nil && forUpdate == nil && len(pipeOps) == 0 {
 		return e
 	}
 	return &ast.Query{

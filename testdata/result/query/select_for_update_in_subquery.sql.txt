@@ -79,43 +79,49 @@ ON a.SingerId = s.SingerId
         Right: &ast.SubQueryTableExpr{
           Lparen: 66,
           Rparen: 136,
-          Query:  &ast.Select{
-            Select:  67,
-            Results: []ast.SelectItem{
-              &ast.ExprSelectItem{
-                Expr: &ast.Ident{
-                  NamePos: 74,
-                  NameEnd: 82,
-                  Name:    "SingerId",
+          Query:  &ast.Query{
+            Query: &ast.Select{
+              Select:  67,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 74,
+                    NameEnd: 82,
+                    Name:    "SingerId",
+                  },
+                },
+              },
+              From: &ast.From{
+                From:   83,
+                Source: &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 88,
+                    NameEnd: 94,
+                    Name:    "Albums",
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 95,
+                Expr:  &ast.BinaryExpr{
+                  Op:   ">",
+                  Left: &ast.Ident{
+                    NamePos: 101,
+                    NameEnd: 116,
+                    Name:    "MarketingBudget",
+                  },
+                  Right: &ast.IntLiteral{
+                    ValuePos: 119,
+                    ValueEnd: 125,
+                    Base:     10,
+                    Value:    "100000",
+                  },
                 },
               },
             },
-            From: &ast.From{
-              From:   83,
-              Source: &ast.TableName{
-                Table: &ast.Ident{
-                  NamePos: 88,
-                  NameEnd: 94,
-                  Name:    "Albums",
-                },
-              },
-            },
-            Where: &ast.Where{
-              Where: 95,
-              Expr:  &ast.BinaryExpr{
-                Op:   ">",
-                Left: &ast.Ident{
-                  NamePos: 101,
-                  NameEnd: 116,
-                  Name:    "MarketingBudget",
-                },
-                Right: &ast.IntLiteral{
-                  ValuePos: 119,
-                  ValueEnd: 125,
-                  Base:     10,
-                  Value:    "100000",
-                },
-              },
+            ForUpdate: &ast.ForUpdate{
+              For:    126,
+              Update: 130,
             },
           },
           As: &ast.AsAlias{
@@ -167,4 +173,4 @@ ON a.SingerId = s.SingerId
 }
 
 --- SQL
-SELECT s.SingerId, s.FirstName, s.LastName FROM Singers AS s INNER JOIN (SELECT SingerId FROM Albums WHERE MarketingBudget > 100000) AS a ON a.SingerId = s.SingerId
+SELECT s.SingerId, s.FirstName, s.LastName FROM Singers AS s INNER JOIN (SELECT SingerId FROM Albums WHERE MarketingBudget > 100000 FOR UPDATE) AS a ON a.SingerId = s.SingerId
