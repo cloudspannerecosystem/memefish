@@ -1,0 +1,170 @@
+--- select_for_update_in_subquery.sql
+SELECT s.SingerId, s.FirstName, s.LastName FROM Singers AS s
+JOIN
+(SELECT SingerId FROM Albums WHERE MarketingBudget > 100000 FOR UPDATE) AS a
+ON a.SingerId = s.SingerId
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 7,
+              NameEnd: 8,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 17,
+              Name:    "SingerId",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 19,
+              NameEnd: 20,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 21,
+              NameEnd: 30,
+              Name:    "FirstName",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 32,
+              NameEnd: 33,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 34,
+              NameEnd: 42,
+              Name:    "LastName",
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   43,
+      Source: &ast.Join{
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 48,
+            NameEnd: 55,
+            Name:    "Singers",
+          },
+          As: &ast.AsAlias{
+            As:    56,
+            Alias: &ast.Ident{
+              NamePos: 59,
+              NameEnd: 60,
+              Name:    "s",
+            },
+          },
+        },
+        Op:    "INNER JOIN",
+        Right: &ast.SubQueryTableExpr{
+          Lparen: 66,
+          Rparen: 136,
+          Query:  &ast.Select{
+            Select:  67,
+            Results: []ast.SelectItem{
+              &ast.ExprSelectItem{
+                Expr: &ast.Ident{
+                  NamePos: 74,
+                  NameEnd: 82,
+                  Name:    "SingerId",
+                },
+              },
+            },
+            From: &ast.From{
+              From:   83,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 88,
+                  NameEnd: 94,
+                  Name:    "Albums",
+                },
+              },
+            },
+            Where: &ast.Where{
+              Where: 95,
+              Expr:  &ast.BinaryExpr{
+                Op:   ">",
+                Left: &ast.Ident{
+                  NamePos: 101,
+                  NameEnd: 116,
+                  Name:    "MarketingBudget",
+                },
+                Right: &ast.IntLiteral{
+                  ValuePos: 119,
+                  ValueEnd: 125,
+                  Base:     10,
+                  Value:    "100000",
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    138,
+            Alias: &ast.Ident{
+              NamePos: 141,
+              NameEnd: 142,
+              Name:    "a",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   143,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 146,
+                  NameEnd: 147,
+                  Name:    "a",
+                },
+                &ast.Ident{
+                  NamePos: 148,
+                  NameEnd: 156,
+                  Name:    "SingerId",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 159,
+                  NameEnd: 160,
+                  Name:    "s",
+                },
+                &ast.Ident{
+                  NamePos: 161,
+                  NameEnd: 169,
+                  Name:    "SingerId",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT s.SingerId, s.FirstName, s.LastName FROM Singers AS s INNER JOIN (SELECT SingerId FROM Albums WHERE MarketingBudget > 100000) AS a ON a.SingerId = s.SingerId

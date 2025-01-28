@@ -1,0 +1,121 @@
+--- update_where_select_for_update.sql
+update Albums set MarketingBudget = MarketingBudget + 100
+where (SingerId, AlbumId) = (select as struct SingerId, AlbumId from Albums where AlbumTitle like "A%" for update)
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 13,
+        Name:    "Albums",
+      },
+    },
+  },
+  Updates: []*ast.UpdateItem{
+    &ast.UpdateItem{
+      Path: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 18,
+          NameEnd: 33,
+          Name:    "MarketingBudget",
+        },
+      },
+      DefaultExpr: &ast.DefaultExpr{
+        DefaultPos: -1,
+        Expr:       &ast.BinaryExpr{
+          Op:   "+",
+          Left: &ast.Ident{
+            NamePos: 36,
+            NameEnd: 51,
+            Name:    "MarketingBudget",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 54,
+            ValueEnd: 57,
+            Base:     10,
+            Value:    "100",
+          },
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 58,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.TupleStructLiteral{
+        Lparen: 64,
+        Rparen: 82,
+        Values: []ast.Expr{
+          &ast.Ident{
+            NamePos: 65,
+            NameEnd: 73,
+            Name:    "SingerId",
+          },
+          &ast.Ident{
+            NamePos: 75,
+            NameEnd: 82,
+            Name:    "AlbumId",
+          },
+        },
+      },
+      Right: &ast.ScalarSubQuery{
+        Lparen: 86,
+        Rparen: 171,
+        Query:  &ast.Select{
+          Select: 87,
+          As:     &ast.AsStruct{
+            As:     94,
+            Struct: 97,
+          },
+          Results: []ast.SelectItem{
+            &ast.ExprSelectItem{
+              Expr: &ast.Ident{
+                NamePos: 104,
+                NameEnd: 112,
+                Name:    "SingerId",
+              },
+            },
+            &ast.ExprSelectItem{
+              Expr: &ast.Ident{
+                NamePos: 114,
+                NameEnd: 121,
+                Name:    "AlbumId",
+              },
+            },
+          },
+          From: &ast.From{
+            From:   122,
+            Source: &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 127,
+                NameEnd: 133,
+                Name:    "Albums",
+              },
+            },
+          },
+          Where: &ast.Where{
+            Where: 134,
+            Expr:  &ast.BinaryExpr{
+              Op:   "LIKE",
+              Left: &ast.Ident{
+                NamePos: 140,
+                NameEnd: 150,
+                Name:    "AlbumTitle",
+              },
+              Right: &ast.StringLiteral{
+                ValuePos: 156,
+                ValueEnd: 160,
+                Value:    "A%",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Albums SET MarketingBudget = MarketingBudget + 100 WHERE (SingerId, AlbumId) = (SELECT AS STRUCT SingerId, AlbumId FROM Albums WHERE AlbumTitle LIKE "A%")
