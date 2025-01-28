@@ -1,0 +1,72 @@
+--- select_for_update.sql
+SELECT MarketingBudget
+FROM Albums
+WHERE SingerId = 1 and AlbumId = 1
+FOR UPDATE
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.Select{
+      Results: []ast.SelectItem{
+        &ast.ExprSelectItem{
+          Expr: &ast.Ident{
+            NamePos: 7,
+            NameEnd: 22,
+            Name:    "MarketingBudget",
+          },
+        },
+      },
+      From: &ast.From{
+        From:   23,
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 28,
+            NameEnd: 34,
+            Name:    "Albums",
+          },
+        },
+      },
+      Where: &ast.Where{
+        Where: 35,
+        Expr:  &ast.BinaryExpr{
+          Op:   "AND",
+          Left: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Ident{
+              NamePos: 41,
+              NameEnd: 49,
+              Name:    "SingerId",
+            },
+            Right: &ast.IntLiteral{
+              ValuePos: 52,
+              ValueEnd: 53,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          Right: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Ident{
+              NamePos: 58,
+              NameEnd: 65,
+              Name:    "AlbumId",
+            },
+            Right: &ast.IntLiteral{
+              ValuePos: 68,
+              ValueEnd: 69,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+        },
+      },
+    },
+    ForUpdate: &ast.ForUpdate{
+      For:    70,
+      Update: 74,
+    },
+  },
+}
+
+--- SQL
+SELECT MarketingBudget FROM Albums WHERE SingerId = 1 AND AlbumId = 1 FOR UPDATE

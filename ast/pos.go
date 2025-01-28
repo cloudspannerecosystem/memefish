@@ -75,7 +75,15 @@ func (q *Query) Pos() token.Pos {
 }
 
 func (q *Query) End() token.Pos {
-	return nodeEnd(nodeChoice(nodeSliceLast(q.PipeOperators), wrapNode(q.Limit), wrapNode(q.OrderBy), wrapNode(q.Query)))
+	return nodeEnd(nodeChoice(nodeSliceLast(q.PipeOperators), wrapNode(q.ForUpdate), wrapNode(q.Limit), wrapNode(q.OrderBy), wrapNode(q.Query)))
+}
+
+func (f *ForUpdate) Pos() token.Pos {
+	return f.For
+}
+
+func (f *ForUpdate) End() token.Pos {
+	return posAdd(f.Update, 6)
 }
 
 func (h *Hint) Pos() token.Pos {

@@ -34,10 +34,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *Query:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.PipeOperators), visitor: v.Field("PipeOperators")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ForUpdate), visitor: v.Field("ForUpdate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
 		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 		stack = append(stack, &stackItem{node: wrapNode(n.With), visitor: v.Field("With")})
+
+	case *ForUpdate:
+		// nothing to do
 
 	case *Hint:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Records), visitor: v.Field("Records")})
