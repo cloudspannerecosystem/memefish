@@ -1,0 +1,45 @@
+--- create_table_with_auto_increment.sql
+create table foo (
+    id int64 not null auto_increment primary key
+)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           68,
+  PrimaryKeyRparen: -1,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 36,
+      Key:  64,
+      Name: &ast.Ident{
+        NamePos: 23,
+        NameEnd: 25,
+        Name:    "id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 26,
+        Name:    "INT64",
+      },
+      NotNull:          true,
+      PrimaryKey:       true,
+      DefaultSemantics: &ast.AutoIncrement{
+        AutoIncrement: 41,
+      },
+      Hidden: -1,
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE foo (
+  id INT64 NOT NULL AUTO_INCREMENT PRIMARY KEY
+)
