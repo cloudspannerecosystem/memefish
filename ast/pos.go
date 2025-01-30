@@ -1158,6 +1158,14 @@ func (i *IdentityColumn) End() token.Pos {
 	return posChoice(posAdd(i.Rparen, 1), posAdd(i.Identity, 8))
 }
 
+func (a *AutoIncrement) Pos() token.Pos {
+	return a.AutoIncrement
+}
+
+func (a *AutoIncrement) End() token.Pos {
+	return posAdd(a.AutoIncrement, 14)
+}
+
 func (t *TableConstraint) Pos() token.Pos {
 	return posChoice(t.ConstraintPos, nodePos(wrapNode(t.Constraint)))
 }

@@ -3073,7 +3073,6 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	name := p.parsePath()
 
 	// This loop allows parsing trailing comma intentionally.
-	// TODO: is this allowed by Spanner really?
 	p.expect("(")
 	var columns []*ast.ColumnDef
 	var constraints []*ast.TableConstraint
@@ -3259,6 +3258,9 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		defaultSemantics = p.parseGeneratedColumnExpr()
 	case p.Token.IsKeywordLike("GENERATED"):
 		defaultSemantics = p.parseIdentityColumn()
+	case p.Token.IsKeywordLike("AUTO_INCREMENT"):
+		pos := p.expectKeywordLike("AUTO_INCREMENT").Pos
+		defaultSemantics = &ast.AutoIncrement{AutoIncrement: pos}
 	}
 
 	hiddenPos := token.InvalidPos
