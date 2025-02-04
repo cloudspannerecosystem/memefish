@@ -433,7 +433,7 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
 
-// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn.
+// ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
 // They are change default value of column and mutually exclusive.
 type ColumnDefaultSemantics interface {
 	Node
@@ -443,6 +443,7 @@ type ColumnDefaultSemantics interface {
 func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
 func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
 func (IdentityColumn) isColumnDefaultSemantics()      {}
+func (AutoIncrement) isColumnDefaultSemantics()      {}
 
 type SequenceParam interface {
 	Node
@@ -2531,6 +2532,16 @@ type IdentityColumn struct {
 	Rparen    token.Pos // position of ")", optional
 
 	Params []SequenceParam //  if Rparen.Invalid() then len(Param) = 0 else len(Param) > 0
+}
+
+// AutoIncrement is AUTO_INCREMENT node.
+//
+//	AUTO_INCREMENT
+type AutoIncrement struct {
+	// pos = AutoIncrement
+	// end = AutoIncrement + 14
+
+	AutoIncrement token.Pos // position of "AUTO_INCREMENT"
 }
 
 // TableConstraint is table constraint in CREATE TABLE and ALTER TABLE.

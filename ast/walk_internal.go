@@ -530,6 +530,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *IdentityColumn:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
 
+	case *AutoIncrement:
+		// nothing to do
+
 	case *TableConstraint:
 		stack = append(stack, &stackItem{node: wrapNode(n.Constraint), visitor: v.Field("Constraint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
