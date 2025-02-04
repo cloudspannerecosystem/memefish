@@ -669,15 +669,25 @@ type QueryStatement struct {
 // https://cloud.google.com/spanner/docs/query-syntax
 type Query struct {
 	// pos = (With ?? Query).pos
-	// end = (PipeOperators[$] ?? Limit ?? OrderBy ?? Query).end
+	// end = (PipeOperators[$] ?? ForUpdate ?? Limit ?? OrderBy ?? Query).end
 
 	With  *With
 	Query QueryExpr
 
-	OrderBy *OrderBy // optional
-	Limit   *Limit   // optional
-
+	OrderBy       *OrderBy   // optional
+	Limit         *Limit     // optional
+	ForUpdate     *ForUpdate // optional
 	PipeOperators []PipeOperator
+}
+
+// ForUpdate is FOR UPDATE node.
+//
+//	FOR UPDATE
+type ForUpdate struct {
+	// pos = For
+	// end = Update + 6
+
+	For, Update token.Pos
 }
 
 // Hint is hint node.

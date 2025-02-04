@@ -194,9 +194,12 @@ func (q *Query) SQL() string {
 		q.Query.SQL() +
 		sqlOpt(" ", q.OrderBy, "") +
 		sqlOpt(" ", q.Limit, "") +
+		sqlOpt(" ", q.ForUpdate, "") +
 		strOpt(len(q.PipeOperators) > 0, " ") +
 		sqlJoin(q.PipeOperators, " ")
 }
+
+func (f *ForUpdate) SQL() string { return "FOR UPDATE" }
 
 func (h *Hint) SQL() string {
 	return "@{" + sqlJoin(h.Records, ", ") + "}"
