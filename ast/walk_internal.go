@@ -940,7 +940,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
-	case *UpdateItem:
+	case *UpdateItemDML:
+		stack = append(stack, &stackItem{node: wrapNode(n.DML), visitor: v.Field("DML")})
+
+	case *UpdateItemSetValue:
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Path), visitor: v.Field("Path")})
 

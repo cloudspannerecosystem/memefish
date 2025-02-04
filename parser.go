@@ -178,7 +178,7 @@ func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatementInternal(hint)
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
-		return p.parseDMLInternal(hint)
+		return p.parseDMLInternal(hint, false)
 	case hint != nil:
 		panic(p.errorfAtPosition(hint.Pos(), p.Token.End, "statement hint is only permitted before query or DML, but got: %s", p.Token.Raw))
 	case p.Token.Kind == "CREATE" || p.Token.IsKeywordLike("ALTER") || p.Token.IsKeywordLike("DROP") ||
@@ -5016,6 +5016,8 @@ func (p *Parser) parseIfExists() bool {
 //
 // ================================================================================
 
+// parseDML parses non-nested DML with optional hints.
+// This function is parseStatements friendly.
 func (p *Parser) parseDML() (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
@@ -5026,10 +5028,13 @@ func (p *Parser) parseDML() (dml ast.DML) {
 	}()
 
 	hint := p.tryParseHint()
-	return p.parseDMLInternal(hint)
+	return p.parseDMLInternal(hint, false)
 }
 
-func (p *Parser) parseDMLInternal(hint *ast.Hint) (dml ast.DML) {
+// parseDMLInternal can parse nested and non-nested DML with parsed hints.
+// The behavior is controlled by nested flag.
+// Note: It is recommended to use parseDML if you want to parse a complete DML statement.
+func (p *Parser) parseDMLInternal(hint *ast.Hint, nested bool) (dml ast.DML) {
 	l := p.Lexer.Clone()
 	defer func() {
 		if r := recover(); r != nil {
@@ -5044,7 +5049,7 @@ func (p *Parser) parseDMLInternal(hint *ast.Hint) (dml ast.DML) {
 	pos := id.Pos
 	switch {
 	case id.IsKeywordLike("INSERT"):
-		return p.parseInsert(pos, hint)
+		return p.parseInsert(pos, hint, nested)
 	case id.IsKeywordLike("DELETE"):
 		return p.parseDelete(pos, hint)
 	case id.IsKeywordLike("UPDATE"):
@@ -5087,7 +5092,7 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 	}
 }
 
-func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
+func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.Insert {
 	var insertOrType ast.InsertOrType
 	if p.Token.Kind == "OR" {
 		p.nextToken()
@@ -5108,18 +5113,22 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 
 	name := p.parsePath()
 
-	p.expect("(")
+	// Column list is optional only when nested update(not top-level DML).
+	// Note: There is a ambiguity between column list and parenthesized query.
 	var columns []*ast.Ident
-	if p.Token.Kind != ")" {
-		for p.Token.Kind != token.TokenEOF {
-			columns = append(columns, p.parseIdent())
-			if p.Token.Kind != "," {
-				break
+	if !nested || (p.Token.Kind == "(" && !p.lookaheadSubQuery()) {
+		p.expect("(")
+		if p.Token.Kind != ")" {
+			for p.Token.Kind != token.TokenEOF {
+				columns = append(columns, p.parseIdent())
+				if p.Token.Kind != "," {
+					break
+				}
+				p.nextToken()
 			}
-			p.nextToken()
 		}
+		p.expect(")")
 	}
-	p.expect(")")
 
 	var input ast.InsertInput
 	if p.Token.IsKeywordLike("VALUES") {
@@ -5239,12 +5248,23 @@ func (p *Parser) parseUpdate(pos token.Pos, hint *ast.Hint) *ast.Update {
 	}
 }
 
-func (p *Parser) parseUpdateItem() *ast.UpdateItem {
+func (p *Parser) parseUpdateItem() ast.UpdateItem {
+	if p.Token.Kind == "(" {
+		lparen := p.expect("(").Pos
+		dml := p.parseDMLInternal(nil, true)
+		rparen := p.expect(")").Pos
+		return &ast.UpdateItemDML{
+			Lparen: lparen,
+			Rparen: rparen,
+			DML:    dml,
+		}
+	}
+
 	path := p.parseIdentOrPath()
 	p.expect("=")
 	defaultExpr := p.parseDefaultExpr()
 
-	return &ast.UpdateItem{
+	return &ast.UpdateItemSetValue{
 		Path:        path,
 		DefaultExpr: defaultExpr,
 	}
