@@ -3952,7 +3952,7 @@ type ThenReturn struct {
 // Insert is INSERT statement node.
 //
 //	{{.Hint | sqlOpt}}
-//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Insert struct {
 	// pos = Hint.pos || Insert
@@ -3964,6 +3964,7 @@ type Insert struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
+	TableHint  *Hint // optional
 	Columns    []*Ident
 	Input      InsertInput
 	ThenReturn *ThenReturn // optional
@@ -4019,7 +4020,7 @@ type SubQueryInput struct {
 // Delete is DELETE statement.
 //
 //	{{.Hint | sqlOpt}}
-//	DELETE FROM {{.TableName | sql}} {{.As | sqlOpt}} {{.Where | sql}}
+//	DELETE FROM {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Delete struct {
 	// pos = Hint.pos || Delete
@@ -4029,6 +4030,7 @@ type Delete struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
+	TableHint  *Hint    // optional
 	As         *AsAlias // optional
 	Where      *Where
 	ThenReturn *ThenReturn // optional
@@ -4037,7 +4039,7 @@ type Delete struct {
 // Update is UPDATE statement.
 //
 //	{{.Hint | sqlOpt}}
-//	UPDATE {{.TableName | sql}} {{.As | sqlOpt}}
+//	UPDATE {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}}
 //	SET {{.Updates | sqlJoin ","}} {{.Where | sql}}
 //	{{.ThenReturn | sqlOpt}}
 type Update struct {
@@ -4048,6 +4050,7 @@ type Update struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
+	TableHint  *Hint         // optional
 	As         *AsAlias      // optional
 	Updates    []*UpdateItem // len(Updates) > 0
 	Where      *Where

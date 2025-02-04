@@ -5107,6 +5107,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 	}
 
 	name := p.parsePath()
+	tableHint := p.tryParseHint()
 
 	p.expect("(")
 	var columns []*ast.Ident
@@ -5135,6 +5136,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 		Hint:         hint,
 		InsertOrType: insertOrType,
 		TableName:    name,
+		TableHint:    tableHint,
 		Columns:      columns,
 		Input:        input,
 		ThenReturn:   thenReturn,
@@ -5203,6 +5205,7 @@ func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 	}
 
 	name := p.parsePath()
+	tableHint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
 	thenReturn := p.tryParseThenReturn()
@@ -5211,6 +5214,7 @@ func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 		Delete:     pos,
 		Hint:       hint,
 		TableName:  name,
+		TableHint:  tableHint,
 		As:         as,
 		Where:      where,
 		ThenReturn: thenReturn,
@@ -5219,6 +5223,7 @@ func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 
 func (p *Parser) parseUpdate(pos token.Pos, hint *ast.Hint) *ast.Update {
 	name := p.parsePath()
+	tableHint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("SET")
@@ -5232,6 +5237,7 @@ func (p *Parser) parseUpdate(pos token.Pos, hint *ast.Hint) *ast.Update {
 		Update:     pos,
 		Hint:       hint,
 		TableName:  name,
+		TableHint:  tableHint,
 		As:         as,
 		Updates:    items,
 		Where:      where,
