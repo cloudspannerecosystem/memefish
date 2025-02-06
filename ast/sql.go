@@ -852,7 +852,8 @@ func (f *ForeignKey) SQL() string {
 	return "FOREIGN KEY (" + sqlJoin(f.Columns, ", ") + ") " +
 		"REFERENCES " + f.ReferenceTable.SQL() + " (" +
 		sqlJoin(f.ReferenceColumns, ", ") + ")" +
-		strOpt(f.OnDelete != "", " "+string(f.OnDelete))
+		strOpt(f.OnDelete != "", " "+string(f.OnDelete)) +
+		strOpt(f.Enforcement != "", " "+string(f.Enforcement))
 }
 
 func (c *Check) SQL() string {

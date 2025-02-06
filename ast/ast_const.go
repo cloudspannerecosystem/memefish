@@ -130,6 +130,13 @@ const (
 	OnDeleteNoAction OnDeleteAction = "ON DELETE NO ACTION"
 )
 
+type Enforcement string
+
+const (
+	Enforced    Enforcement = "ENFORCED"
+	NotEnforced Enforcement = "NOT ENFORCED"
+)
+
 type SecurityType string
 
 const (

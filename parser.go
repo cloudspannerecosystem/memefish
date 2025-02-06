@@ -3344,14 +3344,30 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
 
+	enforced := token.InvalidPos
+	var enforcement ast.Enforcement
+	switch {
+	case p.Token.Kind == "NOT":
+		p.nextToken()
+		enforced = p.expectKeywordLike("ENFORCED").Pos
+
+		enforcement = ast.NotEnforced
+	case p.Token.IsKeywordLike("ENFORCED"):
+		enforced = p.expectKeywordLike("ENFORCED").Pos
+
+		enforcement = ast.Enforced
+	}
+
 	return &ast.ForeignKey{
 		Foreign:          pos,
 		Rparen:           rparen,
 		OnDeleteEnd:      onDeleteEnd,
+		Enforced:         enforced,
 		Columns:          columns,
 		ReferenceTable:   refTable,
 		ReferenceColumns: refColumns,
 		OnDelete:         onDelete,
+		Enforcement:      enforcement,
 	}
 }
 
