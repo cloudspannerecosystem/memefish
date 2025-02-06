@@ -189,6 +189,7 @@ create table if not exists foo (
         Foreign:     206,
         Rparen:      245,
         OnDeleteEnd: -1,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 219,
@@ -225,6 +226,7 @@ create table if not exists foo (
         Foreign:     270,
         Rparen:      322,
         OnDeleteEnd: -1,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 283,

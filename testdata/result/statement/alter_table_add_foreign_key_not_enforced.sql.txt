@@ -1,5 +1,5 @@
---- alter_table_add_foreign_key.sql
-alter table foo add foreign key (bar) references t2 (t2key1)
+--- alter_table_add_foreign_key_not_enforced.sql
+alter table foo add foreign key (bar) references t2 (t2key1) not enforced
 
 --- AST
 &ast.AlterTable{
@@ -20,7 +20,7 @@ alter table foo add foreign key (bar) references t2 (t2key1)
         Foreign:     20,
         Rparen:      59,
         OnDeleteEnd: -1,
-        Enforced:    -1,
+        Enforced:    65,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 33,
@@ -44,10 +44,11 @@ alter table foo add foreign key (bar) references t2 (t2key1)
             Name:    "t2key1",
           },
         },
+        Enforcement: "NOT ENFORCED",
       },
     },
   },
 }
 
 --- SQL
-ALTER TABLE foo ADD FOREIGN KEY (bar) REFERENCES t2 (t2key1)
+ALTER TABLE foo ADD FOREIGN KEY (bar) REFERENCES t2 (t2key1) NOT ENFORCED
