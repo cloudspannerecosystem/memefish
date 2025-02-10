@@ -443,7 +443,7 @@ type ColumnDefaultSemantics interface {
 func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
 func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
 func (IdentityColumn) isColumnDefaultSemantics()      {}
-func (AutoIncrement) isColumnDefaultSemantics()      {}
+func (AutoIncrement) isColumnDefaultSemantics()       {}
 
 type SequenceParam interface {
 	Node
@@ -2569,19 +2569,22 @@ type TableConstraint struct {
 
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.
 //
-//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}}) {{.OnDelete}}
+//	FOREIGN KEY ({{.ColumnNames | sqlJoin ","}}) REFERENCES {{.ReferenceTable}} ({{.ReferenceColumns | sqlJoin ","}})
+//	{{.OnDelete}} {{.Enforcement}}
 type ForeignKey struct {
 	// pos = Foreign
-	// end = OnDeleteEnd || Rparen + 1
+	// end = Enforced + 8 || OnDeleteEnd || Rparen + 1
 
 	Foreign     token.Pos // position of "FOREIGN" keyword
 	Rparen      token.Pos // position of ")" after reference columns
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
+	Enforced    token.Pos // position of "ENFORCED", optional
 
 	Columns          []*Ident
 	ReferenceTable   *Path
 	ReferenceColumns []*Ident       // len(ReferenceColumns) > 0
 	OnDelete         OnDeleteAction // optional
+	Enforcement      Enforcement    // optional
 }
 
 // Check is check constraint in CREATE TABLE and ALTER TABLE.

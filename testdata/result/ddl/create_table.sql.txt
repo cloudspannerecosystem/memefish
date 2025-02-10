@@ -8,6 +8,8 @@ create table foo (
   foreign key (bar) references t2 (t2key2) on delete cascade,
   foreign key (baz) references t2 (t2key3) on delete no action,
   constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  constraint fkname2 foreign key (foo, bar) references t2 (t2key1, t2key2) on delete cascade enforced,
+  constraint fkname3 foreign key (foo, bar) references t2 (t2key1, t2key2) not enforced,
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
@@ -16,8 +18,8 @@ create table foo (
 
 --- AST
 &ast.CreateTable{
-  Rparen:           550,
-  PrimaryKeyRparen: 573,
+  Rparen:           742,
+  PrimaryKeyRparen: 765,
   Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
@@ -154,39 +156,39 @@ create table foo (
       Null: -1,
       Key:  -1,
       Name: &ast.Ident{
-        NamePos: 482,
-        NameEnd: 486,
+        NamePos: 674,
+        NameEnd: 678,
         Name:    "quux",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 487,
+        NamePos: 679,
         Name:    "JSON",
       },
       Hidden: -1,
     },
     &ast.ColumnDef{
-      Null: 515,
+      Null: 707,
       Key:  -1,
       Name: &ast.Ident{
-        NamePos: 495,
-        NameEnd: 500,
+        NamePos: 687,
+        NameEnd: 692,
         Name:    "corge",
       },
       Type: &ast.ScalarSchemaType{
-        NamePos: 501,
+        NamePos: 693,
         Name:    "TIMESTAMP",
       },
       NotNull:          true,
       DefaultSemantics: &ast.ColumnDefaultExpr{
-        Default: 520,
-        Rparen:  548,
+        Default: 712,
+        Rparen:  740,
         Expr:    &ast.CallExpr{
-          Rparen: 547,
+          Rparen: 739,
           Func:   &ast.Path{
             Idents: []*ast.Ident{
               &ast.Ident{
-                NamePos: 529,
-                NameEnd: 546,
+                NamePos: 721,
+                NameEnd: 738,
                 Name:    "current_timestamp",
               },
             },
@@ -203,6 +205,7 @@ create table foo (
         Foreign:     182,
         Rparen:      221,
         OnDeleteEnd: -1,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 195,
@@ -234,6 +237,7 @@ create table foo (
         Foreign:     226,
         Rparen:      265,
         OnDeleteEnd: 284,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 239,
@@ -266,6 +270,7 @@ create table foo (
         Foreign:     288,
         Rparen:      327,
         OnDeleteEnd: 348,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 301,
@@ -303,6 +308,7 @@ create table foo (
         Foreign:     370,
         Rparen:      422,
         OnDeleteEnd: -1,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 383,
@@ -339,20 +345,117 @@ create table foo (
       },
     },
     &ast.TableConstraint{
+      ConstraintPos: 427,
+      Name:          &ast.Ident{
+        NamePos: 438,
+        NameEnd: 445,
+        Name:    "fkname2",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     446,
+        Rparen:      498,
+        OnDeleteEnd: 517,
+        Enforced:    518,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 459,
+            NameEnd: 462,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 464,
+            NameEnd: 467,
+            Name:    "bar",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 480,
+              NameEnd: 482,
+              Name:    "t2",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 484,
+            NameEnd: 490,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 492,
+            NameEnd: 498,
+            Name:    "t2key2",
+          },
+        },
+        OnDelete:    "ON DELETE CASCADE",
+        Enforcement: "ENFORCED",
+      },
+    },
+    &ast.TableConstraint{
+      ConstraintPos: 530,
+      Name:          &ast.Ident{
+        NamePos: 541,
+        NameEnd: 548,
+        Name:    "fkname3",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     549,
+        Rparen:      601,
+        OnDeleteEnd: -1,
+        Enforced:    607,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 562,
+            NameEnd: 565,
+            Name:    "foo",
+          },
+          &ast.Ident{
+            NamePos: 567,
+            NameEnd: 570,
+            Name:    "bar",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 583,
+              NameEnd: 585,
+              Name:    "t2",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 587,
+            NameEnd: 593,
+            Name:    "t2key1",
+          },
+          &ast.Ident{
+            NamePos: 595,
+            NameEnd: 601,
+            Name:    "t2key2",
+          },
+        },
+        Enforcement: "NOT ENFORCED",
+      },
+    },
+    &ast.TableConstraint{
       ConstraintPos: -1,
       Constraint:    &ast.Check{
-        Check:  427,
-        Rparen: 441,
+        Check:  619,
+        Rparen: 633,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
-            NamePos: 434,
-            NameEnd: 437,
+            NamePos: 626,
+            NameEnd: 629,
             Name:    "foo",
           },
           Right: &ast.IntLiteral{
-            ValuePos: 440,
-            ValueEnd: 441,
+            ValuePos: 632,
+            ValueEnd: 633,
             Base:     10,
             Value:    "0",
           },
@@ -360,25 +463,25 @@ create table foo (
       },
     },
     &ast.TableConstraint{
-      ConstraintPos: 446,
+      ConstraintPos: 638,
       Name:          &ast.Ident{
-        NamePos: 457,
-        NameEnd: 462,
+        NamePos: 649,
+        NameEnd: 654,
         Name:    "cname",
       },
       Constraint: &ast.Check{
-        Check:  463,
-        Rparen: 477,
+        Check:  655,
+        Rparen: 669,
         Expr:   &ast.BinaryExpr{
           Op:   ">",
           Left: &ast.Ident{
-            NamePos: 470,
-            NameEnd: 473,
+            NamePos: 662,
+            NameEnd: 665,
             Name:    "bar",
           },
           Right: &ast.IntLiteral{
-            ValuePos: 476,
-            ValueEnd: 477,
+            ValuePos: 668,
+            ValueEnd: 669,
             Base:     10,
             Value:    "0",
           },
@@ -390,16 +493,16 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 565,
-        NameEnd: 568,
+        NamePos: 757,
+        NameEnd: 760,
         Name:    "foo",
       },
     },
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 570,
-        NameEnd: 573,
+        NamePos: 762,
+        NameEnd: 765,
         Name:    "bar",
       },
     },
@@ -418,6 +521,8 @@ CREATE TABLE foo (
   FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE,
   FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION,
   CONSTRAINT fkname FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2),
+  CONSTRAINT fkname2 FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2) ON DELETE CASCADE ENFORCED,
+  CONSTRAINT fkname3 FOREIGN KEY (foo, bar) REFERENCES t2 (t2key1, t2key2) NOT ENFORCED,
   CHECK (foo > 0),
   CONSTRAINT cname CHECK (bar > 0)
 ) PRIMARY KEY (foo, bar)

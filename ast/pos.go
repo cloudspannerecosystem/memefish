@@ -1187,7 +1187,7 @@ func (f *ForeignKey) Pos() token.Pos {
 }
 
 func (f *ForeignKey) End() token.Pos {
-	return posChoice(f.OnDeleteEnd, posAdd(f.Rparen, 1))
+	return posChoice(posAdd(f.Enforced, 8), f.OnDeleteEnd, posAdd(f.Rparen, 1))
 }
 
 func (c *Check) Pos() token.Pos {

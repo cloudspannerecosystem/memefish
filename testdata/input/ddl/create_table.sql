@@ -7,6 +7,8 @@ create table foo (
   foreign key (bar) references t2 (t2key2) on delete cascade,
   foreign key (baz) references t2 (t2key3) on delete no action,
   constraint fkname foreign key (foo, bar) references t2 (t2key1, t2key2),
+  constraint fkname2 foreign key (foo, bar) references t2 (t2key1, t2key2) on delete cascade enforced,
+  constraint fkname3 foreign key (foo, bar) references t2 (t2key1, t2key2) not enforced,
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
