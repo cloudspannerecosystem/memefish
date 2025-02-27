@@ -89,6 +89,10 @@ func main() {
 		node, err = p.ParseDDL()
 	case "dml":
 		node, err = p.ParseDML()
+	case "gql":
+		node, err = p.ParseGQLStatement()
+	case "gql_path_pattern":
+		node, err = p.ParseGQLPathPattern()
 	default:
 		log.Fatalf("unknown mode: %s", *mode)
 	}

@@ -1,0 +1,16 @@
+--- abbreviated_edge_right.sql
+ ->
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLAbbreviatedEdgeRight{
+        Hyphen: 1,
+        Arrow:  1,
+      },
+    },
+  },
+}
+
+--- SQL
+->

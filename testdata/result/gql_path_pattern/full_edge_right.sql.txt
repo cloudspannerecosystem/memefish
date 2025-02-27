@@ -1,0 +1,18 @@
+--- full_edge_right.sql
+ -[]->
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLFullEdgeRight{
+        Hyphen: 1,
+        Lbrack: 2,
+        Rbrack: 3,
+        Arrow:  4,
+      },
+    },
+  },
+}
+
+--- SQL
+-[]->

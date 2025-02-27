@@ -1,0 +1,1 @@
+(source_person:Person)((p:Person)-[k:Knows]->(f:Person)){, 4}(dest_person:Person)

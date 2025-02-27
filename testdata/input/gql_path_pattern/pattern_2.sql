@@ -1,0 +1,1 @@
+(p:(Singer|(!Writer&!Producer)))

@@ -1,0 +1,1 @@
+GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE 'und:ci' RETURN a.name

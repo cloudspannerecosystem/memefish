@@ -1,0 +1,59 @@
+--- select_from_graph_table.sql
+SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable:        14,
+        PropertyGraphName: &ast.Ident{
+          NamePos: 26,
+          NameEnd: 34,
+          Name:    "FinGraph",
+        },
+        Lparen: 25,
+        Rparen: 48,
+        Query:  &ast.GQLMultiLinearQueryStatement{
+          LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLReturnStatement{
+                  Return:         35,
+                  ReturnItemList: []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Item: &ast.Alias{
+                        Expr: &ast.IntLiteral{
+                          ValuePos: 42,
+                          ValueEnd: 43,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                        As: &ast.AsAlias{
+                          As:    44,
+                          Alias: &ast.Ident{
+                            NamePos: 47,
+                            NameEnd: 48,
+                            Name:    "a",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(FinGraph RETURN 1 AS a)
