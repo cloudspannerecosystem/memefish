@@ -2297,7 +2297,7 @@ type CreateLocalityGroup struct {
 
 // AlterLocalityGroup is ALTER LOCALITY GROUP statement node.
 //
-//	ALTER LOCALITY GROUP {{.Name | sql}} {{if.Options}}SET {{.Options | sql}}{{end}}
+//	ALTER LOCALITY GROUP {{.Name | sql}} SET {{.Options | sql}}
 type AlterLocalityGroup struct {
 	// pos = Alter
 	// end = Options.end
