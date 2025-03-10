@@ -1,0 +1,155 @@
+--- create_table_options.sql
+CREATE TABLE Singers (
+  SingerId   INT64 NOT NULL,
+  FirstName  STRING(1024),
+  LastName   STRING(1024),
+  Awards     ARRAY<STRING(MAX)> OPTIONS (locality_group = 'spill_to_hdd')
+) PRIMARY KEY (SingerId), OPTIONS (locality_group = 'ssd_only')
+--- AST
+&ast.CreateTable{
+  Rparen:           180,
+  PrimaryKeyRparen: 203,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "Singers",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 46,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 25,
+        NameEnd: 33,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 36,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 54,
+        NameEnd: 63,
+        Name:    "FirstName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 65,
+        Rparen:  76,
+        Name:    "STRING",
+        Size:    &ast.IntLiteral{
+          ValuePos: 72,
+          ValueEnd: 76,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 81,
+        NameEnd: 89,
+        Name:    "LastName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 92,
+        Rparen:  103,
+        Name:    "STRING",
+        Size:    &ast.IntLiteral{
+          ValuePos: 99,
+          ValueEnd: 103,
+          Base:     10,
+          Value:    "1024",
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 108,
+        NameEnd: 114,
+        Name:    "Awards",
+      },
+      Type: &ast.ArraySchemaType{
+        Array:  119,
+        Gt:     136,
+        Rparen: -1,
+        Item:   &ast.SizedSchemaType{
+          NamePos: 125,
+          Rparen:  135,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+      Hidden:  -1,
+      Options: &ast.Options{
+        Options: 138,
+        Rparen:  178,
+        Records: []*ast.OptionsDef{
+          &ast.OptionsDef{
+            Name: &ast.Ident{
+              NamePos: 147,
+              NameEnd: 161,
+              Name:    "locality_group",
+            },
+            Value: &ast.StringLiteral{
+              ValuePos: 164,
+              ValueEnd: 178,
+              Value:    "spill_to_hdd",
+            },
+          },
+        },
+      },
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 195,
+        NameEnd: 203,
+        Name:    "SingerId",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 206,
+    Rparen:  242,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 215,
+          NameEnd: 229,
+          Name:    "locality_group",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 232,
+          ValueEnd: 242,
+          Value:    "ssd_only",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Singers (
+  SingerId INT64 NOT NULL,
+  FirstName STRING(1024),
+  LastName STRING(1024),
+  Awards ARRAY<STRING(MAX)> OPTIONS (locality_group = "spill_to_hdd")
+) PRIMARY KEY (SingerId), OPTIONS (locality_group = "ssd_only")
