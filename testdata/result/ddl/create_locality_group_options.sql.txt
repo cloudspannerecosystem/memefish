@@ -41,4 +41,4 @@ OPTIONS (storage = 'ssd', ssd_to_hdd_spill_timespan = '10d')
 }
 
 --- SQL
-CREATE LOCALITY GROUP spill_to_hdd SET OPTIONS (storage = "ssd", ssd_to_hdd_spill_timespan = "10d")
+CREATE LOCALITY GROUP spill_to_hdd OPTIONS (storage = "ssd", ssd_to_hdd_spill_timespan = "10d")

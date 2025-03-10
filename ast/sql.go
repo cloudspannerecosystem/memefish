@@ -755,10 +755,11 @@ func (c *CreateDatabase) SQL() string {
 }
 
 func (c *CreateLocalityGroup) SQL() string {
-	return "CREATE LOCALITY GROUP " + c.Name.SQL() + sqlOpt(" SET ", c.Options, "")
+	return "CREATE LOCALITY GROUP " + c.Name.SQL() + sqlOpt(" ", c.Options, "")
 }
+
 func (a *AlterLocalityGroup) SQL() string {
-	return "ALTER LOCALITY GROUP " + a.Name.SQL() + sqlOpt(" ", a.Options, "")
+	return "ALTER LOCALITY GROUP " + a.Name.SQL() + " SET " + a.Options.SQL()
 }
 
 func (d *DropLocalityGroup) SQL() string {

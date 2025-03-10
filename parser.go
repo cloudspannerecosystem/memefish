@@ -2996,6 +2996,7 @@ func (p *Parser) parseCreateLocalityGroup(pos token.Pos) *ast.CreateLocalityGrou
 	p.expectKeywordLike("LOCALITY")
 	p.expect("GROUP")
 	name := p.parseIdent()
+
 	options := p.tryParseOptions()
 
 	return &ast.CreateLocalityGroup{
