@@ -3153,6 +3153,12 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	cluster := p.tryParseCluster()
 	rdp := p.tryParseCreateRowDeletionPolicy()
 
+	var options *ast.Options
+	if p.Token.Kind == "," {
+		p.nextToken()
+		options = p.parseOptions()
+	}
+
 	return &ast.CreateTable{
 		Create:            pos,
 		Rparen:            rparen,
@@ -3165,6 +3171,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
+		Options:           options,
 	}
 }
 
@@ -3488,7 +3495,14 @@ func (p *Parser) tryParseCreateRowDeletionPolicy() *ast.CreateRowDeletionPolicy 
 	if p.Token.Kind != "," {
 		return nil
 	}
+
+	lexer := p.Lexer.Clone()
 	pos := p.expect(",").Pos
+	if !p.Token.IsKeywordLike("ROW") {
+		p.Lexer = lexer
+		return nil
+	}
+
 	rdp := p.parseRowDeletionPolicy()
 	return &ast.CreateRowDeletionPolicy{
 		Comma:             pos,

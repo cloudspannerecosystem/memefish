@@ -795,7 +795,8 @@ func (c *CreateTable) SQL() string {
 		"\n)" +
 		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
-		sqlOpt("", c.RowDeletionPolicy, "")
+		sqlOpt("", c.RowDeletionPolicy, "") +
+		sqlOpt(", ", c.Options, "")
 }
 
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }

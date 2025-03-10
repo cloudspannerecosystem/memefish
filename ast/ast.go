@@ -2390,13 +2390,14 @@ type DropProtoBundle struct {
 //	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
+//	{{.Options | sqlOpt}}
 //
 // Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
 // however they are separated in AST definition for historical reasons. If you want to get
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
+	// end = Options.end || RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
 
 	Create           token.Pos // position of "CREATE" keyword
 	Rparen           token.Pos // position of ")" of end of column definitions
@@ -2410,6 +2411,7 @@ type CreateTable struct {
 	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+	Options           *Options                 // optional
 }
 
 // Synonym is SYNONYM node in CREATE TABLE
