@@ -1,0 +1,43 @@
+--- alter_locality_group.sql
+ALTER LOCALITY GROUP `default` SET OPTIONS (storage = 'ssd', ssd_to_hdd_spill_timespan = '10d')
+--- AST
+&ast.AlterLocalityGroup{
+  Name: &ast.Ident{
+    NamePos: 21,
+    NameEnd: 30,
+    Name:    "default",
+  },
+  Options: &ast.Options{
+    Options: 35,
+    Rparen:  94,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 51,
+          Name:    "storage",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 54,
+          ValueEnd: 59,
+          Value:    "ssd",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 61,
+          NameEnd: 86,
+          Name:    "ssd_to_hdd_spill_timespan",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 89,
+          ValueEnd: 94,
+          Value:    "10d",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER LOCALITY GROUP `default` OPTIONS (storage = "ssd", ssd_to_hdd_spill_timespan = "10d")
