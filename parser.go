@@ -3718,6 +3718,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 
 	storing := p.tryParseStoring()
 	interleaveIn := p.tryParseInterleaveIn()
+	options := p.tryParseOptions()
 
 	return &ast.CreateIndex{
 		Create:       pos,
@@ -3730,6 +3731,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		Keys:         keys,
 		Storing:      storing,
 		InterleaveIn: interleaveIn,
+		Options:      options,
 	}
 }
 

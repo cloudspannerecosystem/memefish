@@ -3034,9 +3034,10 @@ type RenameTableTo struct {
 //	)
 //	{{.Storing | sqlOpt}}
 //	{{.InterleaveIn | sqlOpt}}
+//	{{.Options | sqlOpt}}
 type CreateIndex struct {
 	// pos = Create
-	// end = (InterleaveIn ?? Storing).end || Rparen + 1
+	// end = (Options ?? InterleaveIn ?? Storing).end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")"
@@ -3049,6 +3050,7 @@ type CreateIndex struct {
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
 	InterleaveIn *InterleaveIn // optional
+	Options      *Options      // optional
 }
 
 // CreateVectorIndex is CREATE VECTOR INDEX statement node.
