@@ -80,6 +80,9 @@ func (CreateSchema) isStatement()        {}
 func (DropSchema) isStatement()          {}
 func (CreateDatabase) isStatement()      {}
 func (AlterDatabase) isStatement()       {}
+func (CreateLocalityGroup) isStatement() {}
+func (AlterLocalityGroup) isStatement()  {}
+func (DropLocalityGroup) isStatement()   {}
 func (CreatePlacement) isStatement()     {}
 func (CreateProtoBundle) isStatement()   {}
 func (AlterProtoBundle) isStatement()    {}
@@ -369,6 +372,9 @@ func (CreateSchema) isDDL()        {}
 func (DropSchema) isDDL()          {}
 func (CreateDatabase) isDDL()      {}
 func (AlterDatabase) isDDL()       {}
+func (CreateLocalityGroup) isDDL() {}
+func (AlterLocalityGroup) isDDL()  {}
+func (DropLocalityGroup) isDDL()   {}
 func (CreatePlacement) isDDL()     {}
 func (CreateProtoBundle) isDDL()   {}
 func (AlterProtoBundle) isDDL()    {}
@@ -2274,6 +2280,44 @@ type AlterDatabase struct {
 
 	Name    *Ident
 	Options *Options
+}
+
+// CreateLocalityGroup is CREATE LOCALITY GROUP statement node.
+//
+//	CREATE LOCALITY GROUP {{.Name | sql}} {{.Options | sqlOpt}}
+type CreateLocalityGroup struct {
+	// pos = Create
+	// end = (Options ?? Name).end
+
+	Create token.Pos // position of "CREATE" keyword
+
+	Name    *Ident
+	Options *Options // optional
+}
+
+// AlterLocalityGroup is ALTER LOCALITY GROUP statement node.
+//
+//	ALTER LOCALITY GROUP {{.Name | sql}} {{if.Options}}SET {{.Options | sql}}{{end}}
+type AlterLocalityGroup struct {
+	// pos = Alter
+	// end = Options.end
+
+	Alter token.Pos // position of "ALTER" keyword
+
+	Name    *Ident
+	Options *Options
+}
+
+// DropLocalityGroup is DROP LOCALITY GROUP statement node.
+//
+//	DROP LOCALITY GROUP {{.Name | sql}}
+type DropLocalityGroup struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
 }
 
 // CreatePlacement is CREATE PLACEMENT statement node.

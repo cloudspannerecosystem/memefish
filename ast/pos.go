@@ -1022,6 +1022,30 @@ func (a *AlterDatabase) End() token.Pos {
 	return nodeEnd(wrapNode(a.Options))
 }
 
+func (c *CreateLocalityGroup) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateLocalityGroup) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
+}
+
+func (a *AlterLocalityGroup) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterLocalityGroup) End() token.Pos {
+	return nodeEnd(wrapNode(a.Options))
+}
+
+func (d *DropLocalityGroup) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropLocalityGroup) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (c *CreatePlacement) Pos() token.Pos {
 	return c.Create
 }

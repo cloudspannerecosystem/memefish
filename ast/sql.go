@@ -754,6 +754,17 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
+func (c *CreateLocalityGroup) SQL() string {
+	return "CREATE LOCALITY GROUP " + c.Name.SQL() + sqlOpt(" SET ", c.Options, "")
+}
+func (a *AlterLocalityGroup) SQL() string {
+	return "ALTER LOCALITY GROUP " + a.Name.SQL() + sqlOpt(" ", a.Options, "")
+}
+
+func (d *DropLocalityGroup) SQL() string {
+	return "DROP LOCALITY GROUP " + d.Name.SQL()
+}
+
 func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
 
 func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
