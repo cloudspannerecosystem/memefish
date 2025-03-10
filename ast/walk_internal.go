@@ -623,6 +623,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *SetOnDelete:
 		// nothing to do
 
+	case *AlterTableSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *AlterColumn:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alteration), visitor: v.Field("Alteration")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})

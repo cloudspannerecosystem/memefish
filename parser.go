@@ -3900,7 +3900,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	case p.Token.IsKeywordLike("REPLACE"):
 		alteration = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
-		alteration = p.parseSetOnDelete()
+		alteration = p.parseAlterTableSet()
 	case p.Token.IsKeywordLike("ALTER"):
 		alteration = p.parseAlterColumn()
 	default:
@@ -4053,14 +4053,25 @@ func (p *Parser) parseAlterTableReplace() ast.TableAlteration {
 	}
 }
 
-func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
+func (p *Parser) parseAlterTableSet() ast.TableAlteration {
 	pos := p.expect("SET").Pos
-	onDelete, onDeleteEnd := p.parseOnDeleteAction()
+	switch {
+	case p.Token.Kind == "ON":
+		onDelete, onDeleteEnd := p.parseOnDeleteAction()
 
-	return &ast.SetOnDelete{
-		Set:         pos,
-		OnDeleteEnd: onDeleteEnd,
-		OnDelete:    onDelete,
+		return &ast.SetOnDelete{
+			Set:         pos,
+			OnDeleteEnd: onDeleteEnd,
+			OnDelete:    onDelete,
+		}
+	case p.Token.IsKeywordLike("OPTIONS"):
+		options := p.parseOptions()
+		return &ast.AlterTableSetOptions{
+			Set:     pos,
+			Options: options,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected token: ON, OPTIONS, but: %s", p.Token.AsString))
 	}
 }
 

@@ -1366,6 +1366,14 @@ func (s *SetOnDelete) End() token.Pos {
 	return s.OnDeleteEnd
 }
 
+func (a *AlterTableSetOptions) Pos() token.Pos {
+	return a.Set
+}
+
+func (a *AlterTableSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(a.Options))
+}
+
 func (a *AlterColumn) Pos() token.Pos {
 	return a.Alter
 }

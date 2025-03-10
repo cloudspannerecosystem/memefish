@@ -432,6 +432,7 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
+func (AlterTableSetOptions) isTableAlteration()     {}
 
 // ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
 // They are change default value of column and mutually exclusive.
@@ -2874,6 +2875,17 @@ type SetOnDelete struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	OnDelete OnDeleteAction
+}
+
+// AlterTableSetOptions is SET OPTIONS node in ALTER TABLE.
+//
+//	SET {{.Options | sql}}
+type AlterTableSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
 }
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.

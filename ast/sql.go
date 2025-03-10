@@ -936,6 +936,8 @@ func (s *SetOnDelete) SQL() string {
 	return "SET " + string(s.OnDelete)
 }
 
+func (a *AlterTableSetOptions) SQL() string { return "SET " + a.Options.SQL() }
+
 func (a *AlterColumn) SQL() string {
 	return "ALTER COLUMN " + a.Name.SQL() + " " + a.Alteration.SQL()
 }
