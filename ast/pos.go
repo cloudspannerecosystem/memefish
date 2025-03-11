@@ -1499,7 +1499,7 @@ func (c *CreateIndex) Pos() token.Pos {
 }
 
 func (c *CreateIndex) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(c.InterleaveIn), wrapNode(c.Storing))), posAdd(c.Rparen, 1))
+	return posChoice(nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.InterleaveIn), wrapNode(c.Storing))), posAdd(c.Rparen, 1))
 }
 
 func (c *CreateVectorIndex) Pos() token.Pos {

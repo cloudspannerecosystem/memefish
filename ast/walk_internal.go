@@ -676,6 +676,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Old), visitor: v.Field("Old")})
 
 	case *CreateIndex:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.InterleaveIn), visitor: v.Field("InterleaveIn")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Keys), visitor: v.Field("Keys")})
