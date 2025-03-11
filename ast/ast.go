@@ -2391,7 +2391,7 @@ type DropProtoBundle struct {
 //	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
-//	{{.Options | sqlOpt}}
+//	{{if .Options}}, {{.Options | sqlOpt}}{{end}}
 //
 // Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
 // however they are separated in AST definition for historical reasons. If you want to get
