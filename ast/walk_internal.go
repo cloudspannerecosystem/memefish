@@ -504,6 +504,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		// nothing to do
 
 	case *CreateTable:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Cluster), visitor: v.Field("Cluster")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Synonyms), visitor: v.Field("Synonyms")})
@@ -632,6 +633,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *SetOnDelete:
 		// nothing to do
+
+	case *AlterTableSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
 	case *AlterColumn:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alteration), visitor: v.Field("Alteration")})

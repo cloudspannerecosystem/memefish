@@ -807,7 +807,8 @@ func (c *CreateTable) SQL() string {
 		"\n)" +
 		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
-		sqlOpt("", c.RowDeletionPolicy, "")
+		sqlOpt("", c.RowDeletionPolicy, "") +
+		sqlOpt(", ", c.Options, "")
 }
 
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
@@ -946,6 +947,8 @@ func (r *ReplaceRowDeletionPolicy) SQL() string {
 func (s *SetOnDelete) SQL() string {
 	return "SET " + string(s.OnDelete)
 }
+
+func (a *AlterTableSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 
 func (a *AlterColumn) SQL() string {
 	return "ALTER COLUMN " + a.Name.SQL() + " " + a.Alteration.SQL()

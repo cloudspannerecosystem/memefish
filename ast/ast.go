@@ -438,6 +438,7 @@ func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
 func (AlterColumn) isTableAlteration()              {}
+func (AlterTableSetOptions) isTableAlteration()     {}
 
 // ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
 // They are change default value of column and mutually exclusive.
@@ -2434,13 +2435,14 @@ type DropProtoBundle struct {
 //	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
+//	{{if .Options}}, {{.Options | sqlOpt}}{{end}}
 //
 // Spanner SQL allows to mix `Columns` and `TableConstraints` and `Synonyms`,
 // however they are separated in AST definition for historical reasons. If you want to get
 // the original order of them, please sort them by their `Pos()`.
 type CreateTable struct {
 	// pos = Create
-	// end = RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
+	// end = Options.end || RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1 || Rparen + 1
 
 	Create           token.Pos // position of "CREATE" keyword
 	Rparen           token.Pos // position of ")" of end of column definitions
@@ -2454,6 +2456,7 @@ type CreateTable struct {
 	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+	Options           *Options                 // optional
 }
 
 // Synonym is SYNONYM node in CREATE TABLE
@@ -2916,6 +2919,17 @@ type SetOnDelete struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	OnDelete OnDeleteAction
+}
+
+// AlterTableSetOptions is SET OPTIONS node in ALTER TABLE.
+//
+//	SET {{.Options | sql}}
+type AlterTableSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
 }
 
 // AlterColumn is ALTER COLUMN clause in ALTER TABLE.

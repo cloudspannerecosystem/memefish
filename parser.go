@@ -3199,6 +3199,12 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	cluster := p.tryParseCluster()
 	rdp := p.tryParseCreateRowDeletionPolicy()
 
+	var options *ast.Options
+	if p.Token.Kind == "," {
+		p.nextToken()
+		options = p.parseOptions()
+	}
+
 	return &ast.CreateTable{
 		Create:            pos,
 		Rparen:            rparen,
@@ -3211,6 +3217,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		PrimaryKeys:       keys,
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
+		Options:           options,
 	}
 }
 
@@ -3534,7 +3541,14 @@ func (p *Parser) tryParseCreateRowDeletionPolicy() *ast.CreateRowDeletionPolicy 
 	if p.Token.Kind != "," {
 		return nil
 	}
+
+	lexer := p.Lexer.Clone()
 	pos := p.expect(",").Pos
+	if !p.Token.IsKeywordLike("ROW") {
+		p.Lexer = lexer
+		return nil
+	}
+
 	rdp := p.parseRowDeletionPolicy()
 	return &ast.CreateRowDeletionPolicy{
 		Comma:             pos,
@@ -3934,7 +3948,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	case p.Token.IsKeywordLike("REPLACE"):
 		alteration = p.parseAlterTableReplace()
 	case p.Token.Kind == "SET":
-		alteration = p.parseSetOnDelete()
+		alteration = p.parseAlterTableSet()
 	case p.Token.IsKeywordLike("ALTER"):
 		alteration = p.parseAlterColumn()
 	default:
@@ -4087,14 +4101,25 @@ func (p *Parser) parseAlterTableReplace() ast.TableAlteration {
 	}
 }
 
-func (p *Parser) parseSetOnDelete() *ast.SetOnDelete {
+func (p *Parser) parseAlterTableSet() ast.TableAlteration {
 	pos := p.expect("SET").Pos
-	onDelete, onDeleteEnd := p.parseOnDeleteAction()
+	switch {
+	case p.Token.Kind == "ON":
+		onDelete, onDeleteEnd := p.parseOnDeleteAction()
 
-	return &ast.SetOnDelete{
-		Set:         pos,
-		OnDeleteEnd: onDeleteEnd,
-		OnDelete:    onDelete,
+		return &ast.SetOnDelete{
+			Set:         pos,
+			OnDeleteEnd: onDeleteEnd,
+			OnDelete:    onDelete,
+		}
+	case p.Token.IsKeywordLike("OPTIONS"):
+		options := p.parseOptions()
+		return &ast.AlterTableSetOptions{
+			Set:     pos,
+			Options: options,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected token: ON, OPTIONS, but: %s", p.Token.AsString))
 	}
 }
 

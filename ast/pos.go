@@ -1115,7 +1115,7 @@ func (c *CreateTable) Pos() token.Pos {
 }
 
 func (c *CreateTable) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1), posAdd(c.Rparen, 1))
+	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1), posAdd(c.Rparen, 1))
 }
 
 func (s *Synonym) Pos() token.Pos {
@@ -1388,6 +1388,14 @@ func (s *SetOnDelete) Pos() token.Pos {
 
 func (s *SetOnDelete) End() token.Pos {
 	return s.OnDeleteEnd
+}
+
+func (a *AlterTableSetOptions) Pos() token.Pos {
+	return a.Set
+}
+
+func (a *AlterTableSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(a.Options))
 }
 
 func (a *AlterColumn) Pos() token.Pos {

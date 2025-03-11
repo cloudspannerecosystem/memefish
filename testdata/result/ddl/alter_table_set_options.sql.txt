@@ -1,0 +1,38 @@
+--- alter_table_set_options.sql
+ALTER TABLE Singers SET OPTIONS (locality_group = 'spill_to_hdd')
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "Singers",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterTableSetOptions{
+    Set:     20,
+    Options: &ast.Options{
+      Options: 24,
+      Rparen:  64,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 33,
+            NameEnd: 47,
+            Name:    "locality_group",
+          },
+          Value: &ast.StringLiteral{
+            ValuePos: 50,
+            ValueEnd: 64,
+            Value:    "spill_to_hdd",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Singers SET OPTIONS (locality_group = "spill_to_hdd")
