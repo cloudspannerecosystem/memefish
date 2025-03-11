@@ -1,0 +1,44 @@
+--- create_locality_group_options.sql
+CREATE LOCALITY GROUP spill_to_hdd
+OPTIONS (storage = 'ssd', ssd_to_hdd_spill_timespan = '10d')
+--- AST
+&ast.CreateLocalityGroup{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 34,
+    Name:    "spill_to_hdd",
+  },
+  Options: &ast.Options{
+    Options: 35,
+    Rparen:  94,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 51,
+          Name:    "storage",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 54,
+          ValueEnd: 59,
+          Value:    "ssd",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 61,
+          NameEnd: 86,
+          Name:    "ssd_to_hdd_spill_timespan",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 89,
+          ValueEnd: 94,
+          Value:    "10d",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE LOCALITY GROUP spill_to_hdd OPTIONS (storage = "ssd", ssd_to_hdd_spill_timespan = "10d")

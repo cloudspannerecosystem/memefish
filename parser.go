@@ -2836,6 +2836,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseCreateSchema(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
+		case p.Token.IsKeywordLike("LOCALITY"):
+			return p.parseCreateLocalityGroup(pos)
 		case p.Token.IsKeywordLike("PLACEMENT"):
 			return p.parseCreatePlacement(pos)
 		case p.Token.Kind == "PROTO":
@@ -2880,6 +2882,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseAlterTable(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
+		case p.Token.IsKeywordLike("LOCALITY"):
+			return p.parseAlterLocalityGroup(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseAlterProtoBundle(pos)
 		case p.Token.IsKeywordLike("INDEX"):
@@ -2901,6 +2905,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		switch {
 		case p.Token.IsKeywordLike("SCHEMA"):
 			return p.parseDropSchema(pos)
+		case p.Token.IsKeywordLike("LOCALITY"):
+			return p.parseDropLocalityGroup(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
@@ -2983,6 +2989,46 @@ func (p *Parser) parseAlterDatabase(pos token.Pos) *ast.AlterDatabase {
 		Alter:   pos,
 		Name:    name,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseCreateLocalityGroup(pos token.Pos) *ast.CreateLocalityGroup {
+	p.expectKeywordLike("LOCALITY")
+	p.expect("GROUP")
+	name := p.parseIdent()
+
+	options := p.tryParseOptions()
+
+	return &ast.CreateLocalityGroup{
+		Create:  pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
+func (p *Parser) parseAlterLocalityGroup(pos token.Pos) *ast.AlterLocalityGroup {
+	p.expectKeywordLike("LOCALITY")
+	p.expect("GROUP")
+	name := p.parseIdent()
+
+	p.expect("SET")
+	options := p.parseOptions()
+
+	return &ast.AlterLocalityGroup{
+		Alter:   pos,
+		Name:    name,
+		Options: options,
+	}
+}
+
+func (p *Parser) parseDropLocalityGroup(pos token.Pos) *ast.DropLocalityGroup {
+	p.expectKeywordLike("LOCALITY")
+	p.expect("GROUP")
+	name := p.parseIdent()
+
+	return &ast.DropLocalityGroup{
+		Drop: pos,
+		Name: name,
 	}
 }
 

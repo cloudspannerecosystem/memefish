@@ -1,0 +1,1 @@
+DROP LOCALITY GROUP ssd_only
