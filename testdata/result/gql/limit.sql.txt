@@ -1,0 +1,166 @@
+--- limit.sql
+GRAPH FinGraph
+MATCH (source:Account)-[e:Transfers]->(destination:Account)
+ORDER BY source.nick_name
+LIMIT 3
+RETURN source.nick_name
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        36,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 28,
+                              Name:    "source",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       28,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 29,
+                                  NameEnd: 36,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLFullEdgeRight{
+                          Hyphen:        37,
+                          Lbrack:        38,
+                          Rbrack:        50,
+                          Arrow:         51,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 39,
+                              NameEnd: 40,
+                              Name:    "e",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       40,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 41,
+                                  NameEnd: 50,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        53,
+                          Rparen:        73,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 54,
+                              NameEnd: 65,
+                              Name:    "destination",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       65,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 66,
+                                  NameEnd: 73,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLOrderByStatement{
+            Order:                    75,
+            OrderBySpecificationList: []*ast.GQLOrderBySpecification{
+              &ast.GQLOrderBySpecification{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 84,
+                      NameEnd: 90,
+                      Name:    "source",
+                    },
+                    &ast.Ident{
+                      NamePos: 91,
+                      NameEnd: 100,
+                      Name:    "nick_name",
+                    },
+                  },
+                },
+                DirectionPos: -1,
+              },
+            },
+          },
+          &ast.GQLLimitStatement{
+            Limit: 101,
+            Count: &ast.IntLiteral{
+              ValuePos: 107,
+              ValueEnd: 108,
+              Base:     10,
+              Value:    "3",
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         109,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 116,
+                        NameEnd: 122,
+                        Name:    "source",
+                      },
+                      &ast.Ident{
+                        NamePos: 123,
+                        NameEnd: 132,
+                        Name:    "nick_name",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (source:Account)-[e:Transfers]->(destination:Account) ORDER BY source.nick_name LIMIT 3 RETURN source.nick_name

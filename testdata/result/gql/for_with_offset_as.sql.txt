@@ -1,0 +1,129 @@
+--- for_with_offset_as.sql
+GRAPH FinGraph
+MATCH (p:Person)
+FOR element in [] WITH OFFSET AS off
+RETURN p.name, element, off
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        30,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLForStatement{
+            For:         32,
+            ElementName: &ast.Ident{
+              NamePos: 36,
+              NameEnd: 43,
+              Name:    "element",
+            },
+            ArrayExpression: &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 47,
+              Rbrack: 48,
+            },
+            WithOffsetClause: &ast.GQLWithOffsetClause{
+              With:       50,
+              Offset:     55,
+              OffsetName: &ast.AsAlias{
+                As:    62,
+                Alias: &ast.Ident{
+                  NamePos: 65,
+                  NameEnd: 68,
+                  Name:    "off",
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         69,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 76,
+                        NameEnd: 77,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 78,
+                        NameEnd: 82,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 84,
+                    NameEnd: 91,
+                    Name:    "element",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Ident{
+                    NamePos: 93,
+                    NameEnd: 96,
+                    Name:    "off",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) FOR element IN [] WITH OFFSET AS off RETURN p.name, element, off

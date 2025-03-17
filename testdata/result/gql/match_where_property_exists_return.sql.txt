@@ -1,0 +1,125 @@
+--- match_where_property_exists_return.sql
+GRAPH FinGraph
+MATCH (n:Person|Account WHERE PROPERTY_EXISTS(n, name))
+RETURN n.name
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        69,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "n",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLLabelOrExpression{
+                                Left: &ast.GQLElementLabel{
+                                  LabelName: &ast.Ident{
+                                    NamePos: 24,
+                                    NameEnd: 30,
+                                    Name:    "Person",
+                                  },
+                                },
+                                Right: &ast.GQLElementLabel{
+                                  LabelName: &ast.Ident{
+                                    NamePos: 31,
+                                    NameEnd: 38,
+                                    Name:    "Account",
+                                  },
+                                },
+                              },
+                            },
+                            Filter: &ast.Where{
+                              Where: 39,
+                              Expr:  &ast.CallExpr{
+                                Rparen: 68,
+                                Func:   &ast.Path{
+                                  Idents: []*ast.Ident{
+                                    &ast.Ident{
+                                      NamePos: 45,
+                                      NameEnd: 60,
+                                      Name:    "PROPERTY_EXISTS",
+                                    },
+                                  },
+                                },
+                                Args: []ast.Arg{
+                                  &ast.ExprArg{
+                                    Expr: &ast.Ident{
+                                      NamePos: 61,
+                                      NameEnd: 62,
+                                      Name:    "n",
+                                    },
+                                  },
+                                  &ast.ExprArg{
+                                    Expr: &ast.Ident{
+                                      NamePos: 64,
+                                      NameEnd: 68,
+                                      Name:    "name",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         71,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 78,
+                        NameEnd: 79,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 80,
+                        NameEnd: 84,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (n:Person|Account WHERE PROPERTY_EXISTS(n, name)) RETURN n.name

@@ -1,0 +1,173 @@
+--- return_in_gql_subquery.sql
+GRAPH FinGraph
+RETURN 'Dana' IN {
+  MATCH (p:Person)-[o:Owns]->(a:Account)
+  RETURN p.name
+} AS results
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:         15,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.InExpr{
+                    Left: &ast.StringLiteral{
+                      ValuePos: 22,
+                      ValueEnd: 28,
+                      Value:    "Dana",
+                    },
+                    Right: &ast.GQLSubQueryInCondition{
+                      Lbrace: 32,
+                      Rbrace: 91,
+                      Query:  &ast.GQLQueryExpr{
+                        MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+                          LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+                            &ast.GQLSimpleLinearQueryStatement{
+                              PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+                                &ast.GQLMatchStatement{
+                                  Optional:     -1,
+                                  Match:        36,
+                                  GraphPattern: &ast.GQLGraphPattern{
+                                    PathPatternList: []*ast.GQLTopLevelPathPattern{
+                                      &ast.GQLTopLevelPathPattern{
+                                        PathPattern: &ast.GQLPathPattern{
+                                          PathTermList: []*ast.GQLQuantifiablePathTerm{
+                                            &ast.GQLQuantifiablePathTerm{
+                                              PathTerm: &ast.GQLNodePattern{
+                                                Lparen:        42,
+                                                Rparen:        51,
+                                                PatternFiller: &ast.GQLPatternFiller{
+                                                  GraphPatternVariable: &ast.Ident{
+                                                    NamePos: 43,
+                                                    NameEnd: 44,
+                                                    Name:    "p",
+                                                  },
+                                                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                                                    IsOrColon:       44,
+                                                    LabelExpression: &ast.GQLElementLabel{
+                                                      LabelName: &ast.Ident{
+                                                        NamePos: 45,
+                                                        NameEnd: 51,
+                                                        Name:    "Person",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            &ast.GQLQuantifiablePathTerm{
+                                              PathTerm: &ast.GQLFullEdgeRight{
+                                                Hyphen:        52,
+                                                Lbrack:        53,
+                                                Rbrack:        60,
+                                                Arrow:         61,
+                                                PatternFiller: &ast.GQLPatternFiller{
+                                                  GraphPatternVariable: &ast.Ident{
+                                                    NamePos: 54,
+                                                    NameEnd: 55,
+                                                    Name:    "o",
+                                                  },
+                                                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                                                    IsOrColon:       55,
+                                                    LabelExpression: &ast.GQLElementLabel{
+                                                      LabelName: &ast.Ident{
+                                                        NamePos: 56,
+                                                        NameEnd: 60,
+                                                        Name:    "Owns",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                            &ast.GQLQuantifiablePathTerm{
+                                              PathTerm: &ast.GQLNodePattern{
+                                                Lparen:        63,
+                                                Rparen:        73,
+                                                PatternFiller: &ast.GQLPatternFiller{
+                                                  GraphPatternVariable: &ast.Ident{
+                                                    NamePos: 64,
+                                                    NameEnd: 65,
+                                                    Name:    "a",
+                                                  },
+                                                  IsLabelCondition: &ast.GQLIsLabelCondition{
+                                                    IsOrColon:       65,
+                                                    LabelExpression: &ast.GQLElementLabel{
+                                                      LabelName: &ast.Ident{
+                                                        NamePos: 66,
+                                                        NameEnd: 73,
+                                                        Name:    "Account",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                &ast.GQLReturnStatement{
+                                  Return:         77,
+                                  ReturnItemList: []*ast.GQLReturnItem{
+                                    &ast.GQLReturnItem{
+                                      Item: &ast.ExprSelectItem{
+                                        Expr: &ast.Path{
+                                          Idents: []*ast.Ident{
+                                            &ast.Ident{
+                                              NamePos: 84,
+                                              NameEnd: 85,
+                                              Name:    "p",
+                                            },
+                                            &ast.Ident{
+                                              NamePos: 86,
+                                              NameEnd: 90,
+                                              Name:    "name",
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  As: &ast.AsAlias{
+                    As:    93,
+                    Alias: &ast.Ident{
+                      NamePos: 96,
+                      NameEnd: 103,
+                      Name:    "results",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN "Dana" IN {MATCH (p:Person)-[o:Owns]->(a:Account) RETURN p.name} AS results

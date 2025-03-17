@@ -1,0 +1,130 @@
+--- match_or_expression.sql
+GRAPH FinGraph
+MATCH (n:Person|Account)
+RETURN n.id, n.name, n.nick_name
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        38,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "n",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLLabelOrExpression{
+                                Left: &ast.GQLElementLabel{
+                                  LabelName: &ast.Ident{
+                                    NamePos: 24,
+                                    NameEnd: 30,
+                                    Name:    "Person",
+                                  },
+                                },
+                                Right: &ast.GQLElementLabel{
+                                  LabelName: &ast.Ident{
+                                    NamePos: 31,
+                                    NameEnd: 38,
+                                    Name:    "Account",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         40,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 47,
+                        NameEnd: 48,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 49,
+                        NameEnd: 51,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 53,
+                        NameEnd: 54,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 55,
+                        NameEnd: 59,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 61,
+                        NameEnd: 62,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 63,
+                        NameEnd: 72,
+                        Name:    "nick_name",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (n:Person|Account) RETURN n.id, n.name, n.nick_name
