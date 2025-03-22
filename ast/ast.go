@@ -2660,9 +2660,9 @@ type IndexKey struct {
 	Dir  Direction // optional
 }
 
-// Cluster is INTERLEAVE IN PARENT clause in CREATE TABLE.
+// Cluster is INTERLEAVE IN [PARENT] clause in CREATE TABLE.
 //
-//	, INTERLEAVE IN PARENT {{.TableName | sql}} {{.OnDelete}}
+//	, INTERLEAVE IN {{if .Enforced}}PARENT{{end}} {{.TableName | sql}} {{.OnDelete}}
 type Cluster struct {
 	// pos = Comma
 	// end = OnDeleteEnd || TableName.end
@@ -2671,6 +2671,7 @@ type Cluster struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	TableName *Path
+	Enforced  bool           // true when PARENT is present
 	OnDelete  OnDeleteAction // optional
 }
 

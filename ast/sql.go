@@ -894,7 +894,7 @@ func (i *IndexKey) SQL() string {
 }
 
 func (c *Cluster) SQL() string {
-	return ",\n" + indent + "INTERLEAVE IN PARENT " + c.TableName.SQL() +
+	return ",\n" + indent + "INTERLEAVE IN " + strOpt(c.Enforced, "PARENT ") + c.TableName.SQL() +
 		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
 }
 

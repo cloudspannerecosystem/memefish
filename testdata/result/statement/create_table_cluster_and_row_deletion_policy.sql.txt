@@ -76,6 +76,7 @@ create table foo (
         },
       },
     },
+    Enforced: true,
   },
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
     Comma:             109,
