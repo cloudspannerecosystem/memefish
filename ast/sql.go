@@ -948,6 +948,11 @@ func (s *SetOnDelete) SQL() string {
 	return "SET " + string(s.OnDelete)
 }
 
+func (s *SetInterleaveIn) SQL() string {
+	return "SET INTERLEAVE IN " + strOpt(s.Enforced, "PARENT ") + s.TableName.SQL() +
+		strOpt(s.OnDelete != "", " "+string(s.OnDelete))
+}
+
 func (a *AlterTableSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 
 func (a *AlterColumn) SQL() string {

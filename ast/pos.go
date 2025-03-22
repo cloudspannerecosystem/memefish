@@ -1390,6 +1390,14 @@ func (s *SetOnDelete) End() token.Pos {
 	return s.OnDeleteEnd
 }
 
+func (s *SetInterleaveIn) Pos() token.Pos {
+	return s.Set
+}
+
+func (s *SetInterleaveIn) End() token.Pos {
+	return posChoice(s.OnDeleteEnd, nodeEnd(wrapNode(s.TableName)))
+}
+
 func (a *AlterTableSetOptions) Pos() token.Pos {
 	return a.Set
 }

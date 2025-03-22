@@ -1,0 +1,31 @@
+--- alter_table_set_interleave_in_parent.sql
+alter table foo set interleave in parent bar
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  TableAlteration: &ast.SetInterleaveIn{
+    Set:         16,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 41,
+          NameEnd: 44,
+          Name:    "bar",
+        },
+      },
+    },
+    Enforced: true,
+  },
+}
+
+--- SQL
+ALTER TABLE foo SET INTERLEAVE IN PARENT bar

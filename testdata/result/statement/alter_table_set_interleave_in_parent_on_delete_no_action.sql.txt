@@ -1,0 +1,32 @@
+--- alter_table_set_interleave_in_parent_on_delete_no_action.sql
+alter table foo set interleave in parent bar on delete no action
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  TableAlteration: &ast.SetInterleaveIn{
+    Set:         16,
+    OnDeleteEnd: 64,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 41,
+          NameEnd: 44,
+          Name:    "bar",
+        },
+      },
+    },
+    Enforced: true,
+    OnDelete: "ON DELETE NO ACTION",
+  },
+}
+
+--- SQL
+ALTER TABLE foo SET INTERLEAVE IN PARENT bar ON DELETE NO ACTION
