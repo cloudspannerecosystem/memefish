@@ -1,0 +1,30 @@
+--- alter_table_set_interleave_in.sql
+alter table foo set interleave in bar
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  TableAlteration: &ast.SetInterleaveIn{
+    Set:         16,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 34,
+          NameEnd: 37,
+          Name:    "bar",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo SET INTERLEAVE IN bar

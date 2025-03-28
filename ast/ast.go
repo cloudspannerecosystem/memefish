@@ -437,6 +437,7 @@ func (DropConstraint) isTableAlteration()           {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (SetOnDelete) isTableAlteration()              {}
+func (SetInterleaveIn) isTableAlteration()          {}
 func (AlterColumn) isTableAlteration()              {}
 func (AlterTableSetOptions) isTableAlteration()     {}
 
@@ -2920,6 +2921,21 @@ type SetOnDelete struct {
 	OnDeleteEnd token.Pos // end position of ON DELETE clause
 
 	OnDelete OnDeleteAction
+}
+
+// SetInterleaveIn is SET INTERLEAVE IN clause in ALTER TABLE.
+//
+//	SET INTERLEAVE IN {{if .Enforced}}PARENT{{end}} {{.TableName | sql}} {{.OnDelete}}
+type SetInterleaveIn struct {
+	// pos = Set
+	// end = OnDeleteEnd || TableName.end
+
+	Set         token.Pos // position of "SET" keyword
+	OnDeleteEnd token.Pos // end position of ON DELETE clause
+
+	TableName *Path
+	Enforced  bool
+	OnDelete  OnDeleteAction // optional
 }
 
 // AlterTableSetOptions is SET OPTIONS node in ALTER TABLE.

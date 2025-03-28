@@ -4125,6 +4125,26 @@ func (p *Parser) parseAlterTableSet() ast.TableAlteration {
 			Set:     pos,
 			Options: options,
 		}
+	case p.Token.IsKeywordLike("INTERLEAVE"):
+		p.nextToken()
+		p.expect("IN")
+
+		var enforced bool
+		if p.Token.IsKeywordLike("PARENT") {
+			p.nextToken()
+			enforced = true
+		}
+
+		tableName := p.parsePath()
+		onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
+
+		return &ast.SetInterleaveIn{
+			Set:         pos,
+			Enforced:    enforced,
+			TableName:   tableName,
+			OnDeleteEnd: onDeleteEnd,
+			OnDelete:    onDelete,
+		}
 	default:
 		panic(p.errorfAtToken(&p.Token, "expected token: ON, OPTIONS, but: %s", p.Token.AsString))
 	}
