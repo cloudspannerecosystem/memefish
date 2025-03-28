@@ -3524,7 +3524,13 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	}
 	p.nextToken()
 	p.expect("IN")
-	p.expectKeywordLike("PARENT")
+
+	var enforced bool
+	if p.Token.IsKeywordLike("PARENT") {
+		p.nextToken()
+		enforced = true
+	}
+
 	name := p.parsePath()
 
 	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
@@ -3533,6 +3539,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 		Comma:       pos,
 		OnDeleteEnd: onDeleteEnd,
 		TableName:   name,
+		Enforced:    enforced,
 		OnDelete:    onDelete,
 	}
 }

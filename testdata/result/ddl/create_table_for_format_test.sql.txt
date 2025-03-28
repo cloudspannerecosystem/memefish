@@ -332,6 +332,7 @@ create table if not exists foo (
         },
       },
     },
+    Enforced: true,
   },
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
     Comma:             493,
