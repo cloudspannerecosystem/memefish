@@ -1,0 +1,26 @@
+--- alter_vector_index_add_stored_column.sql
+alter vector index Singer_vector_index
+add stored column genre
+--- AST
+&ast.AlterVectorIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 19,
+        NameEnd: 38,
+        Name:    "Singer_vector_index",
+      },
+    },
+  },
+  Alteration: &ast.AddStoredColumn{
+    Add:  39,
+    Name: &ast.Ident{
+      NamePos: 57,
+      NameEnd: 62,
+      Name:    "genre",
+    },
+  },
+}
+
+--- SQL
+ALTER VECTOR INDEX Singer_vector_index ADD STORED COLUMN genre
