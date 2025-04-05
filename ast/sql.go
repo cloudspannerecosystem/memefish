@@ -1011,6 +1011,10 @@ func (c *CreateVectorIndex) SQL() string {
 		c.Options.SQL()
 }
 
+func (a *AlterVectorIndex) SQL() string {
+	return "ALTER VECTOR INDEX " + a.Name.SQL() + " " + a.Alteration.SQL()
+}
+
 func (c *CreateChangeStream) SQL() string {
 	return "CREATE CHANGE STREAM " + c.Name.SQL() +
 		sqlOpt(" ", c.For, "") +
