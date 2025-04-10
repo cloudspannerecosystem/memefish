@@ -1007,6 +1007,7 @@ func (c *CreateVectorIndex) SQL() string {
 	return "CREATE VECTOR INDEX " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
 		c.Name.SQL() + " ON " + c.TableName.SQL() + " (" + c.ColumnName.SQL() + ") " +
+		sqlOpt("", c.Storing, " ") +
 		sqlOpt("", c.Where, " ") +
 		c.Options.SQL()
 }

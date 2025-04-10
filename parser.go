@@ -3653,6 +3653,7 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 	columnName := p.parseIdent()
 	p.expect(")")
 
+	storing := p.tryParseStoring()
 	where := p.tryParseWhere()
 	options := p.parseOptions()
 
@@ -3662,6 +3663,7 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 		Name:        name,
 		TableName:   tableName,
 		ColumnName:  columnName,
+		Storing:     storing,
 		Where:       where,
 		Options:     options,
 	}

@@ -3132,6 +3132,7 @@ type CreateIndex struct {
 //
 //	CREATE VECTOR INDEX {if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
 //	ON {{.TableName | sql}}({{.ColumnName | sql}})
+//	{{.Storing | sqlOpt}}
 //	{{if .Where}}WHERE {{.Where | sql}}{{end}}
 //	{{.Options | sql}}
 type CreateVectorIndex struct {
@@ -3144,6 +3145,7 @@ type CreateVectorIndex struct {
 	Name        *Ident
 	TableName   *Ident
 	ColumnName  *Ident
+	Storing     *Storing // optional
 
 	// It only allows `WHERE column_name IS NOT NULL` for now, but we still relax the condition
 	// by reusing the `parseWhere` function for sake of it may be extended more conditions in the future.
