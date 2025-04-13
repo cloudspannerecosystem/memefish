@@ -3893,7 +3893,9 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 
 		if p.Token.Kind == "(" {
 			p.nextToken()
-			forTable.Columns = parseCommaSeparatedList(p, p.parseIdent)
+			if p.Token.Kind != ")" {
+				forTable.Columns = parseCommaSeparatedList(p, p.parseIdent)
+			}
 			forTable.Rparen = p.expect(")").Pos
 		}
 
