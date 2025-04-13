@@ -1,0 +1,40 @@
+--- alter_proto_bundle_update_trailing_comma.sql
+ALTER PROTO BUNDLE UPDATE (
+    examples.shipping.OrderHistory,
+)
+
+--- AST
+&ast.AlterProtoBundle{
+  Bundle: 12,
+  Update: &ast.AlterProtoBundleUpdate{
+    Update: 19,
+    Types:  &ast.ProtoBundleTypes{
+      Lparen: 26,
+      Rparen: 64,
+      Types:  []*ast.NamedType{
+        &ast.NamedType{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 32,
+              NameEnd: 40,
+              Name:    "examples",
+            },
+            &ast.Ident{
+              NamePos: 41,
+              NameEnd: 49,
+              Name:    "shipping",
+            },
+            &ast.Ident{
+              NamePos: 50,
+              NameEnd: 62,
+              Name:    "OrderHistory",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER PROTO BUNDLE UPDATE (examples.shipping.OrderHistory)
