@@ -1,0 +1,27 @@
+--- create_change_stream_for_table_empty_columns.sql
+CREATE CHANGE STREAM cs FOR t1()
+
+--- AST
+&ast.CreateChangeStream{
+  Name: &ast.Ident{
+    NamePos: 21,
+    NameEnd: 23,
+    Name:    "cs",
+  },
+  For: &ast.ChangeStreamForTables{
+    For:    24,
+    Tables: []*ast.ChangeStreamForTable{
+      &ast.ChangeStreamForTable{
+        Rparen:    31,
+        TableName: &ast.Ident{
+          NamePos: 28,
+          NameEnd: 30,
+          Name:    "t1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE CHANGE STREAM cs FOR t1()
