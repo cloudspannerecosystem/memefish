@@ -1022,15 +1022,7 @@ func (c *ChangeStreamForAll) SQL() string {
 }
 
 func (c *ChangeStreamForTables) SQL() string {
-	// TODO: Refactor after ChangeStreamForTable implements Node.
-	sql := "FOR "
-	for i, table := range c.Tables {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += table.SQL()
-	}
-	return sql
+	return "FOR " + sqlJoin(c.Tables, ", ")
 }
 
 func (a *AlterChangeStream) SQL() string {
@@ -1050,7 +1042,7 @@ func (a ChangeStreamSetOptions) SQL() string {
 }
 
 func (c *ChangeStreamForTable) SQL() string {
-	return c.TableName.SQL() + strOpt(len(c.Columns) > 0, "("+sqlJoin(c.Columns, ", ")+")")
+	return c.TableName.SQL() + strOpt(!c.Rparen.Invalid(), "("+sqlJoin(c.Columns, ", ")+")")
 }
 
 func (d *DropChangeStream) SQL() string {
