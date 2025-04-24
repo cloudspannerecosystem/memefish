@@ -2898,6 +2898,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseAlterStatistics(pos)
 		case p.Token.IsKeywordLike("MODEL"):
 			return p.parseAlterModel(pos)
+		case p.Token.IsKeywordLike("VECTOR"):
+			return p.parseAlterVectorIndex(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, CHANGE, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("DROP"):
@@ -3749,6 +3751,17 @@ func (p *Parser) parseIndexAlteration() ast.IndexAlteration {
 	}
 }
 
+func (p *Parser) parseVectorIndexAlteration() ast.VectorIndexAlteration {
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		return p.parseAddStoredColumn()
+	case p.Token.IsKeywordLike("DROP"):
+		return p.parseDropStoredColumn()
+	default:
+		panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+	}
+}
+
 func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	unique := false
 	if p.Token.IsKeywordLike("UNIQUE") {
@@ -4371,7 +4384,7 @@ func (p *Parser) parseAlterSequence(pos token.Pos) *ast.AlterSequence {
 	}
 }
 
-func (p *Parser) parseAddStoredColumn() ast.IndexAlteration {
+func (p *Parser) parseAddStoredColumn() *ast.AddStoredColumn {
 	pos := p.expectKeywordLike("ADD").Pos
 	p.expectKeywordLike("STORED")
 	p.expectKeywordLike("COLUMN")
@@ -4384,7 +4397,7 @@ func (p *Parser) parseAddStoredColumn() ast.IndexAlteration {
 	}
 }
 
-func (p *Parser) parseDropStoredColumn() ast.IndexAlteration {
+func (p *Parser) parseDropStoredColumn() *ast.DropStoredColumn {
 	pos := p.expectKeywordLike("DROP").Pos
 	p.expectKeywordLike("STORED")
 	p.expectKeywordLike("COLUMN")
@@ -4415,6 +4428,18 @@ func (p *Parser) parseDropIndex(pos token.Pos) *ast.DropIndex {
 		Drop:     pos,
 		IfExists: ifExists,
 		Name:     name,
+	}
+}
+
+func (p *Parser) parseAlterVectorIndex(pos token.Pos) *ast.AlterVectorIndex {
+	p.expectKeywordLike("VECTOR")
+	p.expectKeywordLike("INDEX")
+	name := p.parsePath()
+	alteration := p.parseVectorIndexAlteration()
+	return &ast.AlterVectorIndex{
+		Alter:      pos,
+		Name:       name,
+		Alteration: alteration,
 	}
 }
 

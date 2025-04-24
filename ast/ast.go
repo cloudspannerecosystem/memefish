@@ -115,6 +115,7 @@ func (AlterModel) isStatement()          {}
 func (DropModel) isStatement()           {}
 func (Analyze) isStatement()             {}
 func (CreateVectorIndex) isStatement()   {}
+func (AlterVectorIndex) isStatement()    {}
 func (DropVectorIndex) isStatement()     {}
 func (CreatePropertyGraph) isStatement() {}
 func (DropPropertyGraph) isStatement()   {}
@@ -407,6 +408,7 @@ func (AlterModel) isDDL()          {}
 func (DropModel) isDDL()           {}
 func (Analyze) isDDL()             {}
 func (CreateVectorIndex) isDDL()   {}
+func (AlterVectorIndex) isDDL()    {}
 func (DropVectorIndex) isDDL()     {}
 func (CreatePropertyGraph) isDDL() {}
 func (DropPropertyGraph) isDDL()   {}
@@ -525,6 +527,17 @@ type IndexAlteration interface {
 
 func (AddStoredColumn) isIndexAlteration()  {}
 func (DropStoredColumn) isIndexAlteration() {}
+
+// VectorIndexAlteration represents ALTER VECTOR INDEX action.
+// Note: Currently, it is same as IndexAlteration,
+// but cloud-spanner-emulator/backend/schema/parser/ddl_parser.jjt implies their difference.
+type VectorIndexAlteration interface {
+	Node
+	isVectorIndexAlteration()
+}
+
+func (AddStoredColumn) isVectorIndexAlteration()  {}
+func (DropStoredColumn) isVectorIndexAlteration() {}
 
 // DML represents data manipulation language in SQL.
 //
@@ -3153,6 +3166,18 @@ type CreateVectorIndex struct {
 	// Reference: https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#vector_index_statements
 	Where   *Where // optional
 	Options *Options
+}
+
+// AlterVectorIndex is ALTER VECTOR INDEX statement node.
+//
+//	ALTER VECTOR INDEX {{.Name | sql}} {{.Alteration | sql}}
+type AlterVectorIndex struct {
+	// pos = Alter
+	// end = Alteration.end
+
+	Alter      token.Pos
+	Name       *Path
+	Alteration VectorIndexAlteration
 }
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
