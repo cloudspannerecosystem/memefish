@@ -3048,8 +3048,25 @@ func (p *Parser) parseCreatePlacement(pos token.Pos) *ast.CreatePlacement {
 
 func (p *Parser) parseProtoBundleTypes() *ast.ProtoBundleTypes {
 	lparen := p.expect("(").Pos
-	types := parseCommaSeparatedList(p, p.parseNamedType)
+
+	var types []*ast.NamedType
+	if p.Token.Kind != ")" {
+		for {
+			types = append(types, p.parseNamedType())
+
+			if p.Token.Kind != "," {
+				break
+			}
+			p.nextToken()
+
+			// case of trailing comma
+			if p.Token.Kind == ")" {
+				break
+			}
+		}
+	}
 	rparen := p.expect(")").Pos
+
 	return &ast.ProtoBundleTypes{
 		Lparen: lparen,
 		Rparen: rparen,
