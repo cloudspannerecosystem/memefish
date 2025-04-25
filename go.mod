@@ -6,7 +6,7 @@ toolchain go1.23.5
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/k0kubun/pp/v3 v3.4.1
 	github.com/pmezard/go-difflib v1.0.0
 )
