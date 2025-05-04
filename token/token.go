@@ -9,7 +9,7 @@ type Token struct {
 	Comments []TokenComment
 	Space    string
 	Raw      string
-	AsString string // available for TokenIdent, TokenString and TokenBytes
+	AsString string // available for TokenIdent, TokenParam, TokenString and TokenBytes
 	Base     int    // 10 or 16 on TokenInt
 	Pos, End Pos
 }
