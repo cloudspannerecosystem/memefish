@@ -534,14 +534,6 @@ func (e *ExprArg) End() token.Pos {
 	return nodeEnd(wrapNode(e.Expr))
 }
 
-func (i *IntervalArg) Pos() token.Pos {
-	return i.Interval
-}
-
-func (i *IntervalArg) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(i.Unit), wrapNode(i.Expr)))
-}
-
 func (s *SequenceArg) Pos() token.Pos {
 	return s.Sequence
 }
@@ -876,6 +868,14 @@ func (j *JSONLiteral) Pos() token.Pos {
 
 func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
+}
+
+func (i *IntervalLiteral) Pos() token.Pos {
+	return i.Interval
+}
+
+func (i *IntervalLiteral) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(i.UnitTo), wrapNode(i.Unit)))
 }
 
 func (n *NewConstructor) Pos() token.Pos {

@@ -1777,6 +1777,8 @@ func (p *Parser) parseLit() ast.Expr {
 	// In parser level, it is a valid ast.Expr, but it is semantically valid only in ast.BracedConstructorFieldExpr.
 	case "{":
 		return p.parseBracedConstructor()
+	case "INTERVAL":
+		return p.parseIntervalLiteral()
 	case token.TokenIdent:
 		id := p.Token
 		switch {
@@ -1993,9 +1995,6 @@ func (p *Parser) parseLambdaArg() *ast.LambdaArg {
 }
 
 func (p *Parser) parseArg() ast.Arg {
-	if i := p.tryParseIntervalArg(); i != nil {
-		return i
-	}
 	if s := p.tryParseSequenceArg(); s != nil {
 		return s
 	}
@@ -2003,22 +2002,6 @@ func (p *Parser) parseArg() ast.Arg {
 		return p.parseLambdaArg()
 	}
 	return p.parseExprArg()
-}
-
-func (p *Parser) tryParseIntervalArg() *ast.IntervalArg {
-	if p.Token.Kind != "INTERVAL" {
-		return nil
-	}
-
-	pos := p.Token.Pos
-	p.nextToken()
-	e := p.parseExpr()
-	unit := p.parseIdent()
-	return &ast.IntervalArg{
-		Interval: pos,
-		Expr:     e,
-		Unit:     unit,
-	}
 }
 
 func (p *Parser) tryParseSequenceArg() *ast.SequenceArg {
@@ -2495,6 +2478,25 @@ func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
 	return &ast.JSONLiteral{
 		JSON:  id.Pos,
 		Value: s,
+	}
+}
+
+func (p *Parser) parseIntervalLiteral() *ast.IntervalLiteral {
+	interval := p.expect("INTERVAL").Pos
+	expr := p.parseExpr()
+	unit := p.parseIdent()
+
+	var unitTo *ast.Ident
+	if p.Token.Kind == "TO" {
+		p.nextToken()
+		unitTo = p.parseIdent()
+	}
+
+	return &ast.IntervalLiteral{
+		Interval: interval,
+		Expr:     expr,
+		Unit:     unit,
+		UnitTo:   unitTo,
 	}
 }
 
@@ -5113,6 +5115,8 @@ func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
 	}
 }
 
+// Usually, you don't need to update scalarSchemaTypes because NamedType can handle types.
+// It is maintained for compatibility.
 var scalarSchemaTypes = []string{
 	"BOOL",
 	"INT64",

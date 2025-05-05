@@ -1,0 +1,680 @@
+--- interval.sql
+SELECT
+  -- Single datetime part
+  INTERVAL 1 YEAR,
+  INTERVAL -5 DAY,
+  INTERVAL 90 SECOND,
+  INTERVAL 1 QUARTER,
+  INTERVAL 6 WEEK,
+  INTERVAL 25 HOUR,
+  INTERVAL 1500 MINUTE,
+  INTERVAL 90000 SECOND,
+  INTERVAL 90 MINUTE,
+  INTERVAL -25 MONTH,
+  INTERVAL -90 MINUTE,
+  INTERVAL @param YEAR,
+
+  -- Datetime part range
+  INTERVAL '2-11' YEAR TO MONTH,
+  INTERVAL '2-11 28' YEAR TO DAY,
+  INTERVAL '2-11 28 16' YEAR TO HOUR,
+  INTERVAL '2-11 28 16:15' YEAR TO MINUTE,
+  INTERVAL '2-11 28 16:15:14' YEAR TO SECOND,
+  INTERVAL '11 28' MONTH TO DAY,
+  INTERVAL '11 28 16' MONTH TO HOUR,
+  INTERVAL '11 28 16:15' MONTH TO MINUTE,
+  INTERVAL '11 28 16:15:14' MONTH TO SECOND,
+  INTERVAL '28 16' DAY TO HOUR,
+  INTERVAL '28 16:15' DAY TO MINUTE,
+  INTERVAL '28 16:15:14' DAY TO SECOND,
+  INTERVAL '16:15' HOUR TO MINUTE,
+  INTERVAL '16:15:14' HOUR TO SECOND,
+  INTERVAL '15:14' MINUTE TO SECOND,
+  INTERVAL '10:20:30.52' HOUR TO SECOND,
+  INTERVAL '1-2' YEAR TO MONTH,
+  INTERVAL '1 -15' MONTH TO DAY,
+  INTERVAL '1 5:30' DAY TO MINUTE,
+  INTERVAL '-23-2 10 -12:30' YEAR TO MINUTE,
+  INTERVAL '-0-2 10 0:30' MONTH TO MINUTE,
+  INTERVAL '-30:10' MINUTE TO SECOND
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 35,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 44,
+            ValueEnd: 45,
+            Base:     10,
+            Value:    "1",
+          },
+          Unit: &ast.Ident{
+            NamePos: 46,
+            NameEnd: 50,
+            Name:    "YEAR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 54,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 63,
+            ValueEnd: 65,
+            Base:     10,
+            Value:    "-5",
+          },
+          Unit: &ast.Ident{
+            NamePos: 66,
+            NameEnd: 69,
+            Name:    "DAY",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 73,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 82,
+            ValueEnd: 84,
+            Base:     10,
+            Value:    "90",
+          },
+          Unit: &ast.Ident{
+            NamePos: 85,
+            NameEnd: 91,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 95,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 104,
+            ValueEnd: 105,
+            Base:     10,
+            Value:    "1",
+          },
+          Unit: &ast.Ident{
+            NamePos: 106,
+            NameEnd: 113,
+            Name:    "QUARTER",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 117,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 126,
+            ValueEnd: 127,
+            Base:     10,
+            Value:    "6",
+          },
+          Unit: &ast.Ident{
+            NamePos: 128,
+            NameEnd: 132,
+            Name:    "WEEK",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 136,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 145,
+            ValueEnd: 147,
+            Base:     10,
+            Value:    "25",
+          },
+          Unit: &ast.Ident{
+            NamePos: 148,
+            NameEnd: 152,
+            Name:    "HOUR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 156,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 165,
+            ValueEnd: 169,
+            Base:     10,
+            Value:    "1500",
+          },
+          Unit: &ast.Ident{
+            NamePos: 170,
+            NameEnd: 176,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 180,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 189,
+            ValueEnd: 194,
+            Base:     10,
+            Value:    "90000",
+          },
+          Unit: &ast.Ident{
+            NamePos: 195,
+            NameEnd: 201,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 205,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 214,
+            ValueEnd: 216,
+            Base:     10,
+            Value:    "90",
+          },
+          Unit: &ast.Ident{
+            NamePos: 217,
+            NameEnd: 223,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 227,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 236,
+            ValueEnd: 239,
+            Base:     10,
+            Value:    "-25",
+          },
+          Unit: &ast.Ident{
+            NamePos: 240,
+            NameEnd: 245,
+            Name:    "MONTH",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 249,
+          Expr:     &ast.IntLiteral{
+            ValuePos: 258,
+            ValueEnd: 261,
+            Base:     10,
+            Value:    "-90",
+          },
+          Unit: &ast.Ident{
+            NamePos: 262,
+            NameEnd: 268,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 272,
+          Expr:     &ast.Param{
+            Atmark: 281,
+            Name:   "param",
+          },
+          Unit: &ast.Ident{
+            NamePos: 288,
+            NameEnd: 292,
+            Name:    "YEAR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 322,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 331,
+            ValueEnd: 337,
+            Value:    "2-11",
+          },
+          Unit: &ast.Ident{
+            NamePos: 338,
+            NameEnd: 342,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 346,
+            NameEnd: 351,
+            Name:    "MONTH",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 355,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 364,
+            ValueEnd: 373,
+            Value:    "2-11 28",
+          },
+          Unit: &ast.Ident{
+            NamePos: 374,
+            NameEnd: 378,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 382,
+            NameEnd: 385,
+            Name:    "DAY",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 389,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 398,
+            ValueEnd: 410,
+            Value:    "2-11 28 16",
+          },
+          Unit: &ast.Ident{
+            NamePos: 411,
+            NameEnd: 415,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 419,
+            NameEnd: 423,
+            Name:    "HOUR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 427,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 436,
+            ValueEnd: 451,
+            Value:    "2-11 28 16:15",
+          },
+          Unit: &ast.Ident{
+            NamePos: 452,
+            NameEnd: 456,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 460,
+            NameEnd: 466,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 470,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 479,
+            ValueEnd: 497,
+            Value:    "2-11 28 16:15:14",
+          },
+          Unit: &ast.Ident{
+            NamePos: 498,
+            NameEnd: 502,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 506,
+            NameEnd: 512,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 516,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 525,
+            ValueEnd: 532,
+            Value:    "11 28",
+          },
+          Unit: &ast.Ident{
+            NamePos: 533,
+            NameEnd: 538,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 542,
+            NameEnd: 545,
+            Name:    "DAY",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 549,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 558,
+            ValueEnd: 568,
+            Value:    "11 28 16",
+          },
+          Unit: &ast.Ident{
+            NamePos: 569,
+            NameEnd: 574,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 578,
+            NameEnd: 582,
+            Name:    "HOUR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 586,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 595,
+            ValueEnd: 608,
+            Value:    "11 28 16:15",
+          },
+          Unit: &ast.Ident{
+            NamePos: 609,
+            NameEnd: 614,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 618,
+            NameEnd: 624,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 628,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 637,
+            ValueEnd: 653,
+            Value:    "11 28 16:15:14",
+          },
+          Unit: &ast.Ident{
+            NamePos: 654,
+            NameEnd: 659,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 663,
+            NameEnd: 669,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 673,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 682,
+            ValueEnd: 689,
+            Value:    "28 16",
+          },
+          Unit: &ast.Ident{
+            NamePos: 690,
+            NameEnd: 693,
+            Name:    "DAY",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 697,
+            NameEnd: 701,
+            Name:    "HOUR",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 705,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 714,
+            ValueEnd: 724,
+            Value:    "28 16:15",
+          },
+          Unit: &ast.Ident{
+            NamePos: 725,
+            NameEnd: 728,
+            Name:    "DAY",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 732,
+            NameEnd: 738,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 742,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 751,
+            ValueEnd: 764,
+            Value:    "28 16:15:14",
+          },
+          Unit: &ast.Ident{
+            NamePos: 765,
+            NameEnd: 768,
+            Name:    "DAY",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 772,
+            NameEnd: 778,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 782,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 791,
+            ValueEnd: 798,
+            Value:    "16:15",
+          },
+          Unit: &ast.Ident{
+            NamePos: 799,
+            NameEnd: 803,
+            Name:    "HOUR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 807,
+            NameEnd: 813,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 817,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 826,
+            ValueEnd: 836,
+            Value:    "16:15:14",
+          },
+          Unit: &ast.Ident{
+            NamePos: 837,
+            NameEnd: 841,
+            Name:    "HOUR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 845,
+            NameEnd: 851,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 855,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 864,
+            ValueEnd: 871,
+            Value:    "15:14",
+          },
+          Unit: &ast.Ident{
+            NamePos: 872,
+            NameEnd: 878,
+            Name:    "MINUTE",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 882,
+            NameEnd: 888,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 892,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 901,
+            ValueEnd: 914,
+            Value:    "10:20:30.52",
+          },
+          Unit: &ast.Ident{
+            NamePos: 915,
+            NameEnd: 919,
+            Name:    "HOUR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 923,
+            NameEnd: 929,
+            Name:    "SECOND",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 933,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 942,
+            ValueEnd: 947,
+            Value:    "1-2",
+          },
+          Unit: &ast.Ident{
+            NamePos: 948,
+            NameEnd: 952,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 956,
+            NameEnd: 961,
+            Name:    "MONTH",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 965,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 974,
+            ValueEnd: 981,
+            Value:    "1 -15",
+          },
+          Unit: &ast.Ident{
+            NamePos: 982,
+            NameEnd: 987,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 991,
+            NameEnd: 994,
+            Name:    "DAY",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 998,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 1007,
+            ValueEnd: 1015,
+            Value:    "1 5:30",
+          },
+          Unit: &ast.Ident{
+            NamePos: 1016,
+            NameEnd: 1019,
+            Name:    "DAY",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 1023,
+            NameEnd: 1029,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 1033,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 1042,
+            ValueEnd: 1059,
+            Value:    "-23-2 10 -12:30",
+          },
+          Unit: &ast.Ident{
+            NamePos: 1060,
+            NameEnd: 1064,
+            Name:    "YEAR",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 1068,
+            NameEnd: 1074,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 1078,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 1087,
+            ValueEnd: 1101,
+            Value:    "-0-2 10 0:30",
+          },
+          Unit: &ast.Ident{
+            NamePos: 1102,
+            NameEnd: 1107,
+            Name:    "MONTH",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 1111,
+            NameEnd: 1117,
+            Name:    "MINUTE",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IntervalLiteral{
+          Interval: 1121,
+          Expr:     &ast.StringLiteral{
+            ValuePos: 1130,
+            ValueEnd: 1138,
+            Value:    "-30:10",
+          },
+          Unit: &ast.Ident{
+            NamePos: 1139,
+            NameEnd: 1145,
+            Name:    "MINUTE",
+          },
+          UnitTo: &ast.Ident{
+            NamePos: 1149,
+            NameEnd: 1155,
+            Name:    "SECOND",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT INTERVAL 1 YEAR, INTERVAL -5 DAY, INTERVAL 90 SECOND, INTERVAL 1 QUARTER, INTERVAL 6 WEEK, INTERVAL 25 HOUR, INTERVAL 1500 MINUTE, INTERVAL 90000 SECOND, INTERVAL 90 MINUTE, INTERVAL -25 MONTH, INTERVAL -90 MINUTE, INTERVAL @param YEAR, INTERVAL "2-11" YEAR TO MONTH, INTERVAL "2-11 28" YEAR TO DAY, INTERVAL "2-11 28 16" YEAR TO HOUR, INTERVAL "2-11 28 16:15" YEAR TO MINUTE, INTERVAL "2-11 28 16:15:14" YEAR TO SECOND, INTERVAL "11 28" MONTH TO DAY, INTERVAL "11 28 16" MONTH TO HOUR, INTERVAL "11 28 16:15" MONTH TO MINUTE, INTERVAL "11 28 16:15:14" MONTH TO SECOND, INTERVAL "28 16" DAY TO HOUR, INTERVAL "28 16:15" DAY TO MINUTE, INTERVAL "28 16:15:14" DAY TO SECOND, INTERVAL "16:15" HOUR TO MINUTE, INTERVAL "16:15:14" HOUR TO SECOND, INTERVAL "15:14" MINUTE TO SECOND, INTERVAL "10:20:30.52" HOUR TO SECOND, INTERVAL "1-2" YEAR TO MONTH, INTERVAL "1 -15" MONTH TO DAY, INTERVAL "1 5:30" DAY TO MINUTE, INTERVAL "-23-2 10 -12:30" YEAR TO MINUTE, INTERVAL "-0-2 10 0:30" MONTH TO MINUTE, INTERVAL "-30:10" MINUTE TO SECOND

@@ -235,6 +235,7 @@ func (DateLiteral) isExpr()           {}
 func (TimestampLiteral) isExpr()      {}
 func (NumericLiteral) isExpr()        {}
 func (JSONLiteral) isExpr()           {}
+func (IntervalLiteral) isExpr()       {}
 func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
@@ -255,7 +256,6 @@ type Arg interface {
 }
 
 func (ExprArg) isArg()     {}
-func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 func (LambdaArg) isArg()   {}
 
@@ -1495,19 +1495,6 @@ type ExprArg struct {
 	Expr Expr
 }
 
-// IntervalArg is argument of date function call.
-//
-//	INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
-type IntervalArg struct {
-	// pos = Interval
-	// end = (Unit ?? Expr).end
-
-	Interval token.Pos // position of "INTERVAL" keyword
-
-	Expr Expr
-	Unit *Ident // optional
-}
-
 // SequenceArg is argument of sequence function call.
 //
 //	SEQUENCE {{.Expr | sql}}
@@ -2037,6 +2024,22 @@ type JSONLiteral struct {
 	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
+}
+
+// IntervalLiteral represents an interval literal.
+//
+//	INTERVAL {{.Value}} {{.Unit | sql}}{{if .UnitTo}} TO {{.UnitTo | sql}}{{end}}
+type IntervalLiteral struct {
+	// pos = Interval
+	// end = (UnitTo ?? Unit).end
+
+	Interval token.Pos // position of "INTERVAL" keyword
+
+	// Expr is either an int64 Expr (for the single part form) or a StringLiteral (for the range form).
+	Expr Expr
+
+	Unit   *Ident
+	UnitTo *Ident // optional
 }
 
 // ================================================================================

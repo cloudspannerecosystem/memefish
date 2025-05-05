@@ -258,10 +258,6 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *ExprArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
-	case *IntervalArg:
-		stack = append(stack, &stackItem{node: wrapNode(n.Unit), visitor: v.Field("Unit")})
-		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
-
 	case *SequenceArg:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
@@ -404,6 +400,11 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *JSONLiteral:
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+
+	case *IntervalLiteral:
+		stack = append(stack, &stackItem{node: wrapNode(n.UnitTo), visitor: v.Field("UnitTo")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Unit), visitor: v.Field("Unit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *NewConstructor:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
