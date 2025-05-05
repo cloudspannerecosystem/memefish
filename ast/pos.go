@@ -1907,7 +1907,7 @@ func (p *PropertyGraphElement) Pos() token.Pos {
 }
 
 func (p *PropertyGraphElement) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(p.Properties), wrapNode(p.Keys), wrapNode(p.Alias), wrapNode(p.Name)))
+	return nodeEnd(nodeChoice(wrapNode(p.DynamicProperties), wrapNode(p.DynamicLabel), wrapNode(p.Properties), wrapNode(p.Keys), wrapNode(p.Alias), wrapNode(p.Name)))
 }
 
 func (p *PropertyGraphSingleProperties) Pos() token.Pos {
@@ -2028,6 +2028,22 @@ func (p *PropertyGraphDerivedProperty) Pos() token.Pos {
 
 func (p *PropertyGraphDerivedProperty) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(p.Alias), wrapNode(p.Expr)))
+}
+
+func (p *PropertyGraphDynamicLabel) Pos() token.Pos {
+	return p.Dynamic
+}
+
+func (p *PropertyGraphDynamicLabel) End() token.Pos {
+	return posAdd(p.Rparen, 1)
+}
+
+func (p *PropertyGraphDynamicProperties) Pos() token.Pos {
+	return p.Dynamic
+}
+
+func (p *PropertyGraphDynamicProperties) End() token.Pos {
+	return posAdd(p.Rparen, 1)
 }
 
 func (d *DropPropertyGraph) Pos() token.Pos {
