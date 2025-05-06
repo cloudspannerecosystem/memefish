@@ -1887,6 +1887,8 @@ func (p *Parser) parseCallLike() ast.Expr {
 
 	nullHandling := p.tryParseNullHandlingModifier()
 	having := p.tryParseHavingModifier()
+	orderBy := p.tryParseOrderBy()
+	limit := p.tryParseLimit()
 
 	rparen := p.expect(")").Pos
 	hint := p.tryParseHint()
@@ -1899,6 +1901,8 @@ func (p *Parser) parseCallLike() ast.Expr {
 		NamedArgs:    namedArgs,
 		NullHandling: nullHandling,
 		Having:       having,
+		OrderBy:      orderBy,
+		Limit:        limit,
 		Hint:         hint,
 	}
 }
