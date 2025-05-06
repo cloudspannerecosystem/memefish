@@ -242,6 +242,8 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *CallExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Having), visitor: v.Field("Having")})
 		stack = append(stack, &stackItem{node: wrapNode(n.NullHandling), visitor: v.Field("NullHandling")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.NamedArgs), visitor: v.Field("NamedArgs")})

@@ -1438,6 +1438,7 @@ type SubscriptSpecifierKeyword struct {
 }
 
 // CallExpr is function call expression node.
+// It can represent both regular function calls and aggregate function calls.
 //
 //	{{.Func | sql}}(
 //		{{if .Distinct}}DISTINCT{{end}}
@@ -1446,6 +1447,8 @@ type SubscriptSpecifierKeyword struct {
 //		{{.NamedArgs | sqlJoin ", "}}
 //		{{.NullHandling | sqlOpt}}
 //		{{.Having | sqlOpt}}
+//		{{.OrderBy | sqlOpt}}
+//		{{.Limit | sqlOpt}}
 //	)
 //	{{.Hint | sqlOpt}}
 type CallExpr struct {
@@ -1460,6 +1463,8 @@ type CallExpr struct {
 	NamedArgs    []*NamedArg
 	NullHandling NullHandlingModifier // optional
 	Having       HavingModifier       // optional
+	OrderBy      *OrderBy             // optional
+	Limit        *Limit               // optional
 	Hint         *Hint                // optional
 }
 

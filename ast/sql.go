@@ -471,6 +471,8 @@ func (c *CallExpr) SQL() string {
 		sqlJoin(c.NamedArgs, ", ") +
 		sqlOpt(" ", c.NullHandling, "") +
 		sqlOpt(" ", c.Having, "") +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Limit, "") +
 		")" +
 		sqlOpt(" ", c.Hint, "")
 }
