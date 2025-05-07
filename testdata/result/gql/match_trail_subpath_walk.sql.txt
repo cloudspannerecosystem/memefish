@@ -1,0 +1,185 @@
+--- match_trail_subpath_walk.sql
+GRAPH FinGraph
+MATCH TRAIL (WALK (a1:Account)-[t1:Transfers]->{4}(a5:Account))
+RETURN COUNT(1) as num_paths
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            PrefixOrMode: &ast.GQLPathMode{
+              Mode:      "TRAIL",
+              ModeToken: &ast.Ident{
+                NamePos: 21,
+                NameEnd: 26,
+                Name:    "TRAIL",
+              },
+            },
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLSubpathPattern{
+                          Lparen:   27,
+                          Rparen:   77,
+                          PathMode: &ast.GQLPathMode{
+                            Mode:      "WALK",
+                            ModeToken: &ast.Ident{
+                              NamePos: 28,
+                              NameEnd: 32,
+                              Name:    "WALK",
+                            },
+                          },
+                          PathPattern: &ast.GQLPathPattern{
+                            PathTermList: []*ast.GQLQuantifiablePathTerm{
+                              &ast.GQLQuantifiablePathTerm{
+                                PathTerm: &ast.GQLNodePattern{
+                                  Lparen:        33,
+                                  Rparen:        44,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 34,
+                                      NameEnd: 36,
+                                      Name:    "a1",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       36,
+                                      LabelExpression: &ast.GQLElementLabel{
+                                        LabelName: &ast.Ident{
+                                          NamePos: 37,
+                                          NameEnd: 44,
+                                          Name:    "Account",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLQuantifiablePathTerm{
+                                PathTerm: &ast.GQLFullEdgeRight{
+                                  Hyphen:        45,
+                                  Lbrack:        46,
+                                  Rbrack:        59,
+                                  Arrow:         60,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 47,
+                                      NameEnd: 49,
+                                      Name:    "t1",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       49,
+                                      LabelExpression: &ast.GQLElementLabel{
+                                        LabelName: &ast.Ident{
+                                          NamePos: 50,
+                                          NameEnd: 59,
+                                          Name:    "Transfers",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                Quantifier: &ast.GQLFixedQuantifier{
+                                  Lbrace: 62,
+                                  Rbrace: 64,
+                                  Bound:  &ast.IntLiteral{
+                                    ValuePos: 63,
+                                    ValueEnd: 64,
+                                    Base:     10,
+                                    Value:    "4",
+                                  },
+                                },
+                              },
+                              &ast.GQLQuantifiablePathTerm{
+                                PathTerm: &ast.GQLNodePattern{
+                                  Lparen:        65,
+                                  Rparen:        76,
+                                  PatternFiller: &ast.GQLPatternFiller{
+                                    GraphPatternVariable: &ast.Ident{
+                                      NamePos: 66,
+                                      NameEnd: 68,
+                                      Name:    "a5",
+                                    },
+                                    IsLabelCondition: &ast.GQLIsLabelCondition{
+                                      IsOrColon:       68,
+                                      LabelExpression: &ast.GQLElementLabel{
+                                        LabelName: &ast.Ident{
+                                          NamePos: 69,
+                                          NameEnd: 76,
+                                          Name:    "Account",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         79,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.CallExpr{
+                    Rparen: 93,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 86,
+                          NameEnd: 91,
+                          Name:    "COUNT",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.IntLiteral{
+                          ValuePos: 92,
+                          ValueEnd: 93,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                      },
+                    },
+                  },
+                  As: &ast.AsAlias{
+                    As:    95,
+                    Alias: &ast.Ident{
+                      NamePos: 98,
+                      NameEnd: 107,
+                      Name:    "num_paths",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH TRAIL (WALK (a1:Account)-[t1:Transfers]->{4}(a5:Account)) RETURN COUNT(1) AS num_paths

@@ -180,6 +180,11 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Sample), visitor: v.Field("Sample")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Source), visitor: v.Field("Source")})
 
+	case *GraphTableExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PropertyGraphName), visitor: v.Field("PropertyGraphName")})
+
 	case *Join:
 		stack = append(stack, &stackItem{node: wrapNode(n.Cond), visitor: v.Field("Cond")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
@@ -218,11 +223,22 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *ValuesInCondition:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
 
+	case *GQLSubQueryInCondition:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+
 	case *IsNullExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *IsBoolExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *IsSourceExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Edge), visitor: v.Field("Edge")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Node), visitor: v.Field("Node")})
+
+	case *IsDestinationExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Edge), visitor: v.Field("Edge")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Node), visitor: v.Field("Node")})
 
 	case *BetweenExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.RightEnd), visitor: v.Field("RightEnd")})
@@ -347,6 +363,15 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *ArraySubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+
+	case *ArrayGQLSubQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+
+	case *ValueGQLSubQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+
+	case *ExistsGQLSubQuery:
+		// nothing to do
 
 	case *ExistsSubQuery:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
@@ -978,6 +1003,184 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *Call:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *GQLGraphQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLQueryExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+
+	case *GQLGraphClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.PropertyGraphName), visitor: v.Field("PropertyGraphName")})
+
+	case *GQLMultiLinearQueryStatement:
+		// nothing to do
+
+	case *GQLSimpleLinearQueryStatement:
+		// nothing to do
+
+	case *GQLSimpleLinearQueryStatementWithSetOperator:
+		stack = append(stack, &stackItem{node: wrapNode(n.Statement), visitor: v.Field("Statement")})
+
+	case *GQLCompositeLinearQueryStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.TailSimpleLinearQueryStatementList), visitor: v.Field("TailSimpleLinearQueryStatementList")})
+		stack = append(stack, &stackItem{node: wrapNode(n.HeadSimpleLinearQueryStatement), visitor: v.Field("HeadSimpleLinearQueryStatement")})
+
+	case *GQLMatchStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphPattern), visitor: v.Field("GraphPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.MatchHint), visitor: v.Field("MatchHint")})
+
+	case *GQLFilterStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLForStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.WithOffsetClause), visitor: v.Field("WithOffsetClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ArrayExpression), visitor: v.Field("ArrayExpression")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementName), visitor: v.Field("ElementName")})
+
+	case *GQLWithOffsetClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.OffsetName), visitor: v.Field("OffsetName")})
+
+	case *GQLLimitClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+
+	case *GQLOffsetClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+
+	case *GQLLimitWithOffsetClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+
+	case *GQLLimitStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
+
+	case *GQLOffsetStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
+
+	case *GQLOrderByStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.OrderBySpecificationList), visitor: v.Field("OrderBySpecificationList")})
+
+	case *GQLOrderBySpecification:
+		stack = append(stack, &stackItem{node: wrapNode(n.CollationSpecification), visitor: v.Field("CollationSpecification")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLCollationSpecification:
+		stack = append(stack, &stackItem{node: wrapNode(n.Specification), visitor: v.Field("Specification")})
+
+	case *GQLWithStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupByClause), visitor: v.Field("GroupByClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReturnItemList), visitor: v.Field("ReturnItemList")})
+
+	case *GQLReturnItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Item), visitor: v.Field("Item")})
+
+	case *GQLReturnStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.LimitAndOffsetClause), visitor: v.Field("LimitAndOffsetClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderByClause), visitor: v.Field("OrderByClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupByClause), visitor: v.Field("GroupByClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReturnItemList), visitor: v.Field("ReturnItemList")})
+
+	case *GQLLinearGraphVariable:
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.VariableName), visitor: v.Field("VariableName")})
+
+	case *GQLLetStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.LinearGraphVariableList), visitor: v.Field("LinearGraphVariableList")})
+
+	case *GQLGraphPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.WhereClause), visitor: v.Field("WhereClause")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PathPatternList), visitor: v.Field("PathPatternList")})
+
+	case *GQLTopLevelPathPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.PathPattern), visitor: v.Field("PathPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Var), visitor: v.Field("Var")})
+
+	case *GQLFullEdgeAny:
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
+
+	case *GQLFullEdgeLeft:
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
+
+	case *GQLFullEdgeRight:
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
+
+	case *GQLAbbreviatedEdgeAny:
+		// nothing to do
+
+	case *GQLAbbreviatedEdgeLeft:
+		// nothing to do
+
+	case *GQLAbbreviatedEdgeRight:
+		// nothing to do
+
+	case *GQLQuantifiablePathTerm:
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLPathPattern:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PathTermList), visitor: v.Field("PathTermList")})
+
+	case *GQLWhereClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.BoolExpression), visitor: v.Field("BoolExpression")})
+
+	case *GQLPathMode:
+		stack = append(stack, &stackItem{node: wrapNode(n.PathOrPathsToken), visitor: v.Field("PathOrPathsToken")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ModeToken), visitor: v.Field("ModeToken")})
+
+	case *GQLFixedQuantifier:
+		stack = append(stack, &stackItem{node: wrapNode(n.Bound), visitor: v.Field("Bound")})
+
+	case *GQLBoundedQuantifier:
+		stack = append(stack, &stackItem{node: wrapNode(n.UpperBound), visitor: v.Field("UpperBound")})
+		stack = append(stack, &stackItem{node: wrapNode(n.LowerBound), visitor: v.Field("LowerBound")})
+
+	case *GQLSubpathPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.WhereClause), visitor: v.Field("WhereClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PathPattern), visitor: v.Field("PathPattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PathMode), visitor: v.Field("PathMode")})
+
+	case *GQLNodePattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.PatternFiller), visitor: v.Field("PatternFiller")})
+
+	case *GQLPatternFiller:
+		stack = append(stack, &stackItem{node: wrapNode(n.IsLabelCondition), visitor: v.Field("IsLabelCondition")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphPatternVariable), visitor: v.Field("GraphPatternVariable")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLIsLabelCondition:
+		// nothing to do
+
+	case *GQLLabelOrExpression:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *GQLLabelParenExpression:
+		stack = append(stack, &stackItem{node: wrapNode(n.LabelExpr), visitor: v.Field("LabelExpr")})
+
+	case *GQLLabelAndExpression:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *GQLLabelNotExpression:
+		stack = append(stack, &stackItem{node: wrapNode(n.LabelExpression), visitor: v.Field("LabelExpression")})
+
+	case *GQLWildcardLabel:
+		// nothing to do
+
+	case *GQLElementLabel:
+		stack = append(stack, &stackItem{node: wrapNode(n.LabelName), visitor: v.Field("LabelName")})
+
+	case *GQLPropertyFilters:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PropertyFilterElemList), visitor: v.Field("PropertyFilterElemList")})
+
+	case *GQLElementProperty:
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementPropertyValue), visitor: v.Field("ElementPropertyValue")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ElementPropertyName), visitor: v.Field("ElementPropertyName")})
+
+	case *GQLPathSearchPrefix:
+		// nothing to do
 	}
 	return stack
 }

@@ -1,0 +1,25 @@
+--- full_edge_any.sql
+ -[a]-
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLFullEdgeAny{
+        FirstHyphen:   1,
+        LastHyphen:    5,
+        Lbrack:        2,
+        Rbrack:        4,
+        PatternFiller: &ast.GQLPatternFiller{
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 3,
+            NameEnd: 4,
+            Name:    "a",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+-[a]-

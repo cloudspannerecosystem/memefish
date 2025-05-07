@@ -1,0 +1,15 @@
+--- abbr_edge_any.sql
+ -
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLAbbreviatedEdgeAny{
+        Hyphen: 1,
+      },
+    },
+  },
+}
+
+--- SQL
+-

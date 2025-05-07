@@ -1,0 +1,113 @@
+--- offset_1.sql
+GRAPH FinGraph
+MATCH (p:Person)
+OFFSET 2
+RETURN p.name, p.id
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        30,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "p",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLOffsetStatement{
+            Offset: 32,
+            Count:  &ast.IntLiteral{
+              ValuePos: 39,
+              ValueEnd: 40,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         41,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 48,
+                        NameEnd: 49,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 50,
+                        NameEnd: 54,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 56,
+                        NameEnd: 57,
+                        Name:    "p",
+                      },
+                      &ast.Ident{
+                        NamePos: 58,
+                        NameEnd: 60,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (p:Person) OFFSET 2 RETURN p.name, p.id

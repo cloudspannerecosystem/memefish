@@ -1,0 +1,209 @@
+--- match_optional.sql
+GRAPH FinGraph
+MATCH (n:Person)
+OPTIONAL MATCH (n:Person)-[:Owns]->(a:Account {is_blocked: TRUE})
+RETURN n.name, a.id AS blocked_account_id
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        30,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "n",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatchStatement{
+            Optional:     32,
+            Match:        41,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        47,
+                          Rparen:        56,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 48,
+                              NameEnd: 49,
+                              Name:    "n",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       49,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 50,
+                                  NameEnd: 56,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLFullEdgeRight{
+                          Hyphen:        57,
+                          Lbrack:        58,
+                          Rbrack:        64,
+                          Arrow:         65,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       59,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 60,
+                                  NameEnd: 64,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        67,
+                          Rparen:        96,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 68,
+                              NameEnd: 69,
+                              Name:    "a",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       69,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 70,
+                                  NameEnd: 77,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Filter: &ast.GQLPropertyFilters{
+                              Lbrace:                 78,
+                              PropertyFilterElemList: []*ast.GQLElementProperty{
+                                &ast.GQLElementProperty{
+                                  ElementPropertyName: &ast.Ident{
+                                    NamePos: 79,
+                                    NameEnd: 89,
+                                    Name:    "is_blocked",
+                                  },
+                                  ElementPropertyValue: &ast.BoolLiteral{
+                                    ValuePos: 91,
+                                    Value:    true,
+                                  },
+                                },
+                              },
+                              Rbrace: 95,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         98,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 105,
+                        NameEnd: 106,
+                        Name:    "n",
+                      },
+                      &ast.Ident{
+                        NamePos: 107,
+                        NameEnd: 111,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Item: &ast.Alias{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 113,
+                        NameEnd: 114,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 115,
+                        NameEnd: 117,
+                        Name:    "id",
+                      },
+                    },
+                  },
+                  As: &ast.AsAlias{
+                    As:    118,
+                    Alias: &ast.Ident{
+                      NamePos: 121,
+                      NameEnd: 139,
+                      Name:    "blocked_account_id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (n:Person) OPTIONAL MATCH (n:Person)-[:Owns]->(a:Account {is_blocked: TRUE}) RETURN n.name, a.id AS blocked_account_id

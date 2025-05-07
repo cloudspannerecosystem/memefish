@@ -1,0 +1,64 @@
+--- pattern_2.sql
+(p:(Singer|(!Writer&!Producer)))
+--- AST
+&ast.GQLPathPattern{
+  PathTermList: []*ast.GQLQuantifiablePathTerm{
+    &ast.GQLQuantifiablePathTerm{
+      PathTerm: &ast.GQLNodePattern{
+        Rparen:        31,
+        PatternFiller: &ast.GQLPatternFiller{
+          GraphPatternVariable: &ast.Ident{
+            NamePos: 1,
+            NameEnd: 2,
+            Name:    "p",
+          },
+          IsLabelCondition: &ast.GQLIsLabelCondition{
+            IsOrColon:       2,
+            LabelExpression: &ast.GQLLabelParenExpression{
+              Lparen:    3,
+              Rparen:    30,
+              LabelExpr: &ast.GQLLabelOrExpression{
+                Left: &ast.GQLElementLabel{
+                  LabelName: &ast.Ident{
+                    NamePos: 4,
+                    NameEnd: 10,
+                    Name:    "Singer",
+                  },
+                },
+                Right: &ast.GQLLabelParenExpression{
+                  Lparen:    11,
+                  Rparen:    29,
+                  LabelExpr: &ast.GQLLabelNotExpression{
+                    Not:             12,
+                    LabelExpression: &ast.GQLLabelAndExpression{
+                      Left: &ast.GQLElementLabel{
+                        LabelName: &ast.Ident{
+                          NamePos: 13,
+                          NameEnd: 19,
+                          Name:    "Writer",
+                        },
+                      },
+                      Right: &ast.GQLLabelNotExpression{
+                        Not:             20,
+                        LabelExpression: &ast.GQLElementLabel{
+                          LabelName: &ast.Ident{
+                            NamePos: 21,
+                            NameEnd: 29,
+                            Name:    "Producer",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(p:(Singer|(!Writer&!Producer)))

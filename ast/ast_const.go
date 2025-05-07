@@ -150,3 +150,36 @@ const (
 	InsertOrTypeUpdate InsertOrType = "UPDATE"
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
+
+type GQLSetOperatorEnum string
+
+const (
+	GQLSetOperatorUnion     GQLSetOperatorEnum = "UNION"
+	GQLSetOperatorIntersect GQLSetOperatorEnum = "INTERSECT"
+	GQLSetOperatorExcept    GQLSetOperatorEnum = "EXCEPT"
+)
+
+type GQLDirectionEnum string
+
+const (
+	GQLSortOrderAsc        GQLDirectionEnum = "ASC"
+	GQLSortOrderAscending  GQLDirectionEnum = "ASCENDING"
+	GQLSortOrderDesc       GQLDirectionEnum = "DESC"
+	GQLSortOrderDescending GQLDirectionEnum = "DESCENDING"
+)
+
+type GQLPathModeEnum string
+
+const (
+	GQLPathModeWalk    GQLPathModeEnum = "WALK"
+	GQLPathModeTrail   GQLPathModeEnum = "TRAIL"
+	GQLPathModeAcyclic GQLPathModeEnum = "ACYCLIC"
+)
+
+type GQLSearchPrefixEnum string
+
+const (
+	GQLPathSearchPrefixAll         GQLSearchPrefixEnum = "ALL"
+	GQLPathSearchPrefixAny         GQLSearchPrefixEnum = "ANY"
+	GQLPathSearchPrefixAnyShortest GQLSearchPrefixEnum = "ANY SHORTEST"
+)

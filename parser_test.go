@@ -251,6 +251,24 @@ func TestParseQuery(t *testing.T) {
 	})
 }
 
+func TestParseGQLStatement(t *testing.T) {
+	inputPath := "./testdata/input/gql"
+	resultPath := "./testdata/result/gql"
+
+	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		return p.ParseGQLStatement()
+	})
+}
+
+func TestParseGQLPathPattern(t *testing.T) {
+	inputPath := "./testdata/input/gql_path_pattern"
+	resultPath := "./testdata/result/gql_path_pattern"
+
+	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		return p.ParseGQLPathPattern()
+	})
+}
+
 func TestParseDDL(t *testing.T) {
 	inputPath := "./testdata/input/ddl"
 	resultPath := "./testdata/result/ddl"

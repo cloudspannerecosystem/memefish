@@ -1,0 +1,113 @@
+--- order_by_collate.sql
+GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE 'und:ci' RETURN a.name
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Ident{
+      NamePos: 6,
+      NameEnd: 14,
+      Name:    "FinGraph",
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    LinearQueryStatementList: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatchStatement{
+            Optional:     -1,
+            Match:        15,
+            GraphPattern: &ast.GQLGraphPattern{
+              PathPatternList: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  PathPattern: &ast.GQLPathPattern{
+                    PathTermList: []*ast.GQLQuantifiablePathTerm{
+                      &ast.GQLQuantifiablePathTerm{
+                        PathTerm: &ast.GQLNodePattern{
+                          Lparen:        21,
+                          Rparen:        30,
+                          PatternFiller: &ast.GQLPatternFiller{
+                            GraphPatternVariable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "a",
+                            },
+                            IsLabelCondition: &ast.GQLIsLabelCondition{
+                              IsOrColon:       23,
+                              LabelExpression: &ast.GQLElementLabel{
+                                LabelName: &ast.Ident{
+                                  NamePos: 24,
+                                  NameEnd: 30,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLOrderByStatement{
+            Order:                    32,
+            OrderBySpecificationList: []*ast.GQLOrderBySpecification{
+              &ast.GQLOrderBySpecification{
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 41,
+                      NameEnd: 42,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 43,
+                      NameEnd: 47,
+                      Name:    "name",
+                    },
+                  },
+                },
+                CollationSpecification: &ast.GQLCollationSpecification{
+                  Collate:       48,
+                  Specification: &ast.StringLiteral{
+                    ValuePos: 56,
+                    ValueEnd: 64,
+                    Value:    "und:ci",
+                  },
+                },
+                DirectionPos: -1,
+              },
+            },
+          },
+          &ast.GQLReturnStatement{
+            Return:         65,
+            ReturnItemList: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Item: &ast.ExprSelectItem{
+                  Expr: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 72,
+                        NameEnd: 73,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 74,
+                        NameEnd: 78,
+                        Name:    "name",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a:Person) ORDER BY a.name COLLATE "und:ci" RETURN a.name

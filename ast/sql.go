@@ -111,7 +111,7 @@ func exprPrec(e Expr) prec {
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
-	case *InExpr, *IsNullExpr, *IsBoolExpr, *BetweenExpr:
+	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsSourceExpr, *IsDestinationExpr, *BetweenExpr:
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
@@ -394,6 +394,13 @@ func (t *TableSampleSize) SQL() string {
 	return "(" + t.Value.SQL() + " " + string(t.Unit) + ")"
 }
 
+func (g *GraphTableExpr) SQL() string {
+	return "GRAPH_TABLE(" +
+		g.PropertyGraphName.SQL() + " " +
+		g.Query.SQL() +
+		")" + sqlOpt(" ", g.As, "")
+}
+
 // ================================================================================
 //
 // Expr
@@ -432,6 +439,10 @@ func (v *ValuesInCondition) SQL() string {
 	return "(" + sqlJoin(v.Exprs, ", ") + ")"
 }
 
+func (g *GQLSubQueryInCondition) SQL() string {
+	return "{" + g.Query.SQL() + "}"
+}
+
 func (i *IsNullExpr) SQL() string {
 	p := exprPrec(i)
 	return paren(p, i.Left) +
@@ -441,6 +452,28 @@ func (i *IsNullExpr) SQL() string {
 func (i *IsBoolExpr) SQL() string {
 	p := exprPrec(i)
 	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + formatBoolUpper(i.Right)
+}
+
+func (i *IsSourceExpr) SQL() string {
+	p := exprPrec(i)
+	sql := paren(p, i.Node)
+	sql += " IS "
+	if i.Not {
+		sql += "NOT "
+	}
+	sql += "SOURCE OF " + i.Edge.SQL()
+	return sql
+}
+
+func (i *IsDestinationExpr) SQL() string {
+	p := exprPrec(i)
+	sql := paren(p, i.Node)
+	sql += " IS "
+	if i.Not {
+		sql += "NOT "
+	}
+	sql += "DESTINATION OF " + i.Edge.SQL()
+	return sql
 }
 
 func (b *BetweenExpr) SQL() string {
@@ -726,6 +759,24 @@ func (c *CastIntValue) SQL() string {
 
 func (c *CastNumValue) SQL() string {
 	return "CAST(" + c.Expr.SQL() + " AS " + string(c.Type) + ")"
+}
+
+// ================================================================================
+//
+// GQL subquery expressions
+//
+// ================================================================================
+
+func (a *ArrayGQLSubQuery) SQL() string {
+	return "ARRAY {" + a.Query.SQL() + "}"
+}
+
+func (v *ValueGQLSubQuery) SQL() string {
+	return "VALUE {" + v.Query.SQL() + "}"
+}
+
+func (v *ExistsGQLSubQuery) SQL() string {
+	return "EXISTS {" + v.Query.SQL() + "}"
 }
 
 // ================================================================================
@@ -1395,4 +1446,214 @@ func (u *UpdateItem) SQL() string {
 
 func (c *Call) SQL() string {
 	return "CALL " + c.Name.SQL() + "(" + sqlJoin(c.Args, ", ") + ")"
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+func (s *GQLGraphQuery) SQL() string {
+	return sqlOpt("", s.Hint, " ") + s.GraphClause.SQL() + " " + s.MultiLinearQueryStatement.SQL()
+}
+
+func (g *GQLQueryExpr) SQL() string {
+	return sqlOpt("", g.GraphClause, " ") + g.MultiLinearQueryStatement.SQL()
+}
+
+func (s *GQLGraphClause) SQL() string { return "GRAPH " + s.PropertyGraphName.SQL() }
+
+func (s *GQLMultiLinearQueryStatement) SQL() string {
+	return sqlJoin(s.LinearQueryStatementList, " NEXT ")
+}
+
+func (s *GQLSimpleLinearQueryStatement) SQL() string {
+	return sqlJoin(s.PrimitiveQueryStatementList, " ")
+}
+
+func (s *GQLCompositeLinearQueryStatement) SQL() string {
+	return s.HeadSimpleLinearQueryStatement.SQL() +
+		strOpt(len(s.TailSimpleLinearQueryStatementList) > 0, " ") +
+		sqlJoin(s.TailSimpleLinearQueryStatementList, " ")
+}
+
+func (g *GQLSimpleLinearQueryStatementWithSetOperator) SQL() string {
+	return string(g.SetOperator) +
+		strOpt(g.AllOrDistinct != "", " "+string(g.AllOrDistinct)) +
+		" " + g.Statement.SQL()
+}
+
+func (s *GQLLinearGraphVariable) SQL() string { return s.VariableName.SQL() + " = " + s.Value.SQL() }
+
+// ================================================================================
+//
+// GQL statements
+//
+// ================================================================================
+
+func (g *GQLMatchStatement) SQL() string {
+	return strIfElse(g.Optional.Invalid(), "MATCH", "OPTIONAL MATCH") +
+		sqlOpt("", g.MatchHint, "") +
+		sqlOpt(" ", g.PrefixOrMode, "") +
+		" " + g.GraphPattern.SQL()
+}
+
+func (g *GQLFilterStatement) SQL() string {
+	return "FILTER " + strOpt(!g.Where.Invalid(), "WHERE ") + g.Expr.SQL()
+}
+
+func (g *GQLForStatement) SQL() string {
+	return "FOR " + g.ElementName.SQL() + " IN " +
+		g.ArrayExpression.SQL() + sqlOpt(" ", g.WithOffsetClause, "")
+}
+
+func (g *GQLWithOffsetClause) SQL() string {
+	return "WITH OFFSET" + sqlOpt(" ", g.OffsetName, "")
+}
+
+func (g *GQLLimitClause) SQL() string { return g.Limit.SQL() }
+
+func (g *GQLOffsetClause) SQL() string { return g.Offset.SQL() }
+
+func (g *GQLLimitWithOffsetClause) SQL() string { return g.Offset.SQL() + " " + g.Limit.SQL() }
+
+func (g *GQLLimitStatement) SQL() string { return "LIMIT " + g.Count.SQL() }
+
+func (g *GQLOffsetStatement) SQL() string {
+	if g.IsSkip {
+		return "SKIP " + g.Count.SQL()
+	}
+	return "OFFSET " + g.Count.SQL()
+}
+
+func (g *GQLOrderByStatement) SQL() string {
+	return "ORDER BY " + sqlJoin(g.OrderBySpecificationList, ", ")
+}
+
+func (g *GQLOrderBySpecification) SQL() string {
+	return g.Expr.SQL() + sqlOpt(" ", g.CollationSpecification, "") +
+		strOpt(g.Direction != "", " "+string(g.Direction))
+}
+
+func (g *GQLCollationSpecification) SQL() string {
+	return "COLLATE " + g.Specification.SQL()
+}
+
+func (g *GQLWithStatement) SQL() string {
+	return "WITH " + strOpt(g.AllOrDistinct != "", string(g.AllOrDistinct)+" ") +
+		sqlJoin(g.ReturnItemList, ", ") +
+		sqlOpt(" ", g.GroupByClause, "")
+}
+
+func (s *GQLLetStatement) SQL() string { return "LET " + sqlJoin(s.LinearGraphVariableList, ", ") }
+
+func (g *GQLReturnItem) SQL() string {
+	return g.Item.SQL()
+}
+
+func (g *GQLReturnStatement) SQL() string {
+	return "RETURN " +
+		strOpt(g.AllOrDistinct != "", string(g.AllOrDistinct)+" ") +
+		sqlJoin(g.ReturnItemList, ", ") +
+		sqlOpt(" ", g.GroupByClause, "") +
+		sqlOpt(" ", g.OrderByClause, "") +
+		sqlOpt(" ", g.LimitAndOffsetClause, "")
+}
+
+// GQL graph patterns
+
+func (g *GQLGraphPattern) SQL() string {
+	return sqlJoin(g.PathPatternList, ", ") + sqlOpt(" ", g.WhereClause, "")
+}
+
+func (g *GQLTopLevelPathPattern) SQL() string {
+	return sqlOpt("", g.Var, " = ") + sqlOpt("", g.PathSearchPrefixOrPathMode, " ") + g.PathPattern.SQL()
+}
+
+func (g *GQLFullEdgeAny) SQL() string { return "-[" + sqlOpt("", g.PatternFiller, "") + "]-" }
+
+func (g *GQLFullEdgeLeft) SQL() string { return "<-[" + sqlOpt("", g.PatternFiller, "") + "]-" }
+
+func (g *GQLFullEdgeRight) SQL() string { return "-[" + sqlOpt("", g.PatternFiller, "") + "]->" }
+
+func (g *GQLAbbreviatedEdgeAny) SQL() string { return "-" }
+
+func (g *GQLAbbreviatedEdgeLeft) SQL() string { return "<-" }
+
+func (g *GQLAbbreviatedEdgeRight) SQL() string { return "->" }
+
+func (g *GQLQuantifiablePathTerm) SQL() string {
+	return sqlOpt("", g.Hint, "") + g.PathTerm.SQL() + sqlOpt("", g.Quantifier, "")
+}
+
+func (g *GQLPathPattern) SQL() string { return sqlJoin(g.PathTermList, "") }
+
+func (g *GQLWhereClause) SQL() string { return "WHERE " + g.BoolExpression.SQL() }
+
+func (g *GQLPathMode) SQL() string {
+	return string(g.Mode) + sqlOpt(" ", g.PathOrPathsToken, "")
+}
+
+func (g *GQLFixedQuantifier) SQL() string { return "{" + g.Bound.SQL() + "}" }
+
+func (g *GQLBoundedQuantifier) SQL() string {
+	return "{" + sqlOpt("", g.LowerBound, "") + "," + g.UpperBound.SQL() + "}"
+}
+
+func (g *GQLSubpathPattern) SQL() string {
+	return "(" +
+		sqlOpt("", g.PathMode, " ") +
+		g.PathPattern.SQL() +
+		sqlOpt(" ", g.WhereClause, "") +
+		")"
+}
+
+func (g *GQLNodePattern) SQL() string { return "(" + g.PatternFiller.SQL() + ")" }
+
+func (g *GQLPatternFiller) SQL() string {
+	return sqlOpt("", g.Hint, "") +
+		sqlOpt("", g.GraphPatternVariable, "") +
+		sqlOpt("", g.IsLabelCondition, "") +
+		sqlOpt(
+			strOpt(g.Hint != nil || g.GraphPatternVariable != nil || g.IsLabelCondition != nil, " "),
+			g.Filter, "")
+}
+
+func (g *GQLIsLabelCondition) SQL() string { return ":" + g.LabelExpression.SQL() }
+
+func (g *GQLLabelParenExpression) SQL() string { return "(" + g.LabelExpr.SQL() + ")" }
+
+func (g *GQLLabelOrExpression) SQL() string { return g.Left.SQL() + "|" + g.Right.SQL() }
+
+func (g *GQLLabelAndExpression) SQL() string { return g.Left.SQL() + "&" + g.Right.SQL() }
+
+func (g *GQLLabelNotExpression) SQL() string { return "!" + g.LabelExpression.SQL() }
+
+func (g *GQLWildcardLabel) SQL() string {
+	return "%"
+}
+func (g *GQLElementLabel) SQL() string {
+	return g.LabelName.SQL()
+}
+
+func (g *GQLPropertyFilters) SQL() string {
+	return "{" + sqlJoin(g.PropertyFilterElemList, ", ") + "}"
+}
+
+func (g *GQLElementProperty) SQL() string {
+	return g.ElementPropertyName.SQL() + ": " + g.ElementPropertyValue.SQL()
+}
+
+func (p *GQLPathSearchPrefix) SQL() string {
+	switch p.SearchPrefix {
+	case GQLPathSearchPrefixAny:
+		return "ANY"
+	case GQLPathSearchPrefixAnyShortest:
+		return "ANY SHORTEST"
+	case GQLPathSearchPrefixAll:
+		return "ALL"
+	default:
+		panic("unreached condition: invalid GQLPathSearchPrefix")
+	}
 }
