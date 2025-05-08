@@ -235,6 +235,7 @@ func (DateLiteral) isExpr()           {}
 func (TimestampLiteral) isExpr()      {}
 func (NumericLiteral) isExpr()        {}
 func (JSONLiteral) isExpr()           {}
+func (IntervalLiteral) isExpr()       {}
 func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
@@ -255,7 +256,6 @@ type Arg interface {
 }
 
 func (ExprArg) isArg()     {}
-func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 func (LambdaArg) isArg()   {}
 
@@ -1264,7 +1264,7 @@ type TableSample struct {
 
 // TableSampleSize is size part of TABLESAMPLE clause.
 //
-//	({{.Value | sql}} {{.Unit}})
+//	({{.Value | sql}} {{.DatePartName}})
 type TableSampleSize struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -1493,19 +1493,6 @@ type ExprArg struct {
 	// end = Expr.end
 
 	Expr Expr
-}
-
-// IntervalArg is argument of date function call.
-//
-//	INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
-type IntervalArg struct {
-	// pos = Interval
-	// end = (Unit ?? Expr).end
-
-	Interval token.Pos // position of "INTERVAL" keyword
-
-	Expr Expr
-	Unit *Ident // optional
 }
 
 // SequenceArg is argument of sequence function call.
@@ -2037,6 +2024,22 @@ type JSONLiteral struct {
 	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
+}
+
+// IntervalLiteral represents an interval literal.
+//
+//	INTERVAL {{.Value}} {{.DatePartName | sql}}{{if .DatePartNameTo}} TO {{.DatePartNameTo | sql}}{{end}}
+type IntervalLiteral struct {
+	// pos = Interval
+	// end = (DatePartNameTo ?? DatePartName).end
+
+	Interval token.Pos // position of "INTERVAL" keyword
+
+	// Value is either an int64 Expr (for the single part form) or a StringLiteral (for the range form).
+	Value Expr
+
+	DatePartName   *Ident
+	DatePartNameTo *Ident // optional
 }
 
 // ================================================================================
