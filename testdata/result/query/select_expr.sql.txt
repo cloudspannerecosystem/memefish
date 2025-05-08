@@ -603,13 +603,13 @@ select 1 + 2, 1 - 2,
             &ast.ExprArg{
               Expr: &ast.IntervalLiteral{
                 Interval: 542,
-                Expr:     &ast.IntLiteral{
+                Value:    &ast.IntLiteral{
                   ValuePos: 551,
                   ValueEnd: 552,
                   Base:     10,
                   Value:    "5",
                 },
-                Unit: &ast.Ident{
+                DatePartName: &ast.Ident{
                   NamePos: 553,
                   NameEnd: 556,
                   Name:    "day",
@@ -645,13 +645,13 @@ select 1 + 2, 1 - 2,
             &ast.ExprArg{
               Expr: &ast.IntervalLiteral{
                 Interval: 613,
-                Expr:     &ast.IntLiteral{
+                Value:    &ast.IntLiteral{
                   ValuePos: 622,
                   ValueEnd: 623,
                   Base:     10,
                   Value:    "5",
                 },
-                Unit: &ast.Ident{
+                DatePartName: &ast.Ident{
                   NamePos: 624,
                   NameEnd: 628,
                   Name:    "hour",

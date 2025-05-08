@@ -875,7 +875,7 @@ func (i *IntervalLiteral) Pos() token.Pos {
 }
 
 func (i *IntervalLiteral) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(i.UnitTo), wrapNode(i.Unit)))
+	return nodeEnd(nodeChoice(wrapNode(i.DatePartNameTo), wrapNode(i.DatePartName)))
 }
 
 func (n *NewConstructor) Pos() token.Pos {

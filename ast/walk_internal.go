@@ -402,9 +402,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *IntervalLiteral:
-		stack = append(stack, &stackItem{node: wrapNode(n.UnitTo), visitor: v.Field("UnitTo")})
-		stack = append(stack, &stackItem{node: wrapNode(n.Unit), visitor: v.Field("Unit")})
-		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.DatePartNameTo), visitor: v.Field("DatePartNameTo")})
+		stack = append(stack, &stackItem{node: wrapNode(n.DatePartName), visitor: v.Field("DatePartName")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *NewConstructor:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})

@@ -1264,7 +1264,7 @@ type TableSample struct {
 
 // TableSampleSize is size part of TABLESAMPLE clause.
 //
-//	({{.Value | sql}} {{.Unit}})
+//	({{.Value | sql}} {{.DatePartName}})
 type TableSampleSize struct {
 	// pos = Lparen
 	// end = Rparen + 1
@@ -2028,18 +2028,18 @@ type JSONLiteral struct {
 
 // IntervalLiteral represents an interval literal.
 //
-//	INTERVAL {{.Value}} {{.Unit | sql}}{{if .UnitTo}} TO {{.UnitTo | sql}}{{end}}
+//	INTERVAL {{.Value}} {{.DatePartName | sql}}{{if .DatePartNameTo}} TO {{.DatePartNameTo | sql}}{{end}}
 type IntervalLiteral struct {
 	// pos = Interval
-	// end = (UnitTo ?? Unit).end
+	// end = (DatePartNameTo ?? DatePartName).end
 
 	Interval token.Pos // position of "INTERVAL" keyword
 
-	// Expr is either an int64 Expr (for the single part form) or a StringLiteral (for the range form).
-	Expr Expr
+	// Value is either an int64 Expr (for the single part form) or a StringLiteral (for the range form).
+	Value Expr
 
-	Unit   *Ident
-	UnitTo *Ident // optional
+	DatePartName   *Ident
+	DatePartNameTo *Ident // optional
 }
 
 // ================================================================================

@@ -2493,10 +2493,10 @@ func (p *Parser) parseIntervalLiteral() *ast.IntervalLiteral {
 	}
 
 	return &ast.IntervalLiteral{
-		Interval: interval,
-		Expr:     expr,
-		Unit:     unit,
-		UnitTo:   unitTo,
+		Interval:       interval,
+		Value:          expr,
+		DatePartName:   unit,
+		DatePartNameTo: unitTo,
 	}
 }
 
