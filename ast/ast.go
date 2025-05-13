@@ -235,7 +235,8 @@ func (DateLiteral) isExpr()           {}
 func (TimestampLiteral) isExpr()      {}
 func (NumericLiteral) isExpr()        {}
 func (JSONLiteral) isExpr()           {}
-func (IntervalLiteral) isExpr()       {}
+func (IntervalLiteralSingle) isExpr() {}
+func (IntervalLiteralRange) isExpr()  {}
 func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
@@ -2026,20 +2027,33 @@ type JSONLiteral struct {
 	Value *StringLiteral
 }
 
-// IntervalLiteral represents an interval literal.
+// IntervalLiteralSingle represents an interval literal with a single datetime part.
 //
-//	INTERVAL {{.Value}} {{.DatePartName | sql}}{{if .DatePartNameTo}} TO {{.DatePartNameTo | sql}}{{end}}
-type IntervalLiteral struct {
+//	INTERVAL {{.Value}} {{.DateTimePart | sql}}
+type IntervalLiteralSingle struct {
 	// pos = Interval
-	// end = (DatePartNameTo ?? DatePartName).end
+	// end = DateTimePart.end
 
 	Interval token.Pos // position of "INTERVAL" keyword
 
-	// Value is either an int64 Expr (for the single part form) or a StringLiteral (for the range form).
-	Value Expr
+	Value IntValue
 
-	DatePartName   *Ident
-	DatePartNameTo *Ident // optional
+	DateTimePart *Ident
+}
+
+// IntervalLiteralRange represents an interval literal with a datetime part range.
+//
+//	INTERVAL {{.Value}} {{.StartingDateTimePart | sql}} TO {{.EndingDateTimePart | sql}}
+type IntervalLiteralRange struct {
+	// pos = Interval
+	// end = EndingDateTimePart.end
+
+	Interval token.Pos // position of "INTERVAL" keyword
+
+	Value *StringLiteral
+
+	StartingDateTimePart *Ident
+	EndingDateTimePart   *Ident
 }
 
 // ================================================================================

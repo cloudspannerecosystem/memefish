@@ -870,12 +870,20 @@ func (j *JSONLiteral) End() token.Pos {
 	return nodeEnd(wrapNode(j.Value))
 }
 
-func (i *IntervalLiteral) Pos() token.Pos {
+func (i *IntervalLiteralSingle) Pos() token.Pos {
 	return i.Interval
 }
 
-func (i *IntervalLiteral) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(i.DatePartNameTo), wrapNode(i.DatePartName)))
+func (i *IntervalLiteralSingle) End() token.Pos {
+	return nodeEnd(wrapNode(i.DateTimePart))
+}
+
+func (i *IntervalLiteralRange) Pos() token.Pos {
+	return i.Interval
+}
+
+func (i *IntervalLiteralRange) End() token.Pos {
+	return nodeEnd(wrapNode(i.EndingDateTimePart))
 }
 
 func (n *NewConstructor) Pos() token.Pos {

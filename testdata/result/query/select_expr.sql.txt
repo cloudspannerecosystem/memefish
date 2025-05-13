@@ -601,7 +601,7 @@ select 1 + 2, 1 - 2,
               },
             },
             &ast.ExprArg{
-              Expr: &ast.IntervalLiteral{
+              Expr: &ast.IntervalLiteralSingle{
                 Interval: 542,
                 Value:    &ast.IntLiteral{
                   ValuePos: 551,
@@ -609,7 +609,7 @@ select 1 + 2, 1 - 2,
                   Base:     10,
                   Value:    "5",
                 },
-                DatePartName: &ast.Ident{
+                DateTimePart: &ast.Ident{
                   NamePos: 553,
                   NameEnd: 556,
                   Name:    "day",
@@ -643,7 +643,7 @@ select 1 + 2, 1 - 2,
               },
             },
             &ast.ExprArg{
-              Expr: &ast.IntervalLiteral{
+              Expr: &ast.IntervalLiteralSingle{
                 Interval: 613,
                 Value:    &ast.IntLiteral{
                   ValuePos: 622,
@@ -651,7 +651,7 @@ select 1 + 2, 1 - 2,
                   Base:     10,
                   Value:    "5",
                 },
-                DatePartName: &ast.Ident{
+                DateTimePart: &ast.Ident{
                   NamePos: 624,
                   NameEnd: 628,
                   Name:    "hour",

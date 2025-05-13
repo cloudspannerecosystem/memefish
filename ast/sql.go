@@ -655,8 +655,12 @@ func (t *JSONLiteral) SQL() string {
 	return "JSON " + t.Value.SQL()
 }
 
-func (n *IntervalLiteral) SQL() string {
-	return "INTERVAL " + n.Value.SQL() + " " + n.DatePartName.SQL() + sqlOpt(" TO ", n.DatePartNameTo, "")
+func (n *IntervalLiteralSingle) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + n.DateTimePart.SQL()
+}
+
+func (n *IntervalLiteralRange) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + n.StartingDateTimePart.SQL() + " TO " + n.EndingDateTimePart.SQL()
 }
 
 // ================================================================================

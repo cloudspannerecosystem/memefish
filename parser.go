@@ -2481,22 +2481,35 @@ func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
 	}
 }
 
-func (p *Parser) parseIntervalLiteral() *ast.IntervalLiteral {
+func (p *Parser) parseIntervalLiteral() ast.Expr {
 	interval := p.expect("INTERVAL").Pos
 	expr := p.parseExpr()
-	unit := p.parseIdent()
+	switch e := expr.(type) {
+	case ast.IntValue:
+		unit := p.parseIdent()
 
-	var unitTo *ast.Ident
-	if p.Token.Kind == "TO" {
-		p.nextToken()
-		unitTo = p.parseIdent()
-	}
+		return &ast.IntervalLiteralSingle{
+			Interval:     interval,
+			Value:        e,
+			DateTimePart: unit,
+		}
+	case *ast.StringLiteral:
+		unit := p.parseIdent()
 
-	return &ast.IntervalLiteral{
-		Interval:       interval,
-		Value:          expr,
-		DatePartName:   unit,
-		DatePartNameTo: unitTo,
+		var unitTo *ast.Ident
+		if p.Token.Kind == "TO" {
+			p.nextToken()
+			unitTo = p.parseIdent()
+		}
+
+		return &ast.IntervalLiteralRange{
+			Interval:             interval,
+			Value:                e,
+			StartingDateTimePart: unit,
+			EndingDateTimePart:   unitTo,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expect int64_expression or datetime_parts_string, but: %v`, p.Token.Kind))
 	}
 }
 
