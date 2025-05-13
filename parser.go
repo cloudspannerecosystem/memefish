@@ -2484,6 +2484,8 @@ func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
 func (p *Parser) parseIntervalLiteral() ast.Expr {
 	interval := p.expect("INTERVAL").Pos
 	expr := p.parseExpr()
+
+	// string parameter is not supported, so ast.Param will be caught as ast.IntValue.
 	switch e := expr.(type) {
 	case ast.IntValue:
 		unit := p.parseIdent()
@@ -2494,19 +2496,19 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 			DateTimePart: unit,
 		}
 	case *ast.StringLiteral:
-		unit := p.parseIdent()
+		starting := p.parseIdent()
 
-		var unitTo *ast.Ident
+		var ending *ast.Ident
 		if p.Token.Kind == "TO" {
 			p.nextToken()
-			unitTo = p.parseIdent()
+			ending = p.parseIdent()
 		}
 
 		return &ast.IntervalLiteralRange{
 			Interval:             interval,
 			Value:                e,
-			StartingDateTimePart: unit,
-			EndingDateTimePart:   unitTo,
+			StartingDateTimePart: starting,
+			EndingDateTimePart:   ending,
 		}
 	default:
 		panic(p.errorfAtToken(&p.Token, `expect int64_expression or datetime_parts_string, but: %v`, p.Token.Kind))
