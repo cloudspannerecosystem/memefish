@@ -2586,7 +2586,7 @@ func (p *Parser) parseType() (t ast.Type) {
 	}()
 
 	switch p.Token.Kind {
-	case token.TokenIdent:
+	case token.TokenIdent, "INTERVAL":
 		if !p.lookaheadSimpleType() {
 			return p.parseNamedType()
 		}
@@ -2612,9 +2612,20 @@ var simpleTypes = []string{
 	"BYTES",
 	"JSON",
 	"TOKENLIST",
+	"INTERVAL",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
+	// Only INTERVAL is a keyword.
+	if p.Token.Kind == "INTERVAL" {
+		pos := p.expect("INTERVAL").Pos
+
+		return &ast.SimpleType{
+			NamePos: pos,
+			Name:    ast.IntervalTypeName,
+		}
+	}
+
 	id := p.expect(token.TokenIdent)
 	for _, typeName := range simpleTypes {
 		if id.IsIdent(typeName) {
@@ -2812,10 +2823,14 @@ func (p *Parser) parseFieldType() *ast.StructField {
 }
 
 func (p *Parser) lookaheadType() bool {
-	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
+	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "INTERVAL" || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
 }
 
 func (p *Parser) lookaheadSimpleType() bool {
+	if p.Token.Kind == "INTERVAL" {
+		return true
+	}
+
 	if p.Token.Kind != token.TokenIdent {
 		return false
 	}

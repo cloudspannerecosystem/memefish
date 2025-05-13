@@ -1,4 +1,4 @@
---- interval.sql
+--- select_interval_values.sql
 SELECT
   -- Single datetime part
   INTERVAL 1 YEAR,
@@ -36,7 +36,12 @@ SELECT
   INTERVAL '1 5:30' DAY TO MINUTE,
   INTERVAL '-23-2 10 -12:30' YEAR TO MINUTE,
   INTERVAL '-0-2 10 0:30' MONTH TO MINUTE,
-  INTERVAL '-30:10' MINUTE TO SECOND
+  INTERVAL '-30:10' MINUTE TO SECOND,
+  CAST("P1D" AS INTERVAL),
+  ARRAY<INTERVAL>[],
+  ARRAY<INTERVAL>[INTERVAL 1 DAY],
+  STRUCT<value INTERVAL>(INTERVAL 1 DAY),
+
 
 --- AST
 &ast.QueryStatement{
@@ -672,9 +677,97 @@ SELECT
           },
         },
       },
+      &ast.ExprSelectItem{
+        Expr: &ast.CastExpr{
+          Cast:   1159,
+          Rparen: 1181,
+          Expr:   &ast.StringLiteral{
+            ValuePos: 1164,
+            ValueEnd: 1169,
+            Value:    "P1D",
+          },
+          Type: &ast.SimpleType{
+            NamePos: 1173,
+            Name:    "INTERVAL",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  1186,
+          Lbrack: 1201,
+          Rbrack: 1202,
+          Type:   &ast.SimpleType{
+            NamePos: 1192,
+            Name:    "INTERVAL",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.ArrayLiteral{
+          Array:  1207,
+          Lbrack: 1222,
+          Rbrack: 1237,
+          Type:   &ast.SimpleType{
+            NamePos: 1213,
+            Name:    "INTERVAL",
+          },
+          Values: []ast.Expr{
+            &ast.IntervalLiteralSingle{
+              Interval: 1223,
+              Value:    &ast.IntLiteral{
+                ValuePos: 1232,
+                ValueEnd: 1233,
+                Base:     10,
+                Value:    "1",
+              },
+              DateTimePart: &ast.Ident{
+                NamePos: 1234,
+                NameEnd: 1237,
+                Name:    "DAY",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.TypedStructLiteral{
+          Struct: 1242,
+          Rparen: 1279,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 1249,
+                NameEnd: 1254,
+                Name:    "value",
+              },
+              Type: &ast.SimpleType{
+                NamePos: 1255,
+                Name:    "INTERVAL",
+              },
+            },
+          },
+          Values: []ast.Expr{
+            &ast.IntervalLiteralSingle{
+              Interval: 1265,
+              Value:    &ast.IntLiteral{
+                ValuePos: 1274,
+                ValueEnd: 1275,
+                Base:     10,
+                Value:    "1",
+              },
+              DateTimePart: &ast.Ident{
+                NamePos: 1276,
+                NameEnd: 1279,
+                Name:    "DAY",
+              },
+            },
+          },
+        },
+      },
     },
   },
 }
 
 --- SQL
-SELECT INTERVAL 1 YEAR, INTERVAL -5 DAY, INTERVAL 90 SECOND, INTERVAL 1 QUARTER, INTERVAL 6 WEEK, INTERVAL 25 HOUR, INTERVAL 1500 MINUTE, INTERVAL 90000 SECOND, INTERVAL 90 MINUTE, INTERVAL -25 MONTH, INTERVAL -90 MINUTE, INTERVAL @param YEAR, INTERVAL "2-11" YEAR TO MONTH, INTERVAL "2-11 28" YEAR TO DAY, INTERVAL "2-11 28 16" YEAR TO HOUR, INTERVAL "2-11 28 16:15" YEAR TO MINUTE, INTERVAL "2-11 28 16:15:14" YEAR TO SECOND, INTERVAL "11 28" MONTH TO DAY, INTERVAL "11 28 16" MONTH TO HOUR, INTERVAL "11 28 16:15" MONTH TO MINUTE, INTERVAL "11 28 16:15:14" MONTH TO SECOND, INTERVAL "28 16" DAY TO HOUR, INTERVAL "28 16:15" DAY TO MINUTE, INTERVAL "28 16:15:14" DAY TO SECOND, INTERVAL "16:15" HOUR TO MINUTE, INTERVAL "16:15:14" HOUR TO SECOND, INTERVAL "15:14" MINUTE TO SECOND, INTERVAL "10:20:30.52" HOUR TO SECOND, INTERVAL "1-2" YEAR TO MONTH, INTERVAL "1 -15" MONTH TO DAY, INTERVAL "1 5:30" DAY TO MINUTE, INTERVAL "-23-2 10 -12:30" YEAR TO MINUTE, INTERVAL "-0-2 10 0:30" MONTH TO MINUTE, INTERVAL "-30:10" MINUTE TO SECOND
+SELECT INTERVAL 1 YEAR, INTERVAL -5 DAY, INTERVAL 90 SECOND, INTERVAL 1 QUARTER, INTERVAL 6 WEEK, INTERVAL 25 HOUR, INTERVAL 1500 MINUTE, INTERVAL 90000 SECOND, INTERVAL 90 MINUTE, INTERVAL -25 MONTH, INTERVAL -90 MINUTE, INTERVAL @param YEAR, INTERVAL "2-11" YEAR TO MONTH, INTERVAL "2-11 28" YEAR TO DAY, INTERVAL "2-11 28 16" YEAR TO HOUR, INTERVAL "2-11 28 16:15" YEAR TO MINUTE, INTERVAL "2-11 28 16:15:14" YEAR TO SECOND, INTERVAL "11 28" MONTH TO DAY, INTERVAL "11 28 16" MONTH TO HOUR, INTERVAL "11 28 16:15" MONTH TO MINUTE, INTERVAL "11 28 16:15:14" MONTH TO SECOND, INTERVAL "28 16" DAY TO HOUR, INTERVAL "28 16:15" DAY TO MINUTE, INTERVAL "28 16:15:14" DAY TO SECOND, INTERVAL "16:15" HOUR TO MINUTE, INTERVAL "16:15:14" HOUR TO SECOND, INTERVAL "15:14" MINUTE TO SECOND, INTERVAL "10:20:30.52" HOUR TO SECOND, INTERVAL "1-2" YEAR TO MONTH, INTERVAL "1 -15" MONTH TO DAY, INTERVAL "1 5:30" DAY TO MINUTE, INTERVAL "-23-2 10 -12:30" YEAR TO MINUTE, INTERVAL "-0-2 10 0:30" MONTH TO MINUTE, INTERVAL "-30:10" MINUTE TO SECOND, CAST("P1D" AS INTERVAL), ARRAY<INTERVAL>[], ARRAY<INTERVAL>[INTERVAL 1 DAY], STRUCT<value INTERVAL>(INTERVAL 1 DAY)
