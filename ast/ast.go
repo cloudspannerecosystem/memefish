@@ -1265,7 +1265,7 @@ type TableSample struct {
 
 // TableSampleSize is size part of TABLESAMPLE clause.
 //
-//	({{.Value | sql}} {{.DatePartName}})
+//	({{.Value | sql}} {{.Unit}})
 type TableSampleSize struct {
 	// pos = Lparen
 	// end = Rparen + 1
