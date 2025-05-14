@@ -37,6 +37,8 @@ SELECT
   INTERVAL '-23-2 10 -12:30' YEAR TO MINUTE,
   INTERVAL '-0-2 10 0:30' MONTH TO MINUTE,
   INTERVAL '-30:10' MINUTE TO SECOND,
+
+  -- INTERVAL as typename
   CAST("P1D" AS INTERVAL),
   ARRAY<INTERVAL>[],
   ARRAY<INTERVAL>[INTERVAL 1 DAY],
@@ -679,51 +681,51 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.CastExpr{
-          Cast:   1159,
-          Rparen: 1181,
+          Cast:   1186,
+          Rparen: 1208,
           Expr:   &ast.StringLiteral{
-            ValuePos: 1164,
-            ValueEnd: 1169,
+            ValuePos: 1191,
+            ValueEnd: 1196,
             Value:    "P1D",
           },
           Type: &ast.SimpleType{
-            NamePos: 1173,
+            NamePos: 1200,
             Name:    "INTERVAL",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  1186,
-          Lbrack: 1201,
-          Rbrack: 1202,
+          Array:  1213,
+          Lbrack: 1228,
+          Rbrack: 1229,
           Type:   &ast.SimpleType{
-            NamePos: 1192,
+            NamePos: 1219,
             Name:    "INTERVAL",
           },
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.ArrayLiteral{
-          Array:  1207,
-          Lbrack: 1222,
-          Rbrack: 1237,
+          Array:  1234,
+          Lbrack: 1249,
+          Rbrack: 1264,
           Type:   &ast.SimpleType{
-            NamePos: 1213,
+            NamePos: 1240,
             Name:    "INTERVAL",
           },
           Values: []ast.Expr{
             &ast.IntervalLiteralSingle{
-              Interval: 1223,
+              Interval: 1250,
               Value:    &ast.IntLiteral{
-                ValuePos: 1232,
-                ValueEnd: 1233,
+                ValuePos: 1259,
+                ValueEnd: 1260,
                 Base:     10,
                 Value:    "1",
               },
               DateTimePart: &ast.Ident{
-                NamePos: 1234,
-                NameEnd: 1237,
+                NamePos: 1261,
+                NameEnd: 1264,
                 Name:    "DAY",
               },
             },
@@ -732,33 +734,33 @@ SELECT
       },
       &ast.ExprSelectItem{
         Expr: &ast.TypedStructLiteral{
-          Struct: 1242,
-          Rparen: 1279,
+          Struct: 1269,
+          Rparen: 1306,
           Fields: []*ast.StructField{
             &ast.StructField{
               Ident: &ast.Ident{
-                NamePos: 1249,
-                NameEnd: 1254,
+                NamePos: 1276,
+                NameEnd: 1281,
                 Name:    "value",
               },
               Type: &ast.SimpleType{
-                NamePos: 1255,
+                NamePos: 1282,
                 Name:    "INTERVAL",
               },
             },
           },
           Values: []ast.Expr{
             &ast.IntervalLiteralSingle{
-              Interval: 1265,
+              Interval: 1292,
               Value:    &ast.IntLiteral{
-                ValuePos: 1274,
-                ValueEnd: 1275,
+                ValuePos: 1301,
+                ValueEnd: 1302,
                 Base:     10,
                 Value:    "1",
               },
               DateTimePart: &ast.Ident{
-                NamePos: 1276,
-                NameEnd: 1279,
+                NamePos: 1303,
+                NameEnd: 1306,
                 Name:    "DAY",
               },
             },
