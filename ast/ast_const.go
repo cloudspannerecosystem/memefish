@@ -153,9 +153,10 @@ const (
 )
 
 // DateTimePart is used for:
-//	- EXTRACT for DATE, TIMESTAMP, INTERVAL
-//	- INTERVAL literals,
-//	- DATE_TRUNC, TIMESTAMP_TRUNC
+//
+//	- INTERVAL literals
+//	- EXTRACT for DATE, TIMESTAMP, INTERVAL (TODO)
+//	- DATE_TRUNC, TIMESTAMP_TRUNC (TODO)
 type DateTimePart string
 
 // Definition of all enum values (including values not used in Spanner)
