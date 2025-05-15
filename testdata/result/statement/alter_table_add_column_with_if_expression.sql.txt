@@ -82,18 +82,15 @@ ALTER TABLE foo ADD COLUMN expired_at TIMESTAMP AS (IF (status != "OPEN" AND sta
               },
               &ast.ExprArg{
                 Expr: &ast.IntervalLiteralSingle{
-                  Interval: 127,
-                  Value:    &ast.IntLiteral{
+                  Interval:        127,
+                  DateTimePartEnd: 143,
+                  Value:           &ast.IntLiteral{
                     ValuePos: 136,
                     ValueEnd: 139,
                     Base:     10,
                     Value:    "120",
                   },
-                  DateTimePart: &ast.Ident{
-                    NamePos: 140,
-                    NameEnd: 143,
-                    Name:    "DAY",
-                  },
+                  DateTimePart: "DAY",
                 },
               },
             },

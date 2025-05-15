@@ -402,12 +402,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *IntervalLiteralSingle:
-		stack = append(stack, &stackItem{node: wrapNode(n.DateTimePart), visitor: v.Field("DateTimePart")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *IntervalLiteralRange:
-		stack = append(stack, &stackItem{node: wrapNode(n.EndingDateTimePart), visitor: v.Field("EndingDateTimePart")})
-		stack = append(stack, &stackItem{node: wrapNode(n.StartingDateTimePart), visitor: v.Field("StartingDateTimePart")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
 
 	case *NewConstructor:

@@ -2481,6 +2481,41 @@ func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
 	}
 }
 
+var validDateTimePartNames = []ast.DateTimePart{
+	ast.DateTimePartYear,
+	ast.DateTimePartMonth,
+	ast.DateTimePartDay,
+	ast.DateTimePartDayOfWeek,
+	ast.DateTimePartDayOfYear,
+	ast.DateTimePartQuarter,
+	ast.DateTimePartHour,
+	ast.DateTimePartMinute,
+	ast.DateTimePartSecond,
+	ast.DateTimePartMillisecond,
+	ast.DateTimePartMicrosecond,
+	ast.DateTimePartNanosecond,
+	ast.DateTimePartWeek,
+	ast.DateTimePartISOYear,
+	ast.DateTimePartISOWeek,
+	ast.DateTimePartDate,
+	ast.DateTimePartDateTime,
+	ast.DateTimePartTime,
+}
+
+func (p *Parser) parseDateTimePart() (part ast.DateTimePart, pos, end token.Pos) {
+	// Note: This function will support WEEKDAY(weekday) when it is released in Spanner
+
+	ident := p.parseIdent()
+
+	for _, dateTimePart := range validDateTimePartNames {
+		if char.EqualFold(ident.Name, string(dateTimePart)) {
+			return dateTimePart, ident.Pos(), ident.End()
+		}
+	}
+
+	panic(p.errorfAtPosition(ident.Pos(), ident.End(), "invalid date time part: %s", ident.Name))
+}
+
 func (p *Parser) parseIntervalLiteral() ast.Expr {
 	interval := p.expect("INTERVAL").Pos
 	expr := p.parseExpr()
@@ -2488,27 +2523,30 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 	// string parameter is not supported, so ast.Param will be caught as ast.IntValue.
 	switch e := expr.(type) {
 	case ast.IntValue:
-		unit := p.parseIdent()
+		unit, _, end := p.parseDateTimePart()
 
 		return &ast.IntervalLiteralSingle{
-			Interval:     interval,
-			Value:        e,
-			DateTimePart: unit,
+			Interval:        interval,
+			Value:           e,
+			DateTimePart:    unit,
+			DateTimePartEnd: end,
 		}
 	case *ast.StringLiteral:
-		starting := p.parseIdent()
+		starting, _, _ := p.parseDateTimePart()
 
-		var ending *ast.Ident
+		var ending ast.DateTimePart
+		var endingEnd token.Pos
 		if p.Token.Kind == "TO" {
 			p.nextToken()
-			ending = p.parseIdent()
+			ending, _, endingEnd = p.parseDateTimePart()
 		}
 
 		return &ast.IntervalLiteralRange{
-			Interval:             interval,
-			Value:                e,
-			StartingDateTimePart: starting,
-			EndingDateTimePart:   ending,
+			Interval:              interval,
+			Value:                 e,
+			StartingDateTimePart:  starting,
+			EndingDateTimePart:    ending,
+			EndingDateTimePartEnd: endingEnd,
 		}
 	default:
 		panic(p.errorfAtToken(&p.Token, `expect int64_expression or datetime_parts_string, but: %v`, p.Token.Kind))

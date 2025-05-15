@@ -602,18 +602,15 @@ select 1 + 2, 1 - 2,
             },
             &ast.ExprArg{
               Expr: &ast.IntervalLiteralSingle{
-                Interval: 542,
-                Value:    &ast.IntLiteral{
+                Interval:        542,
+                DateTimePartEnd: 556,
+                Value:           &ast.IntLiteral{
                   ValuePos: 551,
                   ValueEnd: 552,
                   Base:     10,
                   Value:    "5",
                 },
-                DateTimePart: &ast.Ident{
-                  NamePos: 553,
-                  NameEnd: 556,
-                  Name:    "day",
-                },
+                DateTimePart: "DAY",
               },
             },
           },
@@ -644,18 +641,15 @@ select 1 + 2, 1 - 2,
             },
             &ast.ExprArg{
               Expr: &ast.IntervalLiteralSingle{
-                Interval: 613,
-                Value:    &ast.IntLiteral{
+                Interval:        613,
+                DateTimePartEnd: 628,
+                Value:           &ast.IntLiteral{
                   ValuePos: 622,
                   ValueEnd: 623,
                   Base:     10,
                   Value:    "5",
                 },
-                DateTimePart: &ast.Ident{
-                  NamePos: 624,
-                  NameEnd: 628,
-                  Name:    "hour",
-                },
+                DateTimePart: "HOUR",
               },
             },
           },
@@ -879,4 +873,4 @@ select 1 + 2, 1 - 2,
 }
 
 --- SQL
-SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 `1`).`1`, NOT NOT TRUE, [1, 2, 3][OFFSET(1)], [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 day), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 hour), 1 IN (1, 2, 3), 2 IN UNNEST([1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), [1] || [2], IF(1 > 1, 1, 2) + 1 AS result
+SELECT 1 + 2, 1 - 2, 1 * 2, 2 / 2, +1 + +1, -1 + -1, +1.2, -3.4, ~1 ^ ~1, 1 ^ 2, 2 & 1, 2 | 1, 1 << 2, 2 >> 1, foo.bar * +foo.bar * -foo.bar, (SELECT 1 `1`).`1`, NOT NOT TRUE, [1, 2, 3][OFFSET(1)], [1, 2, 3][OFFSET(1)], [1, 2, 3][ORDINAL(1)], CASE WHEN 1 = 1 THEN "1 = 1" ELSE "else" END, CASE 1 WHEN 1 THEN "1" WHEN 2 THEN "2" ELSE "other" END, date_add(DATE "2019-09-01", INTERVAL 5 DAY), timestamp_add(TIMESTAMP "2019-09-01 08:11:22", INTERVAL 5 HOUR), 1 IN (1, 2, 3), 2 IN UNNEST([1, 2, 3]), 3 IN (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3), [1] || [2], IF(1 > 1, 1, 2) + 1 AS result

@@ -51,632 +51,442 @@ SELECT
     Results: []ast.SelectItem{
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 35,
-          Value:    &ast.IntLiteral{
+          Interval:        35,
+          DateTimePartEnd: 50,
+          Value:           &ast.IntLiteral{
             ValuePos: 44,
             ValueEnd: 45,
             Base:     10,
             Value:    "1",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 46,
-            NameEnd: 50,
-            Name:    "YEAR",
-          },
+          DateTimePart: "YEAR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 54,
-          Value:    &ast.IntLiteral{
+          Interval:        54,
+          DateTimePartEnd: 69,
+          Value:           &ast.IntLiteral{
             ValuePos: 63,
             ValueEnd: 65,
             Base:     10,
             Value:    "-5",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 66,
-            NameEnd: 69,
-            Name:    "DAY",
-          },
+          DateTimePart: "DAY",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 73,
-          Value:    &ast.IntLiteral{
+          Interval:        73,
+          DateTimePartEnd: 91,
+          Value:           &ast.IntLiteral{
             ValuePos: 82,
             ValueEnd: 84,
             Base:     10,
             Value:    "90",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 85,
-            NameEnd: 91,
-            Name:    "SECOND",
-          },
+          DateTimePart: "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 95,
-          Value:    &ast.IntLiteral{
+          Interval:        95,
+          DateTimePartEnd: 113,
+          Value:           &ast.IntLiteral{
             ValuePos: 104,
             ValueEnd: 105,
             Base:     10,
             Value:    "1",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 106,
-            NameEnd: 113,
-            Name:    "QUARTER",
-          },
+          DateTimePart: "QUARTER",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 117,
-          Value:    &ast.IntLiteral{
+          Interval:        117,
+          DateTimePartEnd: 132,
+          Value:           &ast.IntLiteral{
             ValuePos: 126,
             ValueEnd: 127,
             Base:     10,
             Value:    "6",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 128,
-            NameEnd: 132,
-            Name:    "WEEK",
-          },
+          DateTimePart: "WEEK",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 136,
-          Value:    &ast.IntLiteral{
+          Interval:        136,
+          DateTimePartEnd: 152,
+          Value:           &ast.IntLiteral{
             ValuePos: 145,
             ValueEnd: 147,
             Base:     10,
             Value:    "25",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 148,
-            NameEnd: 152,
-            Name:    "HOUR",
-          },
+          DateTimePart: "HOUR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 156,
-          Value:    &ast.IntLiteral{
+          Interval:        156,
+          DateTimePartEnd: 176,
+          Value:           &ast.IntLiteral{
             ValuePos: 165,
             ValueEnd: 169,
             Base:     10,
             Value:    "1500",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 170,
-            NameEnd: 176,
-            Name:    "MINUTE",
-          },
+          DateTimePart: "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 180,
-          Value:    &ast.IntLiteral{
+          Interval:        180,
+          DateTimePartEnd: 201,
+          Value:           &ast.IntLiteral{
             ValuePos: 189,
             ValueEnd: 194,
             Base:     10,
             Value:    "90000",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 195,
-            NameEnd: 201,
-            Name:    "SECOND",
-          },
+          DateTimePart: "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 205,
-          Value:    &ast.IntLiteral{
+          Interval:        205,
+          DateTimePartEnd: 223,
+          Value:           &ast.IntLiteral{
             ValuePos: 214,
             ValueEnd: 216,
             Base:     10,
             Value:    "90",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 217,
-            NameEnd: 223,
-            Name:    "MINUTE",
-          },
+          DateTimePart: "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 227,
-          Value:    &ast.IntLiteral{
+          Interval:        227,
+          DateTimePartEnd: 245,
+          Value:           &ast.IntLiteral{
             ValuePos: 236,
             ValueEnd: 239,
             Base:     10,
             Value:    "-25",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 240,
-            NameEnd: 245,
-            Name:    "MONTH",
-          },
+          DateTimePart: "MONTH",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 249,
-          Value:    &ast.IntLiteral{
+          Interval:        249,
+          DateTimePartEnd: 268,
+          Value:           &ast.IntLiteral{
             ValuePos: 258,
             ValueEnd: 261,
             Base:     10,
             Value:    "-90",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 262,
-            NameEnd: 268,
-            Name:    "MINUTE",
-          },
+          DateTimePart: "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralSingle{
-          Interval: 272,
-          Value:    &ast.Param{
+          Interval:        272,
+          DateTimePartEnd: 292,
+          Value:           &ast.Param{
             Atmark: 281,
             Name:   "param",
           },
-          DateTimePart: &ast.Ident{
-            NamePos: 288,
-            NameEnd: 292,
-            Name:    "YEAR",
-          },
+          DateTimePart: "YEAR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 322,
-          Value:    &ast.StringLiteral{
+          Interval:              322,
+          EndingDateTimePartEnd: 351,
+          Value:                 &ast.StringLiteral{
             ValuePos: 331,
             ValueEnd: 337,
             Value:    "2-11",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 338,
-            NameEnd: 342,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 346,
-            NameEnd: 351,
-            Name:    "MONTH",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "MONTH",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 355,
-          Value:    &ast.StringLiteral{
+          Interval:              355,
+          EndingDateTimePartEnd: 385,
+          Value:                 &ast.StringLiteral{
             ValuePos: 364,
             ValueEnd: 373,
             Value:    "2-11 28",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 374,
-            NameEnd: 378,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 382,
-            NameEnd: 385,
-            Name:    "DAY",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "DAY",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 389,
-          Value:    &ast.StringLiteral{
+          Interval:              389,
+          EndingDateTimePartEnd: 423,
+          Value:                 &ast.StringLiteral{
             ValuePos: 398,
             ValueEnd: 410,
             Value:    "2-11 28 16",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 411,
-            NameEnd: 415,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 419,
-            NameEnd: 423,
-            Name:    "HOUR",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "HOUR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 427,
-          Value:    &ast.StringLiteral{
+          Interval:              427,
+          EndingDateTimePartEnd: 466,
+          Value:                 &ast.StringLiteral{
             ValuePos: 436,
             ValueEnd: 451,
             Value:    "2-11 28 16:15",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 452,
-            NameEnd: 456,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 460,
-            NameEnd: 466,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 470,
-          Value:    &ast.StringLiteral{
+          Interval:              470,
+          EndingDateTimePartEnd: 512,
+          Value:                 &ast.StringLiteral{
             ValuePos: 479,
             ValueEnd: 497,
             Value:    "2-11 28 16:15:14",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 498,
-            NameEnd: 502,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 506,
-            NameEnd: 512,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 516,
-          Value:    &ast.StringLiteral{
+          Interval:              516,
+          EndingDateTimePartEnd: 545,
+          Value:                 &ast.StringLiteral{
             ValuePos: 525,
             ValueEnd: 532,
             Value:    "11 28",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 533,
-            NameEnd: 538,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 542,
-            NameEnd: 545,
-            Name:    "DAY",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "DAY",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 549,
-          Value:    &ast.StringLiteral{
+          Interval:              549,
+          EndingDateTimePartEnd: 582,
+          Value:                 &ast.StringLiteral{
             ValuePos: 558,
             ValueEnd: 568,
             Value:    "11 28 16",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 569,
-            NameEnd: 574,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 578,
-            NameEnd: 582,
-            Name:    "HOUR",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "HOUR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 586,
-          Value:    &ast.StringLiteral{
+          Interval:              586,
+          EndingDateTimePartEnd: 624,
+          Value:                 &ast.StringLiteral{
             ValuePos: 595,
             ValueEnd: 608,
             Value:    "11 28 16:15",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 609,
-            NameEnd: 614,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 618,
-            NameEnd: 624,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 628,
-          Value:    &ast.StringLiteral{
+          Interval:              628,
+          EndingDateTimePartEnd: 669,
+          Value:                 &ast.StringLiteral{
             ValuePos: 637,
             ValueEnd: 653,
             Value:    "11 28 16:15:14",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 654,
-            NameEnd: 659,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 663,
-            NameEnd: 669,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 673,
-          Value:    &ast.StringLiteral{
+          Interval:              673,
+          EndingDateTimePartEnd: 701,
+          Value:                 &ast.StringLiteral{
             ValuePos: 682,
             ValueEnd: 689,
             Value:    "28 16",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 690,
-            NameEnd: 693,
-            Name:    "DAY",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 697,
-            NameEnd: 701,
-            Name:    "HOUR",
-          },
+          StartingDateTimePart: "DAY",
+          EndingDateTimePart:   "HOUR",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 705,
-          Value:    &ast.StringLiteral{
+          Interval:              705,
+          EndingDateTimePartEnd: 738,
+          Value:                 &ast.StringLiteral{
             ValuePos: 714,
             ValueEnd: 724,
             Value:    "28 16:15",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 725,
-            NameEnd: 728,
-            Name:    "DAY",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 732,
-            NameEnd: 738,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "DAY",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 742,
-          Value:    &ast.StringLiteral{
+          Interval:              742,
+          EndingDateTimePartEnd: 778,
+          Value:                 &ast.StringLiteral{
             ValuePos: 751,
             ValueEnd: 764,
             Value:    "28 16:15:14",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 765,
-            NameEnd: 768,
-            Name:    "DAY",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 772,
-            NameEnd: 778,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "DAY",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 782,
-          Value:    &ast.StringLiteral{
+          Interval:              782,
+          EndingDateTimePartEnd: 813,
+          Value:                 &ast.StringLiteral{
             ValuePos: 791,
             ValueEnd: 798,
             Value:    "16:15",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 799,
-            NameEnd: 803,
-            Name:    "HOUR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 807,
-            NameEnd: 813,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "HOUR",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 817,
-          Value:    &ast.StringLiteral{
+          Interval:              817,
+          EndingDateTimePartEnd: 851,
+          Value:                 &ast.StringLiteral{
             ValuePos: 826,
             ValueEnd: 836,
             Value:    "16:15:14",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 837,
-            NameEnd: 841,
-            Name:    "HOUR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 845,
-            NameEnd: 851,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "HOUR",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 855,
-          Value:    &ast.StringLiteral{
+          Interval:              855,
+          EndingDateTimePartEnd: 888,
+          Value:                 &ast.StringLiteral{
             ValuePos: 864,
             ValueEnd: 871,
             Value:    "15:14",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 872,
-            NameEnd: 878,
-            Name:    "MINUTE",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 882,
-            NameEnd: 888,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "MINUTE",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 892,
-          Value:    &ast.StringLiteral{
+          Interval:              892,
+          EndingDateTimePartEnd: 929,
+          Value:                 &ast.StringLiteral{
             ValuePos: 901,
             ValueEnd: 914,
             Value:    "10:20:30.52",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 915,
-            NameEnd: 919,
-            Name:    "HOUR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 923,
-            NameEnd: 929,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "HOUR",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 933,
-          Value:    &ast.StringLiteral{
+          Interval:              933,
+          EndingDateTimePartEnd: 961,
+          Value:                 &ast.StringLiteral{
             ValuePos: 942,
             ValueEnd: 947,
             Value:    "1-2",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 948,
-            NameEnd: 952,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 956,
-            NameEnd: 961,
-            Name:    "MONTH",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "MONTH",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 965,
-          Value:    &ast.StringLiteral{
+          Interval:              965,
+          EndingDateTimePartEnd: 994,
+          Value:                 &ast.StringLiteral{
             ValuePos: 974,
             ValueEnd: 981,
             Value:    "1 -15",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 982,
-            NameEnd: 987,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 991,
-            NameEnd: 994,
-            Name:    "DAY",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "DAY",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 998,
-          Value:    &ast.StringLiteral{
+          Interval:              998,
+          EndingDateTimePartEnd: 1029,
+          Value:                 &ast.StringLiteral{
             ValuePos: 1007,
             ValueEnd: 1015,
             Value:    "1 5:30",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 1016,
-            NameEnd: 1019,
-            Name:    "DAY",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 1023,
-            NameEnd: 1029,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "DAY",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 1033,
-          Value:    &ast.StringLiteral{
+          Interval:              1033,
+          EndingDateTimePartEnd: 1074,
+          Value:                 &ast.StringLiteral{
             ValuePos: 1042,
             ValueEnd: 1059,
             Value:    "-23-2 10 -12:30",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 1060,
-            NameEnd: 1064,
-            Name:    "YEAR",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 1068,
-            NameEnd: 1074,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "YEAR",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 1078,
-          Value:    &ast.StringLiteral{
+          Interval:              1078,
+          EndingDateTimePartEnd: 1117,
+          Value:                 &ast.StringLiteral{
             ValuePos: 1087,
             ValueEnd: 1101,
             Value:    "-0-2 10 0:30",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 1102,
-            NameEnd: 1107,
-            Name:    "MONTH",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 1111,
-            NameEnd: 1117,
-            Name:    "MINUTE",
-          },
+          StartingDateTimePart: "MONTH",
+          EndingDateTimePart:   "MINUTE",
         },
       },
       &ast.ExprSelectItem{
         Expr: &ast.IntervalLiteralRange{
-          Interval: 1121,
-          Value:    &ast.StringLiteral{
+          Interval:              1121,
+          EndingDateTimePartEnd: 1155,
+          Value:                 &ast.StringLiteral{
             ValuePos: 1130,
             ValueEnd: 1138,
             Value:    "-30:10",
           },
-          StartingDateTimePart: &ast.Ident{
-            NamePos: 1139,
-            NameEnd: 1145,
-            Name:    "MINUTE",
-          },
-          EndingDateTimePart: &ast.Ident{
-            NamePos: 1149,
-            NameEnd: 1155,
-            Name:    "SECOND",
-          },
+          StartingDateTimePart: "MINUTE",
+          EndingDateTimePart:   "SECOND",
         },
       },
       &ast.ExprSelectItem{
@@ -716,18 +526,15 @@ SELECT
           },
           Values: []ast.Expr{
             &ast.IntervalLiteralSingle{
-              Interval: 1250,
-              Value:    &ast.IntLiteral{
+              Interval:        1250,
+              DateTimePartEnd: 1264,
+              Value:           &ast.IntLiteral{
                 ValuePos: 1259,
                 ValueEnd: 1260,
                 Base:     10,
                 Value:    "1",
               },
-              DateTimePart: &ast.Ident{
-                NamePos: 1261,
-                NameEnd: 1264,
-                Name:    "DAY",
-              },
+              DateTimePart: "DAY",
             },
           },
         },
@@ -751,18 +558,15 @@ SELECT
           },
           Values: []ast.Expr{
             &ast.IntervalLiteralSingle{
-              Interval: 1292,
-              Value:    &ast.IntLiteral{
+              Interval:        1292,
+              DateTimePartEnd: 1306,
+              Value:           &ast.IntLiteral{
                 ValuePos: 1301,
                 ValueEnd: 1302,
                 Base:     10,
                 Value:    "1",
               },
-              DateTimePart: &ast.Ident{
-                NamePos: 1303,
-                NameEnd: 1306,
-                Name:    "DAY",
-              },
+              DateTimePart: "DAY",
             },
           },
         },

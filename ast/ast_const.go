@@ -151,3 +151,41 @@ const (
 	InsertOrTypeUpdate InsertOrType = "UPDATE"
 	InsertOrTypeIgnore InsertOrType = "IGNORE"
 )
+
+// DateTimePart is used for:
+//	- EXTRACT for DATE, TIMESTAMP, INTERVAL
+//	- INTERVAL literals,
+//	- DATE_TRUNC, TIMESTAMP_TRUNC
+type DateTimePart string
+
+// Definition of all enum values (including values not used in Spanner)
+// https://github.com/google/zetasql/blob/2025.03.1/zetasql/public/functions/datetime.proto#L26
+const (
+	DateTimePartYear        DateTimePart = "YEAR"
+	DateTimePartMonth       DateTimePart = "MONTH"
+	DateTimePartDay         DateTimePart = "DAY"
+	DateTimePartDayOfWeek   DateTimePart = "DAYOFWEEK"
+	DateTimePartDayOfYear   DateTimePart = "DAYOFYEAR"
+	DateTimePartQuarter     DateTimePart = "QUARTER"
+	DateTimePartHour        DateTimePart = "HOUR"
+	DateTimePartMinute      DateTimePart = "MINUTE"
+	DateTimePartSecond      DateTimePart = "SECOND"
+	DateTimePartMillisecond DateTimePart = "MILLISECOND"
+	DateTimePartMicrosecond DateTimePart = "MICROSECOND"
+	DateTimePartNanosecond  DateTimePart = "NANOSECOND"
+	DateTimePartWeek        DateTimePart = "WEEK"
+	DateTimePartISOYear     DateTimePart = "ISOYEAR"
+	DateTimePartISOWeek     DateTimePart = "ISOWEEK"
+	DateTimePartDate        DateTimePart = "DATE"
+
+	// Not yet used in Spanner?
+
+	DateTimePartDateTime      DateTimePart = "DATETIME"
+	DateTimePartTime          DateTimePart = "TIME"
+	DateTimePartWeekMonday    DateTimePart = "WEEK(MONDAY)"
+	DateTimePartWeekTuesday   DateTimePart = "WEEK(TUESDAY)"
+	DateTimePartWeekWednesday DateTimePart = "WEEK(WEDNESDAY)"
+	DateTimePartWeekThursday  DateTimePart = "WEEK(THURSDAY)"
+	DateTimePartWeekFriday    DateTimePart = "WEEK(FRIDAY)"
+	DateTimePartWeekSaturday  DateTimePart = "WEEK(SATURDAY)"
+)
