@@ -870,6 +870,8 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Elements), visitor: v.Field("Elements")})
 
 	case *PropertyGraphElement:
+		stack = append(stack, &stackItem{node: wrapNode(n.DynamicProperties), visitor: v.Field("DynamicProperties")})
+		stack = append(stack, &stackItem{node: wrapNode(n.DynamicLabel), visitor: v.Field("DynamicLabel")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Keys), visitor: v.Field("Keys")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
@@ -927,6 +929,12 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *PropertyGraphDerivedProperty:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *PropertyGraphDynamicLabel:
+		stack = append(stack, &stackItem{node: wrapNode(n.ColumnName), visitor: v.Field("ColumnName")})
+
+	case *PropertyGraphDynamicProperties:
+		stack = append(stack, &stackItem{node: wrapNode(n.ColumnName), visitor: v.Field("ColumnName")})
 
 	case *DropPropertyGraph:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})

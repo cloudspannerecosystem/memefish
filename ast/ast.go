@@ -3859,14 +3859,17 @@ type PropertyGraphElementList struct {
 //
 //	{{.Name | sql}} {{if .Alias | isnil | not)}}AS {{.Alias | sql}}{{end}}
 //	{{.Keys | sqlOpt}} {{.Properties | sqlOpt}}
+//	{{.DynamicLabel | sqlOpt}} {{.DynamicProperties | sqlOpt}}
 type PropertyGraphElement struct {
 	// pos = Name.pos
-	// end = (Properties ?? Keys ?? Alias ?? Name).end
+	// end = (DynamicProperties ?? DynamicLabel ?? Properties ?? Keys ?? Alias ?? Name).end
 
-	Name       *Ident
-	Alias      *Ident                          // optional
-	Keys       PropertyGraphElementKeys        // optional
-	Properties PropertyGraphLabelsOrProperties // optional
+	Name              *Ident
+	Alias             *Ident                          // optional
+	Keys              PropertyGraphElementKeys        // optional
+	Properties        PropertyGraphLabelsOrProperties // optional
+	DynamicLabel      *PropertyGraphDynamicLabel      // optional
+	DynamicProperties *PropertyGraphDynamicProperties // optional
 }
 
 // PropertyGraphSingleProperties is wrapper node for PropertyGraphElementProperties in PropertyGraphElement.
@@ -4043,6 +4046,32 @@ type PropertyGraphDerivedProperty struct {
 
 	Expr  Expr
 	Alias *Ident // optional
+}
+
+// DynamicLabel represents DYNAMIC LABEL clause in CREATE PROPERTY GRAPH statement.
+//
+//	DYNAMIC LABEL ({{.ColumnName | sql}})
+type PropertyGraphDynamicLabel struct {
+	// pos = Dynamic
+	// end = Rparen + 1
+
+	Dynamic token.Pos // position of "DYNAMIC"
+	Rparen  token.Pos // position of ")"
+
+	ColumnName *Ident
+}
+
+// DynamicProperties represents DYNAMIC PROPERTIES clause in CREATE PROPERTY GRAPH statement.
+//
+//	DYNAMIC PROPERTIES ({{.ColumnName | sql}})
+type PropertyGraphDynamicProperties struct {
+	// pos = Dynamic
+	// end = Rparen + 1
+
+	Dynamic token.Pos // position of "DYNAMIC"
+	Rparen  token.Pos // position of ")"
+
+	ColumnName *Ident
 }
 
 // DropPropertyGraph is DROP PROPERTY GRAPH statement node.

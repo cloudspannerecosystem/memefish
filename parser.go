@@ -4822,12 +4822,16 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 
 	keys := p.tryParsePropertyGraphElementKeys()
 	properties := p.tryParsePropertyGraphLabelsOrProperties()
+	dynamicLabel := p.tryParsePropertyGraphDynamicLabel()
+	dynamicProperties := p.tryParsePropertyGraphDynamicProperties()
 
 	return &ast.PropertyGraphElement{
-		Name:       name,
-		Alias:      alias,
-		Keys:       keys,
-		Properties: properties,
+		Name:              name,
+		Alias:             alias,
+		Keys:              keys,
+		Properties:        properties,
+		DynamicLabel:      dynamicLabel,
+		DynamicProperties: dynamicProperties,
 	}
 }
 
@@ -5037,6 +5041,70 @@ func (p *Parser) tryParsePropertyGraphColumnNameList() *ast.PropertyGraphColumnN
 		return nil
 	}
 	return p.parsePropertyGraphColumnNameList()
+}
+
+func (p *Parser) lookaheadPropertyGraphDynamicLabel() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if !p.Token.IsKeywordLike("DYNAMIC") {
+		return false
+	}
+	p.nextToken()
+
+	return p.Token.IsKeywordLike("LABEL")
+}
+
+func (p *Parser) tryParsePropertyGraphDynamicLabel() *ast.PropertyGraphDynamicLabel {
+	if !p.lookaheadPropertyGraphDynamicLabel() {
+		return nil
+	}
+
+	dynamic := p.expectKeywordLike("DYNAMIC").Pos
+	p.expectKeywordLike("LABEL")
+	p.expect("(")
+	name := p.parseIdent()
+	rparen := p.expect(")").Pos
+
+	return &ast.PropertyGraphDynamicLabel{
+		Dynamic:    dynamic,
+		Rparen:     rparen,
+		ColumnName: name,
+	}
+}
+
+func (p *Parser) lookaheadPropertyGraphDynamicProperties() bool {
+	lexer := p.Lexer.Clone()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if !p.Token.IsKeywordLike("DYNAMIC") {
+		return false
+	}
+	p.nextToken()
+
+	return p.Token.IsKeywordLike("PROPERTIES")
+}
+
+func (p *Parser) tryParsePropertyGraphDynamicProperties() *ast.PropertyGraphDynamicProperties {
+	if !p.lookaheadPropertyGraphDynamicProperties() {
+		return nil
+	}
+
+	dynamic := p.expectKeywordLike("DYNAMIC").Pos
+	p.expectKeywordLike("PROPERTIES")
+	p.expect("(")
+	name := p.parseIdent()
+	rparen := p.expect(")").Pos
+
+	return &ast.PropertyGraphDynamicProperties{
+		Dynamic:    dynamic,
+		Rparen:     rparen,
+		ColumnName: name,
+	}
 }
 
 // end CREATE PROPERTY GRAPH
