@@ -235,6 +235,8 @@ func (DateLiteral) isExpr()           {}
 func (TimestampLiteral) isExpr()      {}
 func (NumericLiteral) isExpr()        {}
 func (JSONLiteral) isExpr()           {}
+func (IntervalLiteralSingle) isExpr() {}
+func (IntervalLiteralRange) isExpr()  {}
 func (NewConstructor) isExpr()        {}
 func (BracedNewConstructor) isExpr()  {}
 func (BracedConstructor) isExpr()     {}
@@ -255,7 +257,6 @@ type Arg interface {
 }
 
 func (ExprArg) isArg()     {}
-func (IntervalArg) isArg() {}
 func (SequenceArg) isArg() {}
 func (LambdaArg) isArg()   {}
 
@@ -1500,19 +1501,6 @@ type ExprArg struct {
 	Expr Expr
 }
 
-// IntervalArg is argument of date function call.
-//
-//	INTERVAL {{.Expr | sql}} {{.Unit | sqlOpt}}
-type IntervalArg struct {
-	// pos = Interval
-	// end = (Unit ?? Expr).end
-
-	Interval token.Pos // position of "INTERVAL" keyword
-
-	Expr Expr
-	Unit *Ident // optional
-}
-
 // SequenceArg is argument of sequence function call.
 //
 //	SEQUENCE {{.Expr | sql}}
@@ -2042,6 +2030,37 @@ type JSONLiteral struct {
 	JSON token.Pos // position of "JSON"
 
 	Value *StringLiteral
+}
+
+// IntervalLiteralSingle represents an interval literal with a single datetime part.
+//
+//	INTERVAL {{.Value}} {{.DateTimePart | sql}}
+type IntervalLiteralSingle struct {
+	// pos = Interval
+	// end = DateTimePartEnd
+
+	Interval        token.Pos // position of "INTERVAL" keyword
+	DateTimePartEnd token.Pos
+
+	Value IntValue
+
+	DateTimePart DateTimePart
+}
+
+// IntervalLiteralRange represents an interval literal with a datetime part range.
+//
+//	INTERVAL {{.Value}} {{.StartingDateTimePart | sql}} TO {{.EndingDateTimePart | sql}}
+type IntervalLiteralRange struct {
+	// pos = Interval
+	// end = EndingDateTimePartEnd
+
+	Interval              token.Pos // position of "INTERVAL" keyword
+	EndingDateTimePartEnd token.Pos
+
+	Value *StringLiteral
+
+	StartingDateTimePart DateTimePart
+	EndingDateTimePart   DateTimePart
 }
 
 // ================================================================================

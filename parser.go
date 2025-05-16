@@ -1777,6 +1777,8 @@ func (p *Parser) parseLit() ast.Expr {
 	// In parser level, it is a valid ast.Expr, but it is semantically valid only in ast.BracedConstructorFieldExpr.
 	case "{":
 		return p.parseBracedConstructor()
+	case "INTERVAL":
+		return p.parseIntervalLiteral()
 	case token.TokenIdent:
 		id := p.Token
 		switch {
@@ -1997,9 +1999,6 @@ func (p *Parser) parseLambdaArg() *ast.LambdaArg {
 }
 
 func (p *Parser) parseArg() ast.Arg {
-	if i := p.tryParseIntervalArg(); i != nil {
-		return i
-	}
 	if s := p.tryParseSequenceArg(); s != nil {
 		return s
 	}
@@ -2007,22 +2006,6 @@ func (p *Parser) parseArg() ast.Arg {
 		return p.parseLambdaArg()
 	}
 	return p.parseExprArg()
-}
-
-func (p *Parser) tryParseIntervalArg() *ast.IntervalArg {
-	if p.Token.Kind != "INTERVAL" {
-		return nil
-	}
-
-	pos := p.Token.Pos
-	p.nextToken()
-	e := p.parseExpr()
-	unit := p.parseIdent()
-	return &ast.IntervalArg{
-		Interval: pos,
-		Expr:     e,
-		Unit:     unit,
-	}
 }
 
 func (p *Parser) tryParseSequenceArg() *ast.SequenceArg {
@@ -2502,6 +2485,78 @@ func (p *Parser) parseJSONLiteral(id token.Token) *ast.JSONLiteral {
 	}
 }
 
+var validDateTimePartNames = []ast.DateTimePart{
+	ast.DateTimePartYear,
+	ast.DateTimePartMonth,
+	ast.DateTimePartDay,
+	ast.DateTimePartDayOfWeek,
+	ast.DateTimePartDayOfYear,
+	ast.DateTimePartQuarter,
+	ast.DateTimePartHour,
+	ast.DateTimePartMinute,
+	ast.DateTimePartSecond,
+	ast.DateTimePartMillisecond,
+	ast.DateTimePartMicrosecond,
+	ast.DateTimePartNanosecond,
+	ast.DateTimePartWeek,
+	ast.DateTimePartISOYear,
+	ast.DateTimePartISOWeek,
+	ast.DateTimePartDate,
+	ast.DateTimePartDateTime,
+	ast.DateTimePartTime,
+}
+
+func (p *Parser) parseDateTimePart() (part ast.DateTimePart, pos, end token.Pos) {
+	// Note: This function will support WEEKDAY(weekday) when it is released in Spanner
+
+	ident := p.parseIdent()
+
+	for _, dateTimePart := range validDateTimePartNames {
+		if char.EqualFold(ident.Name, string(dateTimePart)) {
+			return dateTimePart, ident.Pos(), ident.End()
+		}
+	}
+
+	panic(p.errorfAtPosition(ident.Pos(), ident.End(), "invalid date time part: %s", ident.Name))
+}
+
+func (p *Parser) parseIntervalLiteral() ast.Expr {
+	interval := p.expect("INTERVAL").Pos
+	expr := p.parseExpr()
+
+	// string parameter is not supported, so ast.Param will be caught as ast.IntValue.
+	switch e := expr.(type) {
+	case ast.IntValue:
+		unit, _, end := p.parseDateTimePart()
+
+		return &ast.IntervalLiteralSingle{
+			Interval:        interval,
+			Value:           e,
+			DateTimePart:    unit,
+			DateTimePartEnd: end,
+		}
+	case *ast.StringLiteral:
+		starting, _, _ := p.parseDateTimePart()
+
+		var ending ast.DateTimePart
+		var endingEnd token.Pos
+		if p.Token.Kind == "TO" {
+			p.nextToken()
+			ending, _, endingEnd = p.parseDateTimePart()
+		}
+
+		return &ast.IntervalLiteralRange{
+			Interval:              interval,
+			Value:                 e,
+			StartingDateTimePart:  starting,
+			EndingDateTimePart:    ending,
+			EndingDateTimePartEnd: endingEnd,
+		}
+	default:
+		panic(p.errorfAtToken(&p.Token, `expect int64_expression or datetime_parts_string, but: %v`, p.Token.Kind))
+	}
+}
+
 func (p *Parser) lookaheadSubQuery() bool {
 	lexer := p.Lexer.Clone()
 	defer func() {
@@ -2573,7 +2628,7 @@ func (p *Parser) parseType() (t ast.Type) {
 	}()
 
 	switch p.Token.Kind {
-	case token.TokenIdent:
+	case token.TokenIdent, "INTERVAL":
 		if !p.lookaheadSimpleType() {
 			return p.parseNamedType()
 		}
@@ -2599,9 +2654,20 @@ var simpleTypes = []string{
 	"BYTES",
 	"JSON",
 	"TOKENLIST",
+	"INTERVAL",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
+	// Only INTERVAL is a keyword.
+	if p.Token.Kind == "INTERVAL" {
+		pos := p.expect("INTERVAL").Pos
+
+		return &ast.SimpleType{
+			NamePos: pos,
+			Name:    ast.IntervalTypeName,
+		}
+	}
+
 	id := p.expect(token.TokenIdent)
 	for _, typeName := range simpleTypes {
 		if id.IsIdent(typeName) {
@@ -2799,10 +2865,14 @@ func (p *Parser) parseFieldType() *ast.StructField {
 }
 
 func (p *Parser) lookaheadType() bool {
-	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
+	return p.Token.Kind == token.TokenIdent || p.Token.Kind == "INTERVAL" || p.Token.Kind == "ARRAY" || p.Token.Kind == "STRUCT"
 }
 
 func (p *Parser) lookaheadSimpleType() bool {
+	if p.Token.Kind == "INTERVAL" {
+		return true
+	}
+
 	if p.Token.Kind != token.TokenIdent {
 		return false
 	}
@@ -5117,6 +5187,8 @@ func (p *Parser) parseDropModel(pos token.Pos) *ast.DropModel {
 	}
 }
 
+// Usually, you don't need to update scalarSchemaTypes because NamedType can handle types.
+// It is maintained for compatibility.
 var scalarSchemaTypes = []string{
 	"BOOL",
 	"INT64",

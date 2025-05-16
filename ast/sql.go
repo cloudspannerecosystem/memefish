@@ -509,10 +509,6 @@ func (s *ExprArg) SQL() string {
 	return s.Expr.SQL()
 }
 
-func (i *IntervalArg) SQL() string {
-	return "INTERVAL " + i.Expr.SQL() + sqlOpt(" ", i.Unit, "")
-}
-
 func (s *SequenceArg) SQL() string {
 	return "SEQUENCE " + s.Expr.SQL()
 }
@@ -659,6 +655,14 @@ func (t *NumericLiteral) SQL() string {
 
 func (t *JSONLiteral) SQL() string {
 	return "JSON " + t.Value.SQL()
+}
+
+func (n *IntervalLiteralSingle) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + string(n.DateTimePart)
+}
+
+func (n *IntervalLiteralRange) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + string(n.StartingDateTimePart) + " TO " + string(n.EndingDateTimePart)
 }
 
 // ================================================================================
