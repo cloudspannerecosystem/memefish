@@ -2538,12 +2538,8 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 	case *ast.StringLiteral:
 		starting, _, _ := p.parseDateTimePart()
 
-		var ending ast.DateTimePart
-		var endingEnd token.Pos
-		if p.Token.Kind == "TO" {
-			p.nextToken()
-			ending, _, endingEnd = p.parseDateTimePart()
-		}
+		p.expect("TO")
+		ending, _, endingEnd := p.parseDateTimePart()
 
 		return &ast.IntervalLiteralRange{
 			Interval:              interval,
