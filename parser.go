@@ -24,7 +24,11 @@ func (p *Parser) ParseStatement() (ast.Statement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmt, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return stmt, err
 	}
 
 	return stmt, nil
@@ -39,7 +43,11 @@ func (p *Parser) ParseStatements() ([]ast.Statement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmts, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return stmts, err
 	}
 
 	return stmts, nil
@@ -54,7 +62,11 @@ func (p *Parser) ParseQuery() (*ast.QueryStatement, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return stmt, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return stmt, err
 	}
 
 	return stmt, nil
@@ -69,7 +81,11 @@ func (p *Parser) ParseExpr() (ast.Expr, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return expr, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return expr, err
 	}
 
 	return expr, nil
@@ -84,7 +100,11 @@ func (p *Parser) ParseType() (ast.Type, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return t, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return t, err
 	}
 
 	return t, nil
@@ -99,7 +119,11 @@ func (p *Parser) ParseDDL() (ast.DDL, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return ddl, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return ddl, err
 	}
 
 	return ddl, nil
@@ -114,7 +138,11 @@ func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return ddls, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return ddls, err
 	}
 
 	return ddls, nil
@@ -129,7 +157,11 @@ func (p *Parser) ParseDML() (ast.DML, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return dml, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return dml, err
 	}
 
 	return dml, nil
@@ -144,7 +176,11 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 	}
 
 	if len(p.errors) > 0 {
-		return dmls, MultiError(p.errors)
+		// Reset the errors and allow processing to continue
+		err := MultiError(p.errors)
+		p.errors = nil
+
+		return dmls, err
 	}
 
 	return dmls, nil
