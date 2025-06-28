@@ -187,7 +187,7 @@ func (p *Parser) ParseDMLs() ([]ast.DML, error) {
 }
 
 func (p *Parser) parseStatement() (stmt ast.Statement) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		// Panic on tryParseHint()
 		if r := recover(); r != nil {
@@ -200,7 +200,7 @@ func (p *Parser) parseStatement() (stmt ast.Statement) {
 }
 
 func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			stmt = &ast.BadStatement{
@@ -281,7 +281,7 @@ func parseStatements[T ast.Node](p *Parser, doParse func() T) []T {
 // ================================================================================
 
 func (p *Parser) parseQueryStatement() (stmt *ast.QueryStatement) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			// When parsing is failed on tryParseHint, the result of these methods are discarded
@@ -308,8 +308,8 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
-	switch {
-	case p.Token.Kind == "SELECT":
+	switch p.Token.Kind {
+	case "SELECT":
 		p.nextToken()
 
 		allOrDistinct := p.tryParseAllOrDistinct()
@@ -322,7 +322,7 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			As:            as,
 			Results:       results,
 		}
-	case p.Token.Kind == "WHERE":
+	case "WHERE":
 		p.nextToken()
 		expr := p.parseExpr()
 		return &ast.PipeWhere{
@@ -337,11 +337,7 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 // parsePipeOperators parses pipe operators, which can be empty.
 func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 	var pipeOps []ast.PipeOperator
-	for {
-		if p.Token.Kind != "|>" {
-			break
-		}
-
+	for p.Token.Kind == "|>" {
 		pipeOps = append(pipeOps, p.parsePipeOperator())
 	}
 	return pipeOps
@@ -460,7 +456,7 @@ func (p *Parser) parseCTE() *ast.CTE {
 }
 
 func (p *Parser) parseQueryExpr() (query ast.QueryExpr) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			query = p.handleParseQueryExprError(false, r, l)
@@ -502,7 +498,7 @@ func (p *Parser) parseQueryExpr() (query ast.QueryExpr) {
 
 		right := p.parseSimpleQueryExpr()
 		if c, ok := query.(*ast.CompoundQuery); ok {
-			if !(c.Op == op && c.AllOrDistinct == allOrDistinct) {
+			if c.Op != op || c.AllOrDistinct != allOrDistinct {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
 			c.Queries = append(c.Queries, right)
@@ -538,7 +534,7 @@ func (p *Parser) parseFromQuery() *ast.FromQuery {
 
 // parseSimpleQueryExpr parses simple QueryExpr, which can be wrapped in Query or CompoundQuery.
 func (p *Parser) parseSimpleQueryExpr() (query ast.QueryExpr) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			query = p.handleParseQueryExprError(true, r, l)
@@ -632,7 +628,7 @@ func (p *Parser) parseSelectResults() []ast.SelectItem {
 
 // lookaheadStarModifierExcept is needed to distinct "* EXCEPT (columns)" and "* EXCEPT {ALL|DISTINCT}".
 func (p *Parser) lookaheadStarModifierExcept() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -1336,7 +1332,7 @@ func (p *Parser) parseTableSampleSize() *ast.TableSampleSize {
 // ================================================================================
 
 func (p *Parser) parseExpr() (expr ast.Expr) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			expr = p.handleParseExprError(r, l)
@@ -1702,7 +1698,7 @@ func (p *Parser) parseSelector() ast.Expr {
 	for {
 		switch p.Token.Kind {
 		case ".":
-			lexer := p.Lexer.Clone()
+			lexer := p.Clone()
 			p.nextToken()
 			if p.Token.Kind == "*" { // expr.* case
 				p.Lexer = lexer
@@ -1855,7 +1851,7 @@ func (p *Parser) parseLit() ast.Expr {
 }
 
 func (p *Parser) lookaheadCallExpr() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -1946,7 +1942,7 @@ func (p *Parser) parseCallLike() ast.Expr {
 }
 
 func (p *Parser) lookaheadNamedArg() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -1978,7 +1974,7 @@ func (p *Parser) tryParseNamedArg() *ast.NamedArg {
 }
 
 func (p *Parser) lookaheadLambdaArg() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -2295,7 +2291,7 @@ func (p *Parser) parseWithExprVar() *ast.WithExprVar {
 }
 
 func (p *Parser) lookaheadWithExprVar() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -2590,7 +2586,7 @@ func (p *Parser) parseIntervalLiteral() ast.Expr {
 }
 
 func (p *Parser) lookaheadSubQuery() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -2652,7 +2648,7 @@ func (p *Parser) parseNamedType() *ast.NamedType {
 }
 
 func (p *Parser) parseType() (t ast.Type) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			t = p.handleParseTypeError(r, l)
@@ -2827,11 +2823,7 @@ func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
 
 	// Braced constructor permits empty.
 	var fields []*ast.BracedConstructorField
-	for {
-		if p.Token.Kind == "}" {
-			break
-		}
-
+	for p.Token.Kind != "}" {
 		if p.Token.Kind != token.TokenIdent {
 			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
 		}
@@ -2877,7 +2869,7 @@ func (p *Parser) parseNewConstructors() ast.Expr {
 }
 
 func (p *Parser) parseFieldType() *ast.StructField {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	// Try to parse as "x INT64" case.
 	if p.Token.Kind == token.TokenIdent {
 		ident := p.parseIdent()
@@ -2926,7 +2918,7 @@ func (p *Parser) lookaheadSimpleType() bool {
 // ================================================================================
 
 func (p *Parser) parseDDL() (ddl ast.DDL) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			ddl = &ast.BadDDL{BadNode: p.handleParseStatementError(r, l)}
@@ -3641,7 +3633,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 	if p.Token.Kind != "," {
 		return nil
 	}
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	pos := p.expect(",").Pos
 	if !p.Token.IsKeywordLike("INTERLEAVE") {
 		p.Lexer = lexer
@@ -3674,7 +3666,7 @@ func (p *Parser) tryParseCreateRowDeletionPolicy() *ast.CreateRowDeletionPolicy 
 		return nil
 	}
 
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	pos := p.expect(",").Pos
 	if !p.Token.IsKeywordLike("ROW") {
 		p.Lexer = lexer
@@ -4653,7 +4645,7 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 	if p.Token.Kind != "SELECT" {
 		return nil
 	}
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	pos := p.expect("SELECT").Pos
 	if p.Token.Kind != "ON" {
 		p.Lexer = lexer
@@ -4703,7 +4695,7 @@ func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnC
 	if p.Token.Kind != "SELECT" {
 		return nil
 	}
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	pos := p.expect("SELECT").Pos
 	if p.Token.Kind != "ON" {
 		p.Lexer = lexer
@@ -4872,11 +4864,7 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 func (p *Parser) parsePropertyGraphLabelAndPropertiesList() *ast.PropertyGraphLabelAndPropertiesList {
 	// list can be empty
 	var list []*ast.PropertyGraphLabelAndProperties
-	for {
-		if p.Token.Kind != "DEFAULT" && !p.Token.IsKeywordLike("LABEL") {
-			break
-		}
-
+	for p.Token.Kind == "DEFAULT" || p.Token.IsKeywordLike("LABEL") {
 		elemLabel := p.parsePropertyGraphElementLabel()
 		properties := p.tryParsePropertyGraphElementProperties()
 
@@ -5076,7 +5064,7 @@ func (p *Parser) tryParsePropertyGraphColumnNameList() *ast.PropertyGraphColumnN
 }
 
 func (p *Parser) lookaheadPropertyGraphDynamicLabel() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -5108,7 +5096,7 @@ func (p *Parser) tryParsePropertyGraphDynamicLabel() *ast.PropertyGraphDynamicLa
 }
 
 func (p *Parser) lookaheadPropertyGraphDynamicProperties() bool {
-	lexer := p.Lexer.Clone()
+	lexer := p.Clone()
 	defer func() {
 		p.Lexer = lexer
 	}()
@@ -5375,7 +5363,7 @@ func (p *Parser) parseIfExists() bool {
 // ================================================================================
 
 func (p *Parser) parseDML() (dml ast.DML) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		// Panic on tryParseHint()
 		if r := recover(); r != nil {
@@ -5388,7 +5376,7 @@ func (p *Parser) parseDML() (dml ast.DML) {
 }
 
 func (p *Parser) parseDMLInternal(hint *ast.Hint) (dml ast.DML) {
-	l := p.Lexer.Clone()
+	l := p.Clone()
 	defer func() {
 		if r := recover(); r != nil {
 			dml = &ast.BadDML{

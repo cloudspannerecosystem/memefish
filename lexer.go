@@ -353,7 +353,7 @@ func (l *Lexer) consumeNumber(noPanic bool) {
 			if l.peekIs(i, '+') || l.peekIs(i, '-') {
 				i++
 			}
-			if !(l.peekOk(i) && char.IsDigit(l.peek(i))) {
+			if !l.peekOk(i) || !char.IsDigit(l.peek(i)) {
 				i = rollback
 				break
 			}
@@ -516,7 +516,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 				content = append(content, c)
 			case 'x', 'X':
 				for j := 0; j < 2; j++ {
-					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
@@ -547,7 +547,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 					size = 8
 				}
 				for j := 0; j < size; j++ {
-					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
@@ -576,7 +576,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 				i += size
 			case '0', '1', '2', '3':
 				for j := 0; j < 2; j++ {
-					if !(l.peekOk(i+j) && char.IsOctalDigit(l.peek(i+j))) {
+					if !l.peekOk(i+j) || !char.IsOctalDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
