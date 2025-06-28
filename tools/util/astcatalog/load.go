@@ -76,7 +76,7 @@ func loadConsts(fset *token.FileSet, filename string) (map[ConstType]*ConstDef, 
 						return nil, fmt.Errorf("unexpected values: %#v", s.Values)
 					}
 					lit, ok := s.Values[0].(*ast.BasicLit)
-					if !(ok && lit.Kind == token.STRING) {
+					if !ok || lit.Kind != token.STRING {
 						return nil, fmt.Errorf("unexpected value: %#v", s.Values[0])
 					}
 					v := strings.Trim(lit.Value, "\"")
@@ -264,7 +264,7 @@ func loadType(t ast.Expr, interfaces map[NodeInterfaceType]*NodeInterfaceDef, co
 			return NodeStructType(t.Name), nil
 		}
 	case *ast.SelectorExpr:
-		if x, ok := t.X.(*ast.Ident); !(ok && x.Name == "token") {
+		if x, ok := t.X.(*ast.Ident); !ok || x.Name != "token" {
 			return nil, fmt.Errorf("unexpected selector expr: %#v", t)
 		}
 		switch t.Sel.Name {

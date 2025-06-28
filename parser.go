@@ -498,7 +498,7 @@ func (p *Parser) parseQueryExpr() (query ast.QueryExpr) {
 
 		right := p.parseSimpleQueryExpr()
 		if c, ok := query.(*ast.CompoundQuery); ok {
-			if !(c.Op == op && c.AllOrDistinct == allOrDistinct) {
+			if c.Op != op || c.AllOrDistinct != allOrDistinct {
 				p.panicfAtToken(&opTok, "all set operator at the same level must be the same, or wrap (...)")
 			}
 			c.Queries = append(c.Queries, right)
