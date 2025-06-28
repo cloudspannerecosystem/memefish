@@ -308,8 +308,8 @@ func (p *Parser) parseQueryStatementInternal(hint *ast.Hint) (stmt *ast.QuerySta
 
 func (p *Parser) parsePipeOperator() ast.PipeOperator {
 	pos := p.expect("|>").Pos
-	switch {
-	case p.Token.Kind == "SELECT":
+	switch p.Token.Kind {
+	case "SELECT":
 		p.nextToken()
 
 		allOrDistinct := p.tryParseAllOrDistinct()
@@ -322,7 +322,7 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 			As:            as,
 			Results:       results,
 		}
-	case p.Token.Kind == "WHERE":
+	case "WHERE":
 		p.nextToken()
 		expr := p.parseExpr()
 		return &ast.PipeWhere{
@@ -337,11 +337,7 @@ func (p *Parser) parsePipeOperator() ast.PipeOperator {
 // parsePipeOperators parses pipe operators, which can be empty.
 func (p *Parser) parsePipeOperators() []ast.PipeOperator {
 	var pipeOps []ast.PipeOperator
-	for {
-		if p.Token.Kind != "|>" {
-			break
-		}
-
+	for p.Token.Kind == "|>" {
 		pipeOps = append(pipeOps, p.parsePipeOperator())
 	}
 	return pipeOps
@@ -2827,11 +2823,7 @@ func (p *Parser) parseBracedConstructor() *ast.BracedConstructor {
 
 	// Braced constructor permits empty.
 	var fields []*ast.BracedConstructorField
-	for {
-		if p.Token.Kind == "}" {
-			break
-		}
-
+	for p.Token.Kind != "}" {
 		if p.Token.Kind != token.TokenIdent {
 			p.panicfAtToken(&p.Token, "expect <ident>, but %v", p.Token.Kind)
 		}
@@ -4872,11 +4864,7 @@ func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
 func (p *Parser) parsePropertyGraphLabelAndPropertiesList() *ast.PropertyGraphLabelAndPropertiesList {
 	// list can be empty
 	var list []*ast.PropertyGraphLabelAndProperties
-	for {
-		if p.Token.Kind != "DEFAULT" && !p.Token.IsKeywordLike("LABEL") {
-			break
-		}
-
+	for p.Token.Kind == "DEFAULT" || p.Token.IsKeywordLike("LABEL") {
 		elemLabel := p.parsePropertyGraphElementLabel()
 		properties := p.tryParsePropertyGraphElementProperties()
 
