@@ -5167,6 +5167,8 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 			NamedArgs: namedArgs,
 			Rparen:    rparen,
 		}
+	case "STRUCT":
+		return p.parseStructType()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, <ident>, but: %s", p.Token.Kind))

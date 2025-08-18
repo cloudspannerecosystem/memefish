@@ -518,6 +518,7 @@ type SchemaType interface {
 func (ScalarSchemaType) isSchemaType() {}
 func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
+func (StructType) isSchemaType()       {}
 func (NamedType) isSchemaType()        {}
 
 // IndexAlteration represents ALTER INDEX action.
