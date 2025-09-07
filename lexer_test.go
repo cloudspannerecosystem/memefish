@@ -65,11 +65,10 @@ var lexerTestCases = []struct {
 	{"# foo", nil},
 	{"# foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "# foo\n", Pos: 0, End: 6}}}}},
 	{"-- foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "-- foo\n", Pos: 0, End: 7}}}}},
-	{"// foo\n0", []*Token{{Kind: "<int>", Space: "", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "// foo\n", Pos: 0, End: 7}}}}},
 	{"/* foo */ 0", []*Token{{Kind: "<int>", Space: " ", Raw: "0", Base: 10, Comments: []TokenComment{{Space: "", Raw: "/* foo */", Pos: 0, End: 9}}}}},
-	{"// aaa\n// bbb\n/* foo */ 0", []*Token{{Kind: "<int>", Space: " ", Raw: "0", Base: 10, Comments: []TokenComment{
-		{Space: "", Raw: "// aaa\n", Pos: 0, End: 7},
-		{Space: "", Raw: "// bbb\n", Pos: 7, End: 14},
+	{"-- aaa\n-- bbb\n/* foo */ 0", []*Token{{Kind: "<int>", Space: " ", Raw: "0", Base: 10, Comments: []TokenComment{
+		{Space: "", Raw: "-- aaa\n", Pos: 0, End: 7},
+		{Space: "", Raw: "-- bbb\n", Pos: 7, End: 14},
 		{Space: "", Raw: "/* foo */", Pos: 14, End: 23},
 	}}}},
 	// TokenInt

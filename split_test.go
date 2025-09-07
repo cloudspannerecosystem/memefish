@@ -1,11 +1,13 @@
 package memefish_test
 
 import (
-	"github.com/cloudspannerecosystem/memefish"
-	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/google/go-cmp/cmp"
 	"regexp"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+
+	"github.com/cloudspannerecosystem/memefish"
+	"github.com/cloudspannerecosystem/memefish/token"
 )
 
 func TestSplitRawStatements(t *testing.T) {
@@ -45,13 +47,13 @@ func TestSplitRawStatements(t *testing.T) {
 				{Statement: "SELECT 1", End: token.Pos(8)},
 				{Statement: "SELECT 2", Pos: token.Pos(11), End: token.Pos(19)},
 			}},
-		{desc: "single statement with line comment", input: `SELECT 1//
+		{desc: "single statement with line comment", input: `SELECT 1--
 `, want: []*memefish.RawStatement{
-			{Statement: "SELECT 1//\n", End: token.Pos(11)},
+			{Statement: "SELECT 1--\n", End: token.Pos(11)},
 		}},
-		{desc: "semicolon in line comment", input: "SELECT 1 //;\n + 2",
+		{desc: "semicolon in line comment", input: "SELECT 1 --;\n + 2",
 			want: []*memefish.RawStatement{
-				{Statement: "SELECT 1 //;\n + 2", End: token.Pos(17)},
+				{Statement: "SELECT 1 --;\n + 2", End: token.Pos(17)},
 			}},
 		{desc: "semicolon in multi-line comment", input: "SELECT 1 /*;\n*/ + 2",
 			want: []*memefish.RawStatement{
