@@ -5965,6 +5965,11 @@ func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
 	nodes := []T{doParse()}
 	for p.Token.Kind == "," {
 		p.nextToken()
+
+		if p.Token.Kind == ")" {
+			break
+		}
+
 		nodes = append(nodes, doParse())
 	}
 	return nodes
