@@ -5212,15 +5212,26 @@ func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 		return nil
 	}
 
-	pos := p.expectKeywordLike("INPUT").Pos
-	p.expect("(")
-	inputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
-	p.expect(")")
+	parseColumns := func(keyword string) (token.Pos, token.Pos, []*ast.CreateModelColumn) {
+		start := p.expectKeywordLike(keyword).Pos
+		p.expect("(")
+		columns := []*ast.CreateModelColumn{p.tryParseCreateModelColumn()}
 
-	p.expectKeywordLike("OUTPUT")
-	p.expect("(")
-	outputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
-	rparen := p.expect(")").Pos
+		for p.Token.Kind == "," {
+			p.nextToken()
+			if p.Token.Kind == ")" {
+				break // allow trailing comma
+			}
+			columns = append(columns, p.tryParseCreateModelColumn())
+		}
+
+		end := p.expect(")").Pos
+
+		return start, end, columns
+	}
+
+	pos, _, inputColumns := parseColumns("INPUT")
+	_, rparen, outputColumns := parseColumns("OUTPUT")
 
 	return &ast.CreateModelInputOutput{
 		Input:         pos,
@@ -5965,10 +5976,6 @@ func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
 	nodes := []T{doParse()}
 	for p.Token.Kind == "," {
 		p.nextToken()
-
-		if p.Token.Kind == ")" {
-			break
-		}
 
 		nodes = append(nodes, doParse())
 	}
