@@ -71,6 +71,20 @@ func TestSplitRawStatements(t *testing.T) {
 			want: []*memefish.RawStatement{
 				{Statement: "SELECT `1;2;3`", End: token.Pos(14)},
 			}},
+		{desc: "semicolon in leading comment", input: "-- comment;\nSELECT 123",
+			want: []*memefish.RawStatement{
+				{Statement: "-- comment;\nSELECT 123", End: token.Pos(22)},
+			}},
+		{desc: "semicolon in leading single-line comment of 2nd statement", input: "SELECT 1; -- comment;\nSELECT 2",
+			want: []*memefish.RawStatement{
+				{Statement: "SELECT 1", End: token.Pos(8)},
+				{Statement: "-- comment;\nSELECT 2", Pos: token.Pos(10), End: token.Pos(30)},
+			}},
+		{desc: "semicolon in leading multi-line comment of 2nd statement", input: "SELECT 1; /*;\n*/ SELECT 2",
+			want: []*memefish.RawStatement{
+				{Statement: "SELECT 1", End: token.Pos(8)},
+				{Statement: "/*;\n*/ SELECT 2", Pos: token.Pos(10), End: token.Pos(25)},
+			}},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			stmts, err := memefish.SplitRawStatements("", test.input)
