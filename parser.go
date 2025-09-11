@@ -5207,31 +5207,31 @@ func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
 	}
 }
 
+func (p *Parser) parseModelColumns(keyword string) (token.Pos, token.Pos, []*ast.CreateModelColumn) {
+	start := p.expectKeywordLike(keyword).Pos
+	p.expect("(")
+	columns := []*ast.CreateModelColumn{p.tryParseCreateModelColumn()}
+
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == ")" {
+			break // allow trailing comma
+		}
+		columns = append(columns, p.tryParseCreateModelColumn())
+	}
+
+	end := p.expect(")").Pos
+
+	return start, end, columns
+}
+
 func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 	if !p.Token.IsKeywordLike("INPUT") {
 		return nil
 	}
 
-	parseColumns := func(keyword string) (token.Pos, token.Pos, []*ast.CreateModelColumn) {
-		start := p.expectKeywordLike(keyword).Pos
-		p.expect("(")
-		columns := []*ast.CreateModelColumn{p.tryParseCreateModelColumn()}
-
-		for p.Token.Kind == "," {
-			p.nextToken()
-			if p.Token.Kind == ")" {
-				break // allow trailing comma
-			}
-			columns = append(columns, p.tryParseCreateModelColumn())
-		}
-
-		end := p.expect(")").Pos
-
-		return start, end, columns
-	}
-
-	pos, _, inputColumns := parseColumns("INPUT")
-	_, rparen, outputColumns := parseColumns("OUTPUT")
+	pos, _, inputColumns := p.parseModelColumns("INPUT")
+	_, rparen, outputColumns := p.parseModelColumns("OUTPUT")
 
 	return &ast.CreateModelInputOutput{
 		Input:         pos,
