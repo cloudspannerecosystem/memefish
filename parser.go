@@ -5208,7 +5208,7 @@ func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
 }
 
 func (p *Parser) parseModelColumns(keyword string) (token.Pos, token.Pos, []*ast.CreateModelColumn) {
-	start := p.expectKeywordLike(keyword).Pos
+	keywordPos := p.expectKeywordLike(keyword).Pos
 	p.expect("(")
 	columns := []*ast.CreateModelColumn{p.tryParseCreateModelColumn()}
 
@@ -5220,9 +5220,9 @@ func (p *Parser) parseModelColumns(keyword string) (token.Pos, token.Pos, []*ast
 		columns = append(columns, p.tryParseCreateModelColumn())
 	}
 
-	end := p.expect(")").Pos
+	rparen := p.expect(")").Pos
 
-	return start, end, columns
+	return keywordPos, rparen, columns
 }
 
 func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
