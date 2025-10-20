@@ -1,0 +1,1 @@
+SELECT account FROM (WITH result AS (SELECT * FROM NPCs) SELECT * FROM result)

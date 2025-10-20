@@ -1,0 +1,77 @@
+--- with_cte_query.sql
+SELECT account FROM (WITH result AS (SELECT * FROM NPCs) SELECT * FROM result)
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 7,
+          NameEnd: 14,
+          Name:    "account",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   15,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 20,
+        Rparen: 77,
+        Query:  &ast.Query{
+          With: &ast.With{
+            With: 21,
+            CTEs: []*ast.CTE{
+              &ast.CTE{
+                Rparen: 55,
+                Name:   &ast.Ident{
+                  NamePos: 26,
+                  NameEnd: 32,
+                  Name:    "result",
+                },
+                QueryExpr: &ast.Select{
+                  Select:  37,
+                  Results: []ast.SelectItem{
+                    &ast.Star{
+                      Star: 44,
+                    },
+                  },
+                  From: &ast.From{
+                    From:   46,
+                    Source: &ast.TableName{
+                      Table: &ast.Ident{
+                        NamePos: 51,
+                        NameEnd: 55,
+                        Name:    "NPCs",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Query: &ast.Select{
+            Select:  57,
+            Results: []ast.SelectItem{
+              &ast.Star{
+                Star: 64,
+              },
+            },
+            From: &ast.From{
+              From:   66,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 71,
+                  NameEnd: 77,
+                  Name:    "result",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT account FROM (WITH result AS (SELECT * FROM NPCs) SELECT * FROM result)
