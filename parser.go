@@ -5167,6 +5167,8 @@ func (p *Parser) parseSchemaType() ast.SchemaType {
 			NamedArgs: namedArgs,
 			Rparen:    rparen,
 		}
+	case "STRUCT":
+		return p.parseStructType()
 	}
 
 	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, <ident>, but: %s", p.Token.Kind))
@@ -5205,20 +5207,31 @@ func (p *Parser) tryParseCreateModelColumn() *ast.CreateModelColumn {
 	}
 }
 
+func (p *Parser) parseModelColumns(keyword string) (token.Pos, token.Pos, []*ast.CreateModelColumn) {
+	keywordPos := p.expectKeywordLike(keyword).Pos
+	p.expect("(")
+	columns := []*ast.CreateModelColumn{p.tryParseCreateModelColumn()}
+
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == ")" {
+			break // allow trailing comma
+		}
+		columns = append(columns, p.tryParseCreateModelColumn())
+	}
+
+	rparen := p.expect(")").Pos
+
+	return keywordPos, rparen, columns
+}
+
 func (p *Parser) tryParseCreateModelInputOutput() *ast.CreateModelInputOutput {
 	if !p.Token.IsKeywordLike("INPUT") {
 		return nil
 	}
 
-	pos := p.expectKeywordLike("INPUT").Pos
-	p.expect("(")
-	inputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
-	p.expect(")")
-
-	p.expectKeywordLike("OUTPUT")
-	p.expect("(")
-	outputColumns := parseCommaSeparatedList(p, p.tryParseCreateModelColumn)
-	rparen := p.expect(")").Pos
+	pos, _, inputColumns := p.parseModelColumns("INPUT")
+	_, rparen, outputColumns := p.parseModelColumns("OUTPUT")
 
 	return &ast.CreateModelInputOutput{
 		Input:         pos,

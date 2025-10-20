@@ -641,7 +641,7 @@ func (l *Lexer) skipSpaces() {
 func (l *Lexer) skipComment(noPanic bool) bool {
 	r, _ := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 	switch {
-	case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
+	case r == '#' || r == '-' && l.peekIs(1, '-'):
 		return l.skipCommentUntil("\n", false, noPanic)
 	case r == '/' && l.peekIs(1, '*'):
 		return l.skipCommentUntil("*/", true, noPanic)
