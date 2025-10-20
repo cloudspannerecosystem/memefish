@@ -2596,22 +2596,22 @@ func (p *Parser) lookaheadSubQuery() bool {
 	}
 
 	p.nextToken()
-	// (SELECT ... indicates subquery.
-	if p.Token.Kind == "SELECT" {
+	// (SELECT|WITH ... indicates subquery.
+	if p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" {
 		return true
 	}
 
-	// ((...(SELECT maybe indicate subquery.
+	// ((...(SELECT|WITH maybe indicate subquery.
 	nest := 0
 	for p.Token.Kind == "(" {
 		nest++
 		p.nextToken()
 	}
-	if nest == 0 || p.Token.Kind != "SELECT" {
+	if nest == 0 || !(p.Token.Kind == "SELECT" || p.Token.Kind == "WITH") {
 		return false
 	}
 
-	// ((...(SELECT ...)...) UNION indicates subquery.
+	// ((...(SELECT|WITH ...)...) UNION indicates subquery.
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == "(" {
 			nest++
