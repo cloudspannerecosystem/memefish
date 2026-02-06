@@ -2958,6 +2958,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseCreateChangeStream(pos)
 		case p.Token.IsKeywordLike("MODEL"):
 			return p.parseCreateModel(pos, false)
+		case p.Token.IsKeywordLike("FUNCTION"):
+			return p.parseCreateFunction(pos, false)
 		case p.Token.Kind == "OR":
 			p.expect("OR")
 			p.expectKeywordLike("REPLACE")
@@ -2968,6 +2970,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 				return p.parseCreateModel(pos, true)
 			case p.Token.IsKeywordLike("PROPERTY"):
 				return p.parseCreatePropertyGraph(pos, true)
+			case p.Token.IsKeywordLike("FUNCTION"):
+				return p.parseCreateFunction(pos, true)
 			}
 		case p.Token.IsKeywordLike("PROPERTY"):
 			return p.parseCreatePropertyGraph(pos, false)
@@ -3029,6 +3033,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseDropModel(pos)
 		case p.Token.IsKeywordLike("PROPERTY"):
 			return p.parseDropPropertyGraph(pos)
+		case p.Token.IsKeywordLike("FUNCTION"):
+			return p.parseDropFunction(pos)
 		}
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: TABLE, INDEX, ROLE, CHANGE, MODEL, but: %s", p.Token.AsString)
 	case p.Token.IsKeywordLike("RENAME"):
@@ -3375,20 +3381,7 @@ func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView 
 	p.expectKeywordLike("VIEW")
 
 	name := p.parsePath()
-
-	p.expectKeywordLike("SQL")
-	p.expectKeywordLike("SECURITY")
-
-	id := p.expect(token.TokenIdent)
-	var securityType ast.SecurityType
-	switch {
-	case id.IsKeywordLike("INVOKER"):
-		securityType = ast.SecurityTypeInvoker
-	case id.IsKeywordLike("DEFINER"):
-		securityType = ast.SecurityTypeDefiner
-	default:
-		p.panicfAtToken(id, "expected identifier: INVOKER, DEFINER, but: %s", id.Raw)
-	}
+	securityType := p.parseSqlSecurity()
 
 	p.expect("AS")
 
@@ -3998,7 +3991,137 @@ func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 		Drop: pos,
 		Name: name,
 	}
+}
 
+func (p *Parser) parseFunctionParam() *ast.FunctionParam {
+	name := p.parseIdent()
+	t := p.parseFunctionDataType()
+
+	var defaultExpr ast.Expr
+	if p.Token.Kind == "DEFAULT" {
+		p.nextToken()
+		defaultExpr = p.parseExpr()
+	}
+
+	return &ast.FunctionParam{
+		Name:        name,
+		Type:        t,
+		DefaultExpr: defaultExpr,
+	}
+}
+
+func (p *Parser) parseCreateFunction(pos token.Pos, orReplace bool) *ast.CreateFunction {
+	p.expectKeywordLike("FUNCTION")
+	name := p.parsePath()
+
+	p.expect("(")
+	var params []*ast.FunctionParam
+	if p.Token.Kind != ")" {
+		params = parseCommaSeparatedList(p, p.parseFunctionParam)
+	}
+	p.expect(")")
+
+	p.expectKeywordLike("RETURNS")
+	returnType := p.parseFunctionDataType()
+
+	determinism := p.tryParseDeterminism()
+
+	var language string
+	if p.Token.IsKeywordLike("LANGUAGE") {
+		p.nextToken()
+		language = strings.ToUpper(p.parseIdent().Name)
+	}
+
+	var remote bool
+	if p.Token.IsKeywordLike("REMOTE") {
+		p.nextToken()
+		remote = true
+	}
+
+	var sqlSecurity ast.SecurityType
+	if p.Token.IsKeywordLike("SQL") {
+		sqlSecurity = p.parseSqlSecurity()
+	}
+
+	var options *ast.Options
+	var body ast.Expr
+	var asPos token.Pos = token.InvalidPos
+	var rparenAsPos token.Pos = token.InvalidPos
+	if p.Token.Kind == "AS" {
+		asPos = p.expect("AS").Pos
+		p.expect("(")
+		body = p.parseExpr()
+		rparenAsPos = p.expect(")").Pos
+	} else if p.Token.IsKeywordLike("OPTIONS") {
+		options = p.parseOptions()
+	} else {
+		p.panicfAtToken(&p.Token, "expected AS or OPTIONS")
+	}
+
+	return &ast.CreateFunction{
+		Create:      pos,
+		OrReplace:   orReplace,
+		Name:        name,
+		Params:      params,
+		ReturnType:  returnType,
+		SqlSecurity: sqlSecurity,
+		Determinism: determinism,
+		Language:    language,
+		Remote:      remote,
+		Options:     options,
+		Definition:  body,
+		As:          asPos,
+		RparenAs:    rparenAsPos,
+	}
+}
+
+func (p *Parser) parseDropFunction(pos token.Pos) *ast.DropFunction {
+	p.expectKeywordLike("FUNCTION")
+
+	ifExists := p.parseIfExists()
+	name := p.parsePath()
+
+	return &ast.DropFunction{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
+	}
+}
+
+func (p *Parser) tryParseDeterminism() ast.Determinism {
+	if p.Token.IsKeywordLike("DETERMINISTIC") {
+		p.nextToken()
+		return ast.DeterminismDeterministic
+	}
+
+	if p.Token.Kind == "NOT" {
+		lexer := p.Clone()
+		p.nextToken()
+		if p.Token.IsKeywordLike("DETERMINISTIC") {
+			p.nextToken() // DETERMINISTIC
+			return ast.DeterminismNotDeterministic
+		}
+		p.Lexer = lexer
+	}
+
+	return ""
+}
+
+func (p *Parser) parseSqlSecurity() ast.SecurityType {
+	p.expectKeywordLike("SQL")
+	p.expectKeywordLike("SECURITY")
+
+	id := p.expect(token.TokenIdent)
+	switch {
+	case id.IsKeywordLike("INVOKER"):
+		return ast.SecurityTypeInvoker
+	case id.IsKeywordLike("DEFINER"):
+		return ast.SecurityTypeDefiner
+	default:
+		p.panicfAtToken(id, "expected identifier: INVOKER, DEFINER, but: %s", id.Raw)
+	}
+
+	return ""
 }
 
 func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
@@ -5307,7 +5430,9 @@ var sizedSchemaTypes = []string{
 	"BYTES",
 }
 
-// parseScalarSchemaType parses ScalarSchemaType, SizedSchemaType and NamedType, but not ArraySchemaType.
+// parseScalarSchemaType parses a scalar type for column definition.
+// - STRING and BYTES: Size specification is mandatory. Always parsed as SizedSchemaType.
+// - Other types: Size specification is denied. Parsed as ScalarSchemaType or NamedType.
 func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 	if !p.lookaheadSimpleType() {
 		return p.parseNamedType()
@@ -5348,6 +5473,97 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 	}
 
 	panic(p.errorfAtToken(id, "expect ident: %s, %s, but: %s", strings.Join(scalarSchemaTypes, ", "), strings.Join(sizedSchemaTypes, ", "), id.AsString))
+}
+
+func (p *Parser) parseFunctionDataType() ast.SchemaType {
+	switch p.Token.Kind {
+	case token.TokenIdent:
+		return p.parseScalarFunctionSchemaType()
+	case "ARRAY":
+		return p.parseArrayFunctionSchemaType()
+	case "STRUCT":
+		return p.parseStructType()
+	}
+
+	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, STRUCT, <ident>, but: %s", p.Token.Kind))
+}
+
+// parseScalarFunctionSchemaType parses a scalar type for function parameter or return type.
+// - STRING and BYTES: Size specification is optional.
+//   - If size is specified, parsed as SizedSchemaType.
+//   - If size is omitted, parsed as ScalarSchemaType.
+//
+// - Other types: Size specification is denied. Parsed as ScalarSchemaType.
+func (p *Parser) parseScalarFunctionSchemaType() ast.SchemaType {
+	if !p.lookaheadSimpleType() {
+		return p.parseNamedType()
+	}
+
+	id := p.expect(token.TokenIdent)
+	pos := id.Pos
+
+	for _, name := range scalarSchemaTypes {
+		if id.IsIdent(name) {
+			return &ast.ScalarSchemaType{
+				NamePos: pos,
+				Name:    ast.ScalarTypeName(name),
+			}
+		}
+	}
+
+	for _, name := range sizedSchemaTypes {
+		if id.IsIdent(name) {
+			if p.Token.Kind == "(" {
+				p.nextToken()
+				max := false
+				var size ast.IntValue
+				if p.Token.IsIdent("MAX") {
+					p.nextToken()
+					max = true
+				} else {
+					size = p.parseIntValue()
+				}
+				rparen := p.expect(")").Pos
+				return &ast.SizedSchemaType{
+					NamePos: pos,
+					Rparen:  rparen,
+					Name:    ast.ScalarTypeName(name),
+					Max:     max,
+					Size:    size,
+				}
+			} else {
+				return &ast.ScalarSchemaType{
+					NamePos: pos,
+					Name:    ast.ScalarTypeName(name),
+				}
+			}
+		}
+	}
+
+	panic(p.errorfAtToken(id, "expect ident: %s, %s, but: %s", strings.Join(scalarSchemaTypes, ", "), strings.Join(sizedSchemaTypes, ", "), id.AsString))
+}
+
+func (p *Parser) parseArrayFunctionSchemaType() *ast.ArraySchemaType {
+	pos := p.expect("ARRAY").Pos
+	p.expect("<")
+	t := p.parseFunctionDataType()
+	end := p.expect(">").Pos
+
+	var namedArgs []*ast.NamedArg
+	rparen := token.InvalidPos
+	if p.Token.Kind == "(" {
+		p.nextToken()
+		namedArgs = parseCommaSeparatedList(p, p.parseNamedArg)
+		rparen = p.expect(")").Pos
+	}
+
+	return &ast.ArraySchemaType{
+		Array:     pos,
+		Gt:        end,
+		Item:      t,
+		NamedArgs: namedArgs,
+		Rparen:    rparen,
+	}
 }
 
 func (p *Parser) parseIfNotExists() bool {

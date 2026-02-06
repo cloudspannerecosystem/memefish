@@ -1,0 +1,30 @@
+--- create_or_replace_function.sql
+CREATE OR REPLACE FUNCTION my_func() RETURNS INT64 AS (1)
+--- AST
+&ast.CreateFunction{
+  As:        51,
+  RparenAs:  56,
+  OrReplace: true,
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 34,
+        Name:    "my_func",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 45,
+    Name:    "INT64",
+  },
+  Definition: &ast.IntLiteral{
+    ValuePos: 55,
+    ValueEnd: 56,
+    Base:     10,
+    Value:    "1",
+  },
+}
+
+--- SQL
+CREATE OR REPLACE FUNCTION my_func () RETURNS INT64 AS (1)

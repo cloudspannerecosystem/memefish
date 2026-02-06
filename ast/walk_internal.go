@@ -803,6 +803,21 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *Analyze:
 		// nothing to do
 
+	case *FunctionParam:
+		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *CreateFunction:
+		stack = append(stack, &stackItem{node: wrapNode(n.Definition), visitor: v.Field("Definition")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ReturnType), visitor: v.Field("ReturnType")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Params), visitor: v.Field("Params")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *DropFunction:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
 	case *CreateModelColumn:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.DataType), visitor: v.Field("DataType")})
