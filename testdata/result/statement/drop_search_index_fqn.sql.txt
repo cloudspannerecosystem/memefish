@@ -1,0 +1,23 @@
+--- drop_search_index_fqn.sql
+DROP SEARCH INDEX AlbumSchema.AlbumsIndex
+
+--- AST
+&ast.DropSearchIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 18,
+        NameEnd: 29,
+        Name:    "AlbumSchema",
+      },
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 41,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP SEARCH INDEX AlbumSchema.AlbumsIndex

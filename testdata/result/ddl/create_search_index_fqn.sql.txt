@@ -1,0 +1,45 @@
+--- create_search_index_fqn.sql
+CREATE SEARCH INDEX AlbumSchema.AlbumsIndex ON AlbumSchema.Albums(AlbumTitle_Tokens)
+
+--- AST
+&ast.CreateSearchIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 31,
+        Name:    "AlbumSchema",
+      },
+      &ast.Ident{
+        NamePos: 32,
+        NameEnd: 43,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 47,
+        NameEnd: 58,
+        Name:    "AlbumSchema",
+      },
+      &ast.Ident{
+        NamePos: 59,
+        NameEnd: 65,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 66,
+      NameEnd: 83,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen: 83,
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumSchema.AlbumsIndex ON AlbumSchema.Albums(AlbumTitle_Tokens)

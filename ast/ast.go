@@ -3715,8 +3715,8 @@ type CreateSearchIndex struct {
 
 	Create token.Pos
 
-	Name             *Ident
-	TableName        *Ident
+	Name             *Path
+	TableName        *Path
 	TokenListPart    []*Ident
 	Rparen           token.Pos     // position of ")" after TokenListPart
 	Storing          *Storing      // optional
@@ -3736,7 +3736,7 @@ type DropSearchIndex struct {
 
 	Drop     token.Pos
 	IfExists bool
-	Name     *Ident
+	Name     *Path
 }
 
 // AlterSearchIndex represents ALTER SEARCH INDEX statement.
@@ -3747,7 +3747,7 @@ type AlterSearchIndex struct {
 	// end = IndexAlteration.end
 
 	Alter           token.Pos
-	Name            *Ident
+	Name            *Path
 	IndexAlteration IndexAlteration
 }
 

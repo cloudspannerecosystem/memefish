@@ -3789,10 +3789,10 @@ func (p *Parser) parseCreateVectorIndex(pos token.Pos) *ast.CreateVectorIndex {
 func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	p.expectKeywordLike("SEARCH")
 	p.expectKeywordLike("INDEX")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	p.expect("ON")
-	tableName := p.parseIdent()
+	tableName := p.parsePath()
 
 	p.expect("(")
 	columnName := parseCommaSeparatedList(p, p.parseIdent)
@@ -3832,7 +3832,7 @@ func (p *Parser) parseDropSearchIndex(pos token.Pos) *ast.DropSearchIndex {
 	p.expectKeywordLike("SEARCH")
 	p.expectKeywordLike("INDEX")
 	ifExists := p.parseIfExists()
-	name := p.parseIdent()
+	name := p.parsePath()
 	return &ast.DropSearchIndex{
 		Drop:     pos,
 		IfExists: ifExists,
@@ -3845,7 +3845,7 @@ func (p *Parser) parseAlterSearchIndex(pos token.Pos) *ast.AlterSearchIndex {
 	p.expectKeywordLike("SEARCH")
 	p.expectKeywordLike("INDEX")
 
-	name := p.parseIdent()
+	name := p.parsePath()
 	alteration := p.parseIndexAlteration()
 
 	return &ast.AlterSearchIndex{
