@@ -3590,7 +3590,7 @@ type FunctionParam struct {
 // CreateFunction is CREATE FUNCTION statement node.
 //
 //	CREATE {{if .OrReplace}}OR REPLACE{{end}} FUNCTION {{.Name | sql}}
-//	({{.Params | sqlJoin ", "}}) RETURNS {{.ReturnType | sql}}
+//	({{.Params | sqlJoin ", "}}){{if .ReturnType}} RETURNS {{.ReturnType | sql}}{{end}}
 //	{{if .SqlSecurity}}SQL SECURITY {{.SqlSecurity}}{{end}}
 //	{{if .Determinism}}{{.Determinism}}{{end}}
 //	{{if .Language}}LANGUAGE {{.Language}}{{end}}

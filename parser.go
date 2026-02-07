@@ -4021,8 +4021,11 @@ func (p *Parser) parseCreateFunction(pos token.Pos, orReplace bool) *ast.CreateF
 	}
 	p.expect(")")
 
-	p.expectKeywordLike("RETURNS")
-	returnType := p.parseFunctionDataType()
+	var returnType ast.SchemaType
+	if p.Token.IsKeywordLike("RETURNS") {
+		p.nextToken()
+		returnType = p.parseFunctionDataType()
+	}
 
 	determinism := p.tryParseDeterminism()
 
@@ -4045,8 +4048,8 @@ func (p *Parser) parseCreateFunction(pos token.Pos, orReplace bool) *ast.CreateF
 
 	var options *ast.Options
 	var body ast.Expr
-	var asPos token.Pos = token.InvalidPos
-	var rparenAsPos token.Pos = token.InvalidPos
+	asPos := token.InvalidPos
+	rparenAsPos := token.InvalidPos
 	if p.Token.Kind == "AS" {
 		asPos = p.expect("AS").Pos
 		p.expect("(")
@@ -5477,7 +5480,7 @@ func (p *Parser) parseScalarSchemaType() ast.SchemaType {
 
 func (p *Parser) parseFunctionDataType() ast.SchemaType {
 	switch p.Token.Kind {
-	case token.TokenIdent:
+	case token.TokenIdent, "INTERVAL":
 		return p.parseScalarFunctionSchemaType()
 	case "ARRAY":
 		return p.parseArrayFunctionSchemaType()
@@ -5485,7 +5488,7 @@ func (p *Parser) parseFunctionDataType() ast.SchemaType {
 		return p.parseStructType()
 	}
 
-	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, STRUCT, <ident>, but: %s", p.Token.Kind))
+	panic(p.errorfAtToken(&p.Token, "expected token: ARRAY, STRUCT, INTERVAL, <ident>, but: %s", p.Token.Kind))
 }
 
 // parseScalarFunctionSchemaType parses a scalar type for function parameter or return type.
@@ -5497,6 +5500,14 @@ func (p *Parser) parseFunctionDataType() ast.SchemaType {
 func (p *Parser) parseScalarFunctionSchemaType() ast.SchemaType {
 	if !p.lookaheadSimpleType() {
 		return p.parseNamedType()
+	}
+
+	if p.Token.Kind == "INTERVAL" {
+		pos := p.expect("INTERVAL").Pos
+		return &ast.ScalarSchemaType{
+			NamePos: pos,
+			Name:    ast.IntervalTypeName,
+		}
 	}
 
 	id := p.expect(token.TokenIdent)

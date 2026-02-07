@@ -1162,7 +1162,7 @@ func (c *CreateFunction) SQL() string {
 		" FUNCTION " +
 		c.Name.SQL() +
 		" (" + sqlJoin(c.Params, ", ") + ")" +
-		" RETURNS " + c.ReturnType.SQL() +
+		sqlOpt(" RETURNS ", c.ReturnType, "") +
 		strOpt(c.Determinism != "", " "+string(c.Determinism)) +
 		strOpt(c.Language != "", " LANGUAGE "+c.Language) +
 		strOpt(c.Remote, " REMOTE") +
