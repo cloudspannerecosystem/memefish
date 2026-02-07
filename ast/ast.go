@@ -2280,24 +2280,24 @@ type CreateSchema struct {
 	// pos = Create
 	// end = Name.end
 
-	Create token.Pos // position of "CREATE" keyword
-
-	OrReplace bool
-
-	Name *Ident
+	Create      token.Pos // position of "CREATE" keyword
+	OrReplace   bool
+	IfNotExists bool
+	Name        *Ident
 }
 
 // DropSchema is DROP SCHEMA statement node.
 //
-//	DROP SCHEMA {{.Name | sql}}
+//	DROP SCHEMA{{if .IfExists}} IF EXISTS{{end}} {{.Name | sql}}
 type DropSchema struct {
 	// pos = Drop
 	// end = Name.end
 
-	Drop token.Pos // position of "DROP" keyword
-
-	Name *Ident
+	Drop     token.Pos // position of "DROP" keyword
+	IfExists bool
+	Name     *Ident
 }
+
 
 // CreateDatabase is CREATE DATABASE statement node.
 //

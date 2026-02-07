@@ -3055,20 +3055,24 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 
 func (p *Parser) parseCreateSchema(pos token.Pos, orReplace bool) *ast.CreateSchema {
 	p.expectKeywordLike("SCHEMA")
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 	return &ast.CreateSchema{
-		Create:    pos,
-		OrReplace: orReplace,
-		Name:      name,
+		Create:      pos,
+		OrReplace:   orReplace,
+		IfNotExists: ifNotExists,
+		Name:        name,
 	}
 }
 
 func (p *Parser) parseDropSchema(pos token.Pos) *ast.DropSchema {
 	p.expectKeywordLike("SCHEMA")
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropSchema{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
