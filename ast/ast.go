@@ -2275,12 +2275,14 @@ type OptionsDef struct {
 
 // CreateSchema is CREATE SCHEMA statement node.
 //
-//	CREATE SCHEMA {{.Name | sql}}
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} SCHEMA {{.Name | sql}}
 type CreateSchema struct {
 	// pos = Create
 	// end = Name.end
 
 	Create token.Pos // position of "CREATE" keyword
+
+	OrReplace bool
 
 	Name *Ident
 }

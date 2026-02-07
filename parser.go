@@ -2931,7 +2931,7 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		p.nextToken()
 		switch {
 		case p.Token.IsKeywordLike("SCHEMA"):
-			return p.parseCreateSchema(pos)
+			return p.parseCreateSchema(pos, false)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseCreateDatabase(pos)
 		case p.Token.IsKeywordLike("LOCALITY"):
@@ -2964,6 +2964,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			switch {
 			case p.Token.IsKeywordLike("VIEW"):
 				return p.parseCreateView(pos, true)
+			case p.Token.IsKeywordLike("SCHEMA"):
+				return p.parseCreateSchema(pos, true)
 			case p.Token.IsKeywordLike("MODEL"):
 				return p.parseCreateModel(pos, true)
 			case p.Token.IsKeywordLike("PROPERTY"):
@@ -3051,12 +3053,13 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 	panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ALTER, DROP, but: %s", p.Token.AsString))
 }
 
-func (p *Parser) parseCreateSchema(pos token.Pos) *ast.CreateSchema {
+func (p *Parser) parseCreateSchema(pos token.Pos, orReplace bool) *ast.CreateSchema {
 	p.expectKeywordLike("SCHEMA")
 	name := p.parseIdent()
 	return &ast.CreateSchema{
-		Create: pos,
-		Name:   name,
+		Create:    pos,
+		OrReplace: orReplace,
+		Name:      name,
 	}
 }
 
