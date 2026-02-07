@@ -1795,7 +1795,7 @@ func (c *CreateFunction) Pos() token.Pos {
 }
 
 func (c *CreateFunction) End() token.Pos {
-	return posChoice(posAdd(c.RparenAs, 1), nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.ReturnType)))
+	return posChoice(posAdd(c.RparenAs, 1), nodeEnd(wrapNode(c.Options)))
 }
 
 func (d *DropFunction) Pos() token.Pos {

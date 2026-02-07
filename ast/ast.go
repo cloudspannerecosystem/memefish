@@ -3599,7 +3599,7 @@ type FunctionParam struct {
 //	{{if .Definition}}AS ({{.Definition | sql}}){{end}}
 type CreateFunction struct {
 	// pos = Create
-	// end = RparenAs + 1 || Options.end || ReturnType.end
+	// end = RparenAs + 1 || Options.end
 
 	Create   token.Pos
 	As       token.Pos // position of "AS", optional
