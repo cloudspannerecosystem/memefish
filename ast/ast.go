@@ -114,6 +114,8 @@ func (CreateModel) isStatement()         {}
 func (AlterModel) isStatement()          {}
 func (DropModel) isStatement()           {}
 func (Analyze) isStatement()             {}
+func (CreateFunction) isStatement()      {}
+func (DropFunction) isStatement()        {}
 func (CreateVectorIndex) isStatement()   {}
 func (AlterVectorIndex) isStatement()    {}
 func (DropVectorIndex) isStatement()     {}
@@ -408,6 +410,8 @@ func (CreateModel) isDDL()         {}
 func (AlterModel) isDDL()          {}
 func (DropModel) isDDL()           {}
 func (Analyze) isDDL()             {}
+func (CreateFunction) isDDL()      {}
+func (DropFunction) isDDL()        {}
 func (CreateVectorIndex) isDDL()   {}
 func (AlterVectorIndex) isDDL()    {}
 func (DropVectorIndex) isDDL()     {}
@@ -3572,6 +3576,64 @@ type Analyze struct {
 	Analyze token.Pos // position of "ANALYZE" keyword
 }
 
+// FunctionParam is parameter in CREATE FUNCTION.
+//
+//	{{.Name | sql}} {{.Type | sql}}{{if .DefaultExpr}} DEFAULT {{.DefaultExpr | sql}}{{end}}
+type FunctionParam struct {
+	// pos = Name.pos
+	// end = DefaultExpr.end || Type.end
+
+	Name *Ident
+	Type SchemaType
+
+	DefaultExpr Expr // optional
+}
+
+// CreateFunction is CREATE FUNCTION statement node.
+//
+//	CREATE {{if .OrReplace}}OR REPLACE{{end}} FUNCTION {{.Name | sql}}
+//	({{.Params | sqlJoin ", "}}){{if .ReturnType}} RETURNS {{.ReturnType | sql}}{{end}}
+//	{{if .SqlSecurity}}SQL SECURITY {{.SqlSecurity}}{{end}}
+//	{{if .Determinism}}{{.Determinism}}{{end}}
+//	{{if .Language}}LANGUAGE {{.Language}}{{end}}
+//	{{if .Remote}}REMOTE{{end}}
+//	{{if .Options}}OPTIONS ({{.Options | sqlJoin ", "}}){{end}}
+//	{{if .Definition}}AS ({{.Definition | sql}}){{end}}
+type CreateFunction struct {
+	// pos = Create
+	// end = RparenAs + 1 || Options.end
+
+	Create   token.Pos
+	As       token.Pos // position of "AS", optional
+	RparenAs token.Pos // optional
+
+	OrReplace  bool
+	Name       *Path
+	Params     []*FunctionParam
+	ReturnType SchemaType
+
+	SqlSecurity SecurityType // optional
+	Determinism Determinism  // optional
+	Language    string       // optional
+	Remote      bool
+	Options     *Options // optional
+
+	Definition Expr // optional
+}
+
+// DropFunction is DROP FUNCTION statement node.
+//
+//	DROP FUNCTION {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropFunction struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos
+
+	IfExists bool
+	Name     *Path
+}
+
 // CreateModelColumn is a single column definition node in CREATE MODEL.
 //
 //	{{.Name | sql}} {{.DataType | sql}} {{.Options | sqlOpt}}
@@ -3652,6 +3714,8 @@ type DropModel struct {
 // ================================================================================
 
 // ScalarSchemaType is scalar type node in schema.
+// It is used for types without size specification.
+// STRING and BYTES can also be ScalarSchemaType if they do not have a size specification.
 //
 //	{{.Name}}
 type ScalarSchemaType struct {
@@ -3660,7 +3724,7 @@ type ScalarSchemaType struct {
 
 	NamePos token.Pos // position of this name
 
-	Name ScalarTypeName // except for StringTypeName and BytesTypeName
+	Name ScalarTypeName
 }
 
 // SizedSchemaType is sized type node in schema.

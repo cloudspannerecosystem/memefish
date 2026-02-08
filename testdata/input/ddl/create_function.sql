@@ -1,0 +1,1 @@
+CREATE FUNCTION my_func(x INT64, y INT64) RETURNS INT64 AS (x + y)

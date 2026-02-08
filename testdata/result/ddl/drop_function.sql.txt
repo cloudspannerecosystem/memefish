@@ -1,0 +1,17 @@
+--- drop_function.sql
+DROP FUNCTION my_func
+--- AST
+&ast.DropFunction{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 14,
+        NameEnd: 21,
+        Name:    "my_func",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP FUNCTION my_func

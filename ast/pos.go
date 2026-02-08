@@ -1782,6 +1782,30 @@ func (a *Analyze) End() token.Pos {
 	return posAdd(a.Analyze, 7)
 }
 
+func (f *FunctionParam) Pos() token.Pos {
+	return nodePos(wrapNode(f.Name))
+}
+
+func (f *FunctionParam) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(f.DefaultExpr)), nodeEnd(wrapNode(f.Type)))
+}
+
+func (c *CreateFunction) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateFunction) End() token.Pos {
+	return posChoice(posAdd(c.RparenAs, 1), nodeEnd(wrapNode(c.Options)))
+}
+
+func (d *DropFunction) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropFunction) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (c *CreateModelColumn) Pos() token.Pos {
 	return nodePos(wrapNode(c.Name))
 }

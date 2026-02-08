@@ -145,6 +145,13 @@ const (
 	SecurityTypeDefiner SecurityType = "DEFINER"
 )
 
+type Determinism string
+
+const (
+	DeterminismDeterministic    Determinism = "DETERMINISTIC"
+	DeterminismNotDeterministic Determinism = "NOT DETERMINISTIC"
+)
+
 type InsertOrType string
 
 const (

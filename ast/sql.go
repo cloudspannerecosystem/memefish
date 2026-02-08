@@ -1154,6 +1154,32 @@ func (s *AlterStatistics) SQL() string {
 }
 func (a *Analyze) SQL() string { return "ANALYZE" }
 
+func (p *FunctionParam) SQL() string {
+	return p.Name.SQL() + " " + p.Type.SQL() + sqlOpt(" DEFAULT ", p.DefaultExpr, "")
+}
+
+func (c *CreateFunction) SQL() string {
+	return "CREATE" +
+		strOpt(c.OrReplace, " OR REPLACE") +
+		" FUNCTION " +
+		c.Name.SQL() +
+		" (" + sqlJoin(c.Params, ", ") + ")" +
+		sqlOpt(" RETURNS ", c.ReturnType, "") +
+		strOpt(c.Determinism != "", " "+string(c.Determinism)) +
+		strOpt(c.Language != "", " LANGUAGE "+c.Language) +
+		strOpt(c.Remote, " REMOTE") +
+		strOpt(c.SqlSecurity != "", " SQL SECURITY "+string(c.SqlSecurity)) +
+		sqlOpt(" ", c.Options, "") +
+		sqlOpt(" AS (", c.Definition, ")")
+}
+
+func (d *DropFunction) SQL() string {
+	return "DROP" +
+		" FUNCTION " +
+		strOpt(d.IfExists, "IF EXISTS ") +
+		d.Name.SQL()
+}
+
 func (c *CreateModelColumn) SQL() string {
 	return c.Name.SQL() + " " + c.DataType.SQL() + sqlOpt(" ", c.Options, "")
 }
