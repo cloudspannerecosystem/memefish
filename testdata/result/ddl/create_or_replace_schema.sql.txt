@@ -1,0 +1,15 @@
+--- create_or_replace_schema.sql
+CREATE OR REPLACE SCHEMA sch1
+
+--- AST
+&ast.CreateSchema{
+  OrReplace: true,
+  Name:      &ast.Ident{
+    NamePos: 25,
+    NameEnd: 29,
+    Name:    "sch1",
+  },
+}
+
+--- SQL
+CREATE OR REPLACE SCHEMA sch1

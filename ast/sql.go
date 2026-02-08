@@ -772,9 +772,11 @@ func (d *DropLocalityGroup) SQL() string {
 	return "DROP LOCALITY GROUP " + d.Name.SQL()
 }
 
-func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
+func (s *CreateSchema) SQL() string {
+	return "CREATE" + strOpt(s.OrReplace, " OR REPLACE") + " SCHEMA " + strOpt(s.IfNotExists, "IF NOT EXISTS ") + s.Name.SQL()
+}
 
-func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
+func (s *DropSchema) SQL() string { return "DROP SCHEMA " + strOpt(s.IfExists, "IF EXISTS ") + s.Name.SQL() }
 
 func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
