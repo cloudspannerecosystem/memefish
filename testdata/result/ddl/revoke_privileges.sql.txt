@@ -38,16 +38,24 @@ REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contr
         },
       },
     },
-    Names: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 64,
-        NameEnd: 73,
-        Name:    "employees",
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 64,
+            NameEnd: 73,
+            Name:    "employees",
+          },
+        },
       },
-      &ast.Ident{
-        NamePos: 75,
-        NameEnd: 86,
-        Name:    "contractors",
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 75,
+            NameEnd: 86,
+            Name:    "contractors",
+          },
+        },
       },
     },
   },

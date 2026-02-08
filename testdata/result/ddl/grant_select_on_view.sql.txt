@@ -4,11 +4,15 @@ GRANT SELECT ON VIEW singernames TO ROLE hr_manager
 &ast.Grant{
   Privilege: &ast.SelectPrivilegeOnView{
     Select: 6,
-    Names:  []*ast.Ident{
-      &ast.Ident{
-        NamePos: 21,
-        NameEnd: 32,
-        Name:    "singernames",
+    Names:  []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 21,
+            NameEnd: 32,
+            Name:    "singernames",
+          },
+        },
       },
     },
   },
