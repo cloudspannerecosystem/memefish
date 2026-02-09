@@ -557,6 +557,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Constraint), visitor: v.Field("Constraint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *TablePrimaryKey:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+
 	case *ForeignKey:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReferenceColumns), visitor: v.Field("ReferenceColumns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.ReferenceTable), visitor: v.Field("ReferenceTable")})

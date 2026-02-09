@@ -869,6 +869,10 @@ func (c *TableConstraint) SQL() string {
 	return sqlOpt("CONSTRAINT ", c.Name, " ") + c.Constraint.SQL()
 }
 
+func (p *TablePrimaryKey) SQL() string {
+	return "PRIMARY KEY (" + sqlJoin(p.Columns, ", ") + ")"
+}
+
 func (f *ForeignKey) SQL() string {
 	return "FOREIGN KEY (" + sqlJoin(f.Columns, ", ") + ") " +
 		"REFERENCES " + f.ReferenceTable.SQL() + " (" +
