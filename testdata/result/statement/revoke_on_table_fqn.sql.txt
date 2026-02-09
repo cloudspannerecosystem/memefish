@@ -1,0 +1,40 @@
+--- revoke_on_table_fqn.sql
+REVOKE SELECT ON TABLE s.t FROM ROLE r
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.PrivilegeOnTable{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 7,
+        Rparen: -1,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 23,
+            NameEnd: 24,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 25,
+            NameEnd: 26,
+            Name:    "t",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 37,
+      NameEnd: 38,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT ON TABLE s.t FROM ROLE r

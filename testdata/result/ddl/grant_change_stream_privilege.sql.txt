@@ -4,16 +4,24 @@ GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager
 &ast.Grant{
   Privilege: &ast.SelectPrivilegeOnChangeStream{
     Select: 6,
-    Names:  []*ast.Ident{
-      &ast.Ident{
-        NamePos: 30,
-        NameEnd: 41,
-        Name:    "cs_name_one",
+    Names:  []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 30,
+            NameEnd: 41,
+            Name:    "cs_name_one",
+          },
+        },
       },
-      &ast.Ident{
-        NamePos: 43,
-        NameEnd: 54,
-        Name:    "cs_name_two",
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 43,
+            NameEnd: 54,
+            Name:    "cs_name_two",
+          },
+        },
       },
     },
   },

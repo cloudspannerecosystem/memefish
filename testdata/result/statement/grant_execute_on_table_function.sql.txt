@@ -4,11 +4,15 @@ GRANT EXECUTE ON TABLE FUNCTION READ_SingersNameStream TO ROLE hr_manager
 &ast.Grant{
   Privilege: &ast.ExecutePrivilegeOnTableFunction{
     Execute: 6,
-    Names:   []*ast.Ident{
-      &ast.Ident{
-        NamePos: 32,
-        NameEnd: 54,
-        Name:    "READ_SingersNameStream",
+    Names:   []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 32,
+            NameEnd: 54,
+            Name:    "READ_SingersNameStream",
+          },
+        },
       },
     },
   },

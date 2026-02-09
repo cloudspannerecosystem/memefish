@@ -3453,7 +3453,7 @@ type PrivilegeOnTable struct {
 	// end = Names[$].end
 
 	Privileges []TablePrivilege // len(Privileges) > 0
-	Names      []*Ident         // len(Names) > 0
+	Names      []*Path          // len(Names) > 0
 }
 
 // SelectPrivilege is SELECT ON TABLE privilege node in GRANT and REVOKE.
@@ -3514,7 +3514,7 @@ type SelectPrivilegeOnChangeStream struct {
 
 	Select token.Pos
 
-	Names []*Ident // len(Names) > 0
+	Names []*Path // len(Names) > 0
 }
 
 // SelectPrivilegeOnView is SELECT ON VIEW privilege node in GRANT and REVOKE.
@@ -3526,7 +3526,7 @@ type SelectPrivilegeOnView struct {
 
 	Select token.Pos
 
-	Names []*Ident // len(Names) > 0
+	Names []*Path // len(Names) > 0
 }
 
 // ExecutePrivilegeOnTableFunction is EXECUTE ON TABLE FUNCTION privilege node in GRANT and REVOKE.
@@ -3538,7 +3538,7 @@ type ExecutePrivilegeOnTableFunction struct {
 
 	Execute token.Pos
 
-	Names []*Ident // len(Names) > 0
+	Names []*Path // len(Names) > 0
 }
 
 // RolePrivilege is ROLE privilege node in GRANT and REVOKE.

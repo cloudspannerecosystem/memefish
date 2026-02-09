@@ -38,16 +38,24 @@ GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contra
         },
       },
     },
-    Names: []*ast.Ident{
-      &ast.Ident{
-        NamePos: 63,
-        NameEnd: 72,
-        Name:    "employees",
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 63,
+            NameEnd: 72,
+            Name:    "employees",
+          },
+        },
       },
-      &ast.Ident{
-        NamePos: 74,
-        NameEnd: 85,
-        Name:    "contractors",
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 74,
+            NameEnd: 85,
+            Name:    "contractors",
+          },
+        },
       },
     },
   },

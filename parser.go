@@ -4790,7 +4790,7 @@ func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
 		return nil
 	}
 	p.expectKeywordLike("VIEW")
-	names := parseCommaSeparatedList(p, p.parseIdent)
+	names := parseCommaSeparatedList(p, p.parsePath)
 	return &ast.SelectPrivilegeOnView{
 		Select: pos,
 		Names:  names,
@@ -4805,7 +4805,7 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	p.expect("ON")
 	p.expectKeywordLike("TABLE")
 	p.expectKeywordLike("FUNCTION")
-	names := parseCommaSeparatedList(p, p.parseIdent)
+	names := parseCommaSeparatedList(p, p.parsePath)
 	return &ast.ExecutePrivilegeOnTableFunction{
 		Execute: pos,
 		Names:   names,
@@ -4841,7 +4841,7 @@ func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnC
 	}
 	p.expectKeywordLike("CHANGE")
 	p.expectKeywordLike("STREAM")
-	names := parseCommaSeparatedList(p, p.parseIdent)
+	names := parseCommaSeparatedList(p, p.parsePath)
 
 	return &ast.SelectPrivilegeOnChangeStream{
 		Select: pos,
@@ -4853,7 +4853,7 @@ func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
 	privileges := parseCommaSeparatedList(p, p.parseTablePrivilege)
 	p.expect("ON")
 	p.expectKeywordLike("TABLE")
-	names := parseCommaSeparatedList(p, p.parseIdent)
+	names := parseCommaSeparatedList(p, p.parsePath)
 	return &ast.PrivilegeOnTable{
 		Privileges: privileges,
 		Names:      names,
