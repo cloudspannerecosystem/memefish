@@ -426,6 +426,8 @@ type Constraint interface {
 
 func (ForeignKey) isConstraint() {}
 func (Check) isConstraint()      {}
+func (TablePrimaryKey) isConstraint() {}
+
 
 // TableAlteration represents ALTER TABLE action.
 type TableAlteration interface {
@@ -2657,6 +2659,21 @@ type TableConstraint struct {
 
 	Name       *Ident // optional
 	Constraint Constraint
+}
+
+// TablePrimaryKey is primary key constraint in CREATE TABLE.
+// Note: While it implements Constraint interface to be stored in TableConstraints,
+// it is only used for anonymous style as Spanner doesn't support named primary keys.
+//
+//	PRIMARY KEY ({{.Columns | sqlJoin ", "}})
+type TablePrimaryKey struct {
+	// pos = Primary
+	// end = Rparen + 1
+
+	Primary token.Pos // position of "PRIMARY" keyword
+	Rparen  token.Pos // position of ")" after columns
+
+	Columns []*IndexKey
 }
 
 // ForeignKey is foreign key specifier in CREATE TABLE and ALTER TABLE.

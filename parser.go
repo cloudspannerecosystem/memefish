@@ -3292,6 +3292,12 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 				ConstraintPos: token.InvalidPos,
 				Constraint:    c,
 			})
+		case p.Token.IsKeywordLike("PRIMARY"):
+			pk := p.parseTablePrimaryKey()
+			constraints = append(constraints, &ast.TableConstraint{
+				ConstraintPos: token.InvalidPos,
+				Constraint:    pk,
+			})
 		case p.Token.IsKeywordLike("SYNONYM"):
 			synonym := p.parseSynonym()
 			synonyms = append(synonyms, synonym)
@@ -3495,6 +3501,21 @@ func (p *Parser) parseConstraint() *ast.TableConstraint {
 		ConstraintPos: pos,
 		Name:          name,
 		Constraint:    c,
+	}
+}
+
+func (p *Parser) parseTablePrimaryKey() *ast.TablePrimaryKey {
+	pos := p.expectKeywordLike("PRIMARY").Pos
+	p.expectKeywordLike("KEY")
+
+	p.expect("(")
+	keys := parseCommaSeparatedList(p, p.parseIndexKey)
+	rparen := p.expect(")").Pos
+
+	return &ast.TablePrimaryKey{
+		Primary: pos,
+		Rparen:  rparen,
+		Columns: keys,
 	}
 }
 

@@ -1214,6 +1214,14 @@ func (t *TableConstraint) End() token.Pos {
 	return nodeEnd(wrapNode(t.Constraint))
 }
 
+func (t *TablePrimaryKey) Pos() token.Pos {
+	return t.Primary
+}
+
+func (t *TablePrimaryKey) End() token.Pos {
+	return posAdd(t.Rparen, 1)
+}
+
 func (f *ForeignKey) Pos() token.Pos {
 	return f.Foreign
 }
