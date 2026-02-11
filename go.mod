@@ -2,7 +2,7 @@ module github.com/cloudspannerecosystem/memefish
 
 go 1.24.0
 
-toolchain go1.24.4
+toolchain go1.26.0
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
