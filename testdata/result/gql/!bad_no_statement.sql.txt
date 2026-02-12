@@ -20,7 +20,7 @@ syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more G
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.BadGQLLinearQueryStatement{
         BadNode: &ast.BadNode{

@@ -1007,7 +1007,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *GQLGraphQuery:
-		stack = append(stack, &stackItem{node: wrapNode(n.MultiLinearQueryStatement), visitor: v.Field("MultiLinearQueryStatement")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
 		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
@@ -1021,7 +1021,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
 	case *GQLSimpleLinearQueryStatement:
-		stack = append(stack, &stackItem{nodes: wrapNodes(n.PrimitiveQueryStatementList), visitor: v.Field("PrimitiveQueryStatementList")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
 
 	case *GQLCompoundLinearQueryStatement:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
@@ -1029,8 +1029,8 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *BadGQLPrimitiveQueryStatement:
 		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
-	case *GQLReturnStatement:
-		stack = append(stack, &stackItem{nodes: wrapNodes(n.ReturnItems), visitor: v.Field("ReturnItems")})
+	case *GQLReturn:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *GQLReturnItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})

@@ -6348,12 +6348,12 @@ func (p *Parser) parseGQLQuery() *ast.GQLGraphQuery {
 
 func (p *Parser) parseGQLQueryInternal(hint *ast.Hint) *ast.GQLGraphQuery {
 	graphClause := p.parseGQLGraphClause()
-	multiQueryStatement := p.parseGQLMultiLinearQueryStatement()
+	query := p.parseGQLMultiLinearQueryStatement()
 
 	return &ast.GQLGraphQuery{
-		Hint:                      hint,
-		GraphClause:               graphClause,
-		MultiLinearQueryStatement: multiQueryStatement,
+		Hint:        hint,
+		GraphClause: graphClause,
+		Query:       query,
 	}
 }
 
@@ -6425,29 +6425,29 @@ func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryS
 	}
 
 	return &ast.GQLSimpleLinearQueryStatement{
-		PrimitiveQueryStatementList: stmts,
+		Statements: stmts,
 	}
 }
 
 func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryStatement {
 	switch {
 	case p.Token.IsKeywordLike("RETURN"):
-		return p.parseGQLReturnStatement()
+		return p.parseGQLReturn()
 	default:
 		return nil
 	}
 }
 
-func (p *Parser) parseGQLReturnStatement() *ast.GQLReturnStatement {
+func (p *Parser) parseGQLReturn() *ast.GQLReturn {
 	pos := p.expectKeywordLike("RETURN").Pos
 	allOrDistinct := p.tryParseAllOrDistinct()
 
 	items := p.parseGQLReturnItemList()
 
-	return &ast.GQLReturnStatement{
+	return &ast.GQLReturn{
 		Return:        pos,
 		AllOrDistinct: allOrDistinct,
-		ReturnItems:   items,
+		Items:         items,
 	}
 }
 

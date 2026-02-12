@@ -19,13 +19,13 @@ RETURN 10 AS a
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-          &ast.GQLReturnStatement{
-            Return:      14,
-            ReturnItems: []*ast.GQLReturnItem{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 14,
+            Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Expr: &ast.IntLiteral{
                   ValuePos: 21,
@@ -48,10 +48,10 @@ RETURN 10 AS a
         AllOrDistinct: "ALL",
         Statements:    []ast.GQLLinearQueryStatement{
           &ast.GQLSimpleLinearQueryStatement{
-            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturnStatement{
-                Return:      33,
-                ReturnItems: []*ast.GQLReturnItem{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 33,
+                Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Expr: &ast.BinaryExpr{
                       Op:   "+",
@@ -78,10 +78,10 @@ RETURN 10 AS a
             },
           },
           &ast.GQLSimpleLinearQueryStatement{
-            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturnStatement{
-                Return:      61,
-                ReturnItems: []*ast.GQLReturnItem{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 61,
+                Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Expr: &ast.IntLiteral{
                       ValuePos: 68,

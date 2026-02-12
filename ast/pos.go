@@ -2179,7 +2179,7 @@ func (g *GQLGraphQuery) Pos() token.Pos {
 }
 
 func (g *GQLGraphQuery) End() token.Pos {
-	return nodeEnd(wrapNode(g.MultiLinearQueryStatement))
+	return nodeEnd(wrapNode(g.Query))
 }
 
 func (g *GQLGraphClause) Pos() token.Pos {
@@ -2207,11 +2207,11 @@ func (b *BadGQLLinearQueryStatement) End() token.Pos {
 }
 
 func (g *GQLSimpleLinearQueryStatement) Pos() token.Pos {
-	return nodePos(nodeSliceIndex(g.PrimitiveQueryStatementList, 0))
+	return nodePos(nodeSliceIndex(g.Statements, 0))
 }
 
 func (g *GQLSimpleLinearQueryStatement) End() token.Pos {
-	return nodeEnd(nodeSliceLast(g.PrimitiveQueryStatementList))
+	return nodeEnd(nodeSliceLast(g.Statements))
 }
 
 func (g *GQLCompoundLinearQueryStatement) Pos() token.Pos {
@@ -2230,12 +2230,12 @@ func (b *BadGQLPrimitiveQueryStatement) End() token.Pos {
 	return nodeEnd(wrapNode(b.BadNode))
 }
 
-func (g *GQLReturnStatement) Pos() token.Pos {
+func (g *GQLReturn) Pos() token.Pos {
 	return g.Return
 }
 
-func (g *GQLReturnStatement) End() token.Pos {
-	return nodeEnd(nodeSliceLast(g.ReturnItems))
+func (g *GQLReturn) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Items))
 }
 
 func (g *GQLReturnItem) Pos() token.Pos {

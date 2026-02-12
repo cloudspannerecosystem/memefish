@@ -17,14 +17,14 @@ RETURN DISTINCT a AS a, b AS b
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-          &ast.GQLReturnStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
             Return:        14,
             AllOrDistinct: "ALL",
-            ReturnItems:   []*ast.GQLReturnItem{
+            Items:         []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Expr: &ast.IntLiteral{
                   ValuePos: 25,
@@ -56,11 +56,11 @@ RETURN DISTINCT a AS a, b AS b
         },
       },
       &ast.GQLSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-          &ast.GQLReturnStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
             Return:        45,
             AllOrDistinct: "DISTINCT",
-            ReturnItems:   []*ast.GQLReturnItem{
+            Items:         []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Expr: &ast.Ident{
                   NamePos: 61,

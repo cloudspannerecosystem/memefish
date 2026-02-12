@@ -1450,7 +1450,7 @@ func (c *Call) SQL() string {
 // ================================================================================
 
 func (q *GQLGraphQuery) SQL() string {
-	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.MultiLinearQueryStatement.SQL()
+	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.Query.SQL()
 }
 
 func (c *GQLGraphClause) SQL() string {
@@ -1462,7 +1462,7 @@ func (s *GQLMultiLinearQueryStatement) SQL() string {
 }
 
 func (s *GQLSimpleLinearQueryStatement) SQL() string {
-	return sqlJoin(s.PrimitiveQueryStatementList, " ")
+	return sqlJoin(s.Statements, " ")
 }
 
 func (s *GQLCompoundLinearQueryStatement) SQL() string {
@@ -1470,8 +1470,8 @@ func (s *GQLCompoundLinearQueryStatement) SQL() string {
 	return sqlJoin(s.Statements, sep)
 }
 
-func (s *GQLReturnStatement) SQL() string {
-	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.ReturnItems, ", ")
+func (s *GQLReturn) SQL() string {
+	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ")
 }
 
 func (i *GQLReturnItem) SQL() string {

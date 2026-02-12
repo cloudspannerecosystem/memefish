@@ -23,7 +23,7 @@ syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:74: expected tok
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.BadGQLLinearQueryStatement{
         BadNode: &ast.BadNode{

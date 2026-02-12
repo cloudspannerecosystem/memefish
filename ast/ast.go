@@ -4348,20 +4348,20 @@ type GQLPrimitiveQueryStatement interface {
 	isGQLPrimitiveQueryStatement()
 }
 
-func (GQLReturnStatement) isGQLPrimitiveQueryStatement()      {}
+func (GQLReturn) isGQLPrimitiveQueryStatement()               {}
 func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
 
 // GQLGraphQuery is a top-level GQL query.
 //
-//	{{.Hint | sqlOpt}} {{.GraphClause | sql}} {{.MultiLinearQueryStatement | sql}}
+//	{{.Hint | sqlOpt}} {{.GraphClause | sql}} {{.Query | sql}}
 type GQLGraphQuery struct {
 	// pos = (Hint ?? GraphClause).pos
-	// end = MultiLinearQueryStatement.end
+	// end = Query.end
 
 	Hint        *Hint
 	GraphClause *GQLGraphClause
 
-	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
+	Query *GQLMultiLinearQueryStatement
 }
 
 // GQLGraphClause is a GRAPH clause in GQL.
@@ -4376,6 +4376,7 @@ type GQLGraphClause struct {
 }
 
 // GQLMultiLinearQueryStatement is a list of linear query statements chained with NEXT.
+//
 //	{{.Statements | sqlJoin " NEXT "}}
 type GQLMultiLinearQueryStatement struct {
 	// pos = Statements[0].pos
@@ -4395,15 +4396,17 @@ type BadGQLLinearQueryStatement struct {
 }
 
 // GQLSimpleLinearQueryStatement is a list of primitive query statements that ends with RETURN.
-//	{{.PrimitiveQueryStatementList | sqlJoin " "}}
+//
+//	{{.Statements | sqlJoin " "}}
 type GQLSimpleLinearQueryStatement struct {
-	// pos = PrimitiveQueryStatementList[0].pos
-	// end = PrimitiveQueryStatementList[$].end
+	// pos = Statements[0].pos
+	// end = Statements[$].end
 
-	PrimitiveQueryStatementList []GQLPrimitiveQueryStatement // len(PrimitiveQueryStatementList) > 0
+	Statements []GQLPrimitiveQueryStatement // len(Statements) > 0
 }
 
 // GQLCompoundLinearQueryStatement represents a list of linear query statements composited with the set operators.
+//
 //	{{.Statements | sqlJoin (printf " %s %s " .Op .AllOrDistinct)}}
 type GQLCompoundLinearQueryStatement struct {
 	// pos = Statements[0].pos
@@ -4424,16 +4427,16 @@ type BadGQLPrimitiveQueryStatement struct {
 	BadNode *BadNode
 }
 
-// GQLReturnStatement is a RETURN statement in GQL.
+// GQLReturn is a RETURN statement in GQL.
 //
-//	RETURN {{.AllOrDistinct | sqlOpt}} {{.ReturnItems | sqlJoin ", "}}
-type GQLReturnStatement struct {
+//	RETURN {{.AllOrDistinct | sqlOpt}} {{.Items | sqlJoin ", "}}
+type GQLReturn struct {
 	// pos = Return
-	// end = ReturnItems[$].end
+	// end = Items[$].end
 
 	Return        token.Pos
 	AllOrDistinct AllOrDistinct
-	ReturnItems   []*GQLReturnItem
+	Items         []*GQLReturnItem
 }
 
 // GQLReturnItem is an item in a RETURN statement.

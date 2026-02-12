@@ -19,17 +19,17 @@ RETURN 3 AS x
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLCompoundLinearQueryStatement{
         Op:            "UNION",
         AllOrDistinct: "ALL",
         Statements:    []ast.GQLLinearQueryStatement{
           &ast.GQLSimpleLinearQueryStatement{
-            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturnStatement{
-                Return:      14,
-                ReturnItems: []*ast.GQLReturnItem{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 14,
+                Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Expr: &ast.IntLiteral{
                       ValuePos: 21,
@@ -48,10 +48,10 @@ RETURN 3 AS x
             },
           },
           &ast.GQLSimpleLinearQueryStatement{
-            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturnStatement{
-                Return:      38,
-                ReturnItems: []*ast.GQLReturnItem{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 38,
+                Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Expr: &ast.IntLiteral{
                       ValuePos: 45,
@@ -70,10 +70,10 @@ RETURN 3 AS x
             },
           },
           &ast.GQLSimpleLinearQueryStatement{
-            PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-              &ast.GQLReturnStatement{
-                Return:      62,
-                ReturnItems: []*ast.GQLReturnItem{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 62,
+                Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Expr: &ast.IntLiteral{
                       ValuePos: 69,

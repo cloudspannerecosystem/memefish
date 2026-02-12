@@ -39,13 +39,13 @@ RETURN 1 AS x
       },
     },
   },
-  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+  Query: &ast.GQLMultiLinearQueryStatement{
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLSimpleLinearQueryStatement{
-        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
-          &ast.GQLReturnStatement{
-            Return:      21,
-            ReturnItems: []*ast.GQLReturnItem{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 21,
+            Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Expr: &ast.IntLiteral{
                   ValuePos: 28,
