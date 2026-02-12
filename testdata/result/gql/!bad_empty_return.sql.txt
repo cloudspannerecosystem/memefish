@@ -1,0 +1,48 @@
+--- !bad_empty_return.sql
+GRAPH MyGraph
+RETURN
+
+--- Error
+syntax error: testdata/input/gql/!bad_empty_return.sql:3:1: unexpected token: <eof>
+  3|  
+   |  ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 13,
+          Name:    "MyGraph",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      14,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.BadExpr{
+                  BadNode: &ast.BadNode{
+                    NodePos: 21,
+                    NodeEnd: 21,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH MyGraph RETURN 

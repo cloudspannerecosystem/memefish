@@ -1,0 +1,60 @@
+--- !bad_no_statement_after_next.sql
+GRAPH MyGraph
+RETURN 1 AS x
+NEXT
+
+--- Error
+syntax error: testdata/input/gql/!bad_no_statement_after_next.sql:4:1: expect one or more GQL statements, but: <eof>
+  4|  
+   |  ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 13,
+          Name:    "MyGraph",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      14,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 21,
+                  ValueEnd: 22,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 26,
+                  NameEnd: 27,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 33,
+          NodeEnd: 33,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH MyGraph RETURN 1 AS x NEXT 

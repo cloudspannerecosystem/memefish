@@ -1,0 +1,97 @@
+--- return_all_distinct.sql
+GRAPH MyGraph
+RETURN ALL 1 AS a, 2 AS b
+NEXT
+RETURN DISTINCT a AS a, b AS b
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 13,
+          Name:    "MyGraph",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:        14,
+            AllOrDistinct: "ALL",
+            ReturnItems:   []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 25,
+                  ValueEnd: 26,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 30,
+                  NameEnd: 31,
+                  Name:    "a",
+                },
+              },
+              &ast.GQLReturnItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 33,
+                  ValueEnd: 34,
+                  Base:     10,
+                  Value:    "2",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 38,
+                  NameEnd: 39,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:        45,
+            AllOrDistinct: "DISTINCT",
+            ReturnItems:   []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 62,
+                  Name:    "a",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 66,
+                  NameEnd: 67,
+                  Name:    "a",
+                },
+              },
+              &ast.GQLReturnItem{
+                Expr: &ast.Ident{
+                  NamePos: 69,
+                  NameEnd: 70,
+                  Name:    "b",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 74,
+                  NameEnd: 75,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH MyGraph RETURN ALL 1 AS a, 2 AS b NEXT RETURN DISTINCT a AS a, b AS b

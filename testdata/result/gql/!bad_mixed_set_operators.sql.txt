@@ -1,0 +1,162 @@
+--- !bad_mixed_set_operators.sql
+GRAPH g RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
+
+--- Error
+syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:47: all set operator at the same level must be the same
+  1|  GRAPH g RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
+   |                                                ^~~~~~~~~
+syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:74: expected token: <eof>, but: ;
+  1|  GRAPH g RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
+   |                                                                           ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 7,
+          Name:    "g",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 8,
+          NodeEnd: 73,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      8,
+              End:      14,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "1",
+              Base:  10,
+              Pos:   15,
+              End:   16,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   17,
+              End:   19,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      20,
+              End:      21,
+            },
+            &token.Token{
+              Kind:  "UNION",
+              Space: " ",
+              Raw:   "UNION",
+              Pos:   22,
+              End:   27,
+            },
+            &token.Token{
+              Kind:  "ALL",
+              Space: " ",
+              Raw:   "ALL",
+              Pos:   28,
+              End:   31,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      32,
+              End:      38,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "2",
+              Base:  10,
+              Pos:   39,
+              End:   40,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   41,
+              End:   43,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      44,
+              End:      45,
+            },
+            &token.Token{
+              Kind:  "INTERSECT",
+              Space: " ",
+              Raw:   "INTERSECT",
+              Pos:   46,
+              End:   55,
+            },
+            &token.Token{
+              Kind:  "ALL",
+              Space: " ",
+              Raw:   "ALL",
+              Pos:   56,
+              End:   59,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      60,
+              End:      66,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "3",
+              Base:  10,
+              Pos:   67,
+              End:   68,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   69,
+              End:   71,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      72,
+              End:      73,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH g RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x

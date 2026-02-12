@@ -2173,3 +2173,75 @@ func (c *Call) Pos() token.Pos {
 func (c *Call) End() token.Pos {
 	return posAdd(c.Rparen, 1)
 }
+
+func (g *GQLGraphQuery) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.GraphClause)))
+}
+
+func (g *GQLGraphQuery) End() token.Pos {
+	return nodeEnd(wrapNode(g.MultiLinearQueryStatement))
+}
+
+func (g *GQLGraphClause) Pos() token.Pos {
+	return g.Graph
+}
+
+func (g *GQLGraphClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.PropertyGraphName))
+}
+
+func (g *GQLMultiLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Statements, 0))
+}
+
+func (g *GQLMultiLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Statements))
+}
+
+func (b *BadGQLLinearQueryStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLLinearQueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (g *GQLSimpleLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.PrimitiveQueryStatementList, 0))
+}
+
+func (g *GQLSimpleLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.PrimitiveQueryStatementList))
+}
+
+func (g *GQLCompoundLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Statements, 0))
+}
+
+func (g *GQLCompoundLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Statements))
+}
+
+func (b *BadGQLPrimitiveQueryStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLPrimitiveQueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (g *GQLReturnStatement) Pos() token.Pos {
+	return g.Return
+}
+
+func (g *GQLReturnStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.ReturnItems))
+}
+
+func (g *GQLReturnItem) Pos() token.Pos {
+	return nodePos(wrapNode(g.Expr))
+}
+
+func (g *GQLReturnItem) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Expr)))
+}

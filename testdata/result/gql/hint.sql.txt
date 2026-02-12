@@ -1,0 +1,71 @@
+--- hint.sql
+@{a=1}
+GRAPH MyGraph
+RETURN 1 AS x
+
+--- AST
+&ast.GQLGraphQuery{
+  Hint: &ast.Hint{
+    Rbrace:  5,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 3,
+              Name:    "a",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 4,
+          ValueEnd: 5,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  GraphClause: &ast.GQLGraphClause{
+    Graph:             7,
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 13,
+          NameEnd: 20,
+          Name:    "MyGraph",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      21,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 28,
+                  ValueEnd: 29,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 33,
+                  NameEnd: 34,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{a=1} GRAPH MyGraph RETURN 1 AS x

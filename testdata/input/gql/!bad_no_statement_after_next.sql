@@ -1,0 +1,3 @@
+GRAPH MyGraph
+RETURN 1 AS x
+NEXT

@@ -1,0 +1,2 @@
+GRAPH MyGraph
+RETURN

@@ -65,12 +65,39 @@ func (p *Parser) ParseQuery() (*ast.QueryStatement, error) {
 		// Reset the errors and allow processing to continue
 		err := MultiError(p.errors)
 		p.errors = nil
-
 		return stmt, err
 	}
 
 	return stmt, nil
 }
+
+func (p *Parser) ParseGQLQuery() (stmt *ast.GQLGraphQuery, err error) {
+	p.nextToken()
+
+	l := p.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			p.handleParseStatementError(r, l)
+			err = MultiError(p.errors)
+			p.errors = nil
+		}
+	}()
+
+	stmt = p.parseGQLQuery()
+	if p.Token.Kind != token.TokenEOF {
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
+	}
+
+	if len(p.errors) > 0 {
+		// Reset the errors and allow processing to continue
+		err = MultiError(p.errors)
+		p.errors = nil
+		return stmt, err
+	}
+
+	return stmt, nil
+}
+
 
 // ParseExpr parses a SQL expression.
 func (p *Parser) ParseExpr() (ast.Expr, error) {
@@ -213,6 +240,8 @@ func (p *Parser) parseStatementInternal(hint *ast.Hint) (stmt ast.Statement) {
 	switch {
 	case p.Token.Kind == "SELECT" || p.Token.Kind == "WITH" || p.Token.Kind == "(" || p.Token.Kind == "FROM":
 		return p.parseQueryStatementInternal(hint)
+	case p.Token.IsKeywordLike("GRAPH"):
+		return p.parseGQLQueryInternal(hint)
 	case p.Token.IsKeywordLike("INSERT") || p.Token.IsKeywordLike("DELETE") || p.Token.IsKeywordLike("UPDATE"):
 		return p.parseDMLInternal(hint)
 	case hint != nil:
@@ -853,6 +882,31 @@ func (p *Parser) tryParseAllOrDistinct() ast.AllOrDistinct {
 		// not specified
 		return ""
 	}
+}
+
+func (p *Parser) lookaheadSetOp() bool {
+	switch p.Token.Kind {
+	case "UNION", "INTERSECT", "EXCEPT":
+		return true
+	}
+	return false
+}
+
+func (p *Parser) parseSetOp() (ast.SetOp, token.Token) {
+	var op ast.SetOp
+	opTok := p.Token
+	switch p.Token.Kind {
+	case "UNION":
+		op = ast.SetOpUnion
+	case "INTERSECT":
+		op = ast.SetOpIntersect
+	case "EXCEPT":
+		op = ast.SetOpExcept
+	default:
+		p.panicfAtToken(&p.Token, "expected: UNION, INTERSECT, EXCEPT, but: %s", p.Token.Kind)
+	}
+	p.nextToken()
+	return op, opTok
 }
 
 func (p *Parser) parseAllOrDistinct() ast.AllOrDistinct {
@@ -6279,4 +6333,145 @@ func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
 
 func (p *Parser) nextToken() {
 	p.Lexer.nextToken(false)
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+func (p *Parser) parseGQLQuery() *ast.GQLGraphQuery {
+	hint := p.tryParseHint()
+	return p.parseGQLQueryInternal(hint)
+}
+
+func (p *Parser) parseGQLQueryInternal(hint *ast.Hint) *ast.GQLGraphQuery {
+	graphClause := p.parseGQLGraphClause()
+	multiQueryStatement := p.parseGQLMultiLinearQueryStatement()
+
+	return &ast.GQLGraphQuery{
+		Hint:                      hint,
+		GraphClause:               graphClause,
+		MultiLinearQueryStatement: multiQueryStatement,
+	}
+}
+
+func (p *Parser) parseGQLGraphClause() *ast.GQLGraphClause {
+	graphPos := p.expectKeywordLike("GRAPH").Pos
+	graphName := p.parsePath()
+	return &ast.GQLGraphClause{
+		Graph:             graphPos,
+		PropertyGraphName: graphName,
+	}
+}
+
+func (p *Parser) parseGQLMultiLinearQueryStatement() *ast.GQLMultiLinearQueryStatement {
+	var stmts []ast.GQLLinearQueryStatement
+	stmts = append(stmts, p.parseGQLLinearQueryStatement())
+
+	for p.Token.IsKeywordLike("NEXT") {
+		p.nextToken()
+		stmts = append(stmts, p.parseGQLLinearQueryStatement())
+	}
+
+	return &ast.GQLMultiLinearQueryStatement{
+		Statements: stmts,
+	}
+}
+
+func (p *Parser) parseGQLLinearQueryStatement() (stmt ast.GQLLinearQueryStatement) {
+	l := p.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = &ast.BadGQLLinearQueryStatement{BadNode: p.handleParseStatementError(r, l)}
+		}
+	}()
+
+	stmt = p.parseGQLSimpleLinearQueryStatement()
+	for p.lookaheadSetOp() {
+		op, opTok := p.parseSetOp()
+		allOrDistinct := p.tryParseAllOrDistinct()
+		right := p.parseGQLSimpleLinearQueryStatement()
+
+		if c, ok := stmt.(*ast.GQLCompoundLinearQueryStatement); ok {
+			if c.Op != op || c.AllOrDistinct != allOrDistinct {
+				p.panicfAtToken(&opTok, "all set operator at the same level must be the same")
+			}
+			c.Statements = append(c.Statements, right)
+		} else {
+			stmt = &ast.GQLCompoundLinearQueryStatement{
+				Op:            op,
+				AllOrDistinct: allOrDistinct,
+				Statements:    []ast.GQLLinearQueryStatement{stmt, right},
+			}
+		}
+	}
+	return stmt
+}
+
+func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryStatement {
+	var stmts []ast.GQLPrimitiveQueryStatement
+	for {
+		stmt := p.tryParseGQLPrimitiveQueryStatement()
+		if stmt == nil {
+			break
+		}
+		stmts = append(stmts, stmt)
+	}
+
+	if len(stmts) == 0 {
+		p.panicfAtToken(&p.Token, "expect one or more GQL statements, but: %v", p.Token.Kind)
+	}
+
+	return &ast.GQLSimpleLinearQueryStatement{
+		PrimitiveQueryStatementList: stmts,
+	}
+}
+
+func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryStatement {
+	switch {
+	case p.Token.IsKeywordLike("RETURN"):
+		return p.parseGQLReturnStatement()
+	default:
+		return nil
+	}
+}
+
+func (p *Parser) parseGQLReturnStatement() *ast.GQLReturnStatement {
+	pos := p.expectKeywordLike("RETURN").Pos
+	allOrDistinct := p.tryParseAllOrDistinct()
+
+	items := p.parseGQLReturnItemList()
+
+	return &ast.GQLReturnStatement{
+		Return:        pos,
+		AllOrDistinct: allOrDistinct,
+		ReturnItems:   items,
+	}
+}
+
+func (p *Parser) parseGQLReturnItemList() []*ast.GQLReturnItem {
+	var items []*ast.GQLReturnItem
+	for {
+		items = append(items, p.parseGQLReturnItem())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+	}
+	return items
+}
+
+func (p *Parser) parseGQLReturnItem() *ast.GQLReturnItem {
+	expr := p.parseExpr()
+	var alias *ast.Ident
+	if p.Token.Kind == "AS" {
+		p.nextToken()
+		alias = p.parseIdent()
+	}
+	return &ast.GQLReturnItem{
+		Expr:  expr,
+		Alias: alias,
+	}
 }

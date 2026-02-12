@@ -76,6 +76,7 @@ func (BadStatement) isStatement()        {}
 func (BadDDL) isStatement()              {}
 func (BadDML) isStatement()              {}
 func (QueryStatement) isStatement()      {}
+func (GQLGraphQuery) isStatement()       {}
 func (CreateSchema) isStatement()        {}
 func (DropSchema) isStatement()          {}
 func (CreateDatabase) isStatement()      {}
@@ -4323,4 +4324,125 @@ type Call struct {
 
 	Name *Path
 	Args []TVFArg // len(Args) > 0
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+// GQLLinearQueryStatement represents a linear query statement.
+type GQLLinearQueryStatement interface {
+	Node
+	isGQLLinearQueryStatement()
+}
+
+func (GQLSimpleLinearQueryStatement) isGQLLinearQueryStatement()   {}
+func (GQLCompoundLinearQueryStatement) isGQLLinearQueryStatement() {}
+func (BadGQLLinearQueryStatement) isGQLLinearQueryStatement()      {}
+
+// GQLPrimitiveQueryStatement represents a primitive query statement.
+type GQLPrimitiveQueryStatement interface {
+	Node
+	isGQLPrimitiveQueryStatement()
+}
+
+func (GQLReturnStatement) isGQLPrimitiveQueryStatement()      {}
+func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
+
+// GQLGraphQuery is a top-level GQL query.
+//
+//	{{.Hint | sqlOpt}} {{.GraphClause | sql}} {{.MultiLinearQueryStatement | sql}}
+type GQLGraphQuery struct {
+	// pos = (Hint ?? GraphClause).pos
+	// end = MultiLinearQueryStatement.end
+
+	Hint        *Hint
+	GraphClause *GQLGraphClause
+
+	MultiLinearQueryStatement *GQLMultiLinearQueryStatement
+}
+
+// GQLGraphClause is a GRAPH clause in GQL.
+//
+//	GRAPH {{.PropertyGraphName | sql}}
+type GQLGraphClause struct {
+	// pos = Graph
+	// end = PropertyGraphName.end
+
+	Graph             token.Pos
+	PropertyGraphName *Path
+}
+
+// GQLMultiLinearQueryStatement is a list of linear query statements chained with NEXT.
+//	{{.Statements | sqlJoin " NEXT "}}
+type GQLMultiLinearQueryStatement struct {
+	// pos = Statements[0].pos
+	// end = Statements[$].end
+
+	Statements []GQLLinearQueryStatement // len(Statements) > 0
+}
+
+// BadGQLLinearQueryStatement is a bad GQLLinearQueryStatement node.
+//
+//	{{.BadNode | sql}}
+type BadGQLLinearQueryStatement struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// GQLSimpleLinearQueryStatement is a list of primitive query statements that ends with RETURN.
+//	{{.PrimitiveQueryStatementList | sqlJoin " "}}
+type GQLSimpleLinearQueryStatement struct {
+	// pos = PrimitiveQueryStatementList[0].pos
+	// end = PrimitiveQueryStatementList[$].end
+
+	PrimitiveQueryStatementList []GQLPrimitiveQueryStatement // len(PrimitiveQueryStatementList) > 0
+}
+
+// GQLCompoundLinearQueryStatement represents a list of linear query statements composited with the set operators.
+//	{{.Statements | sqlJoin (printf " %s %s " .Op .AllOrDistinct)}}
+type GQLCompoundLinearQueryStatement struct {
+	// pos = Statements[0].pos
+	// end = Statements[$].end
+
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Statements    []GQLLinearQueryStatement // len(Statements) >= 2
+}
+
+// BadGQLPrimitiveQueryStatement is a bad GQLPrimitiveQueryStatement node.
+//
+//	{{.BadNode | sql}}
+type BadGQLPrimitiveQueryStatement struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// GQLReturnStatement is a RETURN statement in GQL.
+//
+//	RETURN {{.AllOrDistinct | sqlOpt}} {{.ReturnItems | sqlJoin ", "}}
+type GQLReturnStatement struct {
+	// pos = Return
+	// end = ReturnItems[$].end
+
+	Return        token.Pos
+	AllOrDistinct AllOrDistinct
+	ReturnItems   []*GQLReturnItem
+}
+
+// GQLReturnItem is an item in a RETURN statement.
+//
+//	{{.Expr | sql}}{{if .Alias}} AS {{.Alias | sql}}{{end}}
+type GQLReturnItem struct {
+	// pos = Expr.pos
+	// end = (Alias ?? Expr).end
+
+	Expr  Expr
+	Alias *Ident
 }

@@ -1,0 +1,4 @@
+GRAPH MyGraph
+RETURN ALL 1 AS a, 2 AS b
+NEXT
+RETURN DISTINCT a AS a, b AS b

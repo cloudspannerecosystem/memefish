@@ -178,6 +178,8 @@ func (b *BadExpr) SQL() string      { return b.BadNode.SQL() }
 func (b *BadType) SQL() string      { return b.BadNode.SQL() }
 func (b *BadDDL) SQL() string       { return b.BadNode.SQL() }
 func (b *BadDML) SQL() string       { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
+func (b *BadGQLLinearQueryStatement) SQL() string { return b.BadNode.SQL() }
+func (b *BadGQLPrimitiveQueryStatement) SQL() string { return b.BadNode.SQL() }
 
 // ================================================================================
 //
@@ -1439,4 +1441,39 @@ func (u *UpdateItem) SQL() string {
 
 func (c *Call) SQL() string {
 	return "CALL " + c.Name.SQL() + "(" + sqlJoin(c.Args, ", ") + ")"
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+func (q *GQLGraphQuery) SQL() string {
+	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.MultiLinearQueryStatement.SQL()
+}
+
+func (c *GQLGraphClause) SQL() string {
+	return "GRAPH " + c.PropertyGraphName.SQL()
+}
+
+func (s *GQLMultiLinearQueryStatement) SQL() string {
+	return sqlJoin(s.Statements, " NEXT ")
+}
+
+func (s *GQLSimpleLinearQueryStatement) SQL() string {
+	return sqlJoin(s.PrimitiveQueryStatementList, " ")
+}
+
+func (s *GQLCompoundLinearQueryStatement) SQL() string {
+	sep := " " + string(s.Op) + strOpt(s.AllOrDistinct != "", " "+string(s.AllOrDistinct)) + " "
+	return sqlJoin(s.Statements, sep)
+}
+
+func (s *GQLReturnStatement) SQL() string {
+	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.ReturnItems, ", ")
+}
+
+func (i *GQLReturnItem) SQL() string {
+	return i.Expr.SQL() + sqlOpt(" AS ", i.Alias, "")
 }

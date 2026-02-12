@@ -1,0 +1,111 @@
+--- next_chain.sql
+GRAPH MyGraph
+RETURN 1 AS a
+NEXT
+RETURN a + 1 AS b
+NEXT
+RETURN b + 1 AS c
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 13,
+          Name:    "MyGraph",
+        },
+      },
+    },
+  },
+  MultiLinearQueryStatement: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      14,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 21,
+                  ValueEnd: 22,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.Ident{
+                  NamePos: 26,
+                  NameEnd: 27,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      33,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.BinaryExpr{
+                  Op:   "+",
+                  Left: &ast.Ident{
+                    NamePos: 40,
+                    NameEnd: 41,
+                    Name:    "a",
+                  },
+                  Right: &ast.IntLiteral{
+                    ValuePos: 44,
+                    ValueEnd: 45,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+                Alias: &ast.Ident{
+                  NamePos: 49,
+                  NameEnd: 50,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        PrimitiveQueryStatementList: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturnStatement{
+            Return:      56,
+            ReturnItems: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Expr: &ast.BinaryExpr{
+                  Op:   "+",
+                  Left: &ast.Ident{
+                    NamePos: 63,
+                    NameEnd: 64,
+                    Name:    "b",
+                  },
+                  Right: &ast.IntLiteral{
+                    ValuePos: 67,
+                    ValueEnd: 68,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+                Alias: &ast.Ident{
+                  NamePos: 72,
+                  NameEnd: 73,
+                  Name:    "c",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH MyGraph RETURN 1 AS a NEXT RETURN a + 1 AS b NEXT RETURN b + 1 AS c
