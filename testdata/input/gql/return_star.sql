@@ -1,1 +1,2 @@
 GRAPH FinGraph
+RETURN *

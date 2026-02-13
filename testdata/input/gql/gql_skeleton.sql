@@ -1,4 +1,4 @@
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN 1 AS a
 NEXT
 RETURN a + 1 AS a

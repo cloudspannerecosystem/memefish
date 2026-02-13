@@ -1,6 +1,6 @@
 --- hint.sql
 @{a=1}
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN 1 AS x
 
 --- AST
@@ -33,8 +33,8 @@ RETURN 1 AS x
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 13,
-          NameEnd: 20,
-          Name:    "MyGraph",
+          NameEnd: 21,
+          Name:    "FinGraph",
         },
       },
     },
@@ -44,19 +44,19 @@ RETURN 1 AS x
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturn{
-            Return: 21,
+            Return: 22,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.IntLiteral{
-                  ValuePos: 28,
-                  ValueEnd: 29,
+                  ValuePos: 29,
+                  ValueEnd: 30,
                   Base:     10,
                   Value:    "1",
                 },
                 Alias: &ast.Ident{
-                  NamePos: 33,
-                  NameEnd: 34,
+                  NamePos: 34,
+                  NameEnd: 35,
                   Name:    "x",
                 },
               },
@@ -69,4 +69,4 @@ RETURN 1 AS x
 }
 
 --- SQL
-@{a=1} GRAPH MyGraph RETURN 1 AS x
+@{a=1} GRAPH FinGraph RETURN 1 AS x

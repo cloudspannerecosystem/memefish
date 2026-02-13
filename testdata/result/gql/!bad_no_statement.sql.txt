@@ -1,5 +1,5 @@
 --- !bad_no_statement.sql
-GRAPH MyGraph
+GRAPH FinGraph
 
 --- Error
 syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more GQL statements, but: <eof>
@@ -14,8 +14,8 @@ syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more G
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 6,
-          NameEnd: 13,
-          Name:    "MyGraph",
+          NameEnd: 14,
+          Name:    "FinGraph",
         },
       },
     },
@@ -24,8 +24,8 @@ syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more G
     Statements: []ast.GQLLinearQueryStatement{
       &ast.BadGQLLinearQueryStatement{
         BadNode: &ast.BadNode{
-          NodePos: 14,
-          NodeEnd: 14,
+          NodePos: 15,
+          NodeEnd: 15,
         },
       },
     },
@@ -33,4 +33,4 @@ syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more G
 }
 
 --- SQL
-GRAPH MyGraph 
+GRAPH FinGraph 

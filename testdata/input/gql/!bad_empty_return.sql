@@ -1,2 +1,2 @@
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN

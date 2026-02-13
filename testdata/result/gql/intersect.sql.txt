@@ -1,5 +1,5 @@
 --- intersect.sql
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN 1 AS x
 INTERSECT DISTINCT
 RETURN 1 AS x
@@ -11,8 +11,8 @@ RETURN 1 AS x
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 6,
-          NameEnd: 13,
-          Name:    "MyGraph",
+          NameEnd: 14,
+          Name:    "FinGraph",
         },
       },
     },
@@ -26,19 +26,19 @@ RETURN 1 AS x
           &ast.GQLSimpleLinearQueryStatement{
             Statements: []ast.GQLPrimitiveQueryStatement{
               &ast.GQLReturn{
-                Return: 14,
+                Return: 15,
                 Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Star: -1,
                     Expr: &ast.IntLiteral{
-                      ValuePos: 21,
-                      ValueEnd: 22,
+                      ValuePos: 22,
+                      ValueEnd: 23,
                       Base:     10,
                       Value:    "1",
                     },
                     Alias: &ast.Ident{
-                      NamePos: 26,
-                      NameEnd: 27,
+                      NamePos: 27,
+                      NameEnd: 28,
                       Name:    "x",
                     },
                   },
@@ -49,19 +49,19 @@ RETURN 1 AS x
           &ast.GQLSimpleLinearQueryStatement{
             Statements: []ast.GQLPrimitiveQueryStatement{
               &ast.GQLReturn{
-                Return: 47,
+                Return: 48,
                 Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
                     Star: -1,
                     Expr: &ast.IntLiteral{
-                      ValuePos: 54,
-                      ValueEnd: 55,
+                      ValuePos: 55,
+                      ValueEnd: 56,
                       Base:     10,
                       Value:    "1",
                     },
                     Alias: &ast.Ident{
-                      NamePos: 59,
-                      NameEnd: 60,
+                      NamePos: 60,
+                      NameEnd: 61,
                       Name:    "x",
                     },
                   },
@@ -76,4 +76,4 @@ RETURN 1 AS x
 }
 
 --- SQL
-GRAPH MyGraph RETURN 1 AS x INTERSECT DISTINCT RETURN 1 AS x
+GRAPH FinGraph RETURN 1 AS x INTERSECT DISTINCT RETURN 1 AS x

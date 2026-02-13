@@ -1,5 +1,5 @@
 --- !bad_empty_return.sql
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN
 
 --- Error
@@ -15,8 +15,8 @@ syntax error: testdata/input/gql/!bad_empty_return.sql:3:1: unexpected token: <e
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 6,
-          NameEnd: 13,
-          Name:    "MyGraph",
+          NameEnd: 14,
+          Name:    "FinGraph",
         },
       },
     },
@@ -26,14 +26,14 @@ syntax error: testdata/input/gql/!bad_empty_return.sql:3:1: unexpected token: <e
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturn{
-            Return: 14,
+            Return: 15,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.BadExpr{
                   BadNode: &ast.BadNode{
-                    NodePos: 21,
-                    NodeEnd: 21,
+                    NodePos: 22,
+                    NodeEnd: 22,
                   },
                 },
               },
@@ -46,4 +46,4 @@ syntax error: testdata/input/gql/!bad_empty_return.sql:3:1: unexpected token: <e
 }
 
 --- SQL
-GRAPH MyGraph RETURN 
+GRAPH FinGraph RETURN 

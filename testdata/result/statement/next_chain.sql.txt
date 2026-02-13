@@ -1,5 +1,5 @@
 --- next_chain.sql
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN 1 AS a
 NEXT
 RETURN a + 1 AS b
@@ -13,8 +13,8 @@ RETURN b + 1 AS c
       Idents: []*ast.Ident{
         &ast.Ident{
           NamePos: 6,
-          NameEnd: 13,
-          Name:    "MyGraph",
+          NameEnd: 14,
+          Name:    "FinGraph",
         },
       },
     },
@@ -24,19 +24,19 @@ RETURN b + 1 AS c
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturn{
-            Return: 14,
+            Return: 15,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.IntLiteral{
-                  ValuePos: 21,
-                  ValueEnd: 22,
+                  ValuePos: 22,
+                  ValueEnd: 23,
                   Base:     10,
                   Value:    "1",
                 },
                 Alias: &ast.Ident{
-                  NamePos: 26,
-                  NameEnd: 27,
+                  NamePos: 27,
+                  NameEnd: 28,
                   Name:    "a",
                 },
               },
@@ -47,27 +47,27 @@ RETURN b + 1 AS c
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturn{
-            Return: 33,
+            Return: 34,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.BinaryExpr{
                   Op:   "+",
                   Left: &ast.Ident{
-                    NamePos: 40,
-                    NameEnd: 41,
+                    NamePos: 41,
+                    NameEnd: 42,
                     Name:    "a",
                   },
                   Right: &ast.IntLiteral{
-                    ValuePos: 44,
-                    ValueEnd: 45,
+                    ValuePos: 45,
+                    ValueEnd: 46,
                     Base:     10,
                     Value:    "1",
                   },
                 },
                 Alias: &ast.Ident{
-                  NamePos: 49,
-                  NameEnd: 50,
+                  NamePos: 50,
+                  NameEnd: 51,
                   Name:    "b",
                 },
               },
@@ -78,27 +78,27 @@ RETURN b + 1 AS c
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLReturn{
-            Return: 56,
+            Return: 57,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.BinaryExpr{
                   Op:   "+",
                   Left: &ast.Ident{
-                    NamePos: 63,
-                    NameEnd: 64,
+                    NamePos: 64,
+                    NameEnd: 65,
                     Name:    "b",
                   },
                   Right: &ast.IntLiteral{
-                    ValuePos: 67,
-                    ValueEnd: 68,
+                    ValuePos: 68,
+                    ValueEnd: 69,
                     Base:     10,
                     Value:    "1",
                   },
                 },
                 Alias: &ast.Ident{
-                  NamePos: 72,
-                  NameEnd: 73,
+                  NamePos: 73,
+                  NameEnd: 74,
                   Name:    "c",
                 },
               },
@@ -111,4 +111,4 @@ RETURN b + 1 AS c
 }
 
 --- SQL
-GRAPH MyGraph RETURN 1 AS a NEXT RETURN a + 1 AS b NEXT RETURN b + 1 AS c
+GRAPH FinGraph RETURN 1 AS a NEXT RETURN a + 1 AS b NEXT RETURN b + 1 AS c

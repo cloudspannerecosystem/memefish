@@ -1,3 +1,3 @@
 @{a=1}
-GRAPH MyGraph
+GRAPH FinGraph
 RETURN 1 AS x
