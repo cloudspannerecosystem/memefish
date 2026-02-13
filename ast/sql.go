@@ -1475,5 +1475,8 @@ func (s *GQLReturn) SQL() string {
 }
 
 func (i *GQLReturnItem) SQL() string {
+	if !i.Star.Invalid() {
+		return "*"
+	}
 	return i.Expr.SQL() + sqlOpt(" AS ", i.Alias, "")
 }

@@ -4443,9 +4443,10 @@ type GQLReturn struct {
 //
 //	{{.Expr | sql}}{{if .Alias}} AS {{.Alias | sql}}{{end}}
 type GQLReturnItem struct {
-	// pos = Expr.pos
-	// end = (Alias ?? Expr).end
+	// pos = Star || Expr.pos
+	// end = Star + 1 || (Alias ?? Expr).end
 
+	Star  token.Pos
 	Expr  Expr
 	Alias *Ident
 }

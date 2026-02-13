@@ -30,6 +30,7 @@ syntax error: testdata/input/gql/!bad_no_statement_after_next.sql:4:1: expect on
             Return: 14,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.IntLiteral{
                   ValuePos: 21,
                   ValueEnd: 22,

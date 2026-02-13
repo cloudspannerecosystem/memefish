@@ -29,6 +29,7 @@ syntax error: testdata/input/gql/!bad_empty_return.sql:3:1: unexpected token: <e
             Return: 14,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.BadExpr{
                   BadNode: &ast.BadNode{
                     NodePos: 21,

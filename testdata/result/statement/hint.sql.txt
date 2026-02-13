@@ -47,6 +47,7 @@ RETURN 1 AS x
             Return: 21,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.IntLiteral{
                   ValuePos: 28,
                   ValueEnd: 29,

@@ -6464,6 +6464,13 @@ func (p *Parser) parseGQLReturnItemList() []*ast.GQLReturnItem {
 }
 
 func (p *Parser) parseGQLReturnItem() *ast.GQLReturnItem {
+	if p.Token.Kind == "*" {
+		pos := p.expect("*").Pos
+		return &ast.GQLReturnItem{
+			Star: pos,
+		}
+	}
+
 	expr := p.parseExpr()
 	var alias *ast.Ident
 	if p.Token.Kind == "AS" {
@@ -6471,6 +6478,7 @@ func (p *Parser) parseGQLReturnItem() *ast.GQLReturnItem {
 		alias = p.parseIdent()
 	}
 	return &ast.GQLReturnItem{
+		Star:  token.InvalidPos,
 		Expr:  expr,
 		Alias: alias,
 	}

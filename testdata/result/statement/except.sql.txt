@@ -29,6 +29,7 @@ RETURN 2 AS x
                 Return: 14,
                 Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
+                    Star: -1,
                     Expr: &ast.IntLiteral{
                       ValuePos: 21,
                       ValueEnd: 22,
@@ -51,6 +52,7 @@ RETURN 2 AS x
                 Return: 39,
                 Items:  []*ast.GQLReturnItem{
                   &ast.GQLReturnItem{
+                    Star: -1,
                     Expr: &ast.IntLiteral{
                       ValuePos: 46,
                       ValueEnd: 47,

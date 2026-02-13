@@ -2239,9 +2239,9 @@ func (g *GQLReturn) End() token.Pos {
 }
 
 func (g *GQLReturnItem) Pos() token.Pos {
-	return nodePos(wrapNode(g.Expr))
+	return posChoice(g.Star, nodePos(wrapNode(g.Expr)))
 }
 
 func (g *GQLReturnItem) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Expr)))
+	return posChoice(posAdd(g.Star, 1), nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Expr))))
 }

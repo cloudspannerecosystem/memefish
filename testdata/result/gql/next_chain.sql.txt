@@ -27,6 +27,7 @@ RETURN b + 1 AS c
             Return: 14,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.IntLiteral{
                   ValuePos: 21,
                   ValueEnd: 22,
@@ -49,6 +50,7 @@ RETURN b + 1 AS c
             Return: 33,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.BinaryExpr{
                   Op:   "+",
                   Left: &ast.Ident{
@@ -79,6 +81,7 @@ RETURN b + 1 AS c
             Return: 56,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
+                Star: -1,
                 Expr: &ast.BinaryExpr{
                   Op:   "+",
                   Left: &ast.Ident{
