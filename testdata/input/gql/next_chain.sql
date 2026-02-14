@@ -1,0 +1,6 @@
+GRAPH FinGraph
+RETURN 1 AS a
+NEXT
+RETURN a + 1 AS b
+NEXT
+RETURN b + 1 AS c

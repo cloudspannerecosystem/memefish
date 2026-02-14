@@ -1,0 +1,85 @@
+--- intersect.sql
+GRAPH FinGraph
+RETURN 1 AS x
+INTERSECT DISTINCT
+RETURN 1 AS x
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Op:            "INTERSECT",
+        AllOrDistinct: "DISTINCT",
+        Statements:    []ast.GQLLinearQueryStatement{
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 15,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 22,
+                      ValueEnd: 23,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    24,
+                      Alias: &ast.Ident{
+                        NamePos: 27,
+                        NameEnd: 28,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 48,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 55,
+                      ValueEnd: 56,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    57,
+                      Alias: &ast.Ident{
+                        NamePos: 60,
+                        NameEnd: 61,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS x INTERSECT DISTINCT RETURN 1 AS x

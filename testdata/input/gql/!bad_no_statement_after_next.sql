@@ -1,0 +1,3 @@
+GRAPH FinGraph
+RETURN 1 AS x
+NEXT
