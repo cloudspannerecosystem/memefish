@@ -98,7 +98,6 @@ func (p *Parser) ParseGQLQuery() (stmt *ast.GQLGraphQuery, err error) {
 	return stmt, nil
 }
 
-
 // ParseExpr parses a SQL expression.
 func (p *Parser) ParseExpr() (ast.Expr, error) {
 	p.nextToken()
@@ -6249,94 +6248,6 @@ skip:
 
 // ================================================================================
 //
-// Utilities
-//
-// ================================================================================
-
-// parseCommaSeparatedList parses a comma separated list of nodes parsed by `doParse`.
-//
-// `doParse` should be a reference to a method of `Parser`. That is, this function should always be used on a single line, e.g.:
-//
-//	columns := parseCommaSeparatedList(p, p.parseIdent)
-//
-// TODO: create a linter for this.
-func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
-	nodes := []T{doParse()}
-	for p.Token.Kind == "," {
-		p.nextToken()
-		nodes = append(nodes, doParse())
-	}
-	return nodes
-}
-
-func (p *Parser) expect(kind token.TokenKind) *token.Token {
-	if p.Token.Kind != kind {
-		p.panicfAtToken(&p.Token, "expected token: %s, but: %s", kind, p.Token.Kind)
-	}
-	t := p.Token.Clone()
-	p.nextToken()
-	return t
-}
-
-func (p *Parser) expectIdent(s string) *token.Token {
-	id := p.expect(token.TokenIdent)
-	if !id.IsIdent(s) {
-		p.panicfAtToken(id, "expected identifier: %s, but: %s", s, token.QuoteSQLIdent(id.AsString))
-	}
-	return id
-}
-
-func (p *Parser) expectKeywordLike(s string) *token.Token {
-	id := p.expect(token.TokenIdent)
-	if !id.IsKeywordLike(s) {
-		if char.EqualFold(id.AsString, s) {
-			p.panicfAtToken(id, "pseudo keyword %s cannot encloses with backquote", s)
-		} else {
-			p.panicfAtToken(id, "expected pseudo keyword: %s, but: %s", s, token.QuoteSQLIdent(id.AsString))
-		}
-	}
-	return id
-}
-
-func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
-	return &Error{
-		Message:  fmt.Sprintf(msg, params...),
-		Position: p.Position(tok.Pos, tok.End),
-	}
-}
-
-func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
-	panic(p.errorfAtToken(tok, msg, params...))
-}
-
-func (p *Parser) parseRenameTableTo() *ast.RenameTableTo {
-	old := p.parseIdent()
-	p.expect("TO")
-	new := p.parseIdent()
-
-	return &ast.RenameTableTo{
-		Old: old,
-		New: new,
-	}
-}
-
-func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
-	p.expectKeywordLike("TABLE")
-	tos := parseCommaSeparatedList(p, p.parseRenameTableTo)
-
-	return &ast.RenameTable{
-		Rename: pos,
-		Tos:    tos,
-	}
-
-}
-
-func (p *Parser) nextToken() {
-	p.Lexer.nextToken(false)
-}
-
-// ================================================================================
-//
 // GQL
 //
 // ================================================================================
@@ -6482,4 +6393,92 @@ func (p *Parser) parseGQLReturnItem() *ast.GQLReturnItem {
 		Expr:  expr,
 		Alias: alias,
 	}
+}
+
+// ================================================================================
+//
+// Utilities
+//
+// ================================================================================
+
+// parseCommaSeparatedList parses a comma separated list of nodes parsed by `doParse`.
+//
+// `doParse` should be a reference to a method of `Parser`. That is, this function should always be used on a single line, e.g.:
+//
+//	columns := parseCommaSeparatedList(p, p.parseIdent)
+//
+// TODO: create a linter for this.
+func parseCommaSeparatedList[T ast.Node](p *Parser, doParse func() T) []T {
+	nodes := []T{doParse()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		nodes = append(nodes, doParse())
+	}
+	return nodes
+}
+
+func (p *Parser) expect(kind token.TokenKind) *token.Token {
+	if p.Token.Kind != kind {
+		p.panicfAtToken(&p.Token, "expected token: %s, but: %s", kind, p.Token.Kind)
+	}
+	t := p.Token.Clone()
+	p.nextToken()
+	return t
+}
+
+func (p *Parser) expectIdent(s string) *token.Token {
+	id := p.expect(token.TokenIdent)
+	if !id.IsIdent(s) {
+		p.panicfAtToken(id, "expected identifier: %s, but: %s", s, token.QuoteSQLIdent(id.AsString))
+	}
+	return id
+}
+
+func (p *Parser) expectKeywordLike(s string) *token.Token {
+	id := p.expect(token.TokenIdent)
+	if !id.IsKeywordLike(s) {
+		if char.EqualFold(id.AsString, s) {
+			p.panicfAtToken(id, "pseudo keyword %s cannot encloses with backquote", s)
+		} else {
+			p.panicfAtToken(id, "expected pseudo keyword: %s, but: %s", s, token.QuoteSQLIdent(id.AsString))
+		}
+	}
+	return id
+}
+
+func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
+	return &Error{
+		Message:  fmt.Sprintf(msg, params...),
+		Position: p.Position(tok.Pos, tok.End),
+	}
+}
+
+func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
+	panic(p.errorfAtToken(tok, msg, params...))
+}
+
+func (p *Parser) parseRenameTableTo() *ast.RenameTableTo {
+	old := p.parseIdent()
+	p.expect("TO")
+	new := p.parseIdent()
+
+	return &ast.RenameTableTo{
+		Old: old,
+		New: new,
+	}
+}
+
+func (p *Parser) parseRenameTable(pos token.Pos) *ast.RenameTable {
+	p.expectKeywordLike("TABLE")
+	tos := parseCommaSeparatedList(p, p.parseRenameTableTo)
+
+	return &ast.RenameTable{
+		Rename: pos,
+		Tos:    tos,
+	}
+
+}
+
+func (p *Parser) nextToken() {
+	p.Lexer.nextToken(false)
 }
