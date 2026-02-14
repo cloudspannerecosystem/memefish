@@ -6329,10 +6329,17 @@ func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryS
 			break
 		}
 		stmts = append(stmts, stmt)
+		if _, ok := stmt.(*ast.GQLReturn); ok {
+			break
+		}
 	}
 
 	if len(stmts) == 0 {
 		p.panicfAtToken(&p.Token, "expect one or more GQL statements, but: %v", p.Token.Kind)
+	}
+
+	if _, ok := stmts[len(stmts)-1].(*ast.GQLReturn); !ok {
+		p.panicfAtToken(&p.Token, "linear query must end with RETURN")
 	}
 
 	return &ast.GQLSimpleLinearQueryStatement{
