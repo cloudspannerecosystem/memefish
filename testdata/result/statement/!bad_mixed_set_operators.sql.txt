@@ -1,13 +1,10 @@
 --- !bad_mixed_set_operators.sql
-GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
+GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x
 
 --- Error
 syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:54: all set operator at the same level must be the same
-  1|  GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
+  1|  GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x
    |                                                       ^~~~~~~~~
-syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:81: expected token: <eof>, but: ;
-  1|  GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x;
-   |                                                                                  ^
 
 
 --- AST
