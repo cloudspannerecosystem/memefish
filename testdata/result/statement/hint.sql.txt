@@ -54,10 +54,13 @@ RETURN 1 AS x
                   Base:     10,
                   Value:    "1",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 34,
-                  NameEnd: 35,
-                  Name:    "x",
+                Alias: &ast.AsAlias{
+                  As:    31,
+                  Alias: &ast.Ident{
+                    NamePos: 34,
+                    NameEnd: 35,
+                    Name:    "x",
+                  },
                 },
               },
             },

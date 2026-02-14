@@ -6383,11 +6383,7 @@ func (p *Parser) parseGQLReturnItem() *ast.GQLReturnItem {
 	}
 
 	expr := p.parseExpr()
-	var alias *ast.Ident
-	if p.Token.Kind == "AS" {
-		p.nextToken()
-		alias = p.parseIdent()
-	}
+	alias := p.tryParseAsAlias(withRequiredAs)
 	return &ast.GQLReturnItem{
 		Star:  token.InvalidPos,
 		Expr:  expr,

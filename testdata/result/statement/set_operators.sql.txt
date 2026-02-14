@@ -38,10 +38,13 @@ RETURN 3 AS x
                       Base:     10,
                       Value:    "1",
                     },
-                    Alias: &ast.Ident{
-                      NamePos: 27,
-                      NameEnd: 28,
-                      Name:    "x",
+                    Alias: &ast.AsAlias{
+                      As:    24,
+                      Alias: &ast.Ident{
+                        NamePos: 27,
+                        NameEnd: 28,
+                        Name:    "x",
+                      },
                     },
                   },
                 },
@@ -61,10 +64,13 @@ RETURN 3 AS x
                       Base:     10,
                       Value:    "2",
                     },
-                    Alias: &ast.Ident{
-                      NamePos: 51,
-                      NameEnd: 52,
-                      Name:    "x",
+                    Alias: &ast.AsAlias{
+                      As:    48,
+                      Alias: &ast.Ident{
+                        NamePos: 51,
+                        NameEnd: 52,
+                        Name:    "x",
+                      },
                     },
                   },
                 },
@@ -84,10 +90,13 @@ RETURN 3 AS x
                       Base:     10,
                       Value:    "3",
                     },
-                    Alias: &ast.Ident{
-                      NamePos: 75,
-                      NameEnd: 76,
-                      Name:    "x",
+                    Alias: &ast.AsAlias{
+                      As:    72,
+                      Alias: &ast.Ident{
+                        NamePos: 75,
+                        NameEnd: 76,
+                        Name:    "x",
+                      },
                     },
                   },
                 },

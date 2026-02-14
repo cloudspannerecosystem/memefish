@@ -33,10 +33,13 @@ RETURN DISTINCT a AS a, b AS b
                   Base:     10,
                   Value:    "1",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 31,
-                  NameEnd: 32,
-                  Name:    "a",
+                Alias: &ast.AsAlias{
+                  As:    28,
+                  Alias: &ast.Ident{
+                    NamePos: 31,
+                    NameEnd: 32,
+                    Name:    "a",
+                  },
                 },
               },
               &ast.GQLReturnItem{
@@ -47,10 +50,13 @@ RETURN DISTINCT a AS a, b AS b
                   Base:     10,
                   Value:    "2",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 39,
-                  NameEnd: 40,
-                  Name:    "b",
+                Alias: &ast.AsAlias{
+                  As:    36,
+                  Alias: &ast.Ident{
+                    NamePos: 39,
+                    NameEnd: 40,
+                    Name:    "b",
+                  },
                 },
               },
             },
@@ -70,10 +76,13 @@ RETURN DISTINCT a AS a, b AS b
                   NameEnd: 63,
                   Name:    "a",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 67,
-                  NameEnd: 68,
-                  Name:    "a",
+                Alias: &ast.AsAlias{
+                  As:    64,
+                  Alias: &ast.Ident{
+                    NamePos: 67,
+                    NameEnd: 68,
+                    Name:    "a",
+                  },
                 },
               },
               &ast.GQLReturnItem{
@@ -83,10 +92,13 @@ RETURN DISTINCT a AS a, b AS b
                   NameEnd: 71,
                   Name:    "b",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 75,
-                  NameEnd: 76,
-                  Name:    "b",
+                Alias: &ast.AsAlias{
+                  As:    72,
+                  Alias: &ast.Ident{
+                    NamePos: 75,
+                    NameEnd: 76,
+                    Name:    "b",
+                  },
                 },
               },
             },

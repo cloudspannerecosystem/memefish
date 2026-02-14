@@ -2303,7 +2303,6 @@ type DropSchema struct {
 	Name     *Ident
 }
 
-
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -4348,7 +4347,7 @@ type GQLPrimitiveQueryStatement interface {
 	isGQLPrimitiveQueryStatement()
 }
 
-func (GQLReturn) isGQLPrimitiveQueryStatement()               {}
+func (GQLReturn) isGQLPrimitiveQueryStatement()                     {}
 func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
 
 // GQLGraphQuery is a top-level GQL query.
@@ -4441,12 +4440,12 @@ type GQLReturn struct {
 
 // GQLReturnItem is an item in a RETURN statement.
 //
-//	{{.Expr | sql}}{{if .Alias}} AS {{.Alias | sql}}{{end}}
+//	{{.Expr | sql}}{{if .Alias}} {{.Alias | sqlOpt}}{{end}}
 type GQLReturnItem struct {
 	// pos = Star || Expr.pos
 	// end = Star + 1 || (Alias ?? Expr).end
 
 	Star  token.Pos
 	Expr  Expr
-	Alias *Ident
+	Alias *AsAlias // optional
 }

@@ -37,10 +37,13 @@ syntax error: testdata/input/gql/!bad_no_statement_after_next.sql:4:1: expect on
                   Base:     10,
                   Value:    "1",
                 },
-                Alias: &ast.Ident{
-                  NamePos: 27,
-                  NameEnd: 28,
-                  Name:    "x",
+                Alias: &ast.AsAlias{
+                  As:    24,
+                  Alias: &ast.Ident{
+                    NamePos: 27,
+                    NameEnd: 28,
+                    Name:    "x",
+                  },
                 },
               },
             },

@@ -36,10 +36,13 @@ RETURN 2 AS x
                       Base:     10,
                       Value:    "1",
                     },
-                    Alias: &ast.Ident{
-                      NamePos: 27,
-                      NameEnd: 28,
-                      Name:    "x",
+                    Alias: &ast.AsAlias{
+                      As:    24,
+                      Alias: &ast.Ident{
+                        NamePos: 27,
+                        NameEnd: 28,
+                        Name:    "x",
+                      },
                     },
                   },
                 },
@@ -59,10 +62,13 @@ RETURN 2 AS x
                       Base:     10,
                       Value:    "2",
                     },
-                    Alias: &ast.Ident{
-                      NamePos: 52,
-                      NameEnd: 53,
-                      Name:    "x",
+                    Alias: &ast.AsAlias{
+                      As:    49,
+                      Alias: &ast.Ident{
+                        NamePos: 52,
+                        NameEnd: 53,
+                        Name:    "x",
+                      },
                     },
                   },
                 },
