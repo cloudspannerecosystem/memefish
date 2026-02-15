@@ -992,13 +992,14 @@ type Where struct {
 
 // GroupBy is GROUP BY clause node.
 //
-//	GROUP BY {{.Exprs | sqlJoin ","}}
+//	GROUP {{.Hint | sqlOpt}} BY {{.Exprs | sqlJoin ","}}
 type GroupBy struct {
 	// pos = Group
 	// end = Exprs[$].end
 
 	Group token.Pos // position of "GROUP" keyword
 
+	Hint  *Hint  // optional
 	Exprs []Expr // len(Exprs) > 0
 }
 
@@ -2301,7 +2302,6 @@ type DropSchema struct {
 	IfExists bool
 	Name     *Ident
 }
-
 
 // CreateDatabase is CREATE DATABASE statement node.
 //

@@ -120,6 +120,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *GroupBy:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Having:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
