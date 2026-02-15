@@ -794,11 +794,13 @@ func (p *Parser) tryParseGroupBy() *ast.GroupBy {
 		return nil
 	}
 	pos := p.expect("GROUP").Pos
+	hint := p.tryParseHint()
 	p.expect("BY")
 	exprs := parseCommaSeparatedList(p, p.parseExpr)
 
 	return &ast.GroupBy{
 		Group: pos,
+		Hint:  hint,
 		Exprs: exprs,
 	}
 }
