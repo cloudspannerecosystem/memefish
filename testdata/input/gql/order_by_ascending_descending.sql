@@ -1,4 +1,0 @@
-GRAPH FinGraph
-FOR x IN [1, 2]
-ORDER BY x ASCENDING, x DESCENDING
-RETURN x AS result

@@ -1,8 +1,5 @@
---- order_by_ascending_descending.sql
-GRAPH FinGraph
-FOR x IN [1, 2]
-ORDER BY x ASCENDING, x DESCENDING
-RETURN x AS result
+--- order_by_directions.sql
+GRAPH FinGraph FOR x IN [1] ORDER BY x, x ASC, x DESC, x ASCENDING, x DESCENDING RETURN x AS result
 
 --- AST
 &ast.GQLGraphQuery{
@@ -31,7 +28,7 @@ RETURN x AS result
             Expr: &ast.ArrayLiteral{
               Array:  -1,
               Lbrack: 24,
-              Rbrack: 29,
+              Rbrack: 26,
               Values: []ast.Expr{
                 &ast.IntLiteral{
                   ValuePos: 25,
@@ -39,20 +36,22 @@ RETURN x AS result
                   Base:     10,
                   Value:    "1",
                 },
-                &ast.IntLiteral{
-                  ValuePos: 28,
-                  ValueEnd: 29,
-                  Base:     10,
-                  Value:    "2",
-                },
               },
             },
           },
           &ast.GQLOrderBy{
-            Order: 31,
+            Order: 28,
             Items: []*ast.GQLOrderByItem{
               &ast.GQLOrderByItem{
-                DirEnd: 51,
+                DirEnd: -1,
+                Expr:   &ast.Ident{
+                  NamePos: 37,
+                  NameEnd: 38,
+                  Name:    "x",
+                },
+              },
+              &ast.GQLOrderByItem{
+                DirEnd: 45,
                 Expr:   &ast.Ident{
                   NamePos: 40,
                   NameEnd: 41,
@@ -61,10 +60,28 @@ RETURN x AS result
                 Dir: "ASC",
               },
               &ast.GQLOrderByItem{
-                DirEnd: 65,
+                DirEnd: 53,
                 Expr:   &ast.Ident{
-                  NamePos: 53,
-                  NameEnd: 54,
+                  NamePos: 47,
+                  NameEnd: 48,
+                  Name:    "x",
+                },
+                Dir: "DESC",
+              },
+              &ast.GQLOrderByItem{
+                DirEnd: 66,
+                Expr:   &ast.Ident{
+                  NamePos: 55,
+                  NameEnd: 56,
+                  Name:    "x",
+                },
+                Dir: "ASC",
+              },
+              &ast.GQLOrderByItem{
+                DirEnd: 80,
+                Expr:   &ast.Ident{
+                  NamePos: 68,
+                  NameEnd: 69,
                   Name:    "x",
                 },
                 Dir: "DESC",
@@ -72,20 +89,20 @@ RETURN x AS result
             },
           },
           &ast.GQLReturn{
-            Return: 66,
+            Return: 81,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
                 Star: -1,
                 Expr: &ast.Ident{
-                  NamePos: 73,
-                  NameEnd: 74,
+                  NamePos: 88,
+                  NameEnd: 89,
                   Name:    "x",
                 },
                 Alias: &ast.AsAlias{
-                  As:    75,
+                  As:    90,
                   Alias: &ast.Ident{
-                    NamePos: 78,
-                    NameEnd: 84,
+                    NamePos: 93,
+                    NameEnd: 99,
                     Name:    "result",
                   },
                 },
@@ -99,4 +116,4 @@ RETURN x AS result
 }
 
 --- SQL
-GRAPH FinGraph FOR x IN [1, 2] ORDER BY x ASC, x DESC RETURN x AS result
+GRAPH FinGraph FOR x IN [1] ORDER BY x, x ASC, x DESC, x ASC, x DESC RETURN x AS result

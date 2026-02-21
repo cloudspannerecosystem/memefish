@@ -6444,7 +6444,7 @@ func (p *Parser) parseGQLOrderByItem() *ast.GQLOrderByItem {
 	}
 
 	var dir ast.Direction
-	var dirEnd token.Pos
+	dirEnd := token.InvalidPos
 	switch {
 	case p.Token.Kind == "ASC" || p.Token.IsKeywordLike("ASCENDING"):
 		dir = ast.DirectionAsc
