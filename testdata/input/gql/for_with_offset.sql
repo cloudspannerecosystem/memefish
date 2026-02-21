@@ -1,0 +1,3 @@
+GRAPH FinGraph
+FOR x IN [1, 2] WITH OFFSET AS i
+RETURN x, i

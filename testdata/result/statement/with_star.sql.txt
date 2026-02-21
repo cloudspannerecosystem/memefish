@@ -1,0 +1,46 @@
+--- with_star.sql
+GRAPH FinGraph
+WITH *
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLWith{
+            With:  15,
+            Items: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 20,
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 22,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 29,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph WITH * RETURN *

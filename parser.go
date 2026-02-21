@@ -1222,7 +1222,7 @@ func (p *Parser) parseIdentOrPath() []*ast.Ident {
 func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
-	withOffset := p.tryParseWithOffset()
+	withOffset := p.tryParseWithOffset(withOptionalAs)
 
 	return p.parseTableExprSuffix(&ast.Unnest{
 		Unnest:     unnest,
@@ -1234,14 +1234,14 @@ func (p *Parser) parseUnnestSuffix(expr ast.Expr, unnest, rparen token.Pos) ast.
 	})
 }
 
-func (p *Parser) tryParseWithOffset() *ast.WithOffset {
+func (p *Parser) tryParseWithOffset(requiredAs withAs) *ast.WithOffset {
 	if p.Token.Kind != "WITH" {
 		return nil
 	}
 
 	with := p.expect("WITH").Pos
 	offset := p.expectKeywordLike("OFFSET").Pos
-	as := p.tryParseAsAlias(withOptionalAs)
+	as := p.tryParseAsAlias(requiredAs)
 
 	return &ast.WithOffset{
 		With:   with,
@@ -1263,7 +1263,7 @@ func (p *Parser) parseTableNameSuffix(id *ast.Ident) ast.TableExpr {
 func (p *Parser) parsePathTableExprSuffix(id *ast.Path) ast.TableExpr {
 	hint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
-	withOffset := p.tryParseWithOffset()
+	withOffset := p.tryParseWithOffset(withOptionalAs)
 	return p.parseTableExprSuffix(&ast.PathTableExpr{
 		Path:       id,
 		Hint:       hint,
@@ -6353,8 +6353,153 @@ func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryState
 	switch {
 	case p.Token.IsKeywordLike("RETURN"):
 		return p.parseGQLReturn()
+	case p.Token.Kind == "WITH":
+		return p.parseGQLWith()
+	case p.Token.IsKeywordLike("FILTER"):
+		return p.parseGQLFilter()
+	case p.Token.Kind == "FOR":
+		return p.parseGQLFor()
+	case p.Token.IsKeywordLike("LET"):
+		return p.parseGQLLet()
+	case p.Token.Kind == "ORDER":
+		return p.parseGQLOrderBy()
+	case p.Token.Kind == "LIMIT":
+		return p.parseGQLLimit()
+	case p.Token.IsKeywordLike("OFFSET") || p.Token.IsKeywordLike("SKIP"):
+		return p.parseGQLOffset()
 	default:
 		return nil
+	}
+}
+
+func (p *Parser) parseGQLFilter() *ast.GQLFilter {
+	filterPos := p.expectKeywordLike("FILTER").Pos
+	var wherePos token.Pos
+	if p.Token.Kind == "WHERE" {
+		wherePos = p.expect("WHERE").Pos
+	}
+	expr := p.parseExpr()
+	return &ast.GQLFilter{
+		Filter: filterPos,
+		Where:  wherePos,
+		Expr:   expr,
+	}
+}
+
+func (p *Parser) parseGQLFor() *ast.GQLFor {
+	pos := p.expect("FOR").Pos
+	ident := p.parseIdent()
+	p.expect("IN")
+	expr := p.parseExpr()
+	withOffset := p.tryParseWithOffset(withRequiredAs)
+	return &ast.GQLFor{
+		For:        pos,
+		Ident:      ident,
+		Expr:       expr,
+		WithOffset: withOffset,
+	}
+}
+
+func (p *Parser) parseGQLLet() *ast.GQLLet {
+	pos := p.expectKeywordLike("LET").Pos
+	var items []*ast.GQLLetItem
+	for {
+		items = append(items, p.parseGQLLetItem())
+		if p.Token.Kind != "," {
+			break
+		}
+		p.nextToken()
+	}
+	return &ast.GQLLet{
+		Let:   pos,
+		Items: items,
+	}
+}
+
+func (p *Parser) parseGQLLetItem() *ast.GQLLetItem {
+	ident := p.parseIdent()
+	p.expect("=")
+	expr := p.parseExpr()
+	return &ast.GQLLetItem{
+		Ident: ident,
+		Expr:  expr,
+	}
+}
+
+func (p *Parser) parseGQLOrderBy() *ast.GQLOrderBy {
+	pos := p.expect("ORDER").Pos
+	p.expect("BY")
+	items := parseCommaSeparatedList(p, p.parseGQLOrderByItem)
+	return &ast.GQLOrderBy{
+		Order: pos,
+		Items: items,
+	}
+}
+
+func (p *Parser) parseGQLOrderByItem() *ast.GQLOrderByItem {
+	expr := p.parseExpr()
+	var collate *ast.Collate
+	if p.Token.Kind == "COLLATE" {
+		collate = p.tryParseCollate()
+	}
+
+	var dir ast.Direction
+	var dirEnd token.Pos
+	switch {
+	case p.Token.Kind == "ASC" || p.Token.IsKeywordLike("ASCENDING"):
+		dir = ast.DirectionAsc
+		dirEnd = p.Token.End
+		p.nextToken()
+	case p.Token.Kind == "DESC" || p.Token.IsKeywordLike("DESCENDING"):
+		dir = ast.DirectionDesc
+		dirEnd = p.Token.End
+		p.nextToken()
+	}
+
+	return &ast.GQLOrderByItem{
+		DirEnd:  dirEnd,
+		Expr:    expr,
+		Collate: collate,
+		Dir:     dir,
+	}
+}
+
+func (p *Parser) parseGQLLimit() *ast.GQLLimit {
+	pos := p.expect("LIMIT").Pos
+	limit := p.parseIntValue()
+	return &ast.GQLLimit{
+		LimitPos: pos,
+		Limit:    limit,
+	}
+}
+
+func (p *Parser) parseGQLOffset() *ast.GQLOffset {
+	pos := p.Token.Pos
+	var keyword string
+	if p.Token.IsKeywordLike("OFFSET") {
+		keyword = p.expectKeywordLike("OFFSET").Raw
+	} else {
+		keyword = p.expectKeywordLike("SKIP").Raw
+	}
+	offset := p.parseIntValue()
+	return &ast.GQLOffset{
+		OffsetPos: pos,
+		Keyword:   keyword,
+		Offset:    offset,
+	}
+}
+
+func (p *Parser) parseGQLWith() *ast.GQLWith {
+	pos := p.expect("WITH").Pos
+	allOrDistinct := p.tryParseAllOrDistinct()
+	items := p.parseGQLReturnItemList()
+	groupBy := p.tryParseGroupBy()
+
+	return &ast.GQLWith{
+		With:          pos,
+		AllOrDistinct: allOrDistinct,
+		Items:         items,
+		GroupBy:       groupBy,
 	}
 }
 
@@ -6364,10 +6509,30 @@ func (p *Parser) parseGQLReturn() *ast.GQLReturn {
 
 	items := p.parseGQLReturnItemList()
 
+	groupBy := p.tryParseGroupBy()
+	var orderBy *ast.GQLOrderBy
+	if p.Token.Kind == "ORDER" {
+		orderBy = p.parseGQLOrderBy()
+	}
+
+	var offset *ast.GQLOffset
+	if p.Token.IsKeywordLike("OFFSET") || p.Token.IsKeywordLike("SKIP") {
+		offset = p.parseGQLOffset()
+	}
+
+	var limit *ast.GQLLimit
+	if p.Token.Kind == "LIMIT" {
+		limit = p.parseGQLLimit()
+	}
+
 	return &ast.GQLReturn{
 		Return:        pos,
 		AllOrDistinct: allOrDistinct,
 		Items:         items,
+		GroupBy:       groupBy,
+		OrderBy:       orderBy,
+		Offset:        offset,
+		Limit:         limit,
 	}
 }
 

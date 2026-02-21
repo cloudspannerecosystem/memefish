@@ -1,0 +1,3 @@
+GRAPH FinGraph
+ORDER BY a DESC
+RETURN a

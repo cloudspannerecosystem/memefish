@@ -1,0 +1,107 @@
+--- complex_linear.sql
+GRAPH FinGraph
+LET x = 1
+FOR y IN [1, 2]
+FILTER WHERE x < y
+RETURN y
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLLet{
+            Let:   15,
+            Items: []*ast.GQLLetItem{
+              &ast.GQLLetItem{
+                Ident: &ast.Ident{
+                  NamePos: 19,
+                  NameEnd: 20,
+                  Name:    "x",
+                },
+                Expr: &ast.IntLiteral{
+                  ValuePos: 23,
+                  ValueEnd: 24,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+          &ast.GQLFor{
+            For:   25,
+            Ident: &ast.Ident{
+              NamePos: 29,
+              NameEnd: 30,
+              Name:    "y",
+            },
+            Expr: &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 34,
+              Rbrack: 39,
+              Values: []ast.Expr{
+                &ast.IntLiteral{
+                  ValuePos: 35,
+                  ValueEnd: 36,
+                  Base:     10,
+                  Value:    "1",
+                },
+                &ast.IntLiteral{
+                  ValuePos: 38,
+                  ValueEnd: 39,
+                  Base:     10,
+                  Value:    "2",
+                },
+              },
+            },
+          },
+          &ast.GQLFilter{
+            Filter: 41,
+            Where:  48,
+            Expr:   &ast.BinaryExpr{
+              Op:   "<",
+              Left: &ast.Ident{
+                NamePos: 54,
+                NameEnd: 55,
+                Name:    "x",
+              },
+              Right: &ast.Ident{
+                NamePos: 58,
+                NameEnd: 59,
+                Name:    "y",
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 60,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 67,
+                  NameEnd: 68,
+                  Name:    "y",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph LET x = 1 FOR y IN [1, 2] FILTER WHERE x < y RETURN y

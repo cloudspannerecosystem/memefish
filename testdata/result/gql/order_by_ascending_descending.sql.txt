@@ -1,0 +1,102 @@
+--- order_by_ascending_descending.sql
+GRAPH FinGraph
+FOR x IN [1, 2]
+ORDER BY x ASCENDING, x DESCENDING
+RETURN x AS result
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLFor{
+            For:   15,
+            Ident: &ast.Ident{
+              NamePos: 19,
+              NameEnd: 20,
+              Name:    "x",
+            },
+            Expr: &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 24,
+              Rbrack: 29,
+              Values: []ast.Expr{
+                &ast.IntLiteral{
+                  ValuePos: 25,
+                  ValueEnd: 26,
+                  Base:     10,
+                  Value:    "1",
+                },
+                &ast.IntLiteral{
+                  ValuePos: 28,
+                  ValueEnd: 29,
+                  Base:     10,
+                  Value:    "2",
+                },
+              },
+            },
+          },
+          &ast.GQLOrderBy{
+            Order: 31,
+            Items: []*ast.GQLOrderByItem{
+              &ast.GQLOrderByItem{
+                DirEnd: 51,
+                Expr:   &ast.Ident{
+                  NamePos: 40,
+                  NameEnd: 41,
+                  Name:    "x",
+                },
+                Dir: "ASC",
+              },
+              &ast.GQLOrderByItem{
+                DirEnd: 65,
+                Expr:   &ast.Ident{
+                  NamePos: 53,
+                  NameEnd: 54,
+                  Name:    "x",
+                },
+                Dir: "DESC",
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 66,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 73,
+                  NameEnd: 74,
+                  Name:    "x",
+                },
+                Alias: &ast.AsAlias{
+                  As:    75,
+                  Alias: &ast.Ident{
+                    NamePos: 78,
+                    NameEnd: 84,
+                    Name:    "result",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph FOR x IN [1, 2] ORDER BY x ASC, x DESC RETURN x AS result

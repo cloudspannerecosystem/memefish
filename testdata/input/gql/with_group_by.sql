@@ -1,0 +1,4 @@
+GRAPH FinGraph
+WITH a, b
+GROUP BY a
+RETURN a
