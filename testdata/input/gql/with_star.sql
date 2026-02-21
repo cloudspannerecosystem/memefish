@@ -1,3 +1,4 @@
 GRAPH FinGraph
+LET x = 1
 WITH *
 RETURN *

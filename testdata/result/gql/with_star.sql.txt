@@ -1,5 +1,6 @@
 --- with_star.sql
 GRAPH FinGraph
+LET x = 1
 WITH *
 RETURN *
 
@@ -20,19 +21,37 @@ RETURN *
     Statements: []ast.GQLLinearQueryStatement{
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLLet{
+            Let:   15,
+            Items: []*ast.GQLLetItem{
+              &ast.GQLLetItem{
+                Ident: &ast.Ident{
+                  NamePos: 19,
+                  NameEnd: 20,
+                  Name:    "x",
+                },
+                Expr: &ast.IntLiteral{
+                  ValuePos: 23,
+                  ValueEnd: 24,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
           &ast.GQLWith{
-            With:  15,
+            With:  25,
             Items: []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
-                Star: 20,
+                Star: 30,
               },
             },
           },
           &ast.GQLReturn{
-            Return: 22,
+            Return: 32,
             Items:  []*ast.GQLReturnItem{
               &ast.GQLReturnItem{
-                Star: 29,
+                Star: 39,
               },
             },
           },
@@ -43,4 +62,4 @@ RETURN *
 }
 
 --- SQL
-GRAPH FinGraph WITH * RETURN *
+GRAPH FinGraph LET x = 1 WITH * RETURN *
