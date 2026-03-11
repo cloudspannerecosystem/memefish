@@ -2738,6 +2738,7 @@ var simpleTypes = []string{
 	"JSON",
 	"TOKENLIST",
 	"INTERVAL",
+	"UUID",
 }
 
 func (p *Parser) parseSimpleType() *ast.SimpleType {
@@ -5488,6 +5489,7 @@ var scalarSchemaTypes = []string{
 	"NUMERIC",
 	"JSON",
 	"TOKENLIST",
+	"UUID",
 }
 
 var sizedSchemaTypes = []string{

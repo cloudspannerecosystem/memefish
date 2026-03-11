@@ -1,0 +1,85 @@
+--- create_table_with_uuid.sql
+create table foo (
+  id uuid not null default (new_uuid()),
+  name string(max)
+) primary key (id)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           79,
+  PrimaryKeyRparen: 96,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 33,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 23,
+        Name:    "id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 24,
+        Name:    "UUID",
+      },
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
+        Default: 38,
+        Rparen:  57,
+        Expr:    &ast.CallExpr{
+          Rparen: 56,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 47,
+                NameEnd: 55,
+                Name:    "new_uuid",
+              },
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 62,
+        NameEnd: 66,
+        Name:    "name",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 67,
+        Rparen:  77,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 94,
+        NameEnd: 96,
+        Name:    "id",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE foo (
+  id UUID NOT NULL DEFAULT (new_uuid()),
+  name STRING(MAX)
+) PRIMARY KEY (id)

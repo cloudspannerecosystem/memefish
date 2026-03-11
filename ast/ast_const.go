@@ -122,6 +122,7 @@ const (
 	JSONTypeName      ScalarTypeName = "JSON"
 	TokenListTypeName ScalarTypeName = "TOKENLIST"
 	IntervalTypeName  ScalarTypeName = "INTERVAL"
+	UUIDTypeName      ScalarTypeName = "UUID"
 )
 
 type OnDeleteAction string
