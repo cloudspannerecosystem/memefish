@@ -456,7 +456,7 @@ type ColumnDefaultSemantics interface {
 	isColumnDefaultSemantics()
 }
 
-func (ColumnDefaultExpr) isColumnDefaultSemantics() {}
+func (ColumnDefaultExpr) isColumnDefaultSemantics()   {}
 func (GeneratedColumnExpr) isColumnDefaultSemantics() {}
 func (IdentityColumn) isColumnDefaultSemantics()      {}
 func (AutoIncrement) isColumnDefaultSemantics()       {}
