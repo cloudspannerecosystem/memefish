@@ -886,7 +886,11 @@ func (c *Check) SQL() string {
 }
 
 func (c *ColumnDefaultExpr) SQL() string {
-	return "DEFAULT (" + c.Expr.SQL() + ")"
+	return "DEFAULT (" + c.Expr.SQL() + ")" + sqlOpt(" ", c.OnUpdate, "")
+}
+
+func (o *OnUpdate) SQL() string {
+	return "ON UPDATE (" + o.Expr.SQL() + ")"
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
@@ -982,6 +986,10 @@ func (a *AlterColumnSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 func (a *AlterColumnSetDefault) SQL() string { return "SET " + a.DefaultExpr.SQL() }
 
 func (a *AlterColumnDropDefault) SQL() string { return "DROP DEFAULT" }
+
+func (a *AlterColumnSetOnUpdate) SQL() string { return "SET " + a.OnUpdate.SQL() }
+
+func (a *AlterColumnDropOnUpdate) SQL() string { return "DROP ON UPDATE" }
 
 func (a *AlterColumnAlterIdentity) SQL() string { return "ALTER IDENTITY " + a.Alteration.SQL() }
 

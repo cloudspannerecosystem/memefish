@@ -3647,10 +3647,30 @@ func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	expr := p.parseExpr()
 	rparen := p.expect(")").Pos
 
+	var onUpdate *ast.OnUpdate
+	if p.Token.Kind == "ON" {
+		onUpdate = p.parseOnUpdate()
+	}
+
 	return &ast.ColumnDefaultExpr{
-		Default: def,
-		Rparen:  rparen,
-		Expr:    expr,
+		Default:  def,
+		Rparen:   rparen,
+		Expr:     expr,
+		OnUpdate: onUpdate,
+	}
+}
+
+func (p *Parser) parseOnUpdate() *ast.OnUpdate {
+	on := p.expect("ON").Pos
+	p.expectKeywordLike("UPDATE")
+	p.expect("(")
+	expr := p.parseExpr()
+	rparen := p.expect(")").Pos
+
+	return &ast.OnUpdate{
+		On:     on,
+		Rparen: rparen,
+		Expr:   expr,
 	}
 }
 
@@ -4474,13 +4494,20 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 	switch {
 	case p.Token.Kind == "SET":
 		set := p.expect("SET").Pos
-		if p.Token.Kind == "DEFAULT" {
+		switch {
+		case p.Token.Kind == "DEFAULT":
 			defaultExpr := p.parseColumnDefaultExpr()
 			return &ast.AlterColumnSetDefault{
 				Set:         set,
 				DefaultExpr: defaultExpr,
 			}
-		} else {
+		case p.Token.Kind == "ON":
+			onUpdate := p.parseOnUpdate()
+			return &ast.AlterColumnSetOnUpdate{
+				Set:      set,
+				OnUpdate: onUpdate,
+			}
+		default:
 			options := p.parseOptions()
 			return &ast.AlterColumnSetOptions{
 				Set:     set,
@@ -4489,10 +4516,20 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		}
 	case p.Token.IsKeywordLike("DROP"):
 		drop := p.expectKeywordLike("DROP").Pos
-		def := p.expect("DEFAULT").Pos
-		return &ast.AlterColumnDropDefault{
-			Drop:    drop,
-			Default: def,
+		switch {
+		case p.Token.Kind == "ON":
+			p.expect("ON")
+			update := p.expectKeywordLike("UPDATE").Pos
+			return &ast.AlterColumnDropOnUpdate{
+				Drop:   drop,
+				Update: update,
+			}
+		default:
+			def := p.expect("DEFAULT").Pos
+			return &ast.AlterColumnDropDefault{
+				Drop:    drop,
+				Default: def,
+			}
 		}
 	case p.Token.IsKeywordLike("ALTER"):
 		alter := p.expectKeywordLike("ALTER").Pos
@@ -4512,7 +4549,6 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 			DefaultExpr: defaultExpr,
 		}
 	}
-
 }
 
 func (p *Parser) parseSkipRange() *ast.SkipRange {

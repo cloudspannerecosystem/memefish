@@ -1,0 +1,66 @@
+--- alter_table_alter_column_with_default_on_update.sql
+ALTER TABLE foo ALTER COLUMN bar TIMESTAMP NOT NULL DEFAULT (pending_commit_timestamp()) ON UPDATE (pending_commit_timestamp())
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 16,
+    Name:  &ast.Ident{
+      NamePos: 29,
+      NameEnd: 32,
+      Name:    "bar",
+    },
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.ScalarSchemaType{
+        NamePos: 33,
+        Name:    "TIMESTAMP",
+      },
+      Null:        47,
+      NotNull:     true,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 52,
+        Rparen:  87,
+        Expr:    &ast.CallExpr{
+          Rparen: 86,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 61,
+                NameEnd: 85,
+                Name:    "pending_commit_timestamp",
+              },
+            },
+          },
+        },
+        OnUpdate: &ast.OnUpdate{
+          On:     89,
+          Rparen: 126,
+          Expr:   &ast.CallExpr{
+            Rparen: 125,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 100,
+                  NameEnd: 124,
+                  Name:    "pending_commit_timestamp",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ALTER COLUMN bar TIMESTAMP NOT NULL DEFAULT (pending_commit_timestamp()) ON UPDATE (pending_commit_timestamp())

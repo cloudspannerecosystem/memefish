@@ -543,6 +543,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ColumnDefaultExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *OnUpdate:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GeneratedColumnExpr:
@@ -660,6 +664,12 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 
 	case *AlterColumnDropDefault:
+		// nothing to do
+
+	case *AlterColumnSetOnUpdate:
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
+
+	case *AlterColumnDropOnUpdate:
 		// nothing to do
 
 	case *AlterColumnAlterIdentity:
