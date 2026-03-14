@@ -1,0 +1,74 @@
+--- insert_on_conflict_assert_rows_modified.sql
+INSERT INTO foo (x, y) VALUES (1, 2) ON CONFLICT DO NOTHING ASSERT_ROWS_MODIFIED 1
+--- AST
+&ast.Insert{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 18,
+      Name:    "x",
+    },
+    &ast.Ident{
+      NamePos: 20,
+      NameEnd: 21,
+      Name:    "y",
+    },
+  },
+  Input: &ast.ValuesInput{
+    Values: 23,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 30,
+        Rparen: 35,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 31,
+              ValueEnd: 32,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 34,
+              ValueEnd: 35,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+        },
+      },
+    },
+  },
+  OnConflict: &ast.OnConflict{
+    On:             37,
+    ConflictAction: &ast.ConflictActionDoNothing{
+      Do:      49,
+      Nothing: 52,
+    },
+  },
+  AssertRowsModified: &ast.AssertRowsModified{
+    Assert:  60,
+    NumRows: &ast.IntLiteral{
+      ValuePos: 81,
+      ValueEnd: 82,
+      Base:     10,
+      Value:    "1",
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (x, y) VALUES (1, 2) ON CONFLICT DO NOTHING ASSERT_ROWS_MODIFIED 1

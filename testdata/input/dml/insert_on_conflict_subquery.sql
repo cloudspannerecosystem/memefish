@@ -1,0 +1,1 @@
+INSERT INTO foo (foo, bar) (SELECT foo, bar FROM bar) ON CONFLICT DO NOTHING

@@ -5756,6 +5756,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 
 	name := p.parsePath()
 	tableHint := p.tryParseHint()
+	as := p.tryParseAsAlias(withOptionalAs)
 
 	p.expect("(")
 	var columns []*ast.Ident
@@ -5777,17 +5778,30 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 		input = p.parseSubQueryInput()
 	}
 
+	var onConflict *ast.OnConflict
+	if p.Token.Kind == "ON" {
+		onConflict = p.parseOnConflict()
+	}
+
+	var assertRowsModified *ast.AssertRowsModified
+	if p.Token.Kind == "ASSERT_ROWS_MODIFIED" {
+		assertRowsModified = p.parseAssertRowsModified()
+	}
+
 	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Insert{
-		Insert:       pos,
-		Hint:         hint,
-		InsertOrType: insertOrType,
-		TableName:    name,
-		TableHint:    tableHint,
-		Columns:      columns,
-		Input:        input,
-		ThenReturn:   thenReturn,
+		Insert:             pos,
+		Hint:               hint,
+		InsertOrType:       insertOrType,
+		TableName:          name,
+		TableHint:          tableHint,
+		As:                 as,
+		Columns:            columns,
+		Input:              input,
+		OnConflict:         onConflict,
+		AssertRowsModified: assertRowsModified,
+		ThenReturn:         thenReturn,
 	}
 }
 
@@ -5844,6 +5858,97 @@ func (p *Parser) parseSubQueryInput() *ast.SubQueryInput {
 
 	return &ast.SubQueryInput{
 		Query: query,
+	}
+}
+
+func (p *Parser) parseAssertRowsModified() *ast.AssertRowsModified {
+	assert := p.expect("ASSERT_ROWS_MODIFIED").Pos
+	numRows := p.parseExpr()
+
+	return &ast.AssertRowsModified{
+		Assert:  assert,
+		NumRows: numRows,
+	}
+}
+
+func (p *Parser) parseOnConflict() *ast.OnConflict {
+	on := p.expect("ON").Pos
+	p.expectKeywordLike("CONFLICT")
+
+	var conflictTarget ast.ConflictTarget
+	switch {
+	case p.Token.Kind == "(":
+		conflictTarget = p.parseConflictTargetColumns()
+	case p.Token.Kind == "ON":
+		conflictTarget = p.parseConflictTargetOnConstraint()
+	}
+
+	var conflictAction ast.ConflictAction
+	do := p.expectKeywordLike("DO").Pos
+	switch {
+	case p.Token.IsKeywordLike("NOTHING"):
+		nothing := p.expectKeywordLike("NOTHING").Pos
+		conflictAction = &ast.ConflictActionDoNothing{
+			Do:      do,
+			Nothing: nothing,
+		}
+	case p.Token.IsKeywordLike("UPDATE"):
+		conflictAction = p.parseConflictActionDoUpdate(do)
+	default:
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: NOTHING, UPDATE, but: %s", p.Token.AsString)
+	}
+
+	return &ast.OnConflict{
+		On:             on,
+		ConflictTarget: conflictTarget,
+		ConflictAction: conflictAction,
+	}
+}
+
+func (p *Parser) parseConflictTargetColumns() *ast.ConflictTargetColumns {
+	lparen := p.expect("(").Pos
+	columns := parseCommaSeparatedList(p, p.parseIdent)
+	rparen := p.expect(")").Pos
+
+	return &ast.ConflictTargetColumns{
+		Lparen:  lparen,
+		Rparen:  rparen,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) parseConflictTargetOnConstraint() *ast.ConflictTargetOnConstraint {
+	on := p.expect("ON").Pos
+	p.expectKeywordLike("UNIQUE")
+	p.expectKeywordLike("CONSTRAINT")
+	name := p.parseIdent()
+
+	return &ast.ConflictTargetOnConstraint{
+		On:   on,
+		Name: name,
+	}
+}
+
+func (p *Parser) parseConflictActionDoUpdate(do token.Pos) *ast.ConflictActionDoUpdate {
+	p.expectKeywordLike("UPDATE")
+	p.expect("SET")
+
+	updateItems := parseCommaSeparatedList(p, p.parseUpdateItem)
+
+	var where *ast.Where
+	if p.Token.Kind == "WHERE" {
+		wherePos := p.expect("WHERE").Pos
+		expr := p.parseExpr()
+		where = &ast.Where{
+			Where: wherePos,
+			Expr:  expr,
+		}
+	}
+
+	return &ast.ConflictActionDoUpdate{
+		Do:          do,
+		UpdateItems: updateItems,
+		Where:       where,
 	}
 }
 

@@ -2102,12 +2102,20 @@ func (t *ThenReturn) End() token.Pos {
 	return nodeEnd(nodeSliceLast(t.Items))
 }
 
+func (a *AssertRowsModified) Pos() token.Pos {
+	return a.Assert
+}
+
+func (a *AssertRowsModified) End() token.Pos {
+	return nodeEnd(wrapNode(a.NumRows))
+}
+
 func (i *Insert) Pos() token.Pos {
 	return posChoice(nodePos(wrapNode(i.Hint)), i.Insert)
 }
 
 func (i *Insert) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.Input)))
+	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.AssertRowsModified), wrapNode(i.OnConflict), wrapNode(i.Input)))
 }
 
 func (v *ValuesInput) Pos() token.Pos {
@@ -2140,6 +2148,46 @@ func (s *SubQueryInput) Pos() token.Pos {
 
 func (s *SubQueryInput) End() token.Pos {
 	return nodeEnd(wrapNode(s.Query))
+}
+
+func (o *OnConflict) Pos() token.Pos {
+	return o.On
+}
+
+func (o *OnConflict) End() token.Pos {
+	return nodeEnd(wrapNode(o.ConflictAction))
+}
+
+func (c *ConflictTargetColumns) Pos() token.Pos {
+	return c.Lparen
+}
+
+func (c *ConflictTargetColumns) End() token.Pos {
+	return posAdd(c.Rparen, 1)
+}
+
+func (c *ConflictTargetOnConstraint) Pos() token.Pos {
+	return c.On
+}
+
+func (c *ConflictTargetOnConstraint) End() token.Pos {
+	return nodeEnd(wrapNode(c.Name))
+}
+
+func (c *ConflictActionDoNothing) Pos() token.Pos {
+	return c.Do
+}
+
+func (c *ConflictActionDoNothing) End() token.Pos {
+	return posAdd(c.Nothing, 7)
+}
+
+func (c *ConflictActionDoUpdate) Pos() token.Pos {
+	return c.Do
+}
+
+func (c *ConflictActionDoUpdate) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Where), nodeSliceLast(c.UpdateItems)))
 }
 
 func (d *Delete) Pos() token.Pos {

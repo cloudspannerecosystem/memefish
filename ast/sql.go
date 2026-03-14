@@ -1379,15 +1379,22 @@ func (t *ThenReturn) SQL() string {
 	return "THEN RETURN " + sqlOpt("", t.WithAction, " ") + sqlJoin(t.Items, ", ")
 }
 
+func (a *AssertRowsModified) SQL() string {
+	return "ASSERT_ROWS_MODIFIED " + a.NumRows.SQL()
+}
+
 func (i *Insert) SQL() string {
 	return sqlOpt("", i.Hint, " ") +
 		"INSERT " +
 		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
 		"INTO " + i.TableName.SQL() +
-		sqlOpt("", i.TableHint, "") + " (" +
+		sqlOpt("", i.TableHint, "") +
+		sqlOpt(" ", i.As, "") + " (" +
 		sqlJoin(i.Columns, ", ") +
 		") " +
 		i.Input.SQL() +
+		sqlOpt(" ", i.OnConflict, "") +
+		sqlOpt(" ", i.AssertRowsModified, "") +
 		sqlOpt(" ", i.ThenReturn, "")
 }
 
@@ -1408,6 +1415,30 @@ func (d *DefaultExpr) SQL() string {
 
 func (s *SubQueryInput) SQL() string {
 	return s.Query.SQL()
+}
+
+func (o *OnConflict) SQL() string {
+	return "ON CONFLICT" +
+		sqlOpt(" ", o.ConflictTarget, "") +
+		" " + o.ConflictAction.SQL()
+}
+
+func (c *ConflictTargetColumns) SQL() string {
+	return "(" + sqlJoin(c.Columns, ", ") + ")"
+}
+
+func (c *ConflictTargetOnConstraint) SQL() string {
+	return "ON UNIQUE CONSTRAINT " + c.Name.SQL()
+}
+
+func (c *ConflictActionDoNothing) SQL() string {
+	return "DO NOTHING"
+}
+
+func (c *ConflictActionDoUpdate) SQL() string {
+	return "DO UPDATE SET " +
+		sqlJoin(c.UpdateItems, ", ") +
+		sqlOpt(" ", c.Where, "")
 }
 
 func (d *Delete) SQL() string {

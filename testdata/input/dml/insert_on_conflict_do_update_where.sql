@@ -1,0 +1,1 @@
+INSERT INTO foo (foo, bar, baz) VALUES (1, 2, 3) ON CONFLICT (foo) DO UPDATE SET bar = 10, baz = DEFAULT WHERE foo > 0
