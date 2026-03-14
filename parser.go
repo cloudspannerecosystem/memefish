@@ -5778,15 +5778,8 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint) *ast.Insert {
 		input = p.parseSubQueryInput()
 	}
 
-	var onConflict *ast.OnConflict
-	if p.Token.Kind == "ON" {
-		onConflict = p.parseOnConflict()
-	}
-
-	var assertRowsModified *ast.AssertRowsModified
-	if p.Token.Kind == "ASSERT_ROWS_MODIFIED" {
-		assertRowsModified = p.parseAssertRowsModified()
-	}
+	onConflict := p.tryParseOnConflict()
+	assertRowsModified := p.tryParseAssertRowsModified()
 
 	thenReturn := p.tryParseThenReturn()
 
@@ -5861,7 +5854,11 @@ func (p *Parser) parseSubQueryInput() *ast.SubQueryInput {
 	}
 }
 
-func (p *Parser) parseAssertRowsModified() *ast.AssertRowsModified {
+func (p *Parser) tryParseAssertRowsModified() *ast.AssertRowsModified {
+	if p.Token.Kind != "ASSERT_ROWS_MODIFIED" {
+		return nil
+	}
+
 	assert := p.expect("ASSERT_ROWS_MODIFIED").Pos
 	numRows := p.parseExpr()
 
@@ -5871,7 +5868,11 @@ func (p *Parser) parseAssertRowsModified() *ast.AssertRowsModified {
 	}
 }
 
-func (p *Parser) parseOnConflict() *ast.OnConflict {
+func (p *Parser) tryParseOnConflict() *ast.OnConflict {
+	if p.Token.Kind != "ON" {
+		return nil
+	}
+
 	on := p.expect("ON").Pos
 	p.expectKeywordLike("CONFLICT")
 
