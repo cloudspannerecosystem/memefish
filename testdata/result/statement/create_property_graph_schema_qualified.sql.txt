@@ -1,0 +1,213 @@
+--- create_property_graph_schema_qualified.sql
+CREATE PROPERTY GRAPH MyGraph
+  NODE TABLES (
+    myschema.NodeTable KEY (id),
+    SimpleNode KEY (id)
+  )
+  EDGE TABLES (
+    myschema.EdgeTable
+      KEY (src_id, dst_id)
+      SOURCE KEY (src_id) REFERENCES myschema.NodeTable (id)
+      DESTINATION KEY (dst_id) REFERENCES SimpleNode (id)
+  )
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 29,
+    Name:    "MyGraph",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   32,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   44,
+        Rparen:   105,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 50,
+                  NameEnd: 58,
+                  Name:    "myschema",
+                },
+                &ast.Ident{
+                  NamePos: 59,
+                  NameEnd: 68,
+                  Name:    "NodeTable",
+                },
+              },
+            },
+            Keys: &ast.PropertyGraphNodeElementKey{
+              Key: &ast.PropertyGraphElementKey{
+                Key:  69,
+                Keys: &ast.PropertyGraphColumnNameList{
+                  Lparen:         73,
+                  Rparen:         76,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 74,
+                      NameEnd: 76,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 83,
+                  NameEnd: 93,
+                  Name:    "SimpleNode",
+                },
+              },
+            },
+            Keys: &ast.PropertyGraphNodeElementKey{
+              Key: &ast.PropertyGraphElementKey{
+                Key:  94,
+                Keys: &ast.PropertyGraphColumnNameList{
+                  Lparen:         98,
+                  Rparen:         101,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 99,
+                      NameEnd: 101,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    EdgeTables: &ast.PropertyGraphEdgeTables{
+      Edge:   109,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   121,
+        Rparen:   294,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 127,
+                  NameEnd: 135,
+                  Name:    "myschema",
+                },
+                &ast.Ident{
+                  NamePos: 136,
+                  NameEnd: 145,
+                  Name:    "EdgeTable",
+                },
+              },
+            },
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Element: &ast.PropertyGraphElementKey{
+                Key:  152,
+                Keys: &ast.PropertyGraphColumnNameList{
+                  Lparen:         156,
+                  Rparen:         171,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 157,
+                      NameEnd: 163,
+                      Name:    "src_id",
+                    },
+                    &ast.Ident{
+                      NamePos: 165,
+                      NameEnd: 171,
+                      Name:    "dst_id",
+                    },
+                  },
+                },
+              },
+              Source: &ast.PropertyGraphSourceKey{
+                Source: 179,
+                Keys:   &ast.PropertyGraphColumnNameList{
+                  Lparen:         190,
+                  Rparen:         197,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 191,
+                      NameEnd: 197,
+                      Name:    "src_id",
+                    },
+                  },
+                },
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 210,
+                      NameEnd: 218,
+                      Name:    "myschema",
+                    },
+                    &ast.Ident{
+                      NamePos: 219,
+                      NameEnd: 228,
+                      Name:    "NodeTable",
+                    },
+                  },
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         229,
+                  Rparen:         232,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 230,
+                      NameEnd: 232,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+              Destination: &ast.PropertyGraphDestinationKey{
+                Destination: 240,
+                Keys:        &ast.PropertyGraphColumnNameList{
+                  Lparen:         256,
+                  Rparen:         263,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 257,
+                      NameEnd: 263,
+                      Name:    "dst_id",
+                    },
+                  },
+                },
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 276,
+                      NameEnd: 286,
+                      Name:    "SimpleNode",
+                    },
+                  },
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         287,
+                  Rparen:         290,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 288,
+                      NameEnd: 290,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH MyGraph NODE TABLES (myschema.NodeTable KEY (id), SimpleNode KEY (id)) EDGE TABLES (myschema.EdgeTable KEY (src_id, dst_id) SOURCE KEY (src_id) REFERENCES myschema.NodeTable (id) DESTINATION KEY (dst_id) REFERENCES SimpleNode (id))

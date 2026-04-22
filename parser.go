@@ -5024,7 +5024,7 @@ func (p *Parser) parsePropertyGraphElementList() *ast.PropertyGraphElementList {
 }
 
 func (p *Parser) parsePropertyGraphElement() *ast.PropertyGraphElement {
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var alias *ast.Ident
 	if p.Token.Kind == "AS" {
@@ -5204,7 +5204,7 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 	p.expectKeywordLike("KEY")
 	sourceColumns := p.parsePropertyGraphColumnNameList()
 	p.expectKeywordLike("REFERENCES")
-	sourceReference := p.parseIdent()
+	sourceReference := p.parsePath()
 	sourceReferenceColumns := p.tryParsePropertyGraphColumnNameList()
 
 	// destination_key
@@ -5212,7 +5212,7 @@ func (p *Parser) tryParsePropertyGraphElementKeys() ast.PropertyGraphElementKeys
 	p.expectKeywordLike("KEY")
 	destinationColumns := p.parsePropertyGraphColumnNameList()
 	p.expectKeywordLike("REFERENCES")
-	destinationReference := p.parseIdent()
+	destinationReference := p.parsePath()
 	destinationReferenceColumns := p.tryParsePropertyGraphColumnNameList()
 
 	return &ast.PropertyGraphEdgeElementKeys{

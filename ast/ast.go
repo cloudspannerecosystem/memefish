@@ -3932,7 +3932,7 @@ type PropertyGraphElement struct {
 	// pos = Name.pos
 	// end = (DynamicProperties ?? DynamicLabel ?? Properties ?? Keys ?? Alias ?? Name).end
 
-	Name              *Ident
+	Name              *Path
 	Alias             *Ident                          // optional
 	Keys              PropertyGraphElementKeys        // optional
 	Properties        PropertyGraphLabelsOrProperties // optional
@@ -4039,7 +4039,7 @@ type PropertyGraphSourceKey struct {
 
 	Source           token.Pos
 	Keys             *PropertyGraphColumnNameList
-	ElementReference *Ident
+	ElementReference *Path
 	ReferenceColumns *PropertyGraphColumnNameList // optional
 }
 
@@ -4053,7 +4053,7 @@ type PropertyGraphDestinationKey struct {
 
 	Destination      token.Pos
 	Keys             *PropertyGraphColumnNameList
-	ElementReference *Ident
+	ElementReference *Path
 	ReferenceColumns *PropertyGraphColumnNameList // optional
 }
 

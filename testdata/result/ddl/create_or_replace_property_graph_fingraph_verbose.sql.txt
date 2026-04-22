@@ -43,10 +43,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
         Rparen:   638,
         Elements: []*ast.PropertyGraphElement{
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 62,
-              NameEnd: 69,
-              Name:    "Account",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 62,
+                  NameEnd: 69,
+                  Name:    "Account",
+                },
+              },
             },
             Alias: &ast.Ident{
               NamePos: 73,
@@ -127,10 +131,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             },
           },
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 476,
-              NameEnd: 482,
-              Name:    "Person",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 476,
+                  NameEnd: 482,
+                  Name:    "Person",
+                },
+              },
             },
             Properties: &ast.PropertyGraphSingleProperties{
               Properties: &ast.PropertyGraphPropertiesAre{
@@ -160,10 +168,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
         Rparen:   1207,
         Elements: []*ast.PropertyGraphElement{
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 660,
-              NameEnd: 676,
-              Name:    "PersonOwnAccount",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 660,
+                  NameEnd: 676,
+                  Name:    "PersonOwnAccount",
+                },
+              },
             },
             Alias: &ast.Ident{
               NamePos: 680,
@@ -203,10 +215,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                     },
                   },
                 },
-                ElementReference: &ast.Ident{
-                  NamePos: 757,
-                  NameEnd: 763,
-                  Name:    "Person",
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 757,
+                      NameEnd: 763,
+                      Name:    "Person",
+                    },
+                  },
                 },
               },
               Destination: &ast.PropertyGraphDestinationKey{
@@ -222,10 +238,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                     },
                   },
                 },
-                ElementReference: &ast.Ident{
-                  NamePos: 849,
-                  NameEnd: 856,
-                  Name:    "Account",
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 849,
+                      NameEnd: 856,
+                      Name:    "Account",
+                    },
+                  },
                 },
               },
             },
@@ -249,10 +269,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
             },
           },
           &ast.PropertyGraphElement{
-            Name: &ast.Ident{
-              NamePos: 954,
-              NameEnd: 976,
-              Name:    "AccountTransferAccount",
+            Name: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 954,
+                  NameEnd: 976,
+                  Name:    "AccountTransferAccount",
+                },
+              },
             },
             Keys: &ast.PropertyGraphEdgeElementKeys{
               Source: &ast.PropertyGraphSourceKey{
@@ -268,10 +292,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                     },
                   },
                 },
-                ElementReference: &ast.Ident{
-                  NamePos: 1010,
-                  NameEnd: 1017,
-                  Name:    "Account",
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 1010,
+                      NameEnd: 1017,
+                      Name:    "Account",
+                    },
+                  },
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
                   Lparen:         1018,
@@ -298,10 +326,14 @@ CREATE OR REPLACE PROPERTY GRAPH FinGraph
                     },
                   },
                 },
-                ElementReference: &ast.Ident{
-                  NamePos: 1078,
-                  NameEnd: 1085,
-                  Name:    "Account",
+                ElementReference: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 1078,
+                      NameEnd: 1085,
+                      Name:    "Account",
+                    },
+                  },
                 },
                 ReferenceColumns: &ast.PropertyGraphColumnNameList{
                   Lparen:         1086,
