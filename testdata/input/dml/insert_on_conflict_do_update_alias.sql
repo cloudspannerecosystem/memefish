@@ -1,0 +1,1 @@
+INSERT INTO foo AS f (x, y) VALUES (1, 2) ON CONFLICT (x) DO UPDATE SET y = f.y + 1

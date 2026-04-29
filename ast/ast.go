@@ -570,6 +570,24 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
+// ConflictTarget represents conflict target in ON CONFLICT clause.
+type ConflictTarget interface {
+	Node
+	isConflictTarget()
+}
+
+func (ConflictTargetColumns) isConflictTarget()      {}
+func (ConflictTargetOnConstraint) isConflictTarget() {}
+
+// ConflictAction represents conflict action in ON CONFLICT clause.
+type ConflictAction interface {
+	Node
+	isConflictAction()
+}
+
+func (ConflictActionDoNothing) isConflictAction() {}
+func (ConflictActionDoUpdate) isConflictAction()  {}
+
 // ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
 	Node
@@ -4225,25 +4243,42 @@ type ThenReturn struct {
 	Items      []SelectItem
 }
 
+// AssertRowsModified is ASSERT_ROWS_MODIFIED clause in DML.
+//
+//	ASSERT_ROWS_MODIFIED {{.NumRows | sql}}
+type AssertRowsModified struct {
+	// pos = Assert
+	// end = NumRows.end
+
+	Assert token.Pos // position of "ASSERT_ROWS_MODIFIED" keyword
+
+	NumRows Expr
+}
+
 // Insert is INSERT statement node.
 //
 //	{{.Hint | sqlOpt}}
-//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	{{.OnConflict | sqlOpt}}
+//	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
 type Insert struct {
 	// pos = Hint.pos || Insert
-	// end = (ThenReturn ?? Input).end
+	// end = (ThenReturn ?? AssertRowsModified ?? OnConflict ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
-	Hint       *Hint // optional
-	TableName  *Path
-	TableHint  *Hint // optional
-	Columns    []*Ident
-	Input      InsertInput
-	ThenReturn *ThenReturn // optional
+	Hint               *Hint // optional
+	TableName          *Path
+	TableHint          *Hint    // optional
+	As                 *AsAlias // optional
+	Columns            []*Ident
+	Input              InsertInput
+	OnConflict         *OnConflict         // optional
+	AssertRowsModified *AssertRowsModified // optional
+	ThenReturn         *ThenReturn         // optional
 }
 
 // ValuesInput is VALUES clause in INSERT.
@@ -4291,6 +4326,68 @@ type SubQueryInput struct {
 	// end = Query.end
 
 	Query QueryExpr
+}
+
+// OnConflict is ON CONFLICT clause in INSERT.
+//
+//	ON CONFLICT {{.ConflictTarget | sqlOpt}} {{.ConflictAction | sql}}
+type OnConflict struct {
+	// pos = On
+	// end = ConflictAction.end
+
+	On token.Pos // position of "ON" keyword
+
+	ConflictTarget ConflictTarget // optional
+	ConflictAction ConflictAction
+}
+
+// ConflictTargetColumns is column list form of conflict target.
+//
+//	({{.Columns | sqlJoin ", "}})
+type ConflictTargetColumns struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen token.Pos // position of "("
+	Rparen token.Pos // position of ")"
+
+	Columns []*Ident
+}
+
+// ConflictTargetOnConstraint is ON UNIQUE CONSTRAINT form of conflict target.
+//
+//	ON UNIQUE CONSTRAINT {{.Name | sql}}
+type ConflictTargetOnConstraint struct {
+	// pos = On
+	// end = Name.end
+
+	On token.Pos // position of "ON" keyword
+
+	Name *Ident
+}
+
+// ConflictActionDoNothing is DO NOTHING conflict action.
+//
+//	DO NOTHING
+type ConflictActionDoNothing struct {
+	// pos = Do
+	// end = Nothing + 7
+
+	Do      token.Pos // position of "DO" keyword
+	Nothing token.Pos // position of "NOTHING" keyword
+}
+
+// ConflictActionDoUpdate is DO UPDATE SET conflict action.
+//
+//	DO UPDATE SET {{.UpdateItems | sqlJoin ", "}} {{.Where | sqlOpt}}
+type ConflictActionDoUpdate struct {
+	// pos = Do
+	// end = (Where ?? UpdateItems[$]).end
+
+	Do token.Pos // position of "DO" keyword
+
+	UpdateItems []*UpdateItem
+	Where       *Where // optional
 }
 
 // Delete is DELETE statement.

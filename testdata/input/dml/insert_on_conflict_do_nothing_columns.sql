@@ -1,0 +1,1 @@
+INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT (foo) DO NOTHING
