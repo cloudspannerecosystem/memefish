@@ -106,6 +106,7 @@ CREATE TABLE sch1.Albums (
         },
       },
     },
+    Enforced: true,
     OnDelete: "ON DELETE CASCADE",
   },
 }

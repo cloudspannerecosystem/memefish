@@ -60,6 +60,7 @@ create table foo (
         },
       },
     },
+    Enforced: true,
   },
 }
 

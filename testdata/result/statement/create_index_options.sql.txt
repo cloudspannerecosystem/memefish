@@ -1,0 +1,64 @@
+--- create_index_options.sql
+CREATE INDEX SingersByFirstLastName ON Singers(FirstName, LastName)
+  OPTIONS (locality_group = 'spill_to_hdd')
+--- AST
+&ast.CreateIndex{
+  Rparen: 66,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 35,
+        Name:    "SingersByFirstLastName",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 39,
+        NameEnd: 46,
+        Name:    "Singers",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 47,
+        NameEnd: 56,
+        Name:    "FirstName",
+      },
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 58,
+        NameEnd: 66,
+        Name:    "LastName",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 70,
+    Rparen:  110,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 79,
+          NameEnd: 93,
+          Name:    "locality_group",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 96,
+          ValueEnd: 110,
+          Value:    "spill_to_hdd",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX SingersByFirstLastName ON Singers(FirstName, LastName) OPTIONS (locality_group = "spill_to_hdd")

@@ -1,0 +1,75 @@
+--- hint.sql
+@{a=1}
+GRAPH FinGraph
+RETURN 1 AS x
+
+--- AST
+&ast.GQLGraphQuery{
+  Hint: &ast.Hint{
+    Rbrace:  5,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 2,
+              NameEnd: 3,
+              Name:    "a",
+            },
+          },
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 4,
+          ValueEnd: 5,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+  GraphClause: &ast.GQLGraphClause{
+    Graph:             7,
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 13,
+          NameEnd: 21,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 22,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 29,
+                  ValueEnd: 30,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.AsAlias{
+                  As:    31,
+                  Alias: &ast.Ident{
+                    NamePos: 34,
+                    NameEnd: 35,
+                    Name:    "x",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{a=1} GRAPH FinGraph RETURN 1 AS x

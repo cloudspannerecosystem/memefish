@@ -1,0 +1,86 @@
+--- create_model_with_trailing_commas.sql
+CREATE MODEL MyModel INPUT(
+  prompt STRING(MAX),
+ ) OUTPUT(
+  content STRING(MAX),
+ ) REMOTE OPTIONS (
+  endpoint = '//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID',
+  default_batch_size = 1
+)
+--- AST
+&ast.CreateModel{
+  Remote: 87,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 20,
+    Name:    "MyModel",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        21,
+    Rparen:       85,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 30,
+          NameEnd: 36,
+          Name:    "prompt",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 37,
+          Rparen:  47,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 63,
+          NameEnd: 70,
+          Name:    "content",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 71,
+          Rparen:  81,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 94,
+    Rparen:  231,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 106,
+          NameEnd: 114,
+          Name:    "endpoint",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 117,
+          ValueEnd: 204,
+          Value:    "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID",
+        },
+      },
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 208,
+          NameEnd: 226,
+          Name:    "default_batch_size",
+        },
+        Value: &ast.IntLiteral{
+          ValuePos: 229,
+          ValueEnd: 230,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL MyModel INPUT (prompt STRING(MAX)) OUTPUT (content STRING(MAX)) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID", default_batch_size = 1)

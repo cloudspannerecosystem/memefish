@@ -1,0 +1,158 @@
+--- create_property_graph_schemaless.sql
+CREATE PROPERTY GRAPH FinGraph
+  NODE TABLES (
+    GraphNode
+      DYNAMIC LABEL (label)
+      DYNAMIC PROPERTIES (properties)
+  )
+  EDGE TABLES (
+    GraphEdge
+      SOURCE KEY (id) REFERENCES GraphNode(id)
+      DESTINATION KEY (dest_id) REFERENCES GraphNode(id)
+      DYNAMIC LABEL (label)
+      DYNAMIC PROPERTIES (properties)
+  )
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 30,
+    Name:    "FinGraph",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   33,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   45,
+        Rparen:   129,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 51,
+              NameEnd: 60,
+              Name:    "GraphNode",
+            },
+            DynamicLabel: &ast.PropertyGraphDynamicLabel{
+              Dynamic:    67,
+              Rparen:     87,
+              ColumnName: &ast.Ident{
+                NamePos: 82,
+                NameEnd: 87,
+                Name:    "label",
+              },
+            },
+            DynamicProperties: &ast.PropertyGraphDynamicProperties{
+              Dynamic:    95,
+              Rparen:     125,
+              ColumnName: &ast.Ident{
+                NamePos: 115,
+                NameEnd: 125,
+                Name:    "properties",
+              },
+            },
+          },
+        },
+      },
+    },
+    EdgeTables: &ast.PropertyGraphEdgeTables{
+      Edge:   133,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   145,
+        Rparen:   333,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 151,
+              NameEnd: 160,
+              Name:    "GraphEdge",
+            },
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
+                Source: 167,
+                Keys:   &ast.PropertyGraphColumnNameList{
+                  Lparen:         178,
+                  Rparen:         181,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 179,
+                      NameEnd: 181,
+                      Name:    "id",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 194,
+                  NameEnd: 203,
+                  Name:    "GraphNode",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         203,
+                  Rparen:         206,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 204,
+                      NameEnd: 206,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+              Destination: &ast.PropertyGraphDestinationKey{
+                Destination: 214,
+                Keys:        &ast.PropertyGraphColumnNameList{
+                  Lparen:         230,
+                  Rparen:         238,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 231,
+                      NameEnd: 238,
+                      Name:    "dest_id",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 251,
+                  NameEnd: 260,
+                  Name:    "GraphNode",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         260,
+                  Rparen:         263,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 261,
+                      NameEnd: 263,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+            DynamicLabel: &ast.PropertyGraphDynamicLabel{
+              Dynamic:    271,
+              Rparen:     291,
+              ColumnName: &ast.Ident{
+                NamePos: 286,
+                NameEnd: 291,
+                Name:    "label",
+              },
+            },
+            DynamicProperties: &ast.PropertyGraphDynamicProperties{
+              Dynamic:    299,
+              Rparen:     329,
+              ColumnName: &ast.Ident{
+                NamePos: 319,
+                NameEnd: 329,
+                Name:    "properties",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH FinGraph NODE TABLES (GraphNode DYNAMIC LABEL (label) DYNAMIC PROPERTIES (properties)) EDGE TABLES (GraphEdge SOURCE KEY (id) REFERENCES GraphNode (id) DESTINATION KEY (dest_id) REFERENCES GraphNode (id) DYNAMIC LABEL (label) DYNAMIC PROPERTIES (properties))

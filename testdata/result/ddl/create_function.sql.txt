@@ -1,0 +1,60 @@
+--- create_function.sql
+CREATE FUNCTION my_func(x INT64, y INT64) RETURNS INT64 AS (x + y)
+--- AST
+&ast.CreateFunction{
+  As:       56,
+  RparenAs: 65,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 23,
+        Name:    "my_func",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 24,
+        NameEnd: 25,
+        Name:    "x",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 26,
+        Name:    "INT64",
+      },
+    },
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 33,
+        NameEnd: 34,
+        Name:    "y",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 35,
+        Name:    "INT64",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 50,
+    Name:    "INT64",
+  },
+  Definition: &ast.BinaryExpr{
+    Op:   "+",
+    Left: &ast.Ident{
+      NamePos: 60,
+      NameEnd: 61,
+      Name:    "x",
+    },
+    Right: &ast.Ident{
+      NamePos: 64,
+      NameEnd: 65,
+      Name:    "y",
+    },
+  },
+}
+
+--- SQL
+CREATE FUNCTION my_func (x INT64, y INT64) RETURNS INT64 AS (x + y)

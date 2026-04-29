@@ -1,0 +1,88 @@
+--- mysql_udf_degrees.sql
+CREATE OR REPLACE FUNCTION mysql.DEGREES(x FLOAT64) RETURNS FLOAT64 AS (
+  x / SAFE.ACOS(0) * 90
+)
+--- AST
+&ast.CreateFunction{
+  As:        68,
+  RparenAs:  97,
+  OrReplace: true,
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 32,
+        Name:    "mysql",
+      },
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 40,
+        Name:    "DEGREES",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 41,
+        NameEnd: 42,
+        Name:    "x",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 43,
+        Name:    "FLOAT64",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 60,
+    Name:    "FLOAT64",
+  },
+  Definition: &ast.BinaryExpr{
+    Op:   "*",
+    Left: &ast.BinaryExpr{
+      Op:   "/",
+      Left: &ast.Ident{
+        NamePos: 75,
+        NameEnd: 76,
+        Name:    "x",
+      },
+      Right: &ast.CallExpr{
+        Rparen: 90,
+        Func:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 79,
+              NameEnd: 83,
+              Name:    "SAFE",
+            },
+            &ast.Ident{
+              NamePos: 84,
+              NameEnd: 88,
+              Name:    "ACOS",
+            },
+          },
+        },
+        Args: []ast.Arg{
+          &ast.ExprArg{
+            Expr: &ast.IntLiteral{
+              ValuePos: 89,
+              ValueEnd: 90,
+              Base:     10,
+              Value:    "0",
+            },
+          },
+        },
+      },
+    },
+    Right: &ast.IntLiteral{
+      ValuePos: 94,
+      ValueEnd: 96,
+      Base:     10,
+      Value:    "90",
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE FUNCTION mysql.DEGREES (x FLOAT64) RETURNS FLOAT64 AS (x / SAFE.ACOS(0) * 90)

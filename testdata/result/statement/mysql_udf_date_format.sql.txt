@@ -1,0 +1,226 @@
+--- mysql_udf_date_format.sql
+CREATE OR REPLACE FUNCTION mysql.DATE_FORMAT(d TIMESTAMP, format STRING) RETURNS STRING AS (
+  SAFE.FORMAT_TIMESTAMP(
+    CASE
+      WHEN SAFE.REGEXP_CONTAINS(format, '(^|[^%])%[cDfhciMrsuVWXx]') THEN ERROR(
+        SAFE.CONCAT(
+          '%',
+          SAFE.REGEXP_EXTRACT(format, '(^|[^%])%[cDfhciMrsuVWXx]'),
+          ' format specifier is not supported'))
+      ELSE format
+    END,
+    d)
+)
+--- AST
+&ast.CreateFunction{
+  As:        88,
+  RparenAs:  395,
+  OrReplace: true,
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 32,
+        Name:    "mysql",
+      },
+      &ast.Ident{
+        NamePos: 33,
+        NameEnd: 44,
+        Name:    "DATE_FORMAT",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 45,
+        NameEnd: 46,
+        Name:    "d",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 47,
+        Name:    "TIMESTAMP",
+      },
+    },
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 58,
+        NameEnd: 64,
+        Name:    "format",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 65,
+        Name:    "STRING",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 81,
+    Name:    "STRING",
+  },
+  Definition: &ast.CallExpr{
+    Rparen: 393,
+    Func:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 95,
+          NameEnd: 99,
+          Name:    "SAFE",
+        },
+        &ast.Ident{
+          NamePos: 100,
+          NameEnd: 116,
+          Name:    "FORMAT_TIMESTAMP",
+        },
+      },
+    },
+    Args: []ast.Arg{
+      &ast.ExprArg{
+        Expr: &ast.CaseExpr{
+          Case:   122,
+          EndPos: 383,
+          Whens:  []*ast.CaseWhen{
+            &ast.CaseWhen{
+              When: 133,
+              Cond: &ast.CallExpr{
+                Rparen: 194,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 138,
+                      NameEnd: 142,
+                      Name:    "SAFE",
+                    },
+                    &ast.Ident{
+                      NamePos: 143,
+                      NameEnd: 158,
+                      Name:    "REGEXP_CONTAINS",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.Ident{
+                      NamePos: 159,
+                      NameEnd: 165,
+                      Name:    "format",
+                    },
+                  },
+                  &ast.ExprArg{
+                    Expr: &ast.StringLiteral{
+                      ValuePos: 167,
+                      ValueEnd: 194,
+                      Value:    "(^|[^%])%[cDfhciMrsuVWXx]",
+                    },
+                  },
+                },
+              },
+              Then: &ast.CallExpr{
+                Rparen: 359,
+                Func:   &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 201,
+                      NameEnd: 206,
+                      Name:    "ERROR",
+                    },
+                  },
+                },
+                Args: []ast.Arg{
+                  &ast.ExprArg{
+                    Expr: &ast.CallExpr{
+                      Rparen: 358,
+                      Func:   &ast.Path{
+                        Idents: []*ast.Ident{
+                          &ast.Ident{
+                            NamePos: 216,
+                            NameEnd: 220,
+                            Name:    "SAFE",
+                          },
+                          &ast.Ident{
+                            NamePos: 221,
+                            NameEnd: 227,
+                            Name:    "CONCAT",
+                          },
+                        },
+                      },
+                      Args: []ast.Arg{
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 239,
+                            ValueEnd: 242,
+                            Value:    "%",
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.CallExpr{
+                            Rparen: 309,
+                            Func:   &ast.Path{
+                              Idents: []*ast.Ident{
+                                &ast.Ident{
+                                  NamePos: 254,
+                                  NameEnd: 258,
+                                  Name:    "SAFE",
+                                },
+                                &ast.Ident{
+                                  NamePos: 259,
+                                  NameEnd: 273,
+                                  Name:    "REGEXP_EXTRACT",
+                                },
+                              },
+                            },
+                            Args: []ast.Arg{
+                              &ast.ExprArg{
+                                Expr: &ast.Ident{
+                                  NamePos: 274,
+                                  NameEnd: 280,
+                                  Name:    "format",
+                                },
+                              },
+                              &ast.ExprArg{
+                                Expr: &ast.StringLiteral{
+                                  ValuePos: 282,
+                                  ValueEnd: 309,
+                                  Value:    "(^|[^%])%[cDfhciMrsuVWXx]",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        &ast.ExprArg{
+                          Expr: &ast.StringLiteral{
+                            ValuePos: 322,
+                            ValueEnd: 358,
+                            Value:    " format specifier is not supported",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Else: &ast.CaseElse{
+            Else: 367,
+            Expr: &ast.Ident{
+              NamePos: 372,
+              NameEnd: 378,
+              Name:    "format",
+            },
+          },
+        },
+      },
+      &ast.ExprArg{
+        Expr: &ast.Ident{
+          NamePos: 392,
+          NameEnd: 393,
+          Name:    "d",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE FUNCTION mysql.DATE_FORMAT (d TIMESTAMP, format STRING) RETURNS STRING AS (SAFE.FORMAT_TIMESTAMP(CASE WHEN SAFE.REGEXP_CONTAINS(format, "(^|[^%])%[cDfhciMrsuVWXx]") THEN ERROR(SAFE.CONCAT("%", SAFE.REGEXP_EXTRACT(format, "(^|[^%])%[cDfhciMrsuVWXx]"), " format specifier is not supported")) ELSE format END, d))

@@ -172,12 +172,14 @@ func (b *BadNode) SQL() string {
 	return sql
 }
 
-func (b *BadStatement) SQL() string { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
-func (b *BadQueryExpr) SQL() string { return b.BadNode.SQL() }
-func (b *BadExpr) SQL() string      { return b.BadNode.SQL() }
-func (b *BadType) SQL() string      { return b.BadNode.SQL() }
-func (b *BadDDL) SQL() string       { return b.BadNode.SQL() }
-func (b *BadDML) SQL() string       { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
+func (b *BadStatement) SQL() string                  { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
+func (b *BadQueryExpr) SQL() string                  { return b.BadNode.SQL() }
+func (b *BadExpr) SQL() string                       { return b.BadNode.SQL() }
+func (b *BadType) SQL() string                       { return b.BadNode.SQL() }
+func (b *BadDDL) SQL() string                        { return b.BadNode.SQL() }
+func (b *BadDML) SQL() string                        { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
+func (b *BadGQLLinearQueryStatement) SQL() string    { return b.BadNode.SQL() }
+func (b *BadGQLPrimitiveQueryStatement) SQL() string { return b.BadNode.SQL() }
 
 // ================================================================================
 //
@@ -194,9 +196,12 @@ func (q *Query) SQL() string {
 		q.Query.SQL() +
 		sqlOpt(" ", q.OrderBy, "") +
 		sqlOpt(" ", q.Limit, "") +
+		sqlOpt(" ", q.ForUpdate, "") +
 		strOpt(len(q.PipeOperators) > 0, " ") +
 		sqlJoin(q.PipeOperators, " ")
 }
+
+func (f *ForUpdate) SQL() string { return "FOR UPDATE" }
 
 func (h *Hint) SQL() string {
 	return "@{" + sqlJoin(h.Records, ", ") + "}"
@@ -278,7 +283,7 @@ func (w *Where) SQL() string {
 }
 
 func (g *GroupBy) SQL() string {
-	return "GROUP BY " + sqlJoin(g.Exprs, ", ")
+	return "GROUP " + sqlOpt("", g.Hint, " ") + "BY " + sqlJoin(g.Exprs, ", ")
 }
 
 func (h *Having) SQL() string {
@@ -468,6 +473,8 @@ func (c *CallExpr) SQL() string {
 		sqlJoin(c.NamedArgs, ", ") +
 		sqlOpt(" ", c.NullHandling, "") +
 		sqlOpt(" ", c.Having, "") +
+		sqlOpt(" ", c.OrderBy, "") +
+		sqlOpt(" ", c.Limit, "") +
 		")" +
 		sqlOpt(" ", c.Hint, "")
 }
@@ -502,10 +509,6 @@ func (h *HavingMin) SQL() string { return "HAVING MIN " + h.Expr.SQL() }
 
 func (s *ExprArg) SQL() string {
 	return s.Expr.SQL()
-}
-
-func (i *IntervalArg) SQL() string {
-	return "INTERVAL " + i.Expr.SQL() + sqlOpt(" ", i.Unit, "")
 }
 
 func (s *SequenceArg) SQL() string {
@@ -656,6 +659,14 @@ func (t *JSONLiteral) SQL() string {
 	return "JSON " + t.Value.SQL()
 }
 
+func (n *IntervalLiteralSingle) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + string(n.DateTimePart)
+}
+
+func (n *IntervalLiteralRange) SQL() string {
+	return "INTERVAL " + n.Value.SQL() + " " + string(n.StartingDateTimePart) + " TO " + string(n.EndingDateTimePart)
+}
+
 // ================================================================================
 //
 // NEW constructors
@@ -751,9 +762,25 @@ func (c *CreateDatabase) SQL() string {
 	return "CREATE DATABASE " + c.Name.SQL()
 }
 
-func (s *CreateSchema) SQL() string { return "CREATE SCHEMA " + s.Name.SQL() }
+func (c *CreateLocalityGroup) SQL() string {
+	return "CREATE LOCALITY GROUP " + c.Name.SQL() + sqlOpt(" ", c.Options, "")
+}
 
-func (s *DropSchema) SQL() string { return "DROP SCHEMA " + s.Name.SQL() }
+func (a *AlterLocalityGroup) SQL() string {
+	return "ALTER LOCALITY GROUP " + a.Name.SQL() + " SET " + a.Options.SQL()
+}
+
+func (d *DropLocalityGroup) SQL() string {
+	return "DROP LOCALITY GROUP " + d.Name.SQL()
+}
+
+func (s *CreateSchema) SQL() string {
+	return "CREATE" + strOpt(s.OrReplace, " OR REPLACE") + " SCHEMA " + strOpt(s.IfNotExists, "IF NOT EXISTS ") + s.Name.SQL()
+}
+
+func (s *DropSchema) SQL() string {
+	return "DROP SCHEMA " + strOpt(s.IfExists, "IF EXISTS ") + s.Name.SQL()
+}
 
 func (d *AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + d.Name.SQL() + " SET " + d.Options.SQL()
@@ -792,7 +819,8 @@ func (c *CreateTable) SQL() string {
 		"\n)" +
 		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
-		sqlOpt("", c.RowDeletionPolicy, "")
+		sqlOpt("", c.RowDeletionPolicy, "") +
+		sqlOpt(", ", c.Options, "")
 }
 
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
@@ -849,7 +877,8 @@ func (f *ForeignKey) SQL() string {
 	return "FOREIGN KEY (" + sqlJoin(f.Columns, ", ") + ") " +
 		"REFERENCES " + f.ReferenceTable.SQL() + " (" +
 		sqlJoin(f.ReferenceColumns, ", ") + ")" +
-		strOpt(f.OnDelete != "", " "+string(f.OnDelete))
+		strOpt(f.OnDelete != "", " "+string(f.OnDelete)) +
+		strOpt(f.Enforcement != "", " "+string(f.Enforcement))
 }
 
 func (c *Check) SQL() string {
@@ -857,7 +886,11 @@ func (c *Check) SQL() string {
 }
 
 func (c *ColumnDefaultExpr) SQL() string {
-	return "DEFAULT (" + c.Expr.SQL() + ")"
+	return "DEFAULT (" + c.Expr.SQL() + ")" + sqlOpt(" ", c.OnUpdate, "")
+}
+
+func (o *OnUpdate) SQL() string {
+	return "ON UPDATE (" + o.Expr.SQL() + ")"
 }
 
 func (g *GeneratedColumnExpr) SQL() string {
@@ -868,12 +901,16 @@ func (i *IdentityColumn) SQL() string {
 	return "GENERATED BY DEFAULT AS IDENTITY" + strOpt(len(i.Params) > 0, " ("+sqlJoin(i.Params, " ")+")")
 }
 
+func (a *AutoIncrement) SQL() string {
+	return "AUTO_INCREMENT"
+}
+
 func (i *IndexKey) SQL() string {
 	return i.Name.SQL() + strOpt(i.Dir != "", " "+string(i.Dir))
 }
 
 func (c *Cluster) SQL() string {
-	return ",\n" + indent + "INTERLEAVE IN PARENT " + c.TableName.SQL() +
+	return ",\n" + indent + "INTERLEAVE IN " + strOpt(c.Enforced, "PARENT ") + c.TableName.SQL() +
 		strOpt(c.OnDelete != "", " "+string(c.OnDelete))
 }
 
@@ -927,6 +964,13 @@ func (s *SetOnDelete) SQL() string {
 	return "SET " + string(s.OnDelete)
 }
 
+func (s *SetInterleaveIn) SQL() string {
+	return "SET INTERLEAVE IN " + strOpt(s.Enforced, "PARENT ") + s.TableName.SQL() +
+		strOpt(s.OnDelete != "", " "+string(s.OnDelete))
+}
+
+func (a *AlterTableSetOptions) SQL() string { return "SET " + a.Options.SQL() }
+
 func (a *AlterColumn) SQL() string {
 	return "ALTER COLUMN " + a.Name.SQL() + " " + a.Alteration.SQL()
 }
@@ -942,6 +986,10 @@ func (a *AlterColumnSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 func (a *AlterColumnSetDefault) SQL() string { return "SET " + a.DefaultExpr.SQL() }
 
 func (a *AlterColumnDropDefault) SQL() string { return "DROP DEFAULT" }
+
+func (a *AlterColumnSetOnUpdate) SQL() string { return "SET " + a.OnUpdate.SQL() }
+
+func (a *AlterColumnDropOnUpdate) SQL() string { return "DROP ON UPDATE" }
 
 func (a *AlterColumnAlterIdentity) SQL() string { return "ALTER IDENTITY " + a.Alteration.SQL() }
 
@@ -971,15 +1019,21 @@ func (c *CreateIndex) SQL() string {
 		sqlJoin(c.Keys, ", ") +
 		")" +
 		sqlOpt(" ", c.Storing, "") +
-		sqlOpt("", c.InterleaveIn, "")
+		sqlOpt("", c.InterleaveIn, "") +
+		sqlOpt(" ", c.Options, "")
 }
 
 func (c *CreateVectorIndex) SQL() string {
 	return "CREATE VECTOR INDEX " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
 		c.Name.SQL() + " ON " + c.TableName.SQL() + " (" + c.ColumnName.SQL() + ") " +
+		sqlOpt("", c.Storing, " ") +
 		sqlOpt("", c.Where, " ") +
 		c.Options.SQL()
+}
+
+func (a *AlterVectorIndex) SQL() string {
+	return "ALTER VECTOR INDEX " + a.Name.SQL() + " " + a.Alteration.SQL()
 }
 
 func (c *CreateChangeStream) SQL() string {
@@ -993,15 +1047,7 @@ func (c *ChangeStreamForAll) SQL() string {
 }
 
 func (c *ChangeStreamForTables) SQL() string {
-	// TODO: Refactor after ChangeStreamForTable implements Node.
-	sql := "FOR "
-	for i, table := range c.Tables {
-		if i > 0 {
-			sql += ", "
-		}
-		sql += table.SQL()
-	}
-	return sql
+	return "FOR " + sqlJoin(c.Tables, ", ")
 }
 
 func (a *AlterChangeStream) SQL() string {
@@ -1021,7 +1067,7 @@ func (a ChangeStreamSetOptions) SQL() string {
 }
 
 func (c *ChangeStreamForTable) SQL() string {
-	return c.TableName.SQL() + strOpt(len(c.Columns) > 0, "("+sqlJoin(c.Columns, ", ")+")")
+	return c.TableName.SQL() + strOpt(!c.Rparen.Invalid(), "("+sqlJoin(c.Columns, ", ")+")")
 }
 
 func (d *DropChangeStream) SQL() string {
@@ -1120,6 +1166,32 @@ func (s *AlterStatistics) SQL() string {
 }
 func (a *Analyze) SQL() string { return "ANALYZE" }
 
+func (p *FunctionParam) SQL() string {
+	return p.Name.SQL() + " " + p.Type.SQL() + sqlOpt(" DEFAULT ", p.DefaultExpr, "")
+}
+
+func (c *CreateFunction) SQL() string {
+	return "CREATE" +
+		strOpt(c.OrReplace, " OR REPLACE") +
+		" FUNCTION " +
+		c.Name.SQL() +
+		" (" + sqlJoin(c.Params, ", ") + ")" +
+		sqlOpt(" RETURNS ", c.ReturnType, "") +
+		strOpt(c.Determinism != "", " "+string(c.Determinism)) +
+		strOpt(c.Language != "", " LANGUAGE "+c.Language) +
+		strOpt(c.Remote, " REMOTE") +
+		strOpt(c.SqlSecurity != "", " SQL SECURITY "+string(c.SqlSecurity)) +
+		sqlOpt(" ", c.Options, "") +
+		sqlOpt(" AS (", c.Definition, ")")
+}
+
+func (d *DropFunction) SQL() string {
+	return "DROP" +
+		" FUNCTION " +
+		strOpt(d.IfExists, "IF EXISTS ") +
+		d.Name.SQL()
+}
+
 func (c *CreateModelColumn) SQL() string {
 	return c.Name.SQL() + " " + c.DataType.SQL() + sqlOpt(" ", c.Options, "")
 }
@@ -1183,7 +1255,9 @@ func (p *PropertyGraphElement) SQL() string {
 	return p.Name.SQL() +
 		sqlOpt(" AS ", p.Alias, "") +
 		sqlOpt(" ", p.Keys, "") +
-		sqlOpt(" ", p.Properties, "")
+		sqlOpt(" ", p.Properties, "") +
+		sqlOpt(" ", p.DynamicLabel, "") +
+		sqlOpt(" ", p.DynamicProperties, "")
 }
 
 func (p *PropertyGraphSingleProperties) SQL() string { return p.Properties.SQL() }
@@ -1239,6 +1313,14 @@ func (p *PropertyGraphDerivedPropertyList) SQL() string {
 
 func (p *PropertyGraphDerivedProperty) SQL() string {
 	return p.Expr.SQL() + sqlOpt(" AS ", p.Alias, "")
+}
+
+func (p *PropertyGraphDynamicLabel) SQL() string {
+	return "DYNAMIC LABEL (" + p.ColumnName.SQL() + ")"
+}
+
+func (p *PropertyGraphDynamicProperties) SQL() string {
+	return "DYNAMIC PROPERTIES (" + p.ColumnName.SQL() + ")"
 }
 
 func (g *DropPropertyGraph) SQL() string {
@@ -1305,14 +1387,22 @@ func (t *ThenReturn) SQL() string {
 	return "THEN RETURN " + sqlOpt("", t.WithAction, " ") + sqlJoin(t.Items, ", ")
 }
 
+func (a *AssertRowsModified) SQL() string {
+	return "ASSERT_ROWS_MODIFIED " + a.NumRows.SQL()
+}
+
 func (i *Insert) SQL() string {
 	return sqlOpt("", i.Hint, " ") +
 		"INSERT " +
 		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
-		"INTO " + i.TableName.SQL() + " (" +
+		"INTO " + i.TableName.SQL() +
+		sqlOpt("", i.TableHint, "") +
+		sqlOpt(" ", i.As, "") + " (" +
 		sqlJoin(i.Columns, ", ") +
 		") " +
 		i.Input.SQL() +
+		sqlOpt(" ", i.OnConflict, "") +
+		sqlOpt(" ", i.AssertRowsModified, "") +
 		sqlOpt(" ", i.ThenReturn, "")
 }
 
@@ -1335,10 +1425,35 @@ func (s *SubQueryInput) SQL() string {
 	return s.Query.SQL()
 }
 
+func (o *OnConflict) SQL() string {
+	return "ON CONFLICT" +
+		sqlOpt(" ", o.ConflictTarget, "") +
+		" " + o.ConflictAction.SQL()
+}
+
+func (c *ConflictTargetColumns) SQL() string {
+	return "(" + sqlJoin(c.Columns, ", ") + ")"
+}
+
+func (c *ConflictTargetOnConstraint) SQL() string {
+	return "ON UNIQUE CONSTRAINT " + c.Name.SQL()
+}
+
+func (c *ConflictActionDoNothing) SQL() string {
+	return "DO NOTHING"
+}
+
+func (c *ConflictActionDoUpdate) SQL() string {
+	return "DO UPDATE SET " +
+		sqlJoin(c.UpdateItems, ", ") +
+		sqlOpt(" ", c.Where, "")
+}
+
 func (d *Delete) SQL() string {
 	return sqlOpt("", d.Hint, " ") +
 		"DELETE FROM " +
-		d.TableName.SQL() + " " +
+		d.TableName.SQL() +
+		sqlOpt("", d.TableHint, "") + " " +
 		sqlOpt("", d.As, " ") +
 		d.Where.SQL() +
 		sqlOpt(" ", d.ThenReturn, "")
@@ -1346,7 +1461,8 @@ func (d *Delete) SQL() string {
 
 func (u *Update) SQL() string {
 	return sqlOpt("", u.Hint, " ") +
-		"UPDATE " + u.TableName.SQL() + " " +
+		"UPDATE " + u.TableName.SQL() +
+		sqlOpt("", u.TableHint, "") + " " +
 		sqlOpt("", u.As, " ") +
 		"SET " +
 		sqlJoin(u.Updates, ", ") +
@@ -1370,4 +1486,42 @@ func (u *UpdateItemDML) SQL() string {
 
 func (c *Call) SQL() string {
 	return "CALL " + c.Name.SQL() + "(" + sqlJoin(c.Args, ", ") + ")"
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+func (q *GQLGraphQuery) SQL() string {
+	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.Query.SQL()
+}
+
+func (c *GQLGraphClause) SQL() string {
+	return "GRAPH " + c.PropertyGraphName.SQL()
+}
+
+func (s *GQLMultiLinearQueryStatement) SQL() string {
+	return sqlJoin(s.Statements, " NEXT ")
+}
+
+func (s *GQLSimpleLinearQueryStatement) SQL() string {
+	return sqlJoin(s.Statements, " ")
+}
+
+func (s *GQLCompoundLinearQueryStatement) SQL() string {
+	sep := " " + string(s.Op) + strOpt(s.AllOrDistinct != "", " "+string(s.AllOrDistinct)) + " "
+	return sqlJoin(s.Statements, sep)
+}
+
+func (s *GQLReturn) SQL() string {
+	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ")
+}
+
+func (i *GQLReturnItem) SQL() string {
+	if !i.Star.Invalid() {
+		return "*"
+	}
+	return i.Expr.SQL() + sqlOpt(" ", i.Alias, "")
 }

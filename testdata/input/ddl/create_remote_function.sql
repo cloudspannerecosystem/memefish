@@ -1,0 +1,1 @@
+CREATE FUNCTION remote_func(x INT64) RETURNS INT64 REMOTE OPTIONS (endpoint = "https://example.com")

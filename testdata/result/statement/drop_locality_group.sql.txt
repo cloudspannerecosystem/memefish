@@ -1,0 +1,13 @@
+--- drop_locality_group.sql
+DROP LOCALITY GROUP ssd_only
+--- AST
+&ast.DropLocalityGroup{
+  Name: &ast.Ident{
+    NamePos: 20,
+    NameEnd: 28,
+    Name:    "ssd_only",
+  },
+}
+
+--- SQL
+DROP LOCALITY GROUP ssd_only

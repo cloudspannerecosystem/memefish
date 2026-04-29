@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/k0kubun/pp/v3"
+
 	"github.com/cloudspannerecosystem/memefish"
 	"github.com/cloudspannerecosystem/memefish/token"
-	"github.com/k0kubun/pp"
 )
 
 func main() {

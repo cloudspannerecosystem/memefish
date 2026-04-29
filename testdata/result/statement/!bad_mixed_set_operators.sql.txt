@@ -1,0 +1,159 @@
+--- !bad_mixed_set_operators.sql
+GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x
+
+--- Error
+syntax error: testdata/input/gql/!bad_mixed_set_operators.sql:1:54: all set operator at the same level must be the same
+  1|  GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x
+   |                                                       ^~~~~~~~~
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 80,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      15,
+              End:      21,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "1",
+              Base:  10,
+              Pos:   22,
+              End:   23,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   24,
+              End:   26,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      27,
+              End:      28,
+            },
+            &token.Token{
+              Kind:  "UNION",
+              Space: " ",
+              Raw:   "UNION",
+              Pos:   29,
+              End:   34,
+            },
+            &token.Token{
+              Kind:  "ALL",
+              Space: " ",
+              Raw:   "ALL",
+              Pos:   35,
+              End:   38,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      39,
+              End:      45,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "2",
+              Base:  10,
+              Pos:   46,
+              End:   47,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   48,
+              End:   50,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      51,
+              End:      52,
+            },
+            &token.Token{
+              Kind:  "INTERSECT",
+              Space: " ",
+              Raw:   "INTERSECT",
+              Pos:   53,
+              End:   62,
+            },
+            &token.Token{
+              Kind:  "ALL",
+              Space: " ",
+              Raw:   "ALL",
+              Pos:   63,
+              End:   66,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      67,
+              End:      73,
+            },
+            &token.Token{
+              Kind:  "<int>",
+              Space: " ",
+              Raw:   "3",
+              Base:  10,
+              Pos:   74,
+              End:   75,
+            },
+            &token.Token{
+              Kind:  "AS",
+              Space: " ",
+              Raw:   "AS",
+              Pos:   76,
+              End:   78,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "x",
+              AsString: "x",
+              Pos:      79,
+              End:      80,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x INTERSECT ALL RETURN 3 AS x

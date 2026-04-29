@@ -1,0 +1,35 @@
+--- grant_on_view_fqn.sql
+GRANT SELECT ON VIEW s.v TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.SelectPrivilegeOnView{
+    Select: 6,
+    Names:  []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 21,
+            NameEnd: 22,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 23,
+            NameEnd: 24,
+            Name:    "v",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 33,
+      NameEnd: 34,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON VIEW s.v TO ROLE r

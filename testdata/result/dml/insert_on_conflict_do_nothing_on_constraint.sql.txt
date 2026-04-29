@@ -1,0 +1,73 @@
+--- insert_on_conflict_do_nothing_on_constraint.sql
+INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT ON UNIQUE CONSTRAINT bar_unique DO NOTHING
+--- AST
+&ast.Insert{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 25,
+      Name:    "bar",
+    },
+  },
+  Input: &ast.ValuesInput{
+    Values: 27,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 34,
+        Rparen: 39,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 35,
+              ValueEnd: 36,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 38,
+              ValueEnd: 39,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+        },
+      },
+    },
+  },
+  OnConflict: &ast.OnConflict{
+    On:             41,
+    ConflictTarget: &ast.ConflictTargetOnConstraint{
+      On:   53,
+      Name: &ast.Ident{
+        NamePos: 74,
+        NameEnd: 84,
+        Name:    "bar_unique",
+      },
+    },
+    ConflictAction: &ast.ConflictActionDoNothing{
+      Do:      85,
+      Nothing: 88,
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT ON UNIQUE CONSTRAINT bar_unique DO NOTHING

@@ -1,0 +1,35 @@
+--- grant_execute_on_table_function_fqn.sql
+GRANT EXECUTE ON TABLE FUNCTION s.f TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.ExecutePrivilegeOnTableFunction{
+    Execute: 6,
+    Names:   []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 32,
+            NameEnd: 33,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 34,
+            NameEnd: 35,
+            Name:    "f",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 44,
+      NameEnd: 45,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT EXECUTE ON TABLE FUNCTION s.f TO ROLE r

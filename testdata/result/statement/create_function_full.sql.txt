@@ -1,0 +1,56 @@
+--- create_function_full.sql
+CREATE OR REPLACE FUNCTION my_schema.my_func(x INT64 DEFAULT 0) RETURNS INT64 NOT DETERMINISTIC LANGUAGE SQL SQL SECURITY INVOKER AS (x)
+--- AST
+&ast.CreateFunction{
+  As:        130,
+  RparenAs:  135,
+  OrReplace: true,
+  Name:      &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 36,
+        Name:    "my_schema",
+      },
+      &ast.Ident{
+        NamePos: 37,
+        NameEnd: 44,
+        Name:    "my_func",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 45,
+        NameEnd: 46,
+        Name:    "x",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 47,
+        Name:    "INT64",
+      },
+      DefaultExpr: &ast.IntLiteral{
+        ValuePos: 61,
+        ValueEnd: 62,
+        Base:     10,
+        Value:    "0",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 72,
+    Name:    "INT64",
+  },
+  SqlSecurity: "INVOKER",
+  Determinism: "NOT DETERMINISTIC",
+  Language:    "SQL",
+  Definition:  &ast.Ident{
+    NamePos: 134,
+    NameEnd: 135,
+    Name:    "x",
+  },
+}
+
+--- SQL
+CREATE OR REPLACE FUNCTION my_schema.my_func (x INT64 DEFAULT 0) RETURNS INT64 NOT DETERMINISTIC LANGUAGE SQL SQL SECURITY INVOKER AS (x)

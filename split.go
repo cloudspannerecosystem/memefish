@@ -35,7 +35,13 @@ func SplitRawStatements(filepath, s string) ([]*RawStatement, error) {
 			if err := lex.NextToken(); err != nil {
 				return nil, err
 			}
-			firstPos = lex.Token.Pos
+
+			// the new firstPos is the first character after the semicolon, which can be the beginning of comments
+			if len(lex.Token.Comments) > 0 {
+				firstPos = lex.Token.Comments[0].Pos
+			} else {
+				firstPos = lex.Token.Pos
+			}
 			continue
 		}
 

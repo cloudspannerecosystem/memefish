@@ -1,0 +1,89 @@
+--- create_table_cluster_without_parent.sql
+create table foo (
+  foo int64,
+  bar int64
+) primary key (foo, bar),
+  interleave in foobar
+
+--- AST
+&ast.CreateTable{
+  Rparen:           44,
+  PrimaryKeyRparen: 67,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 16,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "foo",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 25,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 34,
+        NameEnd: 37,
+        Name:    "bar",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 38,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 59,
+        NameEnd: 62,
+        Name:    "foo",
+      },
+    },
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 64,
+        NameEnd: 67,
+        Name:    "bar",
+      },
+    },
+  },
+  Cluster: &ast.Cluster{
+    Comma:       68,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 86,
+          NameEnd: 92,
+          Name:    "foobar",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE foo (
+  foo INT64,
+  bar INT64
+) PRIMARY KEY (foo, bar),
+  INTERLEAVE IN foobar

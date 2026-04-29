@@ -1,0 +1,85 @@
+--- except.sql
+GRAPH FinGraph
+RETURN 1 AS x
+EXCEPT ALL
+RETURN 2 AS x
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Op:            "EXCEPT",
+        AllOrDistinct: "ALL",
+        Statements:    []ast.GQLLinearQueryStatement{
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 15,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 22,
+                      ValueEnd: 23,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    24,
+                      Alias: &ast.Ident{
+                        NamePos: 27,
+                        NameEnd: 28,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 40,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 47,
+                      ValueEnd: 48,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    49,
+                      Alias: &ast.Ident{
+                        NamePos: 52,
+                        NameEnd: 53,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS x EXCEPT ALL RETURN 2 AS x

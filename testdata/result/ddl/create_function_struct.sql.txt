@@ -1,0 +1,75 @@
+--- create_function_struct.sql
+CREATE FUNCTION my_func(s STRUCT<x INT64, y STRING>) RETURNS INT64 AS (s.x)
+
+--- AST
+&ast.CreateFunction{
+  As:       67,
+  RparenAs: 74,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 23,
+        Name:    "my_func",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 24,
+        NameEnd: 25,
+        Name:    "s",
+      },
+      Type: &ast.StructType{
+        Struct: 26,
+        Gt:     50,
+        Fields: []*ast.StructField{
+          &ast.StructField{
+            Ident: &ast.Ident{
+              NamePos: 33,
+              NameEnd: 34,
+              Name:    "x",
+            },
+            Type: &ast.SimpleType{
+              NamePos: 35,
+              Name:    "INT64",
+            },
+          },
+          &ast.StructField{
+            Ident: &ast.Ident{
+              NamePos: 42,
+              NameEnd: 43,
+              Name:    "y",
+            },
+            Type: &ast.SimpleType{
+              NamePos: 44,
+              Name:    "STRING",
+            },
+          },
+        },
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 61,
+    Name:    "INT64",
+  },
+  Definition: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 71,
+        NameEnd: 72,
+        Name:    "s",
+      },
+      &ast.Ident{
+        NamePos: 73,
+        NameEnd: 74,
+        Name:    "x",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE FUNCTION my_func (s STRUCT<x INT64, y STRING>) RETURNS INT64 AS (s.x)

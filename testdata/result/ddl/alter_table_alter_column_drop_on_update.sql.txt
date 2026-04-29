@@ -1,0 +1,30 @@
+--- alter_table_alter_column_drop_on_update.sql
+ALTER TABLE foo ALTER COLUMN bar DROP ON UPDATE
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 16,
+    Name:  &ast.Ident{
+      NamePos: 29,
+      NameEnd: 32,
+      Name:    "bar",
+    },
+    Alteration: &ast.AlterColumnDropOnUpdate{
+      Drop:   33,
+      Update: 41,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE foo ALTER COLUMN bar DROP ON UPDATE

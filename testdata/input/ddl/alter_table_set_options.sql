@@ -1,0 +1,1 @@
+ALTER TABLE Singers SET OPTIONS (locality_group = 'spill_to_hdd')

@@ -20,6 +20,7 @@ alter table foo add foreign key (bar) references t2 (t2key1)
         Foreign:     20,
         Rparen:      59,
         OnDeleteEnd: -1,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 33,

@@ -1,0 +1,67 @@
+--- create_vector_index_storing_where_options.sql
+create vector index Singer_vector_index on Singers(embedding)
+storing (genre)
+where embedding is not null
+options(distance_type = 'COSINE')
+--- AST
+&ast.CreateVectorIndex{
+  Name: &ast.Ident{
+    NamePos: 20,
+    NameEnd: 39,
+    Name:    "Singer_vector_index",
+  },
+  TableName: &ast.Ident{
+    NamePos: 43,
+    NameEnd: 50,
+    Name:    "Singers",
+  },
+  ColumnName: &ast.Ident{
+    NamePos: 51,
+    NameEnd: 60,
+    Name:    "embedding",
+  },
+  Storing: &ast.Storing{
+    Storing: 62,
+    Rparen:  76,
+    Columns: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 71,
+        NameEnd: 76,
+        Name:    "genre",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 78,
+    Expr:  &ast.IsNullExpr{
+      Null: 101,
+      Not:  true,
+      Left: &ast.Ident{
+        NamePos: 84,
+        NameEnd: 93,
+        Name:    "embedding",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 106,
+    Rparen:  138,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 114,
+          NameEnd: 127,
+          Name:    "distance_type",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 130,
+          ValueEnd: 138,
+          Value:    "COSINE",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE VECTOR INDEX Singer_vector_index ON Singers (embedding) STORING (genre) WHERE embedding IS NOT NULL OPTIONS (distance_type = "COSINE")

@@ -1,0 +1,36 @@
+--- create_proto_bundle_trailing_comma.sql
+CREATE PROTO BUNDLE (
+    examples.shipping.OrderHistory,
+)
+
+--- AST
+&ast.CreateProtoBundle{
+  Types: &ast.ProtoBundleTypes{
+    Lparen: 20,
+    Rparen: 58,
+    Types:  []*ast.NamedType{
+      &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 26,
+            NameEnd: 34,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 35,
+            NameEnd: 43,
+            Name:    "shipping",
+          },
+          &ast.Ident{
+            NamePos: 44,
+            NameEnd: 56,
+            Name:    "OrderHistory",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROTO BUNDLE (examples.shipping.OrderHistory)

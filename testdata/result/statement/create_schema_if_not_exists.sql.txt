@@ -1,0 +1,15 @@
+--- create_schema_if_not_exists.sql
+CREATE SCHEMA IF NOT EXISTS MySchema
+
+--- AST
+&ast.CreateSchema{
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 28,
+    NameEnd: 36,
+    Name:    "MySchema",
+  },
+}
+
+--- SQL
+CREATE SCHEMA IF NOT EXISTS MySchema

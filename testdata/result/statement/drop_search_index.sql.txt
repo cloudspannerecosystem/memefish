@@ -3,10 +3,14 @@ DROP SEARCH INDEX IF EXISTS AlbumsIndex
 --- AST
 &ast.DropSearchIndex{
   IfExists: true,
-  Name:     &ast.Ident{
-    NamePos: 28,
-    NameEnd: 39,
-    Name:    "AlbumsIndex",
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 28,
+        NameEnd: 39,
+        Name:    "AlbumsIndex",
+      },
+    },
   },
 }
 

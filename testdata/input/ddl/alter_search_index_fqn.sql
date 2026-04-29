@@ -1,0 +1,1 @@
+ALTER SEARCH INDEX AlbumSchema.AlbumsIndex ADD STORED COLUMN AlbumTitle

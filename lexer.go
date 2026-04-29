@@ -353,7 +353,7 @@ func (l *Lexer) consumeNumber(noPanic bool) {
 			if l.peekIs(i, '+') || l.peekIs(i, '-') {
 				i++
 			}
-			if !(l.peekOk(i) && char.IsDigit(l.peek(i))) {
+			if !l.peekOk(i) || !char.IsDigit(l.peek(i)) {
 				i = rollback
 				break
 			}
@@ -515,8 +515,8 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 			case '\\', '?', '"', '\'', '`':
 				content = append(content, c)
 			case 'x', 'X':
-				for j := 0; j < 2; j++ {
-					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+				for j := range 2 {
+					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
@@ -547,7 +547,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 					size = 8
 				}
 				for j := 0; j < size; j++ {
-					if !(l.peekOk(i+j) && char.IsHexDigit(l.peek(i+j))) {
+					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
@@ -575,8 +575,8 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 				content = append(content, buf[:n]...)
 				i += size
 			case '0', '1', '2', '3':
-				for j := 0; j < 2; j++ {
-					if !(l.peekOk(i+j) && char.IsOctalDigit(l.peek(i+j))) {
+				for j := range 2 {
+					if !l.peekOk(i+j) || !char.IsOctalDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
 							continue
@@ -641,7 +641,7 @@ func (l *Lexer) skipSpaces() {
 func (l *Lexer) skipComment(noPanic bool) bool {
 	r, _ := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 	switch {
-	case r == '#' || r == '/' && l.peekIs(1, '/') || r == '-' && l.peekIs(1, '-'):
+	case r == '#' || r == '-' && l.peekIs(1, '-'):
 		return l.skipCommentUntil("\n", false, noPanic)
 	case r == '/' && l.peekIs(1, '*'):
 		return l.skipCommentUntil("*/", true, noPanic)
@@ -702,24 +702,24 @@ func (l *Lexer) eof() bool {
 	return l.pos >= len(l.Buffer)
 }
 
-func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
+func (l *Lexer) errorf(msg string, param ...any) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, param...),
 		Position: l.Position(token.Pos(l.pos), token.Pos(l.pos)),
 	}
 }
 
-func (l *Lexer) errorfAtPosition(pos, end token.Pos, msg string, param ...interface{}) *Error {
+func (l *Lexer) errorfAtPosition(pos, end token.Pos, msg string, param ...any) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, param...),
 		Position: l.Position(pos, end),
 	}
 }
 
-func (l *Lexer) panicf(msg string, param ...interface{}) {
+func (l *Lexer) panicf(msg string, param ...any) {
 	panic(l.errorf(msg, param...))
 }
 
-func (l *Lexer) panicfAtPosition(pos, end token.Pos, msg string, param ...interface{}) {
+func (l *Lexer) panicfAtPosition(pos, end token.Pos, msg string, param ...any) {
 	panic(l.errorfAtPosition(pos, end, msg, param...))
 }

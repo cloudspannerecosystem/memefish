@@ -1,0 +1,13 @@
+--- create_locality_group_simple.sql
+CREATE LOCALITY GROUP separate_storage
+--- AST
+&ast.CreateLocalityGroup{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 38,
+    Name:    "separate_storage",
+  },
+}
+
+--- SQL
+CREATE LOCALITY GROUP separate_storage

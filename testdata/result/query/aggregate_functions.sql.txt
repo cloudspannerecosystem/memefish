@@ -1,0 +1,523 @@
+--- aggregate_functions.sql
+SELECT
+  COUNT(x),
+  COUNT(DISTINCT x),
+  COUNT(x IGNORE NULLS),
+  COUNT(x RESPECT NULLS),
+  ANY_VALUE(x HAVING MAX y),
+  ANY_VALUE(x HAVING MIN y),
+  ARRAY_AGG(x ORDER BY y ASC),
+  ARRAY_AGG(x ORDER BY y DESC),
+  ARRAY_AGG(x ORDER BY y DESC, z ASC),
+  ARRAY_AGG(x LIMIT 10),
+  ARRAY_AGG(DISTINCT x ORDER BY x LIMIT 5),
+  STRING_AGG(x HAVING MAX y ORDER BY z),
+  STRING_AGG(x IGNORE NULLS LIMIT 100),
+  ARRAY_AGG(DISTINCT x HAVING MIN y ORDER BY z DESC LIMIT 1)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 16,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 9,
+                NameEnd: 14,
+                Name:    "COUNT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 15,
+                NameEnd: 16,
+                Name:    "x",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 37,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 21,
+                NameEnd: 26,
+                Name:    "COUNT",
+              },
+            },
+          },
+          Distinct: true,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 36,
+                NameEnd: 37,
+                Name:    "x",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 62,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 42,
+                NameEnd: 47,
+                Name:    "COUNT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 48,
+                NameEnd: 49,
+                Name:    "x",
+              },
+            },
+          },
+          NullHandling: &ast.IgnoreNulls{
+            Ignore: 50,
+            Nulls:  57,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 88,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 67,
+                NameEnd: 72,
+                Name:    "COUNT",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 73,
+                NameEnd: 74,
+                Name:    "x",
+              },
+            },
+          },
+          NullHandling: &ast.RespectNulls{
+            Respect: 75,
+            Nulls:   83,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 117,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 93,
+                NameEnd: 102,
+                Name:    "ANY_VALUE",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 103,
+                NameEnd: 104,
+                Name:    "x",
+              },
+            },
+          },
+          Having: &ast.HavingMax{
+            Having: 105,
+            Expr:   &ast.Ident{
+              NamePos: 116,
+              NameEnd: 117,
+              Name:    "y",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 146,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 122,
+                NameEnd: 131,
+                Name:    "ANY_VALUE",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 132,
+                NameEnd: 133,
+                Name:    "x",
+              },
+            },
+          },
+          Having: &ast.HavingMin{
+            Having: 134,
+            Expr:   &ast.Ident{
+              NamePos: 145,
+              NameEnd: 146,
+              Name:    "y",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 177,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 151,
+                NameEnd: 160,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 161,
+                NameEnd: 162,
+                Name:    "x",
+              },
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 163,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: 174,
+                Expr:   &ast.Ident{
+                  NamePos: 172,
+                  NameEnd: 173,
+                  Name:    "y",
+                },
+                Dir: "ASC",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 209,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 182,
+                NameEnd: 191,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 192,
+                NameEnd: 193,
+                Name:    "x",
+              },
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 194,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: 205,
+                Expr:   &ast.Ident{
+                  NamePos: 203,
+                  NameEnd: 204,
+                  Name:    "y",
+                },
+                Dir: "DESC",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 248,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 214,
+                NameEnd: 223,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 224,
+                NameEnd: 225,
+                Name:    "x",
+              },
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 226,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: 237,
+                Expr:   &ast.Ident{
+                  NamePos: 235,
+                  NameEnd: 236,
+                  Name:    "y",
+                },
+                Dir: "DESC",
+              },
+              &ast.OrderByItem{
+                DirPos: 245,
+                Expr:   &ast.Ident{
+                  NamePos: 243,
+                  NameEnd: 244,
+                  Name:    "z",
+                },
+                Dir: "ASC",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 273,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 253,
+                NameEnd: 262,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 263,
+                NameEnd: 264,
+                Name:    "x",
+              },
+            },
+          },
+          Limit: &ast.Limit{
+            Limit: 265,
+            Count: &ast.IntLiteral{
+              ValuePos: 271,
+              ValueEnd: 273,
+              Base:     10,
+              Value:    "10",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 317,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 278,
+                NameEnd: 287,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Distinct: true,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 297,
+                NameEnd: 298,
+                Name:    "x",
+              },
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 299,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: -1,
+                Expr:   &ast.Ident{
+                  NamePos: 308,
+                  NameEnd: 309,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+          Limit: &ast.Limit{
+            Limit: 310,
+            Count: &ast.IntLiteral{
+              ValuePos: 316,
+              ValueEnd: 317,
+              Base:     10,
+              Value:    "5",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 358,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 322,
+                NameEnd: 332,
+                Name:    "STRING_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 333,
+                NameEnd: 334,
+                Name:    "x",
+              },
+            },
+          },
+          Having: &ast.HavingMax{
+            Having: 335,
+            Expr:   &ast.Ident{
+              NamePos: 346,
+              NameEnd: 347,
+              Name:    "y",
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 348,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: -1,
+                Expr:   &ast.Ident{
+                  NamePos: 357,
+                  NameEnd: 358,
+                  Name:    "z",
+                },
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 398,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 363,
+                NameEnd: 373,
+                Name:    "STRING_AGG",
+              },
+            },
+          },
+          Args: []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 374,
+                NameEnd: 375,
+                Name:    "x",
+              },
+            },
+          },
+          NullHandling: &ast.IgnoreNulls{
+            Ignore: 376,
+            Nulls:  383,
+          },
+          Limit: &ast.Limit{
+            Limit: 389,
+            Count: &ast.IntLiteral{
+              ValuePos: 395,
+              ValueEnd: 398,
+              Base:     10,
+              Value:    "100",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.CallExpr{
+          Rparen: 460,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 403,
+                NameEnd: 412,
+                Name:    "ARRAY_AGG",
+              },
+            },
+          },
+          Distinct: true,
+          Args:     []ast.Arg{
+            &ast.ExprArg{
+              Expr: &ast.Ident{
+                NamePos: 422,
+                NameEnd: 423,
+                Name:    "x",
+              },
+            },
+          },
+          Having: &ast.HavingMin{
+            Having: 424,
+            Expr:   &ast.Ident{
+              NamePos: 435,
+              NameEnd: 436,
+              Name:    "y",
+            },
+          },
+          OrderBy: &ast.OrderBy{
+            Order: 437,
+            Items: []*ast.OrderByItem{
+              &ast.OrderByItem{
+                DirPos: 448,
+                Expr:   &ast.Ident{
+                  NamePos: 446,
+                  NameEnd: 447,
+                  Name:    "z",
+                },
+                Dir: "DESC",
+              },
+            },
+          },
+          Limit: &ast.Limit{
+            Limit: 453,
+            Count: &ast.IntLiteral{
+              ValuePos: 459,
+              ValueEnd: 460,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT COUNT(x), COUNT(DISTINCT x), COUNT(x IGNORE NULLS), COUNT(x RESPECT NULLS), ANY_VALUE(x HAVING MAX y), ANY_VALUE(x HAVING MIN y), ARRAY_AGG(x ORDER BY y ASC), ARRAY_AGG(x ORDER BY y DESC), ARRAY_AGG(x ORDER BY y DESC, z ASC), ARRAY_AGG(x LIMIT 10), ARRAY_AGG(DISTINCT x ORDER BY x LIMIT 5), STRING_AGG(x HAVING MAX y ORDER BY z), STRING_AGG(x IGNORE NULLS LIMIT 100), ARRAY_AGG(DISTINCT x HAVING MIN y ORDER BY z DESC LIMIT 1)

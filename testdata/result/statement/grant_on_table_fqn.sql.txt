@@ -1,0 +1,40 @@
+--- grant_on_table_fqn.sql
+GRANT SELECT ON TABLE s.t TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.PrivilegeOnTable{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 6,
+        Rparen: -1,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 22,
+            NameEnd: 23,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 24,
+            NameEnd: 25,
+            Name:    "t",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 34,
+      NameEnd: 35,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON TABLE s.t TO ROLE r

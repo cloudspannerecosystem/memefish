@@ -9,15 +9,23 @@ WHERE Genre IS NOT NULL AND ReleaseTimestamp IS NOT NULL
 OPTIONS(sort_order_sharding=true)
 --- AST
 &ast.CreateSearchIndex{
-  Name: &ast.Ident{
-    NamePos: 20,
-    NameEnd: 35,
-    Name:    "AlbumsIndexFull",
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 35,
+        Name:    "AlbumsIndexFull",
+      },
+    },
   },
-  TableName: &ast.Ident{
-    NamePos: 39,
-    NameEnd: 45,
-    Name:    "Albums",
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 39,
+        NameEnd: 45,
+        Name:    "Albums",
+      },
+    },
   },
   TokenListPart: []*ast.Ident{
     &ast.Ident{

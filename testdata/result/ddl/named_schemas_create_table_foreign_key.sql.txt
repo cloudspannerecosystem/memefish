@@ -85,6 +85,7 @@ CREATE TABLE sch1.ShoppingCarts (
         Foreign:     163,
         Rparen:      255,
         OnDeleteEnd: 274,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 175,

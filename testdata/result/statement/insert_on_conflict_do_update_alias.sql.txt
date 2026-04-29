@@ -1,0 +1,120 @@
+--- insert_on_conflict_do_update_alias.sql
+INSERT INTO foo AS f (x, y) VALUES (1, 2) ON CONFLICT (x) DO UPDATE SET y = f.y + 1
+--- AST
+&ast.Insert{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "foo",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    16,
+    Alias: &ast.Ident{
+      NamePos: 19,
+      NameEnd: 20,
+      Name:    "f",
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 22,
+      NameEnd: 23,
+      Name:    "x",
+    },
+    &ast.Ident{
+      NamePos: 25,
+      NameEnd: 26,
+      Name:    "y",
+    },
+  },
+  Input: &ast.ValuesInput{
+    Values: 28,
+    Rows:   []*ast.ValuesRow{
+      &ast.ValuesRow{
+        Lparen: 35,
+        Rparen: 40,
+        Exprs:  []*ast.DefaultExpr{
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 36,
+              ValueEnd: 37,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+          &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.IntLiteral{
+              ValuePos: 39,
+              ValueEnd: 40,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+        },
+      },
+    },
+  },
+  OnConflict: &ast.OnConflict{
+    On:             42,
+    ConflictTarget: &ast.ConflictTargetColumns{
+      Lparen:  54,
+      Rparen:  56,
+      Columns: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 55,
+          NameEnd: 56,
+          Name:    "x",
+        },
+      },
+    },
+    ConflictAction: &ast.ConflictActionDoUpdate{
+      Do:          58,
+      UpdateItems: []ast.UpdateItem{
+        &ast.UpdateItemSetValue{
+          Path: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 72,
+              NameEnd: 73,
+              Name:    "y",
+            },
+          },
+          DefaultExpr: &ast.DefaultExpr{
+            DefaultPos: -1,
+            Expr:       &ast.BinaryExpr{
+              Op:   "+",
+              Left: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 76,
+                    NameEnd: 77,
+                    Name:    "f",
+                  },
+                  &ast.Ident{
+                    NamePos: 78,
+                    NameEnd: 79,
+                    Name:    "y",
+                  },
+                },
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 82,
+                ValueEnd: 83,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo AS f (x, y) VALUES (1, 2) ON CONFLICT (x) DO UPDATE SET y = f.y + 1

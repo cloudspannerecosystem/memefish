@@ -4,11 +4,15 @@ REVOKE SELECT ON VIEW singernames FROM ROLE hr_manager
 &ast.Revoke{
   Privilege: &ast.SelectPrivilegeOnView{
     Select: 7,
-    Names:  []*ast.Ident{
-      &ast.Ident{
-        NamePos: 22,
-        NameEnd: 33,
-        Name:    "singernames",
+    Names:  []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 22,
+            NameEnd: 33,
+            Name:    "singernames",
+          },
+        },
       },
     },
   },

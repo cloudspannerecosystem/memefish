@@ -1,0 +1,129 @@
+--- create_model_struct_output.sql
+CREATE MODEL MyClassificationModel
+INPUT(
+  content STRING(MAX)
+)
+OUTPUT(
+  embeddings
+    STRUCT<
+      statistics STRUCT<truncated BOOL, token_count FLOAT64>,
+      values ARRAY<FLOAT64>>
+)
+REMOTE
+OPTIONS (
+  endpoint = '//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID'
+)
+--- AST
+&ast.CreateModel{
+  Remote: 192,
+  Name:   &ast.Ident{
+    NamePos: 13,
+    NameEnd: 34,
+    Name:    "MyClassificationModel",
+  },
+  InputOutput: &ast.CreateModelInputOutput{
+    Input:        35,
+    Rparen:       190,
+    InputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 44,
+          NameEnd: 51,
+          Name:    "content",
+        },
+        DataType: &ast.SizedSchemaType{
+          NamePos: 52,
+          Rparen:  62,
+          Name:    "STRING",
+          Max:     true,
+        },
+      },
+    },
+    OutputColumns: []*ast.CreateModelColumn{
+      &ast.CreateModelColumn{
+        Name: &ast.Ident{
+          NamePos: 76,
+          NameEnd: 86,
+          Name:    "embeddings",
+        },
+        DataType: &ast.StructType{
+          Struct: 91,
+          Gt:     188,
+          Fields: []*ast.StructField{
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 105,
+                NameEnd: 115,
+                Name:    "statistics",
+              },
+              Type: &ast.StructType{
+                Struct: 116,
+                Gt:     158,
+                Fields: []*ast.StructField{
+                  &ast.StructField{
+                    Ident: &ast.Ident{
+                      NamePos: 123,
+                      NameEnd: 132,
+                      Name:    "truncated",
+                    },
+                    Type: &ast.SimpleType{
+                      NamePos: 133,
+                      Name:    "BOOL",
+                    },
+                  },
+                  &ast.StructField{
+                    Ident: &ast.Ident{
+                      NamePos: 139,
+                      NameEnd: 150,
+                      Name:    "token_count",
+                    },
+                    Type: &ast.SimpleType{
+                      NamePos: 151,
+                      Name:    "FLOAT64",
+                    },
+                  },
+                },
+              },
+            },
+            &ast.StructField{
+              Ident: &ast.Ident{
+                NamePos: 167,
+                NameEnd: 173,
+                Name:    "values",
+              },
+              Type: &ast.ArrayType{
+                Array: 174,
+                Gt:    187,
+                Item:  &ast.SimpleType{
+                  NamePos: 180,
+                  Name:    "FLOAT64",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 199,
+    Rparen:  310,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 211,
+          NameEnd: 219,
+          Name:    "endpoint",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 222,
+          ValueEnd: 309,
+          Value:    "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL MyClassificationModel INPUT (content STRING(MAX)) OUTPUT (embeddings STRUCT<statistics STRUCT<truncated BOOL, token_count FLOAT64>, values ARRAY<FLOAT64>>) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/PROJECT/locations/LOCATION/endpoints/ENDPOINT_ID")

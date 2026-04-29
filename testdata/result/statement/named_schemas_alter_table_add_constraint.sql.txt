@@ -30,6 +30,7 @@ ALTER TABLE sch1.ShoppingCarts ADD CONSTRAINT FKShoppingCartsCustomers FOREIGN K
         Foreign:     71,
         Rparen:      163,
         OnDeleteEnd: 182,
+        Enforced:    -1,
         Columns:     []*ast.Ident{
           &ast.Ident{
             NamePos: 83,

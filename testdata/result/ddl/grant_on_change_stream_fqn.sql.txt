@@ -1,0 +1,35 @@
+--- grant_on_change_stream_fqn.sql
+GRANT SELECT ON CHANGE STREAM s.c TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.SelectPrivilegeOnChangeStream{
+    Select: 6,
+    Names:  []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 30,
+            NameEnd: 31,
+            Name:    "s",
+          },
+          &ast.Ident{
+            NamePos: 32,
+            NameEnd: 33,
+            Name:    "c",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 42,
+      NameEnd: 43,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON CHANGE STREAM s.c TO ROLE r

@@ -21,6 +21,14 @@ lint: gen bin/golangci-lint
 	@echo
 	bin/golangci-lint run ./...
 
+.PHONY: fmt
+fmt: gen bin/golangci-lint
+	@echo
+	@echo "  (x x) < memefish: fmt"
+	@echo "  /|||\\"
+	@echo
+	bin/golangci-lint fmt ./...
+
 .PHONY: gen
 gen:
 	@echo
@@ -44,10 +52,6 @@ docs:
 .PHONY: ci
 ci: check-gen lint test
 
-.PHONY: fmt
-fmt: gen
-	go fmt ./...
-
 .PHONY: update-result
 update-result:
 	go test -v ./parser_test.go -update
@@ -60,4 +64,4 @@ update-mod:
 install-dep: bin/golangci-lint
 
 bin/golangci-lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(CURDIR)/bin v1.62.2
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(CURDIR)/bin v2.11.4

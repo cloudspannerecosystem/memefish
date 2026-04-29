@@ -55,6 +55,7 @@ create table foo (
         },
       },
     },
+    Enforced: true,
     OnDelete: "ON DELETE CASCADE",
   },
 }

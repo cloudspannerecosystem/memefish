@@ -1,0 +1,15 @@
+--- drop_schema_if_exists.sql
+DROP SCHEMA IF EXISTS MySchema
+
+--- AST
+&ast.DropSchema{
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 22,
+    NameEnd: 30,
+    Name:    "MySchema",
+  },
+}
+
+--- SQL
+DROP SCHEMA IF EXISTS MySchema

@@ -1,0 +1,55 @@
+--- create_remote_function.sql
+CREATE FUNCTION remote_func(x INT64) RETURNS INT64 REMOTE OPTIONS (endpoint = "https://example.com")
+--- AST
+&ast.CreateFunction{
+  As:       -1,
+  RparenAs: -1,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 27,
+        Name:    "remote_func",
+      },
+    },
+  },
+  Params: []*ast.FunctionParam{
+    &ast.FunctionParam{
+      Name: &ast.Ident{
+        NamePos: 28,
+        NameEnd: 29,
+        Name:    "x",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 30,
+        Name:    "INT64",
+      },
+    },
+  },
+  ReturnType: &ast.ScalarSchemaType{
+    NamePos: 45,
+    Name:    "INT64",
+  },
+  Remote:  true,
+  Options: &ast.Options{
+    Options: 58,
+    Rparen:  99,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 67,
+          NameEnd: 75,
+          Name:    "endpoint",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 78,
+          ValueEnd: 99,
+          Value:    "https://example.com",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE FUNCTION remote_func (x INT64) RETURNS INT64 REMOTE OPTIONS (endpoint = "https://example.com")

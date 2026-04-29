@@ -1,0 +1,31 @@
+--- alter_search_index_fqn.sql
+ALTER SEARCH INDEX AlbumSchema.AlbumsIndex ADD STORED COLUMN AlbumTitle
+
+--- AST
+&ast.AlterSearchIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 19,
+        NameEnd: 30,
+        Name:    "AlbumSchema",
+      },
+      &ast.Ident{
+        NamePos: 31,
+        NameEnd: 42,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  IndexAlteration: &ast.AddStoredColumn{
+    Add:  43,
+    Name: &ast.Ident{
+      NamePos: 61,
+      NameEnd: 71,
+      Name:    "AlbumTitle",
+    },
+  },
+}
+
+--- SQL
+ALTER SEARCH INDEX AlbumSchema.AlbumsIndex ADD STORED COLUMN AlbumTitle

@@ -1,6 +1,6 @@
 --- insert_with_hint.sql
 @{pdml_max_parallelism=1}
-insert into foo (foo, bar, baz)
+insert into foo@{force_index=_base_table} (foo, bar, baz)
 values (1, 2, 3),
        (4, 5, 6)
 --- AST
@@ -37,35 +37,57 @@ values (1, 2, 3),
       },
     },
   },
+  TableHint: &ast.Hint{
+    Atmark:  41,
+    Rbrace:  66,
+    Records: []*ast.HintRecord{
+      &ast.HintRecord{
+        Key: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 43,
+              NameEnd: 54,
+              Name:    "force_index",
+            },
+          },
+        },
+        Value: &ast.Ident{
+          NamePos: 55,
+          NameEnd: 66,
+          Name:    "_base_table",
+        },
+      },
+    },
+  },
   Columns: []*ast.Ident{
     &ast.Ident{
-      NamePos: 43,
-      NameEnd: 46,
+      NamePos: 69,
+      NameEnd: 72,
       Name:    "foo",
     },
     &ast.Ident{
-      NamePos: 48,
-      NameEnd: 51,
+      NamePos: 74,
+      NameEnd: 77,
       Name:    "bar",
     },
     &ast.Ident{
-      NamePos: 53,
-      NameEnd: 56,
+      NamePos: 79,
+      NameEnd: 82,
       Name:    "baz",
     },
   },
   Input: &ast.ValuesInput{
-    Values: 58,
+    Values: 84,
     Rows:   []*ast.ValuesRow{
       &ast.ValuesRow{
-        Lparen: 65,
-        Rparen: 73,
+        Lparen: 91,
+        Rparen: 99,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 66,
-              ValueEnd: 67,
+              ValuePos: 92,
+              ValueEnd: 93,
               Base:     10,
               Value:    "1",
             },
@@ -73,8 +95,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 69,
-              ValueEnd: 70,
+              ValuePos: 95,
+              ValueEnd: 96,
               Base:     10,
               Value:    "2",
             },
@@ -82,8 +104,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 72,
-              ValueEnd: 73,
+              ValuePos: 98,
+              ValueEnd: 99,
               Base:     10,
               Value:    "3",
             },
@@ -91,14 +113,14 @@ values (1, 2, 3),
         },
       },
       &ast.ValuesRow{
-        Lparen: 83,
-        Rparen: 91,
+        Lparen: 109,
+        Rparen: 117,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 84,
-              ValueEnd: 85,
+              ValuePos: 110,
+              ValueEnd: 111,
               Base:     10,
               Value:    "4",
             },
@@ -106,8 +128,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 87,
-              ValueEnd: 88,
+              ValuePos: 113,
+              ValueEnd: 114,
               Base:     10,
               Value:    "5",
             },
@@ -115,8 +137,8 @@ values (1, 2, 3),
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 90,
-              ValueEnd: 91,
+              ValuePos: 116,
+              ValueEnd: 117,
               Base:     10,
               Value:    "6",
             },
@@ -128,4 +150,4 @@ values (1, 2, 3),
 }
 
 --- SQL
-@{pdml_max_parallelism=1} INSERT INTO foo (foo, bar, baz) VALUES (1, 2, 3), (4, 5, 6)
+@{pdml_max_parallelism=1} INSERT INTO foo@{force_index=_base_table} (foo, bar, baz) VALUES (1, 2, 3), (4, 5, 6)

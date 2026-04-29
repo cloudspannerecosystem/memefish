@@ -67,12 +67,14 @@ func (p *parser) parsePosAtom() PosExpr {
 
 	if p.consume(".") {
 		x := p.parseVar()
-		if x.Name == "pos" {
+		switch x.Name {
+		case "pos":
 			return &NodePos{Expr: expr}
-		} else if x.Name == "end" {
+		case "end":
 			return &NodeEnd{Expr: expr}
+		default:
+			panic(errors.New(`expected: "pos", "end"`))
 		}
-		panic(errors.New(`expected: "pos", "end"`))
 	}
 
 	if v, ok := expr.(*Var); ok {
@@ -162,7 +164,7 @@ func (p *parser) consumeVar() *Var {
 	start := p.offset
 	for !p.eof() {
 		c := p.current()
-		if !(unicode.IsLetter(c) || c == '_' || unicode.IsDigit(c)) {
+		if !unicode.IsLetter(c) && c != '_' && !unicode.IsDigit(c) {
 			break
 		}
 		p.next()
