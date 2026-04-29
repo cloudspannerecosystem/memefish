@@ -480,6 +480,8 @@ func (AlterColumnType) isColumnAlteration()          {}
 func (AlterColumnSetOptions) isColumnAlteration()    {}
 func (AlterColumnSetDefault) isColumnAlteration()    {}
 func (AlterColumnDropDefault) isColumnAlteration()   {}
+func (AlterColumnSetOnUpdate) isColumnAlteration()   {}
+func (AlterColumnDropOnUpdate) isColumnAlteration()  {}
 func (AlterColumnAlterIdentity) isColumnAlteration() {}
 
 type IdentityAlteration interface {
@@ -2598,13 +2600,27 @@ type ColumnDef struct {
 
 // ColumnDefaultExpr is a default value expression for the column.
 //
-//	DEFAULT ({{.Expr | sql}})
+//	DEFAULT ({{.Expr | sql}}) {{.OnUpdate | sqlOpt}}
 type ColumnDefaultExpr struct {
 	// pos = Default
-	// end = Rparen
+	// end = OnUpdate.end || Rparen + 1
 
 	Default token.Pos // position of "DEFAULT" keyword
-	Rparen  token.Pos // position of ")"
+	Rparen  token.Pos // position of ")" after default expression
+
+	Expr     Expr
+	OnUpdate *OnUpdate // optional
+}
+
+// OnUpdate is ON UPDATE clause for a column.
+//
+//	ON UPDATE ({{.Expr | sql}})
+type OnUpdate struct {
+	// pos = On
+	// end = Rparen + 1
+
+	On     token.Pos // position of "ON" keyword
+	Rparen token.Pos // position of ")"
 
 	Expr Expr
 }
@@ -3051,6 +3067,28 @@ type AlterColumnDropDefault struct {
 
 	Drop    token.Pos
 	Default token.Pos
+}
+
+// AlterColumnSetOnUpdate is SET ON UPDATE node in ALTER COLUMN.
+//
+//	SET {{.OnUpdate | sql}}
+type AlterColumnSetOnUpdate struct {
+	// pos = Set
+	// end = OnUpdate.end
+
+	Set      token.Pos
+	OnUpdate *OnUpdate
+}
+
+// AlterColumnDropOnUpdate is DROP ON UPDATE node in ALTER COLUMN.
+//
+//	DROP ON UPDATE
+type AlterColumnDropOnUpdate struct {
+	// pos = Drop
+	// end = Update + 6
+
+	Drop   token.Pos
+	Update token.Pos // position of "UPDATE" keyword
 }
 
 // AlterColumnAlterIdentity is ALTER IDENTITY node in ALTER COLUMN

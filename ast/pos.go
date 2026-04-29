@@ -1179,7 +1179,15 @@ func (c *ColumnDefaultExpr) Pos() token.Pos {
 }
 
 func (c *ColumnDefaultExpr) End() token.Pos {
-	return c.Rparen
+	return posChoice(nodeEnd(wrapNode(c.OnUpdate)), posAdd(c.Rparen, 1))
+}
+
+func (o *OnUpdate) Pos() token.Pos {
+	return o.On
+}
+
+func (o *OnUpdate) End() token.Pos {
+	return posAdd(o.Rparen, 1)
 }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos {
@@ -1452,6 +1460,22 @@ func (a *AlterColumnDropDefault) Pos() token.Pos {
 
 func (a *AlterColumnDropDefault) End() token.Pos {
 	return posAdd(a.Default, 7)
+}
+
+func (a *AlterColumnSetOnUpdate) Pos() token.Pos {
+	return a.Set
+}
+
+func (a *AlterColumnSetOnUpdate) End() token.Pos {
+	return nodeEnd(wrapNode(a.OnUpdate))
+}
+
+func (a *AlterColumnDropOnUpdate) Pos() token.Pos {
+	return a.Drop
+}
+
+func (a *AlterColumnDropOnUpdate) End() token.Pos {
+	return posAdd(a.Update, 6)
 }
 
 func (a *AlterColumnAlterIdentity) Pos() token.Pos {

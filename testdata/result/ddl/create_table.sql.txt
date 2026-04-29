@@ -13,13 +13,14 @@ create table foo (
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
-  corge timestamp not null default (current_timestamp())
+  corge timestamp not null default (current_timestamp()),
+  grault timestamp not null default (pending_commit_timestamp()) on update (pending_commit_timestamp()),
 ) primary key (foo, bar)
 
 --- AST
 &ast.CreateTable{
-  Rparen:           742,
-  PrimaryKeyRparen: 765,
+  Rparen:           848,
+  PrimaryKeyRparen: 871,
   Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
@@ -190,6 +191,53 @@ create table foo (
                 NamePos: 721,
                 NameEnd: 738,
                 Name:    "current_timestamp",
+              },
+            },
+          },
+        },
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: 766,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 745,
+        NameEnd: 751,
+        Name:    "grault",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 752,
+        Name:    "TIMESTAMP",
+      },
+      NotNull:          true,
+      DefaultSemantics: &ast.ColumnDefaultExpr{
+        Default: 771,
+        Rparen:  806,
+        Expr:    &ast.CallExpr{
+          Rparen: 805,
+          Func:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 780,
+                NameEnd: 804,
+                Name:    "pending_commit_timestamp",
+              },
+            },
+          },
+        },
+        OnUpdate: &ast.OnUpdate{
+          On:     808,
+          Rparen: 845,
+          Expr:   &ast.CallExpr{
+            Rparen: 844,
+            Func:   &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 819,
+                  NameEnd: 843,
+                  Name:    "pending_commit_timestamp",
+                },
               },
             },
           },
@@ -493,16 +541,16 @@ create table foo (
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 757,
-        NameEnd: 760,
+        NamePos: 863,
+        NameEnd: 866,
         Name:    "foo",
       },
     },
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 762,
-        NameEnd: 765,
+        NamePos: 868,
+        NameEnd: 871,
         Name:    "bar",
       },
     },
@@ -517,6 +565,7 @@ CREATE TABLE foo (
   qux STRING(255) NOT NULL AS (concat(baz, "a")) STORED,
   quux JSON,
   corge TIMESTAMP NOT NULL DEFAULT (current_timestamp()),
+  grault TIMESTAMP NOT NULL DEFAULT (pending_commit_timestamp()) ON UPDATE (pending_commit_timestamp()),
   FOREIGN KEY (foo) REFERENCES t2 (t2key1),
   FOREIGN KEY (bar) REFERENCES t2 (t2key2) ON DELETE CASCADE,
   FOREIGN KEY (baz) REFERENCES t2 (t2key3) ON DELETE NO ACTION,
