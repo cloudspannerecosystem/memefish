@@ -1,0 +1,35 @@
+--- revoke_on_all_views_in_schema.sql
+REVOKE SELECT ON ALL VIEWS IN SCHEMA db.sch FROM ROLE r
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.SelectPrivilegeOnAllViewsInSchema{
+    Select:  7,
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 37,
+            NameEnd: 39,
+            Name:    "db",
+          },
+          &ast.Ident{
+            NamePos: 40,
+            NameEnd: 43,
+            Name:    "sch",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 54,
+      NameEnd: 55,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT ON ALL VIEWS IN SCHEMA db.sch FROM ROLE r
