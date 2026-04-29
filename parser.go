@@ -5877,10 +5877,10 @@ func (p *Parser) tryParseOnConflict() *ast.OnConflict {
 	p.expectKeywordLike("CONFLICT")
 
 	var conflictTarget ast.ConflictTarget
-	switch {
-	case p.Token.Kind == "(":
+	switch p.Token.Kind {
+	case "(":
 		conflictTarget = p.parseConflictTargetColumns()
-	case p.Token.Kind == "ON":
+	case "ON":
 		conflictTarget = p.parseConflictTargetOnConstraint()
 	}
 
