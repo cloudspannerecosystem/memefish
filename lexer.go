@@ -515,7 +515,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 			case '\\', '?', '"', '\'', '`':
 				content = append(content, c)
 			case 'x', 'X':
-				for j := 0; j < 2; j++ {
+				for j := range 2 {
 					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
@@ -575,7 +575,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 				content = append(content, buf[:n]...)
 				i += size
 			case '0', '1', '2', '3':
-				for j := 0; j < 2; j++ {
+				for j := range 2 {
 					if !l.peekOk(i+j) || !char.IsOctalDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
@@ -702,24 +702,24 @@ func (l *Lexer) eof() bool {
 	return l.pos >= len(l.Buffer)
 }
 
-func (l *Lexer) errorf(msg string, param ...interface{}) *Error {
+func (l *Lexer) errorf(msg string, param ...any) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, param...),
 		Position: l.Position(token.Pos(l.pos), token.Pos(l.pos)),
 	}
 }
 
-func (l *Lexer) errorfAtPosition(pos, end token.Pos, msg string, param ...interface{}) *Error {
+func (l *Lexer) errorfAtPosition(pos, end token.Pos, msg string, param ...any) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, param...),
 		Position: l.Position(pos, end),
 	}
 }
 
-func (l *Lexer) panicf(msg string, param ...interface{}) {
+func (l *Lexer) panicf(msg string, param ...any) {
 	panic(l.errorf(msg, param...))
 }
 
-func (l *Lexer) panicfAtPosition(pos, end token.Pos, msg string, param ...interface{}) {
+func (l *Lexer) panicfAtPosition(pos, end token.Pos, msg string, param ...any) {
 	panic(l.errorfAtPosition(pos, end, msg, param...))
 }

@@ -2,6 +2,7 @@ package memefish
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/cloudspannerecosystem/memefish/ast"
@@ -2958,12 +2959,7 @@ func (p *Parser) lookaheadSimpleType() bool {
 
 	id := p.Token
 
-	for _, name := range simpleTypes {
-		if id.IsIdent(name) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(simpleTypes, id.IsIdent)
 }
 
 // ================================================================================
@@ -6487,14 +6483,14 @@ func (p *Parser) expectKeywordLike(s string) *token.Token {
 	return id
 }
 
-func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...interface{}) *Error {
+func (p *Parser) errorfAtToken(tok *token.Token, msg string, params ...any) *Error {
 	return &Error{
 		Message:  fmt.Sprintf(msg, params...),
 		Position: p.Position(tok.Pos, tok.End),
 	}
 }
 
-func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...interface{}) {
+func (p *Parser) panicfAtToken(tok *token.Token, msg string, params ...any) {
 	panic(p.errorfAtToken(tok, msg, params...))
 }
 

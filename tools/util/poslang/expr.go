@@ -174,7 +174,7 @@ func (v *Var) EvalNodeSlice(x any) []node {
 
 	n := field.Len()
 	nodes := make([]node, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		item := field.Index(i)
 		if !item.IsValid() || !item.CanInterface() {
 			panic("expect interface, but " + item.Kind().String())
