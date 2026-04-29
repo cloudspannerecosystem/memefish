@@ -4494,14 +4494,14 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 	switch {
 	case p.Token.Kind == "SET":
 		set := p.expect("SET").Pos
-		switch {
-		case p.Token.Kind == "DEFAULT":
+		switch p.Token.Kind {
+		case "DEFAULT":
 			defaultExpr := p.parseColumnDefaultExpr()
 			return &ast.AlterColumnSetDefault{
 				Set:         set,
 				DefaultExpr: defaultExpr,
 			}
-		case p.Token.Kind == "ON":
+		case "ON":
 			onUpdate := p.parseOnUpdate()
 			return &ast.AlterColumnSetOnUpdate{
 				Set:      set,
@@ -4516,8 +4516,8 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		}
 	case p.Token.IsKeywordLike("DROP"):
 		drop := p.expectKeywordLike("DROP").Pos
-		switch {
-		case p.Token.Kind == "ON":
+		switch p.Token.Kind {
+		case "ON":
 			p.expect("ON")
 			update := p.expectKeywordLike("UPDATE").Pos
 			return &ast.AlterColumnDropOnUpdate{
