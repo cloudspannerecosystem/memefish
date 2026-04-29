@@ -1,0 +1,39 @@
+--- revoke_on_all_change_streams_in_schema.sql
+REVOKE SELECT ON ALL CHANGE STREAMS IN SCHEMA sch1, sch2 FROM ROLE r
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
+    Select:  7,
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 46,
+            NameEnd: 50,
+            Name:    "sch1",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 52,
+            NameEnd: 56,
+            Name:    "sch2",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 67,
+      NameEnd: 68,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT ON ALL CHANGE STREAMS IN SCHEMA sch1, sch2 FROM ROLE r

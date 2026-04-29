@@ -4846,6 +4846,9 @@ func (p *Parser) parseRevoke(pos token.Pos) *ast.Revoke {
 }
 
 func (p *Parser) parsePrivilege() ast.Privilege {
+	if s := p.tryParseSelectPrivilegeOnAllViewsInSchema(); s != nil {
+		return s
+	}
 	if s := p.tryParseSelectPrivilegeOnView(); s != nil {
 		return s
 	}
@@ -4855,10 +4858,46 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if r := p.tryParseRolePrivilege(); r != nil {
 		return r
 	}
+	if c := p.tryParseSelectPrivilegeOnAllChangeStreamsInSchema(); c != nil {
+		return c
+	}
 	if c := p.tryParseSelectPrivilegeOnChangeStream(); c != nil {
 		return c
 	}
+	if t := p.tryParsePrivilegeOnAllTablesInSchema(); t != nil {
+		return t
+	}
 	return p.parsePrivilegeOnTable()
+}
+
+func (p *Parser) tryParseSelectPrivilegeOnAllViewsInSchema() *ast.SelectPrivilegeOnAllViewsInSchema {
+	if p.Token.Kind != "SELECT" {
+		return nil
+	}
+	lexer := p.Clone()
+	pos := p.expect("SELECT").Pos
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if p.Token.Kind != "ALL" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ALL")
+	if !p.Token.IsKeywordLike("VIEWS") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("VIEWS")
+	p.expect("IN")
+	p.expectKeywordLike("SCHEMA")
+	schemas := parseCommaSeparatedList(p, p.parsePath)
+	return &ast.SelectPrivilegeOnAllViewsInSchema{
+		Select:  pos,
+		Schemas: schemas,
+	}
 }
 
 func (p *Parser) tryParseSelectPrivilegeOnView() *ast.SelectPrivilegeOnView {
@@ -4911,6 +4950,38 @@ func (p *Parser) tryParseRolePrivilege() *ast.RolePrivilege {
 	}
 }
 
+func (p *Parser) tryParseSelectPrivilegeOnAllChangeStreamsInSchema() *ast.SelectPrivilegeOnAllChangeStreamsInSchema {
+	if p.Token.Kind != "SELECT" {
+		return nil
+	}
+	lexer := p.Clone()
+	pos := p.expect("SELECT").Pos
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if p.Token.Kind != "ALL" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ALL")
+	if !p.Token.IsKeywordLike("CHANGE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("CHANGE")
+	p.expectKeywordLike("STREAMS")
+	p.expect("IN")
+	p.expectKeywordLike("SCHEMA")
+	schemas := parseCommaSeparatedList(p, p.parsePath)
+
+	return &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
+		Select:  pos,
+		Schemas: schemas,
+	}
+}
+
 func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnChangeStream {
 	if p.Token.Kind != "SELECT" {
 		return nil
@@ -4936,6 +5007,33 @@ func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnC
 	}
 }
 
+func (p *Parser) tryParsePrivilegeOnAllTablesInSchema() *ast.PrivilegeOnAllTablesInSchema {
+	lexer := p.Clone()
+	privileges := parseCommaSeparatedList(p, p.parseSchemaTablePrivilege)
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if p.Token.Kind != "ALL" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ALL")
+	if !p.Token.IsKeywordLike("TABLES") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("TABLES")
+	p.expect("IN")
+	p.expectKeywordLike("SCHEMA")
+	schemas := parseCommaSeparatedList(p, p.parsePath)
+	return &ast.PrivilegeOnAllTablesInSchema{
+		Privileges: privileges,
+		Schemas:    schemas,
+	}
+}
+
 func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
 	privileges := parseCommaSeparatedList(p, p.parseTablePrivilege)
 	p.expect("ON")
@@ -4944,6 +5042,38 @@ func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
 	return &ast.PrivilegeOnTable{
 		Privileges: privileges,
 		Names:      names,
+	}
+}
+
+func (p *Parser) parseSchemaTablePrivilege() ast.TablePrivilege {
+	pos := p.Token.Pos
+	switch {
+	case p.Token.Kind == "SELECT":
+		p.nextToken()
+		return &ast.SelectPrivilege{
+			Select: pos,
+			Rparen: token.InvalidPos,
+		}
+	case p.Token.IsKeywordLike("INSERT"):
+		p.nextToken()
+		return &ast.InsertPrivilege{
+			Insert: pos,
+			Rparen: token.InvalidPos,
+		}
+	case p.Token.IsKeywordLike("UPDATE"):
+		p.nextToken()
+		return &ast.UpdatePrivilege{
+			Update: pos,
+			Rparen: token.InvalidPos,
+		}
+	case p.Token.IsKeywordLike("DELETE"):
+		p.nextToken()
+		return &ast.DeletePrivilege{
+			Delete: pos,
+		}
+	default:
+		p.panicfAtToken(&p.Token, "expected privilege token: SELECT, INSERT, UPDATE, DELETE, but: %s", p.Token.AsString)
+		return nil
 	}
 }
 
