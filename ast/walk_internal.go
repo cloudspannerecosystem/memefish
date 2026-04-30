@@ -804,6 +804,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *ExecutePrivilegeOnTableFunction:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
+	case *UsagePrivilegeOnSchema:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
+
 	case *RolePrivilege:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 

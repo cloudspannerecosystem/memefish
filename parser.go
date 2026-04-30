@@ -4852,6 +4852,9 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
 		return e
 	}
+	if u := p.tryParseUsagePrivilegeOnSchema(); u != nil {
+		return u
+	}
 	if r := p.tryParseRolePrivilege(); r != nil {
 		return r
 	}
@@ -4896,6 +4899,29 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	return &ast.ExecutePrivilegeOnTableFunction{
 		Execute: pos,
 		Names:   names,
+	}
+}
+
+func (p *Parser) tryParseUsagePrivilegeOnSchema() *ast.UsagePrivilegeOnSchema {
+	if !p.Token.IsKeywordLike("USAGE") {
+		return nil
+	}
+	pos := p.expectKeywordLike("USAGE").Pos
+	p.expect("ON")
+	p.expectKeywordLike("SCHEMA")
+
+	defaultPos := token.InvalidPos
+	var schemas []*ast.Path
+	if p.Token.Kind == "DEFAULT" {
+		defaultPos = p.expect("DEFAULT").Pos
+	} else {
+		schemas = parseCommaSeparatedList(p, p.parsePath)
+	}
+
+	return &ast.UsagePrivilegeOnSchema{
+		Usage:   pos,
+		Default: defaultPos,
+		Schemas: schemas,
 	}
 }
 
