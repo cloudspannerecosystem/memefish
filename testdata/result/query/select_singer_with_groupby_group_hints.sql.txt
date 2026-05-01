@@ -1,0 +1,79 @@
+--- select_singer_with_groupby_group_hints.sql
+SELECT
+  FirstName, BirthDate
+FROM
+  Singers
+GROUP @{GROUP_METHOD=HASH_GROUP} BY
+  FirstName, BirthDate
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 9,
+          NameEnd: 18,
+          Name:    "FirstName",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 20,
+          NameEnd: 29,
+          Name:    "BirthDate",
+        },
+      },
+    },
+    From: &ast.From{
+      From:   30,
+      Source: &ast.TableName{
+        Table: &ast.Ident{
+          NamePos: 37,
+          NameEnd: 44,
+          Name:    "Singers",
+        },
+      },
+    },
+    GroupBy: &ast.GroupBy{
+      Group: 45,
+      Hint:  &ast.Hint{
+        Atmark:  51,
+        Rbrace:  76,
+        Records: []*ast.HintRecord{
+          &ast.HintRecord{
+            Key: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 53,
+                  NameEnd: 65,
+                  Name:    "GROUP_METHOD",
+                },
+              },
+            },
+            Value: &ast.Ident{
+              NamePos: 66,
+              NameEnd: 76,
+              Name:    "HASH_GROUP",
+            },
+          },
+        },
+      },
+      Exprs: []ast.Expr{
+        &ast.Ident{
+          NamePos: 83,
+          NameEnd: 92,
+          Name:    "FirstName",
+        },
+        &ast.Ident{
+          NamePos: 94,
+          NameEnd: 103,
+          Name:    "BirthDate",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT FirstName, BirthDate FROM Singers GROUP @{GROUP_METHOD=HASH_GROUP} BY FirstName, BirthDate

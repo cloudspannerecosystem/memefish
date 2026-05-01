@@ -76,6 +76,7 @@ func (BadStatement) isStatement()        {}
 func (BadDDL) isStatement()              {}
 func (BadDML) isStatement()              {}
 func (QueryStatement) isStatement()      {}
+func (GQLGraphQuery) isStatement()       {}
 func (CreateSchema) isStatement()        {}
 func (DropSchema) isStatement()          {}
 func (CreateDatabase) isStatement()      {}
@@ -481,6 +482,8 @@ func (AlterColumnType) isColumnAlteration()          {}
 func (AlterColumnSetOptions) isColumnAlteration()    {}
 func (AlterColumnSetDefault) isColumnAlteration()    {}
 func (AlterColumnDropDefault) isColumnAlteration()   {}
+func (AlterColumnSetOnUpdate) isColumnAlteration()   {}
+func (AlterColumnDropOnUpdate) isColumnAlteration()  {}
 func (AlterColumnAlterIdentity) isColumnAlteration() {}
 
 type IdentityAlteration interface {
@@ -568,6 +571,24 @@ type InsertInput interface {
 
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
+
+// ConflictTarget represents conflict target in ON CONFLICT clause.
+type ConflictTarget interface {
+	Node
+	isConflictTarget()
+}
+
+func (ConflictTargetColumns) isConflictTarget()      {}
+func (ConflictTargetOnConstraint) isConflictTarget() {}
+
+// ConflictAction represents conflict action in ON CONFLICT clause.
+type ConflictAction interface {
+	Node
+	isConflictAction()
+}
+
+func (ConflictActionDoNothing) isConflictAction() {}
+func (ConflictActionDoUpdate) isConflictAction()  {}
 
 // ChangeStreamFor represents FOR clause in CREATE/ALTER CHANGE STREAM statement.
 type ChangeStreamFor interface {
@@ -994,13 +1015,14 @@ type Where struct {
 
 // GroupBy is GROUP BY clause node.
 //
-//	GROUP BY {{.Exprs | sqlJoin ","}}
+//	GROUP {{.Hint | sqlOpt}} BY {{.Exprs | sqlJoin ","}}
 type GroupBy struct {
 	// pos = Group
 	// end = Exprs[$].end
 
 	Group token.Pos // position of "GROUP" keyword
 
+	Hint  *Hint  // optional
 	Exprs []Expr // len(Exprs) > 0
 }
 
@@ -2304,7 +2326,6 @@ type DropSchema struct {
 	Name     *Ident
 }
 
-
 // CreateDatabase is CREATE DATABASE statement node.
 //
 //	CREATE DATABASE {{.Name | sql}}
@@ -2599,13 +2620,27 @@ type ColumnDef struct {
 
 // ColumnDefaultExpr is a default value expression for the column.
 //
-//	DEFAULT ({{.Expr | sql}})
+//	DEFAULT ({{.Expr | sql}}) {{.OnUpdate | sqlOpt}}
 type ColumnDefaultExpr struct {
 	// pos = Default
-	// end = Rparen
+	// end = OnUpdate.end || Rparen + 1
 
 	Default token.Pos // position of "DEFAULT" keyword
-	Rparen  token.Pos // position of ")"
+	Rparen  token.Pos // position of ")" after default expression
+
+	Expr     Expr
+	OnUpdate *OnUpdate // optional
+}
+
+// OnUpdate is ON UPDATE clause for a column.
+//
+//	ON UPDATE ({{.Expr | sql}})
+type OnUpdate struct {
+	// pos = On
+	// end = Rparen + 1
+
+	On     token.Pos // position of "ON" keyword
+	Rparen token.Pos // position of ")"
 
 	Expr Expr
 }
@@ -3067,6 +3102,28 @@ type AlterColumnDropDefault struct {
 
 	Drop    token.Pos
 	Default token.Pos
+}
+
+// AlterColumnSetOnUpdate is SET ON UPDATE node in ALTER COLUMN.
+//
+//	SET {{.OnUpdate | sql}}
+type AlterColumnSetOnUpdate struct {
+	// pos = Set
+	// end = OnUpdate.end
+
+	Set      token.Pos
+	OnUpdate *OnUpdate
+}
+
+// AlterColumnDropOnUpdate is DROP ON UPDATE node in ALTER COLUMN.
+//
+//	DROP ON UPDATE
+type AlterColumnDropOnUpdate struct {
+	// pos = Drop
+	// end = Update + 6
+
+	Drop   token.Pos
+	Update token.Pos // position of "UPDATE" keyword
 }
 
 // AlterColumnAlterIdentity is ALTER IDENTITY node in ALTER COLUMN
@@ -4203,25 +4260,42 @@ type ThenReturn struct {
 	Items      []SelectItem
 }
 
+// AssertRowsModified is ASSERT_ROWS_MODIFIED clause in DML.
+//
+//	ASSERT_ROWS_MODIFIED {{.NumRows | sql}}
+type AssertRowsModified struct {
+	// pos = Assert
+	// end = NumRows.end
+
+	Assert token.Pos // position of "ASSERT_ROWS_MODIFIED" keyword
+
+	NumRows Expr
+}
+
 // Insert is INSERT statement node.
 //
 //	{{.Hint | sqlOpt}}
-//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	{{.OnConflict | sqlOpt}}
+//	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
 type Insert struct {
 	// pos = Hint.pos || Insert
-	// end = (ThenReturn ?? Input).end
+	// end = (ThenReturn ?? AssertRowsModified ?? OnConflict ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
 
 	InsertOrType InsertOrType
 
-	Hint       *Hint // optional
-	TableName  *Path
-	TableHint  *Hint // optional
-	Columns    []*Ident
-	Input      InsertInput
-	ThenReturn *ThenReturn // optional
+	Hint               *Hint // optional
+	TableName          *Path
+	TableHint          *Hint    // optional
+	As                 *AsAlias // optional
+	Columns            []*Ident
+	Input              InsertInput
+	OnConflict         *OnConflict         // optional
+	AssertRowsModified *AssertRowsModified // optional
+	ThenReturn         *ThenReturn         // optional
 }
 
 // ValuesInput is VALUES clause in INSERT.
@@ -4269,6 +4343,68 @@ type SubQueryInput struct {
 	// end = Query.end
 
 	Query QueryExpr
+}
+
+// OnConflict is ON CONFLICT clause in INSERT.
+//
+//	ON CONFLICT {{.ConflictTarget | sqlOpt}} {{.ConflictAction | sql}}
+type OnConflict struct {
+	// pos = On
+	// end = ConflictAction.end
+
+	On token.Pos // position of "ON" keyword
+
+	ConflictTarget ConflictTarget // optional
+	ConflictAction ConflictAction
+}
+
+// ConflictTargetColumns is column list form of conflict target.
+//
+//	({{.Columns | sqlJoin ", "}})
+type ConflictTargetColumns struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen token.Pos // position of "("
+	Rparen token.Pos // position of ")"
+
+	Columns []*Ident
+}
+
+// ConflictTargetOnConstraint is ON UNIQUE CONSTRAINT form of conflict target.
+//
+//	ON UNIQUE CONSTRAINT {{.Name | sql}}
+type ConflictTargetOnConstraint struct {
+	// pos = On
+	// end = Name.end
+
+	On token.Pos // position of "ON" keyword
+
+	Name *Ident
+}
+
+// ConflictActionDoNothing is DO NOTHING conflict action.
+//
+//	DO NOTHING
+type ConflictActionDoNothing struct {
+	// pos = Do
+	// end = Nothing + 7
+
+	Do      token.Pos // position of "DO" keyword
+	Nothing token.Pos // position of "NOTHING" keyword
+}
+
+// ConflictActionDoUpdate is DO UPDATE SET conflict action.
+//
+//	DO UPDATE SET {{.UpdateItems | sqlJoin ", "}} {{.Where | sqlOpt}}
+type ConflictActionDoUpdate struct {
+	// pos = Do
+	// end = (Where ?? UpdateItems[$]).end
+
+	Do token.Pos // position of "DO" keyword
+
+	UpdateItems []*UpdateItem
+	Where       *Where // optional
 }
 
 // Delete is DELETE statement.
@@ -4340,4 +4476,129 @@ type Call struct {
 
 	Name *Path
 	Args []TVFArg // len(Args) > 0
+}
+
+// ================================================================================
+//
+// GQL
+//
+// ================================================================================
+
+// GQLLinearQueryStatement represents a linear query statement.
+type GQLLinearQueryStatement interface {
+	Node
+	isGQLLinearQueryStatement()
+}
+
+func (GQLSimpleLinearQueryStatement) isGQLLinearQueryStatement()   {}
+func (GQLCompoundLinearQueryStatement) isGQLLinearQueryStatement() {}
+func (BadGQLLinearQueryStatement) isGQLLinearQueryStatement()      {}
+
+// GQLPrimitiveQueryStatement represents a primitive query statement.
+type GQLPrimitiveQueryStatement interface {
+	Node
+	isGQLPrimitiveQueryStatement()
+}
+
+func (GQLReturn) isGQLPrimitiveQueryStatement()                     {}
+func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
+
+// GQLGraphQuery is a top-level GQL query.
+//
+//	{{.Hint | sqlOpt}} {{.GraphClause | sql}} {{.Query | sql}}
+type GQLGraphQuery struct {
+	// pos = (Hint ?? GraphClause).pos
+	// end = Query.end
+
+	Hint        *Hint
+	GraphClause *GQLGraphClause
+
+	Query *GQLMultiLinearQueryStatement
+}
+
+// GQLGraphClause is a GRAPH clause in GQL.
+//
+//	GRAPH {{.PropertyGraphName | sql}}
+type GQLGraphClause struct {
+	// pos = Graph
+	// end = PropertyGraphName.end
+
+	Graph             token.Pos
+	PropertyGraphName *Path
+}
+
+// GQLMultiLinearQueryStatement is a list of linear query statements chained with NEXT.
+//
+//	{{.Statements | sqlJoin " NEXT "}}
+type GQLMultiLinearQueryStatement struct {
+	// pos = Statements[0].pos
+	// end = Statements[$].end
+
+	Statements []GQLLinearQueryStatement // len(Statements) > 0
+}
+
+// BadGQLLinearQueryStatement is a bad GQLLinearQueryStatement node.
+//
+//	{{.BadNode | sql}}
+type BadGQLLinearQueryStatement struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// GQLSimpleLinearQueryStatement is a list of primitive query statements that ends with RETURN.
+//
+//	{{.Statements | sqlJoin " "}}
+type GQLSimpleLinearQueryStatement struct {
+	// pos = Statements[0].pos
+	// end = Statements[$].end
+
+	Statements []GQLPrimitiveQueryStatement // len(Statements) > 0
+}
+
+// GQLCompoundLinearQueryStatement represents a list of linear query statements composited with the set operators.
+//
+//	{{.Statements | sqlJoin (printf " %s %s " .Op .AllOrDistinct)}}
+type GQLCompoundLinearQueryStatement struct {
+	// pos = Statements[0].pos
+	// end = Statements[$].end
+
+	Op            SetOp
+	AllOrDistinct AllOrDistinct
+	Statements    []GQLLinearQueryStatement // len(Statements) >= 2
+}
+
+// BadGQLPrimitiveQueryStatement is a bad GQLPrimitiveQueryStatement node.
+//
+//	{{.BadNode | sql}}
+type BadGQLPrimitiveQueryStatement struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
+}
+
+// GQLReturn is a RETURN statement in GQL.
+//
+//	RETURN {{.AllOrDistinct | sqlOpt}} {{.Items | sqlJoin ", "}}
+type GQLReturn struct {
+	// pos = Return
+	// end = Items[$].end
+
+	Return        token.Pos
+	AllOrDistinct AllOrDistinct
+	Items         []*GQLReturnItem
+}
+
+// GQLReturnItem is an item in a RETURN statement.
+//
+//	{{.Expr | sql}}{{if .Alias}} {{.Alias | sqlOpt}}{{end}}
+type GQLReturnItem struct {
+	// pos = Star || Expr.pos
+	// end = Star + 1 || (Alias ?? Expr).end
+
+	Star  token.Pos
+	Expr  Expr
+	Alias *AsAlias // optional
 }

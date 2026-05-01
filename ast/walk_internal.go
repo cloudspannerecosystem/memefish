@@ -120,6 +120,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *GroupBy:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Exprs), visitor: v.Field("Exprs")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
 
 	case *Having:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
@@ -542,6 +543,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *ColumnDefaultExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *OnUpdate:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 
 	case *GeneratedColumnExpr:
@@ -662,6 +667,12 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultExpr), visitor: v.Field("DefaultExpr")})
 
 	case *AlterColumnDropDefault:
+		// nothing to do
+
+	case *AlterColumnSetOnUpdate:
+		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})
+
+	case *AlterColumnDropOnUpdate:
 		// nothing to do
 
 	case *AlterColumnAlterIdentity:
@@ -964,10 +975,16 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 		stack = append(stack, &stackItem{node: wrapNode(n.WithAction), visitor: v.Field("WithAction")})
 
+	case *AssertRowsModified:
+		stack = append(stack, &stackItem{node: wrapNode(n.NumRows), visitor: v.Field("NumRows")})
+
 	case *Insert:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.AssertRowsModified), visitor: v.Field("AssertRowsModified")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OnConflict), visitor: v.Field("OnConflict")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Input), visitor: v.Field("Input")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableHint), visitor: v.Field("TableHint")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
@@ -983,6 +1000,23 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *SubQueryInput:
 		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+
+	case *OnConflict:
+		stack = append(stack, &stackItem{node: wrapNode(n.ConflictAction), visitor: v.Field("ConflictAction")})
+		stack = append(stack, &stackItem{node: wrapNode(n.ConflictTarget), visitor: v.Field("ConflictTarget")})
+
+	case *ConflictTargetColumns:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+
+	case *ConflictTargetOnConstraint:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *ConflictActionDoNothing:
+		// nothing to do
+
+	case *ConflictActionDoUpdate:
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.UpdateItems), visitor: v.Field("UpdateItems")})
 
 	case *Delete:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
@@ -1008,6 +1042,36 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *Call:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Args), visitor: v.Field("Args")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *GQLGraphQuery:
+		stack = append(stack, &stackItem{node: wrapNode(n.Query), visitor: v.Field("Query")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GraphClause), visitor: v.Field("GraphClause")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLGraphClause:
+		stack = append(stack, &stackItem{node: wrapNode(n.PropertyGraphName), visitor: v.Field("PropertyGraphName")})
+
+	case *GQLMultiLinearQueryStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
+
+	case *BadGQLLinearQueryStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+
+	case *GQLSimpleLinearQueryStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
+
+	case *GQLCompoundLinearQueryStatement:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Statements), visitor: v.Field("Statements")})
+
+	case *BadGQLPrimitiveQueryStatement:
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+
+	case *GQLReturn:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *GQLReturnItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 	}
 	return stack
 }

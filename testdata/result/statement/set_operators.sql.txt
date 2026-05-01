@@ -1,0 +1,113 @@
+--- set_operators.sql
+GRAPH FinGraph
+RETURN 1 AS x
+UNION ALL
+RETURN 2 AS x
+UNION ALL
+RETURN 3 AS x
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLCompoundLinearQueryStatement{
+        Op:            "UNION",
+        AllOrDistinct: "ALL",
+        Statements:    []ast.GQLLinearQueryStatement{
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 15,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 22,
+                      ValueEnd: 23,
+                      Base:     10,
+                      Value:    "1",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    24,
+                      Alias: &ast.Ident{
+                        NamePos: 27,
+                        NameEnd: 28,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 39,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 46,
+                      ValueEnd: 47,
+                      Base:     10,
+                      Value:    "2",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    48,
+                      Alias: &ast.Ident{
+                        NamePos: 51,
+                        NameEnd: 52,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLSimpleLinearQueryStatement{
+            Statements: []ast.GQLPrimitiveQueryStatement{
+              &ast.GQLReturn{
+                Return: 63,
+                Items:  []*ast.GQLReturnItem{
+                  &ast.GQLReturnItem{
+                    Star: -1,
+                    Expr: &ast.IntLiteral{
+                      ValuePos: 70,
+                      ValueEnd: 71,
+                      Base:     10,
+                      Value:    "3",
+                    },
+                    Alias: &ast.AsAlias{
+                      As:    72,
+                      Alias: &ast.Ident{
+                        NamePos: 75,
+                        NameEnd: 76,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN 1 AS x UNION ALL RETURN 2 AS x UNION ALL RETURN 3 AS x

@@ -1179,7 +1179,15 @@ func (c *ColumnDefaultExpr) Pos() token.Pos {
 }
 
 func (c *ColumnDefaultExpr) End() token.Pos {
-	return c.Rparen
+	return posChoice(nodeEnd(wrapNode(c.OnUpdate)), posAdd(c.Rparen, 1))
+}
+
+func (o *OnUpdate) Pos() token.Pos {
+	return o.On
+}
+
+func (o *OnUpdate) End() token.Pos {
+	return posAdd(o.Rparen, 1)
 }
 
 func (g *GeneratedColumnExpr) Pos() token.Pos {
@@ -1460,6 +1468,22 @@ func (a *AlterColumnDropDefault) Pos() token.Pos {
 
 func (a *AlterColumnDropDefault) End() token.Pos {
 	return posAdd(a.Default, 7)
+}
+
+func (a *AlterColumnSetOnUpdate) Pos() token.Pos {
+	return a.Set
+}
+
+func (a *AlterColumnSetOnUpdate) End() token.Pos {
+	return nodeEnd(wrapNode(a.OnUpdate))
+}
+
+func (a *AlterColumnDropOnUpdate) Pos() token.Pos {
+	return a.Drop
+}
+
+func (a *AlterColumnDropOnUpdate) End() token.Pos {
+	return posAdd(a.Update, 6)
 }
 
 func (a *AlterColumnAlterIdentity) Pos() token.Pos {
@@ -2110,12 +2134,20 @@ func (t *ThenReturn) End() token.Pos {
 	return nodeEnd(nodeSliceLast(t.Items))
 }
 
+func (a *AssertRowsModified) Pos() token.Pos {
+	return a.Assert
+}
+
+func (a *AssertRowsModified) End() token.Pos {
+	return nodeEnd(wrapNode(a.NumRows))
+}
+
 func (i *Insert) Pos() token.Pos {
 	return posChoice(nodePos(wrapNode(i.Hint)), i.Insert)
 }
 
 func (i *Insert) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.Input)))
+	return nodeEnd(nodeChoice(wrapNode(i.ThenReturn), wrapNode(i.AssertRowsModified), wrapNode(i.OnConflict), wrapNode(i.Input)))
 }
 
 func (v *ValuesInput) Pos() token.Pos {
@@ -2150,6 +2182,46 @@ func (s *SubQueryInput) End() token.Pos {
 	return nodeEnd(wrapNode(s.Query))
 }
 
+func (o *OnConflict) Pos() token.Pos {
+	return o.On
+}
+
+func (o *OnConflict) End() token.Pos {
+	return nodeEnd(wrapNode(o.ConflictAction))
+}
+
+func (c *ConflictTargetColumns) Pos() token.Pos {
+	return c.Lparen
+}
+
+func (c *ConflictTargetColumns) End() token.Pos {
+	return posAdd(c.Rparen, 1)
+}
+
+func (c *ConflictTargetOnConstraint) Pos() token.Pos {
+	return c.On
+}
+
+func (c *ConflictTargetOnConstraint) End() token.Pos {
+	return nodeEnd(wrapNode(c.Name))
+}
+
+func (c *ConflictActionDoNothing) Pos() token.Pos {
+	return c.Do
+}
+
+func (c *ConflictActionDoNothing) End() token.Pos {
+	return posAdd(c.Nothing, 7)
+}
+
+func (c *ConflictActionDoUpdate) Pos() token.Pos {
+	return c.Do
+}
+
+func (c *ConflictActionDoUpdate) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(c.Where), nodeSliceLast(c.UpdateItems)))
+}
+
 func (d *Delete) Pos() token.Pos {
 	return posChoice(nodePos(wrapNode(d.Hint)), d.Delete)
 }
@@ -2180,4 +2252,76 @@ func (c *Call) Pos() token.Pos {
 
 func (c *Call) End() token.Pos {
 	return posAdd(c.Rparen, 1)
+}
+
+func (g *GQLGraphQuery) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.GraphClause)))
+}
+
+func (g *GQLGraphQuery) End() token.Pos {
+	return nodeEnd(wrapNode(g.Query))
+}
+
+func (g *GQLGraphClause) Pos() token.Pos {
+	return g.Graph
+}
+
+func (g *GQLGraphClause) End() token.Pos {
+	return nodeEnd(wrapNode(g.PropertyGraphName))
+}
+
+func (g *GQLMultiLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Statements, 0))
+}
+
+func (g *GQLMultiLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Statements))
+}
+
+func (b *BadGQLLinearQueryStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLLinearQueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (g *GQLSimpleLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Statements, 0))
+}
+
+func (g *GQLSimpleLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Statements))
+}
+
+func (g *GQLCompoundLinearQueryStatement) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Statements, 0))
+}
+
+func (g *GQLCompoundLinearQueryStatement) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Statements))
+}
+
+func (b *BadGQLPrimitiveQueryStatement) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLPrimitiveQueryStatement) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (g *GQLReturn) Pos() token.Pos {
+	return g.Return
+}
+
+func (g *GQLReturn) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Items))
+}
+
+func (g *GQLReturnItem) Pos() token.Pos {
+	return posChoice(g.Star, nodePos(wrapNode(g.Expr)))
+}
+
+func (g *GQLReturnItem) End() token.Pos {
+	return posChoice(posAdd(g.Star, 1), nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Expr))))
 }

@@ -2,7 +2,6 @@ theme = "github.com/thingsym/hugo-theme-techdoc"
 
 baseURL = "https://cloudspannerecosystem.dev/memefish/"
 title = "méméfish"
-languageCode = "en-US"
 defaultContentLanguage = "en"
 
 canonifyurls = true
@@ -12,6 +11,12 @@ pygmentscodefences = true
 pygmentscodefencesguesssyntax = true
 
 summaryLength = 30
+
+[languages]
+  [languages.en]
+    label = "English"
+    locale = "en_US"
+    weight = 1
 
 [markup]
   defaultMarkdownHandler = "goldmark"

@@ -106,7 +106,7 @@ func main() {
 
 	if *dig != "" {
 		value := reflect.ValueOf(node)
-		for _, name := range strings.Split(*dig, ".") {
+		for name := range strings.SplitSeq(*dig, ".") {
 			if value.Kind() == reflect.Interface {
 				value = value.Elem()
 			}
@@ -130,7 +130,7 @@ func main() {
 		}
 	}
 
-	for _, elem := range strings.Split(*output, ",") {
+	for elem := range strings.SplitSeq(*output, ",") {
 		switch elem {
 		case "ast":
 			fmt.Println("--- AST")
@@ -157,7 +157,7 @@ func main() {
 	}
 }
 
-func logf(msg string, params ...interface{}) {
+func logf(msg string, params ...any) {
 	if *logging {
 		log.Printf(msg, params...)
 	}

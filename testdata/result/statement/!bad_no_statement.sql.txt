@@ -1,0 +1,36 @@
+--- !bad_no_statement.sql
+GRAPH FinGraph
+
+--- Error
+syntax error: testdata/input/gql/!bad_no_statement.sql:2:1: expect one or more GQL statements, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 15,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph 

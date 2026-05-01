@@ -57,10 +57,7 @@ func (f *File) Position(pos, end Pos) *Position {
 		break
 	case line == endLine:
 		lineBuffer := f.Buffer[f.lines[line] : f.lines[line+1]-1]
-		count := endColumn - column - 1
-		if count < 0 {
-			count = 0
-		}
+		count := max(endColumn-column-1, 0)
 		fmt.Fprintf(&source, "%3d|  %s\n", line+1, lineBuffer)
 		fmt.Fprintf(&source, "   |  %s^%s", strings.Repeat(" ", column), strings.Repeat("~", count))
 	case line < endLine:

@@ -12,5 +12,6 @@ create table foo (
   check (foo > 0),
   constraint cname check (bar > 0),
   quux json,
-  corge timestamp not null default (current_timestamp())
+  corge timestamp not null default (current_timestamp()),
+  grault timestamp not null default (pending_commit_timestamp()) on update (pending_commit_timestamp()),
 ) primary key (foo, bar)
