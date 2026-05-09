@@ -1,0 +1,1 @@
+GRANT USAGE ON SCHEMA db.sch1, sch2 TO ROLE r1, r2

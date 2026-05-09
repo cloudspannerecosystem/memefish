@@ -1,0 +1,40 @@
+--- revoke_usage_on_schema_named.sql
+REVOKE USAGE ON SCHEMA sch1, sch2 FROM ROLE r
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.UsagePrivilegeOnSchema{
+    Usage:   7,
+    Default: -1,
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 23,
+            NameEnd: 27,
+            Name:    "sch1",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 29,
+            NameEnd: 33,
+            Name:    "sch2",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 44,
+      NameEnd: 45,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+REVOKE USAGE ON SCHEMA sch1, sch2 FROM ROLE r

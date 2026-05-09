@@ -503,6 +503,7 @@ func (PrivilegeOnTable) isPrivilege()                {}
 func (SelectPrivilegeOnChangeStream) isPrivilege()   {}
 func (SelectPrivilegeOnView) isPrivilege()           {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege() {}
+func (UsagePrivilegeOnSchema) isPrivilege()          {}
 func (RolePrivilege) isPrivilege()                   {}
 
 // TablePrivilege represents privileges on table.
@@ -3598,6 +3599,19 @@ type ExecutePrivilegeOnTableFunction struct {
 	Execute token.Pos
 
 	Names []*Path // len(Names) > 0
+}
+
+// UsagePrivilegeOnSchema is USAGE ON SCHEMA privilege node in GRANT and REVOKE.
+//
+//	USAGE ON SCHEMA {{if .Default}}DEFAULT{{else}}{{.Schemas | sqlJoin ", "}}{{end}}
+type UsagePrivilegeOnSchema struct {
+	// pos = Usage
+	// end = Schemas[$].end || Default + 7
+
+	Usage   token.Pos // position of "USAGE" pseudo keyword
+	Default token.Pos // position of "DEFAULT" keyword, optional
+
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // RolePrivilege is ROLE privilege node in GRANT and REVOKE.

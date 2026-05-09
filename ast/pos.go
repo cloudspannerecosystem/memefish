@@ -1782,6 +1782,14 @@ func (e *ExecutePrivilegeOnTableFunction) End() token.Pos {
 	return nodeEnd(nodeSliceLast(e.Names))
 }
 
+func (u *UsagePrivilegeOnSchema) Pos() token.Pos {
+	return u.Usage
+}
+
+func (u *UsagePrivilegeOnSchema) End() token.Pos {
+	return posChoice(nodeEnd(nodeSliceLast(u.Schemas)), posAdd(u.Default, 7))
+}
+
 func (r *RolePrivilege) Pos() token.Pos {
 	return r.Role
 }
