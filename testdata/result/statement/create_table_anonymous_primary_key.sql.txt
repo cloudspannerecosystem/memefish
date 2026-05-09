@@ -1,0 +1,84 @@
+--- create_table_anonymous_primary_key.sql
+CREATE TABLE PKsTable(
+  PK1 INT64,
+  PK2 INT64,
+  PRIMARY KEY (PK1, PK2)
+)
+--- AST
+&ast.CreateTable{
+  Rparen:           74,
+  PrimaryKeyRparen: -1,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 21,
+        Name:    "PKsTable",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 25,
+        NameEnd: 28,
+        Name:    "PK1",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 29,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 38,
+        NameEnd: 41,
+        Name:    "PK2",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 42,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: -1,
+      Constraint:    &ast.TablePrimaryKey{
+        Primary: 51,
+        Rparen:  72,
+        Columns: []*ast.IndexKey{
+          &ast.IndexKey{
+            DirPos: -1,
+            Name:   &ast.Ident{
+              NamePos: 64,
+              NameEnd: 67,
+              Name:    "PK1",
+            },
+          },
+          &ast.IndexKey{
+            DirPos: -1,
+            Name:   &ast.Ident{
+              NamePos: 69,
+              NameEnd: 72,
+              Name:    "PK2",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE PKsTable (
+  PK1 INT64,
+  PK2 INT64,
+  PRIMARY KEY (PK1, PK2)
+)
