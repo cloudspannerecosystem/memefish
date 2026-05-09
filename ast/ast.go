@@ -3209,11 +3209,12 @@ type RenameTableTo struct {
 //	  {{.Keys | sqlJoin ","}}
 //	)
 //	{{.Storing | sqlOpt}}
+//	{{.Where | sqlOpt}}
 //	{{.InterleaveIn | sqlOpt}}
 //	{{.Options | sqlOpt}}
 type CreateIndex struct {
 	// pos = Create
-	// end = (Options ?? InterleaveIn ?? Storing).end || Rparen + 1
+	// end = (Options ?? InterleaveIn ?? Where ?? Storing).end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")"
@@ -3225,6 +3226,7 @@ type CreateIndex struct {
 	TableName    *Path
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
+	Where        *Where        // optional
 	InterleaveIn *InterleaveIn // optional
 	Options      *Options      // optional
 }

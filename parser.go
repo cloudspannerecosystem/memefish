@@ -3985,6 +3985,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	rparen := p.expect(")").Pos
 
 	storing := p.tryParseStoring()
+	where := p.tryParseWhere()
 	interleaveIn := p.tryParseInterleaveIn()
 	options := p.tryParseOptions()
 
@@ -3998,6 +3999,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		TableName:    tableName,
 		Keys:         keys,
 		Storing:      storing,
+		Where:        where,
 		InterleaveIn: interleaveIn,
 		Options:      options,
 	}

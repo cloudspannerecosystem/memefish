@@ -1,0 +1,115 @@
+--- create_index_where.sql
+create index foo_bar on foo (
+  bar,
+  baz desc,
+)
+storing (qux)
+where bar is not null and baz is not null
+, interleave in parent
+options (locality_group = 'spill_to_hdd')
+
+--- AST
+&ast.CreateIndex{
+  Rparen: 49,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "foo_bar",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 24,
+        NameEnd: 27,
+        Name:    "foo",
+      },
+    },
+  },
+  Keys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 32,
+        NameEnd: 35,
+        Name:    "bar",
+      },
+    },
+    &ast.IndexKey{
+      DirPos: 43,
+      Name:   &ast.Ident{
+        NamePos: 39,
+        NameEnd: 42,
+        Name:    "baz",
+      },
+      Dir: "DESC",
+    },
+  },
+  Storing: &ast.Storing{
+    Storing: 51,
+    Rparen:  63,
+    Columns: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 60,
+        NameEnd: 63,
+        Name:    "qux",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 65,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.IsNullExpr{
+        Null: 82,
+        Not:  true,
+        Left: &ast.Ident{
+          NamePos: 71,
+          NameEnd: 74,
+          Name:    "bar",
+        },
+      },
+      Right: &ast.IsNullExpr{
+        Null: 102,
+        Not:  true,
+        Left: &ast.Ident{
+          NamePos: 91,
+          NameEnd: 94,
+          Name:    "baz",
+        },
+      },
+    },
+  },
+  InterleaveIn: &ast.InterleaveIn{
+    Comma:     107,
+    TableName: &ast.Ident{
+      NamePos: 123,
+      NameEnd: 129,
+      Name:    "parent",
+    },
+  },
+  Options: &ast.Options{
+    Options: 130,
+    Rparen:  170,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 139,
+          NameEnd: 153,
+          Name:    "locality_group",
+        },
+        Value: &ast.StringLiteral{
+          ValuePos: 156,
+          ValueEnd: 170,
+          Value:    "spill_to_hdd",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE INDEX foo_bar ON foo(bar, baz DESC) STORING (qux) WHERE bar IS NOT NULL AND baz IS NOT NULL, INTERLEAVE IN parent OPTIONS (locality_group = "spill_to_hdd")
