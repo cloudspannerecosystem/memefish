@@ -1,0 +1,3 @@
+GRAPH FinGraph
+RETURN a
+SKIP 5 LIMIT 10

@@ -1068,10 +1068,46 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
 
 	case *GQLReturn:
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.OrderBy), visitor: v.Field("OrderBy")})
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupBy), visitor: v.Field("GroupBy")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
 
 	case *GQLReturnItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLWith:
+		stack = append(stack, &stackItem{node: wrapNode(n.GroupBy), visitor: v.Field("GroupBy")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *GQLFilter:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLFor:
+		stack = append(stack, &stackItem{node: wrapNode(n.WithOffset), visitor: v.Field("WithOffset")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Ident), visitor: v.Field("Ident")})
+
+	case *GQLLet:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *GQLLetItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Ident), visitor: v.Field("Ident")})
+
+	case *GQLOrderBy:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Items), visitor: v.Field("Items")})
+
+	case *GQLLimit:
+		stack = append(stack, &stackItem{node: wrapNode(n.Limit), visitor: v.Field("Limit")})
+
+	case *GQLOffset:
+		stack = append(stack, &stackItem{node: wrapNode(n.Offset), visitor: v.Field("Offset")})
+
+	case *GQLOrderByItem:
+		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 	}
 	return stack

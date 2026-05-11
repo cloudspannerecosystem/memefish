@@ -4500,6 +4500,13 @@ type GQLPrimitiveQueryStatement interface {
 }
 
 func (GQLReturn) isGQLPrimitiveQueryStatement()                     {}
+func (GQLWith) isGQLPrimitiveQueryStatement()                       {}
+func (GQLFilter) isGQLPrimitiveQueryStatement()                     {}
+func (GQLFor) isGQLPrimitiveQueryStatement()                        {}
+func (GQLLet) isGQLPrimitiveQueryStatement()                        {}
+func (GQLOrderBy) isGQLPrimitiveQueryStatement()                    {}
+func (GQLLimit) isGQLPrimitiveQueryStatement()                      {}
+func (GQLOffset) isGQLPrimitiveQueryStatement()                     {}
 func (BadGQLPrimitiveQueryStatement) isGQLPrimitiveQueryStatement() {}
 
 // GQLGraphQuery is a top-level GQL query.
@@ -4580,24 +4587,137 @@ type BadGQLPrimitiveQueryStatement struct {
 
 // GQLReturn is a RETURN statement in GQL.
 //
-//	RETURN {{.AllOrDistinct | sqlOpt}} {{.Items | sqlJoin ", "}}
+//	RETURN {{.AllOrDistinct | sqlOpt}} {{.Items | sqlJoin ", "}} {{.GroupBy | sqlOpt}} {{.OrderBy | sqlOpt}} {{.Offset | sqlOpt}} {{.Limit | sqlOpt}}
 type GQLReturn struct {
 	// pos = Return
-	// end = Items[$].end
+	// end = (Limit ?? Offset ?? OrderBy ?? GroupBy ?? Items[$]).end
 
 	Return        token.Pos
 	AllOrDistinct AllOrDistinct
 	Items         []*GQLReturnItem
+	GroupBy       *GroupBy
+	OrderBy       *GQLOrderBy
+	Offset        *GQLOffset
+	Limit         *GQLLimit
 }
 
-// GQLReturnItem is an item in a RETURN statement.
+// GQLReturnItem is an item in a RETURN or WITH statement.
 //
-//	{{.Expr | sql}}{{if .Alias}} {{.Alias | sqlOpt}}{{end}}
+//	{{if .Star}}*{{"\n"}}{{else}}{{.Expr | sql}}{{if .Alias}} AS {{.Alias | sql}}{{end}}{{end}}
 type GQLReturnItem struct {
 	// pos = Star || Expr.pos
 	// end = Star + 1 || (Alias ?? Expr).end
 
-	Star  token.Pos
+	Star  token.Pos // position of "*", optional
+	Expr  Expr      // optional
+	Alias *AsAlias  // optional
+}
+
+// GQLWith is a WITH statement in GQL.
+//
+//	WITH {{.AllOrDistinct | sqlOpt}} {{.Items | sqlJoin ", "}} {{.GroupBy | sqlOpt}}
+type GQLWith struct {
+	// pos = With
+	// end = (GroupBy ?? Items[$]).end
+
+	With          token.Pos // position of "WITH" keyword
+	AllOrDistinct AllOrDistinct
+	Items         []*GQLReturnItem
+	GroupBy       *GroupBy
+}
+
+// GQLFilter is a FILTER statement in GQL.
+//
+//	FILTER {{.Where | sqlOpt}} {{.Expr | sql}}
+type GQLFilter struct {
+	// pos = Filter || Where
+	// end = Expr.end
+
+	Filter token.Pos // position of "FILTER" keyword, optional
+	Where  token.Pos // position of "WHERE" keyword, optional
+	Expr   Expr
+}
+
+// GQLFor is a FOR statement in GQL.
+//
+//	FOR {{.Ident | sql}} IN {{.Expr | sql}} {{.WithOffset | sqlOpt}}
+type GQLFor struct {
+	// pos = For
+	// end = (WithOffset ?? Expr).end
+
+	For   token.Pos
+	Ident *Ident
 	Expr  Expr
-	Alias *AsAlias // optional
+
+	WithOffset *WithOffset // optional
+}
+
+// GQLLet is a LET statement in GQL.
+//
+//	LET {{.Items | sqlJoin ", "}}
+type GQLLet struct {
+	// pos = Let
+	// end = Items[$].end
+
+	Let   token.Pos
+	Items []*GQLLetItem
+}
+
+// GQLLetItem is an item in a LET statement.
+//
+//	{{.Ident | sql}} = {{.Expr | sql}}
+type GQLLetItem struct {
+	// pos = Ident.pos
+	// end = Expr.end
+
+	Ident *Ident
+	Expr  Expr
+}
+
+// GQLOrderBy is an ORDER BY statement in GQL.
+//
+//	ORDER BY {{.Items | sqlJoin ", "}}
+type GQLOrderBy struct {
+	// pos = Order
+	// end = Items[$].end
+
+	Order token.Pos
+	Items []*GQLOrderByItem
+}
+
+// GQLLimit is a LIMIT statement in GQL.
+//
+//	LIMIT {{.Limit | sql}}
+type GQLLimit struct {
+	// pos = LimitPos
+	// end = Limit.end
+
+	LimitPos token.Pos // position of "LIMIT"
+	Limit    IntValue
+}
+
+// GQLOffset is an OFFSET or SKIP statement in GQL.
+//
+//	{{.Keyword}} {{.Offset | sql}}
+type GQLOffset struct {
+	// pos = OffsetPos
+	// end = Offset.end
+
+	OffsetPos token.Pos // position of "OFFSET" or "SKIP"
+	Keyword   string    // "OFFSET" or "SKIP"
+	Offset    IntValue
+}
+
+// GQLOrderByItem is expression node in GQL ORDER BY clause list.
+//
+//	{{.Expr | sql}} {{.Collate | sqlOpt}} {{.Direction}}
+type GQLOrderByItem struct {
+	// pos = Expr.pos
+	// end = DirEnd || Collate.end || Expr.end
+
+	DirEnd token.Pos // end position of Dir
+
+	Expr    Expr
+	Collate *Collate  // optional
+	Dir     Direction // optional
 }

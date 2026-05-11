@@ -2315,7 +2315,7 @@ func (g *GQLReturn) Pos() token.Pos {
 }
 
 func (g *GQLReturn) End() token.Pos {
-	return nodeEnd(nodeSliceLast(g.Items))
+	return nodeEnd(nodeChoice(wrapNode(g.Limit), wrapNode(g.Offset), wrapNode(g.OrderBy), wrapNode(g.GroupBy), nodeSliceLast(g.Items)))
 }
 
 func (g *GQLReturnItem) Pos() token.Pos {
@@ -2324,4 +2324,76 @@ func (g *GQLReturnItem) Pos() token.Pos {
 
 func (g *GQLReturnItem) End() token.Pos {
 	return posChoice(posAdd(g.Star, 1), nodeEnd(nodeChoice(wrapNode(g.Alias), wrapNode(g.Expr))))
+}
+
+func (g *GQLWith) Pos() token.Pos {
+	return g.With
+}
+
+func (g *GQLWith) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.GroupBy), nodeSliceLast(g.Items)))
+}
+
+func (g *GQLFilter) Pos() token.Pos {
+	return posChoice(g.Filter, g.Where)
+}
+
+func (g *GQLFilter) End() token.Pos {
+	return nodeEnd(wrapNode(g.Expr))
+}
+
+func (g *GQLFor) Pos() token.Pos {
+	return g.For
+}
+
+func (g *GQLFor) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.WithOffset), wrapNode(g.Expr)))
+}
+
+func (g *GQLLet) Pos() token.Pos {
+	return g.Let
+}
+
+func (g *GQLLet) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Items))
+}
+
+func (g *GQLLetItem) Pos() token.Pos {
+	return nodePos(wrapNode(g.Ident))
+}
+
+func (g *GQLLetItem) End() token.Pos {
+	return nodeEnd(wrapNode(g.Expr))
+}
+
+func (g *GQLOrderBy) Pos() token.Pos {
+	return g.Order
+}
+
+func (g *GQLOrderBy) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Items))
+}
+
+func (g *GQLLimit) Pos() token.Pos {
+	return g.LimitPos
+}
+
+func (g *GQLLimit) End() token.Pos {
+	return nodeEnd(wrapNode(g.Limit))
+}
+
+func (g *GQLOffset) Pos() token.Pos {
+	return g.OffsetPos
+}
+
+func (g *GQLOffset) End() token.Pos {
+	return nodeEnd(wrapNode(g.Offset))
+}
+
+func (g *GQLOrderByItem) Pos() token.Pos {
+	return nodePos(wrapNode(g.Expr))
+}
+
+func (g *GQLOrderByItem) End() token.Pos {
+	return posChoice(g.DirEnd, nodeEnd(wrapNode(g.Collate)), nodeEnd(wrapNode(g.Expr)))
 }

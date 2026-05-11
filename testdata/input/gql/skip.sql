@@ -1,0 +1,3 @@
+GRAPH FinGraph
+RETURN a
+SKIP 5

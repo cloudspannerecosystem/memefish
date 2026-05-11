@@ -1,0 +1,3 @@
+GRAPH FinGraph
+FILTER a > 1
+RETURN a

@@ -1,0 +1,5 @@
+GRAPH FinGraph
+LET x = 1
+FOR y IN [1, 2]
+FILTER WHERE x < y
+RETURN y

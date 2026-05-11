@@ -1,0 +1,5 @@
+GRAPH FinGraph
+WITH 1 AS a
+RETURN a
+NEXT
+RETURN a

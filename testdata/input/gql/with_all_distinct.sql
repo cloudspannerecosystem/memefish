@@ -1,0 +1,3 @@
+GRAPH FinGraph
+WITH ALL 1 AS a, 2 AS b
+RETURN a, b

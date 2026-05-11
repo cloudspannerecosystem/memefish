@@ -1,0 +1,65 @@
+--- with.sql
+GRAPH FinGraph
+WITH 1 AS a
+RETURN a
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLWith{
+            With:  15,
+            Items: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 20,
+                  ValueEnd: 21,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.AsAlias{
+                  As:    22,
+                  Alias: &ast.Ident{
+                    NamePos: 25,
+                    NameEnd: 26,
+                    Name:    "a",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 27,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 34,
+                  NameEnd: 35,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph WITH 1 AS a RETURN a
