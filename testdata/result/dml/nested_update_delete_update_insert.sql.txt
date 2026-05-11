@@ -1,0 +1,266 @@
+--- nested_update_delete_update_insert.sql
+UPDATE Singers s
+SET
+  (DELETE FROM s.SingerInfo.Residence r WHERE r.City = 'Seattle'),
+  (UPDATE s.Albums.Song song SET song.songtitle = 'No, This Is Rubbish' WHERE song.songtitle = 'This Is Pretty Good'),
+  (INSERT s.Albums.Song VALUES ("songtitle: 'The Second Best Song'"))
+WHERE SingerId = 3 AND s.Albums.title = 'Go! Go! Go!'
+--- AST
+&ast.Update{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 14,
+        Name:    "Singers",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    -1,
+    Alias: &ast.Ident{
+      NamePos: 15,
+      NameEnd: 16,
+      Name:    "s",
+    },
+  },
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemDML{
+      Lparen: 23,
+      Rparen: 85,
+      DML:    &ast.Delete{
+        Delete:    24,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 36,
+              NameEnd: 37,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 38,
+              NameEnd: 48,
+              Name:    "SingerInfo",
+            },
+            &ast.Ident{
+              NamePos: 49,
+              NameEnd: 58,
+              Name:    "Residence",
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 59,
+            NameEnd: 60,
+            Name:    "r",
+          },
+        },
+        Where: &ast.Where{
+          Where: 61,
+          Expr:  &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 67,
+                  NameEnd: 68,
+                  Name:    "r",
+                },
+                &ast.Ident{
+                  NamePos: 69,
+                  NameEnd: 73,
+                  Name:    "City",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 76,
+              ValueEnd: 85,
+              Value:    "Seattle",
+            },
+          },
+        },
+      },
+    },
+    &ast.UpdateItemDML{
+      Lparen: 90,
+      Rparen: 204,
+      DML:    &ast.Update{
+        Update:    91,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 98,
+              NameEnd: 99,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 100,
+              NameEnd: 106,
+              Name:    "Albums",
+            },
+            &ast.Ident{
+              NamePos: 107,
+              NameEnd: 111,
+              Name:    "Song",
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    -1,
+          Alias: &ast.Ident{
+            NamePos: 112,
+            NameEnd: 116,
+            Name:    "song",
+          },
+        },
+        Updates: []ast.UpdateItem{
+          &ast.UpdateItemSetValue{
+            Path: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 121,
+                NameEnd: 125,
+                Name:    "song",
+              },
+              &ast.Ident{
+                NamePos: 126,
+                NameEnd: 135,
+                Name:    "songtitle",
+              },
+            },
+            DefaultExpr: &ast.DefaultExpr{
+              DefaultPos: -1,
+              Expr:       &ast.StringLiteral{
+                ValuePos: 138,
+                ValueEnd: 159,
+                Value:    "No, This Is Rubbish",
+              },
+            },
+          },
+        },
+        Where: &ast.Where{
+          Where: 160,
+          Expr:  &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 166,
+                  NameEnd: 170,
+                  Name:    "song",
+                },
+                &ast.Ident{
+                  NamePos: 171,
+                  NameEnd: 180,
+                  Name:    "songtitle",
+                },
+              },
+            },
+            Right: &ast.StringLiteral{
+              ValuePos: 183,
+              ValueEnd: 204,
+              Value:    "This Is Pretty Good",
+            },
+          },
+        },
+      },
+    },
+    &ast.UpdateItemDML{
+      Lparen: 209,
+      Rparen: 275,
+      DML:    &ast.Insert{
+        Insert:    210,
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 217,
+              NameEnd: 218,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 219,
+              NameEnd: 225,
+              Name:    "Albums",
+            },
+            &ast.Ident{
+              NamePos: 226,
+              NameEnd: 230,
+              Name:    "Song",
+            },
+          },
+        },
+        Input: &ast.ValuesInput{
+          Values: 231,
+          Rows:   []*ast.ValuesRow{
+            &ast.ValuesRow{
+              Lparen: 238,
+              Rparen: 274,
+              Exprs:  []*ast.DefaultExpr{
+                &ast.DefaultExpr{
+                  DefaultPos: -1,
+                  Expr:       &ast.StringLiteral{
+                    ValuePos: 239,
+                    ValueEnd: 274,
+                    Value:    "songtitle: 'The Second Best Song'",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 277,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 283,
+          NameEnd: 291,
+          Name:    "SingerId",
+        },
+        Right: &ast.IntLiteral{
+          ValuePos: 294,
+          ValueEnd: 295,
+          Base:     10,
+          Value:    "3",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 300,
+              NameEnd: 301,
+              Name:    "s",
+            },
+            &ast.Ident{
+              NamePos: 302,
+              NameEnd: 308,
+              Name:    "Albums",
+            },
+            &ast.Ident{
+              NamePos: 309,
+              NameEnd: 314,
+              Name:    "title",
+            },
+          },
+        },
+        Right: &ast.StringLiteral{
+          ValuePos: 317,
+          ValueEnd: 330,
+          Value:    "Go! Go! Go!",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+UPDATE Singers s SET (DELETE FROM s.SingerInfo.Residence r WHERE r.City = "Seattle"), (UPDATE s.Albums.Song song SET song.songtitle = "No, This Is Rubbish" WHERE song.songtitle = "This Is Pretty Good"), (INSERT INTO s.Albums.Song () VALUES ("songtitle: 'The Second Best Song'")) WHERE SingerId = 3 AND s.Albums.title = "Go! Go! Go!"

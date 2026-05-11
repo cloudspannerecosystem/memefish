@@ -57,8 +57,8 @@ update foo@{force_index=_base_table} set foo = bar, bar = foo, baz = DEFAULT whe
       },
     },
   },
-  Updates: []*ast.UpdateItem{
-    &ast.UpdateItem{
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemSetValue{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 67,
@@ -75,7 +75,7 @@ update foo@{force_index=_base_table} set foo = bar, bar = foo, baz = DEFAULT whe
         },
       },
     },
-    &ast.UpdateItem{
+    &ast.UpdateItemSetValue{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 78,
@@ -92,7 +92,7 @@ update foo@{force_index=_base_table} set foo = bar, bar = foo, baz = DEFAULT whe
         },
       },
     },
-    &ast.UpdateItem{
+    &ast.UpdateItemSetValue{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 89,

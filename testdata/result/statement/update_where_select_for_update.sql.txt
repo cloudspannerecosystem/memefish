@@ -12,8 +12,8 @@ where (SingerId, AlbumId) = (select as struct SingerId, AlbumId from Albums wher
       },
     },
   },
-  Updates: []*ast.UpdateItem{
-    &ast.UpdateItem{
+  Updates: []ast.UpdateItem{
+    &ast.UpdateItemSetValue{
       Path: []*ast.Ident{
         &ast.Ident{
           NamePos: 18,

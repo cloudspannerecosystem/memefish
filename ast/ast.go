@@ -571,6 +571,15 @@ type InsertInput interface {
 func (ValuesInput) isInsertInput()   {}
 func (SubQueryInput) isInsertInput() {}
 
+// UpdateItem represents SET clause items in UPDATE.
+type UpdateItem interface {
+	Node
+	isUpdateItem()
+}
+
+func (UpdateItemSetValue) isUpdateItem() {}
+func (UpdateItemDML) isUpdateItem()      {}
+
 // ConflictTarget represents conflict target in ON CONFLICT clause.
 type ConflictTarget interface {
 	Node
@@ -4290,7 +4299,7 @@ type Insert struct {
 	TableName          *Path
 	TableHint          *Hint    // optional
 	As                 *AsAlias // optional
-	Columns            []*Ident
+	Columns            []*Ident // optional when nested
 	Input              InsertInput
 	OnConflict         *OnConflict         // optional
 	AssertRowsModified *AssertRowsModified // optional
@@ -4402,7 +4411,7 @@ type ConflictActionDoUpdate struct {
 
 	Do token.Pos // position of "DO" keyword
 
-	UpdateItems []*UpdateItem
+	UpdateItems []UpdateItem
 	Where       *Where // optional
 }
 
@@ -4439,17 +4448,28 @@ type Update struct {
 
 	Hint       *Hint // optional
 	TableName  *Path
-	TableHint  *Hint         // optional
-	As         *AsAlias      // optional
-	Updates    []*UpdateItem // len(Updates) > 0
+	TableHint  *Hint        // optional
+	As         *AsAlias     // optional
+	Updates    []UpdateItem // len(Updates) > 0
 	Where      *Where
 	ThenReturn *ThenReturn // optional
 }
 
-// UpdateItem is SET clause items in UPDATE.
+// UpdateItemDML is nested update UpdateItem node in UPDATE statement.
+//
+//	({{.DML | sql}})
+type UpdateItemDML struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos // position of "(", ")"
+	DML            DML
+}
+
+// UpdateItemSetValue is assignment style UpdateItem node in UPDATE statement .
 //
 //	{{.Path | sqlJoin "."}} = {{.DefaultExpr | sql}}
-type UpdateItem struct {
+type UpdateItemSetValue struct {
 	// pos = Path[0].pos
 	// end = DefaultExpr.end
 
