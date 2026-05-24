@@ -47,6 +47,7 @@ package ast
 //   - The fields of each node must be ordered by the position.
 
 //go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
+//go:generate go run ../tools/gen-ast-expr-impls/main.go -astfile ast.go -constfile ast_const.go -outfile expr_impls_test.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
