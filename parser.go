@@ -137,6 +137,29 @@ func (p *Parser) ParseType() (ast.Type, error) {
 	return t, nil
 }
 
+// ParseSchemaType parses a schema type.
+func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
+	p.nextToken()
+	l := p.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			t = p.handleParseTypeError(r, l)
+		}
+		if len(p.errors) > 0 {
+			// Reset the errors and allow processing to continue
+			err = MultiError(p.errors)
+			p.errors = nil
+		}
+	}()
+
+	t = p.parseSchemaType()
+	if p.Token.Kind != token.TokenEOF {
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
+	}
+
+	return t, nil
+}
+
 // ParseDDL parses a CREATE/ALTER/DROP statement.
 func (p *Parser) ParseDDL() (ast.DDL, error) {
 	p.nextToken()
