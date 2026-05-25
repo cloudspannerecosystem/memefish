@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -104,10 +105,11 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
+	case *BadExpr, *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *ReplaceFieldsExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
 		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
 		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
-		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *WithExpr:
+		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *IntervalLiteralSingle, *IntervalLiteralRange,
+		*NewConstructor, *BracedNewConstructor, *BracedConstructor, *WithExpr:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -143,7 +145,7 @@ func exprPrec(e Expr) prec {
 		}
 	}
 
-	panic("exprPrec: unexpected")
+	panic(fmt.Sprintf("exprPrec: unhandled expr type: %T", e))
 }
 
 func paren(p prec, e Expr) string {
