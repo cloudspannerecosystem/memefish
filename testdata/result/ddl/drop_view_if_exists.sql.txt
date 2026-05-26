@@ -1,0 +1,19 @@
+--- drop_view_if_exists.sql
+DROP VIEW IF EXISTS SingersView
+
+--- AST
+&ast.DropView{
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 31,
+        Name:    "SingersView",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP VIEW IF EXISTS SingersView

@@ -860,7 +860,9 @@ func (c *CreateView) SQL() string {
 		" SQL SECURITY " + string(c.SecurityType) + " AS " + c.Query.SQL()
 }
 
-func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
+func (d *DropView) SQL() string {
+	return "DROP VIEW " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
 
 func (c *ColumnDef) SQL() string {
 	return c.Name.SQL() + " " + c.Type.SQL() +
