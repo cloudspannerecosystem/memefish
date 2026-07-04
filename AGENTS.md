@@ -78,4 +78,4 @@ Primary source for ALL syntax: official Cloud Spanner docs — [overview (index 
 
 When the docs are ambiguous or incomplete: [emulator `ddl_parser.jjt`](https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/blob/master/backend/schema/parser/ddl_parser.jjt) for DDL; [GoogleSQL `googlesql.tm`](https://github.com/google/googlesql/blob/master/googlesql/parser/googlesql.tm) for query/DML/expressions.
 
-**CRITICAL**: Spanner's DDL is independent of the DDL of the GoogleSQL reference implementation (`google/googlesql`) — never apply its DDL grammar to Spanner DDL unless Spanner docs or the emulator confirm it.
+**CRITICAL — do not mix dialects**: Spanner's DDL is independent of the DDL of the GoogleSQL reference implementation (`google/googlesql`) — never apply its DDL grammar to Spanner DDL unless Spanner docs or the emulator confirm it. BigQuery's dialect is also called "GoogleSQL", but BigQuery's SQL/GQL — DDL included — is a subset of the GoogleSQL frontend and generally differs from Spanner GoogleSQL; never use BigQuery docs as a syntax source for memefish.
