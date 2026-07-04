@@ -78,4 +78,4 @@ Primary source for ALL syntax: official Cloud Spanner docs — [overview (index 
 
 When the docs are ambiguous or incomplete: [emulator `ddl_parser.jjt`](https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/blob/master/backend/schema/parser/ddl_parser.jjt) for DDL; [GoogleSQL `googlesql.tm`](https://github.com/google/googlesql/blob/master/googlesql/parser/googlesql.tm) for query/DML/expressions.
 
-**CRITICAL**: Spanner's DDL is independent of GoogleSQL (ZetaSQL)'s DDL — never apply ZetaSQL DDL grammar to Spanner DDL unless Spanner docs or the emulator confirm it.
+**CRITICAL**: Spanner's DDL is independent of the DDL of GoogleSQL (formerly known as ZetaSQL) — never apply GoogleSQL DDL grammar to Spanner DDL unless Spanner docs or the emulator confirm it.
