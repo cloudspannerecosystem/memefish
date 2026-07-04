@@ -86,6 +86,7 @@ func (CreateLocalityGroup) isStatement() {}
 func (AlterLocalityGroup) isStatement()  {}
 func (DropLocalityGroup) isStatement()   {}
 func (CreatePlacement) isStatement()     {}
+func (DropPlacement) isStatement()       {}
 func (CreateProtoBundle) isStatement()   {}
 func (AlterProtoBundle) isStatement()    {}
 func (DropProtoBundle) isStatement()     {}
@@ -382,6 +383,7 @@ func (CreateLocalityGroup) isDDL() {}
 func (AlterLocalityGroup) isDDL()  {}
 func (DropLocalityGroup) isDDL()   {}
 func (CreatePlacement) isDDL()     {}
+func (DropPlacement) isDDL()       {}
 func (CreateProtoBundle) isDDL()   {}
 func (AlterProtoBundle) isDDL()    {}
 func (DropProtoBundle) isDDL()     {}
@@ -2400,6 +2402,18 @@ type CreatePlacement struct {
 
 	Name    *Ident
 	Options *Options // optional
+}
+
+// DropPlacement is DROP PLACEMENT statement node.
+//
+//	DROP PLACEMENT {{.Name | sql}}
+type DropPlacement struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
 }
 
 // ================================================================================

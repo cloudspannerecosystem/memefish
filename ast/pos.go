@@ -1062,6 +1062,14 @@ func (c *CreatePlacement) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
 }
 
+func (d *DropPlacement) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropPlacement) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (p *ProtoBundleTypes) Pos() token.Pos {
 	return p.Lparen
 }
