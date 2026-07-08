@@ -1,0 +1,30 @@
+--- grant_on_all_change_streams_in_schema.sql
+GRANT SELECT ON ALL CHANGE STREAMS IN SCHEMA sch TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.SelectPrivilegeOnAllChangeStreamsInSchema{
+    Select:  6,
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 45,
+            NameEnd: 48,
+            Name:    "sch",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 57,
+      NameEnd: 58,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON ALL CHANGE STREAMS IN SCHEMA sch TO ROLE r

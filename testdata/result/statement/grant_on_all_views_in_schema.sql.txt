@@ -1,0 +1,30 @@
+--- grant_on_all_views_in_schema.sql
+GRANT SELECT ON ALL VIEWS IN SCHEMA sch TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.SelectPrivilegeOnAllViewsInSchema{
+    Select:  6,
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 36,
+            NameEnd: 39,
+            Name:    "sch",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 48,
+      NameEnd: 49,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON ALL VIEWS IN SCHEMA sch TO ROLE r

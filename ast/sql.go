@@ -1133,6 +1133,10 @@ func (p *PrivilegeOnTable) SQL() string {
 	return sqlJoin(p.Privileges, ", ") + " ON TABLE " + sqlJoin(p.Names, ", ")
 }
 
+func (p *PrivilegeOnAllTablesInSchema) SQL() string {
+	return sqlJoin(p.Privileges, ", ") + " ON ALL TABLES IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+}
+
 func (s *SelectPrivilege) SQL() string {
 	return "SELECT" +
 		strOpt(len(s.Columns) > 0, "("+sqlJoin(s.Columns, ", ")+")")
@@ -1156,8 +1160,16 @@ func (p *SelectPrivilegeOnChangeStream) SQL() string {
 	return "SELECT ON CHANGE STREAM " + sqlJoin(p.Names, ", ")
 }
 
+func (p *SelectPrivilegeOnAllChangeStreamsInSchema) SQL() string {
+	return "SELECT ON ALL CHANGE STREAMS IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+}
+
 func (s *SelectPrivilegeOnView) SQL() string {
 	return "SELECT ON VIEW " + sqlJoin(s.Names, ", ")
+}
+
+func (s *SelectPrivilegeOnAllViewsInSchema) SQL() string {
+	return "SELECT ON ALL VIEWS IN SCHEMA " + sqlJoin(s.Schemas, ", ")
 }
 
 func (e *ExecutePrivilegeOnTableFunction) SQL() string {

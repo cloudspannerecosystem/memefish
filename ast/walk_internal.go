@@ -787,6 +787,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
 
+	case *PrivilegeOnAllTablesInSchema:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
+
 	case *SelectPrivilege:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 
@@ -802,8 +806,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *SelectPrivilegeOnChangeStream:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 
+	case *SelectPrivilegeOnAllChangeStreamsInSchema:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
+
 	case *SelectPrivilegeOnView:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+
+	case *SelectPrivilegeOnAllViewsInSchema:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
 
 	case *ExecutePrivilegeOnTableFunction:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
