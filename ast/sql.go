@@ -1500,8 +1500,12 @@ func (u *Update) SQL() string {
 		sqlOpt(" ", u.ThenReturn, "")
 }
 
-func (u *UpdateItem) SQL() string {
+func (u *UpdateItemSetValue) SQL() string {
 	return sqlJoin(u.Path, ".") + " = " + u.DefaultExpr.SQL()
+}
+
+func (u *UpdateItemDML) SQL() string {
+	return "(" + u.DML.SQL() + ")"
 }
 
 // ================================================================================

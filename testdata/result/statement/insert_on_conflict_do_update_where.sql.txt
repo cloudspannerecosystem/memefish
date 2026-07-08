@@ -81,8 +81,8 @@ INSERT INTO foo (foo, bar, baz) VALUES (1, 2, 3) ON CONFLICT (foo) DO UPDATE SET
     },
     ConflictAction: &ast.ConflictActionDoUpdate{
       Do:          67,
-      UpdateItems: []*ast.UpdateItem{
-        &ast.UpdateItem{
+      UpdateItems: []ast.UpdateItem{
+        &ast.UpdateItemSetValue{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 81,
@@ -100,7 +100,7 @@ INSERT INTO foo (foo, bar, baz) VALUES (1, 2, 3) ON CONFLICT (foo) DO UPDATE SET
             },
           },
         },
-        &ast.UpdateItem{
+        &ast.UpdateItemSetValue{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 91,

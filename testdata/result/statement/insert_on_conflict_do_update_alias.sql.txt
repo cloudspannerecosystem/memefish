@@ -75,8 +75,8 @@ INSERT INTO foo AS f (x, y) VALUES (1, 2) ON CONFLICT (x) DO UPDATE SET y = f.y 
     },
     ConflictAction: &ast.ConflictActionDoUpdate{
       Do:          58,
-      UpdateItems: []*ast.UpdateItem{
-        &ast.UpdateItem{
+      UpdateItems: []ast.UpdateItem{
+        &ast.UpdateItemSetValue{
           Path: []*ast.Ident{
             &ast.Ident{
               NamePos: 72,
