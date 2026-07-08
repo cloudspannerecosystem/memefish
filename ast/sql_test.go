@@ -84,6 +84,7 @@ func constValues(t *testing.T, name string) []*astcatalog.ConstValueDef {
 	def := loadCatalog(t).Consts[astcatalog.ConstType(name)]
 	if def == nil {
 		t.Fatalf("%s is not registered in AST catalog", name)
+		return nil
 	}
 	return def.Values
 }

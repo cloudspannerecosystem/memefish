@@ -428,10 +428,9 @@ type Constraint interface {
 	isConstraint()
 }
 
-func (ForeignKey) isConstraint() {}
-func (Check) isConstraint()      {}
+func (ForeignKey) isConstraint()      {}
+func (Check) isConstraint()           {}
 func (TablePrimaryKey) isConstraint() {}
-
 
 // TableAlteration represents ALTER TABLE action.
 type TableAlteration interface {
