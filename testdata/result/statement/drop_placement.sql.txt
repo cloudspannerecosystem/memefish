@@ -1,0 +1,13 @@
+--- drop_placement.sql
+DROP PLACEMENT `europeplacement`
+--- AST
+&ast.DropPlacement{
+  Name: &ast.Ident{
+    NamePos: 15,
+    NameEnd: 32,
+    Name:    "europeplacement",
+  },
+}
+
+--- SQL
+DROP PLACEMENT europeplacement

@@ -792,6 +792,8 @@ func (c *CreatePlacement) SQL() string {
 	return "CREATE PLACEMENT " + c.Name.SQL() + sqlOpt(" ", c.Options, " ")
 }
 
+func (d *DropPlacement) SQL() string { return "DROP PLACEMENT " + d.Name.SQL() }
+
 func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + ")" }
 
 func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }

@@ -3064,6 +3064,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseDropSchema(pos)
 		case p.Token.IsKeywordLike("LOCALITY"):
 			return p.parseDropLocalityGroup(pos)
+		case p.Token.IsKeywordLike("PLACEMENT"):
+			return p.parseDropPlacement(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
@@ -3205,6 +3207,16 @@ func (p *Parser) parseCreatePlacement(pos token.Pos) *ast.CreatePlacement {
 		Create:  pos,
 		Name:    name,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseDropPlacement(pos token.Pos) *ast.DropPlacement {
+	p.expectKeywordLike("PLACEMENT")
+	name := p.parseIdent()
+
+	return &ast.DropPlacement{
+		Drop: pos,
+		Name: name,
 	}
 }
 
