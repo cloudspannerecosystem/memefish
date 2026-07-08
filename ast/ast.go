@@ -4443,7 +4443,7 @@ type GQLReturn struct {
 
 	Return        token.Pos
 	AllOrDistinct AllOrDistinct
-	Items         []*GQLReturnItem
+	Items         []*GQLReturnItem // len(Items) > 0
 	GroupBy       *GroupBy
 	OrderBy       *GQLOrderBy
 	Offset        *GQLOffset
@@ -4471,7 +4471,7 @@ type GQLWith struct {
 
 	With          token.Pos // position of "WITH" keyword
 	AllOrDistinct AllOrDistinct
-	Items         []*GQLReturnItem
+	Items         []*GQLReturnItem // len(Items) > 0
 	GroupBy       *GroupBy
 }
 
@@ -4509,7 +4509,7 @@ type GQLLet struct {
 	// end = Items[$].end
 
 	Let   token.Pos
-	Items []*GQLLetItem
+	Items []*GQLLetItem // len(Items) > 0
 }
 
 // GQLLetItem is an item in a LET statement.
@@ -4531,7 +4531,7 @@ type GQLOrderBy struct {
 	// end = Items[$].end
 
 	Order token.Pos
-	Items []*GQLOrderByItem
+	Items []*GQLOrderByItem // len(Items) > 0
 }
 
 // GQLLimit is a LIMIT statement in GQL.
