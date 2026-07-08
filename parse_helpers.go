@@ -43,6 +43,12 @@ func ParseType(filepath, s string) (ast.Type, error) {
 	return newParser(filepath, s).ParseType()
 }
 
+// ParseSchemaType parses an input string containing a schema type.
+// filepath can be empty, it is only used in error message.
+func ParseSchemaType(filepath, s string) (ast.SchemaType, error) {
+	return newParser(filepath, s).ParseSchemaType()
+}
+
 // ParseDDL parses an input string containing a DDL statement.
 // filepath can be empty, it is only used in error message.
 func ParseDDL(filepath, s string) (ast.DDL, error) {
