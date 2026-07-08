@@ -2817,12 +2817,13 @@ type CreateView struct {
 
 // DropView is DROP VIEW statement node.
 //
-//	DROP VIEW {{.Name | sql}}
+//	DROP VIEW {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropView struct {
 	// pos = Drop
 	// end = Name.end
 
-	Drop token.Pos
+	Drop     token.Pos
+	IfExists bool
 
 	Name *Path
 }
