@@ -1,0 +1,1 @@
+GRAPH FinGraph FOR x IN [1] ORDER BY x, x ASC, x DESC, x ASCENDING, x DESCENDING RETURN x AS result

@@ -1,0 +1,57 @@
+--- order_by.sql
+GRAPH FinGraph
+ORDER BY a DESC
+RETURN a
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLOrderBy{
+            Order: 15,
+            Items: []*ast.GQLOrderByItem{
+              &ast.GQLOrderByItem{
+                DirEnd: 30,
+                Expr:   &ast.Ident{
+                  NamePos: 24,
+                  NameEnd: 25,
+                  Name:    "a",
+                },
+                Dir: "DESC",
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 31,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 38,
+                  NameEnd: 39,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph ORDER BY a DESC RETURN a

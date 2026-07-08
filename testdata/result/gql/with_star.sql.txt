@@ -1,0 +1,65 @@
+--- with_star.sql
+GRAPH FinGraph
+LET x = 1
+WITH *
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLLet{
+            Let:   15,
+            Items: []*ast.GQLLetItem{
+              &ast.GQLLetItem{
+                Ident: &ast.Ident{
+                  NamePos: 19,
+                  NameEnd: 20,
+                  Name:    "x",
+                },
+                Expr: &ast.IntLiteral{
+                  ValuePos: 23,
+                  ValueEnd: 24,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+          &ast.GQLWith{
+            With:  25,
+            Items: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 30,
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 32,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 39,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph LET x = 1 WITH * RETURN *

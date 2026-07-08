@@ -1,0 +1,90 @@
+--- for_with_offset.sql
+GRAPH FinGraph
+FOR x IN [1, 2] WITH OFFSET AS i
+RETURN x, i
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLFor{
+            For:   15,
+            Ident: &ast.Ident{
+              NamePos: 19,
+              NameEnd: 20,
+              Name:    "x",
+            },
+            Expr: &ast.ArrayLiteral{
+              Array:  -1,
+              Lbrack: 24,
+              Rbrack: 29,
+              Values: []ast.Expr{
+                &ast.IntLiteral{
+                  ValuePos: 25,
+                  ValueEnd: 26,
+                  Base:     10,
+                  Value:    "1",
+                },
+                &ast.IntLiteral{
+                  ValuePos: 28,
+                  ValueEnd: 29,
+                  Base:     10,
+                  Value:    "2",
+                },
+              },
+            },
+            WithOffset: &ast.WithOffset{
+              With:   31,
+              Offset: 36,
+              As:     &ast.AsAlias{
+                As:    43,
+                Alias: &ast.Ident{
+                  NamePos: 46,
+                  NameEnd: 47,
+                  Name:    "i",
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 48,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 55,
+                  NameEnd: 56,
+                  Name:    "x",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 58,
+                  NameEnd: 59,
+                  Name:    "i",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph FOR x IN [1, 2] WITH OFFSET AS i RETURN x, i

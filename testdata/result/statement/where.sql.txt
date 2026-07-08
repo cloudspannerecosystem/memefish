@@ -1,0 +1,61 @@
+--- where.sql
+GRAPH FinGraph
+FILTER WHERE a > 1
+RETURN a
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLFilter{
+            Filter: 15,
+            Where:  22,
+            Expr:   &ast.BinaryExpr{
+              Op:   ">",
+              Left: &ast.Ident{
+                NamePos: 28,
+                NameEnd: 29,
+                Name:    "a",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 32,
+                ValueEnd: 33,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 34,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 41,
+                  NameEnd: 42,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph FILTER WHERE a > 1 RETURN a

@@ -1,0 +1,91 @@
+--- with_all_distinct.sql
+GRAPH FinGraph
+WITH ALL 1 AS a, 2 AS b
+RETURN a, b
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLWith{
+            With:          15,
+            AllOrDistinct: "ALL",
+            Items:         []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 24,
+                  ValueEnd: 25,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.AsAlias{
+                  As:    26,
+                  Alias: &ast.Ident{
+                    NamePos: 29,
+                    NameEnd: 30,
+                    Name:    "a",
+                  },
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 32,
+                  ValueEnd: 33,
+                  Base:     10,
+                  Value:    "2",
+                },
+                Alias: &ast.AsAlias{
+                  As:    34,
+                  Alias: &ast.Ident{
+                    NamePos: 37,
+                    NameEnd: 38,
+                    Name:    "b",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 39,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 46,
+                  NameEnd: 47,
+                  Name:    "a",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 49,
+                  NameEnd: 50,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph WITH ALL 1 AS a, 2 AS b RETURN a, b

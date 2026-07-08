@@ -1,0 +1,98 @@
+--- with_group_hint.sql
+GRAPH FinGraph
+WITH 1 AS x
+GROUP @{GROUP_METHOD=STREAM_GROUP} BY x
+RETURN x
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLWith{
+            With:  15,
+            Items: []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 20,
+                  ValueEnd: 21,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Alias: &ast.AsAlias{
+                  As:    22,
+                  Alias: &ast.Ident{
+                    NamePos: 25,
+                    NameEnd: 26,
+                    Name:    "x",
+                  },
+                },
+              },
+            },
+            GroupBy: &ast.GroupBy{
+              Group: 27,
+              Hint:  &ast.Hint{
+                Atmark:  33,
+                Rbrace:  60,
+                Records: []*ast.HintRecord{
+                  &ast.HintRecord{
+                    Key: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 35,
+                          NameEnd: 47,
+                          Name:    "GROUP_METHOD",
+                        },
+                      },
+                    },
+                    Value: &ast.Ident{
+                      NamePos: 48,
+                      NameEnd: 60,
+                      Name:    "STREAM_GROUP",
+                    },
+                  },
+                },
+              },
+              Exprs: []ast.Expr{
+                &ast.Ident{
+                  NamePos: 65,
+                  NameEnd: 66,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 67,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 74,
+                  NameEnd: 75,
+                  Name:    "x",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph WITH 1 AS x GROUP @{GROUP_METHOD=STREAM_GROUP} BY x RETURN x

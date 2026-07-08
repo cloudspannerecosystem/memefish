@@ -1538,7 +1538,8 @@ func (s *GQLCompoundLinearQueryStatement) SQL() string {
 }
 
 func (s *GQLReturn) SQL() string {
-	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ")
+	return "RETURN " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ") +
+		sqlOpt(" ", s.GroupBy, "") + sqlOpt(" ", s.OrderBy, "") + sqlOpt(" ", s.Offset, "") + sqlOpt(" ", s.Limit, "")
 }
 
 func (i *GQLReturnItem) SQL() string {
@@ -1546,4 +1547,41 @@ func (i *GQLReturnItem) SQL() string {
 		return "*"
 	}
 	return i.Expr.SQL() + sqlOpt(" ", i.Alias, "")
+}
+
+func (s *GQLWith) SQL() string {
+	return "WITH " + strOpt(s.AllOrDistinct != "", string(s.AllOrDistinct)+" ") + sqlJoin(s.Items, ", ") +
+		sqlOpt(" ", s.GroupBy, "")
+}
+
+func (s *GQLFilter) SQL() string {
+	return strOpt(!s.Filter.Invalid(), "FILTER ") + strOpt(!s.Where.Invalid(), "WHERE ") + s.Expr.SQL()
+}
+
+func (s *GQLFor) SQL() string {
+	return "FOR " + s.Ident.SQL() + " IN " + s.Expr.SQL() + sqlOpt(" ", s.WithOffset, "")
+}
+
+func (s *GQLLet) SQL() string {
+	return "LET " + sqlJoin(s.Items, ", ")
+}
+
+func (i *GQLLetItem) SQL() string {
+	return i.Ident.SQL() + " = " + i.Expr.SQL()
+}
+
+func (s *GQLOrderBy) SQL() string {
+	return "ORDER BY " + sqlJoin(s.Items, ", ")
+}
+
+func (i *GQLOrderByItem) SQL() string {
+	return i.Expr.SQL() + sqlOpt(" ", i.Collate, "") + strOpt(i.Dir != "", " "+string(i.Dir))
+}
+
+func (s *GQLLimit) SQL() string {
+	return "LIMIT " + s.Limit.SQL()
+}
+
+func (s *GQLOffset) SQL() string {
+	return s.Keyword + " " + s.Offset.SQL()
 }

@@ -1,0 +1,61 @@
+--- return_group_by.sql
+GRAPH FinGraph
+RETURN a, b
+GROUP BY a
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 15,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 22,
+                  NameEnd: 23,
+                  Name:    "a",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 25,
+                  NameEnd: 26,
+                  Name:    "b",
+                },
+              },
+            },
+            GroupBy: &ast.GroupBy{
+              Group: 27,
+              Exprs: []ast.Expr{
+                &ast.Ident{
+                  NamePos: 36,
+                  NameEnd: 37,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN a, b GROUP BY a
