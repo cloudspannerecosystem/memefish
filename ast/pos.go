@@ -1062,6 +1062,14 @@ func (c *CreatePlacement) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.Name)))
 }
 
+func (d *DropPlacement) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropPlacement) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
 func (p *ProtoBundleTypes) Pos() token.Pos {
 	return p.Lparen
 }
@@ -1547,7 +1555,7 @@ func (c *CreateIndex) Pos() token.Pos {
 }
 
 func (c *CreateIndex) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.InterleaveIn), wrapNode(c.Storing))), posAdd(c.Rparen, 1))
+	return posChoice(nodeEnd(nodeChoice(wrapNode(c.Options), wrapNode(c.InterleaveIn), wrapNode(c.Where), wrapNode(c.Storing))), posAdd(c.Rparen, 1))
 }
 
 func (c *CreateVectorIndex) Pos() token.Pos {
@@ -1804,6 +1812,14 @@ func (e *ExecutePrivilegeOnTableFunction) Pos() token.Pos {
 
 func (e *ExecutePrivilegeOnTableFunction) End() token.Pos {
 	return nodeEnd(nodeSliceLast(e.Names))
+}
+
+func (u *UsagePrivilegeOnSchema) Pos() token.Pos {
+	return u.Usage
+}
+
+func (u *UsagePrivilegeOnSchema) End() token.Pos {
+	return posChoice(nodeEnd(nodeSliceLast(u.Schemas)), posAdd(u.Default, 7))
 }
 
 func (r *RolePrivilege) Pos() token.Pos {

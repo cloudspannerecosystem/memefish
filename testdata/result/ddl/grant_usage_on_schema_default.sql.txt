@@ -1,0 +1,20 @@
+--- grant_usage_on_schema_default.sql
+GRANT USAGE ON SCHEMA DEFAULT TO ROLE r
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.UsagePrivilegeOnSchema{
+    Usage:   6,
+    Default: 22,
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 38,
+      NameEnd: 39,
+      Name:    "r",
+    },
+  },
+}
+
+--- SQL
+GRANT USAGE ON SCHEMA DEFAULT TO ROLE r

@@ -70,6 +70,19 @@ func ExampleParseType() {
 	// Output:
 	// ARRAY<STRUCT<n INT64, s STRING>>
 }
+
+func ExampleParseSchemaType() {
+	typ, err := memefish.ParseSchemaType("", "ARRAY<STRING(MAX)>")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(typ.SQL())
+
+	// Output:
+	// ARRAY<STRING(MAX)>
+}
+
 func ExampleParseDDL() {
 	sql := heredoc.Doc(`
 		CREATE TABLE foo (

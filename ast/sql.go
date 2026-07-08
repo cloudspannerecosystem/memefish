@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -104,10 +105,11 @@ const (
 
 func exprPrec(e Expr) prec {
 	switch e := e.(type) {
-	case *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
+	case *BadExpr, *CallExpr, *CountStarExpr, *CastExpr, *ExtractExpr, *ReplaceFieldsExpr, *CaseExpr, *IfExpr, *ParenExpr, *ScalarSubQuery,
 		*ArraySubQuery, *ExistsSubQuery, *Param, *Ident, *Path, *ArrayLiteral, *TupleStructLiteral, *TypedStructLiteral,
 		*TypelessStructLiteral, *NullLiteral, *BoolLiteral, *IntLiteral, *FloatLiteral, *StringLiteral, *BytesLiteral,
-		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *WithExpr:
+		*DateLiteral, *TimestampLiteral, *NumericLiteral, *JSONLiteral, *IntervalLiteralSingle, *IntervalLiteralRange,
+		*NewConstructor, *BracedNewConstructor, *BracedConstructor, *WithExpr:
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
@@ -143,7 +145,7 @@ func exprPrec(e Expr) prec {
 		}
 	}
 
-	panic("exprPrec: unexpected")
+	panic(fmt.Sprintf("exprPrec: unhandled expr type: %T", e))
 }
 
 func paren(p prec, e Expr) string {
@@ -790,6 +792,8 @@ func (c *CreatePlacement) SQL() string {
 	return "CREATE PLACEMENT " + c.Name.SQL() + sqlOpt(" ", c.Options, " ")
 }
 
+func (d *DropPlacement) SQL() string { return "DROP PLACEMENT " + d.Name.SQL() }
+
 func (p *ProtoBundleTypes) SQL() string { return "(" + sqlJoin(p.Types, ", ") + ")" }
 
 func (b *CreateProtoBundle) SQL() string { return "CREATE PROTO BUNDLE " + b.Types.SQL() }
@@ -858,7 +862,9 @@ func (c *CreateView) SQL() string {
 		" SQL SECURITY " + string(c.SecurityType) + " AS " + c.Query.SQL()
 }
 
-func (d *DropView) SQL() string { return "DROP VIEW " + d.Name.SQL() }
+func (d *DropView) SQL() string {
+	return "DROP VIEW " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
 
 func (c *ColumnDef) SQL() string {
 	return c.Name.SQL() + " " + c.Type.SQL() +
@@ -1019,6 +1025,7 @@ func (c *CreateIndex) SQL() string {
 		sqlJoin(c.Keys, ", ") +
 		")" +
 		sqlOpt(" ", c.Storing, "") +
+		sqlOpt(" ", c.Where, "") +
 		sqlOpt("", c.InterleaveIn, "") +
 		sqlOpt(" ", c.Options, "")
 }
@@ -1167,6 +1174,13 @@ func (s *SelectPrivilegeOnAllViewsInSchema) SQL() string {
 
 func (e *ExecutePrivilegeOnTableFunction) SQL() string {
 	return "EXECUTE ON TABLE FUNCTION " + sqlJoin(e.Names, ", ")
+}
+
+func (u *UsagePrivilegeOnSchema) SQL() string {
+	if !u.Default.Invalid() {
+		return "USAGE ON SCHEMA DEFAULT"
+	}
+	return "USAGE ON SCHEMA " + sqlJoin(u.Schemas, ", ")
 }
 
 func (r *RolePrivilege) SQL() string {

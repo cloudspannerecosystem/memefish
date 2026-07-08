@@ -1,0 +1,20 @@
+--- revoke_usage_on_schema_default.sql
+REVOKE USAGE ON SCHEMA DEFAULT FROM ROLE public
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.UsagePrivilegeOnSchema{
+    Usage:   7,
+    Default: 23,
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 41,
+      NameEnd: 47,
+      Name:    "public",
+    },
+  },
+}
+
+--- SQL
+REVOKE USAGE ON SCHEMA DEFAULT FROM ROLE public

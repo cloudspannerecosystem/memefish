@@ -137,6 +137,29 @@ func (p *Parser) ParseType() (ast.Type, error) {
 	return t, nil
 }
 
+// ParseSchemaType parses a schema type.
+func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
+	p.nextToken()
+	l := p.Clone()
+	defer func() {
+		if r := recover(); r != nil {
+			t = p.handleParseTypeError(r, l)
+		}
+		if len(p.errors) > 0 {
+			// Reset the errors and allow processing to continue
+			err = MultiError(p.errors)
+			p.errors = nil
+		}
+	}()
+
+	t = p.parseSchemaType()
+	if p.Token.Kind != token.TokenEOF {
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
+	}
+
+	return t, nil
+}
+
 // ParseDDL parses a CREATE/ALTER/DROP statement.
 func (p *Parser) ParseDDL() (ast.DDL, error) {
 	p.nextToken()
@@ -3064,6 +3087,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseDropSchema(pos)
 		case p.Token.IsKeywordLike("LOCALITY"):
 			return p.parseDropLocalityGroup(pos)
+		case p.Token.IsKeywordLike("PLACEMENT"):
+			return p.parseDropPlacement(pos)
 		case p.Token.Kind == "PROTO":
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
@@ -3205,6 +3230,16 @@ func (p *Parser) parseCreatePlacement(pos token.Pos) *ast.CreatePlacement {
 		Create:  pos,
 		Name:    name,
 		Options: options,
+	}
+}
+
+func (p *Parser) parseDropPlacement(pos token.Pos) *ast.DropPlacement {
+	p.expectKeywordLike("PLACEMENT")
+	name := p.parseIdent()
+
+	return &ast.DropPlacement{
+		Drop: pos,
+		Name: name,
 	}
 }
 
@@ -3456,11 +3491,13 @@ func (p *Parser) parseCreateView(pos token.Pos, orReplace bool) *ast.CreateView 
 
 func (p *Parser) parseDropView(pos token.Pos) *ast.DropView {
 	p.expectKeywordLike("VIEW")
+	ifExists := p.parseIfExists()
 	name := p.parsePath()
 
 	return &ast.DropView{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
@@ -3985,6 +4022,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 	rparen := p.expect(")").Pos
 
 	storing := p.tryParseStoring()
+	where := p.tryParseWhere()
 	interleaveIn := p.tryParseInterleaveIn()
 	options := p.tryParseOptions()
 
@@ -3998,6 +4036,7 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 		TableName:    tableName,
 		Keys:         keys,
 		Storing:      storing,
+		Where:        where,
 		InterleaveIn: interleaveIn,
 		Options:      options,
 	}
@@ -4855,6 +4894,9 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if e := p.tryParseExecutePrivilegeOnTableFunction(); e != nil {
 		return e
 	}
+	if u := p.tryParseUsagePrivilegeOnSchema(); u != nil {
+		return u
+	}
 	if r := p.tryParseRolePrivilege(); r != nil {
 		return r
 	}
@@ -4935,6 +4977,29 @@ func (p *Parser) tryParseExecutePrivilegeOnTableFunction() *ast.ExecutePrivilege
 	return &ast.ExecutePrivilegeOnTableFunction{
 		Execute: pos,
 		Names:   names,
+	}
+}
+
+func (p *Parser) tryParseUsagePrivilegeOnSchema() *ast.UsagePrivilegeOnSchema {
+	if !p.Token.IsKeywordLike("USAGE") {
+		return nil
+	}
+	pos := p.expectKeywordLike("USAGE").Pos
+	p.expect("ON")
+	p.expectKeywordLike("SCHEMA")
+
+	defaultPos := token.InvalidPos
+	var schemas []*ast.Path
+	if p.Token.Kind == "DEFAULT" {
+		defaultPos = p.expect("DEFAULT").Pos
+	} else {
+		schemas = parseCommaSeparatedList(p, p.parsePath)
+	}
+
+	return &ast.UsagePrivilegeOnSchema{
+		Usage:   pos,
+		Default: defaultPos,
+		Schemas: schemas,
 	}
 }
 

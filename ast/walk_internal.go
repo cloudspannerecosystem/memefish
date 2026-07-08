@@ -485,6 +485,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *DropPlacement:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
 	case *ProtoBundleTypes:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Types), visitor: v.Field("Types")})
 
@@ -700,6 +703,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *CreateIndex:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.InterleaveIn), visitor: v.Field("InterleaveIn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Keys), visitor: v.Field("Keys")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
@@ -813,6 +817,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *ExecutePrivilegeOnTableFunction:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+
+	case *UsagePrivilegeOnSchema:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
 
 	case *RolePrivilege:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})

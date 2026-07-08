@@ -47,6 +47,7 @@ package ast
 //   - The fields of each node must be ordered by the position.
 
 //go:generate go run ../tools/gen-ast-pos/main.go -astfile ast.go -constfile ast_const.go -outfile pos.go
+//go:generate go run ../tools/gen-ast-expr-impls/main.go -astfile ast.go -constfile ast_const.go -outfile expr_impls_test.go
 
 import (
 	"github.com/cloudspannerecosystem/memefish/token"
@@ -85,6 +86,7 @@ func (CreateLocalityGroup) isStatement() {}
 func (AlterLocalityGroup) isStatement()  {}
 func (DropLocalityGroup) isStatement()   {}
 func (CreatePlacement) isStatement()     {}
+func (DropPlacement) isStatement()       {}
 func (CreateProtoBundle) isStatement()   {}
 func (AlterProtoBundle) isStatement()    {}
 func (DropProtoBundle) isStatement()     {}
@@ -381,6 +383,7 @@ func (CreateLocalityGroup) isDDL() {}
 func (AlterLocalityGroup) isDDL()  {}
 func (DropLocalityGroup) isDDL()   {}
 func (CreatePlacement) isDDL()     {}
+func (DropPlacement) isDDL()       {}
 func (CreateProtoBundle) isDDL()   {}
 func (AlterProtoBundle) isDDL()    {}
 func (DropProtoBundle) isDDL()     {}
@@ -506,6 +509,7 @@ func (SelectPrivilegeOnAllChangeStreamsInSchema) isPrivilege() {}
 func (SelectPrivilegeOnView) isPrivilege()                     {}
 func (SelectPrivilegeOnAllViewsInSchema) isPrivilege()         {}
 func (ExecutePrivilegeOnTableFunction) isPrivilege()           {}
+func (UsagePrivilegeOnSchema) isPrivilege()                    {}
 func (RolePrivilege) isPrivilege()                             {}
 
 // TablePrivilege represents privileges on table.
@@ -530,6 +534,7 @@ func (SizedSchemaType) isSchemaType()  {}
 func (ArraySchemaType) isSchemaType()  {}
 func (StructType) isSchemaType()       {}
 func (NamedType) isSchemaType()        {}
+func (BadType) isSchemaType()          {}
 
 // IndexAlteration represents ALTER INDEX action.
 type IndexAlteration interface {
@@ -2403,6 +2408,18 @@ type CreatePlacement struct {
 	Options *Options // optional
 }
 
+// DropPlacement is DROP PLACEMENT statement node.
+//
+//	DROP PLACEMENT {{.Name | sql}}
+type DropPlacement struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop token.Pos // position of "DROP" keyword
+
+	Name *Ident
+}
+
 // ================================================================================
 //
 // PROTO BUNDLE statements
@@ -2803,12 +2820,13 @@ type CreateView struct {
 
 // DropView is DROP VIEW statement node.
 //
-//	DROP VIEW {{.Name | sql}}
+//	DROP VIEW {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropView struct {
 	// pos = Drop
 	// end = Name.end
 
-	Drop token.Pos
+	Drop     token.Pos
+	IfExists bool
 
 	Name *Path
 }
@@ -3212,11 +3230,12 @@ type RenameTableTo struct {
 //	  {{.Keys | sqlJoin ","}}
 //	)
 //	{{.Storing | sqlOpt}}
+//	{{.Where | sqlOpt}}
 //	{{.InterleaveIn | sqlOpt}}
 //	{{.Options | sqlOpt}}
 type CreateIndex struct {
 	// pos = Create
-	// end = (Options ?? InterleaveIn ?? Storing).end || Rparen + 1
+	// end = (Options ?? InterleaveIn ?? Where ?? Storing).end || Rparen + 1
 
 	Create token.Pos // position of "CREATE" keyword
 	Rparen token.Pos // position of ")"
@@ -3228,6 +3247,7 @@ type CreateIndex struct {
 	TableName    *Path
 	Keys         []*IndexKey
 	Storing      *Storing      // optional
+	Where        *Where        // optional
 	InterleaveIn *InterleaveIn // optional
 	Options      *Options      // optional
 }
@@ -3634,6 +3654,19 @@ type ExecutePrivilegeOnTableFunction struct {
 	Execute token.Pos
 
 	Names []*Path // len(Names) > 0
+}
+
+// UsagePrivilegeOnSchema is USAGE ON SCHEMA privilege node in GRANT and REVOKE.
+//
+//	USAGE ON SCHEMA {{if .Default}}DEFAULT{{else}}{{.Schemas | sqlJoin ", "}}{{end}}
+type UsagePrivilegeOnSchema struct {
+	// pos = Usage
+	// end = Schemas[$].end || Default + 7
+
+	Usage   token.Pos // position of "USAGE" pseudo keyword
+	Default token.Pos // position of "DEFAULT" keyword, optional
+
+	Schemas []*Path // len(Schemas) > 0 when Default is not specified
 }
 
 // RolePrivilege is ROLE privilege node in GRANT and REVOKE.
