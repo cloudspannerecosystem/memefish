@@ -8,6 +8,7 @@ var quoteTestCases = []struct {
 	input          string
 	str, bytes, id string
 }{
+	{"", `""`, `b""`, "``"},
 	{"foo", `"foo"`, `b"foo"`, "foo"},
 	{"if", `"if"`, `b"if"`, "`if`"},
 	{"\u0000", `"\x00"`, `b"\x00"`, "`\\x00`"},
