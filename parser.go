@@ -160,6 +160,28 @@ func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
 	return t, nil
 }
 
+// ParseGQLGraphPattern parses a standalone GQL graph pattern.
+//
+// This is deliberate public API: a graph pattern is not otherwise reachable as
+// a top-level entry point (it only appears inside a MATCH statement), so this
+// method lets callers and the `tools/parse -mode gql_graph_pattern` harness
+// parse and inspect graph patterns in isolation for testing and tooling.
+func (p *Parser) ParseGQLGraphPattern() (*ast.GQLGraphPattern, error) {
+	p.nextToken()
+	pattern := p.parseGQLGraphPattern()
+	if p.Token.Kind != token.TokenEOF {
+		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
+	}
+
+	if len(p.errors) > 0 {
+		err := MultiError(p.errors)
+		p.errors = nil
+		return pattern, err
+	}
+
+	return pattern, nil
+}
+
 // ParseDDL parses a CREATE/ALTER/DROP statement.
 func (p *Parser) ParseDDL() (ast.DDL, error) {
 	p.nextToken()
@@ -6728,6 +6750,8 @@ func (p *Parser) parseGQLSimpleLinearQueryStatement() *ast.GQLSimpleLinearQueryS
 
 func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryStatement {
 	switch {
+	case p.Token.IsKeywordLike("MATCH") || p.Token.IsKeywordLike("OPTIONAL"):
+		return p.parseGQLMatch()
 	case p.Token.IsKeywordLike("RETURN"):
 		return p.parseGQLReturn()
 	case p.Token.Kind == "WITH":
@@ -6746,6 +6770,600 @@ func (p *Parser) tryParseGQLPrimitiveQueryStatement() ast.GQLPrimitiveQueryState
 		return p.parseGQLOffset()
 	default:
 		return nil
+	}
+}
+
+func (p *Parser) parseGQLMatch() *ast.GQLMatch {
+	optional := token.InvalidPos
+	if p.Token.IsKeywordLike("OPTIONAL") {
+		optional = p.expectKeywordLike("OPTIONAL").Pos
+	}
+	match := p.expectKeywordLike("MATCH").Pos
+	hint := p.tryParseHint()
+	pattern := p.parseGQLGraphPattern()
+
+	return &ast.GQLMatch{
+		OptionalPos:  optional,
+		Match:        match,
+		Hint:         hint,
+		Pattern:      pattern,
+	}
+}
+
+func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
+	if p.Token.Kind == "@" {
+		p.panicfAtToken(&p.Token, "traversal hint cannot be used at the beginning of a graph pattern")
+	}
+
+	paths := parseCommaSeparatedList(p, p.parseGQLTopLevelPathPattern)
+	where := p.tryParseWhere()
+
+	return &ast.GQLGraphPattern{
+		Paths: paths,
+		Where: where,
+	}
+}
+
+
+func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
+	hint := p.tryParseHint()
+
+	var variable *ast.Ident
+	var searchPrefix *ast.GQLPathSearchPrefix
+	var mode *ast.GQLPathModeClause
+
+	if p.Token.Kind == token.TokenIdent || p.Token.Kind == "ALL" || p.Token.Kind == "ANY" {
+		switch {
+		case p.Token.Kind == "ALL", p.Token.Kind == "ANY",
+			p.Token.IsKeywordLike("SHORTEST"), p.Token.IsKeywordLike("CHEAPEST"):
+			searchPrefix = p.parseGQLPathSearchPrefix()
+		default:
+			// check if it is "variable ="
+			lexer := p.cloneLexer()
+			p.parseIdent()
+			if p.Token.Kind == "=" {
+				p.Lexer = lexer
+				variable = p.parseIdent()
+				p.expect("=")
+			} else {
+				p.Lexer = lexer
+			}
+		}
+	}
+
+	if p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") ||
+		p.Token.IsKeywordLike("SIMPLE") || p.Token.IsKeywordLike("ACYCLIC") {
+		if searchPrefix != nil {
+			p.panicfAtToken(&p.Token, "a path pattern can have either a path mode or a path search prefix, but not both")
+		}
+		mode = p.parseGQLPathMode()
+	}
+
+	pattern := p.parseGQLPathPattern()
+
+	return &ast.GQLTopLevelPathPattern{
+		Hint:         hint,
+		Variable:     variable,
+		SearchPrefix: searchPrefix,
+		Mode:         mode,
+		Path:         pattern,
+	}
+}
+
+func (p *Parser) parseGQLPathSearchPrefix() *ast.GQLPathSearchPrefix {
+	start := p.Token.Pos
+	var prefix ast.GQLSearchPrefix
+	var end token.Pos
+	var count ast.IntValue
+
+	switch {
+	case p.Token.Kind == "ALL":
+		end = p.Token.End
+		p.nextToken()
+		switch {
+		case p.Token.IsKeywordLike("SHORTEST"):
+			prefix = ast.GQLSearchPrefixAllShortest
+			end = p.Token.End
+			p.nextToken()
+		case p.Token.IsKeywordLike("CHEAPEST"):
+			prefix = ast.GQLSearchPrefixAllCheapest
+			end = p.Token.End
+			p.nextToken()
+		default:
+			prefix = ast.GQLSearchPrefixAll
+		}
+	case p.Token.Kind == "ANY":
+		end = p.Token.End
+		p.nextToken()
+		switch {
+		case p.Token.IsKeywordLike("SHORTEST"):
+			prefix = ast.GQLSearchPrefixAnyShortest
+			end = p.Token.End
+			p.nextToken()
+		case p.Token.IsKeywordLike("CHEAPEST"):
+			prefix = ast.GQLSearchPrefixAnyCheapest
+			end = p.Token.End
+			p.nextToken()
+		case p.Token.Kind == token.TokenInt, p.Token.Kind == token.TokenParam, p.Token.Kind == "CAST":
+			// ANY k — Spanner syntax-accepts; runtime may feature-gate.
+			prefix = ast.GQLSearchPrefixAny
+			count = p.parseIntValue()
+			end = count.End()
+		default:
+			prefix = ast.GQLSearchPrefixAny
+		}
+	case p.Token.IsKeywordLike("SHORTEST"):
+		// SHORTEST k only (bare SHORTEST without count is a Syntax error on Spanner).
+		p.nextToken()
+		if p.Token.Kind != token.TokenInt && p.Token.Kind != token.TokenParam && p.Token.Kind != "CAST" {
+			p.panicfAtToken(&p.Token, "bare SHORTEST path search prefix is not supported; use ANY SHORTEST or SHORTEST <count>")
+		}
+		prefix = ast.GQLSearchPrefixShortest
+		count = p.parseIntValue()
+		end = count.End()
+	case p.Token.IsKeywordLike("CHEAPEST"):
+		p.nextToken()
+		if p.Token.Kind != token.TokenInt && p.Token.Kind != token.TokenParam && p.Token.Kind != "CAST" {
+			p.panicfAtToken(&p.Token, "bare CHEAPEST path search prefix is not supported; use ANY CHEAPEST or CHEAPEST <count>")
+		}
+		prefix = ast.GQLSearchPrefixCheapest
+		count = p.parseIntValue()
+		end = count.End()
+	default:
+		p.panicfAtToken(&p.Token, "expected ALL, ANY, SHORTEST, or CHEAPEST, but: %s", p.Token.Kind)
+	}
+
+	return &ast.GQLPathSearchPrefix{
+		StartPos: start,
+		EndPos:   end,
+		Prefix:   prefix,
+		Count:    count,
+	}
+}
+
+func (p *Parser) parseGQLPathMode() *ast.GQLPathModeClause {
+	id := p.expect(token.TokenIdent)
+	start := id.Pos
+
+	var mode ast.GQLPathMode
+	switch {
+	case id.IsKeywordLike("WALK"):
+		mode = ast.GQLPathModeWalk
+	case id.IsKeywordLike("TRAIL"):
+		mode = ast.GQLPathModeTrail
+	case id.IsKeywordLike("SIMPLE"):
+		mode = ast.GQLPathModeSimple
+	case id.IsKeywordLike("ACYCLIC"):
+		mode = ast.GQLPathModeAcyclic
+	default:
+		p.panicfAtToken(id, "expected WALK, TRAIL, SIMPLE, or ACYCLIC, but: %s", id.AsString)
+	}
+
+	end := id.End
+	if p.Token.IsKeywordLike("PATHS") || p.Token.IsKeywordLike("PATH") {
+		end = p.Token.End
+		p.nextToken()
+	}
+
+	return &ast.GQLPathModeClause{
+		StartPos: start,
+		EndPos:   end,
+		Mode:     mode,
+	}
+}
+
+
+func (p *Parser) parseGQLPathPattern() *ast.GQLPathPattern {
+	var terms []*ast.GQLPathTerm
+	terms = append(terms, p.parseGQLPathTerm())
+
+	for {
+		if p.Token.Kind == "@" || p.lookaheadGQLEdgePattern() || p.lookaheadGQLPathPrimary() {
+			terms = append(terms, p.parseGQLPathTerm())
+		} else {
+			break
+		}
+	}
+
+	return &ast.GQLPathPattern{
+		Terms: terms,
+	}
+}
+
+func (p *Parser) parseGQLPathTerm() *ast.GQLPathTerm {
+	hint := p.tryParseHint()
+	primary := p.parseGQLPathPrimary()
+	quantifier := p.tryParseGQLQuantifier()
+
+	if quantifier != nil {
+		if _, ok := primary.(*ast.GQLNodePattern); ok {
+			p.panicfAtPosition(quantifier.Pos(), quantifier.End(), "Quantifier cannot be used on a node pattern")
+		}
+	}
+
+	return &ast.GQLPathTerm{
+		Hint:       hint,
+		Primary:    primary,
+		Quantifier: quantifier,
+	}
+}
+
+func (p *Parser) lookaheadGQLPathPrimary() bool {
+	return p.Token.Kind == "(" || p.Token.Kind == "[" || p.Token.IsKeywordLike("NODE") || p.Token.IsKeywordLike("EDGE")
+}
+
+func (p *Parser) parseGQLPathPrimary() ast.GQLPathPrimary {
+	switch p.Token.Kind {
+	case "(":
+		if p.lookaheadGQLSubpathPattern() {
+			return p.parseGQLSubpathPattern()
+		}
+		return p.parseGQLNodePattern()
+	case "-", "<", "->":
+		return p.parseGQLEdgePattern()
+	default:
+		p.panicfAtToken(&p.Token, "expected path primary, but: %s", p.Token.Kind)
+	}
+	return nil
+}
+
+func (p *Parser) lookaheadGQLSubpathPattern() bool {
+	lexer := p.cloneLexer()
+	defer func() { p.Lexer = lexer }()
+
+	p.expect("(")
+	p.tryParseHint()
+	if p.Token.Kind == ")" {
+		return false
+	}
+
+	if p.Token.Kind == "-" || p.Token.Kind == "<" || p.Token.Kind == "(" {
+		return true
+	}
+
+	if p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") ||
+		p.Token.IsKeywordLike("SIMPLE") || p.Token.IsKeywordLike("ACYCLIC") {
+		return true
+	}
+
+	return false
+}
+
+func (p *Parser) parseGQLSubpathPattern() *ast.GQLSubpathPattern {
+	lparen := p.expect("(").Pos
+	hint := p.tryParseHint()
+
+	var mode *ast.GQLPathModeClause
+	if p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") ||
+		p.Token.IsKeywordLike("SIMPLE") || p.Token.IsKeywordLike("ACYCLIC") {
+		mode = p.parseGQLPathMode()
+	}
+
+	pathPattern := p.parseGQLPathPattern()
+	where := p.tryParseWhere()
+	rparen := p.expect(")").Pos
+
+	return &ast.GQLSubpathPattern{
+		Lparen: lparen,
+		Rparen: rparen,
+		Hint:   hint,
+		Mode:   mode,
+		Path:   pathPattern,
+		Where:  where,
+	}
+}
+
+func (p *Parser) tryParseGQLQuantifier() ast.GQLQuantifier {
+	switch p.Token.Kind {
+	case "*":
+		pos := p.Token.Pos
+		p.nextToken()
+		return &ast.GQLSymbolQuantifier{OpPos: pos, Op: ast.GQLQuantifierOpZeroOrMore}
+	case "+":
+		pos := p.Token.Pos
+		p.nextToken()
+		return &ast.GQLSymbolQuantifier{OpPos: pos, Op: ast.GQLQuantifierOpOneOrMore}
+	case "{":
+		lbrace := p.expect("{").Pos
+		var low, high ast.IntValue
+		comma := token.InvalidPos
+
+		if p.Token.Kind != "," {
+			low = p.parseIntValue()
+		}
+
+		if p.Token.Kind == "," {
+			comma = p.expect(",").Pos
+			if p.Token.Kind != "}" {
+				high = p.parseIntValue()
+			}
+		}
+
+		rbrace := p.expect("}").Pos
+
+		if comma.Invalid() {
+			return &ast.GQLFixedQuantifier{
+				Lbrace: lbrace,
+				Rbrace: rbrace,
+				Count:  low,
+			}
+		}
+
+		return &ast.GQLBoundedQuantifier{
+			Lbrace: lbrace,
+			Rbrace: rbrace,
+			Low:    low,
+			High:   high,
+			Comma:  comma,
+		}
+	}
+	return nil
+}
+
+func (p *Parser) parseGQLNodePattern() *ast.GQLNodePattern {
+	lparen := p.expect("(").Pos
+	filler := p.parseGQLElementPatternFiller()
+	rparen := p.expect(")").Pos
+
+	return &ast.GQLNodePattern{
+		Lparen:  lparen,
+		Rparen:  rparen,
+		Pattern: filler,
+	}
+}
+
+func (p *Parser) lookaheadGQLEdgePattern() bool {
+	return p.Token.Kind == "-" || p.Token.Kind == "<" || p.Token.Kind == "->"
+}
+
+func (p *Parser) parseGQLEdgePattern() *ast.GQLEdgePattern {
+	start := p.Token.Pos
+	var leftArrow bool
+	if p.Token.Kind == "<" {
+		p.nextToken()
+		if p.Token.Space != "" || len(p.Token.Comments) > 0 {
+			p.panicfAtToken(&p.Token, "no space allowed between '<' and '-'")
+		}
+		leftArrow = true
+	}
+
+	if leftArrow && p.Token.Kind == "->" {
+		p.panicfAtToken(&p.Token, "bidirectional edge pattern '<->' is not supported")
+	}
+
+	if p.Token.Kind == "->" {
+		end := p.Token.End
+		p.nextToken()
+		return &ast.GQLEdgePattern{
+			StartPos:  start,
+			EndPos:    end,
+			Direction: ast.GQLEdgeDirectionRight,
+		}
+	}
+
+	tok := p.expect("-")
+	// abbreviated edge pattern "-" or "<-"
+	if p.Token.Kind != "[" {
+		dir := ast.GQLEdgeDirectionAny
+		if leftArrow {
+			dir = ast.GQLEdgeDirectionLeft
+		}
+		return &ast.GQLEdgePattern{
+			StartPos:  start,
+			EndPos:    tok.End,
+			Direction: dir,
+		}
+	}
+
+	// full edge pattern
+	// "-" or "<-" followed by "["
+	if p.Token.Space != "" || len(p.Token.Comments) > 0 {
+		p.panicfAtToken(&p.Token, "no space allowed between '-' and '['")
+	}
+	p.expect("[")
+	filler := p.parseGQLElementPatternFiller()
+	p.expect("]")
+
+	if p.Token.Space != "" || len(p.Token.Comments) > 0 {
+		if p.Token.Kind == "->" {
+			p.panicfAtToken(&p.Token, "no space allowed between ']' and '->'")
+		} else {
+			p.panicfAtToken(&p.Token, "no space allowed between ']' and '-'")
+		}
+	}
+
+	var direction ast.GQLEdgeDirection
+	var end token.Pos
+	if p.Token.Kind == "->" {
+		if leftArrow {
+			p.panicfAtToken(&p.Token, "bidirectional edge pattern '<-[]->' is not supported")
+		}
+		end = p.Token.End
+		p.nextToken()
+		direction = ast.GQLEdgeDirectionRight
+	} else {
+		tok := p.expect("-")
+		end = tok.End
+		if leftArrow {
+			direction = ast.GQLEdgeDirectionLeft
+		} else {
+			direction = ast.GQLEdgeDirectionAny
+		}
+	}
+
+	return &ast.GQLEdgePattern{
+		StartPos:  start,
+		EndPos:    end,
+		Direction: direction,
+		Filler:    filler,
+	}
+}
+
+func (p *Parser) lookaheadGQLElementVariable() bool {
+	if p.Token.Kind != token.TokenIdent {
+		return false
+	}
+
+	lexer := p.cloneLexer()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	p.parseIdent() // skip identifier
+
+	switch p.Token.Kind {
+	case "IS", ":", "{", "WHERE", ")", "]":
+		return true
+	}
+
+	return p.Token.IsKeywordLike("COST")
+}
+
+func (p *Parser) parseGQLElementPatternFiller() *ast.GQLElementPatternFiller {
+	emptyPos := p.Token.Pos
+	hint := p.tryParseHint()
+
+	var variable *ast.Ident
+	if p.lookaheadGQLElementVariable() {
+		variable = p.parseIdent()
+	}
+
+	var label *ast.GQLLabelFilter
+	if p.Token.Kind == "IS" || p.Token.Kind == ":" {
+		pos := p.Token.Pos
+		is, colon := token.InvalidPos, token.InvalidPos
+		if p.Token.Kind == ":" {
+			colon = pos
+		} else {
+			is = pos
+		}
+		p.nextToken()
+		label = &ast.GQLLabelFilter{
+			IS:    is,
+			Colon: colon,
+			Expr:  p.parseGQLLabelExpression(),
+		}
+	}
+
+	var props *ast.GQLProperties
+	if p.Token.Kind == "{" {
+		props = p.parseGQLProperties()
+	}
+
+	where := p.tryParseWhere()
+
+	if props != nil && where != nil {
+		p.panicfAtPosition(where.Pos(), where.End(), "WHERE clause cannot be used together with property specification")
+	}
+
+	var cost ast.Expr
+	if p.Token.IsKeywordLike("COST") {
+		p.nextToken()
+		cost = p.parseExpr()
+	}
+
+	if hint == nil && variable == nil && label == nil && props == nil && where == nil && cost == nil {
+		return &ast.GQLElementPatternFiller{EmptyPos: emptyPos}
+	}
+	return &ast.GQLElementPatternFiller{
+		EmptyPos:   token.InvalidPos,
+		Hint:       hint,
+		Variable:   variable,
+		Label:      label,
+		Properties: props,
+		Where:      where,
+		Cost:       cost,
+	}
+}
+
+func (p *Parser) parseGQLLabelExpression() ast.GQLLabelExpression {
+	return p.parseGQLLabelOr()
+}
+
+func (p *Parser) parseGQLLabelOr() ast.GQLLabelExpression {
+	expr := p.parseGQLLabelAnd()
+	for p.Token.Kind == "|" {
+		p.nextToken()
+		expr = &ast.GQLLabelBinaryExpr{
+			Left:  expr,
+			Op:    ast.GQLLabelOpOr,
+			Right: p.parseGQLLabelAnd(),
+		}
+	}
+	return expr
+}
+
+func (p *Parser) parseGQLLabelAnd() ast.GQLLabelExpression {
+	expr := p.parseGQLLabelNot()
+	for p.Token.Kind == "&" {
+		p.nextToken()
+		expr = &ast.GQLLabelBinaryExpr{
+			Left:  expr,
+			Op:    ast.GQLLabelOpAnd,
+			Right: p.parseGQLLabelNot(),
+		}
+	}
+	return expr
+}
+
+func (p *Parser) parseGQLLabelNot() ast.GQLLabelExpression {
+	if p.Token.Kind == "!" {
+		opPos := p.Token.Pos
+		p.nextToken()
+		return &ast.GQLLabelUnaryExpr{
+			OpPos: opPos,
+			Op:    ast.GQLLabelOpNot,
+			Expr:  p.parseGQLLabelNot(),
+		}
+	}
+	return p.parseGQLLabelPrimary()
+}
+
+func (p *Parser) parseGQLLabelPrimary() ast.GQLLabelExpression {
+	switch p.Token.Kind {
+	case "%":
+		pos := p.Token.Pos
+		p.nextToken()
+		return &ast.GQLWildcardLabel{Percent: pos}
+	case "(":
+		lparen := p.expect("(").Pos
+		expr := p.parseGQLLabelExpression()
+		rparen := p.expect(")").Pos
+		return &ast.GQLLabelParenExpr{
+			Lparen: lparen,
+			Rparen: rparen,
+			Expr:   expr,
+		}
+	case token.TokenIdent:
+		return &ast.GQLNameLabel{Name: p.parseIdent()}
+	default:
+		p.panicfAtToken(&p.Token, "expected label expression primary, but: %s", p.Token.Kind)
+	}
+	return nil
+}
+
+
+func (p *Parser) parseGQLProperties() *ast.GQLProperties {
+	lbrace := p.expect("{").Pos
+	var fields []*ast.GQLPropertyField
+	if p.Token.Kind != "}" {
+		fields = parseCommaSeparatedList(p, p.parseGQLPropertyField)
+	}
+	rbrace := p.expect("}").Pos
+	return &ast.GQLProperties{
+		Lbrace: lbrace,
+		Rbrace: rbrace,
+		Fields: fields,
+	}
+}
+
+func (p *Parser) parseGQLPropertyField() *ast.GQLPropertyField {
+	name := p.parseIdent()
+	p.expect(":")
+	value := p.parseExpr()
+	return &ast.GQLPropertyField{
+		Name:  name,
+		Value: value,
 	}
 }
 

@@ -1,0 +1,59 @@
+--- simple.sql
+(a)-[e]->(b)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Rparen:  2,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 1,
+                  NameEnd: 2,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  3,
+              EndPos:    9,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 5,
+                  NameEnd: 6,
+                  Name:    "e",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  9,
+              Rparen:  11,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 10,
+                  NameEnd: 11,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(a)-[e]->(b)

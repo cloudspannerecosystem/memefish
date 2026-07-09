@@ -1,0 +1,104 @@
+--- quantified.sql
+(a:Person)-[:KNOWS]-{1, 3}(b:Person)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Rparen:  9,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 1,
+                  NameEnd: 2,
+                  Name:    "a",
+                },
+                Label: &ast.GQLLabelFilter{
+                  IS:    -1,
+                  Colon: 2,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 3,
+                      NameEnd: 9,
+                      Name:    "Person",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  10,
+              EndPos:    20,
+              Direction: "ANY",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Label:    &ast.GQLLabelFilter{
+                  IS:    -1,
+                  Colon: 12,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 13,
+                      NameEnd: 18,
+                      Name:    "KNOWS",
+                    },
+                  },
+                },
+              },
+            },
+            Quantifier: &ast.GQLBoundedQuantifier{
+              Lbrace: 20,
+              Rbrace: 25,
+              Low:    &ast.IntLiteral{
+                ValuePos: 21,
+                ValueEnd: 22,
+                Base:     10,
+                Value:    "1",
+              },
+              High: &ast.IntLiteral{
+                ValuePos: 24,
+                ValueEnd: 25,
+                Base:     10,
+                Value:    "3",
+              },
+              Comma: 22,
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  26,
+              Rparen:  35,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 27,
+                  NameEnd: 28,
+                  Name:    "b",
+                },
+                Label: &ast.GQLLabelFilter{
+                  IS:    -1,
+                  Colon: 28,
+                  Expr:  &ast.GQLNameLabel{
+                    Name: &ast.Ident{
+                      NamePos: 29,
+                      NameEnd: 35,
+                      Name:    "Person",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(a:Person)-[:KNOWS]-{1,3}(b:Person)

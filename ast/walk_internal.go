@@ -1128,6 +1128,91 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *GQLOrderByItem:
 		stack = append(stack, &stackItem{node: wrapNode(n.Collate), visitor: v.Field("Collate")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLMatch:
+		stack = append(stack, &stackItem{node: wrapNode(n.Pattern), visitor: v.Field("Pattern")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLGraphPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Paths), visitor: v.Field("Paths")})
+
+	case *GQLTopLevelPathPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.Path), visitor: v.Field("Path")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Mode), visitor: v.Field("Mode")})
+		stack = append(stack, &stackItem{node: wrapNode(n.SearchPrefix), visitor: v.Field("SearchPrefix")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Variable), visitor: v.Field("Variable")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLPathSearchPrefix:
+		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
+
+	case *GQLPathModeClause:
+		// nothing to do
+
+	case *GQLPathPattern:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Terms), visitor: v.Field("Terms")})
+
+	case *GQLPathTerm:
+		stack = append(stack, &stackItem{node: wrapNode(n.Quantifier), visitor: v.Field("Quantifier")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Primary), visitor: v.Field("Primary")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLSubpathPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Path), visitor: v.Field("Path")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Mode), visitor: v.Field("Mode")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLNodePattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.Pattern), visitor: v.Field("Pattern")})
+
+	case *GQLEdgePattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.Filler), visitor: v.Field("Filler")})
+
+	case *GQLElementPatternFiller:
+		stack = append(stack, &stackItem{node: wrapNode(n.Cost), visitor: v.Field("Cost")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Properties), visitor: v.Field("Properties")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Label), visitor: v.Field("Label")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Variable), visitor: v.Field("Variable")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *GQLLabelFilter:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLNameLabel:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *GQLWildcardLabel:
+		// nothing to do
+
+	case *GQLLabelBinaryExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *GQLLabelUnaryExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLLabelParenExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
+
+	case *GQLProperties:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Fields), visitor: v.Field("Fields")})
+
+	case *GQLPropertyField:
+		stack = append(stack, &stackItem{node: wrapNode(n.Value), visitor: v.Field("Value")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *GQLSymbolQuantifier:
+		// nothing to do
+
+	case *GQLFixedQuantifier:
+		stack = append(stack, &stackItem{node: wrapNode(n.Count), visitor: v.Field("Count")})
+
+	case *GQLBoundedQuantifier:
+		stack = append(stack, &stackItem{node: wrapNode(n.High), visitor: v.Field("High")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Low), visitor: v.Field("Low")})
 	}
 	return stack
 }

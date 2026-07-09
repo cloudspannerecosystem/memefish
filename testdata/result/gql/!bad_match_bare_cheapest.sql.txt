@@ -1,0 +1,188 @@
+--- !bad_match_bare_cheapest.sql
+GRAPH FinGraph
+MATCH CHEAPEST (a:Person)-[:Knows]->(b:Person)
+RETURN a, b
+
+--- Error
+syntax error: testdata/input/gql/!bad_match_bare_cheapest.sql:2:16: bare CHEAPEST path search prefix is not supported; use ANY CHEAPEST or CHEAPEST <count>
+  2|  MATCH CHEAPEST (a:Person)-[:Knows]->(b:Person)
+   |                 ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 73,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      15,
+              End:      20,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "CHEAPEST",
+              AsString: "CHEAPEST",
+              Pos:      21,
+              End:      29,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   30,
+              End:   31,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      31,
+              End:      32,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  32,
+              End:  33,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Person",
+              AsString: "Person",
+              Pos:      33,
+              End:      39,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  39,
+              End:  40,
+            },
+            &token.Token{
+              Kind: "-",
+              Raw:  "-",
+              Pos:  40,
+              End:  41,
+            },
+            &token.Token{
+              Kind: "[",
+              Raw:  "[",
+              Pos:  41,
+              End:  42,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  42,
+              End:  43,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Knows",
+              AsString: "Knows",
+              Pos:      43,
+              End:      48,
+            },
+            &token.Token{
+              Kind: "]",
+              Raw:  "]",
+              Pos:  48,
+              End:  49,
+            },
+            &token.Token{
+              Kind: "->",
+              Raw:  "->",
+              Pos:  49,
+              End:  51,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  51,
+              End:  52,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "b",
+              AsString: "b",
+              Pos:      52,
+              End:      53,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  53,
+              End:  54,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Person",
+              AsString: "Person",
+              Pos:      54,
+              End:      60,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  60,
+              End:  61,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      62,
+              End:      68,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      69,
+              End:      70,
+            },
+            &token.Token{
+              Kind: ",",
+              Raw:  ",",
+              Pos:  70,
+              End:  71,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "b",
+              AsString: "b",
+              Pos:      72,
+              End:      73,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH CHEAPEST (a:Person)-[:Knows]->(b:Person) RETURN a, b

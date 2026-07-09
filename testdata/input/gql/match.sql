@@ -1,0 +1,1 @@
+GRAPH g MATCH (a)-[e]->(b) RETURN a, e, b

@@ -302,3 +302,12 @@ func TestParseGQLQuery(t *testing.T) {
 		return p.ParseGQLQuery()
 	})
 }
+
+func TestParseGQLGraphPattern(t *testing.T) {
+	inputPath := "./testdata/input/gql_graph_pattern"
+	resultPath := "./testdata/result/gql_graph_pattern"
+
+	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		return p.ParseGQLGraphPattern()
+	})
+}

@@ -1,0 +1,261 @@
+--- match_coverage_fillers.sql
+GRAPH FinGraph
+-- Element Filler with Variable, Properties, WHERE, and COST
+MATCH path = (ne:Person {age: 20})-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me)
+RETURN *
+NEXT
+MATCH (ne:Person WHERE ne.name = 'Alice')
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       76,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 82,
+                    NameEnd: 86,
+                    Name:    "path",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  89,
+                          Rparen:  109,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 90,
+                              NameEnd: 92,
+                              Name:    "ne",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 92,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 93,
+                                  NameEnd: 99,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 100,
+                              Rbrace: 108,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 101,
+                                    NameEnd: 104,
+                                    Name:    "age",
+                                  },
+                                  Value: &ast.IntLiteral{
+                                    ValuePos: 106,
+                                    ValueEnd: 108,
+                                    Base:     10,
+                                    Value:    "20",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  110,
+                          EndPos:    159,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 112,
+                              NameEnd: 114,
+                              Name:    "ee",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 114,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 115,
+                                  NameEnd: 120,
+                                  Name:    "Knows",
+                                },
+                              },
+                            },
+                            Where: &ast.Where{
+                              Where: 121,
+                              Expr:  &ast.BinaryExpr{
+                                Op:   ">",
+                                Left: &ast.Path{
+                                  Idents: []*ast.Ident{
+                                    &ast.Ident{
+                                      NamePos: 127,
+                                      NameEnd: 129,
+                                      Name:    "ee",
+                                    },
+                                    &ast.Ident{
+                                      NamePos: 130,
+                                      NameEnd: 135,
+                                      Name:    "since",
+                                    },
+                                  },
+                                },
+                                Right: &ast.IntLiteral{
+                                  ValuePos: 138,
+                                  ValueEnd: 142,
+                                  Base:     10,
+                                  Value:    "2020",
+                                },
+                              },
+                            },
+                            Cost: &ast.Path{
+                              Idents: []*ast.Ident{
+                                &ast.Ident{
+                                  NamePos: 148,
+                                  NameEnd: 150,
+                                  Name:    "ee",
+                                },
+                                &ast.Ident{
+                                  NamePos: 151,
+                                  NameEnd: 156,
+                                  Name:    "since",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  159,
+                          Rparen:  162,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 160,
+                              NameEnd: 162,
+                              Name:    "me",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 164,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 171,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       178,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  184,
+                          Rparen:  218,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 185,
+                              NameEnd: 187,
+                              Name:    "ne",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 187,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 188,
+                                  NameEnd: 194,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Where: &ast.Where{
+                              Where: 195,
+                              Expr:  &ast.BinaryExpr{
+                                Op:   "=",
+                                Left: &ast.Path{
+                                  Idents: []*ast.Ident{
+                                    &ast.Ident{
+                                      NamePos: 201,
+                                      NameEnd: 203,
+                                      Name:    "ne",
+                                    },
+                                    &ast.Ident{
+                                      NamePos: 204,
+                                      NameEnd: 208,
+                                      Name:    "name",
+                                    },
+                                  },
+                                },
+                                Right: &ast.StringLiteral{
+                                  ValuePos: 211,
+                                  ValueEnd: 218,
+                                  Value:    "Alice",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 220,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 227,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH path = (ne:Person {age: 20})-[ee:Knows WHERE ee.since > 2020 COST ee.since]->(me) RETURN * NEXT MATCH (ne:Person WHERE ne.name = "Alice") RETURN *

@@ -1,0 +1,275 @@
+--- match_coverage_subpaths.sql
+GRAPH FinGraph
+-- Path Modes and Subpaths
+MATCH TRAIL (a)->{2,}(b)
+RETURN *
+NEXT
+MATCH TRAIL ((a)-[e]->(b)){0, }
+RETURN *
+NEXT
+MATCH ANY SHORTEST (TRAIL ->{1,4})
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       42,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 48,
+                    EndPos:   53,
+                    Mode:     "TRAIL",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  54,
+                          Rparen:  56,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 55,
+                              NameEnd: 56,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  57,
+                          EndPos:    59,
+                          Direction: "RIGHT",
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 59,
+                          Rbrace: 62,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 60,
+                            ValueEnd: 61,
+                            Base:     10,
+                            Value:    "2",
+                          },
+                          Comma: 61,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  63,
+                          Rparen:  65,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 64,
+                              NameEnd: 65,
+                              Name:    "b",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 67,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 74,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       81,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 87,
+                    EndPos:   92,
+                    Mode:     "TRAIL",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 93,
+                          Rparen: 106,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  94,
+                                  Rparen:  96,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 95,
+                                      NameEnd: 96,
+                                      Name:    "a",
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  97,
+                                  EndPos:    103,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 99,
+                                      NameEnd: 100,
+                                      Name:    "e",
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  103,
+                                  Rparen:  105,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 104,
+                                      NameEnd: 105,
+                                      Name:    "b",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 107,
+                          Rbrace: 111,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 108,
+                            ValueEnd: 109,
+                            Base:     10,
+                            Value:    "0",
+                          },
+                          Comma: 109,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 113,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 120,
+              },
+            },
+          },
+        },
+      },
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       127,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 133,
+                    EndPos:   145,
+                    Prefix:   "ANY SHORTEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 146,
+                          Rparen: 160,
+                          Mode:   &ast.GQLPathModeClause{
+                            StartPos: 147,
+                            EndPos:   152,
+                            Mode:     "TRAIL",
+                          },
+                          Path: &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  153,
+                                  EndPos:    155,
+                                  Direction: "RIGHT",
+                                },
+                                Quantifier: &ast.GQLBoundedQuantifier{
+                                  Lbrace: 155,
+                                  Rbrace: 159,
+                                  Low:    &ast.IntLiteral{
+                                    ValuePos: 156,
+                                    ValueEnd: 157,
+                                    Base:     10,
+                                    Value:    "1",
+                                  },
+                                  High: &ast.IntLiteral{
+                                    ValuePos: 158,
+                                    ValueEnd: 159,
+                                    Base:     10,
+                                    Value:    "4",
+                                  },
+                                  Comma: 157,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 162,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 169,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH TRAIL (a)->{2,}(b) RETURN * NEXT MATCH TRAIL ((a)-[e]->(b)){0,} RETURN * NEXT MATCH ANY SHORTEST (TRAIL ->{1,4}) RETURN *

@@ -43,7 +43,7 @@ var usage = heredoc.Doc(`
 `)
 
 var (
-	mode    = flag.String("mode", "statement", `parsing mode (one of "statement", "query", "expr", "ddl", "dml")`)
+	mode    = flag.String("mode", "statement", `parsing mode (one of "statement", "query", "expr", "type", "ddl", "dml", "gql", "gql_graph_pattern")`)
 	logging = flag.Bool("logging", false, "enable log (default: false)")
 	dig     = flag.String("dig", "", "digging the result node before printing")
 	pos     = flag.String("pos", "", "POS expression")
@@ -89,6 +89,10 @@ func main() {
 		node, err = p.ParseDDL()
 	case "dml":
 		node, err = p.ParseDML()
+	case "gql":
+		node, err = p.ParseGQLQuery()
+	case "gql_graph_pattern":
+		node, err = p.ParseGQLGraphPattern()
 	default:
 		log.Fatalf("unknown mode: %s", *mode)
 	}

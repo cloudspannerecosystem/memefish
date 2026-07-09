@@ -197,3 +197,51 @@ const (
 	DateTimePartWeekFriday    DateTimePart = "WEEK(FRIDAY)"
 	DateTimePartWeekSaturday  DateTimePart = "WEEK(SATURDAY)"
 )
+
+// GQLPathMode is a path mode. Spanner syntax-accepts WALK/TRAIL/ACYCLIC/SIMPLE.
+type GQLPathMode string
+
+const (
+	GQLPathModeWalk    GQLPathMode = "WALK"
+	GQLPathModeTrail   GQLPathMode = "TRAIL"
+	GQLPathModeSimple  GQLPathMode = "SIMPLE"
+	GQLPathModeAcyclic GQLPathMode = "ACYCLIC"
+)
+
+// GQLSearchPrefix is a path search prefix keyword sequence (without optional count).
+// Count-bearing forms (ANY k, SHORTEST k, …) use GQLPathSearchPrefix.Count.
+type GQLSearchPrefix string
+
+const (
+	GQLSearchPrefixAny         GQLSearchPrefix = "ANY"
+	GQLSearchPrefixAll         GQLSearchPrefix = "ALL"
+	GQLSearchPrefixShortest    GQLSearchPrefix = "SHORTEST" // only with Count (SHORTEST k)
+	GQLSearchPrefixCheapest    GQLSearchPrefix = "CHEAPEST" // only with Count (CHEAPEST k)
+	GQLSearchPrefixAnyShortest GQLSearchPrefix = "ANY SHORTEST"
+	GQLSearchPrefixAnyCheapest GQLSearchPrefix = "ANY CHEAPEST"
+	GQLSearchPrefixAllShortest GQLSearchPrefix = "ALL SHORTEST"
+	GQLSearchPrefixAllCheapest GQLSearchPrefix = "ALL CHEAPEST"
+)
+
+type GQLEdgeDirection string
+
+const (
+	GQLEdgeDirectionAny   GQLEdgeDirection = "ANY"
+	GQLEdgeDirectionLeft  GQLEdgeDirection = "LEFT"
+	GQLEdgeDirectionRight GQLEdgeDirection = "RIGHT"
+)
+
+type GQLLabelOp string
+
+const (
+	GQLLabelOpAnd GQLLabelOp = "&"
+	GQLLabelOpOr  GQLLabelOp = "|"
+	GQLLabelOpNot GQLLabelOp = "!"
+)
+
+type GQLQuantifierOp string
+
+const (
+	GQLQuantifierOpZeroOrMore GQLQuantifierOp = "*"
+	GQLQuantifierOpOneOrMore  GQLQuantifierOp = "+"
+)

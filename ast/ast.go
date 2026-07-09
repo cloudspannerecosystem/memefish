@@ -42,6 +42,9 @@ package ast
 //   - Each node interface (except for Node) must have isXXX method (XXX is a name of the interface itself).
 //   - `isXXX` methods must be defined after the interface definition
 //     and the receiver must be the non-pointer node struct type.
+//   - Interfaces used as struct field types must be declared before those structs.
+//     Single-pass `make gen` / astcatalog classifies field types by names seen so far;
+//     a forward-referenced interface is treated as a non-node type and dropped from walkers.
 //   - Each node struct must have pos and end comments.
 //   - Each node struct must have template lines in its doc comment.
 //   - The fields of each node must be ordered by the position.
@@ -4590,6 +4593,7 @@ type GQLPrimitiveQueryStatement interface {
 	isGQLPrimitiveQueryStatement()
 }
 
+func (GQLMatch) isGQLPrimitiveQueryStatement()                      {}
 func (GQLReturn) isGQLPrimitiveQueryStatement()                     {}
 func (GQLWith) isGQLPrimitiveQueryStatement()                       {}
 func (GQLFilter) isGQLPrimitiveQueryStatement()                     {}
@@ -4811,4 +4815,316 @@ type GQLOrderByItem struct {
 	Expr    Expr
 	Collate *Collate  // optional
 	Dir     Direction // optional
+}
+
+// ================================================================================
+//
+// GQL patterns
+//
+// ================================================================================
+
+// GQLMatch represents a MATCH statement in GQL.
+//
+//	{{if .OptionalPos.Invalid | not}}OPTIONAL {{end}}MATCH {{.Hint | sqlOpt}}{{.Pattern | sql}}
+type GQLMatch struct {
+	// pos = OptionalPos || Match
+	// end = Pattern.end
+
+	OptionalPos token.Pos // position of "OPTIONAL", optional
+	Match       token.Pos // position of "MATCH"
+	Hint        *Hint     // optional
+	Pattern     *GQLGraphPattern
+}
+
+// GQLGraphPattern represents a graph pattern in GQL.
+//
+//	{{.Paths | sqlJoin ", "}}{{if .Where}} {{.Where | sql}}{{end}}
+type GQLGraphPattern struct {
+	// pos = Paths[0].pos
+	// end = (Where ?? Paths[$]).end
+
+	Paths []*GQLTopLevelPathPattern
+	Where *Where // optional
+}
+
+// GQLTopLevelPathPattern represents a top-level path pattern in GQL.
+//
+//	{{.Hint | sqlOpt}}{{if .Variable}}{{.Variable}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
+type GQLTopLevelPathPattern struct {
+	// pos = (Hint ?? Variable ?? SearchPrefix ?? Mode ?? Path).pos
+	// end = Path.end
+
+	Hint         *Hint                // optional
+	Variable     *Ident               // optional
+	SearchPrefix *GQLPathSearchPrefix // optional
+	Mode         *GQLPathModeClause   // optional
+	Path         *GQLPathPattern
+}
+
+// GQLPathSearchPrefix represents a path search prefix in GQL.
+//
+//	{{.Prefix}}{{if .Count}} {{.Count | sql}}{{end}}
+type GQLPathSearchPrefix struct {
+	// pos = StartPos
+	// end = Count.end || EndPos
+
+	StartPos token.Pos
+	EndPos   token.Pos
+
+	Prefix GQLSearchPrefix
+	Count  IntValue // optional; Spanner syntax-accepts ANY k / SHORTEST k / CHEAPEST k
+}
+
+// GQLPathModeClause represents a path mode clause in GQL.
+//
+//	{{.Mode}}
+type GQLPathModeClause struct {
+	// pos = StartPos
+	// end = EndPos
+
+	StartPos token.Pos
+	EndPos   token.Pos
+
+	Mode GQLPathMode
+}
+
+// GQLPathPattern represents a sequence of path terms in GQL.
+//
+//	{{.Terms | sqlJoin ""}}
+type GQLPathPattern struct {
+	// pos = Terms[0].pos
+	// end = Terms[$].end
+
+	Terms []*GQLPathTerm
+}
+
+// GQLPathPrimary represents a path primary in GQL: a node, edge, or subpath pattern.
+type GQLPathPrimary interface {
+	Node
+	isGQLPathPrimary()
+}
+
+func (GQLSubpathPattern) isGQLPathPrimary() {}
+func (GQLNodePattern) isGQLPathPrimary()    {}
+func (GQLEdgePattern) isGQLPathPrimary()    {}
+
+// GQLQuantifier represents a path quantifier in GQL.
+type GQLQuantifier interface {
+	Node
+	isGQLQuantifier()
+}
+
+func (GQLSymbolQuantifier) isGQLQuantifier()  {}
+func (GQLFixedQuantifier) isGQLQuantifier()   {}
+func (GQLBoundedQuantifier) isGQLQuantifier() {}
+
+// GQLPathTerm represents a path term with optional hint and quantifier in GQL.
+//
+//	{{.Hint | sqlOpt}}{{.Primary | sql}}{{.Quantifier | sqlOpt}}
+type GQLPathTerm struct {
+	// pos = (Hint ?? Primary).pos
+	// end = (Quantifier ?? Primary).end
+
+	Hint       *Hint          // optional
+	Primary    GQLPathPrimary // GQLNodePattern, GQLEdgePattern, or GQLSubpathPattern
+	Quantifier GQLQuantifier  // optional
+}
+
+// GQLSubpathPattern represents a subpath pattern in GQL.
+//
+//	({{.Hint | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}{{.Where | sqlOpt}})
+type GQLSubpathPattern struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Hint           *Hint              // optional
+	Mode           *GQLPathModeClause // optional
+	Path           *GQLPathPattern
+	Where          *Where // optional
+}
+
+// GQLNodePattern represents a node pattern in GQL.
+//
+//	({{.Pattern | sql}})
+type GQLNodePattern struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Pattern        *GQLElementPatternFiller
+}
+
+// GQLEdgePattern represents an edge pattern in GQL.
+//
+//	{{if eq .Direction "LEFT"}}<{{end}}
+//	{{if .Filler}}-[{{.Filler | sql}}]-{{else}}-{{end}}
+//	{{if eq .Direction "RIGHT"}}>{{end}}
+type GQLEdgePattern struct {
+	// pos = StartPos
+	// end = EndPos
+
+	StartPos token.Pos
+	EndPos   token.Pos
+
+	Direction GQLEdgeDirection
+	Filler    *GQLElementPatternFiller // optional
+}
+
+// GQLElementPatternFiller represents a node or edge element pattern filler in GQL.
+//
+//	{{.Hint | sqlOpt}}{{.Variable | sqlOpt}}{{.Label | sqlOpt}}{{.Properties | sqlOpt}}{{.Where | sqlOpt}}{{.Cost | sqlOpt}}
+//
+// SQL() inserts a space before an IS label when a variable is present (":label" needs no space).
+type GQLElementPatternFiller struct {
+	// pos = (Hint ?? Variable ?? Label ?? Properties ?? Where ?? Cost).pos || EmptyPos
+	// end = (Cost ?? Where ?? Properties ?? Label ?? Variable ?? Hint).end || EmptyPos + 1
+
+	// EmptyPos is the position between brackets/parens when the filler has no content (e.g. -[]- or ()).
+	// It must be InvalidPos when any content field is set. End uses EmptyPos+1 so the empty
+	// filler has a non-empty [pos,end) range required by position checks.
+	EmptyPos token.Pos
+
+	Hint       *Hint           // optional
+	Variable   *Ident          // optional
+	Label      *GQLLabelFilter // optional
+	Properties *GQLProperties  // optional
+	Where      *Where          // optional
+	Cost       Expr            // optional
+}
+
+// GQLLabelExpression represents a label expression in GQL.
+type GQLLabelExpression interface {
+	Node
+	isGQLLabelExpression()
+}
+
+func (GQLNameLabel) isGQLLabelExpression()       {}
+func (GQLWildcardLabel) isGQLLabelExpression()   {}
+func (GQLLabelBinaryExpr) isGQLLabelExpression() {}
+func (GQLLabelUnaryExpr) isGQLLabelExpression()  {}
+func (GQLLabelParenExpr) isGQLLabelExpression()  {}
+
+// GQLLabelFilter represents a label filter in GQL.
+//
+//	{{if .Colon.Invalid}}IS {{else}}:{{end}}{{.Expr | sql}}
+type GQLLabelFilter struct {
+	// pos = IS || Colon
+	// end = Expr.end
+
+	// IS and Colon are mutually exclusive, but one must be valid.
+	IS    token.Pos // optional
+	Colon token.Pos // optional
+	Expr  GQLLabelExpression
+}
+
+// GQLNameLabel represents a label name in GQL.
+//
+//	{{.Name | sql}}
+type GQLNameLabel struct {
+	// pos = Name.pos
+	// end = Name.end
+
+	Name *Ident
+}
+
+// GQLWildcardLabel represents a wildcard label "%" in GQL.
+//
+//	%
+type GQLWildcardLabel struct {
+	// pos = Percent
+	// end = Percent + 1
+
+	Percent token.Pos
+}
+
+// GQLLabelBinaryExpr represents a binary operation on label expressions.
+//
+//	{{.Left | sql}} {{.Op}} {{.Right | sql}}
+type GQLLabelBinaryExpr struct {
+	// pos = Left.pos
+	// end = Right.end
+
+	Op    GQLLabelOp
+	Left  GQLLabelExpression
+	Right GQLLabelExpression
+}
+
+// GQLLabelUnaryExpr represents a unary operation on label expressions.
+//
+//	{{.Op}}{{.Expr | sql}}
+type GQLLabelUnaryExpr struct {
+	// pos = OpPos
+	// end = Expr.end
+
+	OpPos token.Pos
+	Op    GQLLabelOp
+	Expr  GQLLabelExpression
+}
+
+// GQLLabelParenExpr represents a parenthesized label expression.
+//
+//	({{.Expr | sql}})
+type GQLLabelParenExpr struct {
+	// pos = Lparen
+	// end = Rparen + 1
+
+	Lparen, Rparen token.Pos
+	Expr           GQLLabelExpression
+}
+
+// GQLProperties represents property filters in GQL.
+//
+//	{{"{"}}{{.Fields | sqlJoin ", "}}{{"}"}}
+type GQLProperties struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+	Fields         []*GQLPropertyField
+}
+
+// GQLPropertyField represents a single property filter in GQL.
+//
+//	{{.Name | sql}}: {{.Value | sql}}
+type GQLPropertyField struct {
+	// pos = Name.pos
+	// end = Value.end
+
+	Name  *Ident
+	Value Expr
+}
+
+// GQLSymbolQuantifier represents a shorthand quantifier in GQL.
+//
+//	{{.Op}}
+type GQLSymbolQuantifier struct {
+	// pos = OpPos
+	// end = OpPos + 1
+
+	OpPos token.Pos
+	Op    GQLQuantifierOp
+}
+
+// GQLFixedQuantifier represents a fixed repetition in GQL.
+//
+//	{{"{"}}{{.Count | sql}}{{"}"}}
+type GQLFixedQuantifier struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+	Count          IntValue
+}
+
+// GQLBoundedQuantifier represents a range repetition in GQL.
+//
+//	{{"{"}}{{.Low | sqlOpt}},{{.High | sqlOpt}}{{"}"}}
+type GQLBoundedQuantifier struct {
+	// pos = Lbrace
+	// end = Rbrace + 1
+
+	Lbrace, Rbrace token.Pos
+	Low, High      IntValue  // optional
+	Comma          token.Pos // position of ","
 }

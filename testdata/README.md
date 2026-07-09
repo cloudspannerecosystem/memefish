@@ -7,7 +7,9 @@ they will be automatically tested.
   - ddl: input of `ParseDDL()` and `ParseStatement()`
   - dml: input of `ParseDML()` and `ParseStatement()`
   - expr: input of `ParseExpr()`
-  - query: input of `ParseQuery()` and `ParseStatemen()`
+  - query: input of `ParseQuery()` and `ParseStatement()`
+  - gql: input of `ParseGQLQuery()` and `ParseStatement()`
+  - gql_graph_pattern: input of `ParseGQLGraphPattern()`
 
 You can use this command in your project root to automatically update `testdata/result`.
 

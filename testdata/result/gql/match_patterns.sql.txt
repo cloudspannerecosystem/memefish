@@ -1,0 +1,1650 @@
+--- match_patterns.sql
+GRAPH FinGraph
+-- Multiple path patterns in one MATCH
+MATCH
+  (src:Account)-[t1:Transfers]->(mid:Account)-[t2:Transfers]->(dst:Account),
+  (mid)<-[:Owns]-(p:Person)
+-- Path variable and property filter
+MATCH p=(account:Account {is_blocked: false})-[transfer:Transfers]-(dst:Account)
+-- Search prefixes
+MATCH ANY SHORTEST (a:Account {is_blocked:true})-[t:Transfers]->{1, 4} (b:Account)
+MATCH ANY CHEAPEST (a)-[e:Transfer COST e.amount]->{1,3}(b)
+-- Subpath modes
+MATCH WALK (a1:Account)-[t1:Transfers]->(a2:Account)
+MATCH ACYCLIC (a1:Account)-[t1:Transfers]->(a2:Account)
+MATCH TRAIL (a1:Account)-[t1:Transfers]->(a2:Account)
+-- Subpaths with WHERE and hints
+MATCH ((n) WHERE n.id = 1)
+MATCH ( @{a=1} (n) )
+MATCH (-[e:LocatedIn]->(p:Person)->(c:City) WHERE p.id = e.id)
+MATCH (-[e:LocatedIn]->((p:Person)->(c:City)) WHERE p.id = e.id)
+-- Consecutive subpaths
+MATCH ((p:Person))(-[e:LocatedIn]->(c:City))(-[s:StudyAt]->(u:School))
+-- Quantified subpath
+MATCH (source_person:Person)((p:Person)-[k:Knows]->(f:Person)){, 4}(dest_person:Person)
+RETURN 1
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       54,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  62,
+                          Rparen:  74,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 63,
+                              NameEnd: 66,
+                              Name:    "src",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 66,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 67,
+                                  NameEnd: 74,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  75,
+                          EndPos:    92,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 77,
+                              NameEnd: 79,
+                              Name:    "t1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 79,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 80,
+                                  NameEnd: 89,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  92,
+                          Rparen:  104,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 93,
+                              NameEnd: 96,
+                              Name:    "mid",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 96,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 97,
+                                  NameEnd: 104,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  105,
+                          EndPos:    122,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 107,
+                              NameEnd: 109,
+                              Name:    "t2",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 109,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 110,
+                                  NameEnd: 119,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  122,
+                          Rparen:  134,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 123,
+                              NameEnd: 126,
+                              Name:    "dst",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 126,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 127,
+                                  NameEnd: 134,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  139,
+                          Rparen:  143,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 140,
+                              NameEnd: 143,
+                              Name:    "mid",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  144,
+                          EndPos:    154,
+                          Direction: "LEFT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Label:    &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 147,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 148,
+                                  NameEnd: 152,
+                                  Name:    "Owns",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  154,
+                          Rparen:  163,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 155,
+                              NameEnd: 156,
+                              Name:    "p",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 156,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 157,
+                                  NameEnd: 163,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       202,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 208,
+                    NameEnd: 209,
+                    Name:    "p",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  210,
+                          Rparen:  246,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 211,
+                              NameEnd: 218,
+                              Name:    "account",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 218,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 219,
+                                  NameEnd: 226,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 227,
+                              Rbrace: 245,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 228,
+                                    NameEnd: 238,
+                                    Name:    "is_blocked",
+                                  },
+                                  Value: &ast.BoolLiteral{
+                                    ValuePos: 240,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  247,
+                          EndPos:    269,
+                          Direction: "ANY",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 249,
+                              NameEnd: 257,
+                              Name:    "transfer",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 257,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 258,
+                                  NameEnd: 267,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  269,
+                          Rparen:  281,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 270,
+                              NameEnd: 273,
+                              Name:    "dst",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 273,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 274,
+                                  NameEnd: 281,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       302,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 308,
+                    EndPos:   320,
+                    Prefix:   "ANY SHORTEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  321,
+                          Rparen:  349,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 322,
+                              NameEnd: 323,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 323,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 324,
+                                  NameEnd: 331,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 332,
+                              Rbrace: 348,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 333,
+                                    NameEnd: 343,
+                                    Name:    "is_blocked",
+                                  },
+                                  Value: &ast.BoolLiteral{
+                                    ValuePos: 344,
+                                    Value:    true,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  350,
+                          EndPos:    366,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 352,
+                              NameEnd: 353,
+                              Name:    "t",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 353,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 354,
+                                  NameEnd: 363,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 366,
+                          Rbrace: 371,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 367,
+                            ValueEnd: 368,
+                            Base:     10,
+                            Value:    "1",
+                          },
+                          High: &ast.IntLiteral{
+                            ValuePos: 370,
+                            ValueEnd: 371,
+                            Base:     10,
+                            Value:    "4",
+                          },
+                          Comma: 368,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  373,
+                          Rparen:  383,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 374,
+                              NameEnd: 375,
+                              Name:    "b",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 375,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 376,
+                                  NameEnd: 383,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       385,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 391,
+                    EndPos:   403,
+                    Prefix:   "ANY CHEAPEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  404,
+                          Rparen:  406,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 405,
+                              NameEnd: 406,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  407,
+                          EndPos:    436,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 409,
+                              NameEnd: 410,
+                              Name:    "e",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 410,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 411,
+                                  NameEnd: 419,
+                                  Name:    "Transfer",
+                                },
+                              },
+                            },
+                            Cost: &ast.Path{
+                              Idents: []*ast.Ident{
+                                &ast.Ident{
+                                  NamePos: 425,
+                                  NameEnd: 426,
+                                  Name:    "e",
+                                },
+                                &ast.Ident{
+                                  NamePos: 427,
+                                  NameEnd: 433,
+                                  Name:    "amount",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 436,
+                          Rbrace: 440,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 437,
+                            ValueEnd: 438,
+                            Base:     10,
+                            Value:    "1",
+                          },
+                          High: &ast.IntLiteral{
+                            ValuePos: 439,
+                            ValueEnd: 440,
+                            Base:     10,
+                            Value:    "3",
+                          },
+                          Comma: 438,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  441,
+                          Rparen:  443,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 442,
+                              NameEnd: 443,
+                              Name:    "b",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       462,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 468,
+                    EndPos:   472,
+                    Mode:     "WALK",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  473,
+                          Rparen:  484,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 474,
+                              NameEnd: 476,
+                              Name:    "a1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 476,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 477,
+                                  NameEnd: 484,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  485,
+                          EndPos:    502,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 487,
+                              NameEnd: 489,
+                              Name:    "t1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 489,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 490,
+                                  NameEnd: 499,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  502,
+                          Rparen:  513,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 503,
+                              NameEnd: 505,
+                              Name:    "a2",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 505,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 506,
+                                  NameEnd: 513,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       515,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 521,
+                    EndPos:   528,
+                    Mode:     "ACYCLIC",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  529,
+                          Rparen:  540,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 530,
+                              NameEnd: 532,
+                              Name:    "a1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 532,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 533,
+                                  NameEnd: 540,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  541,
+                          EndPos:    558,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 543,
+                              NameEnd: 545,
+                              Name:    "t1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 545,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 546,
+                                  NameEnd: 555,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  558,
+                          Rparen:  569,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 559,
+                              NameEnd: 561,
+                              Name:    "a2",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 561,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 562,
+                                  NameEnd: 569,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       571,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 577,
+                    EndPos:   582,
+                    Mode:     "TRAIL",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  583,
+                          Rparen:  594,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 584,
+                              NameEnd: 586,
+                              Name:    "a1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 586,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 587,
+                                  NameEnd: 594,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  595,
+                          EndPos:    612,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 597,
+                              NameEnd: 599,
+                              Name:    "t1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 599,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 600,
+                                  NameEnd: 609,
+                                  Name:    "Transfers",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  612,
+                          Rparen:  623,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 613,
+                              NameEnd: 615,
+                              Name:    "a2",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 615,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 616,
+                                  NameEnd: 623,
+                                  Name:    "Account",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       658,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 664,
+                          Rparen: 683,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  665,
+                                  Rparen:  667,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 666,
+                                      NameEnd: 667,
+                                      Name:    "n",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          Where: &ast.Where{
+                            Where: 669,
+                            Expr:  &ast.BinaryExpr{
+                              Op:   "=",
+                              Left: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 675,
+                                    NameEnd: 676,
+                                    Name:    "n",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 677,
+                                    NameEnd: 679,
+                                    Name:    "id",
+                                  },
+                                },
+                              },
+                              Right: &ast.IntLiteral{
+                                ValuePos: 682,
+                                ValueEnd: 683,
+                                Base:     10,
+                                Value:    "1",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       685,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 691,
+                          Rparen: 704,
+                          Hint:   &ast.Hint{
+                            Atmark:  693,
+                            Rbrace:  698,
+                            Records: []*ast.HintRecord{
+                              &ast.HintRecord{
+                                Key: &ast.Path{
+                                  Idents: []*ast.Ident{
+                                    &ast.Ident{
+                                      NamePos: 695,
+                                      NameEnd: 696,
+                                      Name:    "a",
+                                    },
+                                  },
+                                },
+                                Value: &ast.IntLiteral{
+                                  ValuePos: 697,
+                                  ValueEnd: 698,
+                                  Base:     10,
+                                  Value:    "1",
+                                },
+                              },
+                            },
+                          },
+                          Path: &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  700,
+                                  Rparen:  702,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 701,
+                                      NameEnd: 702,
+                                      Name:    "n",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       706,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 712,
+                          Rparen: 767,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  713,
+                                  EndPos:    729,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 715,
+                                      NameEnd: 716,
+                                      Name:    "e",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 716,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 717,
+                                          NameEnd: 726,
+                                          Name:    "LocatedIn",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  729,
+                                  Rparen:  738,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 730,
+                                      NameEnd: 731,
+                                      Name:    "p",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 731,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 732,
+                                          NameEnd: 738,
+                                          Name:    "Person",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  739,
+                                  EndPos:    741,
+                                  Direction: "RIGHT",
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  741,
+                                  Rparen:  748,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 742,
+                                      NameEnd: 743,
+                                      Name:    "c",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 743,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 744,
+                                          NameEnd: 748,
+                                          Name:    "City",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          Where: &ast.Where{
+                            Where: 750,
+                            Expr:  &ast.BinaryExpr{
+                              Op:   "=",
+                              Left: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 756,
+                                    NameEnd: 757,
+                                    Name:    "p",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 758,
+                                    NameEnd: 760,
+                                    Name:    "id",
+                                  },
+                                },
+                              },
+                              Right: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 763,
+                                    NameEnd: 764,
+                                    Name:    "e",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 765,
+                                    NameEnd: 767,
+                                    Name:    "id",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       769,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 775,
+                          Rparen: 832,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  776,
+                                  EndPos:    792,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 778,
+                                      NameEnd: 779,
+                                      Name:    "e",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 779,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 780,
+                                          NameEnd: 789,
+                                          Name:    "LocatedIn",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLSubpathPattern{
+                                  Lparen: 792,
+                                  Rparen: 813,
+                                  Path:   &ast.GQLPathPattern{
+                                    Terms: []*ast.GQLPathTerm{
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  793,
+                                          Rparen:  802,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 794,
+                                              NameEnd: 795,
+                                              Name:    "p",
+                                            },
+                                            Label: &ast.GQLLabelFilter{
+                                              IS:    -1,
+                                              Colon: 795,
+                                              Expr:  &ast.GQLNameLabel{
+                                                Name: &ast.Ident{
+                                                  NamePos: 796,
+                                                  NameEnd: 802,
+                                                  Name:    "Person",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLEdgePattern{
+                                          StartPos:  803,
+                                          EndPos:    805,
+                                          Direction: "RIGHT",
+                                        },
+                                      },
+                                      &ast.GQLPathTerm{
+                                        Primary: &ast.GQLNodePattern{
+                                          Lparen:  805,
+                                          Rparen:  812,
+                                          Pattern: &ast.GQLElementPatternFiller{
+                                            EmptyPos: -1,
+                                            Variable: &ast.Ident{
+                                              NamePos: 806,
+                                              NameEnd: 807,
+                                              Name:    "c",
+                                            },
+                                            Label: &ast.GQLLabelFilter{
+                                              IS:    -1,
+                                              Colon: 807,
+                                              Expr:  &ast.GQLNameLabel{
+                                                Name: &ast.Ident{
+                                                  NamePos: 808,
+                                                  NameEnd: 812,
+                                                  Name:    "City",
+                                                },
+                                              },
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          Where: &ast.Where{
+                            Where: 815,
+                            Expr:  &ast.BinaryExpr{
+                              Op:   "=",
+                              Left: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 821,
+                                    NameEnd: 822,
+                                    Name:    "p",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 823,
+                                    NameEnd: 825,
+                                    Name:    "id",
+                                  },
+                                },
+                              },
+                              Right: &ast.Path{
+                                Idents: []*ast.Ident{
+                                  &ast.Ident{
+                                    NamePos: 828,
+                                    NameEnd: 829,
+                                    Name:    "e",
+                                  },
+                                  &ast.Ident{
+                                    NamePos: 830,
+                                    NameEnd: 832,
+                                    Name:    "id",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       858,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 864,
+                          Rparen: 875,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  865,
+                                  Rparen:  874,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 866,
+                                      NameEnd: 867,
+                                      Name:    "p",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 867,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 868,
+                                          NameEnd: 874,
+                                          Name:    "Person",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 876,
+                          Rparen: 901,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  877,
+                                  EndPos:    893,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 879,
+                                      NameEnd: 880,
+                                      Name:    "e",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 880,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 881,
+                                          NameEnd: 890,
+                                          Name:    "LocatedIn",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  893,
+                                  Rparen:  900,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 894,
+                                      NameEnd: 895,
+                                      Name:    "c",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 895,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 896,
+                                          NameEnd: 900,
+                                          Name:    "City",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 902,
+                          Rparen: 927,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  903,
+                                  EndPos:    917,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 905,
+                                      NameEnd: 906,
+                                      Name:    "s",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 906,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 907,
+                                          NameEnd: 914,
+                                          Name:    "StudyAt",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  917,
+                                  Rparen:  926,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 918,
+                                      NameEnd: 919,
+                                      Name:    "u",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 919,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 920,
+                                          NameEnd: 926,
+                                          Name:    "School",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            OptionalPos: -1,
+            Match:       951,
+            Pattern:     &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  957,
+                          Rparen:  978,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 958,
+                              NameEnd: 971,
+                              Name:    "source_person",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 971,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 972,
+                                  NameEnd: 978,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 979,
+                          Rparen: 1012,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  980,
+                                  Rparen:  989,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 981,
+                                      NameEnd: 982,
+                                      Name:    "p",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 982,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 983,
+                                          NameEnd: 989,
+                                          Name:    "Person",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  990,
+                                  EndPos:    1002,
+                                  Direction: "RIGHT",
+                                  Filler:    &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 992,
+                                      NameEnd: 993,
+                                      Name:    "k",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 993,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 994,
+                                          NameEnd: 999,
+                                          Name:    "Knows",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLNodePattern{
+                                  Lparen:  1002,
+                                  Rparen:  1011,
+                                  Pattern: &ast.GQLElementPatternFiller{
+                                    EmptyPos: -1,
+                                    Variable: &ast.Ident{
+                                      NamePos: 1003,
+                                      NameEnd: 1004,
+                                      Name:    "f",
+                                    },
+                                    Label: &ast.GQLLabelFilter{
+                                      IS:    -1,
+                                      Colon: 1004,
+                                      Expr:  &ast.GQLNameLabel{
+                                        Name: &ast.Ident{
+                                          NamePos: 1005,
+                                          NameEnd: 1011,
+                                          Name:    "Person",
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 1013,
+                          Rbrace: 1017,
+                          High:   &ast.IntLiteral{
+                            ValuePos: 1016,
+                            ValueEnd: 1017,
+                            Base:     10,
+                            Value:    "4",
+                          },
+                          Comma: 1014,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  1018,
+                          Rparen:  1037,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 1019,
+                              NameEnd: 1030,
+                              Name:    "dest_person",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              IS:    -1,
+                              Colon: 1030,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 1031,
+                                  NameEnd: 1037,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 1039,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.IntLiteral{
+                  ValuePos: 1046,
+                  ValueEnd: 1047,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (src:Account)-[t1:Transfers]->(mid:Account)-[t2:Transfers]->(dst:Account), (mid)<-[:Owns]-(p:Person) MATCH p = (account:Account {is_blocked: FALSE})-[transfer:Transfers]-(dst:Account) MATCH ANY SHORTEST (a:Account {is_blocked: TRUE})-[t:Transfers]->{1,4}(b:Account) MATCH ANY CHEAPEST (a)-[e:Transfer COST e.amount]->{1,3}(b) MATCH WALK (a1:Account)-[t1:Transfers]->(a2:Account) MATCH ACYCLIC (a1:Account)-[t1:Transfers]->(a2:Account) MATCH TRAIL (a1:Account)-[t1:Transfers]->(a2:Account) MATCH ((n) WHERE n.id = 1) MATCH (@{a=1} (n)) MATCH (-[e:LocatedIn]->(p:Person)->(c:City) WHERE p.id = e.id) MATCH (-[e:LocatedIn]->((p:Person)->(c:City)) WHERE p.id = e.id) MATCH ((p:Person))(-[e:LocatedIn]->(c:City))(-[s:StudyAt]->(u:School)) MATCH (source_person:Person)((p:Person)-[k:Knows]->(f:Person)){,4}(dest_person:Person) RETURN 1
