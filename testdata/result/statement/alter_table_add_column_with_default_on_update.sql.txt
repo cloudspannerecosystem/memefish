@@ -58,7 +58,8 @@ ALTER TABLE foo ADD COLUMN bar TIMESTAMP NOT NULL DEFAULT (pending_commit_timest
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
 }

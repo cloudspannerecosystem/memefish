@@ -30,7 +30,8 @@ CREATE TABLE PKsTable(
         NamePos: 29,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -44,7 +45,8 @@ CREATE TABLE PKsTable(
         NamePos: 42,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{

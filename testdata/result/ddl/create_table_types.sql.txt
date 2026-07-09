@@ -56,7 +56,8 @@ create table types (
         NamePos: 125,
         Name:    "BOOL",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -70,7 +71,8 @@ create table types (
         NamePos: 135,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -84,7 +86,8 @@ create table types (
         NamePos: 148,
         Name:    "FLOAT32",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -98,7 +101,8 @@ create table types (
         NamePos: 161,
         Name:    "FLOAT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -119,7 +123,8 @@ create table types (
           Value:    "256",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -140,7 +145,8 @@ create table types (
           Value:    "0x100",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -156,7 +162,8 @@ create table types (
         Name:    "STRING",
         Max:     true,
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -177,7 +184,8 @@ create table types (
           Value:    "256",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -198,7 +206,8 @@ create table types (
           Value:    "0x100",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -214,7 +223,8 @@ create table types (
         Name:    "BYTES",
         Max:     true,
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -228,7 +238,8 @@ create table types (
         NamePos: 287,
         Name:    "JSON",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -242,7 +253,8 @@ create table types (
         NamePos: 297,
         Name:    "DATE",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -256,7 +268,8 @@ create table types (
         NamePos: 307,
         Name:    "TIMESTAMP",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -275,7 +288,8 @@ create table types (
           Name:    "BOOL",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -296,7 +310,8 @@ create table types (
           Max:     true,
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -330,7 +345,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -349,7 +365,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -368,7 +385,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -392,7 +410,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -421,7 +440,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -440,7 +460,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -464,7 +485,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -488,7 +510,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -517,7 +540,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -551,7 +575,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -575,7 +600,8 @@ create table types (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

@@ -40,7 +40,8 @@ create table if not exists foo (
         NamePos: 41,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 68,
@@ -54,8 +55,9 @@ create table if not exists foo (
         NamePos: 56,
         Name:    "FLOAT64",
       },
-      NotNull: true,
-      Hidden:  -1,
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 98,
@@ -76,9 +78,10 @@ create table if not exists foo (
           Value:    "255",
         },
       },
-      NotNull: true,
-      Hidden:  -1,
-      Options: &ast.Options{
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
+      Options:      &ast.Options{
         Options: 103,
         Rparen:  140,
         Records: []*ast.OptionsDef{
@@ -148,7 +151,8 @@ create table if not exists foo (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 408,
@@ -179,7 +183,8 @@ create table if not exists foo (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{

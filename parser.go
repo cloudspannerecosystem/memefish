@@ -3558,6 +3558,12 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		key = p.expectKeywordLike("KEY").Pos
 	}
 
+	placementKey := token.InvalidPos
+	if p.Token.IsKeywordLike("PLACEMENT") {
+		p.nextToken()
+		placementKey = p.expectKeywordLike("KEY").Pos
+	}
+
 	options := p.tryParseOptions()
 
 	return &ast.ColumnDef{
@@ -3569,6 +3575,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		PrimaryKey:       !key.Invalid(),
 		DefaultSemantics: defaultSemantics,
 		Hidden:           hiddenPos,
+		PlacementKey:     placementKey,
 		Options:          options,
 	}
 }

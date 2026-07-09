@@ -36,8 +36,9 @@ CREATE TABLE sch1.Singers (
         NamePos: 41,
         Name:    "INT64",
       },
-      NotNull: true,
-      Hidden:  -1,
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -58,7 +59,8 @@ CREATE TABLE sch1.Singers (
           Value:    "1024",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -79,7 +81,8 @@ CREATE TABLE sch1.Singers (
           Value:    "1024",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -95,7 +98,8 @@ CREATE TABLE sch1.Singers (
         Name:    "BYTES",
         Max:     true,
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

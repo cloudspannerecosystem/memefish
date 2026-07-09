@@ -1,0 +1,41 @@
+--- create_table_placement_key_minimal.sql
+CREATE TABLE t (location_name STRING(MAX) NOT NULL PLACEMENT KEY) PRIMARY KEY ()
+--- AST
+&ast.CreateTable{
+  Rparen:           64,
+  PrimaryKeyRparen: 79,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 14,
+        Name:    "t",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 46,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 16,
+        NameEnd: 29,
+        Name:    "location_name",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 30,
+        Rparen:  40,
+        Name:    "STRING",
+        Max:     true,
+      },
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: 61,
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE t (
+  location_name STRING(MAX) NOT NULL PLACEMENT KEY
+) PRIMARY KEY ()

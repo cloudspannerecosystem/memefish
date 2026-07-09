@@ -43,7 +43,8 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 50,
@@ -57,8 +58,9 @@ create table foo (
         NamePos: 38,
         Name:    "FLOAT64",
       },
-      NotNull: true,
-      Hidden:  -1,
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 78,
@@ -79,9 +81,10 @@ create table foo (
           Value:    "255",
         },
       },
-      NotNull: true,
-      Hidden:  -1,
-      Options: &ast.Options{
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
+      Options:      &ast.Options{
         Options: 83,
         Rparen:  120,
         Records: []*ast.OptionsDef{
@@ -151,7 +154,8 @@ create table foo (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -165,7 +169,8 @@ create table foo (
         NamePos: 679,
         Name:    "JSON",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 707,
@@ -196,7 +201,8 @@ create table foo (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: 766,
@@ -243,7 +249,8 @@ create table foo (
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   TableConstraints: []*ast.TableConstraint{

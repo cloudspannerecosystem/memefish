@@ -58,7 +58,8 @@ CREATE TABLE foo
           },
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -74,7 +75,8 @@ CREATE TABLE foo
         Name:    "STRING",
         Max:     true,
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -88,7 +90,8 @@ CREATE TABLE foo
         NamePos: 121,
         Name:    "INT64",
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

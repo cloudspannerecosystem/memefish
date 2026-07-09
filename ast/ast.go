@@ -2528,7 +2528,7 @@ type DropProtoBundle struct {
 //	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
 //	  {{.Synonym | sqlJoin ","}}
 //	)
-//	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
+//	{{if .PrimaryKeyRparen.Invalid | not}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //	{{if .Options}}, {{.Options | sqlOpt}}{{end}}
@@ -2542,7 +2542,7 @@ type CreateTable struct {
 
 	Create           token.Pos // position of "CREATE" keyword
 	Rparen           token.Pos // position of ")" of end of column definitions
-	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause, optional
+	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause; InvalidPos if omitted
 
 	IfNotExists       bool
 	Name              *Path
@@ -2627,10 +2627,11 @@ type BitReversedPositive struct {
 //	{{.DefaultSemantics | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{if .PrimaryKey}}PRIMARY KEY{{end}}
+//	{{if .PlacementKey.Invalid | not}}PLACEMENT KEY{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
+	// end = Options.end || PlacementKey + 3 || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 	Key  token.Pos // position of "KEY" of PRIMARY KEY
@@ -2642,8 +2643,9 @@ type ColumnDef struct {
 
 	DefaultSemantics ColumnDefaultSemantics // optional
 
-	Hidden  token.Pos // InvalidPos if not hidden
-	Options *Options  // optional
+	Hidden       token.Pos // InvalidPos if not hidden
+	PlacementKey token.Pos // position of "KEY" of PLACEMENT KEY; InvalidPos if absent
+	Options      *Options  // optional
 }
 
 // ColumnDefaultExpr is a default value expression for the column.

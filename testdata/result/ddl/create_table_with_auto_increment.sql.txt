@@ -34,7 +34,8 @@ create table foo (
       DefaultSemantics: &ast.AutoIncrement{
         AutoIncrement: 41,
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
 }

@@ -30,8 +30,9 @@ CREATE TABLE Singers (
         NamePos: 36,
         Name:    "INT64",
       },
-      NotNull: true,
-      Hidden:  -1,
+      NotNull:      true,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -52,7 +53,8 @@ CREATE TABLE Singers (
           Value:    "1024",
         },
       },
-      Hidden: -1,
+      Hidden:       -1,
+      PlacementKey: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{
