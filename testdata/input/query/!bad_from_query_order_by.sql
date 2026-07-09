@@ -1,0 +1,1 @@
+FROM t ORDER BY x

@@ -1,0 +1,1 @@
+FROM t LIMIT 1

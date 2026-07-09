@@ -1,0 +1,56 @@
+--- !bad_from_query_order_by.sql
+FROM t ORDER BY x
+--- Error
+syntax error: testdata/input/query/!bad_from_query_order_by.sql:1:8: ORDER BY not supported after FROM query; Consider using pipe operator `|> ORDER BY` or parentheses around the FROM query.
+  1|  FROM t ORDER BY x
+   |         ^~~~~
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 17,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "FROM",
+          Raw:  "FROM",
+          End:  4,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "t",
+          AsString: "t",
+          Pos:      5,
+          End:      6,
+        },
+        &token.Token{
+          Kind:  "ORDER",
+          Space: " ",
+          Raw:   "ORDER",
+          Pos:   7,
+          End:   12,
+        },
+        &token.Token{
+          Kind:  "BY",
+          Space: " ",
+          Raw:   "BY",
+          Pos:   13,
+          End:   15,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "x",
+          AsString: "x",
+          Pos:      16,
+          End:      17,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM t ORDER BY x
