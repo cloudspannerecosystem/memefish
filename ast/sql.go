@@ -250,7 +250,7 @@ func (s *SubQuery) SQL() string {
 	return "(" + s.Query.SQL() + ")"
 }
 
-func (s *StarModifierExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, " ") + ")" }
+func (s *StarModifierExcept) SQL() string { return "EXCEPT (" + sqlJoin(s.Columns, ", ") + ")" }
 
 func (s *StarModifierReplaceItem) SQL() string { return s.Expr.SQL() + " AS " + s.Name.SQL() }
 
