@@ -46,7 +46,11 @@ func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
 	}()
 
 	p.nextToken()
-	stmts = parseStatements(p, p.parseStatement)
+	stmts = parseStatements(
+		p,
+		p.parseStatement,
+		func(bad *ast.BadNode) ast.Statement { return &ast.BadStatement{BadNode: bad} },
+	)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -178,7 +182,11 @@ func (p *Parser) ParseDDLs() (ddls []ast.DDL, err error) {
 	}()
 
 	p.nextToken()
-	ddls = parseStatements(p, p.parseDDL)
+	ddls = parseStatements(
+		p,
+		p.parseDDL,
+		func(bad *ast.BadNode) ast.DDL { return &ast.BadDDL{BadNode: bad} },
+	)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -216,7 +224,11 @@ func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
 	}()
 
 	p.nextToken()
-	dmls = parseStatements(p, p.parseDML)
+	dmls = parseStatements(
+		p,
+		p.parseDML,
+		func(bad *ast.BadNode) ast.DML { return &ast.BadDML{BadNode: bad} },
+	)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
 	}
@@ -297,11 +309,14 @@ func (p *Parser) parseCall() *ast.Call {
 	}
 }
 
-func parseStatements[T ast.Node](p *Parser, doParse func() T) []T {
+func parseStatements[T ast.Node](p *Parser, doParse func() T, wrapBad func(*ast.BadNode) T) []T {
 	var nodes []T
 	for p.Token.Kind != token.TokenEOF {
 		if p.Token.Kind == ";" {
-			p.nextToken()
+			if bad := p.nextTokenAfterSemicolonRecover(); bad != nil {
+				nodes = append(nodes, wrapBad(bad))
+				break
+			}
 			continue
 		}
 
@@ -6488,7 +6503,26 @@ func (p *Parser) handleError(r any, l *Lexer) {
 
 func (p *Parser) handleParseStatementError(r any, l *Lexer) *ast.BadNode {
 	p.handleError(r, l)
+	return p.consumeBadStatement()
+}
 
+// nextTokenAfterSemicolonRecover advances past a statement separator while
+// keeping lexical errors inside the public multi-statement parse boundary.
+func (p *Parser) nextTokenAfterSemicolonRecover() (bad *ast.BadNode) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			p.handleError(r, l)
+			p.Lexer.nextToken(true)
+			bad = p.consumeBadStatement()
+		}
+	}()
+
+	p.nextToken()
+	return nil
+}
+
+func (p *Parser) consumeBadStatement() *ast.BadNode {
 	var tokens []*token.Token
 	pos := p.Token.Pos
 	end := p.Token.Pos
