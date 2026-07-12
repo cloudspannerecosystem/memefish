@@ -17,121 +17,113 @@ type Parser struct {
 }
 
 // ParseStatement parses a SQL statement.
-func (p *Parser) ParseStatement() (ast.Statement, error) {
+func (p *Parser) ParseStatement() (stmt ast.Statement, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)}
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	stmt := p.parseStatement()
+	stmt = p.parseStatement()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return stmt, err
 	}
 
 	return stmt, nil
 }
 
 // ParseStatements parses SQL statements list separated by semi-colon.
-func (p *Parser) ParseStatements() ([]ast.Statement, error) {
+func (p *Parser) ParseStatements() (stmts []ast.Statement, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			stmts = append(stmts, &ast.BadStatement{BadNode: p.handleParseStatementError(r, l)})
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	stmts := parseStatements(p, p.parseStatement)
+	stmts = parseStatements(p, p.parseStatement)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return stmts, err
 	}
 
 	return stmts, nil
 }
 
 // ParseQuery parses a query statement.
-func (p *Parser) ParseQuery() (*ast.QueryStatement, error) {
+func (p *Parser) ParseQuery() (stmt *ast.QueryStatement, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			stmt = &ast.QueryStatement{Query: &ast.BadQueryExpr{BadNode: p.handleParseStatementError(r, l)}}
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	stmt := p.parseQueryStatement()
+	stmt = p.parseQueryStatement()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-		return stmt, err
 	}
 
 	return stmt, nil
 }
 
 func (p *Parser) ParseGQLQuery() (stmt *ast.GQLGraphQuery, err error) {
-	p.nextToken()
-
 	l := p.cloneLexer()
 	defer func() {
 		if r := recover(); r != nil {
 			p.handleParseStatementError(r, l)
-			err = MultiError(p.errors)
-			p.errors = nil
 		}
+		err = p.collectError()
 	}()
 
+	p.nextToken()
 	stmt = p.parseGQLQuery()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err = MultiError(p.errors)
-		p.errors = nil
-		return stmt, err
 	}
 
 	return stmt, nil
 }
 
 // ParseExpr parses a SQL expression.
-func (p *Parser) ParseExpr() (ast.Expr, error) {
+func (p *Parser) ParseExpr() (expr ast.Expr, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			expr = p.handleParseExprError(r, l)
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	expr := p.parseExpr()
+	expr = p.parseExpr()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return expr, err
 	}
 
 	return expr, nil
 }
 
 // ParseType parses a type name.
-func (p *Parser) ParseType() (ast.Type, error) {
+func (p *Parser) ParseType() (t ast.Type, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			t = p.handleParseTypeError(r, l)
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	t := p.parseType()
+	t = p.parseType()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return t, err
 	}
 
 	return t, nil
@@ -139,19 +131,15 @@ func (p *Parser) ParseType() (ast.Type, error) {
 
 // ParseSchemaType parses a schema type.
 func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
-	p.nextToken()
 	l := p.cloneLexer()
 	defer func() {
 		if r := recover(); r != nil {
 			t = p.handleParseTypeError(r, l)
 		}
-		if len(p.errors) > 0 {
-			// Reset the errors and allow processing to continue
-			err = MultiError(p.errors)
-			p.errors = nil
-		}
+		err = p.collectError()
 	}()
 
+	p.nextToken()
 	t = p.parseSchemaType()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
@@ -161,76 +149,76 @@ func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
 }
 
 // ParseDDL parses a CREATE/ALTER/DROP statement.
-func (p *Parser) ParseDDL() (ast.DDL, error) {
+func (p *Parser) ParseDDL() (ddl ast.DDL, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			ddl = &ast.BadDDL{BadNode: p.handleParseStatementError(r, l)}
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	ddl := p.parseDDL()
+	ddl = p.parseDDL()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return ddl, err
 	}
 
 	return ddl, nil
 }
 
 // ParseDDLs parses CREATE/ALTER/DROP statements list separated by semi-colon.
-func (p *Parser) ParseDDLs() ([]ast.DDL, error) {
+func (p *Parser) ParseDDLs() (ddls []ast.DDL, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			ddls = append(ddls, &ast.BadDDL{BadNode: p.handleParseStatementError(r, l)})
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	ddls := parseStatements(p, p.parseDDL)
+	ddls = parseStatements(p, p.parseDDL)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return ddls, err
 	}
 
 	return ddls, nil
 }
 
 // ParseDML parses a INSERT/DELETE/UPDATE statement.
-func (p *Parser) ParseDML() (ast.DML, error) {
+func (p *Parser) ParseDML() (dml ast.DML, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			dml = &ast.BadDML{BadNode: p.handleParseStatementError(r, l)}
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	dml := p.parseDML()
+	dml = p.parseDML()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return dml, err
 	}
 
 	return dml, nil
 }
 
 // ParseDMLs parses INSERT/DELETE/UPDATE statements list separated by semi-colon.
-func (p *Parser) ParseDMLs() ([]ast.DML, error) {
+func (p *Parser) ParseDMLs() (dmls []ast.DML, err error) {
+	l := p.cloneLexer()
+	defer func() {
+		if r := recover(); r != nil {
+			dmls = append(dmls, &ast.BadDML{BadNode: p.handleParseStatementError(r, l)})
+		}
+		err = p.collectError()
+	}()
+
 	p.nextToken()
-	dmls := parseStatements(p, p.parseDML)
+	dmls = parseStatements(p, p.parseDML)
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		// Reset the errors and allow processing to continue
-		err := MultiError(p.errors)
-		p.errors = nil
-
-		return dmls, err
 	}
 
 	return dmls, nil
@@ -6467,6 +6455,19 @@ func (p *Parser) parseStringValue() ast.StringValue {
 //
 // ================================================================================
 
+// collectError converts the accumulated parse errors into a single error and
+// resets the error buffer so the Parser can be reused for a subsequent parse.
+// It returns nil when no error has been accumulated.
+func (p *Parser) collectError() error {
+	if len(p.errors) == 0 {
+		return nil
+	}
+
+	err := MultiError(p.errors)
+	p.errors = nil
+	return err
+}
+
 func (p *Parser) handleError(r any, l *Lexer) {
 	e, ok := r.(*Error)
 	if !ok {
@@ -6475,6 +6476,14 @@ func (p *Parser) handleError(r any, l *Lexer) {
 
 	p.errors = append(p.errors, e)
 	p.Lexer = l
+
+	// When the panic escapes before the first token is read (a lexical error in
+	// the very first token), the restored lexer still holds the zero token.
+	// Advance once in noPanic mode so the recovery skip loops start from the
+	// first real token instead of emitting a spurious empty token.
+	if p.Token.Kind == "" {
+		p.Lexer.nextToken(true)
+	}
 }
 
 func (p *Parser) handleParseStatementError(r any, l *Lexer) *ast.BadNode {
