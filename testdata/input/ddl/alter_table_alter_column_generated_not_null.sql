@@ -1,0 +1,1 @@
+ALTER TABLE users ALTER COLUMN normalized_name STRING(MAX) NOT NULL AS (LOWER(name))
