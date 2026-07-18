@@ -1,0 +1,97 @@
+--- !bad_match_empty_properties.sql
+GRAPH FinGraph
+MATCH (a {})
+RETURN a
+
+--- Error
+syntax error: testdata/input/gql/!bad_match_empty_properties.sql:2:11: expected token: <ident>, but: }
+  2|  MATCH (a {})
+   |            ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 36,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      15,
+              End:      20,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   21,
+              End:   22,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      22,
+              End:      23,
+            },
+            &token.Token{
+              Kind:  "{",
+              Space: " ",
+              Raw:   "{",
+              Pos:   24,
+              End:   25,
+            },
+            &token.Token{
+              Kind: "}",
+              Raw:  "}",
+              Pos:  25,
+              End:  26,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  26,
+              End:  27,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      28,
+              End:      34,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      35,
+              End:      36,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a {}) RETURN a

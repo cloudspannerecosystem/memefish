@@ -4842,7 +4842,9 @@ type GQLMatch struct {
 	OptionalPos token.Pos // position of "OPTIONAL", optional
 	Match       token.Pos // position of "MATCH"
 	Hint        *Hint     // optional
-	Pattern     *GQLGraphPattern
+	// Pattern is always a valid graph pattern. A malformed pattern inside MATCH
+	// is recovered at the GQL linear-query-statement boundary instead.
+	Pattern *GQLGraphPattern
 }
 
 // GQLGraphPattern represents a graph pattern in GQL.
@@ -5103,7 +5105,7 @@ type GQLProperties struct {
 	// end = Rbrace + 1
 
 	Lbrace, Rbrace token.Pos
-	Fields         []*GQLPropertyField
+	Fields         []*GQLPropertyField // len(Fields) > 0
 }
 
 // GQLPropertyField represents a single property filter in GQL.

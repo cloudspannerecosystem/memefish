@@ -167,7 +167,8 @@ func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
 // method lets callers and the `tools/parse -mode gql_graph_pattern` harness
 // parse and inspect graph patterns in isolation for testing and tooling.
 // Malformed input returns a *ast.BadGQLGraphPattern together with the parse
-// error; the returned node remains safe to inspect, walk, and unparse.
+// error; trailing tokens also make the whole fragment malformed. The returned
+// node remains safe to inspect, walk, and unparse.
 func (p *Parser) ParseGQLGraphPattern() (pattern ast.GQLGraphPatternNode, err error) {
 	entry := p.cloneLexer()
 	var patternStart *Lexer
@@ -6843,23 +6844,22 @@ func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
 	var searchPrefix *ast.GQLPathSearchPrefix
 	var mode *ast.GQLPathModeClause
 
-	if p.Token.Kind == token.TokenIdent || p.Token.Kind == "ALL" || p.Token.Kind == "ANY" {
-		switch {
-		case p.Token.Kind == "ALL", p.Token.Kind == "ANY",
-			p.Token.IsKeywordLike("SHORTEST"), p.Token.IsKeywordLike("CHEAPEST"):
-			searchPrefix = p.parseGQLPathSearchPrefix()
-		default:
-			// check if it is "variable ="
-			lexer := p.cloneLexer()
-			p.parseIdent()
-			if p.Token.Kind == "=" {
-				p.Lexer = lexer
-				variable = p.parseIdent()
-				p.expect("=")
-			} else {
-				p.Lexer = lexer
-			}
+	// A prefix-like non-reserved keyword can also be a path variable. Resolve
+	// the unambiguous "identifier =" form before trying a search prefix.
+	if p.Token.Kind == token.TokenIdent {
+		lexer := p.cloneLexer()
+		p.parseIdent()
+		isVariable := p.Token.Kind == "="
+		p.Lexer = lexer
+		if isVariable {
+			variable = p.parseIdent()
+			p.expect("=")
 		}
+	}
+
+	if p.Token.Kind == "ALL" || p.Token.Kind == "ANY" ||
+		p.Token.IsKeywordLike("SHORTEST") || p.Token.IsKeywordLike("CHEAPEST") {
+		searchPrefix = p.parseGQLPathSearchPrefix()
 	}
 
 	if p.Token.IsKeywordLike("WALK") || p.Token.IsKeywordLike("TRAIL") ||
@@ -6972,8 +6972,12 @@ func (p *Parser) parseGQLPathMode() *ast.GQLPathModeClause {
 
 	end := id.End
 	var suffix ast.GQLPathModeSuffix
-	if p.Token.IsKeywordLike("PATHS") || p.Token.IsKeywordLike("PATH") {
-		suffix = ast.GQLPathModeSuffix(p.Token.AsString)
+	if p.Token.IsKeywordLike("PATH") {
+		suffix = ast.GQLPathModeSuffixPath
+		end = p.Token.End
+		p.nextToken()
+	} else if p.Token.IsKeywordLike("PATHS") {
+		suffix = ast.GQLPathModeSuffixPaths
 		end = p.Token.End
 		p.nextToken()
 	}
@@ -7050,7 +7054,7 @@ func (p *Parser) lookaheadGQLSubpathPattern() bool {
 		return false
 	}
 
-	if p.Token.Kind == "-" || p.Token.Kind == "<" || p.Token.Kind == "(" {
+	if p.lookaheadGQLEdgePattern() || p.Token.Kind == "(" {
 		return true
 	}
 
@@ -7377,10 +7381,7 @@ func (p *Parser) parseGQLLabelPrimary() ast.GQLLabelExpression {
 
 func (p *Parser) parseGQLProperties() *ast.GQLProperties {
 	lbrace := p.expect("{").Pos
-	var fields []*ast.GQLPropertyField
-	if p.Token.Kind != "}" {
-		fields = parseCommaSeparatedList(p, p.parseGQLPropertyField)
-	}
+	fields := parseCommaSeparatedList(p, p.parseGQLPropertyField)
 	rbrace := p.expect("}").Pos
 	return &ast.GQLProperties{
 		Lbrace: lbrace,
