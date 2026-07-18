@@ -47,7 +47,7 @@ RETURN *
                               Name:    "nl1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 46,
                               Expr:  &ast.GQLLabelBinaryExpr{
                                 Op:   "|",
@@ -96,7 +96,7 @@ RETURN *
                               Name:    "nl2",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 74,
                               Expr:  &ast.GQLLabelBinaryExpr{
                                 Op:   "&",
@@ -145,7 +145,7 @@ RETURN *
                               Name:    "nl3",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 102,
                               Expr:  &ast.GQLLabelUnaryExpr{
                                 OpPos: 103,
@@ -188,7 +188,7 @@ RETURN *
                               Name:    "nl4",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 122,
                               Expr:  &ast.GQLWildcardLabel{
                                 Percent: 123,
@@ -223,7 +223,7 @@ RETURN *
                               Name:    "nl5",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 136,
                               Expr:  &ast.GQLLabelBinaryExpr{
                                 Op:   "&",
@@ -290,7 +290,7 @@ RETURN *
                               Name:    "nl6",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    176,
+                              Is:    176,
                               Colon: -1,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -329,7 +329,7 @@ RETURN *
                               Name:    "nl7",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 197,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

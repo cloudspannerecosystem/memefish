@@ -46,7 +46,7 @@ RETURN a, b
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 29,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -85,7 +85,7 @@ RETURN a, b
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 55,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -127,7 +127,7 @@ RETURN a, b
                               Name:    "b",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 72,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

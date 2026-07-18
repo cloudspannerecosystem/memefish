@@ -4825,7 +4825,7 @@ type GQLOrderByItem struct {
 
 // GQLMatch represents a MATCH statement in GQL.
 //
-//	{{if .OptionalPos.Invalid | not}}OPTIONAL {{end}}MATCH {{.Hint | sqlOpt}}{{.Pattern | sql}}
+//	{{if .OptionalPos.Invalid | not}}OPTIONAL {{end}}MATCH{{if .Hint}} {{.Hint | sql}}{{end}} {{.Pattern | sql}}
 type GQLMatch struct {
 	// pos = OptionalPos || Match
 	// end = Pattern.end
@@ -4849,7 +4849,7 @@ type GQLGraphPattern struct {
 
 // GQLTopLevelPathPattern represents a top-level path pattern in GQL.
 //
-//	{{.Hint | sqlOpt}}{{if .Variable}}{{.Variable}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
+//	{{.Hint | sqlOpt}}{{if .Variable}}{{.Variable | sql}} = {{end}}{{.SearchPrefix | sqlOpt}}{{.Mode | sqlOpt}}{{.Path | sql}}
 type GQLTopLevelPathPattern struct {
 	// pos = (Hint ?? Variable ?? SearchPrefix ?? Mode ?? Path).pos
 	// end = Path.end
@@ -4872,12 +4872,14 @@ type GQLPathSearchPrefix struct {
 	EndPos   token.Pos
 
 	Prefix GQLSearchPrefix
-	Count  IntValue // optional; Spanner syntax-accepts ANY k / SHORTEST k / CHEAPEST k
+	// Count is required for SHORTEST and CHEAPEST, optional for ANY, and absent
+	// for the other prefixes.
+	Count IntValue
 }
 
 // GQLPathModeClause represents a path mode clause in GQL.
 //
-//	{{.Mode}}
+//	{{.Mode}}{{if .Suffix}} {{.Suffix}}{{end}}
 type GQLPathModeClause struct {
 	// pos = StartPos
 	// end = EndPos
@@ -4885,7 +4887,8 @@ type GQLPathModeClause struct {
 	StartPos token.Pos
 	EndPos   token.Pos
 
-	Mode GQLPathMode
+	Mode   GQLPathMode
+	Suffix GQLPathModeSuffix // optional PATH or PATHS spelling
 }
 
 // GQLPathPattern represents a sequence of path terms in GQL.
@@ -4925,7 +4928,7 @@ type GQLPathTerm struct {
 	// pos = (Hint ?? Primary).pos
 	// end = (Quantifier ?? Primary).end
 
-	Hint       *Hint          // optional
+	Hint       *Hint          // optional; syntactically precedes and attaches to the following path term
 	Primary    GQLPathPrimary // GQLNodePattern, GQLEdgePattern, or GQLSubpathPattern
 	Quantifier GQLQuantifier  // optional
 }
@@ -5009,11 +5012,11 @@ func (GQLLabelParenExpr) isGQLLabelExpression()  {}
 //
 //	{{if .Colon.Invalid}}IS {{else}}:{{end}}{{.Expr | sql}}
 type GQLLabelFilter struct {
-	// pos = IS || Colon
+	// pos = Is || Colon
 	// end = Expr.end
 
-	// IS and Colon are mutually exclusive, but one must be valid.
-	IS    token.Pos // optional
+	// Is and Colon are mutually exclusive, but one must be valid.
+	Is    token.Pos // position of "IS", optional
 	Colon token.Pos // optional
 	Expr  GQLLabelExpression
 }

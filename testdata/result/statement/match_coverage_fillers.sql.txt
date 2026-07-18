@@ -49,7 +49,7 @@ RETURN *
                               Name:    "ne",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 92,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -94,7 +94,7 @@ RETURN *
                               Name:    "ee",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 114,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -199,7 +199,7 @@ RETURN *
                               Name:    "ne",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 187,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

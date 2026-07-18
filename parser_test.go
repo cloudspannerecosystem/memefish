@@ -93,6 +93,9 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			}
 
 			node, err := parse(p)
+			if !bad && node == nil {
+				t.Fatal("parser returned a nil AST without an expected parse error")
+			}
 
 			pprinter := pp.New()
 			pprinter.SetColoringEnabled(false)
@@ -192,7 +195,9 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
-			fmt.Fprintln(&buf, node.SQL())
+			if node != nil {
+				fmt.Fprintln(&buf, node.SQL())
+			}
 
 			actual := buf.Bytes()
 
@@ -221,6 +226,9 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 					t.Fatalf("error on diff: %v", err)
 				}
 				t.Error(d)
+				return
+			}
+			if node == nil {
 				return
 			}
 
@@ -308,6 +316,45 @@ func TestParseGQLGraphPattern(t *testing.T) {
 	resultPath := "./testdata/result/gql_graph_pattern"
 
 	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
-		return p.ParseGQLGraphPattern()
+		pattern, err := p.ParseGQLGraphPattern()
+		if pattern == nil {
+			return nil, err
+		}
+		return pattern, err
 	})
+}
+
+func TestParseGQLGraphPatternMalformedReturnsNil(t *testing.T) {
+	p := &memefish.Parser{
+		Lexer: &memefish.Lexer{
+			File: &token.File{Buffer: "(a)-@"},
+		},
+	}
+
+	pattern, err := p.ParseGQLGraphPattern()
+	if err == nil {
+		t.Fatal("ParseGQLGraphPattern() error = nil, want error")
+	}
+	if pattern != nil {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %#v, want nil", pattern)
+	}
+}
+
+func TestParseGQLGraphPatternFirstTokenLexerErrorReturnsNil(t *testing.T) {
+	p := &memefish.Parser{
+		Lexer: &memefish.Lexer{
+			File: &token.File{Buffer: `"foo`},
+		},
+	}
+
+	pattern, err := p.ParseGQLGraphPattern()
+	if err == nil {
+		t.Fatal("ParseGQLGraphPattern() error = nil, want error")
+	}
+	if !strings.Contains(err.Error(), "unclosed string literal") {
+		t.Fatalf("ParseGQLGraphPattern() error = %v, want unclosed string literal", err)
+	}
+	if pattern != nil {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %#v, want nil", pattern)
+	}
 }

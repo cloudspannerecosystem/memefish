@@ -44,7 +44,7 @@ RETURN *
                               Name:    "n",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 50,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -105,7 +105,7 @@ RETURN *
                               Name:    "src",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 154,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -126,7 +126,7 @@ RETURN *
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 165,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -151,7 +151,7 @@ RETURN *
                               Name:    "dst",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 182,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -192,7 +192,7 @@ RETURN *
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 201,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -217,7 +217,7 @@ RETURN *
                               Name:    "p",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 210,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

@@ -1,0 +1,96 @@
+--- edge_edge_hint.sql
+(a)-[e]->@{JOIN_METHOD=HASH_JOIN}-[f]->(b)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Rparen:  2,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 1,
+                  NameEnd: 2,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  3,
+              EndPos:    9,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 5,
+                  NameEnd: 6,
+                  Name:    "e",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Hint: &ast.Hint{
+              Atmark:  9,
+              Rbrace:  32,
+              Records: []*ast.HintRecord{
+                &ast.HintRecord{
+                  Key: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 11,
+                        NameEnd: 22,
+                        Name:    "JOIN_METHOD",
+                      },
+                    },
+                  },
+                  Value: &ast.Ident{
+                    NamePos: 23,
+                    NameEnd: 32,
+                    Name:    "HASH_JOIN",
+                  },
+                },
+              },
+            },
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  33,
+              EndPos:    39,
+              Direction: "RIGHT",
+              Filler:    &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 35,
+                  NameEnd: 36,
+                  Name:    "f",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  39,
+              Rparen:  41,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 40,
+                  NameEnd: 41,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(a)-[e]->@{JOIN_METHOD=HASH_JOIN} -[f]->(b)

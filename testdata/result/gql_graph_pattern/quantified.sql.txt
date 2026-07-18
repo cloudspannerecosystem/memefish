@@ -18,7 +18,7 @@
                   Name:    "a",
                 },
                 Label: &ast.GQLLabelFilter{
-                  IS:    -1,
+                  Is:    -1,
                   Colon: 2,
                   Expr:  &ast.GQLNameLabel{
                     Name: &ast.Ident{
@@ -39,7 +39,7 @@
               Filler:    &ast.GQLElementPatternFiller{
                 EmptyPos: -1,
                 Label:    &ast.GQLLabelFilter{
-                  IS:    -1,
+                  Is:    -1,
                   Colon: 12,
                   Expr:  &ast.GQLNameLabel{
                     Name: &ast.Ident{
@@ -81,7 +81,7 @@
                   Name:    "b",
                 },
                 Label: &ast.GQLLabelFilter{
-                  IS:    -1,
+                  Is:    -1,
                   Colon: 28,
                   Expr:  &ast.GQLNameLabel{
                     Name: &ast.Ident{

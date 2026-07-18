@@ -68,6 +68,90 @@ func TestExprPrecPanicIncludesUnhandledType(t *testing.T) {
 	}
 }
 
+func TestGQLLabelExpressionSQLPreservesPrecedence(t *testing.T) {
+	label := func(name string) GQLLabelExpression {
+		return &GQLNameLabel{Name: &Ident{Name: name}}
+	}
+
+	tests := []struct {
+		name string
+		expr GQLLabelExpression
+		want string
+	}{
+		{
+			name: "and over or",
+			expr: &GQLLabelBinaryExpr{
+				Op: GQLLabelOpAnd,
+				Left: &GQLLabelBinaryExpr{
+					Op:    GQLLabelOpOr,
+					Left:  label("A"),
+					Right: label("B"),
+				},
+				Right: label("C"),
+			},
+			want: "(A | B) & C",
+		},
+		{
+			name: "not over or",
+			expr: &GQLLabelUnaryExpr{
+				Op: GQLLabelOpNot,
+				Expr: &GQLLabelBinaryExpr{
+					Op:    GQLLabelOpOr,
+					Left:  label("A"),
+					Right: label("B"),
+				},
+			},
+			want: "!(A | B)",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.expr.SQL(); got != test.want {
+				t.Fatalf("SQL() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
+func TestGQLPathSearchPrefixSQLRequiresShortestCount(t *testing.T) {
+	counted := &GQLPathSearchPrefix{
+		Prefix: GQLSearchPrefixShortest,
+		Count:  &IntLiteral{Base: 10, Value: "3"},
+	}
+	if got, want := counted.SQL(), "SHORTEST 3"; got != want {
+		t.Fatalf("SQL() = %q, want %q", got, want)
+	}
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Fatal("SQL() did not panic for SHORTEST without Count")
+		}
+	}()
+	_ = (&GQLPathSearchPrefix{Prefix: GQLSearchPrefixShortest}).SQL()
+}
+
+func TestGQLPathModeClauseSQLPreservesSuffix(t *testing.T) {
+	tests := []struct {
+		name   string
+		suffix GQLPathModeSuffix
+		want   string
+	}{
+		{name: "without suffix", want: "WALK"},
+		{name: "singular path", suffix: GQLPathModeSuffixPath, want: "WALK PATH"},
+		{name: "plural paths", suffix: GQLPathModeSuffixPaths, want: "WALK PATHS"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			n := &GQLPathModeClause{Mode: GQLPathModeWalk, Suffix: test.suffix}
+			if got := n.SQL(); got != test.want {
+				t.Errorf("SQL() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 func loadCatalog(t *testing.T) *astcatalog.Catalog {
 	t.Helper()
 

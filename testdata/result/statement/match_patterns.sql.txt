@@ -61,7 +61,7 @@ RETURN 1
                               Name:    "src",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 66,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -87,7 +87,7 @@ RETURN 1
                               Name:    "t1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 79,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -112,7 +112,7 @@ RETURN 1
                               Name:    "mid",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 96,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -138,7 +138,7 @@ RETURN 1
                               Name:    "t2",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 109,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -163,7 +163,7 @@ RETURN 1
                               Name:    "dst",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 126,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -204,7 +204,7 @@ RETURN 1
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 147,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -229,7 +229,7 @@ RETURN 1
                               Name:    "p",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 156,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -273,7 +273,7 @@ RETURN 1
                               Name:    "account",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 218,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -315,7 +315,7 @@ RETURN 1
                               Name:    "transfer",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 257,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -340,7 +340,7 @@ RETURN 1
                               Name:    "dst",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 273,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -384,7 +384,7 @@ RETURN 1
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 323,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -427,7 +427,7 @@ RETURN 1
                               Name:    "t",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 353,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -469,7 +469,7 @@ RETURN 1
                               Name:    "b",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 375,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -528,7 +528,7 @@ RETURN 1
                               Name:    "e",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 410,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -617,7 +617,7 @@ RETURN 1
                               Name:    "a1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 476,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -643,7 +643,7 @@ RETURN 1
                               Name:    "t1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 489,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -668,7 +668,7 @@ RETURN 1
                               Name:    "a2",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 505,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -712,7 +712,7 @@ RETURN 1
                               Name:    "a1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 532,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -738,7 +738,7 @@ RETURN 1
                               Name:    "t1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 545,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -763,7 +763,7 @@ RETURN 1
                               Name:    "a2",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 561,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -807,7 +807,7 @@ RETURN 1
                               Name:    "a1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 586,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -833,7 +833,7 @@ RETURN 1
                               Name:    "t1",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 599,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -858,7 +858,7 @@ RETURN 1
                               Name:    "a2",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 615,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -1029,7 +1029,7 @@ RETURN 1
                                       Name:    "e",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 716,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1054,7 +1054,7 @@ RETURN 1
                                       Name:    "p",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 731,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1086,7 +1086,7 @@ RETURN 1
                                       Name:    "c",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 743,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1170,7 +1170,7 @@ RETURN 1
                                       Name:    "e",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 779,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1201,7 +1201,7 @@ RETURN 1
                                               Name:    "p",
                                             },
                                             Label: &ast.GQLLabelFilter{
-                                              IS:    -1,
+                                              Is:    -1,
                                               Colon: 795,
                                               Expr:  &ast.GQLNameLabel{
                                                 Name: &ast.Ident{
@@ -1233,7 +1233,7 @@ RETURN 1
                                               Name:    "c",
                                             },
                                             Label: &ast.GQLLabelFilter{
-                                              IS:    -1,
+                                              Is:    -1,
                                               Colon: 807,
                                               Expr:  &ast.GQLNameLabel{
                                                 Name: &ast.Ident{
@@ -1320,7 +1320,7 @@ RETURN 1
                                       Name:    "p",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 867,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1356,7 +1356,7 @@ RETURN 1
                                       Name:    "e",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 880,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1381,7 +1381,7 @@ RETURN 1
                                       Name:    "c",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 895,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1417,7 +1417,7 @@ RETURN 1
                                       Name:    "s",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 906,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1442,7 +1442,7 @@ RETURN 1
                                       Name:    "u",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 919,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1485,7 +1485,7 @@ RETURN 1
                               Name:    "source_person",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 971,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -1516,7 +1516,7 @@ RETURN 1
                                       Name:    "p",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 982,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1542,7 +1542,7 @@ RETURN 1
                                       Name:    "k",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 993,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1567,7 +1567,7 @@ RETURN 1
                                       Name:    "f",
                                     },
                                     Label: &ast.GQLLabelFilter{
-                                      IS:    -1,
+                                      Is:    -1,
                                       Colon: 1004,
                                       Expr:  &ast.GQLNameLabel{
                                         Name: &ast.Ident{
@@ -1607,7 +1607,7 @@ RETURN 1
                               Name:    "dest_person",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 1030,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

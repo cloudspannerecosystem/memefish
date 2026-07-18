@@ -35,6 +35,7 @@ RETURN *
                     StartPos: 53,
                     EndPos:   62,
                     Mode:     "WALK",
+                    Suffix:   "PATH",
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -97,6 +98,7 @@ RETURN *
                     StartPos: 85,
                     EndPos:   95,
                     Mode:     "WALK",
+                    Suffix:   "PATHS",
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -159,6 +161,7 @@ RETURN *
                     StartPos: 121,
                     EndPos:   131,
                     Mode:     "TRAIL",
+                    Suffix:   "PATH",
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -221,6 +224,7 @@ RETURN *
                     StartPos: 160,
                     EndPos:   171,
                     Mode:     "SIMPLE",
+                    Suffix:   "PATH",
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -283,6 +287,7 @@ RETURN *
                     StartPos: 200,
                     EndPos:   212,
                     Mode:     "ACYCLIC",
+                    Suffix:   "PATH",
                   },
                   Path: &ast.GQLPathPattern{
                     Terms: []*ast.GQLPathTerm{
@@ -350,4 +355,4 @@ RETURN *
 }
 
 --- SQL
-GRAPH FinGraph MATCH WALK (aw)-[ew]->(bw) MATCH WALK (aws)-[ews]->(bws) MATCH TRAIL (atvar)-[et]->(btvar) MATCH SIMPLE (asvar)-[es]->(bsvar) MATCH ACYCLIC (aa)-[ea]->(ba) RETURN *
+GRAPH FinGraph MATCH WALK PATH (aw)-[ew]->(bw) MATCH WALK PATHS (aws)-[ews]->(bws) MATCH TRAIL PATH (atvar)-[et]->(btvar) MATCH SIMPLE PATH (asvar)-[es]->(bsvar) MATCH ACYCLIC PATH (aa)-[ea]->(ba) RETURN *

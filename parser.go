@@ -165,18 +165,36 @@ func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
 // This is deliberate public API: a graph pattern is not otherwise reachable as
 // a top-level entry point (it only appears inside a MATCH statement), so this
 // method lets callers and the `tools/parse -mode gql_graph_pattern` harness
-// parse and inspect graph patterns in isolation for testing and tooling.
-func (p *Parser) ParseGQLGraphPattern() (*ast.GQLGraphPattern, error) {
+// parse and inspect graph patterns in isolation for testing and tooling. Until
+// graph patterns have a Bad* representation, recovered malformed input returns
+// nil with the parse error rather than an unsafe or valid-looking partial AST.
+func (p *Parser) ParseGQLGraphPattern() (pattern *ast.GQLGraphPattern, err error) {
+	l := p.cloneLexer()
+	started := false
+	defer func() {
+		if r := recover(); r != nil {
+			if started {
+				p.handleParseStatementError(r, l)
+			} else {
+				p.handleError(r, l)
+			}
+			// GQLGraphPattern has no Bad* variant, so do not expose a partial
+			// concrete node whose required Paths invariant may not hold.
+			pattern = nil
+		}
+		if len(p.errors) > 0 {
+			pattern = nil
+			err = MultiError(p.errors)
+			p.errors = nil
+		}
+	}()
+
 	p.nextToken()
-	pattern := p.parseGQLGraphPattern()
+	started = true
+	l = p.cloneLexer()
+	pattern = p.parseGQLGraphPattern()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
-	}
-
-	if len(p.errors) > 0 {
-		err := MultiError(p.errors)
-		p.errors = nil
-		return pattern, err
 	}
 
 	return pattern, nil
@@ -6783,18 +6801,14 @@ func (p *Parser) parseGQLMatch() *ast.GQLMatch {
 	pattern := p.parseGQLGraphPattern()
 
 	return &ast.GQLMatch{
-		OptionalPos:  optional,
-		Match:        match,
-		Hint:         hint,
-		Pattern:      pattern,
+		OptionalPos: optional,
+		Match:       match,
+		Hint:        hint,
+		Pattern:     pattern,
 	}
 }
 
 func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
-	if p.Token.Kind == "@" {
-		p.panicfAtToken(&p.Token, "traversal hint cannot be used at the beginning of a graph pattern")
-	}
-
 	paths := parseCommaSeparatedList(p, p.parseGQLTopLevelPathPattern)
 	where := p.tryParseWhere()
 
@@ -6803,7 +6817,6 @@ func (p *Parser) parseGQLGraphPattern() *ast.GQLGraphPattern {
 		Where: where,
 	}
 }
-
 
 func (p *Parser) parseGQLTopLevelPathPattern() *ast.GQLTopLevelPathPattern {
 	hint := p.tryParseHint()
@@ -6940,7 +6953,9 @@ func (p *Parser) parseGQLPathMode() *ast.GQLPathModeClause {
 	}
 
 	end := id.End
+	var suffix ast.GQLPathModeSuffix
 	if p.Token.IsKeywordLike("PATHS") || p.Token.IsKeywordLike("PATH") {
+		suffix = ast.GQLPathModeSuffix(p.Token.AsString)
 		end = p.Token.End
 		p.nextToken()
 	}
@@ -6949,9 +6964,9 @@ func (p *Parser) parseGQLPathMode() *ast.GQLPathModeClause {
 		StartPos: start,
 		EndPos:   end,
 		Mode:     mode,
+		Suffix:   suffix,
 	}
 }
-
 
 func (p *Parser) parseGQLPathPattern() *ast.GQLPathPattern {
 	var terms []*ast.GQLPathTerm
@@ -6977,7 +6992,7 @@ func (p *Parser) parseGQLPathTerm() *ast.GQLPathTerm {
 
 	if quantifier != nil {
 		if _, ok := primary.(*ast.GQLNodePattern); ok {
-			p.panicfAtPosition(quantifier.Pos(), quantifier.End(), "Quantifier cannot be used on a node pattern")
+			p.panicfAtPosition(quantifier.Pos(), quantifier.End(), "quantifier cannot be used on a node pattern")
 		}
 	}
 
@@ -6989,7 +7004,7 @@ func (p *Parser) parseGQLPathTerm() *ast.GQLPathTerm {
 }
 
 func (p *Parser) lookaheadGQLPathPrimary() bool {
-	return p.Token.Kind == "(" || p.Token.Kind == "[" || p.Token.IsKeywordLike("NODE") || p.Token.IsKeywordLike("EDGE")
+	return p.Token.Kind == "("
 }
 
 func (p *Parser) parseGQLPathPrimary() ast.GQLPathPrimary {
@@ -7239,7 +7254,7 @@ func (p *Parser) parseGQLElementPatternFiller() *ast.GQLElementPatternFiller {
 		}
 		p.nextToken()
 		label = &ast.GQLLabelFilter{
-			IS:    is,
+			Is:    is,
 			Colon: colon,
 			Expr:  p.parseGQLLabelExpression(),
 		}
@@ -7341,7 +7356,6 @@ func (p *Parser) parseGQLLabelPrimary() ast.GQLLabelExpression {
 	}
 	return nil
 }
-
 
 func (p *Parser) parseGQLProperties() *ast.GQLProperties {
 	lbrace := p.expect("{").Pos

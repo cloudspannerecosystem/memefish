@@ -57,7 +57,7 @@ RETURN *
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 59,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -120,7 +120,7 @@ RETURN *
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 87,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -183,7 +183,7 @@ RETURN *
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 114,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

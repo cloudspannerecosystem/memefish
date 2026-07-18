@@ -53,7 +53,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 41,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -134,7 +134,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                           Filler:    &ast.GQLElementPatternFiller{
                             EmptyPos: -1,
                             Label:    &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 96,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -159,7 +159,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "acc",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 108,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -210,7 +210,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "p",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 140,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -255,7 +255,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "e",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 158,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -302,7 +302,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 193,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -353,7 +353,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "p",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 225,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -420,7 +420,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "e",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 269,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -445,7 +445,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 279,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -496,7 +496,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "a",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 311,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -558,7 +558,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               },
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 365,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{
@@ -583,7 +583,7 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
                               Name:    "oa",
                             },
                             Label: &ast.GQLLabelFilter{
-                              IS:    -1,
+                              Is:    -1,
                               Colon: 380,
                               Expr:  &ast.GQLNameLabel{
                                 Name: &ast.Ident{

@@ -208,6 +208,14 @@ const (
 	GQLPathModeAcyclic GQLPathMode = "ACYCLIC"
 )
 
+// GQLPathModeSuffix is the optional syntactic-sugar suffix on a path mode.
+type GQLPathModeSuffix string
+
+const (
+	GQLPathModeSuffixPath  GQLPathModeSuffix = "PATH"
+	GQLPathModeSuffixPaths GQLPathModeSuffix = "PATHS"
+)
+
 // GQLSearchPrefix is a path search prefix keyword sequence (without optional count).
 // Count-bearing forms (ANY k, SHORTEST k, …) use GQLPathSearchPrefix.Count.
 type GQLSearchPrefix string

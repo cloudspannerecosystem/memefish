@@ -2535,7 +2535,7 @@ func (g *GQLElementPatternFiller) End() token.Pos {
 }
 
 func (g *GQLLabelFilter) Pos() token.Pos {
-	return posChoice(g.IS, g.Colon)
+	return posChoice(g.Is, g.Colon)
 }
 
 func (g *GQLLabelFilter) End() token.Pos {

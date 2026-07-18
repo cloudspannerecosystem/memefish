@@ -1,0 +1,13 @@
+--- !bad_trailing_hint.sql
+(a)-@x
+
+--- Error
+syntax error: testdata/input/gql_graph_pattern/!bad_trailing_hint.sql:1:5: expected token: <eof>, but: <param>
+  1|  (a)-@x
+   |      ^~
+
+
+--- AST
+nil
+
+--- SQL

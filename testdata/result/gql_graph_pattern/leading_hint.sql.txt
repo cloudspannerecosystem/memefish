@@ -1,0 +1,73 @@
+--- leading_hint.sql
+@{FORCE_INDEX=i}(a)-(b)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Hint: &ast.Hint{
+        Rbrace:  15,
+        Records: []*ast.HintRecord{
+          &ast.HintRecord{
+            Key: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 2,
+                  NameEnd: 13,
+                  Name:    "FORCE_INDEX",
+                },
+              },
+            },
+            Value: &ast.Ident{
+              NamePos: 14,
+              NameEnd: 15,
+              Name:    "i",
+            },
+          },
+        },
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  16,
+              Rparen:  18,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 17,
+                  NameEnd: 18,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  19,
+              EndPos:    20,
+              Direction: "ANY",
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  20,
+              Rparen:  22,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 21,
+                  NameEnd: 22,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+@{FORCE_INDEX=i} (a)-(b)

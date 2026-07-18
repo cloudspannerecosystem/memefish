@@ -1613,11 +1613,14 @@ func (n *GQLTopLevelPathPattern) SQL() string {
 }
 
 func (n *GQLPathSearchPrefix) SQL() string {
+	if (n.Prefix == GQLSearchPrefixShortest || n.Prefix == GQLSearchPrefixCheapest) && n.Count == nil {
+		panic(fmt.Sprintf("GQLPathSearchPrefix.SQL: %s requires Count", n.Prefix))
+	}
 	return string(n.Prefix) + sqlOpt(" ", n.Count, "")
 }
 
 func (n *GQLPathModeClause) SQL() string {
-	return string(n.Mode)
+	return string(n.Mode) + strOpt(n.Suffix != "", " "+string(n.Suffix))
 }
 
 func (n *GQLPathPattern) SQL() string {
@@ -1668,15 +1671,43 @@ func (n *GQLWildcardLabel) SQL() string {
 }
 
 func (n *GQLLabelBinaryExpr) SQL() string {
-	return n.Left.SQL() + " " + string(n.Op) + " " + n.Right.SQL()
+	p := gqlLabelPrec(n)
+	return gqlLabelParen(p, n.Left) +
+		" " + string(n.Op) + " " +
+		gqlLabelParen(p, n.Right)
 }
 
 func (n *GQLLabelUnaryExpr) SQL() string {
-	return string(n.Op) + n.Expr.SQL()
+	return string(n.Op) + gqlLabelParen(gqlLabelPrec(n), n.Expr)
 }
 
 func (n *GQLLabelParenExpr) SQL() string {
 	return "(" + n.Expr.SQL() + ")"
+}
+
+func gqlLabelPrec(e GQLLabelExpression) prec {
+	switch e := e.(type) {
+	case *GQLNameLabel, *GQLWildcardLabel, *GQLLabelParenExpr:
+		return precLit
+	case *GQLLabelUnaryExpr:
+		return precNot
+	case *GQLLabelBinaryExpr:
+		switch e.Op {
+		case GQLLabelOpAnd:
+			return precAnd
+		case GQLLabelOpOr:
+			return precOr
+		}
+	}
+
+	panic(fmt.Sprintf("gqlLabelPrec: unhandled label expression: %T", e))
+}
+
+func gqlLabelParen(p prec, e GQLLabelExpression) string {
+	if gqlLabelPrec(e) <= p {
+		return e.SQL()
+	}
+	return "(" + e.SQL() + ")"
 }
 
 func (n *GQLProperties) SQL() string {
