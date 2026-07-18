@@ -4854,8 +4854,8 @@ type GQLGraphPattern struct {
 	// pos = Paths[0].pos
 	// end = (Where ?? Paths[$]).end
 
-	Paths []*GQLTopLevelPathPattern
-	Where *Where // optional
+	Paths []*GQLTopLevelPathPattern // len(Paths) > 0
+	Where *Where                    // optional
 }
 
 // BadGQLGraphPattern is a bad GQLGraphPattern node.
@@ -4919,7 +4919,7 @@ type GQLPathPattern struct {
 	// pos = Terms[0].pos
 	// end = Terms[$].end
 
-	Terms []*GQLPathTerm
+	Terms []*GQLPathTerm // len(Terms) > 0
 }
 
 // GQLPathPrimary represents a path primary in GQL: a node, edge, or subpath pattern.
