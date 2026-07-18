@@ -182,6 +182,7 @@ func (b *BadDDL) SQL() string                        { return b.BadNode.SQL() }
 func (b *BadDML) SQL() string                        { return sqlOpt("", b.Hint, " ") + b.BadNode.SQL() }
 func (b *BadGQLLinearQueryStatement) SQL() string    { return b.BadNode.SQL() }
 func (b *BadGQLPrimitiveQueryStatement) SQL() string { return b.BadNode.SQL() }
+func (b *BadGQLGraphPattern) SQL() string            { return b.BadNode.SQL() }
 
 // ================================================================================
 //

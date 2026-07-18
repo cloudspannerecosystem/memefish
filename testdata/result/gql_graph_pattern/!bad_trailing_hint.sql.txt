@@ -8,6 +8,44 @@ syntax error: testdata/input/gql_graph_pattern/!bad_trailing_hint.sql:1:5: expec
 
 
 --- AST
-nil
+&ast.BadGQLGraphPattern{
+  BadNode: &ast.BadNode{
+    NodeEnd: 6,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        End:  1,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "a",
+        AsString: "a",
+        Pos:      1,
+        End:      2,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  2,
+        End:  3,
+      },
+      &token.Token{
+        Kind: "-",
+        Raw:  "-",
+        Pos:  3,
+        End:  4,
+      },
+      &token.Token{
+        Kind:     "<param>",
+        Raw:      "@x",
+        AsString: "x",
+        Pos:      4,
+        End:      6,
+      },
+    },
+  },
+}
 
 --- SQL
+(a)-@x

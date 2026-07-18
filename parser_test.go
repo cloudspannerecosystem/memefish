@@ -316,18 +316,15 @@ func TestParseGQLGraphPattern(t *testing.T) {
 	resultPath := "./testdata/result/gql_graph_pattern"
 
 	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
-		pattern, err := p.ParseGQLGraphPattern()
-		if pattern == nil {
-			return nil, err
-		}
-		return pattern, err
+		return p.ParseGQLGraphPattern()
 	})
 }
 
-func TestParseGQLGraphPatternMalformedReturnsNil(t *testing.T) {
+func TestParseGQLGraphPatternMalformedReturnsBadNode(t *testing.T) {
+	const input = "(a)-@"
 	p := &memefish.Parser{
 		Lexer: &memefish.Lexer{
-			File: &token.File{Buffer: "(a)-@"},
+			File: &token.File{Buffer: input},
 		},
 	}
 
@@ -335,15 +332,24 @@ func TestParseGQLGraphPatternMalformedReturnsNil(t *testing.T) {
 	if err == nil {
 		t.Fatal("ParseGQLGraphPattern() error = nil, want error")
 	}
-	if pattern != nil {
-		t.Fatalf("ParseGQLGraphPattern() pattern = %#v, want nil", pattern)
+	bad, ok := pattern.(*ast.BadGQLGraphPattern)
+	if !ok {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.BadGQLGraphPattern", pattern)
 	}
+	if got := bad.SQL(); got != input {
+		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
+	}
+	if bad.Pos() != 0 || bad.End() != token.Pos(len(input)) {
+		t.Errorf("ParseGQLGraphPattern() range = [%d, %d), want [0, %d)", bad.Pos(), bad.End(), len(input))
+	}
+	ast.Inspect(bad, func(ast.Node) bool { return true })
 }
 
-func TestParseGQLGraphPatternFirstTokenLexerErrorReturnsNil(t *testing.T) {
+func TestParseGQLGraphPatternFirstTokenLexerErrorReturnsBadNode(t *testing.T) {
+	const input = `"foo`
 	p := &memefish.Parser{
 		Lexer: &memefish.Lexer{
-			File: &token.File{Buffer: `"foo`},
+			File: &token.File{Buffer: input},
 		},
 	}
 
@@ -354,7 +360,50 @@ func TestParseGQLGraphPatternFirstTokenLexerErrorReturnsNil(t *testing.T) {
 	if !strings.Contains(err.Error(), "unclosed string literal") {
 		t.Fatalf("ParseGQLGraphPattern() error = %v, want unclosed string literal", err)
 	}
-	if pattern != nil {
-		t.Fatalf("ParseGQLGraphPattern() pattern = %#v, want nil", pattern)
+	bad, ok := pattern.(*ast.BadGQLGraphPattern)
+	if !ok {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.BadGQLGraphPattern", pattern)
+	}
+	if got := bad.SQL(); got != input {
+		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
+	}
+	ast.Inspect(bad, func(ast.Node) bool { return true })
+
+	p.Lexer = &memefish.Lexer{File: &token.File{Buffer: "(a)"}}
+	pattern, err = p.ParseGQLGraphPattern()
+	if err != nil {
+		t.Fatalf("reused ParseGQLGraphPattern() error = %v, want nil", err)
+	}
+	if _, ok := pattern.(*ast.GQLGraphPattern); !ok {
+		t.Fatalf("reused ParseGQLGraphPattern() pattern = %T, want *ast.GQLGraphPattern", pattern)
+	}
+}
+
+func TestParseGQLGraphPatternHelper(t *testing.T) {
+	const input = "(a)-[e]->(b)"
+	pattern, err := memefish.ParseGQLGraphPattern("", input)
+	if err != nil {
+		t.Fatalf("ParseGQLGraphPattern() error = %v, want nil", err)
+	}
+	if _, ok := pattern.(*ast.GQLGraphPattern); !ok {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.GQLGraphPattern", pattern)
+	}
+	if got := pattern.SQL(); got != input {
+		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
+	}
+}
+
+func TestParseGQLGraphPatternHelperMalformedReturnsBadNode(t *testing.T) {
+	const input = "(a) trailing"
+	pattern, err := memefish.ParseGQLGraphPattern("", input)
+	if err == nil {
+		t.Fatal("ParseGQLGraphPattern() error = nil, want error")
+	}
+	bad, ok := pattern.(*ast.BadGQLGraphPattern)
+	if !ok {
+		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.BadGQLGraphPattern", pattern)
+	}
+	if got := bad.SQL(); got != input {
+		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
 	}
 }

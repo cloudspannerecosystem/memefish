@@ -165,33 +165,34 @@ func (p *Parser) ParseSchemaType() (t ast.SchemaType, err error) {
 // This is deliberate public API: a graph pattern is not otherwise reachable as
 // a top-level entry point (it only appears inside a MATCH statement), so this
 // method lets callers and the `tools/parse -mode gql_graph_pattern` harness
-// parse and inspect graph patterns in isolation for testing and tooling. Until
-// graph patterns have a Bad* representation, recovered malformed input returns
-// nil with the parse error rather than an unsafe or valid-looking partial AST.
-func (p *Parser) ParseGQLGraphPattern() (pattern *ast.GQLGraphPattern, err error) {
-	l := p.cloneLexer()
-	started := false
+// parse and inspect graph patterns in isolation for testing and tooling.
+// Malformed input returns a *ast.BadGQLGraphPattern together with the parse
+// error; the returned node remains safe to inspect, walk, and unparse.
+func (p *Parser) ParseGQLGraphPattern() (pattern ast.GQLGraphPatternNode, err error) {
+	entry := p.cloneLexer()
+	var patternStart *Lexer
 	defer func() {
 		if r := recover(); r != nil {
-			if started {
-				p.handleParseStatementError(r, l)
+			if patternStart == nil {
+				p.handleError(r, entry)
+				p.Lexer.nextToken(true)
 			} else {
-				p.handleError(r, l)
+				p.handleError(r, patternStart)
 			}
-			// GQLGraphPattern has no Bad* variant, so do not expose a partial
-			// concrete node whose required Paths invariant may not hold.
-			pattern = nil
+			pattern = &ast.BadGQLGraphPattern{BadNode: p.consumeBadGQLGraphPattern()}
 		}
 		if len(p.errors) > 0 {
-			pattern = nil
+			if _, ok := pattern.(*ast.BadGQLGraphPattern); !ok {
+				p.Lexer = patternStart
+				pattern = &ast.BadGQLGraphPattern{BadNode: p.consumeBadGQLGraphPattern()}
+			}
 			err = MultiError(p.errors)
 			p.errors = nil
 		}
 	}()
 
 	p.nextToken()
-	started = true
-	l = p.cloneLexer()
+	patternStart = p.cloneLexer()
 	pattern = p.parseGQLGraphPattern()
 	if p.Token.Kind != token.TokenEOF {
 		p.errors = append(p.errors, p.errorfAtToken(&p.Token, "expected token: <eof>, but: %s", p.Token.Kind))
@@ -6529,6 +6530,23 @@ skip:
 		case ";":
 			break skip
 		}
+		end = p.Token.End
+		tokens = append(tokens, p.Token.Clone())
+		p.Lexer.nextToken(true)
+	}
+
+	return &ast.BadNode{
+		NodePos: pos,
+		NodeEnd: end,
+		Tokens:  tokens,
+	}
+}
+
+func (p *Parser) consumeBadGQLGraphPattern() *ast.BadNode {
+	var tokens []*token.Token
+	pos := p.Token.Pos
+	end := p.Token.Pos
+	for p.Token.Kind != token.TokenEOF {
 		end = p.Token.End
 		tokens = append(tokens, p.Token.Clone())
 		p.Lexer.nextToken(true)

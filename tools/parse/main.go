@@ -92,11 +92,7 @@ func main() {
 	case "gql":
 		node, err = p.ParseGQLQuery()
 	case "gql_graph_pattern":
-		pattern, parseErr := p.ParseGQLGraphPattern()
-		if pattern != nil {
-			node = pattern
-		}
-		err = parseErr
+		node, err = p.ParseGQLGraphPattern()
 	default:
 		log.Fatalf("unknown mode: %s", *mode)
 	}

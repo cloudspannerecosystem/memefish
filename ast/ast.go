@@ -4823,6 +4823,15 @@ type GQLOrderByItem struct {
 //
 // ================================================================================
 
+// GQLGraphPatternNode represents a graph pattern or a recovered bad graph pattern.
+type GQLGraphPatternNode interface {
+	Node
+	isGQLGraphPatternNode()
+}
+
+func (GQLGraphPattern) isGQLGraphPatternNode()    {}
+func (BadGQLGraphPattern) isGQLGraphPatternNode() {}
+
 // GQLMatch represents a MATCH statement in GQL.
 //
 //	{{if .OptionalPos.Invalid | not}}OPTIONAL {{end}}MATCH{{if .Hint}} {{.Hint | sql}}{{end}} {{.Pattern | sql}}
@@ -4845,6 +4854,16 @@ type GQLGraphPattern struct {
 
 	Paths []*GQLTopLevelPathPattern
 	Where *Where // optional
+}
+
+// BadGQLGraphPattern is a bad GQLGraphPattern node.
+//
+//	{{.BadNode | sql}}
+type BadGQLGraphPattern struct {
+	// pos = BadNode.pos
+	// end = BadNode.end
+
+	BadNode *BadNode
 }
 
 // GQLTopLevelPathPattern represents a top-level path pattern in GQL.

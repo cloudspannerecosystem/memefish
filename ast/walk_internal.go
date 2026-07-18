@@ -1137,6 +1137,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Paths), visitor: v.Field("Paths")})
 
+	case *BadGQLGraphPattern:
+		stack = append(stack, &stackItem{node: wrapNode(n.BadNode), visitor: v.Field("BadNode")})
+
 	case *GQLTopLevelPathPattern:
 		stack = append(stack, &stackItem{node: wrapNode(n.Path), visitor: v.Field("Path")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Mode), visitor: v.Field("Mode")})

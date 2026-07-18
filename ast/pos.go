@@ -2462,6 +2462,14 @@ func (g *GQLGraphPattern) End() token.Pos {
 	return nodeEnd(nodeChoice(wrapNode(g.Where), nodeSliceLast(g.Paths)))
 }
 
+func (b *BadGQLGraphPattern) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLGraphPattern) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
 func (g *GQLTopLevelPathPattern) Pos() token.Pos {
 	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.Variable), wrapNode(g.SearchPrefix), wrapNode(g.Mode), wrapNode(g.Path)))
 }
