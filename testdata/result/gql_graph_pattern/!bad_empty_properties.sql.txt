@@ -1,0 +1,51 @@
+--- !bad_empty_properties.sql
+(a {})
+
+--- Error
+syntax error: testdata/input/gql_graph_pattern/!bad_empty_properties.sql:1:5: expected token: <ident>, but: }
+  1|  (a {})
+   |      ^
+
+
+--- AST
+&ast.BadGQLGraphPattern{
+  BadNode: &ast.BadNode{
+    NodeEnd: 6,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        End:  1,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "a",
+        AsString: "a",
+        Pos:      1,
+        End:      2,
+      },
+      &token.Token{
+        Kind:  "{",
+        Space: " ",
+        Raw:   "{",
+        Pos:   3,
+        End:   4,
+      },
+      &token.Token{
+        Kind: "}",
+        Raw:  "}",
+        Pos:  4,
+        End:  5,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  5,
+        End:  6,
+      },
+    },
+  },
+}
+
+--- SQL
+(a {})

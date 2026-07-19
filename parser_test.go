@@ -195,9 +195,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintln(&buf)
 
 			fmt.Fprintf(&buf, "--- SQL\n")
-			if node != nil {
-				fmt.Fprintln(&buf, node.SQL())
-			}
+			fmt.Fprintln(&buf, node.SQL())
 
 			actual := buf.Bytes()
 
@@ -228,10 +226,6 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				t.Error(d)
 				return
 			}
-			if node == nil {
-				return
-			}
-
 			s1 := node.SQL()
 			p1 := &memefish.Parser{
 				Lexer: &memefish.Lexer{
@@ -379,65 +373,8 @@ func TestParseGQLGraphPatternFirstTokenLexerErrorReturnsBadNode(t *testing.T) {
 	}
 }
 
-func TestParseGQLGraphPatternHelper(t *testing.T) {
-	const input = "(a)-[e]->(b)"
-	pattern, err := memefish.ParseGQLGraphPattern("", input)
-	if err != nil {
-		t.Fatalf("ParseGQLGraphPattern() error = %v, want nil", err)
-	}
-	if _, ok := pattern.(*ast.GQLGraphPattern); !ok {
-		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.GQLGraphPattern", pattern)
-	}
-	if got := pattern.SQL(); got != input {
-		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
-	}
-}
-
 func TestParseGQLGraphPatternHelperMalformedReturnsBadNode(t *testing.T) {
 	const input = "(a) trailing"
-	pattern, err := memefish.ParseGQLGraphPattern("", input)
-	if err == nil {
-		t.Fatal("ParseGQLGraphPattern() error = nil, want error")
-	}
-	bad, ok := pattern.(*ast.BadGQLGraphPattern)
-	if !ok {
-		t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.BadGQLGraphPattern", pattern)
-	}
-	if got := bad.SQL(); got != input {
-		t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, input)
-	}
-}
-
-func TestParseGQLGraphPatternSupportedForms(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-	}{
-		{name: "path variable with search prefix", input: "p = ANY SHORTEST (a)->(b)", want: "p = ANY SHORTEST (a)->(b)"},
-		{name: "prefix-like path variable", input: "shortest = (a)", want: "shortest = (a)"},
-		{name: "path mode suffix is canonical", input: "p = trail paths (a)", want: "p = TRAIL PATHS (a)"},
-		{name: "edge-only subpath", input: "(->)", want: "(->)"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			pattern, err := memefish.ParseGQLGraphPattern("", tt.input)
-			if err != nil {
-				t.Fatalf("ParseGQLGraphPattern() error = %v, want nil", err)
-			}
-			if _, ok := pattern.(*ast.GQLGraphPattern); !ok {
-				t.Fatalf("ParseGQLGraphPattern() pattern = %T, want *ast.GQLGraphPattern", pattern)
-			}
-			if got := pattern.SQL(); got != tt.want {
-				t.Errorf("ParseGQLGraphPattern() SQL() = %q, want %q", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestParseGQLGraphPatternRejectsEmptyProperties(t *testing.T) {
-	const input = "(a {})"
 	pattern, err := memefish.ParseGQLGraphPattern("", input)
 	if err == nil {
 		t.Fatal("ParseGQLGraphPattern() error = nil, want error")

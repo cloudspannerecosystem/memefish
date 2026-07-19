@@ -107,10 +107,6 @@ func main() {
 		}
 		fmt.Println()
 	}
-	if node == nil {
-		return
-	}
-
 	if *dig != "" {
 		value := reflect.ValueOf(node)
 		for name := range strings.SplitSeq(*dig, ".") {
