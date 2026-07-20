@@ -1,0 +1,102 @@
+--- !bad_revoke_delete_on_all_sequences.sql
+REVOKE DELETE ON ALL SEQUENCES IN SCHEMA s1 FROM ROLE r1
+
+--- Error
+syntax error: testdata/input/ddl/!bad_revoke_delete_on_all_sequences.sql:1:8: expected sequence privilege: SELECT, UPDATE
+  1|  REVOKE DELETE ON ALL SEQUENCES IN SCHEMA s1 FROM ROLE r1
+   |         ^~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 56,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "REVOKE",
+        AsString: "REVOKE",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DELETE",
+        AsString: "DELETE",
+        Pos:      7,
+        End:      13,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   14,
+        End:   16,
+      },
+      &token.Token{
+        Kind:  "ALL",
+        Space: " ",
+        Raw:   "ALL",
+        Pos:   17,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "SEQUENCES",
+        AsString: "SEQUENCES",
+        Pos:      21,
+        End:      30,
+      },
+      &token.Token{
+        Kind:  "IN",
+        Space: " ",
+        Raw:   "IN",
+        Pos:   31,
+        End:   33,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "SCHEMA",
+        AsString: "SCHEMA",
+        Pos:      34,
+        End:      40,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "s1",
+        AsString: "s1",
+        Pos:      41,
+        End:      43,
+      },
+      &token.Token{
+        Kind:  "FROM",
+        Space: " ",
+        Raw:   "FROM",
+        Pos:   44,
+        End:   48,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      49,
+        End:      53,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "r1",
+        AsString: "r1",
+        Pos:      54,
+        End:      56,
+      },
+    },
+  },
+}
+
+--- SQL
+REVOKE DELETE ON ALL SEQUENCES IN SCHEMA s1 FROM ROLE r1

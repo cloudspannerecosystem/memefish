@@ -505,6 +505,8 @@ type Privilege interface {
 
 func (PrivilegeOnTable) isPrivilege()                          {}
 func (PrivilegeOnAllTablesInSchema) isPrivilege()              {}
+func (PrivilegeOnSequence) isPrivilege()                       {}
+func (PrivilegeOnAllSequencesInSchema) isPrivilege()           {}
 func (SelectPrivilegeOnChangeStream) isPrivilege()             {}
 func (SelectPrivilegeOnAllChangeStreamsInSchema) isPrivilege() {}
 func (SelectPrivilegeOnView) isPrivilege()                     {}
@@ -3570,6 +3572,32 @@ type PrivilegeOnAllTablesInSchema struct {
 	// end = Schemas[$].end
 
 	Privileges []TablePrivilege // len(Privileges) > 0
+	Schemas    []*Path          // len(Schemas) > 0
+}
+
+// PrivilegeOnSequence is ON SEQUENCE privilege node in GRANT and REVOKE.
+//
+// Privileges are SELECT and/or UPDATE (no column list).
+//
+//	{{.Privileges | sqlJoin ", "}} ON SEQUENCE {{.Names | sqlJoin ", "}}
+type PrivilegeOnSequence struct {
+	// pos = Privileges[0].pos
+	// end = Names[$].end
+
+	Privileges []TablePrivilege // SELECT and/or UPDATE only; len(Privileges) > 0
+	Names      []*Path          // len(Names) > 0
+}
+
+// PrivilegeOnAllSequencesInSchema is ON ALL SEQUENCES IN SCHEMA privilege node in GRANT and REVOKE.
+//
+// Privileges are SELECT and/or UPDATE (no column list).
+//
+//	{{.Privileges | sqlJoin ", "}} ON ALL SEQUENCES IN SCHEMA {{.Schemas | sqlJoin ", "}}
+type PrivilegeOnAllSequencesInSchema struct {
+	// pos = Privileges[0].pos
+	// end = Schemas[$].end
+
+	Privileges []TablePrivilege // SELECT and/or UPDATE only; len(Privileges) > 0
 	Schemas    []*Path          // len(Schemas) > 0
 }
 

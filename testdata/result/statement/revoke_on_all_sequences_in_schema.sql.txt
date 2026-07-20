@@ -1,0 +1,38 @@
+--- revoke_on_all_sequences_in_schema.sql
+REVOKE SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA sch1 FROM ROLE data_analyst
+--- AST
+&ast.Revoke{
+  Privilege: &ast.PrivilegeOnAllSequencesInSchema{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 7,
+        Rparen: -1,
+      },
+      &ast.UpdatePrivilege{
+        Update: 15,
+        Rparen: -1,
+      },
+    },
+    Schemas: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 49,
+            NameEnd: 53,
+            Name:    "sch1",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 64,
+      NameEnd: 76,
+      Name:    "data_analyst",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA sch1 FROM ROLE data_analyst
