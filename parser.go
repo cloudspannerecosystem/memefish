@@ -3550,6 +3550,13 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		defaultSemantics = &ast.AutoIncrement{AutoIncrement: pos}
 	}
 
+	var placementKey *ast.PlacementKey
+	if p.Token.IsKeywordLike("PLACEMENT") {
+		placement := p.expectKeywordLike("PLACEMENT").Pos
+		key := p.expectKeywordLike("KEY").Pos
+		placementKey = &ast.PlacementKey{Placement: placement, Key: key}
+	}
+
 	hiddenPos := token.InvalidPos
 	if p.Token.IsKeywordLike("HIDDEN") {
 		hiddenPos = p.expectKeywordLike("HIDDEN").Pos
@@ -3572,6 +3579,7 @@ func (p *Parser) parseColumnDef() *ast.ColumnDef {
 		PrimaryKey:       !key.Invalid(),
 		DefaultSemantics: defaultSemantics,
 		Hidden:           hiddenPos,
+		PlacementKey:     placementKey,
 		Options:          options,
 	}
 }

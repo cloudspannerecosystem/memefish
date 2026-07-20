@@ -1,0 +1,93 @@
+--- create_table_placement_key.sql
+CREATE TABLE Singers (
+  SingerId INT64 NOT NULL,
+  SingerName STRING(MAX) NOT NULL,
+  Location STRING(MAX) NOT NULL PLACEMENT KEY HIDDEN
+) PRIMARY KEY (SingerId)
+
+--- AST
+&ast.CreateTable{
+  Rparen:           138,
+  PrimaryKeyRparen: 161,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 20,
+        Name:    "Singers",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 44,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 25,
+        NameEnd: 33,
+        Name:    "SingerId",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 34,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 79,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 52,
+        NameEnd: 62,
+        Name:    "SingerName",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 63,
+        Rparen:  73,
+        Name:    "STRING",
+        Max:     true,
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 112,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 87,
+        NameEnd: 95,
+        Name:    "Location",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 96,
+        Rparen:  106,
+        Name:    "STRING",
+        Max:     true,
+      },
+      NotNull:      true,
+      PlacementKey: &ast.PlacementKey{
+        Placement: 117,
+        Key:       127,
+      },
+      Hidden: 131,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Name:   &ast.Ident{
+        NamePos: 153,
+        NameEnd: 161,
+        Name:    "SingerId",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Singers (
+  SingerId INT64 NOT NULL,
+  SingerName STRING(MAX) NOT NULL,
+  Location STRING(MAX) NOT NULL PLACEMENT KEY HIDDEN
+) PRIMARY KEY (SingerId)

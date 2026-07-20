@@ -870,10 +870,13 @@ func (c *ColumnDef) SQL() string {
 	return c.Name.SQL() + " " + c.Type.SQL() +
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultSemantics, "") +
+		sqlOpt(" ", c.PlacementKey, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
 		strOpt(c.PrimaryKey, " PRIMARY KEY") +
 		sqlOpt(" ", c.Options, "")
 }
+
+func (*PlacementKey) SQL() string { return "PLACEMENT KEY" }
 
 func (c *TableConstraint) SQL() string {
 	return sqlOpt("CONSTRAINT ", c.Name, " ") + c.Constraint.SQL()

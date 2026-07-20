@@ -2625,12 +2625,13 @@ type BitReversedPositive struct {
 //	{{.Name | sql}}
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultSemantics | sqlOpt}}
+//	{{.PlacementKey | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{if .PrimaryKey}}PRIMARY KEY{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
+	// end = Options.end || Key + 3 || Hidden + 6 || PlacementKey.end || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 	Key  token.Pos // position of "KEY" of PRIMARY KEY
@@ -2642,8 +2643,20 @@ type ColumnDef struct {
 
 	DefaultSemantics ColumnDefaultSemantics // optional
 
-	Hidden  token.Pos // InvalidPos if not hidden
-	Options *Options  // optional
+	PlacementKey *PlacementKey // optional
+	Hidden       token.Pos     // InvalidPos if not hidden
+	Options      *Options      // optional
+}
+
+// PlacementKey is PLACEMENT KEY clause for a column.
+//
+//	PLACEMENT KEY
+type PlacementKey struct {
+	// pos = Placement
+	// end = Key + 3
+
+	Placement token.Pos // position of "PLACEMENT" pseudo keyword
+	Key       token.Pos // position of "KEY" pseudo keyword
 }
 
 // ColumnDefaultExpr is a default value expression for the column.
