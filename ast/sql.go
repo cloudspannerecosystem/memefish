@@ -414,7 +414,8 @@ func (b *BinaryExpr) SQL() string {
 
 func (u *UnaryExpr) SQL() string {
 	p := exprPrec(u)
-	return string(u.Op) + strOpt(u.Op == OpNot, " ") + paren(p, u.Expr)
+	expr := paren(p, u.Expr)
+	return string(u.Op) + strOpt(u.Op == OpNot || (u.Op == OpMinus && strings.HasPrefix(expr, "-")), " ") + expr
 }
 
 func (i *InExpr) SQL() string {
