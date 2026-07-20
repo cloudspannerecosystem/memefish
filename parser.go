@@ -176,7 +176,9 @@ func (p *Parser) ParseGQLGraphPattern() (pattern ast.GQLGraphPatternNode, err er
 		if r := recover(); r != nil {
 			if patternStart == nil {
 				p.handleError(r, entry)
-				p.Lexer.nextToken(true)
+				if p.Token.Kind == "" {
+					p.Lexer.nextToken(true)
+				}
 			} else {
 				p.handleError(r, patternStart)
 			}
