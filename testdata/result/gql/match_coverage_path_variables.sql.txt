@@ -21,9 +21,9 @@ RETURN *
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       15,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Variable: &ast.Ident{

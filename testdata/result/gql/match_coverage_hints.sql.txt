@@ -34,9 +34,9 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       33,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    33,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Path: &ast.GQLPathPattern{
@@ -191,9 +191,9 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       132,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    132,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Path: &ast.GQLPathPattern{
@@ -334,9 +334,9 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       217,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    217,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Path: &ast.GQLPathPattern{
@@ -477,9 +477,9 @@ GROUP @{GROUP_METHOD=HASH_GROUP} BY p.name
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       303,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    303,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Path: &ast.GQLPathPattern{

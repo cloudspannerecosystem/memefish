@@ -22,9 +22,9 @@ RETURN a, b
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       8,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    8,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   SearchPrefix: &ast.GQLPathSearchPrefix{

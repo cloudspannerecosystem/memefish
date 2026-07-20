@@ -4834,14 +4834,14 @@ func (BadGQLGraphPattern) isGQLGraphPatternNode() {}
 
 // GQLMatch represents a MATCH statement in GQL.
 //
-//	{{if .OptionalPos.Invalid | not}}OPTIONAL {{end}}MATCH{{if .Hint}} {{.Hint | sql}}{{end}} {{.Pattern | sql}}
+//	{{if .Optional.Invalid | not}}OPTIONAL {{end}}MATCH{{if .Hint}} {{.Hint | sql}}{{end}} {{.Pattern | sql}}
 type GQLMatch struct {
-	// pos = OptionalPos || Match
+	// pos = Optional || Match
 	// end = Pattern.end
 
-	OptionalPos token.Pos // position of "OPTIONAL", optional
-	Match       token.Pos // position of "MATCH"
-	Hint        *Hint     // optional
+	Optional token.Pos // position of "OPTIONAL", optional
+	Match    token.Pos // position of "MATCH"
+	Hint     *Hint     // optional
 	// Pattern is always a valid graph pattern. A malformed pattern inside MATCH
 	// is recovered at the GQL linear-query-statement boundary instead.
 	Pattern *GQLGraphPattern

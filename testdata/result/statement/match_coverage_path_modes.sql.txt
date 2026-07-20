@@ -26,9 +26,9 @@ RETURN *
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       47,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    47,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Mode: &ast.GQLPathModeClause{
@@ -89,9 +89,9 @@ RETURN *
             },
           },
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       79,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    79,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Mode: &ast.GQLPathModeClause{
@@ -152,9 +152,9 @@ RETURN *
             },
           },
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       115,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    115,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Mode: &ast.GQLPathModeClause{
@@ -215,9 +215,9 @@ RETURN *
             },
           },
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       154,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    154,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Mode: &ast.GQLPathModeClause{
@@ -278,9 +278,9 @@ RETURN *
             },
           },
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       194,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: -1,
+            Match:    194,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Mode: &ast.GQLPathModeClause{

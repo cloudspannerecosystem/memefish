@@ -2447,7 +2447,7 @@ func (g *GQLOrderByItem) End() token.Pos {
 }
 
 func (g *GQLMatch) Pos() token.Pos {
-	return posChoice(g.OptionalPos, g.Match)
+	return posChoice(g.Optional, g.Match)
 }
 
 func (g *GQLMatch) End() token.Pos {

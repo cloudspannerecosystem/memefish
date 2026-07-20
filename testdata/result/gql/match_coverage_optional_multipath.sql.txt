@@ -25,9 +25,9 @@ RETURN *
       &ast.GQLSimpleLinearQueryStatement{
         Statements: []ast.GQLPrimitiveQueryStatement{
           &ast.GQLMatch{
-            OptionalPos: 33,
-            Match:       42,
-            Pattern:     &ast.GQLGraphPattern{
+            Optional: 33,
+            Match:    42,
+            Pattern:  &ast.GQLGraphPattern{
               Paths: []*ast.GQLTopLevelPathPattern{
                 &ast.GQLTopLevelPathPattern{
                   Path: &ast.GQLPathPattern{
@@ -64,9 +64,9 @@ RETURN *
             },
           },
           &ast.GQLMatch{
-            OptionalPos: -1,
-            Match:       119,
-            Hint:        &ast.Hint{
+            Optional: -1,
+            Match:    119,
+            Hint:     &ast.Hint{
               Atmark:  125,
               Rbrace:  148,
               Records: []*ast.HintRecord{

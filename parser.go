@@ -6820,10 +6820,10 @@ func (p *Parser) parseGQLMatch() *ast.GQLMatch {
 	pattern := p.parseGQLGraphPattern()
 
 	return &ast.GQLMatch{
-		OptionalPos: optional,
-		Match:       match,
-		Hint:        hint,
-		Pattern:     pattern,
+		Optional: optional,
+		Match:    match,
+		Hint:     hint,
+		Pattern:  pattern,
 	}
 }
 

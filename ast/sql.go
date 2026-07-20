@@ -1547,7 +1547,7 @@ func (s *GQLCompoundLinearQueryStatement) SQL() string {
 }
 
 func (n *GQLMatch) SQL() string {
-	return strOpt(!n.OptionalPos.Invalid(), "OPTIONAL ") + "MATCH" + sqlOpt(" ", n.Hint, "") + " " + n.Pattern.SQL()
+	return strOpt(!n.Optional.Invalid(), "OPTIONAL ") + "MATCH" + sqlOpt(" ", n.Hint, "") + " " + n.Pattern.SQL()
 }
 
 func (s *GQLReturn) SQL() string {
