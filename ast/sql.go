@@ -991,7 +991,8 @@ func (a *AlterColumn) SQL() string {
 func (a *AlterColumnType) SQL() string {
 	return a.Type.SQL() +
 		strOpt(a.NotNull, " NOT NULL") +
-		sqlOpt(" ", a.DefaultExpr, "")
+		sqlOpt(" ", a.DefaultExpr, "") +
+		sqlOpt(" ", a.GeneratedExpr, "")
 }
 
 func (a *AlterColumnSetOptions) SQL() string { return "SET " + a.Options.SQL() }

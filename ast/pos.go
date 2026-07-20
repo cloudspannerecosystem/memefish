@@ -1459,7 +1459,7 @@ func (a *AlterColumnType) Pos() token.Pos {
 }
 
 func (a *AlterColumnType) End() token.Pos {
-	return posChoice(nodeEnd(wrapNode(a.DefaultExpr)), posAdd(a.Null, 4), nodeEnd(wrapNode(a.Type)))
+	return posChoice(nodeEnd(wrapNode(a.GeneratedExpr)), nodeEnd(wrapNode(a.DefaultExpr)), posAdd(a.Null, 4), nodeEnd(wrapNode(a.Type)))
 }
 
 func (a *AlterColumnSetOptions) Pos() token.Pos {

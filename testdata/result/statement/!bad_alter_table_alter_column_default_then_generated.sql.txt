@@ -1,0 +1,49 @@
+--- !bad_alter_table_alter_column_default_then_generated.sql
+ALTER TABLE metrics ALTER COLUMN doubled INT64 DEFAULT (0) AS (source * 2)
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_table_alter_column_default_then_generated.sql:1:60: expected token: <eof>, but: AS
+  1|  ALTER TABLE metrics ALTER COLUMN doubled INT64 DEFAULT (0) AS (source * 2)
+   |                                                             ^~
+
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "metrics",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 20,
+    Name:  &ast.Ident{
+      NamePos: 33,
+      NameEnd: 40,
+      Name:    "doubled",
+    },
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.ScalarSchemaType{
+        NamePos: 41,
+        Name:    "INT64",
+      },
+      Null:        -1,
+      DefaultExpr: &ast.ColumnDefaultExpr{
+        Default: 47,
+        Rparen:  57,
+        Expr:    &ast.IntLiteral{
+          ValuePos: 56,
+          ValueEnd: 57,
+          Base:     10,
+          Value:    "0",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE metrics ALTER COLUMN doubled INT64 DEFAULT (0)
