@@ -1,0 +1,16 @@
+--- unary_minus_int.sql
+- -1
+
+--- AST
+&ast.UnaryExpr{
+  Op:   "-",
+  Expr: &ast.IntLiteral{
+    ValuePos: 2,
+    ValueEnd: 4,
+    Base:     10,
+    Value:    "-1",
+  },
+}
+
+--- SQL
+- -1
