@@ -71,8 +71,7 @@ create table foo (
           },
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -105,8 +104,7 @@ create table foo (
           },
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -145,8 +143,7 @@ create table foo (
           },
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -170,8 +167,7 @@ create table foo (
           },
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
   },
 }

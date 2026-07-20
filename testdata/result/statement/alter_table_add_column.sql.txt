@@ -27,9 +27,8 @@ alter table foo add column baz string(max) not null
         Name:    "STRING",
         Max:     true,
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
   },
 }

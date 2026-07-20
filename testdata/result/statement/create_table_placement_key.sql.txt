@@ -2,12 +2,13 @@
 CREATE TABLE Singers (
   SingerId INT64 NOT NULL,
   SingerName STRING(MAX) NOT NULL,
-  Location STRING(MAX) NOT NULL PLACEMENT KEY
+  Location STRING(MAX) NOT NULL PLACEMENT KEY HIDDEN
 ) PRIMARY KEY (SingerId)
+
 --- AST
 &ast.CreateTable{
-  Rparen:           131,
-  PrimaryKeyRparen: 154,
+  Rparen:           138,
+  PrimaryKeyRparen: 161,
   Name:             &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
@@ -30,9 +31,8 @@ CREATE TABLE Singers (
         NamePos: 34,
         Name:    "INT64",
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 79,
@@ -48,9 +48,8 @@ CREATE TABLE Singers (
         Name:    "STRING",
         Max:     true,
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 112,
@@ -67,16 +66,19 @@ CREATE TABLE Singers (
         Max:     true,
       },
       NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: 127,
+      PlacementKey: &ast.PlacementKey{
+        Placement: 117,
+        Key:       127,
+      },
+      Hidden: 131,
     },
   },
   PrimaryKeys: []*ast.IndexKey{
     &ast.IndexKey{
       DirPos: -1,
       Name:   &ast.Ident{
-        NamePos: 146,
-        NameEnd: 154,
+        NamePos: 153,
+        NameEnd: 161,
         Name:    "SingerId",
       },
     },
@@ -87,5 +89,5 @@ CREATE TABLE Singers (
 CREATE TABLE Singers (
   SingerId INT64 NOT NULL,
   SingerName STRING(MAX) NOT NULL,
-  Location STRING(MAX) NOT NULL PLACEMENT KEY
+  Location STRING(MAX) NOT NULL PLACEMENT KEY HIDDEN
 ) PRIMARY KEY (SingerId)

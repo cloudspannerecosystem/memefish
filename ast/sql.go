@@ -821,7 +821,7 @@ func (c *CreateTable) SQL() string {
 		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
 		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
 		"\n)" +
-		strOpt(!c.PrimaryKeyRparen.Invalid(), " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
+		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "") +
 		sqlOpt(", ", c.Options, "")
@@ -870,11 +870,13 @@ func (c *ColumnDef) SQL() string {
 	return c.Name.SQL() + " " + c.Type.SQL() +
 		strOpt(c.NotNull, " NOT NULL") +
 		sqlOpt(" ", c.DefaultSemantics, "") +
+		sqlOpt(" ", c.PlacementKey, "") +
 		strOpt(!c.Hidden.Invalid(), " HIDDEN") +
 		strOpt(c.PrimaryKey, " PRIMARY KEY") +
-		strOpt(!c.PlacementKey.Invalid(), " PLACEMENT KEY") +
 		sqlOpt(" ", c.Options, "")
 }
+
+func (*PlacementKey) SQL() string { return "PLACEMENT KEY" }
 
 func (c *TableConstraint) SQL() string {
 	return sqlOpt("CONSTRAINT ", c.Name, " ") + c.Constraint.SQL()

@@ -29,9 +29,8 @@ alter table foo add column if not exists baz string(max) not null
         Name:    "STRING",
         Max:     true,
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
   },
 }

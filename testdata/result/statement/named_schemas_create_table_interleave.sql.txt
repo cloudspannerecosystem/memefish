@@ -36,9 +36,8 @@ CREATE TABLE sch1.Albums (
         NamePos: 38,
         Name:    "INT64",
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: 74,
@@ -52,9 +51,8 @@ CREATE TABLE sch1.Albums (
         NamePos: 64,
         Name:    "INT64",
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -70,8 +68,7 @@ CREATE TABLE sch1.Albums (
         Name:    "STRING",
         Max:     true,
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

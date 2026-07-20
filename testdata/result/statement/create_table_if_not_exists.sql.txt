@@ -31,8 +31,7 @@ create table if not exists foo (
         NamePos: 39,
         Name:    "INT64",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: 64,
@@ -46,9 +45,8 @@ create table if not exists foo (
         NamePos: 52,
         Name:    "FLOAT64",
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

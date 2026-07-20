@@ -2528,7 +2528,7 @@ type DropProtoBundle struct {
 //	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
 //	  {{.Synonym | sqlJoin ","}}
 //	)
-//	{{if .PrimaryKeyRparen.Invalid | not}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
+//	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //	{{if .Options}}, {{.Options | sqlOpt}}{{end}}
@@ -2542,7 +2542,7 @@ type CreateTable struct {
 
 	Create           token.Pos // position of "CREATE" keyword
 	Rparen           token.Pos // position of ")" of end of column definitions
-	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause; InvalidPos if omitted
+	PrimaryKeyRparen token.Pos // position of ")" of PRIMARY KEY clause, optional
 
 	IfNotExists       bool
 	Name              *Path
@@ -2625,13 +2625,13 @@ type BitReversedPositive struct {
 //	{{.Name | sql}}
 //	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}}
 //	{{.DefaultSemantics | sqlOpt}}
+//	{{.PlacementKey | sqlOpt}}
 //	{{if .Hidden.Invalid | not)}}HIDDEN{{end}}
 //	{{if .PrimaryKey}}PRIMARY KEY{{end}}
-//	{{if .PlacementKey.Invalid | not}}PLACEMENT KEY{{end}}
 //	{{.Options | sqlOpt}}
 type ColumnDef struct {
 	// pos = Name.pos
-	// end = Options.end || PlacementKey + 3 || Key + 3 || Hidden + 6 || DefaultSemantics.end || Null + 4 || Type.end
+	// end = Options.end || Key + 3 || Hidden + 6 || PlacementKey.end || DefaultSemantics.end || Null + 4 || Type.end
 
 	Null token.Pos // position of "NULL"
 	Key  token.Pos // position of "KEY" of PRIMARY KEY
@@ -2643,9 +2643,20 @@ type ColumnDef struct {
 
 	DefaultSemantics ColumnDefaultSemantics // optional
 
-	Hidden       token.Pos // InvalidPos if not hidden
-	PlacementKey token.Pos // position of "KEY" of PLACEMENT KEY; InvalidPos if absent
-	Options      *Options  // optional
+	PlacementKey *PlacementKey // optional
+	Hidden       token.Pos     // InvalidPos if not hidden
+	Options      *Options      // optional
+}
+
+// PlacementKey is PLACEMENT KEY clause for a column.
+//
+//	PLACEMENT KEY
+type PlacementKey struct {
+	// pos = Placement
+	// end = Key + 3
+
+	Placement token.Pos // position of "PLACEMENT" pseudo keyword
+	Key       token.Pos // position of "KEY" pseudo keyword
 }
 
 // ColumnDefaultExpr is a default value expression for the column.

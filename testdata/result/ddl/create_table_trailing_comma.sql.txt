@@ -33,8 +33,7 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -48,8 +47,7 @@ create table foo (
         NamePos: 38,
         Name:    "INT64",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
   },
   PrimaryKeys: []*ast.IndexKey{

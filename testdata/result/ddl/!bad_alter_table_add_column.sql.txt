@@ -33,8 +33,7 @@ syntax error: testdata/input/ddl/!bad_alter_table_add_column.sql:1:44: expected 
         Name:    "STRING",
         Max:     true,
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
   },
 }

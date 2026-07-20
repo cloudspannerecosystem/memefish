@@ -541,9 +541,13 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *ColumnDef:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.PlacementKey), visitor: v.Field("PlacementKey")})
 		stack = append(stack, &stackItem{node: wrapNode(n.DefaultSemantics), visitor: v.Field("DefaultSemantics")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Type), visitor: v.Field("Type")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *PlacementKey:
+		// nothing to do
 
 	case *ColumnDefaultExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.OnUpdate), visitor: v.Field("OnUpdate")})

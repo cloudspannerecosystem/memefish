@@ -32,8 +32,7 @@ create table foo (
         NamePos: 25,
         Name:    "INT64",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -47,8 +46,7 @@ create table foo (
         NamePos: 38,
         Name:    "INT64",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -62,8 +60,7 @@ create table foo (
         NamePos: 51,
         Name:    "TIMESTAMP",
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
   },
   RowDeletionPolicy: &ast.CreateRowDeletionPolicy{
@@ -91,4 +88,4 @@ CREATE TABLE foo (
   foo INT64,
   bar INT64,
   baz TIMESTAMP
-) PRIMARY KEY (), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))
+), ROW DELETION POLICY ( OLDER_THAN ( baz, INTERVAL 30 DAY ))

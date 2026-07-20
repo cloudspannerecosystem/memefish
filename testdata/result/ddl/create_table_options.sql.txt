@@ -31,9 +31,8 @@ CREATE TABLE Singers (
         NamePos: 36,
         Name:    "INT64",
       },
-      NotNull:      true,
-      Hidden:       -1,
-      PlacementKey: -1,
+      NotNull: true,
+      Hidden:  -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -54,8 +53,7 @@ CREATE TABLE Singers (
           Value:    "1024",
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -76,8 +74,7 @@ CREATE TABLE Singers (
           Value:    "1024",
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
+      Hidden: -1,
     },
     &ast.ColumnDef{
       Null: -1,
@@ -98,9 +95,8 @@ CREATE TABLE Singers (
           Max:     true,
         },
       },
-      Hidden:       -1,
-      PlacementKey: -1,
-      Options:      &ast.Options{
+      Hidden:  -1,
+      Options: &ast.Options{
         Options: 138,
         Rparen:  178,
         Records: []*ast.OptionsDef{
