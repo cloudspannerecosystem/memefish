@@ -1590,6 +1590,14 @@ func (a *AlterVectorIndex) End() token.Pos {
 	return nodeEnd(wrapNode(a.Alteration))
 }
 
+func (v *VectorIndexSetOptions) Pos() token.Pos {
+	return v.Set
+}
+
+func (v *VectorIndexSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(v.Options))
+}
+
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }

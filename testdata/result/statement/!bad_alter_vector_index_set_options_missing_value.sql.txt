@@ -1,0 +1,46 @@
+--- !bad_alter_vector_index_set_options_missing_value.sql
+ALTER VECTOR INDEX IncidentVectorIndex SET OPTIONS (disable_search =)
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_vector_index_set_options_missing_value.sql:1:69: unexpected token: )
+  1|  ALTER VECTOR INDEX IncidentVectorIndex SET OPTIONS (disable_search =)
+   |                                                                      ^
+
+
+--- AST
+&ast.AlterVectorIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 19,
+        NameEnd: 38,
+        Name:    "IncidentVectorIndex",
+      },
+    },
+  },
+  Alteration: &ast.VectorIndexSetOptions{
+    Set:     39,
+    Options: &ast.Options{
+      Options: 43,
+      Rparen:  68,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 52,
+            NameEnd: 66,
+            Name:    "disable_search",
+          },
+          Value: &ast.BadExpr{
+            BadNode: &ast.BadNode{
+              NodePos: 68,
+              NodeEnd: 68,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER VECTOR INDEX IncidentVectorIndex SET OPTIONS (disable_search = )

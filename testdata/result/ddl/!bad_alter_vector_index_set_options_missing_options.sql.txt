@@ -1,0 +1,91 @@
+--- !bad_alter_vector_index_set_options_missing_options.sql
+ALTER VECTOR INDEX IncidentVectorIndex SET (disable_search = true)
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_vector_index_set_options_missing_options.sql:1:44: expected token: <ident>, but: (
+  1|  ALTER VECTOR INDEX IncidentVectorIndex SET (disable_search = true)
+   |                                             ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 66,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "VECTOR",
+        AsString: "VECTOR",
+        Pos:      6,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INDEX",
+        AsString: "INDEX",
+        Pos:      13,
+        End:      18,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "IncidentVectorIndex",
+        AsString: "IncidentVectorIndex",
+        Pos:      19,
+        End:      38,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   39,
+        End:   42,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   43,
+        End:   44,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "disable_search",
+        AsString: "disable_search",
+        Pos:      44,
+        End:      58,
+      },
+      &token.Token{
+        Kind:  "=",
+        Space: " ",
+        Raw:   "=",
+        Pos:   59,
+        End:   60,
+      },
+      &token.Token{
+        Kind:  "TRUE",
+        Space: " ",
+        Raw:   "true",
+        Pos:   61,
+        End:   65,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  65,
+        End:  66,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER VECTOR INDEX IncidentVectorIndex SET (disable_search = true)
