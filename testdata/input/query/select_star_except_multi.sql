@@ -1,0 +1,1 @@
+SELECT * EXCEPT (fruit, vegetable) FROM (SELECT "apple" AS fruit, "carrot" AS vegetable, 1 AS n)
