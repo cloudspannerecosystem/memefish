@@ -1,0 +1,34 @@
+--- revoke_on_sequence.sql
+REVOKE UPDATE ON SEQUENCE s1 FROM ROLE r1
+--- AST
+&ast.Revoke{
+  Privilege: &ast.PrivilegeOnSequence{
+    Privileges: []ast.TablePrivilege{
+      &ast.UpdatePrivilege{
+        Update: 7,
+        Rparen: -1,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 26,
+            NameEnd: 28,
+            Name:    "s1",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 39,
+      NameEnd: 41,
+      Name:    "r1",
+    },
+  },
+}
+
+--- SQL
+REVOKE UPDATE ON SEQUENCE s1 FROM ROLE r1

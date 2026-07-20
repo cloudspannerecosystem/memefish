@@ -4951,6 +4951,12 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if c := p.tryParseSelectPrivilegeOnChangeStream(); c != nil {
 		return c
 	}
+	if s := p.tryParsePrivilegeOnAllSequencesInSchema(); s != nil {
+		return s
+	}
+	if s := p.tryParsePrivilegeOnSequence(); s != nil {
+		return s
+	}
 	if t := p.tryParsePrivilegeOnAllTablesInSchema(); t != nil {
 		return t
 	}
@@ -5114,6 +5120,66 @@ func (p *Parser) tryParseSelectPrivilegeOnChangeStream() *ast.SelectPrivilegeOnC
 	return &ast.SelectPrivilegeOnChangeStream{
 		Select: pos,
 		Names:  names,
+	}
+}
+
+func (p *Parser) tryParsePrivilegeOnAllSequencesInSchema() *ast.PrivilegeOnAllSequencesInSchema {
+	lexer := p.cloneLexer()
+	privileges := parseCommaSeparatedList(p, p.parseSchemaTablePrivilege)
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if p.Token.Kind != "ALL" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ALL")
+	if !p.Token.IsKeywordLike("SEQUENCES") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("SEQUENCES")
+	p.requireSequencePrivileges(privileges)
+	p.expect("IN")
+	p.expectKeywordLike("SCHEMA")
+	schemas := parseCommaSeparatedList(p, p.parsePath)
+	return &ast.PrivilegeOnAllSequencesInSchema{
+		Privileges: privileges,
+		Schemas:    schemas,
+	}
+}
+
+func (p *Parser) tryParsePrivilegeOnSequence() *ast.PrivilegeOnSequence {
+	lexer := p.cloneLexer()
+	privileges := parseCommaSeparatedList(p, p.parseSchemaTablePrivilege)
+	if p.Token.Kind != "ON" {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expect("ON")
+	if !p.Token.IsKeywordLike("SEQUENCE") {
+		p.Lexer = lexer
+		return nil
+	}
+	p.expectKeywordLike("SEQUENCE")
+	p.requireSequencePrivileges(privileges)
+	names := parseCommaSeparatedList(p, p.parsePath)
+	return &ast.PrivilegeOnSequence{
+		Privileges: privileges,
+		Names:      names,
+	}
+}
+
+func (p *Parser) requireSequencePrivileges(privileges []ast.TablePrivilege) {
+	for _, privilege := range privileges {
+		switch privilege.(type) {
+		case *ast.SelectPrivilege, *ast.UpdatePrivilege:
+			continue
+		default:
+			panic(p.errorfAtPosition(privilege.Pos(), privilege.End(), "expected sequence privilege: SELECT, UPDATE"))
+		}
 	}
 }
 

@@ -1,0 +1,34 @@
+--- grant_on_sequence.sql
+GRANT SELECT ON SEQUENCE s1 TO ROLE r1
+--- AST
+&ast.Grant{
+  Privilege: &ast.PrivilegeOnSequence{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 6,
+        Rparen: -1,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 25,
+            NameEnd: 27,
+            Name:    "s1",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 36,
+      NameEnd: 38,
+      Name:    "r1",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT ON SEQUENCE s1 TO ROLE r1

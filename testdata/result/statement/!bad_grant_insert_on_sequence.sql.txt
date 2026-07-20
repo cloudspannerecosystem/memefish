@@ -1,0 +1,80 @@
+--- !bad_grant_insert_on_sequence.sql
+GRANT INSERT ON SEQUENCE s1 TO ROLE r1
+
+--- Error
+syntax error: testdata/input/ddl/!bad_grant_insert_on_sequence.sql:1:7: expected sequence privilege: SELECT, UPDATE
+  1|  GRANT INSERT ON SEQUENCE s1 TO ROLE r1
+   |        ^~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 38,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "GRANT",
+        AsString: "GRANT",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INSERT",
+        AsString: "INSERT",
+        Pos:      6,
+        End:      12,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   13,
+        End:   15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "SEQUENCE",
+        AsString: "SEQUENCE",
+        Pos:      16,
+        End:      24,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "s1",
+        AsString: "s1",
+        Pos:      25,
+        End:      27,
+      },
+      &token.Token{
+        Kind:  "TO",
+        Space: " ",
+        Raw:   "TO",
+        Pos:   28,
+        End:   30,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      31,
+        End:      35,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "r1",
+        AsString: "r1",
+        Pos:      36,
+        End:      38,
+      },
+    },
+  },
+}
+
+--- SQL
+GRANT INSERT ON SEQUENCE s1 TO ROLE r1

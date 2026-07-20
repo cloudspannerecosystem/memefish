@@ -1148,6 +1148,14 @@ func (p *PrivilegeOnAllTablesInSchema) SQL() string {
 	return sqlJoin(p.Privileges, ", ") + " ON ALL TABLES IN SCHEMA " + sqlJoin(p.Schemas, ", ")
 }
 
+func (p *PrivilegeOnSequence) SQL() string {
+	return sqlJoin(p.Privileges, ", ") + " ON SEQUENCE " + sqlJoin(p.Names, ", ")
+}
+
+func (p *PrivilegeOnAllSequencesInSchema) SQL() string {
+	return sqlJoin(p.Privileges, ", ") + " ON ALL SEQUENCES IN SCHEMA " + sqlJoin(p.Schemas, ", ")
+}
+
 func (s *SelectPrivilege) SQL() string {
 	return "SELECT" +
 		strOpt(len(s.Columns) > 0, "("+sqlJoin(s.Columns, ", ")+")")

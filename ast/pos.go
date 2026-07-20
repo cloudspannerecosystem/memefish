@@ -1766,6 +1766,22 @@ func (p *PrivilegeOnAllTablesInSchema) End() token.Pos {
 	return nodeEnd(nodeSliceLast(p.Schemas))
 }
 
+func (p *PrivilegeOnSequence) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(p.Privileges, 0))
+}
+
+func (p *PrivilegeOnSequence) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Names))
+}
+
+func (p *PrivilegeOnAllSequencesInSchema) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(p.Privileges, 0))
+}
+
+func (p *PrivilegeOnAllSequencesInSchema) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Schemas))
+}
+
 func (s *SelectPrivilege) Pos() token.Pos {
 	return s.Select
 }
