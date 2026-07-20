@@ -1,0 +1,24 @@
+--- !bad_lex_first_token_ddl.sql
+'hello
+--- Error
+syntax error: testdata/input/ddl/!bad_lex_first_token_ddl.sql:1:1: unclosed string literal
+  1|  'hello
+   |  ^~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 6,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "<bad>",
+        Raw:  "'hello",
+        End:  6,
+      },
+    },
+  },
+}
+
+--- SQL
+'hello
