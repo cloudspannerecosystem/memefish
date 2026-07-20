@@ -725,6 +725,9 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Alteration), visitor: v.Field("Alteration")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *VectorIndexSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *CreateChangeStream:
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.For), visitor: v.Field("For")})

@@ -554,8 +554,9 @@ type VectorIndexAlteration interface {
 	isVectorIndexAlteration()
 }
 
-func (AddStoredColumn) isVectorIndexAlteration()  {}
-func (DropStoredColumn) isVectorIndexAlteration() {}
+func (VectorIndexSetOptions) isVectorIndexAlteration() {}
+func (AddStoredColumn) isVectorIndexAlteration()       {}
+func (DropStoredColumn) isVectorIndexAlteration()      {}
 
 // DML represents data manipulation language in SQL.
 //
@@ -3315,6 +3316,18 @@ type AlterVectorIndex struct {
 	Alter      token.Pos
 	Name       *Path
 	Alteration VectorIndexAlteration
+}
+
+// VectorIndexSetOptions is SET OPTIONS clause in ALTER VECTOR INDEX.
+//
+//	SET {{.Options | sql}}
+type VectorIndexSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set token.Pos // position of "SET" keyword
+
+	Options *Options
 }
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.

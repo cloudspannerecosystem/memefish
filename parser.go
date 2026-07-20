@@ -3996,8 +3996,10 @@ func (p *Parser) parseVectorIndexAlteration() ast.VectorIndexAlteration {
 		return p.parseAddStoredColumn()
 	case p.Token.IsKeywordLike("DROP"):
 		return p.parseDropStoredColumn()
+	case p.Token.Kind == "SET":
+		return p.parseVectorIndexSetOptions()
 	default:
-		panic(p.errorfAtToken(&p.Token, "expected pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
 	}
 }
 
@@ -4808,6 +4810,16 @@ func (p *Parser) parseDropStoredColumn() *ast.DropStoredColumn {
 		Name: name,
 	}
 }
+
+func (p *Parser) parseVectorIndexSetOptions() *ast.VectorIndexSetOptions {
+	set := p.expect("SET").Pos
+	options := p.parseOptions()
+	return &ast.VectorIndexSetOptions{
+		Set:     set,
+		Options: options,
+	}
+}
+
 func (p *Parser) parseDropTable(pos token.Pos) *ast.DropTable {
 	p.expectKeywordLike("TABLE")
 	ifExists := p.parseIfExists()

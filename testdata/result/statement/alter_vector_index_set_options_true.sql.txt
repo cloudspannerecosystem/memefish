@@ -1,0 +1,38 @@
+--- alter_vector_index_set_options_true.sql
+ALTER VECTOR INDEX IncidentVectorIndex SET OPTIONS (disable_search = true)
+
+--- AST
+&ast.AlterVectorIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 19,
+        NameEnd: 38,
+        Name:    "IncidentVectorIndex",
+      },
+    },
+  },
+  Alteration: &ast.VectorIndexSetOptions{
+    Set:     39,
+    Options: &ast.Options{
+      Options: 43,
+      Rparen:  73,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 52,
+            NameEnd: 66,
+            Name:    "disable_search",
+          },
+          Value: &ast.BoolLiteral{
+            ValuePos: 69,
+            Value:    true,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER VECTOR INDEX IncidentVectorIndex SET OPTIONS (disable_search = true)
