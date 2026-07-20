@@ -3690,14 +3690,6 @@ func (p *Parser) parseTypeNotNull() (t ast.SchemaType, notNull bool, null token.
 	return
 }
 
-func (p *Parser) tryParseColumnDefaultExpr() *ast.ColumnDefaultExpr {
-	if p.Token.Kind != "DEFAULT" {
-		return nil
-	}
-
-	return p.parseColumnDefaultExpr()
-}
-
 func (p *Parser) parseColumnDefaultExpr() *ast.ColumnDefaultExpr {
 	def := p.expect("DEFAULT").Pos
 	p.expect("(")
@@ -4600,12 +4592,21 @@ func (p *Parser) parseColumnAlteration() ast.ColumnAlteration {
 		}
 	default:
 		t, notNull, null := p.parseTypeNotNull()
-		defaultExpr := p.tryParseColumnDefaultExpr()
+
+		var defaultExpr *ast.ColumnDefaultExpr
+		var generatedExpr *ast.GeneratedColumnExpr
+		switch p.Token.Kind {
+		case "DEFAULT":
+			defaultExpr = p.parseColumnDefaultExpr()
+		case "AS":
+			generatedExpr = p.parseGeneratedColumnExpr()
+		}
 		return &ast.AlterColumnType{
-			Type:        t,
-			Null:        null,
-			NotNull:     notNull,
-			DefaultExpr: defaultExpr,
+			Type:          t,
+			Null:          null,
+			NotNull:       notNull,
+			DefaultExpr:   defaultExpr,
+			GeneratedExpr: generatedExpr,
 		}
 	}
 }

@@ -3089,15 +3089,16 @@ type AlterColumn struct {
 
 // AlterColumnType is action to change the data type of the column in ALTER COLUMN.
 //
-//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}}
+//	{{.Type | sql}} {{if .NotNull}}NOT NULL{{end}} {{.DefaultExpr | sqlOpt}} {{.GeneratedExpr | sqlOpt}}
 type AlterColumnType struct {
 	// pos = Type.pos
-	// end = DefaultExpr.end || Null + 4 || Type.end
+	// end = GeneratedExpr.end || DefaultExpr.end || Null + 4 || Type.end
 
-	Type        SchemaType
-	Null        token.Pos // position of "NULL" keyword, optional
-	NotNull     bool
-	DefaultExpr *ColumnDefaultExpr // optional
+	Type          SchemaType
+	Null          token.Pos // position of "NULL" keyword, optional
+	NotNull       bool
+	DefaultExpr   *ColumnDefaultExpr   // optional, mutually exclusive with GeneratedExpr
+	GeneratedExpr *GeneratedColumnExpr // optional, mutually exclusive with DefaultExpr
 }
 
 // AlterColumnSetOptions is SET OPTIONS node in ALTER COLUMN.

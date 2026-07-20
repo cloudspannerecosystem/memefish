@@ -1,0 +1,52 @@
+--- alter_table_alter_column_generated.sql
+ALTER TABLE metrics ALTER COLUMN doubled INT64 AS (source * 2)
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 19,
+        Name:    "metrics",
+      },
+    },
+  },
+  TableAlteration: &ast.AlterColumn{
+    Alter: 20,
+    Name:  &ast.Ident{
+      NamePos: 33,
+      NameEnd: 40,
+      Name:    "doubled",
+    },
+    Alteration: &ast.AlterColumnType{
+      Type: &ast.ScalarSchemaType{
+        NamePos: 41,
+        Name:    "INT64",
+      },
+      Null:          -1,
+      GeneratedExpr: &ast.GeneratedColumnExpr{
+        As:     47,
+        Stored: -1,
+        Rparen: 61,
+        Expr:   &ast.BinaryExpr{
+          Op:   "*",
+          Left: &ast.Ident{
+            NamePos: 51,
+            NameEnd: 57,
+            Name:    "source",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 60,
+            ValueEnd: 61,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE metrics ALTER COLUMN doubled INT64 AS (source * 2)
