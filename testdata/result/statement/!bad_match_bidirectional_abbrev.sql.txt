@@ -1,0 +1,115 @@
+--- !bad_match_bidirectional_abbrev.sql
+GRAPH FinGraph
+MATCH (a)<->(b)
+RETURN a
+
+--- Error
+syntax error: testdata/input/gql/!bad_match_bidirectional_abbrev.sql:2:11: bidirectional edge pattern '<->' is not supported
+  2|  MATCH (a)<->(b)
+   |            ^~
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 39,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      15,
+              End:      20,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   21,
+              End:   22,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      22,
+              End:      23,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  23,
+              End:  24,
+            },
+            &token.Token{
+              Kind: "<",
+              Raw:  "<",
+              Pos:  24,
+              End:  25,
+            },
+            &token.Token{
+              Kind: "->",
+              Raw:  "->",
+              Pos:  25,
+              End:  27,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  27,
+              End:  28,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "b",
+              AsString: "b",
+              Pos:      28,
+              End:      29,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  29,
+              End:  30,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      31,
+              End:      37,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      38,
+              End:      39,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a)<->(b) RETURN a

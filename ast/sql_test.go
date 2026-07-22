@@ -68,6 +68,52 @@ func TestExprPrecPanicIncludesUnhandledType(t *testing.T) {
 	}
 }
 
+func TestGQLLabelExpressionSQLPreservesPrecedence(t *testing.T) {
+	label := func(name string) GQLLabelExpression {
+		return &GQLNameLabel{Name: &Ident{Name: name}}
+	}
+
+	tests := []struct {
+		name string
+		expr GQLLabelExpression
+		want string
+	}{
+		{
+			name: "and over or",
+			expr: &GQLLabelBinaryExpr{
+				Op: GQLLabelOpAnd,
+				Left: &GQLLabelBinaryExpr{
+					Op:    GQLLabelOpOr,
+					Left:  label("A"),
+					Right: label("B"),
+				},
+				Right: label("C"),
+			},
+			want: "(A | B) & C",
+		},
+		{
+			name: "not over or",
+			expr: &GQLLabelUnaryExpr{
+				Op: GQLLabelOpNot,
+				Expr: &GQLLabelBinaryExpr{
+					Op:    GQLLabelOpOr,
+					Left:  label("A"),
+					Right: label("B"),
+				},
+			},
+			want: "!(A | B)",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := test.expr.SQL(); got != test.want {
+				t.Fatalf("SQL() = %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 func loadCatalog(t *testing.T) *astcatalog.Catalog {
 	t.Helper()
 

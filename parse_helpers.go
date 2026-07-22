@@ -49,6 +49,14 @@ func ParseSchemaType(filepath, s string) (ast.SchemaType, error) {
 	return newParser(filepath, s).ParseSchemaType()
 }
 
+// ParseGQLGraphPattern parses an input string containing a GQL graph pattern.
+// filepath can be empty, it is only used in error message.
+// Malformed input, including trailing tokens after a valid pattern, returns a
+// *ast.BadGQLGraphPattern together with the parse error.
+func ParseGQLGraphPattern(filepath, s string) (ast.GQLGraphPatternNode, error) {
+	return newParser(filepath, s).ParseGQLGraphPattern()
+}
+
 // ParseDDL parses an input string containing a DDL statement.
 // filepath can be empty, it is only used in error message.
 func ParseDDL(filepath, s string) (ast.DDL, error) {

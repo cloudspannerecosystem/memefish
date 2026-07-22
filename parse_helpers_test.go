@@ -83,6 +83,18 @@ func ExampleParseSchemaType() {
 	// ARRAY<STRING(MAX)>
 }
 
+func ExampleParseGQLGraphPattern() {
+	pattern, err := memefish.ParseGQLGraphPattern("", "(a)-[e]->(b)")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(pattern.SQL())
+
+	// Output:
+	// (a)-[e]->(b)
+}
+
 func ExampleParseDDL() {
 	sql := heredoc.Doc(`
 		CREATE TABLE foo (

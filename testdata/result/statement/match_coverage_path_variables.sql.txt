@@ -1,0 +1,181 @@
+--- match_coverage_path_variables.sql
+GRAPH FinGraph
+MATCH p = ANY SHORTEST (a)->(b), shortest = (c), q = TRAIL PATHS (d), edge = (->)
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 21,
+                    NameEnd: 22,
+                    Name:    "p",
+                  },
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 25,
+                    EndPos:   37,
+                    Prefix:   "ANY SHORTEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  38,
+                          Rparen:  40,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 39,
+                              NameEnd: 40,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  41,
+                          EndPos:    43,
+                          Direction: "RIGHT",
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  43,
+                          Rparen:  45,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 44,
+                              NameEnd: 45,
+                              Name:    "b",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 48,
+                    NameEnd: 56,
+                    Name:    "shortest",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  59,
+                          Rparen:  61,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 60,
+                              NameEnd: 61,
+                              Name:    "c",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 64,
+                    NameEnd: 65,
+                    Name:    "q",
+                  },
+                  Mode: &ast.GQLPathModeClause{
+                    StartPos: 68,
+                    EndPos:   79,
+                    Mode:     "TRAIL",
+                    Suffix:   "PATHS",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  80,
+                          Rparen:  82,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 81,
+                              NameEnd: 82,
+                              Name:    "d",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.GQLTopLevelPathPattern{
+                  Variable: &ast.Ident{
+                    NamePos: 85,
+                    NameEnd: 89,
+                    Name:    "edge",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLSubpathPattern{
+                          Lparen: 92,
+                          Rparen: 95,
+                          Path:   &ast.GQLPathPattern{
+                            Terms: []*ast.GQLPathTerm{
+                              &ast.GQLPathTerm{
+                                Primary: &ast.GQLEdgePattern{
+                                  StartPos:  93,
+                                  EndPos:    95,
+                                  Direction: "RIGHT",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 97,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 104,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH p = ANY SHORTEST (a)->(b), shortest = (c), q = TRAIL PATHS (d), edge = (->) RETURN *

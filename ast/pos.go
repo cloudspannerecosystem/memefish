@@ -2477,3 +2477,187 @@ func (g *GQLOrderByItem) Pos() token.Pos {
 func (g *GQLOrderByItem) End() token.Pos {
 	return posChoice(g.DirEnd, nodeEnd(wrapNode(g.Collate)), nodeEnd(wrapNode(g.Expr)))
 }
+
+func (g *GQLMatch) Pos() token.Pos {
+	return posChoice(g.Optional, g.Match)
+}
+
+func (g *GQLMatch) End() token.Pos {
+	return nodeEnd(wrapNode(g.Pattern))
+}
+
+func (g *GQLGraphPattern) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Paths, 0))
+}
+
+func (g *GQLGraphPattern) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Where), nodeSliceLast(g.Paths)))
+}
+
+func (b *BadGQLGraphPattern) Pos() token.Pos {
+	return nodePos(wrapNode(b.BadNode))
+}
+
+func (b *BadGQLGraphPattern) End() token.Pos {
+	return nodeEnd(wrapNode(b.BadNode))
+}
+
+func (g *GQLTopLevelPathPattern) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.Variable), wrapNode(g.SearchPrefix), wrapNode(g.Mode), wrapNode(g.Path)))
+}
+
+func (g *GQLTopLevelPathPattern) End() token.Pos {
+	return nodeEnd(wrapNode(g.Path))
+}
+
+func (g *GQLPathSearchPrefix) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLPathSearchPrefix) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(g.Count)), g.EndPos)
+}
+
+func (g *GQLPathModeClause) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLPathModeClause) End() token.Pos {
+	return g.EndPos
+}
+
+func (g *GQLPathPattern) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(g.Terms, 0))
+}
+
+func (g *GQLPathPattern) End() token.Pos {
+	return nodeEnd(nodeSliceLast(g.Terms))
+}
+
+func (g *GQLPathTerm) Pos() token.Pos {
+	return nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.Primary)))
+}
+
+func (g *GQLPathTerm) End() token.Pos {
+	return nodeEnd(nodeChoice(wrapNode(g.Quantifier), wrapNode(g.Primary)))
+}
+
+func (g *GQLSubpathPattern) Pos() token.Pos {
+	return g.Lparen
+}
+
+func (g *GQLSubpathPattern) End() token.Pos {
+	return posAdd(g.Rparen, 1)
+}
+
+func (g *GQLNodePattern) Pos() token.Pos {
+	return g.Lparen
+}
+
+func (g *GQLNodePattern) End() token.Pos {
+	return posAdd(g.Rparen, 1)
+}
+
+func (g *GQLEdgePattern) Pos() token.Pos {
+	return g.StartPos
+}
+
+func (g *GQLEdgePattern) End() token.Pos {
+	return g.EndPos
+}
+
+func (g *GQLElementPatternFiller) Pos() token.Pos {
+	return posChoice(nodePos(nodeChoice(wrapNode(g.Hint), wrapNode(g.Variable), wrapNode(g.Label), wrapNode(g.Properties), wrapNode(g.Where), wrapNode(g.Cost))), g.EmptyPos)
+}
+
+func (g *GQLElementPatternFiller) End() token.Pos {
+	return posChoice(nodeEnd(nodeChoice(wrapNode(g.Cost), wrapNode(g.Where), wrapNode(g.Properties), wrapNode(g.Label), wrapNode(g.Variable), wrapNode(g.Hint))), posAdd(g.EmptyPos, 1))
+}
+
+func (g *GQLLabelFilter) Pos() token.Pos {
+	return posChoice(g.Is, g.Colon)
+}
+
+func (g *GQLLabelFilter) End() token.Pos {
+	return nodeEnd(wrapNode(g.Expr))
+}
+
+func (g *GQLNameLabel) Pos() token.Pos {
+	return nodePos(wrapNode(g.Name))
+}
+
+func (g *GQLNameLabel) End() token.Pos {
+	return nodeEnd(wrapNode(g.Name))
+}
+
+func (g *GQLWildcardLabel) Pos() token.Pos {
+	return g.Percent
+}
+
+func (g *GQLWildcardLabel) End() token.Pos {
+	return posAdd(g.Percent, 1)
+}
+
+func (g *GQLLabelBinaryExpr) Pos() token.Pos {
+	return nodePos(wrapNode(g.Left))
+}
+
+func (g *GQLLabelBinaryExpr) End() token.Pos {
+	return nodeEnd(wrapNode(g.Right))
+}
+
+func (g *GQLLabelUnaryExpr) Pos() token.Pos {
+	return g.OpPos
+}
+
+func (g *GQLLabelUnaryExpr) End() token.Pos {
+	return nodeEnd(wrapNode(g.Expr))
+}
+
+func (g *GQLLabelParenExpr) Pos() token.Pos {
+	return g.Lparen
+}
+
+func (g *GQLLabelParenExpr) End() token.Pos {
+	return posAdd(g.Rparen, 1)
+}
+
+func (g *GQLProperties) Pos() token.Pos {
+	return g.Lbrace
+}
+
+func (g *GQLProperties) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
+}
+
+func (g *GQLPropertyField) Pos() token.Pos {
+	return nodePos(wrapNode(g.Name))
+}
+
+func (g *GQLPropertyField) End() token.Pos {
+	return nodeEnd(wrapNode(g.Value))
+}
+
+func (g *GQLSymbolQuantifier) Pos() token.Pos {
+	return g.OpPos
+}
+
+func (g *GQLSymbolQuantifier) End() token.Pos {
+	return posAdd(g.OpPos, 1)
+}
+
+func (g *GQLFixedQuantifier) Pos() token.Pos {
+	return g.Lbrace
+}
+
+func (g *GQLFixedQuantifier) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
+}
+
+func (g *GQLBoundedQuantifier) Pos() token.Pos {
+	return g.Lbrace
+}
+
+func (g *GQLBoundedQuantifier) End() token.Pos {
+	return posAdd(g.Rbrace, 1)
+}

@@ -1,0 +1,366 @@
+--- match_coverage_labels.sql
+GRAPH FinGraph
+-- Label Expressions
+MATCH (nl1:Person|Employee)
+MATCH (nl2:Person&Employee)
+MATCH (nl3:!Person)
+MATCH (nl4:%)
+MATCH (nl5:(Person|Employee)&!Student)
+MATCH (nl6 IS Person)
+MATCH (nl7:Person)
+RETURN *
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    36,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  42,
+                          Rparen:  62,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 43,
+                              NameEnd: 46,
+                              Name:    "nl1",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 46,
+                              Expr:  &ast.GQLLabelBinaryExpr{
+                                Op:   "|",
+                                Left: &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 47,
+                                    NameEnd: 53,
+                                    Name:    "Person",
+                                  },
+                                },
+                                Right: &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 54,
+                                    NameEnd: 62,
+                                    Name:    "Employee",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    64,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  70,
+                          Rparen:  90,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 71,
+                              NameEnd: 74,
+                              Name:    "nl2",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 74,
+                              Expr:  &ast.GQLLabelBinaryExpr{
+                                Op:   "&",
+                                Left: &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 75,
+                                    NameEnd: 81,
+                                    Name:    "Person",
+                                  },
+                                },
+                                Right: &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 82,
+                                    NameEnd: 90,
+                                    Name:    "Employee",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    92,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  98,
+                          Rparen:  110,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 99,
+                              NameEnd: 102,
+                              Name:    "nl3",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 102,
+                              Expr:  &ast.GQLLabelUnaryExpr{
+                                OpPos: 103,
+                                Op:    "!",
+                                Expr:  &ast.GQLNameLabel{
+                                  Name: &ast.Ident{
+                                    NamePos: 104,
+                                    NameEnd: 110,
+                                    Name:    "Person",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    112,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  118,
+                          Rparen:  124,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 119,
+                              NameEnd: 122,
+                              Name:    "nl4",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 122,
+                              Expr:  &ast.GQLWildcardLabel{
+                                Percent: 123,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    126,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  132,
+                          Rparen:  163,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 133,
+                              NameEnd: 136,
+                              Name:    "nl5",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 136,
+                              Expr:  &ast.GQLLabelBinaryExpr{
+                                Op:   "&",
+                                Left: &ast.GQLLabelParenExpr{
+                                  Lparen: 137,
+                                  Rparen: 153,
+                                  Expr:   &ast.GQLLabelBinaryExpr{
+                                    Op:   "|",
+                                    Left: &ast.GQLNameLabel{
+                                      Name: &ast.Ident{
+                                        NamePos: 138,
+                                        NameEnd: 144,
+                                        Name:    "Person",
+                                      },
+                                    },
+                                    Right: &ast.GQLNameLabel{
+                                      Name: &ast.Ident{
+                                        NamePos: 145,
+                                        NameEnd: 153,
+                                        Name:    "Employee",
+                                      },
+                                    },
+                                  },
+                                },
+                                Right: &ast.GQLLabelUnaryExpr{
+                                  OpPos: 155,
+                                  Op:    "!",
+                                  Expr:  &ast.GQLNameLabel{
+                                    Name: &ast.Ident{
+                                      NamePos: 156,
+                                      NameEnd: 163,
+                                      Name:    "Student",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    165,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  171,
+                          Rparen:  185,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 172,
+                              NameEnd: 175,
+                              Name:    "nl6",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    176,
+                              Colon: -1,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 179,
+                                  NameEnd: 185,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    187,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  193,
+                          Rparen:  204,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 194,
+                              NameEnd: 197,
+                              Name:    "nl7",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 197,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 198,
+                                  NameEnd: 204,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 206,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: 213,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (nl1:Person | Employee) MATCH (nl2:Person & Employee) MATCH (nl3:!Person) MATCH (nl4:%) MATCH (nl5:(Person | Employee) & !Student) MATCH (nl6 IS Person) MATCH (nl7:Person) RETURN *

@@ -1,0 +1,145 @@
+--- path_variables_and_edge_subpaths.sql
+p = ANY SHORTEST (a)->(b), shortest = (c), q = TRAIL PATHS (d), edge = (->)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NameEnd: 1,
+        Name:    "p",
+      },
+      SearchPrefix: &ast.GQLPathSearchPrefix{
+        StartPos: 4,
+        EndPos:   16,
+        Prefix:   "ANY SHORTEST",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  17,
+              Rparen:  19,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 18,
+                  NameEnd: 19,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  20,
+              EndPos:    22,
+              Direction: "RIGHT",
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  22,
+              Rparen:  24,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 23,
+                  NameEnd: 24,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 27,
+        NameEnd: 35,
+        Name:    "shortest",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  38,
+              Rparen:  40,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 39,
+                  NameEnd: 40,
+                  Name:    "c",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 43,
+        NameEnd: 44,
+        Name:    "q",
+      },
+      Mode: &ast.GQLPathModeClause{
+        StartPos: 47,
+        EndPos:   58,
+        Mode:     "TRAIL",
+        Suffix:   "PATHS",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  59,
+              Rparen:  61,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 60,
+                  NameEnd: 61,
+                  Name:    "d",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    &ast.GQLTopLevelPathPattern{
+      Variable: &ast.Ident{
+        NamePos: 64,
+        NameEnd: 68,
+        Name:    "edge",
+      },
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLSubpathPattern{
+              Lparen: 71,
+              Rparen: 74,
+              Path:   &ast.GQLPathPattern{
+                Terms: []*ast.GQLPathTerm{
+                  &ast.GQLPathTerm{
+                    Primary: &ast.GQLEdgePattern{
+                      StartPos:  72,
+                      EndPos:    74,
+                      Direction: "RIGHT",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+p = ANY SHORTEST (a)->(b), shortest = (c), q = TRAIL PATHS (d), edge = (->)

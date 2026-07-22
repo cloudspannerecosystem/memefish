@@ -1,0 +1,203 @@
+--- match_complex.sql
+GRAPH g
+MATCH ANY SHORTEST (a:Person {name: "Alice"})-[:KNOWS]->{1, 5}(b:Person)
+WHERE a.age > 20
+RETURN a, b
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 7,
+          Name:    "g",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    8,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  SearchPrefix: &ast.GQLPathSearchPrefix{
+                    StartPos: 14,
+                    EndPos:   26,
+                    Prefix:   "ANY SHORTEST",
+                  },
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  27,
+                          Rparen:  52,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 28,
+                              NameEnd: 29,
+                              Name:    "a",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 29,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 30,
+                                  NameEnd: 36,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                            Properties: &ast.GQLProperties{
+                              Lbrace: 37,
+                              Rbrace: 51,
+                              Fields: []*ast.GQLPropertyField{
+                                &ast.GQLPropertyField{
+                                  Name: &ast.Ident{
+                                    NamePos: 38,
+                                    NameEnd: 42,
+                                    Name:    "name",
+                                  },
+                                  Value: &ast.StringLiteral{
+                                    ValuePos: 44,
+                                    ValueEnd: 51,
+                                    Value:    "Alice",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  53,
+                          EndPos:    64,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Label:    &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 55,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 56,
+                                  NameEnd: 61,
+                                  Name:    "KNOWS",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        Quantifier: &ast.GQLBoundedQuantifier{
+                          Lbrace: 64,
+                          Rbrace: 69,
+                          Low:    &ast.IntLiteral{
+                            ValuePos: 65,
+                            ValueEnd: 66,
+                            Base:     10,
+                            Value:    "1",
+                          },
+                          High: &ast.IntLiteral{
+                            ValuePos: 68,
+                            ValueEnd: 69,
+                            Base:     10,
+                            Value:    "5",
+                          },
+                          Comma: 66,
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  70,
+                          Rparen:  79,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 71,
+                              NameEnd: 72,
+                              Name:    "b",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 72,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 73,
+                                  NameEnd: 79,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 81,
+                Expr:  &ast.BinaryExpr{
+                  Op:   ">",
+                  Left: &ast.Path{
+                    Idents: []*ast.Ident{
+                      &ast.Ident{
+                        NamePos: 87,
+                        NameEnd: 88,
+                        Name:    "a",
+                      },
+                      &ast.Ident{
+                        NamePos: 89,
+                        NameEnd: 92,
+                        Name:    "age",
+                      },
+                    },
+                  },
+                  Right: &ast.IntLiteral{
+                    ValuePos: 95,
+                    ValueEnd: 97,
+                    Base:     10,
+                    Value:    "20",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 98,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 105,
+                  NameEnd: 106,
+                  Name:    "a",
+                },
+              },
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Ident{
+                  NamePos: 108,
+                  NameEnd: 109,
+                  Name:    "b",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH g MATCH ANY SHORTEST (a:Person {name: "Alice"})-[:KNOWS]->{1,5}(b:Person) WHERE a.age > 20 RETURN a, b

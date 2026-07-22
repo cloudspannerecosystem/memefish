@@ -1,0 +1,146 @@
+--- !bad_match_bidirectional_full.sql
+GRAPH FinGraph
+MATCH (a)<-[:Knows]->(b)
+RETURN a
+
+--- Error
+syntax error: testdata/input/gql/!bad_match_bidirectional_full.sql:2:20: bidirectional edge pattern '<-[]->' is not supported
+  2|  MATCH (a)<-[:Knows]->(b)
+   |                     ^~
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.BadGQLLinearQueryStatement{
+        BadNode: &ast.BadNode{
+          NodePos: 15,
+          NodeEnd: 48,
+          Tokens:  []*token.Token{
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "MATCH",
+              AsString: "MATCH",
+              Pos:      15,
+              End:      20,
+            },
+            &token.Token{
+              Kind:  "(",
+              Space: " ",
+              Raw:   "(",
+              Pos:   21,
+              End:   22,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      22,
+              End:      23,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  23,
+              End:  24,
+            },
+            &token.Token{
+              Kind: "<",
+              Raw:  "<",
+              Pos:  24,
+              End:  25,
+            },
+            &token.Token{
+              Kind: "-",
+              Raw:  "-",
+              Pos:  25,
+              End:  26,
+            },
+            &token.Token{
+              Kind: "[",
+              Raw:  "[",
+              Pos:  26,
+              End:  27,
+            },
+            &token.Token{
+              Kind: ":",
+              Raw:  ":",
+              Pos:  27,
+              End:  28,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "Knows",
+              AsString: "Knows",
+              Pos:      28,
+              End:      33,
+            },
+            &token.Token{
+              Kind: "]",
+              Raw:  "]",
+              Pos:  33,
+              End:  34,
+            },
+            &token.Token{
+              Kind: "->",
+              Raw:  "->",
+              Pos:  34,
+              End:  36,
+            },
+            &token.Token{
+              Kind: "(",
+              Raw:  "(",
+              Pos:  36,
+              End:  37,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Raw:      "b",
+              AsString: "b",
+              Pos:      37,
+              End:      38,
+            },
+            &token.Token{
+              Kind: ")",
+              Raw:  ")",
+              Pos:  38,
+              End:  39,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    "\n",
+              Raw:      "RETURN",
+              AsString: "RETURN",
+              Pos:      40,
+              End:      46,
+            },
+            &token.Token{
+              Kind:     "<ident>",
+              Space:    " ",
+              Raw:      "a",
+              AsString: "a",
+              Pos:      47,
+              End:      48,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a)<-[:Knows]->(b) RETURN a

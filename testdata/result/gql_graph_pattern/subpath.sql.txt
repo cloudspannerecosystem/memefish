@@ -1,0 +1,111 @@
+--- subpath.sql
+(a)-((b)-[e]->(c))->(d)
+
+--- AST
+&ast.GQLGraphPattern{
+  Paths: []*ast.GQLTopLevelPathPattern{
+    &ast.GQLTopLevelPathPattern{
+      Path: &ast.GQLPathPattern{
+        Terms: []*ast.GQLPathTerm{
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Rparen:  2,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 1,
+                  NameEnd: 2,
+                  Name:    "a",
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  3,
+              EndPos:    4,
+              Direction: "ANY",
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLSubpathPattern{
+              Lparen: 4,
+              Rparen: 17,
+              Path:   &ast.GQLPathPattern{
+                Terms: []*ast.GQLPathTerm{
+                  &ast.GQLPathTerm{
+                    Primary: &ast.GQLNodePattern{
+                      Lparen:  5,
+                      Rparen:  7,
+                      Pattern: &ast.GQLElementPatternFiller{
+                        EmptyPos: -1,
+                        Variable: &ast.Ident{
+                          NamePos: 6,
+                          NameEnd: 7,
+                          Name:    "b",
+                        },
+                      },
+                    },
+                  },
+                  &ast.GQLPathTerm{
+                    Primary: &ast.GQLEdgePattern{
+                      StartPos:  8,
+                      EndPos:    14,
+                      Direction: "RIGHT",
+                      Filler:    &ast.GQLElementPatternFiller{
+                        EmptyPos: -1,
+                        Variable: &ast.Ident{
+                          NamePos: 10,
+                          NameEnd: 11,
+                          Name:    "e",
+                        },
+                      },
+                    },
+                  },
+                  &ast.GQLPathTerm{
+                    Primary: &ast.GQLNodePattern{
+                      Lparen:  14,
+                      Rparen:  16,
+                      Pattern: &ast.GQLElementPatternFiller{
+                        EmptyPos: -1,
+                        Variable: &ast.Ident{
+                          NamePos: 15,
+                          NameEnd: 16,
+                          Name:    "c",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLEdgePattern{
+              StartPos:  18,
+              EndPos:    20,
+              Direction: "RIGHT",
+            },
+          },
+          &ast.GQLPathTerm{
+            Primary: &ast.GQLNodePattern{
+              Lparen:  20,
+              Rparen:  22,
+              Pattern: &ast.GQLElementPatternFiller{
+                EmptyPos: -1,
+                Variable: &ast.Ident{
+                  NamePos: 21,
+                  NameEnd: 22,
+                  Name:    "d",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+(a)-((b)-[e]->(c))->(d)
