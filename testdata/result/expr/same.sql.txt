@@ -1,0 +1,41 @@
+--- same.sql
+SAME(a, b, c)
+
+--- AST
+&ast.CallExpr{
+  Rparen: 12,
+  Func:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NameEnd: 4,
+        Name:    "SAME",
+      },
+    },
+  },
+  Args: []ast.Arg{
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 5,
+        NameEnd: 6,
+        Name:    "a",
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 8,
+        NameEnd: 9,
+        Name:    "b",
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 11,
+        NameEnd: 12,
+        Name:    "c",
+      },
+    },
+  },
+}
+
+--- SQL
+SAME(a, b, c)

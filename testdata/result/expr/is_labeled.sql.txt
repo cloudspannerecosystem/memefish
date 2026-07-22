@@ -1,0 +1,40 @@
+--- is_labeled.sql
+a IS LABELED A & B | C
+
+--- AST
+&ast.IsLabeledExpr{
+  Left: &ast.Ident{
+    NameEnd: 1,
+    Name:    "a",
+  },
+  Label: &ast.GQLLabelBinaryExpr{
+    Op:   "|",
+    Left: &ast.GQLLabelBinaryExpr{
+      Op:   "&",
+      Left: &ast.GQLNameLabel{
+        Name: &ast.Ident{
+          NamePos: 13,
+          NameEnd: 14,
+          Name:    "A",
+        },
+      },
+      Right: &ast.GQLNameLabel{
+        Name: &ast.Ident{
+          NamePos: 17,
+          NameEnd: 18,
+          Name:    "B",
+        },
+      },
+    },
+    Right: &ast.GQLNameLabel{
+      Name: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 22,
+        Name:    "C",
+      },
+    },
+  },
+}
+
+--- SQL
+a IS LABELED A & B | C

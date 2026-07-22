@@ -478,6 +478,22 @@ func (i *IsBoolExpr) End() token.Pos {
 	return posAdd(i.RightPos, ifThenElse(i.Right, 4, 5))
 }
 
+func (i *IsSourceExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Left))
+}
+
+func (i *IsSourceExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Right))
+}
+
+func (i *IsDestinationExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Left))
+}
+
+func (i *IsDestinationExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Right))
+}
+
 func (b *BetweenExpr) Pos() token.Pos {
 	return nodePos(wrapNode(b.Left))
 }
@@ -2572,6 +2588,14 @@ func (g *GQLElementPatternFiller) Pos() token.Pos {
 
 func (g *GQLElementPatternFiller) End() token.Pos {
 	return posChoice(nodeEnd(nodeChoice(wrapNode(g.Cost), wrapNode(g.Where), wrapNode(g.Properties), wrapNode(g.Label), wrapNode(g.Variable), wrapNode(g.Hint))), posAdd(g.EmptyPos, 1))
+}
+
+func (i *IsLabeledExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Left))
+}
+
+func (i *IsLabeledExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Label))
 }
 
 func (g *GQLLabelFilter) Pos() token.Pos {

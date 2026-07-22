@@ -1,0 +1,126 @@
+--- is_source_where.sql
+GRAPH FinGraph
+MATCH (a)-[e]->(b)
+WHERE a IS SOURCE OF e
+RETURN a.id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  23,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLEdgePattern{
+                          StartPos:  24,
+                          EndPos:    30,
+                          Direction: "RIGHT",
+                          Filler:    &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 26,
+                              NameEnd: 27,
+                              Name:    "e",
+                            },
+                          },
+                        },
+                      },
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  30,
+                          Rparen:  32,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 31,
+                              NameEnd: 32,
+                              Name:    "b",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 34,
+                Expr:  &ast.IsSourceExpr{
+                  Of:   52,
+                  Left: &ast.Ident{
+                    NamePos: 40,
+                    NameEnd: 41,
+                    Name:    "a",
+                  },
+                  Right: &ast.Ident{
+                    NamePos: 55,
+                    NameEnd: 56,
+                    Name:    "e",
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 57,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 64,
+                      NameEnd: 65,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 66,
+                      NameEnd: 68,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a)-[e]->(b) WHERE a IS SOURCE OF e RETURN a.id

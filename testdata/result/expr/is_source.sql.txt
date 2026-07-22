@@ -1,0 +1,43 @@
+--- is_source.sql
+(a AND b) IS SOURCE (e OR f)
+
+--- AST
+&ast.IsSourceExpr{
+  Of:   -1,
+  Left: &ast.ParenExpr{
+    Rparen: 8,
+    Expr:   &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.Ident{
+        NamePos: 1,
+        NameEnd: 2,
+        Name:    "a",
+      },
+      Right: &ast.Ident{
+        NamePos: 7,
+        NameEnd: 8,
+        Name:    "b",
+      },
+    },
+  },
+  Right: &ast.ParenExpr{
+    Lparen: 20,
+    Rparen: 27,
+    Expr:   &ast.BinaryExpr{
+      Op:   "OR",
+      Left: &ast.Ident{
+        NamePos: 21,
+        NameEnd: 22,
+        Name:    "e",
+      },
+      Right: &ast.Ident{
+        NamePos: 26,
+        NameEnd: 27,
+        Name:    "f",
+      },
+    },
+  },
+}
+
+--- SQL
+(a AND b) IS SOURCE (e OR f)

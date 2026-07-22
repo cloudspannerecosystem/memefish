@@ -1,0 +1,31 @@
+--- is_not_labeled.sql
+e IS NOT LABELED Transfers & Owns
+
+--- AST
+&ast.IsLabeledExpr{
+  Not:  true,
+  Left: &ast.Ident{
+    NameEnd: 1,
+    Name:    "e",
+  },
+  Label: &ast.GQLLabelBinaryExpr{
+    Op:   "&",
+    Left: &ast.GQLNameLabel{
+      Name: &ast.Ident{
+        NamePos: 17,
+        NameEnd: 26,
+        Name:    "Transfers",
+      },
+    },
+    Right: &ast.GQLNameLabel{
+      Name: &ast.Ident{
+        NamePos: 29,
+        NameEnd: 33,
+        Name:    "Owns",
+      },
+    },
+  },
+}
+
+--- SQL
+e IS NOT LABELED Transfers & Owns
