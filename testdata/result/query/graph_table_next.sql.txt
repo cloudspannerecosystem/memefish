@@ -1,0 +1,122 @@
+--- graph_table_next.sql
+SELECT * FROM GRAPH_TABLE (FinGraph LET a = 1 RETURN a AS x NEXT FILTER WHERE x > 0 RETURN x) AS t
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 14,
+        RParen:     92,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 27,
+              NameEnd: 35,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GQLMultiLinearQueryStatement{
+          Statements: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLLet{
+                  Let:   36,
+                  Items: []*ast.GQLLetItem{
+                    &ast.GQLLetItem{
+                      Ident: &ast.Ident{
+                        NamePos: 40,
+                        NameEnd: 41,
+                        Name:    "a",
+                      },
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 44,
+                        ValueEnd: 45,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 46,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Ident{
+                        NamePos: 53,
+                        NameEnd: 54,
+                        Name:    "a",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    55,
+                        Alias: &ast.Ident{
+                          NamePos: 58,
+                          NameEnd: 59,
+                          Name:    "x",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLFilter{
+                  Filter: 65,
+                  Where:  72,
+                  Expr:   &ast.BinaryExpr{
+                    Op:   ">",
+                    Left: &ast.Ident{
+                      NamePos: 78,
+                      NameEnd: 79,
+                      Name:    "x",
+                    },
+                    Right: &ast.IntLiteral{
+                      ValuePos: 82,
+                      ValueEnd: 83,
+                      Base:     10,
+                      Value:    "0",
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 84,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Ident{
+                        NamePos: 91,
+                        NameEnd: 92,
+                        Name:    "x",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    94,
+          Alias: &ast.Ident{
+            NamePos: 97,
+            NameEnd: 98,
+            Name:    "t",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(FinGraph LET a = 1 RETURN a AS x NEXT FILTER WHERE x > 0 RETURN x) AS t

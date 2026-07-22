@@ -1,0 +1,103 @@
+--- graph_table_match_columns_dot_star.sql
+SELECT * FROM GRAPH_TABLE (FinGraph MATCH (n:Person) COLUMNS (n.*, 1 AS number))
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 14,
+        RParen:     79,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 27,
+              NameEnd: 35,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GraphTableMatch{
+          Match: &ast.GQLMatch{
+            Optional: -1,
+            Match:    36,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  42,
+                          Rparen:  51,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 43,
+                              NameEnd: 44,
+                              Name:    "n",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 44,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 45,
+                                  NameEnd: 51,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Columns: &ast.GraphTableColumns{
+            Columns: 53,
+            RParen:  78,
+            Items:   []ast.SelectItem{
+              &ast.DotStar{
+                Star: 64,
+                Expr: &ast.Ident{
+                  NamePos: 62,
+                  NameEnd: 63,
+                  Name:    "n",
+                },
+              },
+              &ast.Alias{
+                Expr: &ast.IntLiteral{
+                  ValuePos: 67,
+                  ValueEnd: 68,
+                  Base:     10,
+                  Value:    "1",
+                },
+                As: &ast.AsAlias{
+                  As:    69,
+                  Alias: &ast.Ident{
+                    NamePos: 72,
+                    NameEnd: 78,
+                    Name:    "number",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(FinGraph MATCH (n:Person) COLUMNS(n.*, 1 AS number))

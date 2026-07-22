@@ -1,0 +1,99 @@
+--- graph_table_tablesample.sql
+SELECT *
+FROM GRAPH_TABLE(
+  FinGraph
+  LET x = 1
+  RETURN x AS v
+) TABLESAMPLE BERNOULLI (10 PERCENT)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 14,
+        RParen:     66,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 29,
+              NameEnd: 37,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GQLMultiLinearQueryStatement{
+          Statements: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLLet{
+                  Let:   40,
+                  Items: []*ast.GQLLetItem{
+                    &ast.GQLLetItem{
+                      Ident: &ast.Ident{
+                        NamePos: 44,
+                        NameEnd: 45,
+                        Name:    "x",
+                      },
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 48,
+                        ValueEnd: 49,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 52,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Ident{
+                        NamePos: 59,
+                        NameEnd: 60,
+                        Name:    "x",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    61,
+                        Alias: &ast.Ident{
+                          NamePos: 64,
+                          NameEnd: 65,
+                          Name:    "v",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Sample: &ast.TableSample{
+          TableSample: 68,
+          Method:      "BERNOULLI",
+          Size:        &ast.TableSampleSize{
+            Lparen: 90,
+            Rparen: 101,
+            Value:  &ast.IntLiteral{
+              ValuePos: 91,
+              ValueEnd: 93,
+              Base:     10,
+              Value:    "10",
+            },
+            Unit: "PERCENT",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(FinGraph LET x = 1 RETURN x AS v) TABLESAMPLE BERNOULLI (10 PERCENT)

@@ -1,0 +1,79 @@
+--- graph_table_minimal.sql
+SELECT * FROM GRAPH_TABLE (FinGraph LET x = 1 RETURN x AS v)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 14,
+        RParen:     59,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 27,
+              NameEnd: 35,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GQLMultiLinearQueryStatement{
+          Statements: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLLet{
+                  Let:   36,
+                  Items: []*ast.GQLLetItem{
+                    &ast.GQLLetItem{
+                      Ident: &ast.Ident{
+                        NamePos: 40,
+                        NameEnd: 41,
+                        Name:    "x",
+                      },
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 44,
+                        ValueEnd: 45,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                    },
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 46,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.Ident{
+                        NamePos: 53,
+                        NameEnd: 54,
+                        Name:    "x",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    55,
+                        Alias: &ast.Ident{
+                          NamePos: 58,
+                          NameEnd: 59,
+                          Name:    "v",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(FinGraph LET x = 1 RETURN x AS v)

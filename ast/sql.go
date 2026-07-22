@@ -1540,6 +1540,18 @@ func (c *Call) SQL() string {
 //
 // ================================================================================
 
+func (n *GraphTableExpr) SQL() string {
+	return "GRAPH_TABLE(" + n.GraphName.SQL() + " " + n.Query.SQL() + ")" + sqlOpt(" ", n.As, "") + sqlOpt(" ", n.Sample, "")
+}
+
+func (m *GraphTableMatch) SQL() string {
+	return m.Match.SQL() + sqlOpt(" ", m.Columns, "")
+}
+
+func (c *GraphTableColumns) SQL() string {
+	return "COLUMNS(" + sqlJoin(c.Items, ", ") + ")"
+}
+
 func (q *GQLGraphQuery) SQL() string {
 	return sqlOpt("", q.Hint, " ") + q.GraphClause.SQL() + " " + q.Query.SQL()
 }

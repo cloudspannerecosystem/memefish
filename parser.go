@@ -1210,6 +1210,22 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		return p.parseUnnestSuffix(expr, unnest, rparen)
 	}
 
+	if p.Token.Kind == "GRAPH_TABLE" {
+		graphTable := p.expect("GRAPH_TABLE").Pos
+		p.expect("(")
+		graphName := p.parsePath()
+		query := p.parseGraphTableQuery()
+		rparen := p.expect(")").Pos
+		as := p.tryParseAsAlias(withOptionalAs)
+		return p.parseTableExprSuffix(&ast.GraphTableExpr{
+			GraphTable: graphTable,
+			GraphName:  graphName,
+			Query:      query,
+			RParen:     rparen,
+			As:         as,
+		})
+	}
+
 	if p.Token.Kind == token.TokenIdent {
 		ids := p.parseIdentOrPath()
 		if p.Token.Kind == "(" {
@@ -1221,7 +1237,52 @@ func (p *Parser) parseSimpleTableExpr() ast.TableExpr {
 		return p.parsePathTableExprSuffix(&ast.Path{Idents: ids})
 	}
 
-	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, <ident>, but: %s", p.Token.Kind))
+	panic(p.errorfAtToken(&p.Token, "expected token: (, UNNEST, GRAPH_TABLE, <ident>, but: %s", p.Token.Kind))
+}
+
+func (p *Parser) parseGraphTableQuery() ast.GraphTableQuery {
+	// A single MATCH followed by COLUMNS or the GRAPH_TABLE closing parenthesis
+	// is the SQL/PGQ form. Other MATCH forms are advanced GQL query blocks.
+	if p.lookaheadGraphTableMatch() {
+		return p.parseGraphTableMatch()
+	}
+	return p.parseGQLMultiLinearQueryStatement()
+}
+
+func (p *Parser) lookaheadGraphTableMatch() bool {
+	if !p.Token.IsKeywordLike("MATCH") {
+		return false
+	}
+
+	lexer := p.cloneLexer()
+	defer func() { p.Lexer = lexer }()
+
+	p.parseGQLMatch()
+	return p.Token.IsKeywordLike("COLUMNS") || p.Token.Kind == ")"
+}
+
+func (p *Parser) parseGraphTableMatch() *ast.GraphTableMatch {
+	match := p.parseGQLMatch()
+	var columns *ast.GraphTableColumns
+	if p.Token.IsKeywordLike("COLUMNS") {
+		columns = p.parseGraphTableColumns()
+	}
+	return &ast.GraphTableMatch{
+		Match:   match,
+		Columns: columns,
+	}
+}
+
+func (p *Parser) parseGraphTableColumns() *ast.GraphTableColumns {
+	columns := p.expectKeywordLike("COLUMNS").Pos
+	p.expect("(")
+	items := parseCommaSeparatedList(p, p.parseSelectItem)
+	rparen := p.expect(")").Pos
+	return &ast.GraphTableColumns{
+		Columns: columns,
+		RParen:  rparen,
+		Items:   items,
+	}
 }
 
 func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
@@ -1394,6 +1455,8 @@ func (p *Parser) parseTableExprSuffix(join ast.TableExpr) ast.TableExpr {
 	case *ast.SubQueryTableExpr:
 		j.Sample = sample
 	case *ast.ParenTableExpr:
+		j.Sample = sample
+	case *ast.GraphTableExpr:
 		j.Sample = sample
 	default:
 		panic(fmt.Sprintf("BUG: unexpected join: %#v", join))
