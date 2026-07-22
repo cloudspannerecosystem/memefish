@@ -1,0 +1,166 @@
+--- !bad_graph_table_return_columns.sql
+SELECT * FROM GRAPH_TABLE (FinGraph MATCH (n:Person) RETURN n COLUMNS (n.id))
+
+--- Error
+syntax error: testdata/input/query/!bad_graph_table_return_columns.sql:1:63: expected token: ), but: <ident>
+  1|  SELECT * FROM GRAPH_TABLE (FinGraph MATCH (n:Person) RETURN n COLUMNS (n.id))
+   |                                                                ^~~~~~~
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.BadQueryExpr{
+    BadNode: &ast.BadNode{
+      NodeEnd: 77,
+      Tokens:  []*token.Token{
+        &token.Token{
+          Kind: "SELECT",
+          Raw:  "SELECT",
+          End:  6,
+        },
+        &token.Token{
+          Kind:  "*",
+          Space: " ",
+          Raw:   "*",
+          Pos:   7,
+          End:   8,
+        },
+        &token.Token{
+          Kind:  "FROM",
+          Space: " ",
+          Raw:   "FROM",
+          Pos:   9,
+          End:   13,
+        },
+        &token.Token{
+          Kind:  "GRAPH_TABLE",
+          Space: " ",
+          Raw:   "GRAPH_TABLE",
+          Pos:   14,
+          End:   25,
+        },
+        &token.Token{
+          Kind:  "(",
+          Space: " ",
+          Raw:   "(",
+          Pos:   26,
+          End:   27,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Raw:      "FinGraph",
+          AsString: "FinGraph",
+          Pos:      27,
+          End:      35,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "MATCH",
+          AsString: "MATCH",
+          Pos:      36,
+          End:      41,
+        },
+        &token.Token{
+          Kind:  "(",
+          Space: " ",
+          Raw:   "(",
+          Pos:   42,
+          End:   43,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Raw:      "n",
+          AsString: "n",
+          Pos:      43,
+          End:      44,
+        },
+        &token.Token{
+          Kind: ":",
+          Raw:  ":",
+          Pos:  44,
+          End:  45,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Raw:      "Person",
+          AsString: "Person",
+          Pos:      45,
+          End:      51,
+        },
+        &token.Token{
+          Kind: ")",
+          Raw:  ")",
+          Pos:  51,
+          End:  52,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "RETURN",
+          AsString: "RETURN",
+          Pos:      53,
+          End:      59,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "n",
+          AsString: "n",
+          Pos:      60,
+          End:      61,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Space:    " ",
+          Raw:      "COLUMNS",
+          AsString: "COLUMNS",
+          Pos:      62,
+          End:      69,
+        },
+        &token.Token{
+          Kind:  "(",
+          Space: " ",
+          Raw:   "(",
+          Pos:   70,
+          End:   71,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Raw:      "n",
+          AsString: "n",
+          Pos:      71,
+          End:      72,
+        },
+        &token.Token{
+          Kind: ".",
+          Raw:  ".",
+          Pos:  72,
+          End:  73,
+        },
+        &token.Token{
+          Kind:     "<ident>",
+          Raw:      "id",
+          AsString: "id",
+          Pos:      73,
+          End:      75,
+        },
+        &token.Token{
+          Kind: ")",
+          Raw:  ")",
+          Pos:  75,
+          End:  76,
+        },
+        &token.Token{
+          Kind: ")",
+          Raw:  ")",
+          Pos:  76,
+          End:  77,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE (FinGraph MATCH (n:Person) RETURN n COLUMNS (n.id))

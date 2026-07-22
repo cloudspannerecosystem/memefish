@@ -1,0 +1,94 @@
+--- graph_table_match_no_columns.sql
+SELECT n.id FROM GRAPH_TABLE (FinGraph MATCH (n:Person)) AS g
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 7,
+              NameEnd: 8,
+              Name:    "n",
+            },
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 11,
+              Name:    "id",
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   12,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 17,
+        RParen:     55,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 30,
+              NameEnd: 38,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GraphTableMatch{
+          Match: &ast.GQLMatch{
+            Optional: -1,
+            Match:    39,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  45,
+                          Rparen:  54,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 46,
+                              NameEnd: 47,
+                              Name:    "n",
+                            },
+                            Label: &ast.GQLLabelFilter{
+                              Is:    -1,
+                              Colon: 47,
+                              Expr:  &ast.GQLNameLabel{
+                                Name: &ast.Ident{
+                                  NamePos: 48,
+                                  NameEnd: 54,
+                                  Name:    "Person",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    57,
+          Alias: &ast.Ident{
+            NamePos: 60,
+            NameEnd: 61,
+            Name:    "g",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT n.id FROM GRAPH_TABLE(FinGraph MATCH (n:Person)) AS g

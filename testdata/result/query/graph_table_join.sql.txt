@@ -1,0 +1,171 @@
+--- graph_table_join.sql
+SELECT a.id, g.v
+FROM Accounts AS a
+JOIN GRAPH_TABLE (FinGraph LET x = 1 RETURN x AS v) AS g
+ON a.id = g.v
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 7,
+              NameEnd: 8,
+              Name:    "a",
+            },
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 11,
+              Name:    "id",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 13,
+              NameEnd: 14,
+              Name:    "g",
+            },
+            &ast.Ident{
+              NamePos: 15,
+              NameEnd: 16,
+              Name:    "v",
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   17,
+      Source: &ast.Join{
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 22,
+            NameEnd: 30,
+            Name:    "Accounts",
+          },
+          As: &ast.AsAlias{
+            As:    31,
+            Alias: &ast.Ident{
+              NamePos: 34,
+              NameEnd: 35,
+              Name:    "a",
+            },
+          },
+        },
+        Op:    "INNER JOIN",
+        Right: &ast.GraphTableExpr{
+          GraphTable: 41,
+          RParen:     86,
+          GraphName:  &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 54,
+                NameEnd: 62,
+                Name:    "FinGraph",
+              },
+            },
+          },
+          Query: &ast.GQLMultiLinearQueryStatement{
+            Statements: []ast.GQLLinearQueryStatement{
+              &ast.GQLSimpleLinearQueryStatement{
+                Statements: []ast.GQLPrimitiveQueryStatement{
+                  &ast.GQLLet{
+                    Let:   63,
+                    Items: []*ast.GQLLetItem{
+                      &ast.GQLLetItem{
+                        Ident: &ast.Ident{
+                          NamePos: 67,
+                          NameEnd: 68,
+                          Name:    "x",
+                        },
+                        Expr: &ast.IntLiteral{
+                          ValuePos: 71,
+                          ValueEnd: 72,
+                          Base:     10,
+                          Value:    "1",
+                        },
+                      },
+                    },
+                  },
+                  &ast.GQLReturn{
+                    Return: 73,
+                    Items:  []*ast.GQLReturnItem{
+                      &ast.GQLReturnItem{
+                        Star: -1,
+                        Expr: &ast.Ident{
+                          NamePos: 80,
+                          NameEnd: 81,
+                          Name:    "x",
+                        },
+                        Alias: &ast.AsAlias{
+                          As:    82,
+                          Alias: &ast.Ident{
+                            NamePos: 85,
+                            NameEnd: 86,
+                            Name:    "v",
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    88,
+            Alias: &ast.Ident{
+              NamePos: 91,
+              NameEnd: 92,
+              Name:    "g",
+            },
+          },
+        },
+        Cond: &ast.On{
+          On:   93,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 96,
+                  NameEnd: 97,
+                  Name:    "a",
+                },
+                &ast.Ident{
+                  NamePos: 98,
+                  NameEnd: 100,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 103,
+                  NameEnd: 104,
+                  Name:    "g",
+                },
+                &ast.Ident{
+                  NamePos: 105,
+                  NameEnd: 106,
+                  Name:    "v",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT a.id, g.v FROM Accounts AS a INNER JOIN GRAPH_TABLE(FinGraph LET x = 1 RETURN x AS v) AS g ON a.id = g.v

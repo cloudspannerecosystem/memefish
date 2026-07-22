@@ -1,0 +1,83 @@
+--- graph_table_qualified_graph.sql
+SELECT * FROM GRAPH_TABLE (schema.FinGraph FILTER WHERE TRUE RETURN 1 AS v) AS t
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.GraphTableExpr{
+        GraphTable: 14,
+        RParen:     74,
+        GraphName:  &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 27,
+              NameEnd: 33,
+              Name:    "schema",
+            },
+            &ast.Ident{
+              NamePos: 34,
+              NameEnd: 42,
+              Name:    "FinGraph",
+            },
+          },
+        },
+        Query: &ast.GQLMultiLinearQueryStatement{
+          Statements: []ast.GQLLinearQueryStatement{
+            &ast.GQLSimpleLinearQueryStatement{
+              Statements: []ast.GQLPrimitiveQueryStatement{
+                &ast.GQLFilter{
+                  Filter: 43,
+                  Where:  50,
+                  Expr:   &ast.BoolLiteral{
+                    ValuePos: 56,
+                    Value:    true,
+                  },
+                },
+                &ast.GQLReturn{
+                  Return: 61,
+                  Items:  []*ast.GQLReturnItem{
+                    &ast.GQLReturnItem{
+                      Star: -1,
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 68,
+                        ValueEnd: 69,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      Alias: &ast.AsAlias{
+                        As:    70,
+                        Alias: &ast.Ident{
+                          NamePos: 73,
+                          NameEnd: 74,
+                          Name:    "v",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        As: &ast.AsAlias{
+          As:    76,
+          Alias: &ast.Ident{
+            NamePos: 79,
+            NameEnd: 80,
+            Name:    "t",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM GRAPH_TABLE(schema.FinGraph FILTER WHERE TRUE RETURN 1 AS v) AS t

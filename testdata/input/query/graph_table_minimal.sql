@@ -1,0 +1,1 @@
+SELECT * FROM GRAPH_TABLE (FinGraph LET x = 1 RETURN x AS v)
