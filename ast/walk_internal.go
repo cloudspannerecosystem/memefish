@@ -225,6 +225,14 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *IsBoolExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
+	case *IsSourceExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
+	case *IsDestinationExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
 	case *BetweenExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.RightEnd), visitor: v.Field("RightEnd")})
 		stack = append(stack, &stackItem{node: wrapNode(n.RightStart), visitor: v.Field("RightStart")})
@@ -1196,6 +1204,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Label), visitor: v.Field("Label")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Variable), visitor: v.Field("Variable")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Hint), visitor: v.Field("Hint")})
+
+	case *IsLabeledExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Label), visitor: v.Field("Label")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
 	case *GQLLabelFilter:
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})

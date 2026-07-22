@@ -1,0 +1,19 @@
+--- is_source_no_of.sql
+a IS SOURCE e
+
+--- AST
+&ast.IsSourceExpr{
+  Of:   -1,
+  Left: &ast.Ident{
+    NameEnd: 1,
+    Name:    "a",
+  },
+  Right: &ast.Ident{
+    NamePos: 12,
+    NameEnd: 13,
+    Name:    "e",
+  },
+}
+
+--- SQL
+a IS SOURCE e

@@ -1,0 +1,41 @@
+--- all_different.sql
+ALL_DIFFERENT(a, b, c)
+
+--- AST
+&ast.CallExpr{
+  Rparen: 21,
+  Func:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NameEnd: 13,
+        Name:    "ALL_DIFFERENT",
+      },
+    },
+  },
+  Args: []ast.Arg{
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 14,
+        NameEnd: 15,
+        Name:    "a",
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 17,
+        NameEnd: 18,
+        Name:    "b",
+      },
+    },
+    &ast.ExprArg{
+      Expr: &ast.Ident{
+        NamePos: 20,
+        NameEnd: 21,
+        Name:    "c",
+      },
+    },
+  },
+}
+
+--- SQL
+ALL_DIFFERENT(a, b, c)

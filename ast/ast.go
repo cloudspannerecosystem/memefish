@@ -211,6 +211,9 @@ func (UnaryExpr) isExpr()             {}
 func (InExpr) isExpr()                {}
 func (IsNullExpr) isExpr()            {}
 func (IsBoolExpr) isExpr()            {}
+func (IsSourceExpr) isExpr()          {}
+func (IsDestinationExpr) isExpr()     {}
+func (IsLabeledExpr) isExpr()         {}
 func (BetweenExpr) isExpr()           {}
 func (SelectorExpr) isExpr()          {}
 func (IndexExpr) isExpr()             {}
@@ -1432,6 +1435,34 @@ type IsBoolExpr struct {
 	Not   bool
 	Left  Expr
 	Right bool
+}
+
+// IsSourceExpr is IS SOURCE [OF] expression node.
+//
+//	{{.Left | sql}} IS {{if .Not}}NOT {{end}}SOURCE{{if .Of.Invalid | not}} OF{{end}} {{.Right | sql}}
+type IsSourceExpr struct {
+	// pos = Left.pos
+	// end = Right.end
+
+	Of token.Pos // position of "OF", optional
+
+	Not   bool
+	Left  Expr
+	Right Expr
+}
+
+// IsDestinationExpr is IS DESTINATION [OF] expression node.
+//
+//	{{.Left | sql}} IS {{if .Not}}NOT {{end}}DESTINATION{{if .Of.Invalid | not}} OF{{end}} {{.Right | sql}}
+type IsDestinationExpr struct {
+	// pos = Left.pos
+	// end = Right.end
+
+	Of token.Pos // position of "OF", optional
+
+	Not   bool
+	Left  Expr
+	Right Expr
 }
 
 // BetweenExpr is BETWEEN expression node.
@@ -5083,6 +5114,21 @@ func (GQLWildcardLabel) isGQLLabelExpression()   {}
 func (GQLLabelBinaryExpr) isGQLLabelExpression() {}
 func (GQLLabelUnaryExpr) isGQLLabelExpression()  {}
 func (GQLLabelParenExpr) isGQLLabelExpression()  {}
+
+// IsLabeledExpr is IS LABELED expression node.
+//
+// It is declared after GQLLabelExpression because the AST generators resolve
+// field interfaces in declaration order.
+//
+//	{{.Left | sql}} IS {{if .Not}}NOT {{end}}LABELED {{.Label | sql}}
+type IsLabeledExpr struct {
+	// pos = Left.pos
+	// end = Label.end
+
+	Not   bool
+	Left  Expr
+	Label GQLLabelExpression
+}
 
 // GQLLabelFilter represents a label filter in GQL.
 //

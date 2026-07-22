@@ -1,0 +1,108 @@
+--- is_labeled_where.sql
+GRAPH FinGraph
+MATCH (a)
+WHERE a IS LABELED Account | Person
+RETURN a.id
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLMatch{
+            Optional: -1,
+            Match:    15,
+            Pattern:  &ast.GQLGraphPattern{
+              Paths: []*ast.GQLTopLevelPathPattern{
+                &ast.GQLTopLevelPathPattern{
+                  Path: &ast.GQLPathPattern{
+                    Terms: []*ast.GQLPathTerm{
+                      &ast.GQLPathTerm{
+                        Primary: &ast.GQLNodePattern{
+                          Lparen:  21,
+                          Rparen:  23,
+                          Pattern: &ast.GQLElementPatternFiller{
+                            EmptyPos: -1,
+                            Variable: &ast.Ident{
+                              NamePos: 22,
+                              NameEnd: 23,
+                              Name:    "a",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              Where: &ast.Where{
+                Where: 25,
+                Expr:  &ast.IsLabeledExpr{
+                  Left: &ast.Ident{
+                    NamePos: 31,
+                    NameEnd: 32,
+                    Name:    "a",
+                  },
+                  Label: &ast.GQLLabelBinaryExpr{
+                    Op:   "|",
+                    Left: &ast.GQLNameLabel{
+                      Name: &ast.Ident{
+                        NamePos: 44,
+                        NameEnd: 51,
+                        Name:    "Account",
+                      },
+                    },
+                    Right: &ast.GQLNameLabel{
+                      Name: &ast.Ident{
+                        NamePos: 54,
+                        NameEnd: 60,
+                        Name:    "Person",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.GQLReturn{
+            Return: 61,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 68,
+                      NameEnd: 69,
+                      Name:    "a",
+                    },
+                    &ast.Ident{
+                      NamePos: 70,
+                      NameEnd: 72,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph MATCH (a) WHERE a IS LABELED Account | Person RETURN a.id

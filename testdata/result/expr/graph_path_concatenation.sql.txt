@@ -1,0 +1,19 @@
+--- graph_path_concatenation.sql
+p || q
+
+--- AST
+&ast.BinaryExpr{
+  Op:   "||",
+  Left: &ast.Ident{
+    NameEnd: 1,
+    Name:    "p",
+  },
+  Right: &ast.Ident{
+    NamePos: 5,
+    NameEnd: 6,
+    Name:    "q",
+  },
+}
+
+--- SQL
+p || q

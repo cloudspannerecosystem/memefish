@@ -1614,9 +1614,41 @@ func (p *Parser) parseComparison() ast.Expr {
 				Not:      not,
 				Right:    false,
 			}
-		default:
-			p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, but: %s", p.Token.Kind)
+		case token.TokenIdent:
+			switch {
+			case p.Token.IsKeywordLike("SOURCE") || p.Token.IsKeywordLike("DESTINATION"):
+				isSource := p.Token.IsKeywordLike("SOURCE")
+				p.nextToken()
+				of := token.InvalidPos
+				if p.Token.Kind == "OF" {
+					of = p.expect("OF").Pos
+				}
+				right := p.parseBitOr()
+				if isSource {
+					return &ast.IsSourceExpr{
+						Of:    of,
+						Not:   not,
+						Left:  expr,
+						Right: right,
+					}
+				}
+				return &ast.IsDestinationExpr{
+					Of:    of,
+					Not:   not,
+					Left:  expr,
+					Right: right,
+				}
+			case p.Token.IsKeywordLike("LABELED"):
+				p.nextToken()
+				label := p.parseGQLLabelExpression()
+				return &ast.IsLabeledExpr{
+					Not:   not,
+					Left:  expr,
+					Label: label,
+				}
+			}
 		}
+		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, SOURCE, DESTINATION, LABELED, but: %s", p.Token.Kind)
 	default:
 		return expr
 	}

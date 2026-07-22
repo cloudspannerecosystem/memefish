@@ -113,7 +113,7 @@ func exprPrec(e Expr) prec {
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
-	case *InExpr, *IsNullExpr, *IsBoolExpr, *BetweenExpr:
+	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsSourceExpr, *IsDestinationExpr, *IsLabeledExpr, *BetweenExpr:
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
@@ -447,6 +447,21 @@ func (i *IsNullExpr) SQL() string {
 func (i *IsBoolExpr) SQL() string {
 	p := exprPrec(i)
 	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + formatBoolUpper(i.Right)
+}
+
+func (i *IsSourceExpr) SQL() string {
+	p := exprPrec(i)
+	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "SOURCE" + strOpt(!i.Of.Invalid(), " OF") + " " + paren(p, i.Right)
+}
+
+func (i *IsDestinationExpr) SQL() string {
+	p := exprPrec(i)
+	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "DESTINATION" + strOpt(!i.Of.Invalid(), " OF") + " " + paren(p, i.Right)
+}
+
+func (i *IsLabeledExpr) SQL() string {
+	p := exprPrec(i)
+	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "LABELED " + i.Label.SQL()
 }
 
 func (b *BetweenExpr) SQL() string {

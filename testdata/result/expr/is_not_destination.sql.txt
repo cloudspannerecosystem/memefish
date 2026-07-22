@@ -1,0 +1,20 @@
+--- is_not_destination.sql
+a IS NOT DESTINATION OF e
+
+--- AST
+&ast.IsDestinationExpr{
+  Of:   21,
+  Not:  true,
+  Left: &ast.Ident{
+    NameEnd: 1,
+    Name:    "a",
+  },
+  Right: &ast.Ident{
+    NamePos: 24,
+    NameEnd: 25,
+    Name:    "e",
+  },
+}
+
+--- SQL
+a IS NOT DESTINATION OF e
