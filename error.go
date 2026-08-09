@@ -7,7 +7,7 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
-// MultiError is a list of errors occured on parsing.
+// MultiError is a list of errors occurred on parsing.
 //
 // Note that Parse* methods returns this wrapped error even if the error is just one.
 type MultiError []*Error
@@ -42,7 +42,7 @@ func (list MultiError) FullError() string {
 	return message.String()
 }
 
-// Error is an error occured on parsing.
+// Error is an error occurred on parsing.
 type Error struct {
 	Message  string
 	Position *token.Position
