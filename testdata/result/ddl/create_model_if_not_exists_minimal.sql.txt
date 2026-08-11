@@ -1,0 +1,16 @@
+--- create_model_if_not_exists_minimal.sql
+CREATE MODEL IF NOT EXISTS MyModel REMOTE
+
+--- AST
+&ast.CreateModel{
+  Remote:      35,
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 27,
+    NameEnd: 34,
+    Name:    "MyModel",
+  },
+}
+
+--- SQL
+CREATE MODEL IF NOT EXISTS MyModel REMOTE

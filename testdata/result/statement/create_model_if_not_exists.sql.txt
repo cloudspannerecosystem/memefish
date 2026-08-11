@@ -1,18 +1,19 @@
 --- create_model_if_not_exists.sql
-CREATE MODEL GeminiPro IF NOT EXISTS
+CREATE MODEL IF NOT EXISTS GeminiPro
 INPUT (prompt STRING(MAX))
 OUTPUT (content STRING(MAX))
 REMOTE OPTIONS (
   endpoint = '//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro',
   default_batch_size = 1
 )
+
 --- AST
 &ast.CreateModel{
   Remote:      93,
   IfNotExists: true,
   Name:        &ast.Ident{
-    NamePos: 13,
-    NameEnd: 22,
+    NamePos: 27,
+    NameEnd: 36,
     Name:    "GeminiPro",
   },
   InputOutput: &ast.CreateModelInputOutput{
@@ -83,4 +84,4 @@ REMOTE OPTIONS (
 }
 
 --- SQL
-CREATE MODEL GeminiPro IF NOT EXISTS INPUT (prompt STRING(MAX)) OUTPUT (content STRING(MAX)) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro", default_batch_size = 1)
+CREATE MODEL IF NOT EXISTS GeminiPro INPUT (prompt STRING(MAX)) OUTPUT (content STRING(MAX)) REMOTE OPTIONS (endpoint = "//aiplatform.googleapis.com/projects/fake-project/locations/asia-northeast1/publishers/google/models/gemini-pro", default_batch_size = 1)
