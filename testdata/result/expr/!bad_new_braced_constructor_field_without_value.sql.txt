@@ -1,0 +1,51 @@
+--- !bad_new_braced_constructor_field_without_value.sql
+NEW foo { bar }
+
+--- Error
+syntax error: testdata/input/expr/!bad_new_braced_constructor_field_without_value.sql:1:15: expected token: {, :, but: }
+  1|  NEW foo { bar }
+   |                ^
+syntax error: testdata/input/expr/!bad_new_braced_constructor_field_without_value.sql:1:15: expected token: <eof>, but: }
+  1|  NEW foo { bar }
+   |                ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 13,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "NEW",
+        Raw:  "NEW",
+        End:  3,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      4,
+        End:      7,
+      },
+      &token.Token{
+        Kind:  "{",
+        Space: " ",
+        Raw:   "{",
+        Pos:   8,
+        End:   9,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "bar",
+        AsString: "bar",
+        Pos:      10,
+        End:      13,
+      },
+    },
+  },
+}
+
+--- SQL
+NEW foo { bar

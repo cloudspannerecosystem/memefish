@@ -3171,6 +3171,8 @@ func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
 		fieldValue = &ast.BracedConstructorFieldValueExpr{Colon: colon, Expr: expr}
 	case "{":
 		fieldValue = p.parseBracedConstructor()
+	default:
+		p.panicfAtToken(&p.Token, "expected token: {, :, but: %s", p.Token.Kind)
 	}
 	return &ast.BracedConstructorField{Name: name, Value: fieldValue}
 }
