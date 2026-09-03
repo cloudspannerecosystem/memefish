@@ -1,0 +1,57 @@
+--- !bad_alter_change_stream_set_without_target.sql
+ALTER CHANGE STREAM A SET
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_change_stream_set_without_target.sql:2:1: expected token: FOR, pseudo keyword: OPTIONS, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 25,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "CHANGE",
+        AsString: "CHANGE",
+        Pos:      6,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "STREAM",
+        AsString: "STREAM",
+        Pos:      13,
+        End:      19,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "A",
+        AsString: "A",
+        Pos:      20,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   22,
+        End:   25,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER CHANGE STREAM A SET
