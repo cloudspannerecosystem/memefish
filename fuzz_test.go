@@ -158,7 +158,7 @@ func FuzzSplitRawStatements(f *testing.F) {
 		}
 		for i, raw := range stmts {
 			// The empty fallback result has zero positions and an empty statement.
-			if !(0 <= raw.Pos && raw.Pos <= raw.End && int(raw.End) <= len(s)) {
+			if raw.Pos < 0 || raw.End < raw.Pos || len(s) < int(raw.End) {
 				t.Fatalf("statement %d has out-of-range positions [%d, %d) for input of length %d\ninput: %q", i, raw.Pos, raw.End, len(s), s)
 			}
 			if len(stmts) == 1 && raw.Statement == "" && raw.Pos == 0 && raw.End == 0 {
