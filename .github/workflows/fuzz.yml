@@ -1,0 +1,48 @@
+name: Fuzz
+
+on:
+  schedule:
+    # Weekly, Monday 03:00 UTC
+    - cron: '0 3 * * 1'
+  workflow_dispatch: {}
+
+jobs:
+  fuzz:
+    name: Fuzz
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go
+      uses: actions/setup-go@v7
+      with:
+        go-version: "1.26"
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v7
+
+    - name: Fuzz parser entry points
+      run: |
+        status=0
+        for target in FuzzParseStatements FuzzParseQuery FuzzParseExpr FuzzParseType FuzzParseSchemaType FuzzParseGQLGraphPattern FuzzSplitRawStatements; do
+          go test -run '^$' -fuzz "^${target}\$" -fuzztime 2m . || status=1
+        done
+        exit $status
+
+    - name: Fuzz token quoting
+      if: always()
+      run: |
+        status=0
+        for target in FuzzQuoteSQLString FuzzQuoteSQLBytes FuzzQuoteSQLIdent; do
+          go test -run '^$' -fuzz "^${target}\$" -fuzztime 2m ./token || status=1
+        done
+        exit $status
+
+    - name: Upload failing inputs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: fuzz-failing-inputs
+        path: |
+          testdata/fuzz
+          token/testdata/fuzz
+        if-no-files-found: ignore
