@@ -1,0 +1,44 @@
+--- !bad_with_expr_without_vars.sql
+WITH(0)
+
+--- Error
+syntax error: testdata/input/expr/!bad_with_expr_without_vars.sql:1:6: expected token: <ident>, but: <int>
+  1|  WITH(0)
+   |       ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 7,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "WITH",
+        Raw:  "WITH",
+        End:  4,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  4,
+        End:  5,
+      },
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "0",
+        Base: 10,
+        Pos:  5,
+        End:  6,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  6,
+        End:  7,
+      },
+    },
+  },
+}
+
+--- SQL
+WITH(0)
