@@ -1,0 +1,50 @@
+--- create_table_empty_primary_key_constraint.sql
+CREATE TABLE Singleton (Name STRING(MAX), PRIMARY KEY ())
+
+--- AST
+&ast.CreateTable{
+  Rparen:           56,
+  PrimaryKeyRparen: -1,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 22,
+        Name:    "Singleton",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 24,
+        NameEnd: 28,
+        Name:    "Name",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 29,
+        Rparen:  39,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+  },
+  TableConstraints: []*ast.TableConstraint{
+    &ast.TableConstraint{
+      ConstraintPos: -1,
+      Constraint:    &ast.TablePrimaryKey{
+        Primary: 42,
+        Rparen:  55,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Singleton (
+  Name STRING(MAX),
+  PRIMARY KEY ()
+)

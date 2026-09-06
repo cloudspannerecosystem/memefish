@@ -2664,7 +2664,7 @@ type DropProtoBundle struct {
 //	  {{.TableConstraints | sqlJoin ","}}{{if and .TableConstraints .Synonym}},{{end}}
 //	  {{.Synonym | sqlJoin ","}}
 //	)
-//	{{if .PrimaryKeys}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
+//	{{if .PrimaryKeys | isnil | not}}PRIMARY KEY ({{.PrimaryKeys | sqlJoin ","}}){{end}}
 //	{{.Cluster | sqlOpt}}
 //	{{.CreateRowDeletionPolicy | sqlOpt}}
 //	{{if .Options}}, {{.Options | sqlOpt}}{{end}}
@@ -2684,7 +2684,7 @@ type CreateTable struct {
 	Name              *Path
 	Columns           []*ColumnDef
 	TableConstraints  []*TableConstraint
-	PrimaryKeys       []*IndexKey // when omitted, len(PrimaryKeys) = 0
+	PrimaryKeys       []*IndexKey // nil when omitted; non-nil empty slice for PRIMARY KEY ()
 	Synonyms          []*Synonym
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional

@@ -3679,6 +3679,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	var keys []*ast.IndexKey
 	primaryKeyRparen := token.InvalidPos
 	if p.Token.IsKeywordLike("PRIMARY") {
+		keys = []*ast.IndexKey{}
 		p.nextToken()
 		p.expectKeywordLike("KEY")
 
@@ -3883,7 +3884,10 @@ func (p *Parser) parseTablePrimaryKey() *ast.TablePrimaryKey {
 	p.expectKeywordLike("KEY")
 
 	p.expect("(")
-	keys := parseCommaSeparatedList(p, p.parseIndexKey)
+	var keys []*ast.IndexKey
+	if p.Token.Kind != ")" {
+		keys = parseCommaSeparatedList(p, p.parseIndexKey)
+	}
 	rparen := p.expect(")").Pos
 
 	return &ast.TablePrimaryKey{
