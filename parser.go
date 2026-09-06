@@ -3679,6 +3679,7 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 	var keys []*ast.IndexKey
 	primaryKeyRparen := token.InvalidPos
 	if p.Token.IsKeywordLike("PRIMARY") {
+		// Keep the slice non-nil to distinguish PRIMARY KEY () from an omitted clause.
 		keys = []*ast.IndexKey{}
 		p.nextToken()
 		p.expectKeywordLike("KEY")
