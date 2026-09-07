@@ -6,6 +6,7 @@ values (1, 2, 3),
 --- AST
 &ast.Insert{
   Insert: 26,
+  Or:     -1,
   Hint:   &ast.Hint{
     Rbrace:  24,
     Records: []*ast.HintRecord{

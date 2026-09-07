@@ -10,6 +10,7 @@ syntax error: testdata/input/dml/!bad_insert.sql:2:1: expected beginning of simp
 
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

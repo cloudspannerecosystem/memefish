@@ -4,6 +4,7 @@ INSERT IGNORE INTO foo
 
 --- AST
 &ast.Insert{
+  Or:           -1,
   InsertOrType: "IGNORE",
   TableName:    &ast.Path{
     Idents: []*ast.Ident{
@@ -58,4 +59,4 @@ INSERT IGNORE INTO foo
 }
 
 --- SQL
-INSERT OR IGNORE INTO foo (foo, bar) VALUES (1, 2)
+INSERT IGNORE INTO foo (foo, bar) VALUES (1, 2)

@@ -3,6 +3,7 @@ INSERT INTO foo(bar) VALUES (GET_NEXT_SEQUENCE_VALUE(SEQUENCE my_sequence))
 
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

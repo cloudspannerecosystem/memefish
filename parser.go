@@ -6376,8 +6376,9 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 
 func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.Insert {
 	var insertOrType ast.InsertOrType
-	hasOr := p.Token.Kind == "OR"
-	if hasOr {
+	or := token.InvalidPos
+	if p.Token.Kind == "OR" {
+		or = p.Token.Pos
 		p.nextToken()
 	}
 	switch {
@@ -6385,7 +6386,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.In
 		insertOrType = ast.InsertOrTypeUpdate
 	case p.Token.Kind == "IGNORE":
 		insertOrType = ast.InsertOrTypeIgnore
-	case hasOr:
+	case !or.Invalid():
 		p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
 	}
 	if insertOrType != "" {
@@ -6434,6 +6435,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.In
 
 	return &ast.Insert{
 		Insert:             pos,
+		Or:                 or,
 		Hint:               hint,
 		InsertOrType:       insertOrType,
 		TableName:          name,

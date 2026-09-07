@@ -4,6 +4,7 @@ INSERT UPDATE INTO foo
 
 --- AST
 &ast.Insert{
+  Or:           -1,
   InsertOrType: "UPDATE",
   TableName:    &ast.Path{
     Idents: []*ast.Ident{
@@ -58,4 +59,4 @@ INSERT UPDATE INTO foo
 }
 
 --- SQL
-INSERT OR UPDATE INTO foo (foo, bar) VALUES (1, 2)
+INSERT UPDATE INTO foo (foo, bar) VALUES (1, 2)

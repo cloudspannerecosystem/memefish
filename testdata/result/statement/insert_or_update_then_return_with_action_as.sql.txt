@@ -4,6 +4,7 @@ INSERT OR UPDATE INTO foo
 THEN RETURN WITH ACTION AS act *
 --- AST
 &ast.Insert{
+  Or:           7,
   InsertOrType: "UPDATE",
   TableName:    &ast.Path{
     Idents: []*ast.Ident{
