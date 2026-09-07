@@ -150,6 +150,16 @@ var lexerWrongTestCase = []struct {
 	{`R"foo`, 1, 5, "unclosed raw string literal"},
 	{"'foo\n", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
 	{"R'foo\n", 1, 5, "unclosed raw string literal: newline appears in non triple-quoted"},
+	{"'foo\rbar'", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
+	{"\"foo\rbar\"", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
+	{"'foo\r\nbar'", 0, 4, "unclosed string literal: newline appears in non triple-quoted"},
+	{"R'foo\rbar'", 1, 5, "unclosed raw string literal: newline appears in non triple-quoted"},
+	{"R\"foo\rbar\"", 1, 5, "unclosed raw string literal: newline appears in non triple-quoted"},
+	{"B'foo\rbar'", 1, 5, "unclosed bytes literal: newline appears in non triple-quoted"},
+	{"B\"foo\rbar\"", 1, 5, "unclosed bytes literal: newline appears in non triple-quoted"},
+	{"RB'foo\rbar'", 2, 6, "unclosed raw bytes literal: newline appears in non triple-quoted"},
+	{"BR\"foo\rbar\"", 2, 6, "unclosed raw bytes literal: newline appears in non triple-quoted"},
+	{"`foo\rbar`", 0, 4, "unclosed identifier: newline appears in non triple-quoted"},
 	{"R'foo\\", 5, 6, "invalid escape sequence: \\<eof>"},
 	{`"\400"`, 1, 3, "invalid escape sequence: \\4"},
 	{`"\3xx"`, 1, 4, "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits"},
@@ -214,6 +224,24 @@ func TestLexer(t *testing.T) {
 	for _, tc := range lexerTestCases {
 		t.Run(fmt.Sprintf("testcase/%q", tc.source), func(t *testing.T) {
 			testLexer(t, tc.source, tc.tokens)
+		})
+	}
+}
+
+func TestLexerLineCommentNewlines(t *testing.T) {
+	for _, prefix := range []string{"#", "--"} {
+		for _, newline := range []string{"\n", "\r", "\r\n"} {
+			comment := prefix + " comment" + newline
+			t.Run(fmt.Sprintf("%q", comment), func(t *testing.T) {
+				testLexer(t, comment+"0", []*Token{{
+					Kind: TokenInt, Raw: "0", Base: 10,
+					Comments: []TokenComment{{Raw: comment, End: Pos(len(comment))}},
+				}})
+				testLexer(t, comment, nil)
+			})
+		}
+		t.Run(prefix+"/EOF", func(t *testing.T) {
+			testLexer(t, prefix+" comment", nil)
 		})
 	}
 }
