@@ -656,13 +656,14 @@ func (l *Lexer) skipComment(noPanic bool) bool {
 		}
 		return false
 	case r == '/' && l.peekIs(1, '*'):
-		return l.skipCommentUntil("*/", noPanic)
+		return l.skipBlockComment(noPanic)
 	default:
 		return false
 	}
 }
 
-func (l *Lexer) skipCommentUntil(end string, noPanic bool) bool {
+func (l *Lexer) skipBlockComment(noPanic bool) bool {
+	const end = "*/"
 	pos := token.Pos(l.pos)
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
