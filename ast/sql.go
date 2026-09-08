@@ -861,7 +861,7 @@ func (c *CreateTable) SQL() string {
 		strOpt(len(c.TableConstraints) > 0, indent) + sqlJoin(c.TableConstraints, ",\n"+indent) + strOpt(len(c.TableConstraints) > 0 && len(c.Synonyms) > 0, ",\n") +
 		strOpt(len(c.Synonyms) > 0, indent) + sqlJoin(c.Synonyms, ",\n") +
 		"\n)" +
-		strOpt(len(c.PrimaryKeys) > 0, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
+		strOpt(c.PrimaryKeys != nil, " PRIMARY KEY ("+sqlJoin(c.PrimaryKeys, ", ")+")") +
 		sqlOpt("", c.Cluster, "") +
 		sqlOpt("", c.RowDeletionPolicy, "") +
 		sqlOpt(", ", c.Options, "")

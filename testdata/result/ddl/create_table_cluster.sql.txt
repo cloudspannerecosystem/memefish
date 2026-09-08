@@ -48,7 +48,8 @@ create table foo (
       Hidden: -1,
     },
   },
-  Cluster: &ast.Cluster{
+  PrimaryKeys: []*ast.IndexKey{},
+  Cluster:     &ast.Cluster{
     Comma:       60,
     OnDeleteEnd: -1,
     TableName:   &ast.Path{
@@ -68,5 +69,5 @@ create table foo (
 CREATE TABLE foo (
   foo INT64,
   bar INT64
-),
+) PRIMARY KEY (),
   INTERLEAVE IN PARENT foobar

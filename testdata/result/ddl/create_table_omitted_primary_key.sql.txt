@@ -1,0 +1,40 @@
+--- create_table_omitted_primary_key.sql
+CREATE TABLE GeneratedKey (Name STRING(MAX))
+
+--- AST
+&ast.CreateTable{
+  Rparen:           43,
+  PrimaryKeyRparen: -1,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 25,
+        Name:    "GeneratedKey",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 27,
+        NameEnd: 31,
+        Name:    "Name",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 32,
+        Rparen:  42,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE GeneratedKey (
+  Name STRING(MAX)
+)

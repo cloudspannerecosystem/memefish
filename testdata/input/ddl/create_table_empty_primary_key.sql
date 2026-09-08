@@ -1,0 +1,1 @@
+CREATE TABLE Singleton (Name STRING(MAX)) PRIMARY KEY ()
