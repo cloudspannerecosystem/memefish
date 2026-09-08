@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -19,6 +20,33 @@ import (
 )
 
 var update = flag.Bool("update", false, "update result files")
+
+func errorMessages(err error) []string {
+	list, ok := err.(memefish.MultiError)
+	if !ok {
+		return nil
+	}
+	msgs := make([]string, 0, len(list))
+	for _, e := range list {
+		msgs = append(msgs, e.Message)
+	}
+	return msgs
+}
+
+func errorMessagesWithin(err error, input string, end token.Pos) []string {
+	list, ok := err.(memefish.MultiError)
+	if !ok {
+		return nil
+	}
+	trailingJunk := strings.TrimSpace(input[min(int(end), len(input)):]) != ""
+	msgs := make([]string, 0, len(list))
+	for _, e := range list {
+		if e.Position.Pos <= end || !trailingJunk {
+			msgs = append(msgs, e.Message)
+		}
+	}
+	return msgs
+}
 
 type pathVisitor struct {
 	f    func(path string, node ast.Node) bool
@@ -93,6 +121,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			}
 
 			node, err := parse(p)
+			parseErr := err
 			if !bad && node == nil {
 				t.Fatal("parser returned a nil AST without an expected parse error")
 			}
@@ -233,11 +262,19 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				},
 			}
 
-			node1, _ := parse(p1)
+			node1, err1 := parse(p1)
 
 			s2 := node1.SQL()
 			if s1 != s2 {
 				t.Errorf("%q != %q", s1, s2)
+			}
+
+			// The unparsed source can only witness errors located within the
+			// node; an error past its end (trailing tokens) is out of scope.
+			want := errorMessagesWithin(parseErr, string(b), node.End())
+			got := errorMessages(err1)
+			if !slices.Equal(want, got) {
+				t.Errorf("error mismatch on re-parsing the unparsed source\nsource: %q\nwant errors: %q\ngot errors: %q", s1, want, got)
 			}
 		})
 	}
