@@ -605,7 +605,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 			continue
 		}
 
-		if c == '\n' && len(q) != 3 {
+		if (c == '\n' || c == '\r') && len(q) != 3 {
 			if noPanic {
 				hasError = true
 				i++
@@ -642,15 +642,28 @@ func (l *Lexer) skipComment(noPanic bool) bool {
 	r, _ := utf8.DecodeRuneInString(l.Buffer[l.pos:])
 	switch {
 	case r == '#' || r == '-' && l.peekIs(1, '-'):
-		return l.skipCommentUntil("\n", false, noPanic)
+		for !l.eof() {
+			switch l.skip() {
+			case '\r':
+				// Keep CRLF together in the comment's raw text.
+				if l.peekIs(0, '\n') {
+					l.skip()
+				}
+				return false
+			case '\n':
+				return false
+			}
+		}
+		return false
 	case r == '/' && l.peekIs(1, '*'):
-		return l.skipCommentUntil("*/", true, noPanic)
+		return l.skipBlockComment(noPanic)
 	default:
 		return false
 	}
 }
 
-func (l *Lexer) skipCommentUntil(end string, mustEnd bool, noPanic bool) bool {
+func (l *Lexer) skipBlockComment(noPanic bool) bool {
+	const end = "*/"
 	pos := token.Pos(l.pos)
 	for !l.eof() {
 		if l.slice(0, len(end)) == end {
@@ -659,12 +672,10 @@ func (l *Lexer) skipCommentUntil(end string, mustEnd bool, noPanic bool) bool {
 		}
 		l.skip()
 	}
-	if mustEnd {
-		if noPanic {
-			return true
-		}
-		l.panicfAtPosition(pos, token.Pos(l.pos), "unclosed comment")
+	if noPanic {
+		return true
 	}
+	l.panicfAtPosition(pos, token.Pos(l.pos), "unclosed comment")
 
 	return false
 }
