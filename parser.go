@@ -7037,11 +7037,11 @@ func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadType {
 skip:
 	for p.Token.Kind != token.TokenEOF {
 		switch p.Token.Kind {
-		case ";", ")":
+		case ";":
 			break skip
-		case "<":
+		case "<", "(":
 			nesting += 1
-		case ">":
+		case ">", ")":
 			if nesting == 0 {
 				break skip
 			}
@@ -7051,7 +7051,17 @@ skip:
 				break skip
 			}
 			if nesting == 1 {
+				// The first ">" of ">>" closes this bad type, so consume it and
+				// leave the second ">" for the enclosing type.
+				gt := p.Token.Clone()
+				gt.Kind = ">"
+				gt.Raw = ">"
+				gt.End = gt.Pos + 1
+				tokens = append(tokens, gt)
+				end = gt.End
 				p.Token.Kind = ">"
+				p.Token.Raw = ">"
+				p.Token.Space = ""
 				p.Token.Pos += 1
 				break skip
 			}
