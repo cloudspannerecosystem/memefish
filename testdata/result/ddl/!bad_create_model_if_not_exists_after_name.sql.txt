@@ -1,0 +1,70 @@
+--- !bad_create_model_if_not_exists_after_name.sql
+CREATE MODEL MyModel IF NOT EXISTS REMOTE
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_model_if_not_exists_after_name.sql:1:22: expected token: <ident>, but: IF
+  1|  CREATE MODEL MyModel IF NOT EXISTS REMOTE
+   |                       ^~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 41,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MODEL",
+        AsString: "MODEL",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MyModel",
+        AsString: "MyModel",
+        Pos:      13,
+        End:      20,
+      },
+      &token.Token{
+        Kind:  "IF",
+        Space: " ",
+        Raw:   "IF",
+        Pos:   21,
+        End:   23,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   24,
+        End:   27,
+      },
+      &token.Token{
+        Kind:  "EXISTS",
+        Space: " ",
+        Raw:   "EXISTS",
+        Pos:   28,
+        End:   34,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "REMOTE",
+        AsString: "REMOTE",
+        Pos:      35,
+        End:      41,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE MODEL MyModel IF NOT EXISTS REMOTE

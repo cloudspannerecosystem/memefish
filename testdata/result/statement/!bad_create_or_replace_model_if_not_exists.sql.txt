@@ -1,0 +1,85 @@
+--- !bad_create_or_replace_model_if_not_exists.sql
+CREATE OR REPLACE MODEL IF NOT EXISTS MyModel REMOTE
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_or_replace_model_if_not_exists.sql:1:25: expected token: <ident>, but: IF
+  1|  CREATE OR REPLACE MODEL IF NOT EXISTS MyModel REMOTE
+   |                          ^~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 52,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:  "OR",
+        Space: " ",
+        Raw:   "OR",
+        Pos:   7,
+        End:   9,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "REPLACE",
+        AsString: "REPLACE",
+        Pos:      10,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MODEL",
+        AsString: "MODEL",
+        Pos:      18,
+        End:      23,
+      },
+      &token.Token{
+        Kind:  "IF",
+        Space: " ",
+        Raw:   "IF",
+        Pos:   24,
+        End:   26,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   27,
+        End:   30,
+      },
+      &token.Token{
+        Kind:  "EXISTS",
+        Space: " ",
+        Raw:   "EXISTS",
+        Pos:   31,
+        End:   37,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "MyModel",
+        AsString: "MyModel",
+        Pos:      38,
+        End:      45,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "REMOTE",
+        AsString: "REMOTE",
+        Pos:      46,
+        End:      52,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE MODEL IF NOT EXISTS MyModel REMOTE
