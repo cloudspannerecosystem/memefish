@@ -5,15 +5,12 @@ NEW foo { bar }
 syntax error: testdata/input/expr/!bad_new_braced_constructor_field_without_value.sql:1:15: expected token: {, :, but: }
   1|  NEW foo { bar }
    |                ^
-syntax error: testdata/input/expr/!bad_new_braced_constructor_field_without_value.sql:1:15: expected token: <eof>, but: }
-  1|  NEW foo { bar }
-   |                ^
 
 
 --- AST
 &ast.BadExpr{
   BadNode: &ast.BadNode{
-    NodeEnd: 13,
+    NodeEnd: 15,
     Tokens:  []*token.Token{
       &token.Token{
         Kind: "NEW",
@@ -43,9 +40,16 @@ syntax error: testdata/input/expr/!bad_new_braced_constructor_field_without_valu
         Pos:      10,
         End:      13,
       },
+      &token.Token{
+        Kind:  "}",
+        Space: " ",
+        Raw:   "}",
+        Pos:   14,
+        End:   15,
+      },
     },
   },
 }
 
 --- SQL
-NEW foo { bar
+NEW foo { bar }

@@ -7001,7 +7001,7 @@ skip:
 		switch p.Token.Kind {
 		case ";":
 			break skip
-		case "(", "[", "CASE", "WHEN":
+		case "(", "[", "{", "CASE", "WHEN":
 			nesting += 1
 		case ")", "]", "}", "END", "THEN":
 			if nesting == 0 {
