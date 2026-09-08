@@ -461,6 +461,7 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 	var content []byte
 	hasError := false
 
+scan:
 	for l.peekOk(i) {
 		if l.slice(i, i+len(q)) == q {
 			if len(content) == 0 && name == "identifier" {
@@ -519,9 +520,9 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
-							continue
+							continue scan
 						}
-						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(min(l.pos+i+j+1, len(l.Buffer))), "invalid escape sequence: hex escape sequence must be follwed by 2 hex digits")
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+2), 16, 8)
@@ -550,9 +551,9 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 					if !l.peekOk(i+j) || !char.IsHexDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
-							continue
+							continue scan
 						}
-						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(min(l.pos+i+j+1, len(l.Buffer))), "invalid escape sequence: \\%c must be followed by %d hex digits", c, size)
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i, i+size), 16, 32)
@@ -579,9 +580,9 @@ func (l *Lexer) consumeQuotedContent(q string, raw, unicode bool, name string, n
 					if !l.peekOk(i+j) || !char.IsOctalDigit(l.peek(i+j)) {
 						if noPanic {
 							hasError = true
-							continue
+							continue scan
 						}
-						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(l.pos+i+j+1), "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
+						l.panicfAtPosition(token.Pos(l.pos+i-2), token.Pos(min(l.pos+i+j+1, len(l.Buffer))), "invalid escape sequence: octal escape sequence must be follwed by 3 octal digits")
 					}
 				}
 				u, err := strconv.ParseUint(l.slice(i-1, i+2), 8, 8)
