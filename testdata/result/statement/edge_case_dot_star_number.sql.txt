@@ -1,0 +1,22 @@
+--- edge_case_dot_star_number.sql
+SELECT 0 .*
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.DotStar{
+        Star: 10,
+        Expr: &ast.IntLiteral{
+          ValuePos: 7,
+          ValueEnd: 8,
+          Base:     10,
+          Value:    "0",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 0 .*

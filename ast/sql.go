@@ -262,7 +262,7 @@ func (s *Star) SQL() string {
 }
 
 func (s *DotStar) SQL() string {
-	return s.Expr.SQL() + ".*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
+	return s.Expr.SQL() + sepBeforeDot(s.Expr) + ".*" + sqlOpt(" ", s.Except, "") + sqlOpt(" ", s.Replace, "")
 }
 
 func (a *Alias) SQL() string {
@@ -478,9 +478,19 @@ func (b *BetweenExpr) SQL() string {
 		" BETWEEN " + paren(p, b.RightStart) + " AND " + paren(p, b.RightEnd)
 }
 
+// sepBeforeDot returns a separator to be inserted between e and a following ".".
+// Without it, a decimal integer literal and the "." would be lexed together as
+// a float literal (e.g. `0 .A` would be printed as `0.A`).
+func sepBeforeDot(e Expr) string {
+	if lit, ok := e.(*IntLiteral); ok && lit.Base == 10 {
+		return " "
+	}
+	return ""
+}
+
 func (s *SelectorExpr) SQL() string {
 	p := exprPrec(s)
-	return paren(p, s.Expr) + "." + s.Ident.SQL()
+	return paren(p, s.Expr) + sepBeforeDot(s.Expr) + "." + s.Ident.SQL()
 }
 
 func (i *IndexExpr) SQL() string {

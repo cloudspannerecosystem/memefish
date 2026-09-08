@@ -1,0 +1,19 @@
+--- edge_case_selector_number.sql
+0 .A
+
+--- AST
+&ast.SelectorExpr{
+  Expr: &ast.IntLiteral{
+    ValueEnd: 1,
+    Base:     10,
+    Value:    "0",
+  },
+  Ident: &ast.Ident{
+    NamePos: 3,
+    NameEnd: 4,
+    Name:    "A",
+  },
+}
+
+--- SQL
+0 .A
