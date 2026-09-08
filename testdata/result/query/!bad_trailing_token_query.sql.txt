@@ -1,0 +1,27 @@
+--- !bad_trailing_token_query.sql
+SELECT 1 !
+
+--- Error
+syntax error: testdata/input/query/!bad_trailing_token_query.sql:1:10: expected token: <eof>, but: !
+  1|  SELECT 1 !
+   |           ^
+
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IntLiteral{
+          ValuePos: 7,
+          ValueEnd: 8,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1
