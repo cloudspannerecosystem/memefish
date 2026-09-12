@@ -155,6 +155,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeLimit) isPipeOperator()  {}
 
 // SelectItem represents expression in SELECT clause result columns list.
 type SelectItem interface {
@@ -1178,6 +1179,19 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeLimit is LIMIT pipe operator node.
+//
+//	|> LIMIT {{.Count | sql}} {{.Offset | sqlOpt}}
+type PipeLimit struct {
+	// pos = Pipe
+	// end = (Offset ?? Count).end
+
+	Pipe token.Pos // position of "|>"
+
+	Count  IntValue
+	Offset *Offset // optional
 }
 
 // ================================================================================

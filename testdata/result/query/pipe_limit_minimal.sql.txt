@@ -1,0 +1,33 @@
+--- pipe_limit_minimal.sql
+FROM t |> LIMIT 1
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Query{
+    Query: &ast.FromQuery{
+      From: &ast.From{
+        Source: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 5,
+            NameEnd: 6,
+            Name:    "t",
+          },
+        },
+      },
+    },
+    PipeOperators: []ast.PipeOperator{
+      &ast.PipeLimit{
+        Pipe:  7,
+        Count: &ast.IntLiteral{
+          ValuePos: 16,
+          ValueEnd: 17,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+FROM t |> LIMIT 1
