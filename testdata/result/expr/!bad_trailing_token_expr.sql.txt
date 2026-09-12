@@ -1,0 +1,27 @@
+--- !bad_trailing_token_expr.sql
+1 + 2 !
+
+--- Error
+syntax error: testdata/input/expr/!bad_trailing_token_expr.sql:1:7: expected token: <eof>, but: !
+  1|  1 + 2 !
+   |        ^
+
+
+--- AST
+&ast.BinaryExpr{
+  Op:   "+",
+  Left: &ast.IntLiteral{
+    ValueEnd: 1,
+    Base:     10,
+    Value:    "1",
+  },
+  Right: &ast.IntLiteral{
+    ValuePos: 4,
+    ValueEnd: 5,
+    Base:     10,
+    Value:    "2",
+  },
+}
+
+--- SQL
+1 + 2

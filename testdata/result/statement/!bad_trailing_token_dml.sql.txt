@@ -1,0 +1,31 @@
+--- !bad_trailing_token_dml.sql
+DELETE FROM t WHERE TRUE !
+
+--- Error
+syntax error: testdata/input/dml/!bad_trailing_token_dml.sql:1:26: expected token: <eof>, but: !
+  1|  DELETE FROM t WHERE TRUE !
+   |                           ^
+
+
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "t",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 14,
+    Expr:  &ast.BoolLiteral{
+      ValuePos: 20,
+      Value:    true,
+    },
+  },
+}
+
+--- SQL
+DELETE FROM t WHERE TRUE
