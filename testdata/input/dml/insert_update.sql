@@ -1,0 +1,2 @@
+INSERT UPDATE INTO foo
+(foo, bar) VALUES (1, 2)

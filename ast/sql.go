@@ -1492,7 +1492,8 @@ func (a *AssertRowsModified) SQL() string {
 func (i *Insert) SQL() string {
 	return sqlOpt("", i.Hint, " ") +
 		"INSERT " +
-		strOpt(i.InsertOrType != "", "OR "+string(i.InsertOrType)+" ") +
+		strOpt(!i.Or.Invalid(), "OR ") +
+		strOpt(i.InsertOrType != "", string(i.InsertOrType)+" ") +
 		"INTO " + i.TableName.SQL() +
 		sqlOpt("", i.TableHint, "") +
 		sqlOpt(" ", i.As, "") + " (" +
