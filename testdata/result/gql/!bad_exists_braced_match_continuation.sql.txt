@@ -15,9 +15,6 @@ syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:5:1: 
 syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:6:1: expected token: }, but: <eof>
   6|  
    |  ^
-syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:5:1: expected token: <eof>, but: }
-  5|  }
-   |  ^
 
 
 --- AST
@@ -45,7 +42,7 @@ syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:5:1: 
                 Expr: &ast.BadExpr{
                   BadNode: &ast.BadNode{
                     NodePos: 22,
-                    NodeEnd: 51,
+                    NodeEnd: 53,
                     Tokens:  []*token.Token{
                       &token.Token{
                         Kind:  "EXISTS",
@@ -97,6 +94,13 @@ syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:5:1: 
                         Pos:      45,
                         End:      51,
                       },
+                      &token.Token{
+                        Kind:  "}",
+                        Space: "\n",
+                        Raw:   "}",
+                        Pos:   52,
+                        End:   53,
+                      },
                     },
                   },
                 },
@@ -110,4 +114,4 @@ syntax error: testdata/input/gql/!bad_exists_braced_match_continuation.sql:5:1: 
 }
 
 --- SQL
-GRAPH FinGraph RETURN EXISTS { MATCH (a) FILTER
+GRAPH FinGraph RETURN EXISTS { MATCH (a) FILTER }
