@@ -197,6 +197,23 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			fmt.Fprintf(&buf, "--- SQL\n")
 			fmt.Fprintln(&buf, node.SQL())
 
+			// Check before updating goldens, too: recovery is not a successful
+			// round trip for a positive fixture.
+			s1 := node.SQL()
+			p1 := &memefish.Parser{
+				Lexer: &memefish.Lexer{
+					File: &token.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
+				},
+			}
+			node1, err := parse(p1)
+			if !bad && err != nil {
+				t.Fatalf("SQL() output failed to parse: %v\nSQL: %s", err, s1)
+			}
+			s2 := node1.SQL()
+			if s1 != s2 {
+				t.Errorf("%q != %q", s1, s2)
+			}
+
 			actual := buf.Bytes()
 
 			if *update {
@@ -225,19 +242,6 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				}
 				t.Error(d)
 				return
-			}
-			s1 := node.SQL()
-			p1 := &memefish.Parser{
-				Lexer: &memefish.Lexer{
-					File: &token.File{FilePath: in.Name() + " (SQL)", Buffer: s1},
-				},
-			}
-
-			node1, _ := parse(p1)
-
-			s2 := node1.SQL()
-			if s1 != s2 {
-				t.Errorf("%q != %q", s1, s2)
 			}
 		})
 	}
