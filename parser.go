@@ -4420,6 +4420,8 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 				Options: p.parseOptions(),
 			}
 			return cs
+		} else {
+			p.panicfAtToken(&p.Token, "expected token: FOR, pseudo keyword: OPTIONS, but: %s", p.Token.Kind)
 		}
 	} else if p.Token.IsKeywordLike("DROP") {
 		droppos := p.Token.Pos
