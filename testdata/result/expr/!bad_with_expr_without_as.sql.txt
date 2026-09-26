@@ -1,0 +1,44 @@
+--- !bad_with_expr_without_as.sql
+WITH(a)
+
+--- Error
+syntax error: testdata/input/expr/!bad_with_expr_without_as.sql:1:7: expected token: AS, but: )
+  1|  WITH(a)
+   |        ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 7,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "WITH",
+        Raw:  "WITH",
+        End:  4,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  4,
+        End:  5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "a",
+        AsString: "a",
+        Pos:      5,
+        End:      6,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  6,
+        End:  7,
+      },
+    },
+  },
+}
+
+--- SQL
+WITH(a)

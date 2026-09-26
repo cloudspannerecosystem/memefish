@@ -2659,7 +2659,8 @@ func (p *Parser) parseWithExpr() *ast.WithExpr {
 	with := p.expect("WITH").Pos
 	p.expect("(")
 
-	var vars []*ast.WithExprVar
+	vars := []*ast.WithExprVar{p.parseWithExprVar()}
+	p.expect(",")
 	for p.lookaheadWithExprVar() {
 		vars = append(vars, p.parseWithExprVar())
 		p.expect(",")
