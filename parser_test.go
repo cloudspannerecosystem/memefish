@@ -328,7 +328,25 @@ func TestParseStatement(t *testing.T) {
 
 	for _, inputPath := range inputPaths {
 		testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
-			return p.ParseStatement()
+			stmt, err := p.ParseStatement()
+			if err != nil {
+				return stmt, err
+			}
+			// Keep the separator outside any trailing line comment.
+			stmts, err := memefish.ParseStatements(p.FilePath, p.Buffer+"\n; SELECT 1;")
+			if err != nil {
+				return stmt, fmt.Errorf("parsing with a following statement: %w", err)
+			}
+			if len(stmts) != 2 {
+				return stmt, fmt.Errorf("parsing with a following statement: got %d statements, want 2", len(stmts))
+			}
+			if got, want := stmts[0].SQL(), stmt.SQL(); got != want {
+				return stmt, fmt.Errorf("parsing with a following statement: SQL() = %q, want %q", got, want)
+			}
+			if got := stmts[1].SQL(); got != "SELECT 1" {
+				return stmt, fmt.Errorf("unexpected following statement: %s", got)
+			}
+			return stmt, nil
 		})
 	}
 }
