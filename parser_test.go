@@ -19,7 +19,7 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
-var update = flag.Bool("update", false, "update snapshot files")
+var update = flag.Bool("update-snapshots", false, "update snapshot files")
 
 func errorMessages(err error) []string {
 	list, ok := err.(memefish.MultiError)

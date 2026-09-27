@@ -54,7 +54,7 @@ ci: check-gen lint test
 
 .PHONY: update-snapshots
 update-snapshots:
-	go test -v ./parser_test.go -update
+	go test -v ./parser_test.go -update-snapshots
 
 .PHONY: update-mod
 update-mod:
