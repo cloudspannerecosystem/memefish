@@ -3,21 +3,26 @@
 If you place `.sql` files containing GoogleSQL in the correct location in this directory,
 they will be automatically tested.
 
-- input
+- inputs
   - ddl: input of `ParseDDL()` and `ParseStatement()`
   - dml: input of `ParseDML()` and `ParseStatement()`
   - expr: input of `ParseExpr()`
   - query: input of `ParseQuery()` and `ParseStatement()`
   - gql: input of `ParseGQLQuery()` and `ParseStatement()`
   - gql_graph_pattern: input of `ParseGQLGraphPattern()`
+  - statement: input of `ParseStatement()`
+- snapshots: the snapshot files of the parse results (AST and unparsed SQL) of `inputs`
+- fuzz: the fuzzing corpus of `Fuzz*` functions in `fuzz_test.go`
 
-You can use this command in your project root to automatically update `testdata/result`.
+## Snapshots
+
+You can use this command in your project root to automatically update the snapshot files in `testdata/snapshots`.
 
 ```
-$ go test --update
+$ make update-snapshots
 ```
 
-Note: You should carefully check the diff when committing the contents of `testdata/result`.
+Note: You should carefully check the diff when committing the snapshot files in `testdata/snapshots`.
 
 ## Tips
 
@@ -28,7 +33,7 @@ You can use ZetaSQL to check if it's a valid GoogleSQL query.
 
 ```sh
 # statement
-$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --mode=parse,unparse "$(cat testdata/input/query/pipe_from_where_select_distinct.sql)"
+$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --mode=parse,unparse "$(cat testdata/inputs/query/pipe_from_where_select_distinct.sql)"
 # or expression
-$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --sql_mode=expression --mode=parse,unparse "$(cat testdata/input/expr/array_literal_empty_with_types.sql)" ```
+$ docker run --rm --platform linux/amd64 zetasql execute_query --product_mode=external --sql_mode=expression --mode=parse,unparse "$(cat testdata/inputs/expr/array_literal_empty_with_types.sql)"
 ```

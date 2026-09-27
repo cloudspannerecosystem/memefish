@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -18,7 +19,34 @@ import (
 	"github.com/cloudspannerecosystem/memefish/token"
 )
 
-var update = flag.Bool("update", false, "update result files")
+var update = flag.Bool("update-snapshots", false, "update snapshot files")
+
+func errorMessages(err error) []string {
+	list, ok := err.(memefish.MultiError)
+	if !ok {
+		return nil
+	}
+	msgs := make([]string, 0, len(list))
+	for _, e := range list {
+		msgs = append(msgs, e.Message)
+	}
+	return msgs
+}
+
+func errorMessagesWithin(err error, input string, end token.Pos) []string {
+	list, ok := err.(memefish.MultiError)
+	if !ok {
+		return nil
+	}
+	trailingJunk := strings.TrimSpace(input[min(int(end), len(input)):]) != ""
+	msgs := make([]string, 0, len(list))
+	for _, e := range list {
+		if e.Position.Pos <= end || !trailingJunk {
+			msgs = append(msgs, e.Message)
+		}
+	}
+	return msgs
+}
 
 type pathVisitor struct {
 	f    func(path string, node ast.Node) bool
@@ -55,18 +83,18 @@ func (v *pathVisitor) Index(index int) ast.Visitor {
 	}
 }
 
-func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
+func testParser(t *testing.T, inputPath, snapshotPath string, parse func(p *memefish.Parser) (ast.Node, error)) {
 	if *update {
-		_, err := os.Stat(resultPath)
+		_, err := os.Stat(snapshotPath)
 		if err == nil {
-			err = os.RemoveAll(resultPath)
+			err = os.RemoveAll(snapshotPath)
 			if err != nil {
-				log.Fatalf("error on remove result path: %v", err)
+				log.Fatalf("error on remove snapshot path: %v", err)
 			}
 		}
-		err = os.MkdirAll(resultPath, 0777)
+		err = os.MkdirAll(snapshotPath, 0777)
 		if err != nil {
-			log.Fatalf("error on create result path: %v", err)
+			log.Fatalf("error on create snapshot path: %v", err)
 		}
 	}
 
@@ -93,6 +121,7 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 			}
 
 			node, err := parse(p)
+			parseErr := err
 			if !bad && node == nil {
 				t.Fatal("parser returned a nil AST without an expected parse error")
 			}
@@ -201,16 +230,16 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 
 			if *update {
 				t.Log("update " + in.Name() + ".txt")
-				err = os.WriteFile(filepath.Join(resultPath, in.Name()+".txt"), buf.Bytes(), 0666)
+				err = os.WriteFile(filepath.Join(snapshotPath, in.Name()+".txt"), buf.Bytes(), 0666)
 				if err != nil {
-					log.Fatalf("error on writing result file: %v", err)
+					log.Fatalf("error on writing snapshot file: %v", err)
 				}
 				return
 			}
 
-			expected, err := os.ReadFile(filepath.Join(resultPath, in.Name()+".txt"))
+			expected, err := os.ReadFile(filepath.Join(snapshotPath, in.Name()+".txt"))
 			if err != nil {
-				t.Fatalf("error on reading result file: %v", err)
+				t.Fatalf("error on reading snapshot file: %v", err)
 			}
 
 			if !bytes.Equal(actual, expected) {
@@ -233,83 +262,91 @@ func testParser(t *testing.T, inputPath, resultPath string, parse func(p *memefi
 				},
 			}
 
-			node1, _ := parse(p1)
+			node1, err1 := parse(p1)
 
 			s2 := node1.SQL()
 			if s1 != s2 {
 				t.Errorf("%q != %q", s1, s2)
+			}
+
+			// The unparsed source can only witness errors located within the
+			// node; an error past its end (trailing tokens) is out of scope.
+			want := errorMessagesWithin(parseErr, string(b), node.End())
+			got := errorMessages(err1)
+			if !slices.Equal(want, got) {
+				t.Errorf("error mismatch on re-parsing the unparsed source\nsource: %q\nwant errors: %q\ngot errors: %q", s1, want, got)
 			}
 		})
 	}
 }
 
 func TestParseQuery(t *testing.T) {
-	inputPath := "./testdata/input/query"
-	resultPath := "./testdata/result/query"
+	inputPath := "./testdata/inputs/query"
+	snapshotPath := "./testdata/snapshots/query"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseQuery()
 	})
 }
 
 func TestParseDDL(t *testing.T) {
-	inputPath := "./testdata/input/ddl"
-	resultPath := "./testdata/result/ddl"
+	inputPath := "./testdata/inputs/ddl"
+	snapshotPath := "./testdata/snapshots/ddl"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseDDL()
 	})
 }
 
 func TestParseDML(t *testing.T) {
-	inputPath := "./testdata/input/dml"
-	resultPath := "./testdata/result/dml"
+	inputPath := "./testdata/inputs/dml"
+	snapshotPath := "./testdata/snapshots/dml"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseDML()
 	})
 }
 
 func TestParseExpr(t *testing.T) {
-	inputPath := "./testdata/input/expr"
-	resultPath := "./testdata/result/expr"
+	inputPath := "./testdata/inputs/expr"
+	snapshotPath := "./testdata/snapshots/expr"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseExpr()
 	})
 }
 
 func TestParseStatement(t *testing.T) {
 	inputPaths := []string{
-		"./testdata/input/query",
-		"./testdata/input/ddl",
-		"./testdata/input/dml",
-		"./testdata/input/gql",
-		"./testdata/input/statement",
+		"./testdata/inputs/query",
+		"./testdata/inputs/ddl",
+		"./testdata/inputs/dml",
+		"./testdata/inputs/gql",
+		"./testdata/inputs/statement",
 	}
-	resultPath := "./testdata/result/statement"
+	snapshotPath := "./testdata/snapshots/statement"
 
 	for _, inputPath := range inputPaths {
-		testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+		testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 			return p.ParseStatement()
 		})
 	}
 }
 
 func TestParseGQLQuery(t *testing.T) {
-	inputPath := "./testdata/input/gql"
-	resultPath := "./testdata/result/gql"
+	inputPath := "./testdata/inputs/gql"
+	snapshotPath := "./testdata/snapshots/gql"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseGQLQuery()
 	})
 }
 
 func TestParseGQLGraphPattern(t *testing.T) {
-	inputPath := "./testdata/input/gql_graph_pattern"
-	resultPath := "./testdata/result/gql_graph_pattern"
+	inputPath := "./testdata/inputs/gql_graph_pattern"
+	snapshotPath := "./testdata/snapshots/gql_graph_pattern"
 
-	testParser(t, inputPath, resultPath, func(p *memefish.Parser) (ast.Node, error) {
+	testParser(t, inputPath, snapshotPath, func(p *memefish.Parser) (ast.Node, error) {
 		return p.ParseGQLGraphPattern()
 	})
 }

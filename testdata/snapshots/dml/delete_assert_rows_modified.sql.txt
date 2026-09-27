@@ -1,0 +1,57 @@
+--- delete_assert_rows_modified.sql
+DELETE FROM UserTasks WHERE UserId = @userId AND MessageId = @messageId ASSERT_ROWS_MODIFIED 1
+
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 21,
+        Name:    "UserTasks",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 22,
+    Expr:  &ast.BinaryExpr{
+      Op:   "AND",
+      Left: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 28,
+          NameEnd: 34,
+          Name:    "UserId",
+        },
+        Right: &ast.Param{
+          Atmark: 37,
+          Name:   "userId",
+        },
+      },
+      Right: &ast.BinaryExpr{
+        Op:   "=",
+        Left: &ast.Ident{
+          NamePos: 49,
+          NameEnd: 58,
+          Name:    "MessageId",
+        },
+        Right: &ast.Param{
+          Atmark: 61,
+          Name:   "messageId",
+        },
+      },
+    },
+  },
+  AssertRowsModified: &ast.AssertRowsModified{
+    Assert:  72,
+    NumRows: &ast.IntLiteral{
+      ValuePos: 93,
+      ValueEnd: 94,
+      Base:     10,
+      Value:    "1",
+    },
+  },
+}
+
+--- SQL
+DELETE FROM UserTasks WHERE UserId = @userId AND MessageId = @messageId ASSERT_ROWS_MODIFIED 1

@@ -1,0 +1,92 @@
+--- !bad_value_braced_hint.sql
+GRAPH FinGraph
+RETURN VALUE @{x=} { RETURN 1 }
+
+--- Error
+syntax error: testdata/inputs/gql/!bad_value_braced_hint.sql:2:18: unexpected token: }
+  2|  RETURN VALUE @{x=} { RETURN 1 }
+   |                   ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 15,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.ValueGQLSubQuery{
+                  Value:  22,
+                  Rbrace: 45,
+                  Hint:   &ast.Hint{
+                    Atmark:  28,
+                    Rbrace:  32,
+                    Records: []*ast.HintRecord{
+                      &ast.HintRecord{
+                        Key: &ast.Path{
+                          Idents: []*ast.Ident{
+                            &ast.Ident{
+                              NamePos: 30,
+                              NameEnd: 31,
+                              Name:    "x",
+                            },
+                          },
+                        },
+                        Value: &ast.BadExpr{
+                          BadNode: &ast.BadNode{
+                            NodePos: 32,
+                            NodeEnd: 32,
+                          },
+                        },
+                      },
+                    },
+                  },
+                  Query: &ast.GQLMultiLinearQueryStatement{
+                    Statements: []ast.GQLLinearQueryStatement{
+                      &ast.GQLSimpleLinearQueryStatement{
+                        Statements: []ast.GQLPrimitiveQueryStatement{
+                          &ast.GQLReturn{
+                            Return: 36,
+                            Items:  []*ast.GQLReturnItem{
+                              &ast.GQLReturnItem{
+                                Star: -1,
+                                Expr: &ast.IntLiteral{
+                                  ValuePos: 43,
+                                  ValueEnd: 44,
+                                  Base:     10,
+                                  Value:    "1",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN VALUE @{x=} { RETURN 1 }

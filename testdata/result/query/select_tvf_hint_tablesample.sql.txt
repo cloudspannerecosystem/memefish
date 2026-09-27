@@ -1,0 +1,99 @@
+--- select_tvf_hint_tablesample.sql
+SELECT * FROM app.f(1, x => 2) @{test_hint=1} TABLESAMPLE RESERVOIR (2 ROWS)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.TVFCallExpr{
+        Rparen: 29,
+        Name:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 14,
+              NameEnd: 17,
+              Name:    "app",
+            },
+            &ast.Ident{
+              NamePos: 18,
+              NameEnd: 19,
+              Name:    "f",
+            },
+          },
+        },
+        Args: []ast.TVFArg{
+          &ast.ExprArg{
+            Expr: &ast.IntLiteral{
+              ValuePos: 20,
+              ValueEnd: 21,
+              Base:     10,
+              Value:    "1",
+            },
+          },
+        },
+        NamedArgs: []*ast.NamedArg{
+          &ast.NamedArg{
+            Name: &ast.Ident{
+              NamePos: 23,
+              NameEnd: 24,
+              Name:    "x",
+            },
+            Value: &ast.IntLiteral{
+              ValuePos: 28,
+              ValueEnd: 29,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+        },
+        Hint: &ast.Hint{
+          Atmark:  31,
+          Rbrace:  44,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 33,
+                    NameEnd: 42,
+                    Name:    "test_hint",
+                  },
+                },
+              },
+              Value: &ast.IntLiteral{
+                ValuePos: 43,
+                ValueEnd: 44,
+                Base:     10,
+                Value:    "1",
+              },
+            },
+          },
+        },
+        Sample: &ast.TableSample{
+          TableSample: 46,
+          Method:      "RESERVOIR",
+          Size:        &ast.TableSampleSize{
+            Lparen: 68,
+            Rparen: 75,
+            Value:  &ast.IntLiteral{
+              ValuePos: 69,
+              ValueEnd: 70,
+              Base:     10,
+              Value:    "2",
+            },
+            Unit: "ROWS",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM app.f(1, x => 2) @{test_hint=1} TABLESAMPLE RESERVOIR (2 ROWS)

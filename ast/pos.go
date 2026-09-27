@@ -1206,6 +1206,38 @@ func (c *CreateTable) End() token.Pos {
 	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1), posAdd(c.Rparen, 1))
 }
 
+func (c *CreateQueue) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateQueue) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1))
+}
+
+func (a *AlterQueue) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterQueue) End() token.Pos {
+	return nodeEnd(wrapNode(a.QueueAlteration))
+}
+
+func (d *DropQueue) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropQueue) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
+func (q *QueueSetOptions) Pos() token.Pos {
+	return q.Set
+}
+
+func (q *QueueSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(q.Options))
+}
+
 func (s *Synonym) Pos() token.Pos {
 	return s.Synonym
 }
@@ -1670,6 +1702,14 @@ func (v *VectorIndexSetOptions) End() token.Pos {
 	return nodeEnd(wrapNode(v.Options))
 }
 
+func (v *VectorIndexRebuild) Pos() token.Pos {
+	return v.Rebuild
+}
+
+func (v *VectorIndexRebuild) End() token.Pos {
+	return posAdd(v.Rebuild, 7)
+}
+
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }
@@ -1827,6 +1867,14 @@ func (p *PrivilegeOnTable) Pos() token.Pos {
 }
 
 func (p *PrivilegeOnTable) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Names))
+}
+
+func (p *PrivilegeOnQueue) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(p.Privileges, 0))
+}
+
+func (p *PrivilegeOnQueue) End() token.Pos {
 	return nodeEnd(nodeSliceLast(p.Names))
 }
 
@@ -2371,7 +2419,7 @@ func (d *Delete) Pos() token.Pos {
 }
 
 func (d *Delete) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.Where)))
+	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.AssertRowsModified), wrapNode(d.Where)))
 }
 
 func (u *Update) Pos() token.Pos {

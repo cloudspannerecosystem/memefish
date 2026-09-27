@@ -1,0 +1,63 @@
+--- delete_assert_rows_modified_return.sql
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 THEN RETURN id, Payload
+
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 14,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 20,
+        NameEnd: 22,
+        Name:    "id",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 25,
+        ValueEnd: 26,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+  AssertRowsModified: &ast.AssertRowsModified{
+    Assert:  27,
+    NumRows: &ast.IntLiteral{
+      ValuePos: 48,
+      ValueEnd: 49,
+      Base:     10,
+      Value:    "1",
+    },
+  },
+  ThenReturn: &ast.ThenReturn{
+    Then:  50,
+    Items: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 62,
+          NameEnd: 64,
+          Name:    "id",
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Ident{
+          NamePos: 66,
+          NameEnd: 73,
+          Name:    "Payload",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 THEN RETURN id, Payload

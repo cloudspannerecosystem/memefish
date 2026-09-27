@@ -52,9 +52,9 @@ docs:
 .PHONY: ci
 ci: check-gen lint test
 
-.PHONY: update-result
-update-result:
-	go test -v ./parser_test.go -update
+.PHONY: update-snapshots
+update-snapshots:
+	go test -v ./parser_test.go -update-snapshots
 
 .PHONY: update-mod
 update-mod:

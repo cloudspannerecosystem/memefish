@@ -1,0 +1,23 @@
+--- alter_queue_on_delete_cascade.sql
+ALTER QUEUE Q SET ON DELETE CASCADE
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  QueueAlteration: &ast.SetOnDelete{
+    Set:         14,
+    OnDeleteEnd: 35,
+    OnDelete:    "ON DELETE CASCADE",
+  },
+}
+
+--- SQL
+ALTER QUEUE Q SET ON DELETE CASCADE

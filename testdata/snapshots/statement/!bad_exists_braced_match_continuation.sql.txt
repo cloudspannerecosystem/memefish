@@ -1,0 +1,117 @@
+--- !bad_exists_braced_match_continuation.sql
+GRAPH FinGraph
+RETURN EXISTS {
+  MATCH (a)
+  FILTER
+}
+
+--- Error
+syntax error: testdata/inputs/gql/!bad_exists_braced_match_continuation.sql:5:1: unexpected token: }
+  5|  }
+   |  ^
+syntax error: testdata/inputs/gql/!bad_exists_braced_match_continuation.sql:5:1: linear query must end with RETURN
+  5|  }
+   |  ^
+syntax error: testdata/inputs/gql/!bad_exists_braced_match_continuation.sql:6:1: expected token: }, but: <eof>
+  6|  
+   |  ^
+
+
+--- AST
+&ast.GQLGraphQuery{
+  GraphClause: &ast.GQLGraphClause{
+    PropertyGraphName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 6,
+          NameEnd: 14,
+          Name:    "FinGraph",
+        },
+      },
+    },
+  },
+  Query: &ast.GQLMultiLinearQueryStatement{
+    Statements: []ast.GQLLinearQueryStatement{
+      &ast.GQLSimpleLinearQueryStatement{
+        Statements: []ast.GQLPrimitiveQueryStatement{
+          &ast.GQLReturn{
+            Return: 15,
+            Items:  []*ast.GQLReturnItem{
+              &ast.GQLReturnItem{
+                Star: -1,
+                Expr: &ast.BadExpr{
+                  BadNode: &ast.BadNode{
+                    NodePos: 22,
+                    NodeEnd: 53,
+                    Tokens:  []*token.Token{
+                      &token.Token{
+                        Kind:  "EXISTS",
+                        Space: " ",
+                        Raw:   "EXISTS",
+                        Pos:   22,
+                        End:   28,
+                      },
+                      &token.Token{
+                        Kind:  "{",
+                        Space: " ",
+                        Raw:   "{",
+                        Pos:   29,
+                        End:   30,
+                      },
+                      &token.Token{
+                        Kind:     "<ident>",
+                        Space:    "\n  ",
+                        Raw:      "MATCH",
+                        AsString: "MATCH",
+                        Pos:      33,
+                        End:      38,
+                      },
+                      &token.Token{
+                        Kind:  "(",
+                        Space: " ",
+                        Raw:   "(",
+                        Pos:   39,
+                        End:   40,
+                      },
+                      &token.Token{
+                        Kind:     "<ident>",
+                        Raw:      "a",
+                        AsString: "a",
+                        Pos:      40,
+                        End:      41,
+                      },
+                      &token.Token{
+                        Kind: ")",
+                        Raw:  ")",
+                        Pos:  41,
+                        End:  42,
+                      },
+                      &token.Token{
+                        Kind:     "<ident>",
+                        Space:    "\n  ",
+                        Raw:      "FILTER",
+                        AsString: "FILTER",
+                        Pos:      45,
+                        End:      51,
+                      },
+                      &token.Token{
+                        Kind:  "}",
+                        Space: "\n",
+                        Raw:   "}",
+                        Pos:   52,
+                        End:   53,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+GRAPH FinGraph RETURN EXISTS { MATCH (a) FILTER }

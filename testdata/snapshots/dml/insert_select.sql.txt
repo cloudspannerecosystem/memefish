@@ -1,0 +1,91 @@
+--- insert_select.sql
+insert foo (foo, bar)
+select * from unnest([(1, 2), (3, 4)])
+--- AST
+&ast.Insert{
+  Or:        -1,
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 10,
+        Name:    "foo",
+      },
+    },
+  },
+  Columns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 12,
+      NameEnd: 15,
+      Name:    "foo",
+    },
+    &ast.Ident{
+      NamePos: 17,
+      NameEnd: 20,
+      Name:    "bar",
+    },
+  },
+  Input: &ast.SubQueryInput{
+    Query: &ast.Select{
+      Select:  22,
+      Results: []ast.SelectItem{
+        &ast.Star{
+          Star: 29,
+        },
+      },
+      From: &ast.From{
+        From:   31,
+        Source: &ast.Unnest{
+          Unnest: 36,
+          Rparen: 59,
+          Expr:   &ast.ArrayLiteral{
+            Array:  -1,
+            Lbrack: 43,
+            Rbrack: 58,
+            Values: []ast.Expr{
+              &ast.TupleStructLiteral{
+                Lparen: 44,
+                Rparen: 49,
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 45,
+                    ValueEnd: 46,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                  &ast.IntLiteral{
+                    ValuePos: 48,
+                    ValueEnd: 49,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+              &ast.TupleStructLiteral{
+                Lparen: 52,
+                Rparen: 57,
+                Values: []ast.Expr{
+                  &ast.IntLiteral{
+                    ValuePos: 53,
+                    ValueEnd: 54,
+                    Base:     10,
+                    Value:    "3",
+                  },
+                  &ast.IntLiteral{
+                    ValuePos: 56,
+                    ValueEnd: 57,
+                    Base:     10,
+                    Value:    "4",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+INSERT INTO foo (foo, bar) SELECT * FROM UNNEST([(1, 2), (3, 4)])

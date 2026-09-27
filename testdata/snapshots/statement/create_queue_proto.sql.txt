@@ -1,0 +1,92 @@
+--- create_queue_proto.sql
+CREATE QUEUE Q (id INT64, Payload examples.Message NOT NULL) PRIMARY KEY (id), OPTIONS (disable_delivery = true)
+
+--- AST
+&ast.CreateQueue{
+  PrimaryKeyRparen: 76,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 14,
+        Name:    "Q",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 16,
+        NameEnd: 18,
+        Name:    "id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 19,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: 55,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 26,
+        NameEnd: 33,
+        Name:    "Payload",
+      },
+      Type: &ast.NamedType{
+        Path: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 34,
+            NameEnd: 42,
+            Name:    "examples",
+          },
+          &ast.Ident{
+            NamePos: 43,
+            NameEnd: 50,
+            Name:    "Message",
+          },
+        },
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 74,
+        NameEnd: 76,
+        Name:    "id",
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 79,
+    Rparen:  111,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 88,
+          NameEnd: 104,
+          Name:    "disable_delivery",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 107,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE QUEUE Q (
+  id INT64,
+  Payload examples.Message NOT NULL
+) PRIMARY KEY (id), OPTIONS (disable_delivery = true)

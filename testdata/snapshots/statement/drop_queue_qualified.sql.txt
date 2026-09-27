@@ -1,0 +1,24 @@
+--- drop_queue_qualified.sql
+DROP QUEUE IF EXISTS app.`Queue`
+
+--- AST
+&ast.DropQueue{
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 21,
+        NameEnd: 24,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 25,
+        NameEnd: 32,
+        Name:    "Queue",
+      },
+    },
+  },
+}
+
+--- SQL
+DROP QUEUE IF EXISTS app.Queue
