@@ -1,0 +1,61 @@
+--- grant_queue_qualified.sql
+GRANT SELECT, INSERT, DELETE ON QUEUE app.`Queue`, other.Q TO ROLE worker
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.PrivilegeOnQueue{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 6,
+        Rparen: -1,
+      },
+      &ast.InsertPrivilege{
+        Insert: 14,
+        Rparen: -1,
+      },
+      &ast.DeletePrivilege{
+        Delete: 22,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 38,
+            NameEnd: 41,
+            Name:    "app",
+          },
+          &ast.Ident{
+            NamePos: 42,
+            NameEnd: 49,
+            Name:    "Queue",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 51,
+            NameEnd: 56,
+            Name:    "other",
+          },
+          &ast.Ident{
+            NamePos: 57,
+            NameEnd: 58,
+            Name:    "Q",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 67,
+      NameEnd: 73,
+      Name:    "worker",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT, INSERT, DELETE ON QUEUE app.Queue, other.Q TO ROLE worker

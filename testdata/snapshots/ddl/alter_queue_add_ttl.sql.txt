@@ -1,0 +1,36 @@
+--- alter_queue_add_ttl.sql
+ALTER QUEUE Q ADD ROW DELETION POLICY (OLDER_THAN(DeliverTime, INTERVAL 7 DAY))
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  QueueAlteration: &ast.AddRowDeletionPolicy{
+    Add:               14,
+    RowDeletionPolicy: &ast.RowDeletionPolicy{
+      Row:        18,
+      Rparen:     78,
+      ColumnName: &ast.Ident{
+        NamePos: 50,
+        NameEnd: 61,
+        Name:    "DeliverTime",
+      },
+      NumDays: &ast.IntLiteral{
+        ValuePos: 72,
+        ValueEnd: 73,
+        Base:     10,
+        Value:    "7",
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER QUEUE Q ADD ROW DELETION POLICY ( OLDER_THAN ( DeliverTime, INTERVAL 7 DAY ))
