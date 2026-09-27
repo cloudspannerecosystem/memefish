@@ -1009,7 +1009,7 @@ func (r *RowDeletionPolicy) SQL() string {
 }
 
 func (a *AlterTable) SQL() string {
-	return "ALTER TABLE " + a.Name.SQL() + " " + a.TableAlteration.SQL()
+	return "ALTER TABLE " + strOpt(a.IfExists, "IF EXISTS ") + a.Name.SQL() + " " + a.TableAlteration.SQL()
 }
 
 func (s *AddSynonym) SQL() string { return "ADD SYNONYM " + s.Name.SQL() }

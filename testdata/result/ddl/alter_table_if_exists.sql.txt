@@ -1,0 +1,38 @@
+--- alter_table_if_exists.sql
+ALTER TABLE IF EXISTS Singers ADD COLUMN SingerInfo STRING(MAX)
+
+--- AST
+&ast.AlterTable{
+  IfExists: true,
+  Name:     &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 22,
+        NameEnd: 29,
+        Name:    "Singers",
+      },
+    },
+  },
+  TableAlteration: &ast.AddColumn{
+    Add:    30,
+    Column: &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 41,
+        NameEnd: 51,
+        Name:    "SingerInfo",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 52,
+        Rparen:  62,
+        Name:    "STRING",
+        Max:     true,
+      },
+      Hidden: -1,
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE IF EXISTS Singers ADD COLUMN SingerInfo STRING(MAX)

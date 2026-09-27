@@ -4805,6 +4805,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
+	ifExists := p.parseIfExists()
 	name := p.parsePath()
 
 	var alteration ast.TableAlteration
@@ -4831,6 +4832,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 
 	return &ast.AlterTable{
 		Alter:           pos,
+		IfExists:        ifExists,
 		Name:            name,
 		TableAlteration: alteration,
 	}

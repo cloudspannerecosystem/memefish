@@ -3100,13 +3100,14 @@ type DropView struct {
 
 // AlterTable is ALTER TABLE statement node.
 //
-//	ALTER TABLE {{.Name | sql}} {{.TableAlteration | sql}}
+//	ALTER TABLE {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}} {{.TableAlteration | sql}}
 type AlterTable struct {
 	// pos = Alter
 	// end = TableAlteration.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
+	IfExists       bool
 	Name            *Path
 	TableAlteration TableAlteration
 }
