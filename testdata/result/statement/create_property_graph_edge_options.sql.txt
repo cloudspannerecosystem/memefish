@@ -1,0 +1,147 @@
+--- create_property_graph_edge_options.sql
+CREATE OR REPLACE PROPERTY GRAPH g
+NODE TABLES (T KEY (id))
+EDGE TABLES (E SOURCE KEY (src) REFERENCES T (id) DESTINATION KEY (dst) REFERENCES T (id))
+OPTIONS (validate_element_key_uniqueness = true)
+
+--- AST
+&ast.CreatePropertyGraph{
+  OrReplace: true,
+  Name:      &ast.Ident{
+    NamePos: 33,
+    NameEnd: 34,
+    Name:    "g",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   35,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   47,
+        Rparen:   58,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 48,
+              NameEnd: 49,
+              Name:    "T",
+            },
+            Keys: &ast.PropertyGraphNodeElementKey{
+              Key: &ast.PropertyGraphElementKey{
+                Key:  50,
+                Keys: &ast.PropertyGraphColumnNameList{
+                  Lparen:         54,
+                  Rparen:         57,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 55,
+                      NameEnd: 57,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    EdgeTables: &ast.PropertyGraphEdgeTables{
+      Edge:   60,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   72,
+        Rparen:   149,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 73,
+              NameEnd: 74,
+              Name:    "E",
+            },
+            Keys: &ast.PropertyGraphEdgeElementKeys{
+              Source: &ast.PropertyGraphSourceKey{
+                Source: 75,
+                Keys:   &ast.PropertyGraphColumnNameList{
+                  Lparen:         86,
+                  Rparen:         90,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 87,
+                      NameEnd: 90,
+                      Name:    "src",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 103,
+                  NameEnd: 104,
+                  Name:    "T",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         105,
+                  Rparen:         108,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 106,
+                      NameEnd: 108,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+              Destination: &ast.PropertyGraphDestinationKey{
+                Destination: 110,
+                Keys:        &ast.PropertyGraphColumnNameList{
+                  Lparen:         126,
+                  Rparen:         130,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 127,
+                      NameEnd: 130,
+                      Name:    "dst",
+                    },
+                  },
+                },
+                ElementReference: &ast.Ident{
+                  NamePos: 143,
+                  NameEnd: 144,
+                  Name:    "T",
+                },
+                ReferenceColumns: &ast.PropertyGraphColumnNameList{
+                  Lparen:         145,
+                  Rparen:         148,
+                  ColumnNameList: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 146,
+                      NameEnd: 148,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 151,
+    Rparen:  198,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 160,
+          NameEnd: 191,
+          Name:    "validate_element_key_uniqueness",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 194,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE OR REPLACE PROPERTY GRAPH g NODE TABLES (T KEY (id)) EDGE TABLES (E SOURCE KEY (src) REFERENCES T (id) DESTINATION KEY (dst) REFERENCES T (id)) OPTIONS (validate_element_key_uniqueness = true)

@@ -1355,7 +1355,7 @@ func (c *CreatePropertyGraph) SQL() string {
 		strOpt(c.OrReplace, "OR REPLACE ") +
 		"PROPERTY GRAPH " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
-		c.Name.SQL() + " " + c.Content.SQL()
+		c.Name.SQL() + " " + c.Content.SQL() + sqlOpt(" ", c.Options, "")
 }
 
 func (p *PropertyGraphContent) SQL() string {

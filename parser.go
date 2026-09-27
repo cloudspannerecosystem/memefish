@@ -4335,9 +4335,16 @@ func (p *Parser) tryParseOptions() *ast.Options {
 }
 
 func (p *Parser) parseOptions() *ast.Options {
+	return p.parseOptionsWithEmptyRecords(false)
+}
+
+func (p *Parser) parseOptionsWithEmptyRecords(allowEmpty bool) *ast.Options {
 	pos := p.expectKeywordLike("OPTIONS").Pos
 	p.expect("(")
-	optionsDefs := parseCommaSeparatedList(p, p.parseOptionsDef)
+	var optionsDefs []*ast.OptionsDef
+	if !allowEmpty || p.Token.Kind != ")" {
+		optionsDefs = parseCommaSeparatedList(p, p.parseOptionsDef)
+	}
 	rparen := p.expect(")").Pos
 
 	return &ast.Options{
@@ -5781,6 +5788,14 @@ func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
 
 // begin CREATE PROPERTY GRAPH
 
+func (p *Parser) tryParsePropertyGraphOptions() *ast.Options {
+	if !p.Token.IsKeywordLike("OPTIONS") {
+		return nil
+	}
+	// Unlike other DDL options, property graph options can be empty.
+	return p.parseOptionsWithEmptyRecords(true)
+}
+
 func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.CreatePropertyGraph {
 	p.expectKeywordLike("PROPERTY")
 	p.expectKeywordLike("GRAPH")
@@ -5788,6 +5803,7 @@ func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.Cr
 	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 	content := p.parsePropertyGraphContent()
+	options := p.tryParsePropertyGraphOptions()
 
 	return &ast.CreatePropertyGraph{
 		Create:      pos,
@@ -5795,6 +5811,7 @@ func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.Cr
 		IfNotExists: ifNotExists,
 		Name:        name,
 		Content:     content,
+		Options:     options,
 	}
 }
 

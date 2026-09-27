@@ -1,0 +1,70 @@
+--- !bad_alter_table_empty_options.sql
+ALTER TABLE T SET OPTIONS ()
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_table_empty_options.sql:1:28: expected token: <ident>, but: )
+  1|  ALTER TABLE T SET OPTIONS ()
+   |                             ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 28,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      6,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "T",
+        AsString: "T",
+        Pos:      12,
+        End:      13,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   14,
+        End:   17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "OPTIONS",
+        AsString: "OPTIONS",
+        Pos:      18,
+        End:      25,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   26,
+        End:   27,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  27,
+        End:  28,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE T SET OPTIONS ()
