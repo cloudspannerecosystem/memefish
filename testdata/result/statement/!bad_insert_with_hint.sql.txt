@@ -12,6 +12,7 @@ syntax error: testdata/input/dml/!bad_insert_with_hint.sql:3:1: expected beginni
 --- AST
 &ast.Insert{
   Insert: 26,
+  Or:     -1,
   Hint:   &ast.Hint{
     Rbrace:  24,
     Records: []*ast.HintRecord{

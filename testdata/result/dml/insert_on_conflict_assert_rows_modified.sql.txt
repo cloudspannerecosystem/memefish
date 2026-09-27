@@ -2,6 +2,7 @@
 INSERT INTO foo (x, y) VALUES (1, 2) ON CONFLICT DO NOTHING ASSERT_ROWS_MODIFIED 1
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

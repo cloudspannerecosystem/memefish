@@ -3,6 +3,7 @@ INSERT OR IGNORE INTO foo
 (foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
+  Or:           7,
   InsertOrType: "IGNORE",
   TableName:    &ast.Path{
     Idents: []*ast.Ident{

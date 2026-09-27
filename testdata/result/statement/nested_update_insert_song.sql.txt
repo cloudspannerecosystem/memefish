@@ -28,6 +28,7 @@ WHERE s.SingerId = 5 AND s.AlbumInfo.title = "Fire is Hot"
       Rparen: 105,
       DML:    &ast.Insert{
         Insert:    22,
+        Or:        -1,
         TableName: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{

@@ -4560,7 +4560,7 @@ type AssertRowsModified struct {
 // Insert is INSERT statement node.
 //
 //	{{.Hint | sqlOpt}}
-//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if not .Or.Invalid}}OR{{end}} {{.InsertOrType}} INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 //	{{.OnConflict | sqlOpt}}
 //	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
@@ -4569,6 +4569,7 @@ type Insert struct {
 	// end = (ThenReturn ?? AssertRowsModified ?? OnConflict ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
+	Or     token.Pos // position of "OR" keyword, optional
 
 	InsertOrType InsertOrType
 

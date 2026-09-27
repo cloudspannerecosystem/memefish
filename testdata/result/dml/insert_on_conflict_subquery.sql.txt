@@ -2,6 +2,7 @@
 INSERT INTO foo (foo, bar) (SELECT foo, bar FROM bar) ON CONFLICT DO NOTHING
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

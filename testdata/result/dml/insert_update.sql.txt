@@ -1,41 +1,44 @@
---- insert_on_conflict_do_nothing.sql
-INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT DO NOTHING
+--- insert_update.sql
+INSERT UPDATE INTO foo
+(foo, bar) VALUES (1, 2)
+
 --- AST
 &ast.Insert{
-  Or:        -1,
-  TableName: &ast.Path{
+  Or:           -1,
+  InsertOrType: "UPDATE",
+  TableName:    &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{
-        NamePos: 12,
-        NameEnd: 15,
+        NamePos: 19,
+        NameEnd: 22,
         Name:    "foo",
       },
     },
   },
   Columns: []*ast.Ident{
     &ast.Ident{
-      NamePos: 17,
-      NameEnd: 20,
+      NamePos: 24,
+      NameEnd: 27,
       Name:    "foo",
     },
     &ast.Ident{
-      NamePos: 22,
-      NameEnd: 25,
+      NamePos: 29,
+      NameEnd: 32,
       Name:    "bar",
     },
   },
   Input: &ast.ValuesInput{
-    Values: 27,
+    Values: 34,
     Rows:   []*ast.ValuesRow{
       &ast.ValuesRow{
-        Lparen: 34,
-        Rparen: 39,
+        Lparen: 41,
+        Rparen: 46,
         Exprs:  []*ast.DefaultExpr{
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 35,
-              ValueEnd: 36,
+              ValuePos: 42,
+              ValueEnd: 43,
               Base:     10,
               Value:    "1",
             },
@@ -43,8 +46,8 @@ INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT DO NOTHING
           &ast.DefaultExpr{
             DefaultPos: -1,
             Expr:       &ast.IntLiteral{
-              ValuePos: 38,
-              ValueEnd: 39,
+              ValuePos: 45,
+              ValueEnd: 46,
               Base:     10,
               Value:    "2",
             },
@@ -53,14 +56,7 @@ INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT DO NOTHING
       },
     },
   },
-  OnConflict: &ast.OnConflict{
-    On:             41,
-    ConflictAction: &ast.ConflictActionDoNothing{
-      Do:      53,
-      Nothing: 56,
-    },
-  },
 }
 
 --- SQL
-INSERT INTO foo (foo, bar) VALUES (1, 2) ON CONFLICT DO NOTHING
+INSERT UPDATE INTO foo (foo, bar) VALUES (1, 2)

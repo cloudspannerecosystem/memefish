@@ -3,6 +3,7 @@ insert foo (foo, bar)
 values (1, default)
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

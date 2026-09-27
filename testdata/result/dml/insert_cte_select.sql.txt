@@ -4,6 +4,7 @@ with cte AS (select 1 as foo, 2 as bar)
 select *
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

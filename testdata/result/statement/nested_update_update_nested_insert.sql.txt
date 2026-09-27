@@ -63,6 +63,7 @@ WHERE s.SingerId = 5
             Rparen: 135,
             DML:    &ast.Insert{
               Insert:    58,
+              Or:        -1,
               TableName: &ast.Path{
                 Idents: []*ast.Ident{
                   &ast.Ident{

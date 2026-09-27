@@ -3,6 +3,7 @@ INSERT OR UPDATE INTO foo
 (foo, bar) VALUES (1, 2)
 --- AST
 &ast.Insert{
+  Or:           7,
   InsertOrType: "UPDATE",
   TableName:    &ast.Path{
     Idents: []*ast.Ident{

@@ -3,6 +3,7 @@ insert foo (foo, bar)
 select * from unnest([(1, 2), (3, 4)])
 --- AST
 &ast.Insert{
+  Or:        -1,
   TableName: &ast.Path{
     Idents: []*ast.Ident{
       &ast.Ident{

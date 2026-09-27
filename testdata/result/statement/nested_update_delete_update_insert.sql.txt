@@ -172,6 +172,7 @@ WHERE SingerId = 3 AND s.Albums.title = 'Go! Go! Go!'
       Rparen: 275,
       DML:    &ast.Insert{
         Insert:    210,
+        Or:        -1,
         TableName: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{

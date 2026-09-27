@@ -30,6 +30,7 @@ WHERE TRUE
       Rparen: 338,
       DML:    &ast.Insert{
         Insert:    223,
+        Or:        -1,
         TableName: &ast.Path{
           Idents: []*ast.Ident{
             &ast.Ident{
