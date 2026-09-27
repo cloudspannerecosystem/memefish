@@ -1,0 +1,1 @@
+ALTER VECTOR INDEX app.`Index` REBUILD

@@ -1702,6 +1702,14 @@ func (v *VectorIndexSetOptions) End() token.Pos {
 	return nodeEnd(wrapNode(v.Options))
 }
 
+func (v *VectorIndexRebuild) Pos() token.Pos {
+	return v.Rebuild
+}
+
+func (v *VectorIndexRebuild) End() token.Pos {
+	return posAdd(v.Rebuild, 7)
+}
+
 func (c *CreateChangeStream) Pos() token.Pos {
 	return c.Create
 }

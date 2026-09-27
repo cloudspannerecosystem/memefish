@@ -4462,8 +4462,12 @@ func (p *Parser) parseVectorIndexAlteration() ast.VectorIndexAlteration {
 		return p.parseDropStoredColumn()
 	case p.Token.Kind == "SET":
 		return p.parseVectorIndexSetOptions()
+	case p.Token.IsKeywordLike("REBUILD"):
+		rebuild := p.expectKeywordLike("REBUILD").Pos
+
+		return &ast.VectorIndexRebuild{Rebuild: rebuild}
 	default:
-		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, REBUILD, but: %s", p.Token.AsString))
 	}
 }
 
