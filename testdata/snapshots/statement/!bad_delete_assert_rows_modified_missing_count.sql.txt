@@ -1,10 +1,10 @@
---- !bad_delete_assert_rows_modified_duplicate.sql
-DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 ASSERT_ROWS_MODIFIED 1
+--- !bad_delete_assert_rows_modified_missing_count.sql
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED
 
 --- Error
-syntax error: testdata/input/dml/!bad_delete_assert_rows_modified_duplicate.sql:1:51: expected token: <eof>, but: ASSERT_ROWS_MODIFIED
-  1|  DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 ASSERT_ROWS_MODIFIED 1
-   |                                                    ^~~~~~~~~~~~~~~~~~~~
+syntax error: testdata/inputs/dml/!bad_delete_assert_rows_modified_missing_count.sql:2:1: unexpected token: <eof>
+  2|  
+   |  ^
 
 
 --- AST
@@ -37,14 +37,14 @@ syntax error: testdata/input/dml/!bad_delete_assert_rows_modified_duplicate.sql:
   },
   AssertRowsModified: &ast.AssertRowsModified{
     Assert:  27,
-    NumRows: &ast.IntLiteral{
-      ValuePos: 48,
-      ValueEnd: 49,
-      Base:     10,
-      Value:    "1",
+    NumRows: &ast.BadExpr{
+      BadNode: &ast.BadNode{
+        NodePos: 48,
+        NodeEnd: 48,
+      },
     },
   },
 }
 
 --- SQL
-DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 
