@@ -853,6 +853,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
 
+	case *PrivilegeOnQueue:
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Names), visitor: v.Field("Names")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})
+
 	case *PrivilegeOnAllTablesInSchema:
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Schemas), visitor: v.Field("Schemas")})
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Privileges), visitor: v.Field("Privileges")})

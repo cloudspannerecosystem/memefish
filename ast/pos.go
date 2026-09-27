@@ -1862,6 +1862,14 @@ func (p *PrivilegeOnTable) End() token.Pos {
 	return nodeEnd(nodeSliceLast(p.Names))
 }
 
+func (p *PrivilegeOnQueue) Pos() token.Pos {
+	return nodePos(nodeSliceIndex(p.Privileges, 0))
+}
+
+func (p *PrivilegeOnQueue) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Names))
+}
+
 func (p *PrivilegeOnAllTablesInSchema) Pos() token.Pos {
 	return nodePos(nodeSliceIndex(p.Privileges, 0))
 }

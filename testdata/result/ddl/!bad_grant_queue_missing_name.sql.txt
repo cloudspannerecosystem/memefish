@@ -1,0 +1,72 @@
+--- !bad_grant_queue_missing_name.sql
+GRANT INSERT ON QUEUE TO ROLE producer
+
+--- Error
+syntax error: testdata/input/ddl/!bad_grant_queue_missing_name.sql:1:23: expected token: <ident>, but: TO
+  1|  GRANT INSERT ON QUEUE TO ROLE producer
+   |                        ^~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 38,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "GRANT",
+        AsString: "GRANT",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INSERT",
+        AsString: "INSERT",
+        Pos:      6,
+        End:      12,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   13,
+        End:   15,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "QUEUE",
+        AsString: "QUEUE",
+        Pos:      16,
+        End:      21,
+      },
+      &token.Token{
+        Kind:  "TO",
+        Space: " ",
+        Raw:   "TO",
+        Pos:   22,
+        End:   24,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      25,
+        End:      29,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "producer",
+        AsString: "producer",
+        Pos:      30,
+        End:      38,
+      },
+    },
+  },
+}
+
+--- SQL
+GRANT INSERT ON QUEUE TO ROLE producer

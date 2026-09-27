@@ -1,0 +1,1 @@
+GRANT SELECT, INSERT, DELETE ON QUEUE app.`Queue`, other.Q TO ROLE worker

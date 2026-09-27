@@ -537,6 +537,7 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                          {}
+func (PrivilegeOnQueue) isPrivilege()                          {}
 func (PrivilegeOnAllTablesInSchema) isPrivilege()              {}
 func (PrivilegeOnSequence) isPrivilege()                       {}
 func (PrivilegeOnAllSequencesInSchema) isPrivilege()           {}
@@ -3809,6 +3810,17 @@ type Revoke struct {
 //
 //	{{.Privileges | sqlJoin ","}} ON TABLE {{.Names | sqlJoin ","}}
 type PrivilegeOnTable struct {
+	// pos = Privileges[0].pos
+	// end = Names[$].end
+
+	Privileges []TablePrivilege // len(Privileges) > 0
+	Names      []*Path          // len(Names) > 0
+}
+
+// PrivilegeOnQueue is ON QUEUE privilege node in GRANT and REVOKE.
+//
+//	{{.Privileges | sqlJoin ", "}} ON QUEUE {{.Names | sqlJoin ", "}}
+type PrivilegeOnQueue struct {
 	// pos = Privileges[0].pos
 	// end = Names[$].end
 

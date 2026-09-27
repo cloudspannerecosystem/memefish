@@ -1,0 +1,72 @@
+--- !bad_revoke_queue_missing_role.sql
+REVOKE DELETE ON QUEUE Q FROM ROLE
+
+--- Error
+syntax error: testdata/input/ddl/!bad_revoke_queue_missing_role.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 34,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "REVOKE",
+        AsString: "REVOKE",
+        End:      6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DELETE",
+        AsString: "DELETE",
+        Pos:      7,
+        End:      13,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   14,
+        End:   16,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "QUEUE",
+        AsString: "QUEUE",
+        Pos:      17,
+        End:      22,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Q",
+        AsString: "Q",
+        Pos:      23,
+        End:      24,
+      },
+      &token.Token{
+        Kind:  "FROM",
+        Space: " ",
+        Raw:   "FROM",
+        Pos:   25,
+        End:   29,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ROLE",
+        AsString: "ROLE",
+        Pos:      30,
+        End:      34,
+      },
+    },
+  },
+}
+
+--- SQL
+REVOKE DELETE ON QUEUE Q FROM ROLE

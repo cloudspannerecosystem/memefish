@@ -1,0 +1,56 @@
+--- grant_queue_multiple.sql
+GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
+
+--- AST
+&ast.Grant{
+  Privilege: &ast.PrivilegeOnQueue{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 6,
+        Rparen: -1,
+      },
+      &ast.InsertPrivilege{
+        Insert: 14,
+        Rparen: -1,
+      },
+      &ast.DeletePrivilege{
+        Delete: 22,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 38,
+            NameEnd: 39,
+            Name:    "Q",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 41,
+            NameEnd: 51,
+            Name:    "OtherQueue",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 60,
+      NameEnd: 68,
+      Name:    "producer",
+    },
+    &ast.Ident{
+      NamePos: 70,
+      NameEnd: 78,
+      Name:    "consumer",
+    },
+  },
+}
+
+--- SQL
+GRANT SELECT, INSERT, DELETE ON QUEUE Q, OtherQueue TO ROLE producer, consumer
