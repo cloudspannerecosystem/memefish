@@ -383,7 +383,7 @@ func (p *ParenTableExpr) SQL() string {
 func (j *Join) SQL() string {
 	return j.Left.SQL() +
 		strOpt(j.Op != CommaJoin, " ") +
-		string(j.Op) + " " +
+		string(j.Op) + strOpt(j.Op != CommaJoin, strOpt(j.Method != "", " "+string(j.Method))+" JOIN") + " " +
 		sqlOpt("", j.Hint, " ") +
 		j.Right.SQL() +
 		sqlOpt(" ", j.Cond, "")

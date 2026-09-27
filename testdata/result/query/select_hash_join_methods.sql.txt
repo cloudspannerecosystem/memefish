@@ -1,0 +1,176 @@
+--- select_hash_join_methods.sql
+SELECT * FROM A
+INNER HASH JOIN B ON A.id = B.id
+LEFT OUTER HASH JOIN C USING (id)
+RIGHT OUTER HASH JOIN D ON C.id = D.id
+FULL OUTER HASH JOIN E USING (id)
+CROSS HASH JOIN F
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.Join{
+        Left: &ast.Join{
+          Left: &ast.Join{
+            Left: &ast.Join{
+              Left: &ast.Join{
+                Left: &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 14,
+                    NameEnd: 15,
+                    Name:    "A",
+                  },
+                },
+                Op:     "INNER",
+                Method: "HASH",
+                Right:  &ast.TableName{
+                  Table: &ast.Ident{
+                    NamePos: 32,
+                    NameEnd: 33,
+                    Name:    "B",
+                  },
+                },
+                Cond: &ast.On{
+                  On:   34,
+                  Expr: &ast.BinaryExpr{
+                    Op:   "=",
+                    Left: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 37,
+                          NameEnd: 38,
+                          Name:    "A",
+                        },
+                        &ast.Ident{
+                          NamePos: 39,
+                          NameEnd: 41,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                    Right: &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 44,
+                          NameEnd: 45,
+                          Name:    "B",
+                        },
+                        &ast.Ident{
+                          NamePos: 46,
+                          NameEnd: 48,
+                          Name:    "id",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              Op:     "LEFT OUTER",
+              Method: "HASH",
+              Right:  &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 70,
+                  NameEnd: 71,
+                  Name:    "C",
+                },
+              },
+              Cond: &ast.Using{
+                Using:  72,
+                Rparen: 81,
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 79,
+                    NameEnd: 81,
+                    Name:    "id",
+                  },
+                },
+              },
+            },
+            Op:     "RIGHT OUTER",
+            Method: "HASH",
+            Right:  &ast.TableName{
+              Table: &ast.Ident{
+                NamePos: 105,
+                NameEnd: 106,
+                Name:    "D",
+              },
+            },
+            Cond: &ast.On{
+              On:   107,
+              Expr: &ast.BinaryExpr{
+                Op:   "=",
+                Left: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 110,
+                      NameEnd: 111,
+                      Name:    "C",
+                    },
+                    &ast.Ident{
+                      NamePos: 112,
+                      NameEnd: 114,
+                      Name:    "id",
+                    },
+                  },
+                },
+                Right: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 117,
+                      NameEnd: 118,
+                      Name:    "D",
+                    },
+                    &ast.Ident{
+                      NamePos: 119,
+                      NameEnd: 121,
+                      Name:    "id",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Op:     "FULL OUTER",
+          Method: "HASH",
+          Right:  &ast.TableName{
+            Table: &ast.Ident{
+              NamePos: 143,
+              NameEnd: 144,
+              Name:    "E",
+            },
+          },
+          Cond: &ast.Using{
+            Using:  145,
+            Rparen: 154,
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 152,
+                NameEnd: 154,
+                Name:    "id",
+              },
+            },
+          },
+        },
+        Op:     "CROSS",
+        Method: "HASH",
+        Right:  &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 172,
+            NameEnd: 173,
+            Name:    "F",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM A INNER HASH JOIN B ON A.id = B.id LEFT OUTER HASH JOIN C USING (id) RIGHT OUTER HASH JOIN D ON C.id = D.id FULL OUTER HASH JOIN E USING (id) CROSS HASH JOIN F

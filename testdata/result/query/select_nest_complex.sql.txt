@@ -110,7 +110,7 @@ from (
               },
             },
           },
-          Op:    "INNER JOIN",
+          Op:    "INNER",
           Right: &ast.SubQueryTableExpr{
             Lparen: 103,
             Rparen: 119,

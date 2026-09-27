@@ -202,7 +202,7 @@ FROM
             },
           },
         },
-        Op:    "LEFT OUTER JOIN",
+        Op:    "LEFT OUTER",
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
             Idents: []*ast.Ident{

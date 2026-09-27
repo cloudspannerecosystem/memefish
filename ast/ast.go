@@ -1292,7 +1292,7 @@ type ParenTableExpr struct {
 // Join is JOIN expression.
 //
 //	{{.Left | sql}}
-//	  {{.Op}} {{.Method}} {{.Hint | sqlOpt}}
+//	  {{if .Op == ","}} , {{else}} {{.Op}} {{.Method}} JOIN {{.Hint | sqlOpt}} {{end}}
 //	  {{.Right | sql}}
 //	{{.Cond | sqlOpt}}
 type Join struct {

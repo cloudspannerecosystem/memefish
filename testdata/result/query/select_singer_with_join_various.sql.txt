@@ -64,7 +64,7 @@ FROM
                             },
                           },
                         },
-                        Op:    "INNER JOIN",
+                        Op:    "INNER",
                         Right: &ast.TableName{
                           Table: &ast.Ident{
                             NamePos: 37,
@@ -115,7 +115,7 @@ FROM
                           },
                         },
                       },
-                      Op:    "INNER JOIN",
+                      Op:    "INNER",
                       Right: &ast.TableName{
                         Table: &ast.Ident{
                           NamePos: 91,
@@ -166,7 +166,7 @@ FROM
                         },
                       },
                     },
-                    Op:    "CROSS JOIN",
+                    Op:    "CROSS",
                     Right: &ast.TableName{
                       Table: &ast.Ident{
                         NamePos: 145,
@@ -183,7 +183,7 @@ FROM
                       },
                     },
                   },
-                  Op:    "FULL OUTER JOIN",
+                  Op:    "FULL OUTER",
                   Right: &ast.TableName{
                     Table: &ast.Ident{
                       NamePos: 169,
@@ -234,7 +234,7 @@ FROM
                     },
                   },
                 },
-                Op:    "FULL OUTER JOIN",
+                Op:    "FULL OUTER",
                 Right: &ast.TableName{
                   Table: &ast.Ident{
                     NamePos: 228,
@@ -285,7 +285,7 @@ FROM
                   },
                 },
               },
-              Op:    "LEFT OUTER JOIN",
+              Op:    "LEFT OUTER",
               Right: &ast.TableName{
                 Table: &ast.Ident{
                   NamePos: 281,
@@ -336,7 +336,7 @@ FROM
                 },
               },
             },
-            Op:    "LEFT OUTER JOIN",
+            Op:    "LEFT OUTER",
             Right: &ast.TableName{
               Table: &ast.Ident{
                 NamePos: 340,
@@ -387,7 +387,7 @@ FROM
               },
             },
           },
-          Op:    "RIGHT OUTER JOIN",
+          Op:    "RIGHT OUTER",
           Right: &ast.TableName{
             Table: &ast.Ident{
               NamePos: 394,
@@ -438,7 +438,7 @@ FROM
             },
           },
         },
-        Op:    "RIGHT OUTER JOIN",
+        Op:    "RIGHT OUTER",
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 454,

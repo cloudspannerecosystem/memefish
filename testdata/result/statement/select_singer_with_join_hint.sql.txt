@@ -45,7 +45,7 @@ FROM
                   },
                 },
               },
-              Op:   "LEFT OUTER JOIN",
+              Op:   "LEFT OUTER",
               Hint: &ast.Hint{
                 Atmark:  45,
                 Rbrace:  68,
@@ -117,7 +117,7 @@ FROM
                 },
               },
             },
-            Op:   "INNER JOIN",
+            Op:   "INNER",
             Hint: &ast.Hint{
               Atmark:  117,
               Rbrace:  138,
@@ -190,7 +190,7 @@ FROM
               },
             },
           },
-          Op:   "INNER JOIN",
+          Op:   "INNER",
           Hint: &ast.Hint{
             Atmark:  187,
             Rbrace:  209,
@@ -263,7 +263,7 @@ FROM
             },
           },
         },
-        Op:   "INNER JOIN",
+        Op:   "INNER",
         Hint: &ast.Hint{
           Atmark:  258,
           Rbrace:  279,
