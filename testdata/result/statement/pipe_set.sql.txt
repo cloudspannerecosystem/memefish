@@ -1,0 +1,95 @@
+--- pipe_set.sql
+SELECT * FROM (
+  SELECT * FROM Singers
+  |> SET FirstName = UPPER(FirstName), `Last Name` = "unknown",
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 104,
+        Query:  &ast.Query{
+          Query: &ast.Select{
+            Select:  18,
+            Results: []ast.SelectItem{
+              &ast.Star{
+                Star: 25,
+              },
+            },
+            From: &ast.From{
+              From:   27,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 32,
+                  NameEnd: 39,
+                  Name:    "Singers",
+                },
+              },
+            },
+          },
+          PipeOperators: []ast.PipeOperator{
+            &ast.PipeSet{
+              Pipe:  42,
+              Items: []*ast.PipeSetItem{
+                &ast.PipeSetItem{
+                  Column: &ast.Ident{
+                    NamePos: 49,
+                    NameEnd: 58,
+                    Name:    "FirstName",
+                  },
+                  Equal: 59,
+                  Expr:  &ast.CallExpr{
+                    Rparen: 76,
+                    Func:   &ast.Path{
+                      Idents: []*ast.Ident{
+                        &ast.Ident{
+                          NamePos: 61,
+                          NameEnd: 66,
+                          Name:    "UPPER",
+                        },
+                      },
+                    },
+                    Args: []ast.Arg{
+                      &ast.ExprArg{
+                        Expr: &ast.Ident{
+                          NamePos: 67,
+                          NameEnd: 76,
+                          Name:    "FirstName",
+                        },
+                      },
+                    },
+                  },
+                },
+                &ast.PipeSetItem{
+                  Column: &ast.Ident{
+                    NamePos: 79,
+                    NameEnd: 90,
+                    Name:    "Last Name",
+                  },
+                  Equal: 91,
+                  Expr:  &ast.StringLiteral{
+                    ValuePos: 93,
+                    ValueEnd: 102,
+                    Value:    "unknown",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers |> SET FirstName = UPPER(FirstName), `Last Name` = "unknown")

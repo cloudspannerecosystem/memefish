@@ -334,6 +334,22 @@ func (p *PipeAs) End() token.Pos {
 	return nodeEnd(wrapNode(p.Alias))
 }
 
+func (p *PipeSet) Pos() token.Pos {
+	return p.Pipe
+}
+
+func (p *PipeSet) End() token.Pos {
+	return nodeEnd(nodeSliceLast(p.Items))
+}
+
+func (p *PipeSetItem) Pos() token.Pos {
+	return nodePos(wrapNode(p.Column))
+}
+
+func (p *PipeSetItem) End() token.Pos {
+	return nodeEnd(wrapNode(p.Expr))
+}
+
 func (p *PipeLimit) Pos() token.Pos {
 	return p.Pipe
 }
