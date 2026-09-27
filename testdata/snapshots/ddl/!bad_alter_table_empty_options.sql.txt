@@ -2,7 +2,7 @@
 ALTER TABLE T SET OPTIONS ()
 
 --- Error
-syntax error: testdata/input/ddl/!bad_alter_table_empty_options.sql:1:28: expected token: <ident>, but: )
+syntax error: testdata/inputs/ddl/!bad_alter_table_empty_options.sql:1:28: expected token: <ident>, but: )
   1|  ALTER TABLE T SET OPTIONS ()
    |                             ^
 
