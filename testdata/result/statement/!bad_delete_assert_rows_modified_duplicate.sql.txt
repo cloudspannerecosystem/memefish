@@ -1,0 +1,50 @@
+--- !bad_delete_assert_rows_modified_duplicate.sql
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 ASSERT_ROWS_MODIFIED 1
+
+--- Error
+syntax error: testdata/input/dml/!bad_delete_assert_rows_modified_duplicate.sql:1:51: expected token: <eof>, but: ASSERT_ROWS_MODIFIED
+  1|  DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1 ASSERT_ROWS_MODIFIED 1
+   |                                                    ^~~~~~~~~~~~~~~~~~~~
+
+
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  Where: &ast.Where{
+    Where: 14,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Ident{
+        NamePos: 20,
+        NameEnd: 22,
+        Name:    "id",
+      },
+      Right: &ast.IntLiteral{
+        ValuePos: 25,
+        ValueEnd: 26,
+        Base:     10,
+        Value:    "1",
+      },
+    },
+  },
+  AssertRowsModified: &ast.AssertRowsModified{
+    Assert:  27,
+    NumRows: &ast.IntLiteral{
+      ValuePos: 48,
+      ValueEnd: 49,
+      Base:     10,
+      Value:    "1",
+    },
+  },
+}
+
+--- SQL
+DELETE FROM Q WHERE id = 1 ASSERT_ROWS_MODIFIED 1

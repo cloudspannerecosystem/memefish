@@ -6787,16 +6787,18 @@ func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 	tableHint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
+	assertRowsModified := p.tryParseAssertRowsModified()
 	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Delete{
-		Delete:     pos,
-		Hint:       hint,
-		TableName:  name,
-		TableHint:  tableHint,
-		As:         as,
-		Where:      where,
-		ThenReturn: thenReturn,
+		Delete:             pos,
+		Hint:               hint,
+		TableName:          name,
+		TableHint:          tableHint,
+		As:                 as,
+		Where:              where,
+		AssertRowsModified: assertRowsModified,
+		ThenReturn:         thenReturn,
 	}
 }
 

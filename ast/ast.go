@@ -4784,19 +4784,21 @@ type ConflictActionDoUpdate struct {
 //
 //	{{.Hint | sqlOpt}}
 //	DELETE FROM {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} {{.Where | sql}}
+//	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
 type Delete struct {
 	// pos = Hint.pos || Delete
-	// end = (ThenReturn ?? Where).end
+	// end = (ThenReturn ?? AssertRowsModified ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
-	Hint       *Hint // optional
-	TableName  *Path
-	TableHint  *Hint    // optional
-	As         *AsAlias // optional
-	Where      *Where
-	ThenReturn *ThenReturn // optional
+	Hint               *Hint // optional
+	TableName          *Path
+	TableHint          *Hint    // optional
+	As                 *AsAlias // optional
+	Where              *Where
+	AssertRowsModified *AssertRowsModified // optional
+	ThenReturn         *ThenReturn         // optional
 }
 
 // Update is UPDATE statement.

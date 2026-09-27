@@ -1112,6 +1112,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 
 	case *Delete:
 		stack = append(stack, &stackItem{node: wrapNode(n.ThenReturn), visitor: v.Field("ThenReturn")})
+		stack = append(stack, &stackItem{node: wrapNode(n.AssertRowsModified), visitor: v.Field("AssertRowsModified")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.As), visitor: v.Field("As")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableHint), visitor: v.Field("TableHint")})

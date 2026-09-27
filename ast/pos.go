@@ -2411,7 +2411,7 @@ func (d *Delete) Pos() token.Pos {
 }
 
 func (d *Delete) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.Where)))
+	return nodeEnd(nodeChoice(wrapNode(d.ThenReturn), wrapNode(d.AssertRowsModified), wrapNode(d.Where)))
 }
 
 func (u *Update) Pos() token.Pos {

@@ -1,0 +1,1 @@
+DELETE Q AS q WHERE q.id = @id ASSERT_ROWS_MODIFIED @count
