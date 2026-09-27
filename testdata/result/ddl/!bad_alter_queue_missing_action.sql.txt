@@ -1,0 +1,42 @@
+--- !bad_alter_queue_missing_action.sql
+ALTER QUEUE Q
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_queue_missing_action.sql:2:1: expected ADD, DROP, REPLACE or SET
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 13,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "QUEUE",
+        AsString: "QUEUE",
+        Pos:      6,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Q",
+        AsString: "Q",
+        Pos:      12,
+        End:      13,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER QUEUE Q

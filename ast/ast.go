@@ -96,6 +96,9 @@ func (DropProtoBundle) isStatement()     {}
 func (CreateTable) isStatement()         {}
 func (AlterTable) isStatement()          {}
 func (DropTable) isStatement()           {}
+func (CreateQueue) isStatement()         {}
+func (AlterQueue) isStatement()          {}
+func (DropQueue) isStatement()           {}
 func (RenameTable) isStatement()         {}
 func (CreateIndex) isStatement()         {}
 func (AlterIndex) isStatement()          {}
@@ -404,6 +407,9 @@ func (DropProtoBundle) isDDL()     {}
 func (CreateTable) isDDL()         {}
 func (AlterTable) isDDL()          {}
 func (DropTable) isDDL()           {}
+func (CreateQueue) isDDL()         {}
+func (AlterQueue) isDDL()          {}
+func (DropQueue) isDDL()           {}
 func (RenameTable) isDDL()         {}
 func (CreateIndex) isDDL()         {}
 func (AlterIndex) isDDL()          {}
@@ -466,6 +472,19 @@ func (SetOnDelete) isTableAlteration()              {}
 func (SetInterleaveIn) isTableAlteration()          {}
 func (AlterColumn) isTableAlteration()              {}
 func (AlterTableSetOptions) isTableAlteration()     {}
+
+// QueueAlteration represents an ALTER QUEUE action.
+type QueueAlteration interface {
+	Node
+	isQueueAlteration()
+}
+
+func (AddRowDeletionPolicy) isQueueAlteration()     {}
+func (DropRowDeletionPolicy) isQueueAlteration()    {}
+func (ReplaceRowDeletionPolicy) isQueueAlteration() {}
+func (SetOnDelete) isQueueAlteration()              {}
+func (SetInterleaveIn) isQueueAlteration()          {}
+func (QueueSetOptions) isQueueAlteration()          {}
 
 // ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
 // They are change default value of column and mutually exclusive.
@@ -2703,6 +2722,62 @@ type CreateTable struct {
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 	Options           *Options                 // optional
+}
+
+// CreateQueue is a CREATE QUEUE statement.
+//
+//	CREATE QUEUE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	({{.Columns | sqlJoin ", "}}) PRIMARY KEY ({{.PrimaryKeys | sqlJoin ", "}})
+//	{{.Cluster | sqlOpt}} {{.RowDeletionPolicy | sqlOpt}}
+//	{{if .Options}}, {{.Options | sql}}{{end}}
+type CreateQueue struct {
+	// pos = Create
+	// end = Options.end || RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1
+
+	Create            token.Pos
+	PrimaryKeyRparen  token.Pos
+	IfNotExists       bool
+	Name              *Path
+	Columns           []*ColumnDef             // len(Columns) > 0
+	PrimaryKeys       []*IndexKey              // non-nil; empty for PRIMARY KEY ()
+	Cluster           *Cluster                 // optional
+	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+	Options           *Options                 // optional
+}
+
+// AlterQueue is an ALTER QUEUE statement.
+//
+//	ALTER QUEUE {{.Name | sql}} {{.QueueAlteration | sql}}
+type AlterQueue struct {
+	// pos = Alter
+	// end = QueueAlteration.end
+
+	Alter           token.Pos
+	Name            *Path
+	QueueAlteration QueueAlteration
+}
+
+// DropQueue is a DROP QUEUE statement.
+//
+//	DROP QUEUE {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropQueue struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Path
+}
+
+// QueueSetOptions is a SET OPTIONS action in ALTER QUEUE.
+//
+//	SET {{.Options | sql}}
+type QueueSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
 }
 
 // Synonym is SYNONYM node in CREATE TABLE

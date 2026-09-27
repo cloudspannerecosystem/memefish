@@ -1206,6 +1206,38 @@ func (c *CreateTable) End() token.Pos {
 	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1), posAdd(c.Rparen, 1))
 }
 
+func (c *CreateQueue) Pos() token.Pos {
+	return c.Create
+}
+
+func (c *CreateQueue) End() token.Pos {
+	return posChoice(nodeEnd(wrapNode(c.Options)), nodeEnd(wrapNode(c.RowDeletionPolicy)), nodeEnd(wrapNode(c.Cluster)), posAdd(c.PrimaryKeyRparen, 1))
+}
+
+func (a *AlterQueue) Pos() token.Pos {
+	return a.Alter
+}
+
+func (a *AlterQueue) End() token.Pos {
+	return nodeEnd(wrapNode(a.QueueAlteration))
+}
+
+func (d *DropQueue) Pos() token.Pos {
+	return d.Drop
+}
+
+func (d *DropQueue) End() token.Pos {
+	return nodeEnd(wrapNode(d.Name))
+}
+
+func (q *QueueSetOptions) Pos() token.Pos {
+	return q.Set
+}
+
+func (q *QueueSetOptions) End() token.Pos {
+	return nodeEnd(wrapNode(q.Options))
+}
+
 func (s *Synonym) Pos() token.Pos {
 	return s.Synonym
 }

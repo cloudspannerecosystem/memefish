@@ -881,6 +881,24 @@ func (c *CreateTable) SQL() string {
 		sqlOpt(", ", c.Options, "")
 }
 
+func (c *CreateQueue) SQL() string {
+	return "CREATE QUEUE " + strOpt(c.IfNotExists, "IF NOT EXISTS ") +
+		c.Name.SQL() + " (\n" + indent + sqlJoin(c.Columns, ",\n"+indent) +
+		"\n) PRIMARY KEY (" + sqlJoin(c.PrimaryKeys, ", ") + ")" +
+		sqlOpt("", c.Cluster, "") + sqlOpt("", c.RowDeletionPolicy, "") +
+		sqlOpt(", ", c.Options, "")
+}
+
+func (a *AlterQueue) SQL() string {
+	return "ALTER QUEUE " + a.Name.SQL() + " " + a.QueueAlteration.SQL()
+}
+
+func (d *DropQueue) SQL() string {
+	return "DROP QUEUE " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
+}
+
+func (q *QueueSetOptions) SQL() string { return "SET " + q.Options.SQL() }
+
 func (s *Synonym) SQL() string { return "SYNONYM (" + s.Name.SQL() + ")" }
 
 func (c *CreateSequence) SQL() string {

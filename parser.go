@@ -3304,6 +3304,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseCreateProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseCreateQueue(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseCreateSequence(pos)
 		case p.Token.IsKeywordLike("VIEW"):
@@ -3346,6 +3348,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseAlterQueue(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
 		case p.Token.IsKeywordLike("LOCALITY"):
@@ -3381,6 +3385,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseDropTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseDropQueue(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
@@ -3730,6 +3736,145 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
 		Options:           options,
+	}
+}
+
+func (p *Parser) parseCreateQueue(pos token.Pos) *ast.CreateQueue {
+	p.expectKeywordLike("QUEUE")
+	ifNotExists := p.parseIfNotExists()
+	name := p.parsePath()
+
+	p.expect("(")
+	columns := []*ast.ColumnDef{p.parseColumnDef()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == ")" {
+			break // Allow the trailing comma emitted by GetDatabaseDdl.
+		}
+		columns = append(columns, p.parseColumnDef())
+	}
+	p.expect(")")
+
+	p.expectKeywordLike("PRIMARY")
+	p.expectKeywordLike("KEY")
+	p.expect("(")
+	keys := []*ast.IndexKey{}
+	if p.Token.Kind != ")" {
+		keys = parseCommaSeparatedList(p, p.parseIndexKey)
+	}
+	rparen := p.expect(")").Pos
+
+	cluster := p.tryParseCluster()
+	rdp := p.tryParseCreateRowDeletionPolicy()
+
+	var options *ast.Options
+	if p.Token.Kind == "," {
+		p.nextToken()
+		options = p.parseOptions()
+	}
+
+	return &ast.CreateQueue{
+		Create:            pos,
+		PrimaryKeyRparen:  rparen,
+		IfNotExists:       ifNotExists,
+		Name:              name,
+		Columns:           columns,
+		PrimaryKeys:       keys,
+		Cluster:           cluster,
+		RowDeletionPolicy: rdp,
+		Options:           options,
+	}
+}
+
+func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
+	p.expectKeywordLike("QUEUE")
+	name := p.parsePath()
+
+	var alteration ast.QueueAlteration
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		add := p.expectKeywordLike("ADD").Pos
+
+		alteration = &ast.AddRowDeletionPolicy{
+			Add:               add,
+			RowDeletionPolicy: p.parseRowDeletionPolicy(),
+		}
+	case p.Token.IsKeywordLike("DROP"):
+		drop := p.expectKeywordLike("DROP").Pos
+		p.expectKeywordLike("ROW")
+		p.expectKeywordLike("DELETION")
+		policy := p.expectKeywordLike("POLICY").Pos
+
+		alteration = &ast.DropRowDeletionPolicy{
+			Drop:   drop,
+			Policy: policy,
+		}
+	case p.Token.IsKeywordLike("REPLACE"):
+		replace := p.expectKeywordLike("REPLACE").Pos
+
+		alteration = &ast.ReplaceRowDeletionPolicy{
+			Replace:           replace,
+			RowDeletionPolicy: p.parseRowDeletionPolicy(),
+		}
+	case p.Token.Kind == "SET":
+		set := p.expect("SET").Pos
+		switch {
+		case p.Token.IsKeywordLike("OPTIONS"):
+			alteration = &ast.QueueSetOptions{
+				Set:     set,
+				Options: p.parseOptions(),
+			}
+		case p.Token.Kind == "ON":
+			onDelete, end := p.parseOnDeleteAction()
+
+			alteration = &ast.SetOnDelete{
+				Set:         set,
+				OnDelete:    onDelete,
+				OnDeleteEnd: end,
+			}
+		case p.Token.IsKeywordLike("INTERLEAVE"):
+			p.nextToken()
+			p.expect("IN")
+
+			var enforced bool
+			if p.Token.IsKeywordLike("PARENT") {
+				p.nextToken()
+				enforced = true
+			}
+
+			table := p.parsePath()
+			onDelete, end := p.tryParseOnDeleteAction()
+
+			alteration = &ast.SetInterleaveIn{
+				Set:         set,
+				TableName:   table,
+				Enforced:    enforced,
+				OnDelete:    onDelete,
+				OnDeleteEnd: end,
+			}
+		default:
+			p.panicfAtToken(&p.Token, "expected ON, OPTIONS or INTERLEAVE")
+		}
+	default:
+		p.panicfAtToken(&p.Token, "expected ADD, DROP, REPLACE or SET")
+	}
+
+	return &ast.AlterQueue{
+		Alter:           pos,
+		Name:            name,
+		QueueAlteration: alteration,
+	}
+}
+
+func (p *Parser) parseDropQueue(pos token.Pos) *ast.DropQueue {
+	p.expectKeywordLike("QUEUE")
+	ifExists := p.parseIfExists()
+	name := p.parsePath()
+
+	return &ast.DropQueue{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 

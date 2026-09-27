@@ -1,0 +1,1 @@
+DROP QUEUE IF EXISTS `queue`

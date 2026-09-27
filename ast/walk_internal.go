@@ -557,6 +557,24 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
+	case *CreateQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+		stack = append(stack, &stackItem{node: wrapNode(n.RowDeletionPolicy), visitor: v.Field("RowDeletionPolicy")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Cluster), visitor: v.Field("Cluster")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.PrimaryKeys), visitor: v.Field("PrimaryKeys")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.Columns), visitor: v.Field("Columns")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *AlterQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.QueueAlteration), visitor: v.Field("QueueAlteration")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *DropQueue:
+		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
+
+	case *QueueSetOptions:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
+
 	case *Synonym:
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 

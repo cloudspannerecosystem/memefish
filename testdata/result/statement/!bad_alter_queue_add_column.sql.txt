@@ -1,0 +1,74 @@
+--- !bad_alter_queue_add_column.sql
+ALTER QUEUE Q ADD COLUMN x INT64
+
+--- Error
+syntax error: testdata/input/ddl/!bad_alter_queue_add_column.sql:1:19: expected pseudo keyword: ROW, but: COLUMN
+  1|  ALTER QUEUE Q ADD COLUMN x INT64
+   |                    ^~~~~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 32,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "QUEUE",
+        AsString: "QUEUE",
+        Pos:      6,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Q",
+        AsString: "Q",
+        Pos:      12,
+        End:      13,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "ADD",
+        AsString: "ADD",
+        Pos:      14,
+        End:      17,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "COLUMN",
+        AsString: "COLUMN",
+        Pos:      18,
+        End:      24,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "x",
+        AsString: "x",
+        Pos:      25,
+        End:      26,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      27,
+        End:      32,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER QUEUE Q ADD COLUMN x INT64

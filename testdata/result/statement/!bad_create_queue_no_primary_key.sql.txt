@@ -1,0 +1,124 @@
+--- !bad_create_queue_no_primary_key.sql
+CREATE QUEUE Q (id INT64, Payload BYTES(MAX) NOT NULL)
+
+--- Error
+syntax error: testdata/input/ddl/!bad_create_queue_no_primary_key.sql:2:1: expected token: <ident>, but: <eof>
+  2|  
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 54,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "QUEUE",
+        AsString: "QUEUE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Q",
+        AsString: "Q",
+        Pos:      13,
+        End:      14,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   15,
+        End:   16,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "id",
+        AsString: "id",
+        Pos:      16,
+        End:      18,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      19,
+        End:      24,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  24,
+        End:  25,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Payload",
+        AsString: "Payload",
+        Pos:      26,
+        End:      33,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "BYTES",
+        AsString: "BYTES",
+        Pos:      34,
+        End:      39,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  39,
+        End:  40,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "MAX",
+        AsString: "MAX",
+        Pos:      40,
+        End:      43,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  43,
+        End:  44,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   45,
+        End:   48,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   49,
+        End:   53,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  53,
+        End:  54,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE QUEUE Q (id INT64, Payload BYTES(MAX) NOT NULL)
