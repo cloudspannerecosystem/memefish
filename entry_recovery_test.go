@@ -302,3 +302,27 @@ func requireSafeEntryNodes(t *testing.T, nodes []ast.Node) {
 		}()
 	}
 }
+
+func TestParseTypeRecoveryKeepsBalancedBrackets(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		// ">>" is split between a bad inner type and its enclosing type; the
+		// first ">" must stay in the bad type so its rendering is balanced.
+		{input: "ARRAY<STRUCT<x !, y INT64>>", want: "ARRAY<STRUCT<x !, y INT64>>"},
+		{input: "STRUCT<x STRUCT<y !>>", want: "STRUCT<x STRUCT<y !>>"},
+		// Parentheses inside a bad type are tracked as nesting instead of
+		// unconditionally ending it.
+		{input: "ARRAY<STRING(!)>", want: "ARRAY<STRING(!)>"},
+	}
+	for _, test := range tests {
+		typ, err := memefish.ParseType("", test.input)
+		if err == nil {
+			t.Errorf("ParseType(%q) error = nil, want an error", test.input)
+		}
+		if got := typ.SQL(); got != test.want {
+			t.Errorf("ParseType(%q).SQL() = %q, want %q", test.input, got, test.want)
+		}
+	}
+}

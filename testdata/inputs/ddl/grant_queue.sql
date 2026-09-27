@@ -1,0 +1,1 @@
+GRANT INSERT ON QUEUE Q TO ROLE producer

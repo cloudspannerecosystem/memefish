@@ -1,0 +1,1 @@
+REVOKE SELECT, INSERT, DELETE ON QUEUE Q, `queue` FROM ROLE producer, consumer

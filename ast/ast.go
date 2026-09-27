@@ -96,6 +96,9 @@ func (DropProtoBundle) isStatement()     {}
 func (CreateTable) isStatement()         {}
 func (AlterTable) isStatement()          {}
 func (DropTable) isStatement()           {}
+func (CreateQueue) isStatement()         {}
+func (AlterQueue) isStatement()          {}
+func (DropQueue) isStatement()           {}
 func (RenameTable) isStatement()         {}
 func (CreateIndex) isStatement()         {}
 func (AlterIndex) isStatement()          {}
@@ -405,6 +408,9 @@ func (DropProtoBundle) isDDL()     {}
 func (CreateTable) isDDL()         {}
 func (AlterTable) isDDL()          {}
 func (DropTable) isDDL()           {}
+func (CreateQueue) isDDL()         {}
+func (AlterQueue) isDDL()          {}
+func (DropQueue) isDDL()           {}
 func (RenameTable) isDDL()         {}
 func (CreateIndex) isDDL()         {}
 func (AlterIndex) isDDL()          {}
@@ -468,6 +474,19 @@ func (SetInterleaveIn) isTableAlteration()          {}
 func (AlterColumn) isTableAlteration()              {}
 func (AlterTableSetOptions) isTableAlteration()     {}
 
+// QueueAlteration represents an ALTER QUEUE action.
+type QueueAlteration interface {
+	Node
+	isQueueAlteration()
+}
+
+func (AddRowDeletionPolicy) isQueueAlteration()     {}
+func (DropRowDeletionPolicy) isQueueAlteration()    {}
+func (ReplaceRowDeletionPolicy) isQueueAlteration() {}
+func (SetOnDelete) isQueueAlteration()              {}
+func (SetInterleaveIn) isQueueAlteration()          {}
+func (QueueSetOptions) isQueueAlteration()          {}
+
 // ColumnDefaultSemantics is interface of DefaultExpr, GeneratedColumnExpr, IdentityColumn, AutoIncrement.
 // They are change default value of column and mutually exclusive.
 type ColumnDefaultSemantics interface {
@@ -519,6 +538,7 @@ type Privilege interface {
 }
 
 func (PrivilegeOnTable) isPrivilege()                          {}
+func (PrivilegeOnQueue) isPrivilege()                          {}
 func (PrivilegeOnAllTablesInSchema) isPrivilege()              {}
 func (PrivilegeOnSequence) isPrivilege()                       {}
 func (PrivilegeOnAllSequencesInSchema) isPrivilege()           {}
@@ -564,14 +584,13 @@ func (AddStoredColumn) isIndexAlteration()  {}
 func (DropStoredColumn) isIndexAlteration() {}
 
 // VectorIndexAlteration represents ALTER VECTOR INDEX action.
-// Note: Currently, it is same as IndexAlteration,
-// but cloud-spanner-emulator/backend/schema/parser/ddl_parser.jjt implies their difference.
 type VectorIndexAlteration interface {
 	Node
 	isVectorIndexAlteration()
 }
 
 func (VectorIndexSetOptions) isVectorIndexAlteration() {}
+func (VectorIndexRebuild) isVectorIndexAlteration()    {}
 func (AddStoredColumn) isVectorIndexAlteration()       {}
 func (DropStoredColumn) isVectorIndexAlteration()      {}
 
@@ -2478,7 +2497,7 @@ type Options struct {
 	Options token.Pos // position of "OPTIONS" keyword
 	Rparen  token.Pos // position of ")"
 
-	Records []*OptionsDef // len(Records) > 0
+	Records []*OptionsDef // may be empty in some statements
 }
 
 // OptionsDef is single option definition for DDL statements.
@@ -2728,6 +2747,62 @@ type CreateTable struct {
 	Cluster           *Cluster                 // optional
 	RowDeletionPolicy *CreateRowDeletionPolicy // optional
 	Options           *Options                 // optional
+}
+
+// CreateQueue is a CREATE QUEUE statement.
+//
+//	CREATE QUEUE {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
+//	({{.Columns | sqlJoin ", "}}) PRIMARY KEY ({{.PrimaryKeys | sqlJoin ", "}})
+//	{{.Cluster | sqlOpt}} {{.RowDeletionPolicy | sqlOpt}}
+//	{{if .Options}}, {{.Options | sql}}{{end}}
+type CreateQueue struct {
+	// pos = Create
+	// end = Options.end || RowDeletionPolicy.end || Cluster.end || PrimaryKeyRparen + 1
+
+	Create            token.Pos
+	PrimaryKeyRparen  token.Pos
+	IfNotExists       bool
+	Name              *Path
+	Columns           []*ColumnDef             // len(Columns) > 0
+	PrimaryKeys       []*IndexKey              // non-nil; empty for PRIMARY KEY ()
+	Cluster           *Cluster                 // optional
+	RowDeletionPolicy *CreateRowDeletionPolicy // optional
+	Options           *Options                 // optional
+}
+
+// AlterQueue is an ALTER QUEUE statement.
+//
+//	ALTER QUEUE {{.Name | sql}} {{.QueueAlteration | sql}}
+type AlterQueue struct {
+	// pos = Alter
+	// end = QueueAlteration.end
+
+	Alter           token.Pos
+	Name            *Path
+	QueueAlteration QueueAlteration
+}
+
+// DropQueue is a DROP QUEUE statement.
+//
+//	DROP QUEUE {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
+type DropQueue struct {
+	// pos = Drop
+	// end = Name.end
+
+	Drop     token.Pos
+	IfExists bool
+	Name     *Path
+}
+
+// QueueSetOptions is a SET OPTIONS action in ALTER QUEUE.
+//
+//	SET {{.Options | sql}}
+type QueueSetOptions struct {
+	// pos = Set
+	// end = Options.end
+
+	Set     token.Pos
+	Options *Options
 }
 
 // Synonym is SYNONYM node in CREATE TABLE
@@ -3050,13 +3125,14 @@ type DropView struct {
 
 // AlterTable is ALTER TABLE statement node.
 //
-//	ALTER TABLE {{.Name | sql}} {{.TableAlteration | sql}}
+//	ALTER TABLE {{if .IfExists}}IF EXISTS {{end}}{{.Name | sql}} {{.TableAlteration | sql}}
 type AlterTable struct {
 	// pos = Alter
 	// end = TableAlteration.end
 
 	Alter token.Pos // position of "ALTER" keyword
 
+	IfExists       bool
 	Name            *Path
 	TableAlteration TableAlteration
 }
@@ -3521,6 +3597,16 @@ type VectorIndexSetOptions struct {
 	Options *Options
 }
 
+// VectorIndexRebuild is a REBUILD clause in ALTER VECTOR INDEX.
+//
+//	REBUILD
+type VectorIndexRebuild struct {
+	// pos = Rebuild
+	// end = Rebuild + 7
+
+	Rebuild token.Pos // position of "REBUILD" keyword
+}
+
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
 //	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
@@ -3759,6 +3845,17 @@ type Revoke struct {
 //
 //	{{.Privileges | sqlJoin ","}} ON TABLE {{.Names | sqlJoin ","}}
 type PrivilegeOnTable struct {
+	// pos = Privileges[0].pos
+	// end = Names[$].end
+
+	Privileges []TablePrivilege // len(Privileges) > 0
+	Names      []*Path          // len(Names) > 0
+}
+
+// PrivilegeOnQueue is ON QUEUE privilege node in GRANT and REVOKE.
+//
+//	{{.Privileges | sqlJoin ", "}} ON QUEUE {{.Names | sqlJoin ", "}}
+type PrivilegeOnQueue struct {
 	// pos = Privileges[0].pos
 	// end = Names[$].end
 
@@ -4251,15 +4348,17 @@ func (PropertyGraphDerivedPropertyList) isPropertyGraphElementProperties() {}
 //	{{if .IfNotExists}}IF NOT EXISTS{{end}}
 //	{{.Name | sql}}
 //	{{.Content | sql}}
+//	{{.Options | sqlOpt}}
 type CreatePropertyGraph struct {
 	// pos = Create
-	// end = Content.end
+	// end = (Options ?? Content).end
 
 	Create      token.Pos // position of "CREATE" keyword
 	OrReplace   bool
 	IfNotExists bool
 	Name        *Ident
 	Content     *PropertyGraphContent
+	Options     *Options // optional
 }
 
 // PropertyGraphContent represents body of CREATE PROPERTY GRAPH statement.
@@ -4585,7 +4684,7 @@ type AssertRowsModified struct {
 // Insert is INSERT statement node.
 //
 //	{{.Hint | sqlOpt}}
-//	INSERT {{if .InsertOrType}}OR .InsertOrType{{end}}INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
+//	INSERT {{if not .Or.Invalid}}OR{{end}} {{.InsertOrType}} INTO {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} ({{.Columns | sqlJoin ","}}) {{.Input | sql}}
 //	{{.OnConflict | sqlOpt}}
 //	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
@@ -4594,6 +4693,7 @@ type Insert struct {
 	// end = (ThenReturn ?? AssertRowsModified ?? OnConflict ?? Input).end
 
 	Insert token.Pos // position of "INSERT" keyword
+	Or     token.Pos // position of "OR" keyword, optional
 
 	InsertOrType InsertOrType
 
@@ -4721,19 +4821,21 @@ type ConflictActionDoUpdate struct {
 //
 //	{{.Hint | sqlOpt}}
 //	DELETE FROM {{.TableName | sql}}{{.TableHint | sqlOpt}} {{.As | sqlOpt}} {{.Where | sql}}
+//	{{.AssertRowsModified | sqlOpt}}
 //	{{.ThenReturn | sqlOpt}}
 type Delete struct {
 	// pos = Hint.pos || Delete
-	// end = (ThenReturn ?? Where).end
+	// end = (ThenReturn ?? AssertRowsModified ?? Where).end
 
 	Delete token.Pos // position of "DELETE" keyword
 
-	Hint       *Hint // optional
-	TableName  *Path
-	TableHint  *Hint    // optional
-	As         *AsAlias // optional
-	Where      *Where
-	ThenReturn *ThenReturn // optional
+	Hint               *Hint // optional
+	TableName          *Path
+	TableHint          *Hint    // optional
+	As                 *AsAlias // optional
+	Where              *Where
+	AssertRowsModified *AssertRowsModified // optional
+	ThenReturn         *ThenReturn         // optional
 }
 
 // Update is UPDATE statement.

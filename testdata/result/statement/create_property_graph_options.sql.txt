@@ -1,0 +1,49 @@
+--- create_property_graph_options.sql
+CREATE PROPERTY GRAPH g NODE TABLES (T)
+OPTIONS (validate_element_key_uniqueness = false)
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 23,
+    Name:    "g",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   24,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   36,
+        Rparen:   38,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 37,
+              NameEnd: 38,
+              Name:    "T",
+            },
+          },
+        },
+      },
+    },
+  },
+  Options: &ast.Options{
+    Options: 40,
+    Rparen:  88,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 49,
+          NameEnd: 80,
+          Name:    "validate_element_key_uniqueness",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 83,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH g NODE TABLES (T) OPTIONS (validate_element_key_uniqueness = false)

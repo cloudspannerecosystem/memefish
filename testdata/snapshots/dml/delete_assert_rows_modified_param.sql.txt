@@ -1,0 +1,57 @@
+--- delete_assert_rows_modified_param.sql
+DELETE Q AS q WHERE q.id = @id ASSERT_ROWS_MODIFIED @count
+
+--- AST
+&ast.Delete{
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 7,
+        NameEnd: 8,
+        Name:    "Q",
+      },
+    },
+  },
+  As: &ast.AsAlias{
+    As:    9,
+    Alias: &ast.Ident{
+      NamePos: 12,
+      NameEnd: 13,
+      Name:    "q",
+    },
+  },
+  Where: &ast.Where{
+    Where: 14,
+    Expr:  &ast.BinaryExpr{
+      Op:   "=",
+      Left: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 20,
+            NameEnd: 21,
+            Name:    "q",
+          },
+          &ast.Ident{
+            NamePos: 22,
+            NameEnd: 24,
+            Name:    "id",
+          },
+        },
+      },
+      Right: &ast.Param{
+        Atmark: 27,
+        Name:   "id",
+      },
+    },
+  },
+  AssertRowsModified: &ast.AssertRowsModified{
+    Assert:  31,
+    NumRows: &ast.Param{
+      Atmark: 52,
+      Name:   "count",
+    },
+  },
+}
+
+--- SQL
+DELETE FROM Q AS q WHERE q.id = @id ASSERT_ROWS_MODIFIED @count

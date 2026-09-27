@@ -1,0 +1,4 @@
+CREATE OR REPLACE PROPERTY GRAPH g
+NODE TABLES (T KEY (id))
+EDGE TABLES (E SOURCE KEY (src) REFERENCES T (id) DESTINATION KEY (dst) REFERENCES T (id))
+OPTIONS (validate_element_key_uniqueness = true)

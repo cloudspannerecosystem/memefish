@@ -1,0 +1,2 @@
+go test fuzz v1
+string("SELECT 0 .A0000 #0000000000000")

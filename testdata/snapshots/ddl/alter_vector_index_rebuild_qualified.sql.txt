@@ -1,0 +1,26 @@
+--- alter_vector_index_rebuild_qualified.sql
+ALTER VECTOR INDEX app.`Index` REBUILD
+
+--- AST
+&ast.AlterVectorIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 19,
+        NameEnd: 22,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 23,
+        NameEnd: 30,
+        Name:    "Index",
+      },
+    },
+  },
+  Alteration: &ast.VectorIndexRebuild{
+    Rebuild: 31,
+  },
+}
+
+--- SQL
+ALTER VECTOR INDEX app.Index REBUILD

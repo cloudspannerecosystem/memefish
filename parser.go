@@ -2681,7 +2681,8 @@ func (p *Parser) parseWithExpr() *ast.WithExpr {
 	with := p.expect("WITH").Pos
 	p.expect("(")
 
-	var vars []*ast.WithExprVar
+	vars := []*ast.WithExprVar{p.parseWithExprVar()}
+	p.expect(",")
 	for p.lookaheadWithExprVar() {
 		vars = append(vars, p.parseWithExprVar())
 		p.expect(",")
@@ -3200,6 +3201,8 @@ func (p *Parser) parseBracedNewConstructorField() *ast.BracedConstructorField {
 		fieldValue = &ast.BracedConstructorFieldValueExpr{Colon: colon, Expr: expr}
 	case "{":
 		fieldValue = p.parseBracedConstructor()
+	default:
+		p.panicfAtToken(&p.Token, "expected token: {, :, but: %s", p.Token.Kind)
 	}
 	return &ast.BracedConstructorField{Name: name, Value: fieldValue}
 }
@@ -3323,6 +3326,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseCreateProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseCreateTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseCreateQueue(pos)
 		case p.Token.IsKeywordLike("SEQUENCE"):
 			return p.parseCreateSequence(pos)
 		case p.Token.IsKeywordLike("VIEW"):
@@ -3365,6 +3370,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 		switch {
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseAlterTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseAlterQueue(pos)
 		case p.Token.IsKeywordLike("DATABASE"):
 			return p.parseAlterDatabase(pos)
 		case p.Token.IsKeywordLike("LOCALITY"):
@@ -3400,6 +3407,8 @@ func (p *Parser) parseDDL() (ddl ast.DDL) {
 			return p.parseDropProtoBundle(pos)
 		case p.Token.IsKeywordLike("TABLE"):
 			return p.parseDropTable(pos)
+		case p.Token.IsKeywordLike("QUEUE"):
+			return p.parseDropQueue(pos)
 		case p.Token.IsKeywordLike("INDEX"):
 			return p.parseDropIndex(pos)
 		case p.Token.IsKeywordLike("SEARCH"):
@@ -3749,6 +3758,145 @@ func (p *Parser) parseCreateTable(pos token.Pos) *ast.CreateTable {
 		Cluster:           cluster,
 		RowDeletionPolicy: rdp,
 		Options:           options,
+	}
+}
+
+func (p *Parser) parseCreateQueue(pos token.Pos) *ast.CreateQueue {
+	p.expectKeywordLike("QUEUE")
+	ifNotExists := p.parseIfNotExists()
+	name := p.parsePath()
+
+	p.expect("(")
+	columns := []*ast.ColumnDef{p.parseColumnDef()}
+	for p.Token.Kind == "," {
+		p.nextToken()
+		if p.Token.Kind == ")" {
+			break // Allow the trailing comma emitted by GetDatabaseDdl.
+		}
+		columns = append(columns, p.parseColumnDef())
+	}
+	p.expect(")")
+
+	p.expectKeywordLike("PRIMARY")
+	p.expectKeywordLike("KEY")
+	p.expect("(")
+	keys := []*ast.IndexKey{}
+	if p.Token.Kind != ")" {
+		keys = parseCommaSeparatedList(p, p.parseIndexKey)
+	}
+	rparen := p.expect(")").Pos
+
+	cluster := p.tryParseCluster()
+	rdp := p.tryParseCreateRowDeletionPolicy()
+
+	var options *ast.Options
+	if p.Token.Kind == "," {
+		p.nextToken()
+		options = p.parseOptions()
+	}
+
+	return &ast.CreateQueue{
+		Create:            pos,
+		PrimaryKeyRparen:  rparen,
+		IfNotExists:       ifNotExists,
+		Name:              name,
+		Columns:           columns,
+		PrimaryKeys:       keys,
+		Cluster:           cluster,
+		RowDeletionPolicy: rdp,
+		Options:           options,
+	}
+}
+
+func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
+	p.expectKeywordLike("QUEUE")
+	name := p.parsePath()
+
+	var alteration ast.QueueAlteration
+	switch {
+	case p.Token.IsKeywordLike("ADD"):
+		add := p.expectKeywordLike("ADD").Pos
+
+		alteration = &ast.AddRowDeletionPolicy{
+			Add:               add,
+			RowDeletionPolicy: p.parseRowDeletionPolicy(),
+		}
+	case p.Token.IsKeywordLike("DROP"):
+		drop := p.expectKeywordLike("DROP").Pos
+		p.expectKeywordLike("ROW")
+		p.expectKeywordLike("DELETION")
+		policy := p.expectKeywordLike("POLICY").Pos
+
+		alteration = &ast.DropRowDeletionPolicy{
+			Drop:   drop,
+			Policy: policy,
+		}
+	case p.Token.IsKeywordLike("REPLACE"):
+		replace := p.expectKeywordLike("REPLACE").Pos
+
+		alteration = &ast.ReplaceRowDeletionPolicy{
+			Replace:           replace,
+			RowDeletionPolicy: p.parseRowDeletionPolicy(),
+		}
+	case p.Token.Kind == "SET":
+		set := p.expect("SET").Pos
+		switch {
+		case p.Token.IsKeywordLike("OPTIONS"):
+			alteration = &ast.QueueSetOptions{
+				Set:     set,
+				Options: p.parseOptions(),
+			}
+		case p.Token.Kind == "ON":
+			onDelete, end := p.parseOnDeleteAction()
+
+			alteration = &ast.SetOnDelete{
+				Set:         set,
+				OnDelete:    onDelete,
+				OnDeleteEnd: end,
+			}
+		case p.Token.IsKeywordLike("INTERLEAVE"):
+			p.nextToken()
+			p.expect("IN")
+
+			var enforced bool
+			if p.Token.IsKeywordLike("PARENT") {
+				p.nextToken()
+				enforced = true
+			}
+
+			table := p.parsePath()
+			onDelete, end := p.tryParseOnDeleteAction()
+
+			alteration = &ast.SetInterleaveIn{
+				Set:         set,
+				TableName:   table,
+				Enforced:    enforced,
+				OnDelete:    onDelete,
+				OnDeleteEnd: end,
+			}
+		default:
+			p.panicfAtToken(&p.Token, "expected ON, OPTIONS or INTERLEAVE")
+		}
+	default:
+		p.panicfAtToken(&p.Token, "expected ADD, DROP, REPLACE or SET")
+	}
+
+	return &ast.AlterQueue{
+		Alter:           pos,
+		Name:            name,
+		QueueAlteration: alteration,
+	}
+}
+
+func (p *Parser) parseDropQueue(pos token.Pos) *ast.DropQueue {
+	p.expectKeywordLike("QUEUE")
+	ifExists := p.parseIfExists()
+	name := p.parsePath()
+
+	return &ast.DropQueue{
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
@@ -4209,9 +4357,16 @@ func (p *Parser) tryParseOptions() *ast.Options {
 }
 
 func (p *Parser) parseOptions() *ast.Options {
+	return p.parseOptionsWithEmptyRecords(false)
+}
+
+func (p *Parser) parseOptionsWithEmptyRecords(allowEmpty bool) *ast.Options {
 	pos := p.expectKeywordLike("OPTIONS").Pos
 	p.expect("(")
-	optionsDefs := parseCommaSeparatedList(p, p.parseOptionsDef)
+	var optionsDefs []*ast.OptionsDef
+	if !allowEmpty || p.Token.Kind != ")" {
+		optionsDefs = parseCommaSeparatedList(p, p.parseOptionsDef)
+	}
 	rparen := p.expect(")").Pos
 
 	return &ast.Options{
@@ -4336,8 +4491,12 @@ func (p *Parser) parseVectorIndexAlteration() ast.VectorIndexAlteration {
 		return p.parseDropStoredColumn()
 	case p.Token.Kind == "SET":
 		return p.parseVectorIndexSetOptions()
+	case p.Token.IsKeywordLike("REBUILD"):
+		rebuild := p.expectKeywordLike("REBUILD").Pos
+
+		return &ast.VectorIndexRebuild{Rebuild: rebuild}
 	default:
-		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, but: %s", p.Token.AsString))
+		panic(p.errorfAtToken(&p.Token, "expected token: SET, pseudo keyword: ADD, DROP, REBUILD, but: %s", p.Token.AsString))
 	}
 }
 
@@ -4439,6 +4598,8 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 				Options: p.parseOptions(),
 			}
 			return cs
+		} else {
+			p.panicfAtToken(&p.Token, "expected token: FOR, pseudo keyword: OPTIONS, but: %s", p.Token.Kind)
 		}
 	} else if p.Token.IsKeywordLike("DROP") {
 		droppos := p.Token.Pos
@@ -4673,6 +4834,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 
 func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 	p.expectKeywordLike("TABLE")
+	ifExists := p.parseIfExists()
 	name := p.parsePath()
 
 	var alteration ast.TableAlteration
@@ -4699,6 +4861,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 
 	return &ast.AlterTable{
 		Alter:           pos,
+		IfExists:        ifExists,
 		Name:            name,
 		TableAlteration: alteration,
 	}
@@ -5290,7 +5453,7 @@ func (p *Parser) parsePrivilege() ast.Privilege {
 	if t := p.tryParsePrivilegeOnAllTablesInSchema(); t != nil {
 		return t
 	}
-	return p.parsePrivilegeOnTable()
+	return p.parsePrivilegeOnTableOrQueue()
 }
 
 func (p *Parser) tryParseSelectPrivilegeOnAllViewsInSchema() *ast.SelectPrivilegeOnAllViewsInSchema {
@@ -5540,11 +5703,23 @@ func (p *Parser) tryParsePrivilegeOnAllTablesInSchema() *ast.PrivilegeOnAllTable
 	}
 }
 
-func (p *Parser) parsePrivilegeOnTable() *ast.PrivilegeOnTable {
+func (p *Parser) parsePrivilegeOnTableOrQueue() ast.Privilege {
 	privileges := parseCommaSeparatedList(p, p.parseTablePrivilege)
 	p.expect("ON")
+
+	if p.Token.IsKeywordLike("QUEUE") {
+		p.nextToken()
+		names := parseCommaSeparatedList(p, p.parsePath)
+
+		return &ast.PrivilegeOnQueue{
+			Privileges: privileges,
+			Names:      names,
+		}
+	}
+
 	p.expectKeywordLike("TABLE")
 	names := parseCommaSeparatedList(p, p.parsePath)
+
 	return &ast.PrivilegeOnTable{
 		Privileges: privileges,
 		Names:      names,
@@ -5635,6 +5810,14 @@ func (p *Parser) tryParseTablePrivilegeColumns() ([]*ast.Ident, token.Pos) {
 
 // begin CREATE PROPERTY GRAPH
 
+func (p *Parser) tryParsePropertyGraphOptions() *ast.Options {
+	if !p.Token.IsKeywordLike("OPTIONS") {
+		return nil
+	}
+	// Unlike other DDL options, property graph options can be empty.
+	return p.parseOptionsWithEmptyRecords(true)
+}
+
 func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.CreatePropertyGraph {
 	p.expectKeywordLike("PROPERTY")
 	p.expectKeywordLike("GRAPH")
@@ -5642,6 +5825,7 @@ func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.Cr
 	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 	content := p.parsePropertyGraphContent()
+	options := p.tryParsePropertyGraphOptions()
 
 	return &ast.CreatePropertyGraph{
 		Create:      pos,
@@ -5649,6 +5833,7 @@ func (p *Parser) parseCreatePropertyGraph(pos token.Pos, orReplace bool) *ast.Cr
 		IfNotExists: ifNotExists,
 		Name:        name,
 		Content:     content,
+		Options:     options,
 	}
 }
 
@@ -6410,16 +6595,20 @@ func (p *Parser) tryParseThenReturn() *ast.ThenReturn {
 
 func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.Insert {
 	var insertOrType ast.InsertOrType
+	or := token.InvalidPos
 	if p.Token.Kind == "OR" {
+		or = p.Token.Pos
 		p.nextToken()
-		switch {
-		case p.Token.IsKeywordLike("UPDATE"):
-			insertOrType = ast.InsertOrTypeUpdate
-		case p.Token.Kind == "IGNORE":
-			insertOrType = ast.InsertOrTypeIgnore
-		default:
-			p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
-		}
+	}
+	switch {
+	case p.Token.IsKeywordLike("UPDATE"):
+		insertOrType = ast.InsertOrTypeUpdate
+	case p.Token.Kind == "IGNORE":
+		insertOrType = ast.InsertOrTypeIgnore
+	case !or.Invalid():
+		p.panicfAtToken(&p.Token, "expected pseudo keyword: UPDATE, IGNORE, but: %s", p.Token.AsString)
+	}
+	if insertOrType != "" {
 		p.nextToken()
 	}
 
@@ -6465,6 +6654,7 @@ func (p *Parser) parseInsert(pos token.Pos, hint *ast.Hint, nested bool) *ast.In
 
 	return &ast.Insert{
 		Insert:             pos,
+		Or:                 or,
 		Hint:               hint,
 		InsertOrType:       insertOrType,
 		TableName:          name,
@@ -6642,16 +6832,18 @@ func (p *Parser) parseDelete(pos token.Pos, hint *ast.Hint) *ast.Delete {
 	tableHint := p.tryParseHint()
 	as := p.tryParseAsAlias(withOptionalAs)
 	where := p.parseWhere()
+	assertRowsModified := p.tryParseAssertRowsModified()
 	thenReturn := p.tryParseThenReturn()
 
 	return &ast.Delete{
-		Delete:     pos,
-		Hint:       hint,
-		TableName:  name,
-		TableHint:  tableHint,
-		As:         as,
-		Where:      where,
-		ThenReturn: thenReturn,
+		Delete:             pos,
+		Hint:               hint,
+		TableName:          name,
+		TableHint:          tableHint,
+		As:                 as,
+		Where:              where,
+		AssertRowsModified: assertRowsModified,
+		ThenReturn:         thenReturn,
 	}
 }
 
@@ -7028,7 +7220,7 @@ skip:
 		switch p.Token.Kind {
 		case ";":
 			break skip
-		case "(", "[", "CASE", "WHEN":
+		case "(", "[", "{", "CASE", "WHEN":
 			nesting += 1
 		case ")", "]", "}", "END", "THEN":
 			if nesting == 0 {
@@ -7064,11 +7256,11 @@ func (p *Parser) handleParseTypeError(r any, l *Lexer) *ast.BadType {
 skip:
 	for p.Token.Kind != token.TokenEOF {
 		switch p.Token.Kind {
-		case ";", ")":
+		case ";":
 			break skip
-		case "<":
+		case "<", "(":
 			nesting += 1
-		case ">":
+		case ">", ")":
 			if nesting == 0 {
 				break skip
 			}
@@ -7078,7 +7270,17 @@ skip:
 				break skip
 			}
 			if nesting == 1 {
+				// The first ">" of ">>" closes this bad type, so consume it and
+				// leave the second ">" for the enclosing type.
+				gt := p.Token.Clone()
+				gt.Kind = ">"
+				gt.Raw = ">"
+				gt.End = gt.Pos + 1
+				tokens = append(tokens, gt)
+				end = gt.End
 				p.Token.Kind = ">"
+				p.Token.Raw = ">"
+				p.Token.Space = ""
 				p.Token.Pos += 1
 				break skip
 			}

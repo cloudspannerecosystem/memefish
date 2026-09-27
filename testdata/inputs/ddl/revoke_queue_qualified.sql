@@ -1,0 +1,1 @@
+REVOKE SELECT, INSERT, DELETE ON QUEUE app.`Queue`, other.Q FROM ROLE worker

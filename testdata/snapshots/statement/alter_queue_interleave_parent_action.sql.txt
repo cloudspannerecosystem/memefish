@@ -1,0 +1,33 @@
+--- alter_queue_interleave_parent_action.sql
+ALTER QUEUE Q SET INTERLEAVE IN PARENT T ON DELETE NO ACTION
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  QueueAlteration: &ast.SetInterleaveIn{
+    Set:         14,
+    OnDeleteEnd: 60,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 39,
+          NameEnd: 40,
+          Name:    "T",
+        },
+      },
+    },
+    Enforced: true,
+    OnDelete: "ON DELETE NO ACTION",
+  },
+}
+
+--- SQL
+ALTER QUEUE Q SET INTERLEAVE IN PARENT T ON DELETE NO ACTION

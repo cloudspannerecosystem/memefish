@@ -1,0 +1,127 @@
+--- !bad_create_table_primary_key_expr.sql
+create table foo (
+  a int64,
+) primary key ((a))
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_create_table_primary_key_expr.sql:3:16: expected token: <ident>, but: (
+  3|  ) primary key ((a))
+   |                 ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 49,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "create",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "table",
+        AsString: "table",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "foo",
+        AsString: "foo",
+        Pos:      13,
+        End:      16,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   17,
+        End:   18,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "a",
+        AsString: "a",
+        Pos:      21,
+        End:      22,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "int64",
+        AsString: "int64",
+        Pos:      23,
+        End:      28,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  28,
+        End:  29,
+      },
+      &token.Token{
+        Kind:  ")",
+        Space: "\n",
+        Raw:   ")",
+        Pos:   30,
+        End:   31,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "primary",
+        AsString: "primary",
+        Pos:      32,
+        End:      39,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "key",
+        AsString: "key",
+        Pos:      40,
+        End:      43,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   44,
+        End:   45,
+      },
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        Pos:  45,
+        End:  46,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "a",
+        AsString: "a",
+        Pos:      46,
+        End:      47,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  47,
+        End:  48,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  48,
+        End:  49,
+      },
+    },
+  },
+}
+
+--- SQL
+create table foo ( a int64, ) primary key ((a))

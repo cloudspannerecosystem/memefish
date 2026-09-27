@@ -1,0 +1,43 @@
+--- alter_queue_qualified.sql
+ALTER QUEUE app.`Queue` SET OPTIONS (disable_send = true)
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 15,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 23,
+        Name:    "Queue",
+      },
+    },
+  },
+  QueueAlteration: &ast.QueueSetOptions{
+    Set:     24,
+    Options: &ast.Options{
+      Options: 28,
+      Rparen:  56,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 37,
+            NameEnd: 49,
+            Name:    "disable_send",
+          },
+          Value: &ast.BoolLiteral{
+            ValuePos: 52,
+            Value:    true,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER QUEUE app.Queue SET OPTIONS (disable_send = true)
