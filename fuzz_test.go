@@ -10,17 +10,17 @@ import (
 )
 
 // addSeedsFromTestdata seeds the fuzzing corpus with the *.sql files under
-// testdata/input/<dir> for each given dir.
+// testdata/inputs/<dir> for each given dir.
 func addSeedsFromTestdata(f *testing.F, dirs ...string) {
 	f.Helper()
 
 	for _, dir := range dirs {
-		paths, err := filepath.Glob(filepath.Join("testdata", "input", dir, "*.sql"))
+		paths, err := filepath.Glob(filepath.Join("testdata", "inputs", dir, "*.sql"))
 		if err != nil {
 			f.Fatal(err)
 		}
 		if len(paths) == 0 {
-			f.Fatalf("no seed files found in testdata/input/%s", dir)
+			f.Fatalf("no seed files found in testdata/inputs/%s", dir)
 		}
 		for _, path := range paths {
 			b, err := os.ReadFile(path)
