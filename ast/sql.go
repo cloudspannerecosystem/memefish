@@ -534,7 +534,8 @@ func (c *TVFCallExpr) SQL() string {
 		strOpt(len(c.Args) > 0 && len(c.NamedArgs) > 0, ", ") +
 		sqlJoin(c.NamedArgs, ", ") +
 		")" +
-		sqlOpt(" ", c.Hint, "")
+		sqlOpt(" ", c.Hint, "") +
+		sqlOpt(" ", c.Sample, "")
 }
 
 func (n *NamedArg) SQL() string { return n.Name.SQL() + " => " + n.Value.SQL() }
