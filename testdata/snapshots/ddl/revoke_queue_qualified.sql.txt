@@ -1,0 +1,61 @@
+--- revoke_queue_qualified.sql
+REVOKE SELECT, INSERT, DELETE ON QUEUE app.`Queue`, other.Q FROM ROLE worker
+
+--- AST
+&ast.Revoke{
+  Privilege: &ast.PrivilegeOnQueue{
+    Privileges: []ast.TablePrivilege{
+      &ast.SelectPrivilege{
+        Select: 7,
+        Rparen: -1,
+      },
+      &ast.InsertPrivilege{
+        Insert: 15,
+        Rparen: -1,
+      },
+      &ast.DeletePrivilege{
+        Delete: 23,
+      },
+    },
+    Names: []*ast.Path{
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 39,
+            NameEnd: 42,
+            Name:    "app",
+          },
+          &ast.Ident{
+            NamePos: 43,
+            NameEnd: 50,
+            Name:    "Queue",
+          },
+        },
+      },
+      &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 52,
+            NameEnd: 57,
+            Name:    "other",
+          },
+          &ast.Ident{
+            NamePos: 58,
+            NameEnd: 59,
+            Name:    "Q",
+          },
+        },
+      },
+    },
+  },
+  Roles: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 70,
+      NameEnd: 76,
+      Name:    "worker",
+    },
+  },
+}
+
+--- SQL
+REVOKE SELECT, INSERT, DELETE ON QUEUE app.Queue, other.Q FROM ROLE worker

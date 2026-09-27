@@ -1,0 +1,1 @@
+ALTER QUEUE Q

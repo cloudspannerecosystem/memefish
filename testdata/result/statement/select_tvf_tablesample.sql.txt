@@ -1,0 +1,46 @@
+--- select_tvf_tablesample.sql
+SELECT * FROM f() TABLESAMPLE BERNOULLI (10 PERCENT)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.TVFCallExpr{
+        Rparen: 16,
+        Name:   &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 14,
+              NameEnd: 15,
+              Name:    "f",
+            },
+          },
+        },
+        Sample: &ast.TableSample{
+          TableSample: 18,
+          Method:      "BERNOULLI",
+          Size:        &ast.TableSampleSize{
+            Lparen: 40,
+            Rparen: 51,
+            Value:  &ast.IntLiteral{
+              ValuePos: 41,
+              ValueEnd: 43,
+              Base:     10,
+              Value:    "10",
+            },
+            Unit: "PERCENT",
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM f() TABLESAMPLE BERNOULLI (10 PERCENT)

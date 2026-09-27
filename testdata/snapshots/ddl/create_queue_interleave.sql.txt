@@ -1,0 +1,86 @@
+--- create_queue_interleave.sql
+CREATE QUEUE Q (id INT64, Payload BYTES(1) NOT NULL) PRIMARY KEY (id), INTERLEAVE IN T
+
+--- AST
+&ast.CreateQueue{
+  PrimaryKeyRparen: 68,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 13,
+        NameEnd: 14,
+        Name:    "Q",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: -1,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 16,
+        NameEnd: 18,
+        Name:    "id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 19,
+        Name:    "INT64",
+      },
+      Hidden: -1,
+    },
+    &ast.ColumnDef{
+      Null: 47,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 26,
+        NameEnd: 33,
+        Name:    "Payload",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 34,
+        Rparen:  41,
+        Name:    "BYTES",
+        Size:    &ast.IntLiteral{
+          ValuePos: 40,
+          ValueEnd: 41,
+          Base:     10,
+          Value:    "1",
+        },
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 66,
+        NameEnd: 68,
+        Name:    "id",
+      },
+    },
+  },
+  Cluster: &ast.Cluster{
+    Comma:       69,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 85,
+          NameEnd: 86,
+          Name:    "T",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE QUEUE Q (
+  id INT64,
+  Payload BYTES(1) NOT NULL
+) PRIMARY KEY (id),
+  INTERLEAVE IN T

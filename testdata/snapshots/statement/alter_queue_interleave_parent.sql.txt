@@ -1,0 +1,32 @@
+--- alter_queue_interleave_parent.sql
+ALTER QUEUE Q SET INTERLEAVE IN PARENT T
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  QueueAlteration: &ast.SetInterleaveIn{
+    Set:         14,
+    OnDeleteEnd: -1,
+    TableName:   &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 39,
+          NameEnd: 40,
+          Name:    "T",
+        },
+      },
+    },
+    Enforced: true,
+  },
+}
+
+--- SQL
+ALTER QUEUE Q SET INTERLEAVE IN PARENT T

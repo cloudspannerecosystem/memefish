@@ -1,0 +1,74 @@
+--- create_queue_qualified.sql
+CREATE QUEUE IF NOT EXISTS app.`Queue` (Id INT64 NOT NULL, Payload BYTES(MAX) NOT NULL) PRIMARY KEY (Id)
+
+--- AST
+&ast.CreateQueue{
+  PrimaryKeyRparen: 103,
+  IfNotExists:      true,
+  Name:             &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 27,
+        NameEnd: 30,
+        Name:    "app",
+      },
+      &ast.Ident{
+        NamePos: 31,
+        NameEnd: 38,
+        Name:    "Queue",
+      },
+    },
+  },
+  Columns: []*ast.ColumnDef{
+    &ast.ColumnDef{
+      Null: 53,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 40,
+        NameEnd: 42,
+        Name:    "Id",
+      },
+      Type: &ast.ScalarSchemaType{
+        NamePos: 43,
+        Name:    "INT64",
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+    &ast.ColumnDef{
+      Null: 82,
+      Key:  -1,
+      Name: &ast.Ident{
+        NamePos: 59,
+        NameEnd: 66,
+        Name:    "Payload",
+      },
+      Type: &ast.SizedSchemaType{
+        NamePos: 67,
+        Rparen:  76,
+        Name:    "BYTES",
+        Max:     true,
+      },
+      NotNull: true,
+      Hidden:  -1,
+    },
+  },
+  PrimaryKeys: []*ast.IndexKey{
+    &ast.IndexKey{
+      DirPos: -1,
+      Lparen: -1,
+      Rparen: -1,
+      Name:   &ast.Ident{
+        NamePos: 101,
+        NameEnd: 103,
+        Name:    "Id",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE QUEUE IF NOT EXISTS app.Queue (
+  Id INT64 NOT NULL,
+  Payload BYTES(MAX) NOT NULL
+) PRIMARY KEY (Id)

@@ -1,0 +1,58 @@
+--- alter_queue_options.sql
+ALTER QUEUE Q SET OPTIONS (disable_send = true, disable_delivery = NULL, locality_group = NULL)
+
+--- AST
+&ast.AlterQueue{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 13,
+        Name:    "Q",
+      },
+    },
+  },
+  QueueAlteration: &ast.QueueSetOptions{
+    Set:     14,
+    Options: &ast.Options{
+      Options: 18,
+      Rparen:  94,
+      Records: []*ast.OptionsDef{
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 27,
+            NameEnd: 39,
+            Name:    "disable_send",
+          },
+          Value: &ast.BoolLiteral{
+            ValuePos: 42,
+            Value:    true,
+          },
+        },
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 48,
+            NameEnd: 64,
+            Name:    "disable_delivery",
+          },
+          Value: &ast.NullLiteral{
+            Null: 67,
+          },
+        },
+        &ast.OptionsDef{
+          Name: &ast.Ident{
+            NamePos: 73,
+            NameEnd: 87,
+            Name:    "locality_group",
+          },
+          Value: &ast.NullLiteral{
+            Null: 90,
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER QUEUE Q SET OPTIONS (disable_send = true, disable_delivery = null, locality_group = null)
