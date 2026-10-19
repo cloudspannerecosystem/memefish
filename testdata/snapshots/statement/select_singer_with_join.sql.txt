@@ -33,7 +33,7 @@ FROM
             },
           },
         },
-        Op:    "LEFT OUTER JOIN",
+        Op:    "LEFT OUTER",
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 48,

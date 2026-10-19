@@ -31,7 +31,7 @@ FROM
             Name:    "Roster",
           },
         },
-        Op:    "INNER JOIN",
+        Op:    "INNER",
         Right: &ast.Unnest{
           Unnest: 127,
           Rparen: 256,

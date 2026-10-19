@@ -266,7 +266,7 @@ FROM ML.PREDICT(
                         },
                       },
                     },
-                    Op:    "INNER JOIN",
+                    Op:    "INNER",
                     Right: &ast.TableName{
                       Table: &ast.Ident{
                         NamePos: 449,

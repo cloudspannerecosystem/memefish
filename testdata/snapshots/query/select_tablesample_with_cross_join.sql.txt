@@ -33,7 +33,7 @@ FROM
             },
           },
         },
-        Op:    "CROSS JOIN",
+        Op:    "CROSS",
         Right: &ast.TableName{
           Table: &ast.Ident{
             NamePos: 43,

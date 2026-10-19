@@ -162,7 +162,7 @@ FROM
             },
           },
         },
-        Op:    "INNER JOIN",
+        Op:    "INNER",
         Right: &ast.PathTableExpr{
           Path: &ast.Path{
             Idents: []*ast.Ident{

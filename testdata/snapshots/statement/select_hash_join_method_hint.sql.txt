@@ -1,0 +1,93 @@
+--- select_hash_join_method_hint.sql
+SELECT * FROM A LEFT OUTER HASH JOIN @{HASH_JOIN_BUILD_SIDE=BUILD_LEFT} B ON A.id = B.id
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.Join{
+        Left: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 14,
+            NameEnd: 15,
+            Name:    "A",
+          },
+        },
+        Op:     "LEFT OUTER",
+        Method: "HASH",
+        Hint:   &ast.Hint{
+          Atmark:  37,
+          Rbrace:  70,
+          Records: []*ast.HintRecord{
+            &ast.HintRecord{
+              Key: &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 39,
+                    NameEnd: 59,
+                    Name:    "HASH_JOIN_BUILD_SIDE",
+                  },
+                },
+              },
+              Value: &ast.Ident{
+                NamePos: 60,
+                NameEnd: 70,
+                Name:    "BUILD_LEFT",
+              },
+            },
+          },
+        },
+        Right: &ast.TableName{
+          Table: &ast.Ident{
+            NamePos: 72,
+            NameEnd: 73,
+            Name:    "B",
+          },
+        },
+        Cond: &ast.On{
+          On:   74,
+          Expr: &ast.BinaryExpr{
+            Op:   "=",
+            Left: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 77,
+                  NameEnd: 78,
+                  Name:    "A",
+                },
+                &ast.Ident{
+                  NamePos: 79,
+                  NameEnd: 81,
+                  Name:    "id",
+                },
+              },
+            },
+            Right: &ast.Path{
+              Idents: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 84,
+                  NameEnd: 85,
+                  Name:    "B",
+                },
+                &ast.Ident{
+                  NamePos: 86,
+                  NameEnd: 88,
+                  Name:    "id",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM A LEFT OUTER HASH JOIN @{HASH_JOIN_BUILD_SIDE=BUILD_LEFT} B ON A.id = B.id

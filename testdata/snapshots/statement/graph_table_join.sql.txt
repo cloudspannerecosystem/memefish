@@ -59,7 +59,7 @@ ON a.id = g.v
             },
           },
         },
-        Op:    "INNER JOIN",
+        Op:    "INNER",
         Right: &ast.GraphTableExpr{
           GraphTable: 41,
           Rparen:     86,

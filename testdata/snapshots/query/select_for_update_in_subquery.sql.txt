@@ -75,7 +75,7 @@ ON a.SingerId = s.SingerId
             },
           },
         },
-        Op:    "INNER JOIN",
+        Op:    "INNER",
         Right: &ast.SubQueryTableExpr{
           Lparen: 66,
           Rparen: 136,
