@@ -518,6 +518,14 @@ func (i *IsUnknownExpr) End() token.Pos {
 	return posAdd(i.Unknown, 7)
 }
 
+func (i *IsDistinctFromExpr) Pos() token.Pos {
+	return nodePos(wrapNode(i.Left))
+}
+
+func (i *IsDistinctFromExpr) End() token.Pos {
+	return nodeEnd(wrapNode(i.Right))
+}
+
 func (i *IsSourceExpr) Pos() token.Pos {
 	return nodePos(wrapNode(i.Left))
 }

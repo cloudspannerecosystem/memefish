@@ -1709,6 +1709,14 @@ func (p *Parser) parseComparison() ast.Expr {
 				Not:      not,
 				Right:    false,
 			}
+		case "DISTINCT":
+			p.nextToken()
+			p.expect("FROM")
+			return &ast.IsDistinctFromExpr{
+				Not:   not,
+				Left:  expr,
+				Right: p.parseBitOr(),
+			}
 		case token.TokenIdent:
 			switch {
 			case p.Token.IsKeywordLike("UNKNOWN"):
@@ -1750,7 +1758,7 @@ func (p *Parser) parseComparison() ast.Expr {
 				}
 			}
 		}
-		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, UNKNOWN, SOURCE, DESTINATION, LABELED, but: %s", p.Token.Kind)
+		p.panicfAtToken(&p.Token, "expected token: NULL, TRUE, FALSE, DISTINCT, UNKNOWN, SOURCE, DESTINATION, LABELED, but: %s", p.Token.Kind)
 	default:
 		return expr
 	}

@@ -113,7 +113,7 @@ func exprPrec(e Expr) prec {
 		return precLit
 	case *IndexExpr, *SelectorExpr:
 		return precSelector
-	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsUnknownExpr, *IsSourceExpr, *IsDestinationExpr, *IsLabeledExpr, *BetweenExpr:
+	case *InExpr, *IsNullExpr, *IsBoolExpr, *IsUnknownExpr, *IsDistinctFromExpr, *IsSourceExpr, *IsDestinationExpr, *IsLabeledExpr, *BetweenExpr:
 		return precComparison
 	case *BinaryExpr:
 		switch e.Op {
@@ -462,6 +462,11 @@ func (i *IsBoolExpr) SQL() string {
 func (i *IsUnknownExpr) SQL() string {
 	p := exprPrec(i)
 	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "UNKNOWN"
+}
+
+func (i *IsDistinctFromExpr) SQL() string {
+	p := exprPrec(i)
+	return paren(p, i.Left) + " IS " + strOpt(i.Not, "NOT ") + "DISTINCT FROM " + paren(p, i.Right)
 }
 
 func (i *IsSourceExpr) SQL() string {

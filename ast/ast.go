@@ -219,6 +219,7 @@ func (InExpr) isExpr()                {}
 func (IsNullExpr) isExpr()            {}
 func (IsBoolExpr) isExpr()            {}
 func (IsUnknownExpr) isExpr()         {}
+func (IsDistinctFromExpr) isExpr()    {}
 func (IsSourceExpr) isExpr()          {}
 func (IsDestinationExpr) isExpr()     {}
 func (IsLabeledExpr) isExpr()         {}
@@ -1524,6 +1525,18 @@ type IsUnknownExpr struct {
 
 	Not  bool
 	Left Expr
+}
+
+// IsDistinctFromExpr is IS DISTINCT FROM expression node.
+//
+//	{{.Left | sql}} IS {{if .Not}}NOT{{end}} DISTINCT FROM {{.Right | sql}}
+type IsDistinctFromExpr struct {
+	// pos = Left.pos
+	// end = Right.end
+
+	Not   bool
+	Left  Expr
+	Right Expr
 }
 
 // IsSourceExpr is IS SOURCE [OF] expression node.

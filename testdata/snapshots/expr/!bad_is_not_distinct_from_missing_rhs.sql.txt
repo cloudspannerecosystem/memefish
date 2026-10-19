@@ -1,0 +1,69 @@
+--- !bad_is_not_distinct_from_missing_rhs.sql
+(1 IS NOT DISTINCT FROM)
+
+--- Error
+syntax error: testdata/inputs/expr/!bad_is_not_distinct_from_missing_rhs.sql:1:24: unexpected token: )
+  1|  (1 IS NOT DISTINCT FROM)
+   |                         ^
+syntax error: testdata/inputs/expr/!bad_is_not_distinct_from_missing_rhs.sql:1:1: cannot parse (...) as expression, tuple struct literal or subquery
+  1|  (1 IS NOT DISTINCT FROM)
+   |  ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 24,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "(",
+        Raw:  "(",
+        End:  1,
+      },
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "1",
+        Base: 10,
+        Pos:  1,
+        End:  2,
+      },
+      &token.Token{
+        Kind:  "IS",
+        Space: " ",
+        Raw:   "IS",
+        Pos:   3,
+        End:   5,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   6,
+        End:   9,
+      },
+      &token.Token{
+        Kind:  "DISTINCT",
+        Space: " ",
+        Raw:   "DISTINCT",
+        Pos:   10,
+        End:   18,
+      },
+      &token.Token{
+        Kind:  "FROM",
+        Space: " ",
+        Raw:   "FROM",
+        Pos:   19,
+        End:   23,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  23,
+        End:  24,
+      },
+    },
+  },
+}
+
+--- SQL
+(1 IS NOT DISTINCT FROM)

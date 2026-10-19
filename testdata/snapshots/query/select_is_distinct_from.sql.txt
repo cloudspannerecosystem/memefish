@@ -1,0 +1,233 @@
+--- select_is_distinct_from.sql
+SELECT
+  1 IS DISTINCT FROM 2,
+  NULL IS NOT DISTINCT FROM NULL,
+  1 + 2 IS DISTINCT FROM 3 | 4,
+  NOT 1 IS DISTINCT FROM 1 AND 2 IS NOT DISTINCT FROM 2 OR FALSE,
+  (TRUE OR FALSE) IS NOT DISTINCT FROM (NULL IS NULL),
+  (1 IS DISTINCT FROM 2) IS DISTINCT FROM (3 IS NOT DISTINCT FROM 4),
+  (SELECT 1) IS DISTINCT FROM (SELECT 2)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.IntLiteral{
+            ValuePos: 9,
+            ValueEnd: 10,
+            Base:     10,
+            Value:    "1",
+          },
+          Right: &ast.IntLiteral{
+            ValuePos: 28,
+            ValueEnd: 29,
+            Base:     10,
+            Value:    "2",
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Not:  true,
+          Left: &ast.NullLiteral{
+            Null: 33,
+          },
+          Right: &ast.NullLiteral{
+            Null: 59,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.BinaryExpr{
+            Op:   "+",
+            Left: &ast.IntLiteral{
+              ValuePos: 67,
+              ValueEnd: 68,
+              Base:     10,
+              Value:    "1",
+            },
+            Right: &ast.IntLiteral{
+              ValuePos: 71,
+              ValueEnd: 72,
+              Base:     10,
+              Value:    "2",
+            },
+          },
+          Right: &ast.BinaryExpr{
+            Op:   "|",
+            Left: &ast.IntLiteral{
+              ValuePos: 90,
+              ValueEnd: 91,
+              Base:     10,
+              Value:    "3",
+            },
+            Right: &ast.IntLiteral{
+              ValuePos: 94,
+              ValueEnd: 95,
+              Base:     10,
+              Value:    "4",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.BinaryExpr{
+          Op:   "OR",
+          Left: &ast.BinaryExpr{
+            Op:   "AND",
+            Left: &ast.UnaryExpr{
+              OpPos: 99,
+              Op:    "NOT",
+              Expr:  &ast.IsDistinctFromExpr{
+                Left: &ast.IntLiteral{
+                  ValuePos: 103,
+                  ValueEnd: 104,
+                  Base:     10,
+                  Value:    "1",
+                },
+                Right: &ast.IntLiteral{
+                  ValuePos: 122,
+                  ValueEnd: 123,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+            Right: &ast.IsDistinctFromExpr{
+              Not:  true,
+              Left: &ast.IntLiteral{
+                ValuePos: 128,
+                ValueEnd: 129,
+                Base:     10,
+                Value:    "2",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 151,
+                ValueEnd: 152,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+          Right: &ast.BoolLiteral{
+            ValuePos: 156,
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Not:  true,
+          Left: &ast.ParenExpr{
+            Lparen: 165,
+            Rparen: 179,
+            Expr:   &ast.BinaryExpr{
+              Op:   "OR",
+              Left: &ast.BoolLiteral{
+                ValuePos: 166,
+                Value:    true,
+              },
+              Right: &ast.BoolLiteral{
+                ValuePos: 174,
+              },
+            },
+          },
+          Right: &ast.ParenExpr{
+            Lparen: 202,
+            Rparen: 215,
+            Expr:   &ast.IsNullExpr{
+              Null: 211,
+              Left: &ast.NullLiteral{
+                Null: 203,
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.ParenExpr{
+            Lparen: 220,
+            Rparen: 241,
+            Expr:   &ast.IsDistinctFromExpr{
+              Left: &ast.IntLiteral{
+                ValuePos: 221,
+                ValueEnd: 222,
+                Base:     10,
+                Value:    "1",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 240,
+                ValueEnd: 241,
+                Base:     10,
+                Value:    "2",
+              },
+            },
+          },
+          Right: &ast.ParenExpr{
+            Lparen: 260,
+            Rparen: 285,
+            Expr:   &ast.IsDistinctFromExpr{
+              Not:  true,
+              Left: &ast.IntLiteral{
+                ValuePos: 261,
+                ValueEnd: 262,
+                Base:     10,
+                Value:    "3",
+              },
+              Right: &ast.IntLiteral{
+                ValuePos: 284,
+                ValueEnd: 285,
+                Base:     10,
+                Value:    "4",
+              },
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.IsDistinctFromExpr{
+          Left: &ast.ScalarSubQuery{
+            Lparen: 290,
+            Rparen: 299,
+            Query:  &ast.Select{
+              Select:  291,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 298,
+                    ValueEnd: 299,
+                    Base:     10,
+                    Value:    "1",
+                  },
+                },
+              },
+            },
+          },
+          Right: &ast.ScalarSubQuery{
+            Lparen: 318,
+            Rparen: 327,
+            Query:  &ast.Select{
+              Select:  319,
+              Results: []ast.SelectItem{
+                &ast.ExprSelectItem{
+                  Expr: &ast.IntLiteral{
+                    ValuePos: 326,
+                    ValueEnd: 327,
+                    Base:     10,
+                    Value:    "2",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT 1 IS DISTINCT FROM 2, NULL IS NOT DISTINCT FROM NULL, 1 + 2 IS DISTINCT FROM 3 | 4, NOT 1 IS DISTINCT FROM 1 AND 2 IS NOT DISTINCT FROM 2 OR FALSE, (TRUE OR FALSE) IS NOT DISTINCT FROM (NULL IS NULL), (1 IS DISTINCT FROM 2) IS DISTINCT FROM (3 IS NOT DISTINCT FROM 4), (SELECT 1) IS DISTINCT FROM (SELECT 2)

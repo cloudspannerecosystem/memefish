@@ -15,6 +15,7 @@ var exprPrecTestCases = []exprPrecTestCase{
 	{name: "IsNullExpr", expr: &IsNullExpr{}},
 	{name: "IsBoolExpr", expr: &IsBoolExpr{}},
 	{name: "IsUnknownExpr", expr: &IsUnknownExpr{}},
+	{name: "IsDistinctFromExpr", expr: &IsDistinctFromExpr{}},
 	{name: "IsSourceExpr", expr: &IsSourceExpr{}},
 	{name: "IsDestinationExpr", expr: &IsDestinationExpr{}},
 	{name: "IsLabeledExpr", expr: &IsLabeledExpr{}},

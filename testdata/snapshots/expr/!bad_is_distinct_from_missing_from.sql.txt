@@ -1,0 +1,48 @@
+--- !bad_is_distinct_from_missing_from.sql
+1 IS DISTINCT 2
+
+--- Error
+syntax error: testdata/inputs/expr/!bad_is_distinct_from_missing_from.sql:1:15: expected token: FROM, but: <int>
+  1|  1 IS DISTINCT 2
+   |                ^
+
+
+--- AST
+&ast.BadExpr{
+  BadNode: &ast.BadNode{
+    NodeEnd: 15,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "<int>",
+        Raw:  "1",
+        Base: 10,
+        End:  1,
+      },
+      &token.Token{
+        Kind:  "IS",
+        Space: " ",
+        Raw:   "IS",
+        Pos:   2,
+        End:   4,
+      },
+      &token.Token{
+        Kind:  "DISTINCT",
+        Space: " ",
+        Raw:   "DISTINCT",
+        Pos:   5,
+        End:   13,
+      },
+      &token.Token{
+        Kind:  "<int>",
+        Space: " ",
+        Raw:   "2",
+        Base:  10,
+        Pos:   14,
+        End:   15,
+      },
+    },
+  },
+}
+
+--- SQL
+1 IS DISTINCT 2

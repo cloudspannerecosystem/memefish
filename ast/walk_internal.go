@@ -242,6 +242,10 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 	case *IsUnknownExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
 
+	case *IsDistinctFromExpr:
+		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
+		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
+
 	case *IsSourceExpr:
 		stack = append(stack, &stackItem{node: wrapNode(n.Right), visitor: v.Field("Right")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Left), visitor: v.Field("Left")})
