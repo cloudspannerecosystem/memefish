@@ -1,0 +1,189 @@
+--- !bad_create_table_interleave_on_delete_set_null.sql
+CREATE TABLE Child (
+  Id INT64 NOT NULL
+) PRIMARY KEY (Id), INTERLEAVE IN PARENT Parent ON DELETE SET NULL
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_create_table_interleave_on_delete_set_null.sql:3:59: expected token: NO, <ident>, but: SET
+  3|  ) PRIMARY KEY (Id), INTERLEAVE IN PARENT Parent ON DELETE SET NULL
+   |                                                            ^~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 107,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Child",
+        AsString: "Child",
+        Pos:      13,
+        End:      18,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   19,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      23,
+        End:      25,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      26,
+        End:      31,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   32,
+        End:   35,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   36,
+        End:   40,
+      },
+      &token.Token{
+        Kind:  ")",
+        Space: "\n",
+        Raw:   ")",
+        Pos:   41,
+        End:   42,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      43,
+        End:      50,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      51,
+        End:      54,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   55,
+        End:   56,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      56,
+        End:      58,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  58,
+        End:  59,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  59,
+        End:  60,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INTERLEAVE",
+        AsString: "INTERLEAVE",
+        Pos:      61,
+        End:      71,
+      },
+      &token.Token{
+        Kind:  "IN",
+        Space: " ",
+        Raw:   "IN",
+        Pos:   72,
+        End:   74,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PARENT",
+        AsString: "PARENT",
+        Pos:      75,
+        End:      81,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Parent",
+        AsString: "Parent",
+        Pos:      82,
+        End:      88,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   89,
+        End:   91,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DELETE",
+        AsString: "DELETE",
+        Pos:      92,
+        End:      98,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   99,
+        End:   102,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   103,
+        End:   107,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Child ( Id INT64 NOT NULL ) PRIMARY KEY (Id), INTERLEAVE IN PARENT Parent ON DELETE SET NULL

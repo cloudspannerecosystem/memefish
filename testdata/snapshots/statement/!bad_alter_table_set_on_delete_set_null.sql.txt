@@ -1,0 +1,78 @@
+--- !bad_alter_table_set_on_delete_set_null.sql
+ALTER TABLE Child SET ON DELETE SET NULL
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_alter_table_set_on_delete_set_null.sql:1:33: expected token: NO, <ident>, but: SET
+  1|  ALTER TABLE Child SET ON DELETE SET NULL
+   |                                  ^~~
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 40,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ALTER",
+        AsString: "ALTER",
+        End:      5,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      6,
+        End:      11,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Child",
+        AsString: "Child",
+        Pos:      12,
+        End:      17,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   18,
+        End:   21,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   22,
+        End:   24,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DELETE",
+        AsString: "DELETE",
+        Pos:      25,
+        End:      31,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   32,
+        End:   35,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   36,
+        End:   40,
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Child SET ON DELETE SET NULL

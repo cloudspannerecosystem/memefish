@@ -3855,7 +3855,7 @@ func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
 				Options: p.parseOptions(),
 			}
 		case p.Token.Kind == "ON":
-			onDelete, end := p.parseOnDeleteAction()
+			onDelete, end := p.parseOnDeleteAction(false)
 
 			alteration = &ast.SetOnDelete{
 				Set:         set,
@@ -3873,7 +3873,7 @@ func (p *Parser) parseAlterQueue(pos token.Pos) *ast.AlterQueue {
 			}
 
 			table := p.parsePath()
-			onDelete, end := p.tryParseOnDeleteAction()
+			onDelete, end := p.tryParseOnDeleteAction(false)
 
 			alteration = &ast.SetInterleaveIn{
 				Set:         set,
@@ -4097,7 +4097,7 @@ func (p *Parser) parseForeignKey() *ast.ForeignKey {
 	refColumns := parseCommaSeparatedList(p, p.parseIdent)
 	rparen := p.expect(")").Pos
 
-	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
+	onDelete, onDeleteEnd := p.tryParseOnDeleteAction(true)
 
 	enforced := token.InvalidPos
 	var enforcement ast.Enforcement
@@ -4268,7 +4268,7 @@ func (p *Parser) tryParseCluster() *ast.Cluster {
 
 	name := p.parsePath()
 
-	onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
+	onDelete, onDeleteEnd := p.tryParseOnDeleteAction(false)
 
 	return &ast.Cluster{
 		Comma:       pos,
@@ -4320,17 +4320,17 @@ func (p *Parser) parseRowDeletionPolicy() *ast.RowDeletionPolicy {
 	}
 }
 
-func (p *Parser) tryParseOnDeleteAction() (onDelete ast.OnDeleteAction, onDeleteEnd token.Pos) {
+func (p *Parser) tryParseOnDeleteAction(allowSetNull bool) (onDelete ast.OnDeleteAction, onDeleteEnd token.Pos) {
 	onDeleteEnd = token.InvalidPos
 	if p.Token.Kind != "ON" {
 		return
 	}
 
-	onDelete, onDeleteEnd = p.parseOnDeleteAction()
+	onDelete, onDeleteEnd = p.parseOnDeleteAction(allowSetNull)
 	return
 }
 
-func (p *Parser) parseOnDeleteAction() (onDelete ast.OnDeleteAction, onDeleteEnd token.Pos) {
+func (p *Parser) parseOnDeleteAction(allowSetNull bool) (onDelete ast.OnDeleteAction, onDeleteEnd token.Pos) {
 	p.expect("ON")
 	p.expectKeywordLike("DELETE")
 	switch p.Token.Kind {
@@ -4341,8 +4341,21 @@ func (p *Parser) parseOnDeleteAction() (onDelete ast.OnDeleteAction, onDeleteEnd
 		p.nextToken()
 		onDeleteEnd = p.expectKeywordLike("ACTION").End
 		onDelete = ast.OnDeleteNoAction
+	case "SET":
+		// SET NULL is a foreign-key action, not an interleaving action.
+		if allowSetNull {
+			p.nextToken()
+			onDeleteEnd = p.expect("NULL").End
+			onDelete = ast.OnDeleteSetNull
+			break
+		}
+		fallthrough
 	default:
-		p.panicfAtToken(&p.Token, "expected token: NO, <ident>, but: %s", p.Token.Kind)
+		expected := "NO, <ident>"
+		if allowSetNull {
+			expected = "NO, SET, <ident>"
+		}
+		p.panicfAtToken(&p.Token, "expected token: %s, but: %s", expected, p.Token.Kind)
 	}
 	return
 }
@@ -5014,7 +5027,7 @@ func (p *Parser) parseAlterTableSet() ast.TableAlteration {
 	pos := p.expect("SET").Pos
 	switch {
 	case p.Token.Kind == "ON":
-		onDelete, onDeleteEnd := p.parseOnDeleteAction()
+		onDelete, onDeleteEnd := p.parseOnDeleteAction(false)
 
 		return &ast.SetOnDelete{
 			Set:         pos,
@@ -5038,7 +5051,7 @@ func (p *Parser) parseAlterTableSet() ast.TableAlteration {
 		}
 
 		tableName := p.parsePath()
-		onDelete, onDeleteEnd := p.tryParseOnDeleteAction()
+		onDelete, onDeleteEnd := p.tryParseOnDeleteAction(false)
 
 		return &ast.SetInterleaveIn{
 			Set:         pos,

@@ -1,0 +1,70 @@
+--- alter_table_add_constraint_foreign_key_on_delete_set_null.sql
+ALTER TABLE Child ADD CONSTRAINT FK_Parent FOREIGN KEY (ParentId, ParentRegion) REFERENCES Parent (Id, Region) ON DELETE SET NULL ENFORCED
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 17,
+        Name:    "Child",
+      },
+    },
+  },
+  TableAlteration: &ast.AddTableConstraint{
+    Add:             18,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: 22,
+      Name:          &ast.Ident{
+        NamePos: 33,
+        NameEnd: 42,
+        Name:    "FK_Parent",
+      },
+      Constraint: &ast.ForeignKey{
+        Foreign:     43,
+        Rparen:      109,
+        OnDeleteEnd: 129,
+        Enforced:    130,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 56,
+            NameEnd: 64,
+            Name:    "ParentId",
+          },
+          &ast.Ident{
+            NamePos: 66,
+            NameEnd: 78,
+            Name:    "ParentRegion",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 91,
+              NameEnd: 97,
+              Name:    "Parent",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 99,
+            NameEnd: 101,
+            Name:    "Id",
+          },
+          &ast.Ident{
+            NamePos: 103,
+            NameEnd: 109,
+            Name:    "Region",
+          },
+        },
+        OnDelete:    "ON DELETE SET NULL",
+        Enforcement: "ENFORCED",
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Child ADD CONSTRAINT FK_Parent FOREIGN KEY (ParentId, ParentRegion) REFERENCES Parent (Id, Region) ON DELETE SET NULL ENFORCED

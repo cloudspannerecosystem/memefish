@@ -1,0 +1,54 @@
+--- alter_table_add_foreign_key_on_delete_set_null.sql
+ALTER TABLE Child ADD FOREIGN KEY (ParentId) REFERENCES Parent (Id) ON DELETE SET NULL
+
+--- AST
+&ast.AlterTable{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 12,
+        NameEnd: 17,
+        Name:    "Child",
+      },
+    },
+  },
+  TableAlteration: &ast.AddTableConstraint{
+    Add:             18,
+    TableConstraint: &ast.TableConstraint{
+      ConstraintPos: -1,
+      Constraint:    &ast.ForeignKey{
+        Foreign:     22,
+        Rparen:      66,
+        OnDeleteEnd: 86,
+        Enforced:    -1,
+        Columns:     []*ast.Ident{
+          &ast.Ident{
+            NamePos: 35,
+            NameEnd: 43,
+            Name:    "ParentId",
+          },
+        },
+        ReferenceTable: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 56,
+              NameEnd: 62,
+              Name:    "Parent",
+            },
+          },
+        },
+        ReferenceColumns: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 64,
+            NameEnd: 66,
+            Name:    "Id",
+          },
+        },
+        OnDelete: "ON DELETE SET NULL",
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER TABLE Child ADD FOREIGN KEY (ParentId) REFERENCES Parent (Id) ON DELETE SET NULL

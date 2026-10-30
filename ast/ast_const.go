@@ -129,6 +129,7 @@ type OnDeleteAction string
 const (
 	OnDeleteCascade  OnDeleteAction = "ON DELETE CASCADE"
 	OnDeleteNoAction OnDeleteAction = "ON DELETE NO ACTION"
+	OnDeleteSetNull  OnDeleteAction = "ON DELETE SET NULL"
 )
 
 type Enforcement string

@@ -1,0 +1,247 @@
+--- !bad_foreign_key_on_delete_set_null_missing_null.sql
+CREATE TABLE Child (
+  Id INT64 NOT NULL,
+  ParentId INT64,
+  FOREIGN KEY (ParentId) REFERENCES Parent (Id) ON DELETE SET
+) PRIMARY KEY (Id)
+
+--- Error
+syntax error: testdata/inputs/ddl/!bad_foreign_key_on_delete_set_null_missing_null.sql:5:1: expected token: NULL, but: )
+  5|  ) PRIMARY KEY (Id)
+   |  ^
+
+
+--- AST
+&ast.BadDDL{
+  BadNode: &ast.BadNode{
+    NodeEnd: 140,
+    Tokens:  []*token.Token{
+      &token.Token{
+        Kind: "CREATE",
+        Raw:  "CREATE",
+        End:  6,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "TABLE",
+        AsString: "TABLE",
+        Pos:      7,
+        End:      12,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Child",
+        AsString: "Child",
+        Pos:      13,
+        End:      18,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   19,
+        End:   20,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      23,
+        End:      25,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      26,
+        End:      31,
+      },
+      &token.Token{
+        Kind:  "NOT",
+        Space: " ",
+        Raw:   "NOT",
+        Pos:   32,
+        End:   35,
+      },
+      &token.Token{
+        Kind:  "NULL",
+        Space: " ",
+        Raw:   "NULL",
+        Pos:   36,
+        End:   40,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  40,
+        End:  41,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "ParentId",
+        AsString: "ParentId",
+        Pos:      44,
+        End:      52,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "INT64",
+        AsString: "INT64",
+        Pos:      53,
+        End:      58,
+      },
+      &token.Token{
+        Kind: ",",
+        Raw:  ",",
+        Pos:  58,
+        End:  59,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    "\n  ",
+        Raw:      "FOREIGN",
+        AsString: "FOREIGN",
+        Pos:      62,
+        End:      69,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      70,
+        End:      73,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   74,
+        End:   75,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "ParentId",
+        AsString: "ParentId",
+        Pos:      75,
+        End:      83,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  83,
+        End:  84,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "REFERENCES",
+        AsString: "REFERENCES",
+        Pos:      85,
+        End:      95,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "Parent",
+        AsString: "Parent",
+        Pos:      96,
+        End:      102,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   103,
+        End:   104,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      104,
+        End:      106,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  106,
+        End:  107,
+      },
+      &token.Token{
+        Kind:  "ON",
+        Space: " ",
+        Raw:   "ON",
+        Pos:   108,
+        End:   110,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "DELETE",
+        AsString: "DELETE",
+        Pos:      111,
+        End:      117,
+      },
+      &token.Token{
+        Kind:  "SET",
+        Space: " ",
+        Raw:   "SET",
+        Pos:   118,
+        End:   121,
+      },
+      &token.Token{
+        Kind:  ")",
+        Space: "\n",
+        Raw:   ")",
+        Pos:   122,
+        End:   123,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "PRIMARY",
+        AsString: "PRIMARY",
+        Pos:      124,
+        End:      131,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Space:    " ",
+        Raw:      "KEY",
+        AsString: "KEY",
+        Pos:      132,
+        End:      135,
+      },
+      &token.Token{
+        Kind:  "(",
+        Space: " ",
+        Raw:   "(",
+        Pos:   136,
+        End:   137,
+      },
+      &token.Token{
+        Kind:     "<ident>",
+        Raw:      "Id",
+        AsString: "Id",
+        Pos:      137,
+        End:      139,
+      },
+      &token.Token{
+        Kind: ")",
+        Raw:  ")",
+        Pos:  139,
+        End:  140,
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE TABLE Child ( Id INT64 NOT NULL, ParentId INT64, FOREIGN KEY (ParentId) REFERENCES Parent (Id) ON DELETE SET ) PRIMARY KEY (Id)
