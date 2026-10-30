@@ -1,0 +1,208 @@
+--- select_tvf_alias.sql
+SELECT p.x, q.x
+FROM ML.PREDICT(MODEL MyModel, (SELECT 1 AS x)) @{remote_udf_max_rows_per_rpc=1} AS p
+CROSS JOIN ML.PREDICT(MODEL MyModel, (SELECT 2 AS x)) q
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 7,
+              NameEnd: 8,
+              Name:    "p",
+            },
+            &ast.Ident{
+              NamePos: 9,
+              NameEnd: 10,
+              Name:    "x",
+            },
+          },
+        },
+      },
+      &ast.ExprSelectItem{
+        Expr: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 12,
+              NameEnd: 13,
+              Name:    "q",
+            },
+            &ast.Ident{
+              NamePos: 14,
+              NameEnd: 15,
+              Name:    "x",
+            },
+          },
+        },
+      },
+    },
+    From: &ast.From{
+      From:   16,
+      Source: &ast.Join{
+        Left: &ast.TVFCallExpr{
+          Rparen: 62,
+          Name:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 21,
+                NameEnd: 23,
+                Name:    "ML",
+              },
+              &ast.Ident{
+                NamePos: 24,
+                NameEnd: 31,
+                Name:    "PREDICT",
+              },
+            },
+          },
+          Args: []ast.TVFArg{
+            &ast.ModelArg{
+              Model: 32,
+              Name:  &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 38,
+                    NameEnd: 45,
+                    Name:    "MyModel",
+                  },
+                },
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.ScalarSubQuery{
+                Lparen: 47,
+                Rparen: 61,
+                Query:  &ast.Select{
+                  Select:  48,
+                  Results: []ast.SelectItem{
+                    &ast.Alias{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 55,
+                        ValueEnd: 56,
+                        Base:     10,
+                        Value:    "1",
+                      },
+                      As: &ast.AsAlias{
+                        As:    57,
+                        Alias: &ast.Ident{
+                          NamePos: 60,
+                          NameEnd: 61,
+                          Name:    "x",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          Hint: &ast.Hint{
+            Atmark:  64,
+            Rbrace:  95,
+            Records: []*ast.HintRecord{
+              &ast.HintRecord{
+                Key: &ast.Path{
+                  Idents: []*ast.Ident{
+                    &ast.Ident{
+                      NamePos: 66,
+                      NameEnd: 93,
+                      Name:    "remote_udf_max_rows_per_rpc",
+                    },
+                  },
+                },
+                Value: &ast.IntLiteral{
+                  ValuePos: 94,
+                  ValueEnd: 95,
+                  Base:     10,
+                  Value:    "1",
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    97,
+            Alias: &ast.Ident{
+              NamePos: 100,
+              NameEnd: 101,
+              Name:    "p",
+            },
+          },
+        },
+        Op:    "CROSS",
+        Right: &ast.TVFCallExpr{
+          Rparen: 154,
+          Name:   &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 113,
+                NameEnd: 115,
+                Name:    "ML",
+              },
+              &ast.Ident{
+                NamePos: 116,
+                NameEnd: 123,
+                Name:    "PREDICT",
+              },
+            },
+          },
+          Args: []ast.TVFArg{
+            &ast.ModelArg{
+              Model: 124,
+              Name:  &ast.Path{
+                Idents: []*ast.Ident{
+                  &ast.Ident{
+                    NamePos: 130,
+                    NameEnd: 137,
+                    Name:    "MyModel",
+                  },
+                },
+              },
+            },
+            &ast.ExprArg{
+              Expr: &ast.ScalarSubQuery{
+                Lparen: 139,
+                Rparen: 153,
+                Query:  &ast.Select{
+                  Select:  140,
+                  Results: []ast.SelectItem{
+                    &ast.Alias{
+                      Expr: &ast.IntLiteral{
+                        ValuePos: 147,
+                        ValueEnd: 148,
+                        Base:     10,
+                        Value:    "2",
+                      },
+                      As: &ast.AsAlias{
+                        As:    149,
+                        Alias: &ast.Ident{
+                          NamePos: 152,
+                          NameEnd: 153,
+                          Name:    "x",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          As: &ast.AsAlias{
+            As:    -1,
+            Alias: &ast.Ident{
+              NamePos: 156,
+              NameEnd: 157,
+              Name:    "q",
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT p.x, q.x FROM ML.PREDICT(MODEL MyModel, (SELECT 1 AS x)) @{remote_udf_max_rows_per_rpc=1} AS p CROSS JOIN ML.PREDICT(MODEL MyModel, (SELECT 2 AS x)) q

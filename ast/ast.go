@@ -1661,10 +1661,11 @@ type CallExpr struct {
 //		{{.NamedArgs | sqlJoin ", "}}
 //	)
 //	{{.Hint | sqlOpt}}
+//	{{.As | sqlOpt}}
 //	{{.Sample | sqlOpt}}
 type TVFCallExpr struct {
 	// pos = Name.pos
-	// end = (Sample ?? Hint).end || Rparen + 1
+	// end = (Sample ?? As ?? Hint).end || Rparen + 1
 
 	Rparen token.Pos // position of ")"
 
@@ -1672,6 +1673,7 @@ type TVFCallExpr struct {
 	Args      []TVFArg
 	NamedArgs []*NamedArg
 	Hint      *Hint        // optional
+	As        *AsAlias     // optional
 	Sample    *TableSample // optional
 }
 

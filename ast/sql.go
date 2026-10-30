@@ -544,6 +544,7 @@ func (c *TVFCallExpr) SQL() string {
 		sqlJoin(c.NamedArgs, ", ") +
 		")" +
 		sqlOpt(" ", c.Hint, "") +
+		sqlOpt(" ", c.As, "") +
 		sqlOpt(" ", c.Sample, "")
 }
 

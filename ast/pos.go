@@ -587,7 +587,7 @@ func (t *TVFCallExpr) Pos() token.Pos {
 }
 
 func (t *TVFCallExpr) End() token.Pos {
-	return posChoice(nodeEnd(nodeChoice(wrapNode(t.Sample), wrapNode(t.Hint))), posAdd(t.Rparen, 1))
+	return posChoice(nodeEnd(nodeChoice(wrapNode(t.Sample), wrapNode(t.As), wrapNode(t.Hint))), posAdd(t.Rparen, 1))
 }
 
 func (e *ExprArg) Pos() token.Pos {

@@ -1338,6 +1338,7 @@ func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
 
 	rparen := p.expect(")").Pos
 	hint := p.tryParseHint()
+	as := p.tryParseAsAlias(withOptionalAs)
 	sample := p.tryParseTableSample()
 
 	return &ast.TVFCallExpr{
@@ -1346,6 +1347,7 @@ func (p *Parser) parseTVFCallExpr(ids []*ast.Ident) *ast.TVFCallExpr {
 		Args:      args,
 		NamedArgs: namedArgs,
 		Hint:      hint,
+		As:        as,
 		Sample:    sample,
 	}
 }
