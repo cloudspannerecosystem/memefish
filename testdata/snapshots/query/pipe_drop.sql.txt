@@ -1,0 +1,63 @@
+--- pipe_drop.sql
+SELECT * FROM (
+  SELECT * FROM Singers
+  |> DROP FirstName, `Last Name`,
+)
+
+--- AST
+&ast.QueryStatement{
+  Query: &ast.Select{
+    Results: []ast.SelectItem{
+      &ast.Star{
+        Star: 7,
+      },
+    },
+    From: &ast.From{
+      From:   9,
+      Source: &ast.SubQueryTableExpr{
+        Lparen: 14,
+        Rparen: 74,
+        Query:  &ast.Query{
+          Query: &ast.Select{
+            Select:  18,
+            Results: []ast.SelectItem{
+              &ast.Star{
+                Star: 25,
+              },
+            },
+            From: &ast.From{
+              From:   27,
+              Source: &ast.TableName{
+                Table: &ast.Ident{
+                  NamePos: 32,
+                  NameEnd: 39,
+                  Name:    "Singers",
+                },
+              },
+            },
+          },
+          PipeOperators: []ast.PipeOperator{
+            &ast.PipeDrop{
+              Pipe:    42,
+              Columns: []*ast.Ident{
+                &ast.Ident{
+                  NamePos: 50,
+                  NameEnd: 59,
+                  Name:    "FirstName",
+                },
+                &ast.Ident{
+                  NamePos: 61,
+                  NameEnd: 72,
+                  Name:    "Last Name",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+SELECT * FROM (SELECT * FROM Singers |> DROP FirstName, `Last Name`)

@@ -332,6 +332,8 @@ func (p *PipeWhere) SQL() string {
 
 func (p *PipeAs) SQL() string { return "|> AS " + p.Alias.SQL() }
 
+func (p *PipeDrop) SQL() string { return "|> DROP " + sqlJoin(p.Columns, ", ") }
+
 func (p *PipeSet) SQL() string { return "|> SET " + sqlJoin(p.Items, ", ") }
 
 func (p *PipeSetItem) SQL() string { return p.Column.SQL() + " = " + p.Expr.SQL() }

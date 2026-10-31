@@ -158,6 +158,7 @@ type PipeOperator interface {
 func (PipeSelect) isPipeOperator() {}
 func (PipeWhere) isPipeOperator()  {}
 func (PipeAs) isPipeOperator()     {}
+func (PipeDrop) isPipeOperator()   {}
 func (PipeSet) isPipeOperator()    {}
 func (PipeLimit) isPipeOperator()  {}
 
@@ -1200,6 +1201,18 @@ type PipeAs struct {
 
 	Pipe  token.Pos // position of "|>"
 	Alias *Ident
+}
+
+// PipeDrop is DROP pipe operator node.
+//
+//	|> DROP {{.Columns | sqlJoin ", "}}
+type PipeDrop struct {
+	// pos = Pipe
+	// end = Columns[$].end
+
+	Pipe token.Pos // position of "|>"
+
+	Columns []*Ident // len(Columns) > 0
 }
 
 // PipeSet is SET pipe operator node.
@@ -3145,7 +3158,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	IfExists       bool
+	IfExists        bool
 	Name            *Path
 	TableAlteration TableAlteration
 }
