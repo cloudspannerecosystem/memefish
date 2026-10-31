@@ -3818,14 +3818,15 @@ type DropRole struct {
 
 // DropChangeStream is DROP CHANGE STREAM  statement node.
 //
-//	DROP CHANGE STREAM {{.Name | sql}}
+//	DROP CHANGE STREAM {{if .IfExists}}IF EXISTS{{end}} {{.Name | sql}}
 type DropChangeStream struct {
 	// pos = Drop
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" keyword
 
-	Name *Ident
+	IfExists bool
+	Name     *Ident
 }
 
 // Grant is GRANT statement node.

@@ -1172,7 +1172,7 @@ func (c *ChangeStreamForTable) SQL() string {
 }
 
 func (d *DropChangeStream) SQL() string {
-	return "DROP CHANGE STREAM " + d.Name.SQL()
+	return "DROP CHANGE STREAM " + strOpt(d.IfExists, "IF EXISTS ") + d.Name.SQL()
 }
 
 func (s *Storing) SQL() string {

@@ -1,0 +1,15 @@
+--- drop_change_stream_if_exists.sql
+DROP CHANGE STREAM IF EXISTS SingerUpdates
+
+--- AST
+&ast.DropChangeStream{
+  IfExists: true,
+  Name:     &ast.Ident{
+    NamePos: 29,
+    NameEnd: 42,
+    Name:    "SingerUpdates",
+  },
+}
+
+--- SQL
+DROP CHANGE STREAM IF EXISTS SingerUpdates

@@ -1,0 +1,1 @@
+DROP CHANGE STREAM IF EXISTS SingerUpdates

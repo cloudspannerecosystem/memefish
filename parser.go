@@ -4628,10 +4628,12 @@ func (p *Parser) parseAlterChangeStream(pos token.Pos) *ast.AlterChangeStream {
 func (p *Parser) parseDropChangeStream(pos token.Pos) *ast.DropChangeStream {
 	p.expectKeywordLike("CHANGE")
 	p.expectKeywordLike("STREAM")
+	ifExists := p.parseIfExists()
 	name := p.parseIdent()
 	return &ast.DropChangeStream{
-		Drop: pos,
-		Name: name,
+		Drop:     pos,
+		IfExists: ifExists,
+		Name:     name,
 	}
 }
 
