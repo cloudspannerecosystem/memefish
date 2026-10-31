@@ -4772,10 +4772,10 @@ func (p *Parser) parseSqlSecurity() ast.SecurityType {
 func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 	pos := p.expect("FOR").Pos
 	if p.Token.Kind == "ALL" {
-		p.nextToken()
+		all := p.expect("ALL").Pos
 		return &ast.ChangeStreamForAll{
 			For: pos,
-			All: p.Token.Pos,
+			All: all,
 		}
 
 	}

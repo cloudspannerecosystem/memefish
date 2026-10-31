@@ -12,7 +12,7 @@ ALTER CHANGE STREAM change_stream_name SET FOR ALL
     Set: 39,
     For: &ast.ChangeStreamForAll{
       For: 43,
-      All: 51,
+      All: 47,
     },
   },
 }
