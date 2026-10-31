@@ -1138,7 +1138,7 @@ func (a *VectorIndexSetOptions) SQL() string { return "SET " + a.Options.SQL() }
 func (v *VectorIndexRebuild) SQL() string { return "REBUILD" }
 
 func (c *CreateChangeStream) SQL() string {
-	return "CREATE CHANGE STREAM " + c.Name.SQL() +
+	return "CREATE CHANGE STREAM " + strOpt(c.IfNotExists, "IF NOT EXISTS ") + c.Name.SQL() +
 		sqlOpt(" ", c.For, "") +
 		sqlOpt(" ", c.Options, "")
 }

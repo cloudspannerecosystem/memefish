@@ -3622,16 +3622,17 @@ type VectorIndexRebuild struct {
 
 // CreateChangeStream is CREATE CHANGE STREAM statement node.
 //
-//	CREATE CHANGE STREAM {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
+//	CREATE CHANGE STREAM {{if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}} {{.For | sqlOpt}} {{.Options | sqlOpt}}
 type CreateChangeStream struct {
 	// pos = Create
 	// end = (Options ?? For ?? Name).end
 
 	Create token.Pos // position of "CREATE" keyword
 
-	Name    *Ident
-	For     ChangeStreamFor // optional
-	Options *Options        // optional
+	IfNotExists bool
+	Name        *Ident
+	For         ChangeStreamFor // optional
+	Options     *Options        // optional
 }
 
 // ChangeStreamForAll is FOR ALL node in CREATE CHANGE STREAM

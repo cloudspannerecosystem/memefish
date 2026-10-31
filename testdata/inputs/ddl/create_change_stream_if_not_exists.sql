@@ -1,0 +1,1 @@
+CREATE CHANGE STREAM IF NOT EXISTS SingerUpdates FOR Singers

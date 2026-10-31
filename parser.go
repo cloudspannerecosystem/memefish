@@ -4568,10 +4568,12 @@ func (p *Parser) parseCreateIndex(pos token.Pos) *ast.CreateIndex {
 func (p *Parser) parseCreateChangeStream(pos token.Pos) *ast.CreateChangeStream {
 	p.expectKeywordLike("CHANGE")
 	p.expectKeywordLike("STREAM")
+	ifNotExists := p.parseIfNotExists()
 	name := p.parseIdent()
 	cs := &ast.CreateChangeStream{
-		Create: pos,
-		Name:   name,
+		Create:      pos,
+		IfNotExists: ifNotExists,
+		Name:        name,
 	}
 	if p.Token.Kind == "FOR" {
 		cs.For = p.parseChangeStreamFor()

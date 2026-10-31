@@ -1,0 +1,28 @@
+--- create_change_stream_if_not_exists.sql
+CREATE CHANGE STREAM IF NOT EXISTS SingerUpdates FOR Singers
+
+--- AST
+&ast.CreateChangeStream{
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 35,
+    NameEnd: 48,
+    Name:    "SingerUpdates",
+  },
+  For: &ast.ChangeStreamForTables{
+    For:    49,
+    Tables: []*ast.ChangeStreamForTable{
+      &ast.ChangeStreamForTable{
+        Rparen:    -1,
+        TableName: &ast.Ident{
+          NamePos: 53,
+          NameEnd: 60,
+          Name:    "Singers",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE CHANGE STREAM IF NOT EXISTS SingerUpdates FOR Singers

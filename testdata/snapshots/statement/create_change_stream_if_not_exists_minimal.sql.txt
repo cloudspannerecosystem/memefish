@@ -1,0 +1,15 @@
+--- create_change_stream_if_not_exists_minimal.sql
+CREATE CHANGE STREAM IF NOT EXISTS SingerUpdates
+
+--- AST
+&ast.CreateChangeStream{
+  IfNotExists: true,
+  Name:        &ast.Ident{
+    NamePos: 35,
+    NameEnd: 48,
+    Name:    "SingerUpdates",
+  },
+}
+
+--- SQL
+CREATE CHANGE STREAM IF NOT EXISTS SingerUpdates
