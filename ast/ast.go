@@ -3562,7 +3562,10 @@ type CreateIndex struct {
 // CreateVectorIndex is CREATE VECTOR INDEX statement node.
 //
 //	CREATE VECTOR INDEX {if .IfNotExists}}IF NOT EXISTS{{end}} {{.Name | sql}}
-//	ON {{.TableName | sql}}({{.ColumnName | sql}})
+//	ON {{.TableName | sql}}(
+//	  {{.ColumnName | sql}}{{if .ExtraKeyColumns}},
+//	  {{.ExtraKeyColumns | sqlJoin ", "}}{{end}}
+//	)
 //	{{.Storing | sqlOpt}}
 //	{{if .Where}}WHERE {{.Where | sql}}{{end}}
 //	{{.Options | sql}}
@@ -3572,11 +3575,12 @@ type CreateVectorIndex struct {
 
 	Create token.Pos // position of "CREATE" keyword
 
-	IfNotExists bool // optional
-	Name        *Ident
-	TableName   *Ident
-	ColumnName  *Ident
-	Storing     *Storing // optional
+	IfNotExists     bool // optional
+	Name            *Ident
+	TableName       *Ident
+	ColumnName      *Ident
+	ExtraKeyColumns []*Ident // optional
+	Storing         *Storing // optional
 
 	// It only allows `WHERE column_name IS NOT NULL` for now, but we still relax the condition
 	// by reusing the `parseWhere` function for sake of it may be extended more conditions in the future.

@@ -787,6 +787,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Where), visitor: v.Field("Where")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Storing), visitor: v.Field("Storing")})
+		stack = append(stack, &stackItem{nodes: wrapNodes(n.ExtraKeyColumns), visitor: v.Field("ExtraKeyColumns")})
 		stack = append(stack, &stackItem{node: wrapNode(n.ColumnName), visitor: v.Field("ColumnName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.TableName), visitor: v.Field("TableName")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
