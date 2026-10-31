@@ -1,0 +1,79 @@
+--- create_property_graph_empty_metadata_options.sql
+CREATE PROPERTY GRAPH g NODE TABLES (T DEFAULT LABEL OPTIONS () PROPERTIES (id OPTIONS (), name AS title OPTIONS ()))
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 23,
+    Name:    "g",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   24,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   36,
+        Rparen:   116,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 37,
+              NameEnd: 38,
+              Name:    "T",
+            },
+            Properties: &ast.PropertyGraphLabelAndPropertiesList{
+              LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+                &ast.PropertyGraphLabelAndProperties{
+                  Label: &ast.PropertyGraphElementLabelDefaultLabel{
+                    Default: 39,
+                    Label:   47,
+                    Options: &ast.Options{
+                      Options: 53,
+                      Rparen:  62,
+                    },
+                  },
+                  Properties: &ast.PropertyGraphDerivedPropertyList{
+                    Properties:        64,
+                    Rparen:            115,
+                    DerivedProperties: []*ast.PropertyGraphDerivedProperty{
+                      &ast.PropertyGraphDerivedProperty{
+                        Expr: &ast.Ident{
+                          NamePos: 76,
+                          NameEnd: 78,
+                          Name:    "id",
+                        },
+                        Options: &ast.Options{
+                          Options: 79,
+                          Rparen:  88,
+                        },
+                      },
+                      &ast.PropertyGraphDerivedProperty{
+                        Expr: &ast.Ident{
+                          NamePos: 91,
+                          NameEnd: 95,
+                          Name:    "name",
+                        },
+                        Alias: &ast.Ident{
+                          NamePos: 99,
+                          NameEnd: 104,
+                          Name:    "title",
+                        },
+                        Options: &ast.Options{
+                          Options: 105,
+                          Rparen:  114,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH g NODE TABLES (T DEFAULT LABEL OPTIONS () PROPERTIES (id OPTIONS (), name AS title OPTIONS ()))

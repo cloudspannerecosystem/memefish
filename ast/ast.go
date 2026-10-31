@@ -3145,7 +3145,7 @@ type AlterTable struct {
 
 	Alter token.Pos // position of "ALTER" keyword
 
-	IfExists       bool
+	IfExists        bool
 	Name            *Path
 	TableAlteration TableAlteration
 }
@@ -4481,13 +4481,14 @@ type PropertyGraphElementLabelLabelName struct {
 
 // PropertyGraphElementLabelDefaultLabel represents DEFAULT LABEL node.
 //
-//	DEFAULT LABEL
+//	DEFAULT LABEL {{.Options | sqlOpt}}
 type PropertyGraphElementLabelDefaultLabel struct {
 	// pos = Default
-	// end = Label + 5
+	// end = Options.end || Label + 5
 
 	Default token.Pos
 	Label   token.Pos
+	Options *Options // optional
 }
 
 // PropertyGraphNodeElementKey is a wrapper of PropertyGraphElementKey to implement PropertyGraphElementKeys
@@ -4603,12 +4604,14 @@ type PropertyGraphDerivedPropertyList struct {
 // PropertyGraphDerivedProperty represents an expression that defines a property and can optionally reference the input table columns.
 //
 //	{{.Expr | sql}} {{if .Alias}}AS {{.Alias | sql}}{{end}}
+//	{{.Options | sqlOpt}}
 type PropertyGraphDerivedProperty struct {
 	// pos = Expr.pos
-	// end = (Alias ?? Expr).end
+	// end = (Options ?? Alias ?? Expr).end
 
-	Expr  Expr
-	Alias *Ident // optional
+	Expr    Expr
+	Alias   *Ident   // optional
+	Options *Options // optional
 }
 
 // DynamicLabel represents DYNAMIC LABEL clause in CREATE PROPERTY GRAPH statement.

@@ -2227,7 +2227,7 @@ func (p *PropertyGraphElementLabelDefaultLabel) Pos() token.Pos {
 }
 
 func (p *PropertyGraphElementLabelDefaultLabel) End() token.Pos {
-	return posAdd(p.Label, 5)
+	return posChoice(nodeEnd(wrapNode(p.Options)), posAdd(p.Label, 5))
 }
 
 func (p *PropertyGraphNodeElementKey) Pos() token.Pos {
@@ -2307,7 +2307,7 @@ func (p *PropertyGraphDerivedProperty) Pos() token.Pos {
 }
 
 func (p *PropertyGraphDerivedProperty) End() token.Pos {
-	return nodeEnd(nodeChoice(wrapNode(p.Alias), wrapNode(p.Expr)))
+	return nodeEnd(nodeChoice(wrapNode(p.Options), wrapNode(p.Alias), wrapNode(p.Expr)))
 }
 
 func (p *PropertyGraphDynamicLabel) Pos() token.Pos {

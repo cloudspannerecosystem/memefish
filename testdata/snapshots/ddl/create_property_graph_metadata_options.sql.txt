@@ -1,0 +1,219 @@
+--- create_property_graph_metadata_options.sql
+CREATE PROPERTY GRAPH g NODE TABLES (
+  T DEFAULT LABEL OPTIONS (description = 'A node', synonyms = ['vertex', 'entity'])
+    PROPERTIES (id OPTIONS (description = 'Identifier'), name AS title OPTIONS (synonyms = ['caption', 'heading'], description = 'Title')),
+  U DEFAULT LABEL OPTIONS (synonyms = ['other']) NO PROPERTIES
+)
+
+--- AST
+&ast.CreatePropertyGraph{
+  Name: &ast.Ident{
+    NamePos: 22,
+    NameEnd: 23,
+    Name:    "g",
+  },
+  Content: &ast.PropertyGraphContent{
+    NodeTables: &ast.PropertyGraphNodeTables{
+      Node:   24,
+      Tables: &ast.PropertyGraphElementList{
+        Lparen:   36,
+        Rparen:   325,
+        Elements: []*ast.PropertyGraphElement{
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 40,
+              NameEnd: 41,
+              Name:    "T",
+            },
+            Properties: &ast.PropertyGraphLabelAndPropertiesList{
+              LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+                &ast.PropertyGraphLabelAndProperties{
+                  Label: &ast.PropertyGraphElementLabelDefaultLabel{
+                    Default: 42,
+                    Label:   50,
+                    Options: &ast.Options{
+                      Options: 56,
+                      Rparen:  120,
+                      Records: []*ast.OptionsDef{
+                        &ast.OptionsDef{
+                          Name: &ast.Ident{
+                            NamePos: 65,
+                            NameEnd: 76,
+                            Name:    "description",
+                          },
+                          Value: &ast.StringLiteral{
+                            ValuePos: 79,
+                            ValueEnd: 87,
+                            Value:    "A node",
+                          },
+                        },
+                        &ast.OptionsDef{
+                          Name: &ast.Ident{
+                            NamePos: 89,
+                            NameEnd: 97,
+                            Name:    "synonyms",
+                          },
+                          Value: &ast.ArrayLiteral{
+                            Array:  -1,
+                            Lbrack: 100,
+                            Rbrack: 119,
+                            Values: []ast.Expr{
+                              &ast.StringLiteral{
+                                ValuePos: 101,
+                                ValueEnd: 109,
+                                Value:    "vertex",
+                              },
+                              &ast.StringLiteral{
+                                ValuePos: 111,
+                                ValueEnd: 119,
+                                Value:    "entity",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  Properties: &ast.PropertyGraphDerivedPropertyList{
+                    Properties:        126,
+                    Rparen:            259,
+                    DerivedProperties: []*ast.PropertyGraphDerivedProperty{
+                      &ast.PropertyGraphDerivedProperty{
+                        Expr: &ast.Ident{
+                          NamePos: 138,
+                          NameEnd: 140,
+                          Name:    "id",
+                        },
+                        Options: &ast.Options{
+                          Options: 141,
+                          Rparen:  176,
+                          Records: []*ast.OptionsDef{
+                            &ast.OptionsDef{
+                              Name: &ast.Ident{
+                                NamePos: 150,
+                                NameEnd: 161,
+                                Name:    "description",
+                              },
+                              Value: &ast.StringLiteral{
+                                ValuePos: 164,
+                                ValueEnd: 176,
+                                Value:    "Identifier",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &ast.PropertyGraphDerivedProperty{
+                        Expr: &ast.Ident{
+                          NamePos: 179,
+                          NameEnd: 183,
+                          Name:    "name",
+                        },
+                        Alias: &ast.Ident{
+                          NamePos: 187,
+                          NameEnd: 192,
+                          Name:    "title",
+                        },
+                        Options: &ast.Options{
+                          Options: 193,
+                          Rparen:  258,
+                          Records: []*ast.OptionsDef{
+                            &ast.OptionsDef{
+                              Name: &ast.Ident{
+                                NamePos: 202,
+                                NameEnd: 210,
+                                Name:    "synonyms",
+                              },
+                              Value: &ast.ArrayLiteral{
+                                Array:  -1,
+                                Lbrack: 213,
+                                Rbrack: 234,
+                                Values: []ast.Expr{
+                                  &ast.StringLiteral{
+                                    ValuePos: 214,
+                                    ValueEnd: 223,
+                                    Value:    "caption",
+                                  },
+                                  &ast.StringLiteral{
+                                    ValuePos: 225,
+                                    ValueEnd: 234,
+                                    Value:    "heading",
+                                  },
+                                },
+                              },
+                            },
+                            &ast.OptionsDef{
+                              Name: &ast.Ident{
+                                NamePos: 237,
+                                NameEnd: 248,
+                                Name:    "description",
+                              },
+                              Value: &ast.StringLiteral{
+                                ValuePos: 251,
+                                ValueEnd: 258,
+                                Value:    "Title",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          &ast.PropertyGraphElement{
+            Name: &ast.Ident{
+              NamePos: 264,
+              NameEnd: 265,
+              Name:    "U",
+            },
+            Properties: &ast.PropertyGraphLabelAndPropertiesList{
+              LabelAndProperties: []*ast.PropertyGraphLabelAndProperties{
+                &ast.PropertyGraphLabelAndProperties{
+                  Label: &ast.PropertyGraphElementLabelDefaultLabel{
+                    Default: 266,
+                    Label:   274,
+                    Options: &ast.Options{
+                      Options: 280,
+                      Rparen:  309,
+                      Records: []*ast.OptionsDef{
+                        &ast.OptionsDef{
+                          Name: &ast.Ident{
+                            NamePos: 289,
+                            NameEnd: 297,
+                            Name:    "synonyms",
+                          },
+                          Value: &ast.ArrayLiteral{
+                            Array:  -1,
+                            Lbrack: 300,
+                            Rbrack: 308,
+                            Values: []ast.Expr{
+                              &ast.StringLiteral{
+                                ValuePos: 301,
+                                ValueEnd: 308,
+                                Value:    "other",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  Properties: &ast.PropertyGraphNoProperties{
+                    No:         311,
+                    Properties: 314,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE PROPERTY GRAPH g NODE TABLES (T DEFAULT LABEL OPTIONS (description = "A node", synonyms = ["vertex", "entity"]) PROPERTIES (id OPTIONS (description = "Identifier"), name AS title OPTIONS (synonyms = ["caption", "heading"], description = "Title")), U DEFAULT LABEL OPTIONS (synonyms = ["other"]) NO PROPERTIES)

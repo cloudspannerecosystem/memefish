@@ -5932,10 +5932,12 @@ func (p *Parser) parsePropertyGraphElementLabel() ast.PropertyGraphElementLabel 
 	if p.Token.Kind == "DEFAULT" {
 		def := p.expect("DEFAULT").Pos
 		label := p.expectKeywordLike("LABEL").Pos
+		options := p.tryParsePropertyGraphOptions()
 
 		return &ast.PropertyGraphElementLabelDefaultLabel{
 			Default: def,
 			Label:   label,
+			Options: options,
 		}
 	}
 
@@ -6015,8 +6017,9 @@ func (p *Parser) parsePropertyGraphDerivedProperty() *ast.PropertyGraphDerivedPr
 	}
 
 	return &ast.PropertyGraphDerivedProperty{
-		Expr:  expr,
-		Alias: name,
+		Expr:    expr,
+		Alias:   name,
+		Options: p.tryParsePropertyGraphOptions(),
 	}
 }
 

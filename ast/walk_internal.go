@@ -1027,7 +1027,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{node: wrapNode(n.Name), visitor: v.Field("Name")})
 
 	case *PropertyGraphElementLabelDefaultLabel:
-		// nothing to do
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 
 	case *PropertyGraphNodeElementKey:
 		stack = append(stack, &stackItem{node: wrapNode(n.Key), visitor: v.Field("Key")})
@@ -1063,6 +1063,7 @@ func walkInternal(node Node, v Visitor, stack []*stackItem) []*stackItem {
 		stack = append(stack, &stackItem{nodes: wrapNodes(n.DerivedProperties), visitor: v.Field("DerivedProperties")})
 
 	case *PropertyGraphDerivedProperty:
+		stack = append(stack, &stackItem{node: wrapNode(n.Options), visitor: v.Field("Options")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Alias), visitor: v.Field("Alias")})
 		stack = append(stack, &stackItem{node: wrapNode(n.Expr), visitor: v.Field("Expr")})
 

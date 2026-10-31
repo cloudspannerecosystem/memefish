@@ -1404,7 +1404,9 @@ func (p *PropertyGraphLabelAndProperties) SQL() string {
 
 func (p *PropertyGraphElementLabelLabelName) SQL() string { return "LABEL " + p.Name.SQL() }
 
-func (p *PropertyGraphElementLabelDefaultLabel) SQL() string { return "DEFAULT LABEL" }
+func (p *PropertyGraphElementLabelDefaultLabel) SQL() string {
+	return "DEFAULT LABEL" + sqlOpt(" ", p.Options, "")
+}
 
 func (p *PropertyGraphNodeElementKey) SQL() string { return p.Key.SQL() }
 
@@ -1444,7 +1446,7 @@ func (p *PropertyGraphDerivedPropertyList) SQL() string {
 }
 
 func (p *PropertyGraphDerivedProperty) SQL() string {
-	return p.Expr.SQL() + sqlOpt(" AS ", p.Alias, "")
+	return p.Expr.SQL() + sqlOpt(" AS ", p.Alias, "") + sqlOpt(" ", p.Options, "")
 }
 
 func (p *PropertyGraphDynamicLabel) SQL() string {

@@ -1,0 +1,1 @@
+CREATE PROPERTY GRAPH g NODE TABLES (T LABEL L OPTIONS (description = 'Label'))
