@@ -98,10 +98,14 @@ OPTIONS(sort_order_sharding=true)
   },
   Interleave: &ast.InterleaveIn{
     Comma:     200,
-    TableName: &ast.Ident{
-      NamePos: 216,
-      NameEnd: 223,
-      Name:    "Singers",
+    TableName: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 216,
+          NameEnd: 223,
+          Name:    "Singers",
+        },
+      },
     },
   },
   Options: &ast.Options{
