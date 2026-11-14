@@ -1,0 +1,62 @@
+--- alter_change_stream_set_for_tables_named_schema.sql
+ALTER CHANGE STREAM change_stream_name SET FOR sch.table_name1(column1), sch.table_name2
+--- AST
+&ast.AlterChangeStream{
+  Name: &ast.Ident{
+    NamePos: 20,
+    NameEnd: 38,
+    Name:    "change_stream_name",
+  },
+  ChangeStreamAlteration: &ast.ChangeStreamSetFor{
+    Set: 39,
+    For: &ast.ChangeStreamForTables{
+      For:    43,
+      Tables: []*ast.ChangeStreamForTable{
+        &ast.ChangeStreamForTable{
+          Rparen:    70,
+          TableName: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 47,
+                NameEnd: 50,
+                Name:    "sch",
+              },
+              &ast.Ident{
+                NamePos: 51,
+                NameEnd: 62,
+                Name:    "table_name1",
+              },
+            },
+          },
+          Columns: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 63,
+              NameEnd: 70,
+              Name:    "column1",
+            },
+          },
+        },
+        &ast.ChangeStreamForTable{
+          Rparen:    -1,
+          TableName: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 73,
+                NameEnd: 76,
+                Name:    "sch",
+              },
+              &ast.Ident{
+                NamePos: 77,
+                NameEnd: 88,
+                Name:    "table_name2",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+ALTER CHANGE STREAM change_stream_name SET FOR sch.table_name1(column1), sch.table_name2
