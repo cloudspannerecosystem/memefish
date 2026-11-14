@@ -3930,7 +3930,7 @@ func (p *Parser) parseCreateSequence(pos token.Pos) *ast.CreateSequence {
 	ifNotExists := p.parseIfNotExists()
 	name := p.parsePath()
 	params := p.parseSequenceParams()
-	options := p.parseOptions()
+	options := p.tryParseOptions()
 
 	return &ast.CreateSequence{
 		Create:      pos,

@@ -915,7 +915,7 @@ func (c *CreateSequence) SQL() string {
 	return "CREATE SEQUENCE " +
 		strOpt(c.IfNotExists, "IF NOT EXISTS ") +
 		c.Name.SQL() +
-		strOpt(len(c.Params) > 0, " "+sqlJoin(c.Params, "")) +
+		strOpt(len(c.Params) > 0, " "+sqlJoin(c.Params, " ")) +
 		sqlOpt(" ", c.Options, "")
 }
 
