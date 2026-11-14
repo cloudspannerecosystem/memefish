@@ -1,0 +1,22 @@
+--- create_sequence_bit_reversed_positive.sql
+CREATE SEQUENCE MySequence BIT_REVERSED_POSITIVE
+--- AST
+&ast.CreateSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 16,
+        NameEnd: 26,
+        Name:    "MySequence",
+      },
+    },
+  },
+  Params: []ast.SequenceParam{
+    &ast.BitReversedPositive{
+      BitReversedPositive: 27,
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE MySequence BIT_REVERSED_POSITIVE

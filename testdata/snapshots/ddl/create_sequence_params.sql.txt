@@ -1,0 +1,47 @@
+--- create_sequence_params.sql
+CREATE SEQUENCE IF NOT EXISTS MySequence BIT_REVERSED_POSITIVE SKIP RANGE 1, 1000 START COUNTER WITH 50
+--- AST
+&ast.CreateSequence{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 30,
+        NameEnd: 40,
+        Name:    "MySequence",
+      },
+    },
+  },
+  IfNotExists: true,
+  Params:      []ast.SequenceParam{
+    &ast.BitReversedPositive{
+      BitReversedPositive: 41,
+    },
+    &ast.SkipRange{
+      Skip: 63,
+      Min:  &ast.IntLiteral{
+        ValuePos: 74,
+        ValueEnd: 75,
+        Base:     10,
+        Value:    "1",
+      },
+      Max: &ast.IntLiteral{
+        ValuePos: 77,
+        ValueEnd: 81,
+        Base:     10,
+        Value:    "1000",
+      },
+    },
+    &ast.StartCounterWith{
+      Start:   82,
+      Counter: &ast.IntLiteral{
+        ValuePos: 101,
+        ValueEnd: 103,
+        Base:     10,
+        Value:    "50",
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEQUENCE IF NOT EXISTS MySequence BIT_REVERSED_POSITIVE SKIP RANGE 1, 1000 START COUNTER WITH 50
