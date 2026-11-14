@@ -4984,7 +4984,7 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 func (p *Parser) parseAlterTableRename() ast.TableAlteration {
 	pos := p.expectKeywordLike("RENAME").Pos
 	p.expect("TO")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	var addSynonym *ast.AddSynonym
 	if p.Token.Kind == "," {

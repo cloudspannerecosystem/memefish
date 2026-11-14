@@ -3228,7 +3228,7 @@ type RenameTo struct {
 
 	Rename token.Pos // position of "RENAME" pseudo keyword
 
-	Name       *Ident
+	Name       *Path
 	AddSynonym *AddSynonym // optional
 }
 
