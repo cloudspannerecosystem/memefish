@@ -13,10 +13,14 @@ ALTER TABLE Singers DROP SYNONYM SingersTest
   },
   TableAlteration: &ast.DropSynonym{
     Drop: 20,
-    Name: &ast.Ident{
-      NamePos: 33,
-      NameEnd: 44,
-      Name:    "SingersTest",
+    Name: &ast.Path{
+      Idents: []*ast.Ident{
+        &ast.Ident{
+          NamePos: 33,
+          NameEnd: 44,
+          Name:    "SingersTest",
+        },
+      },
     },
   },
 }

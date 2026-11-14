@@ -3205,7 +3205,7 @@ type AddSynonym struct {
 	// end = Name.end
 
 	Add  token.Pos // position of "ADD" pseudo keyword
-	Name *Ident
+	Name *Path
 }
 
 // DropSynonym is DROP SYNONYM node in ALTER TABLE.
@@ -3216,7 +3216,7 @@ type DropSynonym struct {
 	// end = Name.end
 
 	Drop token.Pos // position of "DROP" pseudo keyword
-	Name *Ident
+	Name *Path
 }
 
 // RenameTo is RENAME TO node in ALTER TABLE.

@@ -4877,7 +4877,7 @@ func (p *Parser) parseAlterTable(pos token.Pos) *ast.AlterTable {
 
 func (p *Parser) parseAddSynonym(add token.Pos) *ast.AddSynonym {
 	p.expectKeywordLike("SYNONYM")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.AddSynonym{
 		Add:  add,
@@ -4947,7 +4947,7 @@ func (p *Parser) parseAlterTableDrop() ast.TableAlteration {
 	switch {
 	case p.Token.IsKeywordLike("SYNONYM"):
 		p.expectKeywordLike("SYNONYM")
-		name := p.parseIdent()
+		name := p.parsePath()
 		alteration = &ast.DropSynonym{
 			Drop: pos,
 			Name: name,
