@@ -1,0 +1,1 @@
+ALTER TABLE sch.Singers RENAME TO sch.SingersNew
