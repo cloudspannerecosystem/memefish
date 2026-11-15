@@ -1,0 +1,1 @@
+ALTER CHANGE STREAM change_stream_name SET FOR sch.table_name1(column1), sch.table_name2

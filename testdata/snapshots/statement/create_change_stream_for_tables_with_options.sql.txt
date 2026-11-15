@@ -14,10 +14,14 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
     Tables: []*ast.ChangeStreamForTable{
       &ast.ChangeStreamForTable{
         Rparen:    72,
-        TableName: &ast.Ident{
-          NamePos: 44,
-          NameEnd: 55,
-          Name:    "table_name1",
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 44,
+              NameEnd: 55,
+              Name:    "table_name1",
+            },
+          },
         },
         Columns: []*ast.Ident{
           &ast.Ident{
@@ -34,10 +38,14 @@ OPTIONS(retention_period = '1d', value_capture_type = 'NEW_ROW')
       },
       &ast.ChangeStreamForTable{
         Rparen:    103,
-        TableName: &ast.Ident{
-          NamePos: 75,
-          NameEnd: 86,
-          Name:    "table_name2",
+        TableName: &ast.Path{
+          Idents: []*ast.Ident{
+            &ast.Ident{
+              NamePos: 75,
+              NameEnd: 86,
+              Name:    "table_name2",
+            },
+          },
         },
         Columns: []*ast.Ident{
           &ast.Ident{

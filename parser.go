@@ -4783,7 +4783,7 @@ func (p *Parser) parseChangeStreamFor() ast.ChangeStreamFor {
 		For: pos,
 	}
 	for {
-		tname := p.parseIdent()
+		tname := p.parsePath()
 		forTable := ast.ChangeStreamForTable{
 			TableName: tname,
 			Rparen:    token.InvalidPos,

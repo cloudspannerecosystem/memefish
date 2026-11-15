@@ -15,10 +15,14 @@ ALTER CHANGE STREAM cs SET FOR t1()
       Tables: []*ast.ChangeStreamForTable{
         &ast.ChangeStreamForTable{
           Rparen:    34,
-          TableName: &ast.Ident{
-            NamePos: 31,
-            NameEnd: 33,
-            Name:    "t1",
+          TableName: &ast.Path{
+            Idents: []*ast.Ident{
+              &ast.Ident{
+                NamePos: 31,
+                NameEnd: 33,
+                Name:    "t1",
+              },
+            },
           },
         },
       },

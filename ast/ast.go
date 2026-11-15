@@ -3666,7 +3666,7 @@ type ChangeStreamForTable struct {
 
 	Rparen token.Pos // position of ")"
 
-	TableName *Ident
+	TableName *Path
 	Columns   []*Ident
 }
 
