@@ -1,0 +1,1 @@
+CREATE INDEX AlbumsByTitle ON sch1.Albums(AlbumTitle), INTERLEAVE IN sch1.Singers

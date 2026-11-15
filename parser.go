@@ -4832,7 +4832,7 @@ func (p *Parser) tryParseInterleaveIn() *ast.InterleaveIn {
 	pos := p.expect(",").Pos
 	p.expectKeywordLike("INTERLEAVE")
 	p.expect("IN")
-	name := p.parseIdent()
+	name := p.parsePath()
 
 	return &ast.InterleaveIn{
 		Comma:     pos,
