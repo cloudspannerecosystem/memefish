@@ -1,0 +1,1 @@
+ALTER TABLE sch.Singers DROP SYNONYM sch.SingersTest

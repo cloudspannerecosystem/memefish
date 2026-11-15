@@ -20,10 +20,14 @@ ALTER TABLE Singers RENAME TO SingersNew, ADD SYNONYM Singers
     },
     AddSynonym: &ast.AddSynonym{
       Add:  42,
-      Name: &ast.Ident{
-        NamePos: 54,
-        NameEnd: 61,
-        Name:    "Singers",
+      Name: &ast.Path{
+        Idents: []*ast.Ident{
+          &ast.Ident{
+            NamePos: 54,
+            NameEnd: 61,
+            Name:    "Singers",
+          },
+        },
       },
     },
   },
