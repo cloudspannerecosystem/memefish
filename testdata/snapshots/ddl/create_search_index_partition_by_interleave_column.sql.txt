@@ -1,0 +1,58 @@
+--- create_search_index_partition_by_interleave_column.sql
+-- a key column named Interleave before the INTERLEAVE IN clause
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId, Interleave, INTERLEAVE IN Singers
+--- AST
+&ast.CreateSearchIndex{
+  Create: 65,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 85,
+        NameEnd: 96,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 100,
+        NameEnd: 106,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 107,
+      NameEnd: 124,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           124,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 139,
+      NameEnd: 147,
+      Name:    "SingerId",
+    },
+    &ast.Ident{
+      NamePos: 149,
+      NameEnd: 159,
+      Name:    "Interleave",
+    },
+  },
+  Interleave: &ast.InterleaveIn{
+    Comma:     159,
+    TableName: &ast.Ident{
+      NamePos: 175,
+      NameEnd: 182,
+      Name:    "Singers",
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId, Interleave, INTERLEAVE IN Singers

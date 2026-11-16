@@ -1,0 +1,68 @@
+--- create_search_index_partition_by_interleave_column_last.sql
+-- a column named interleave as the last PARTITION BY key, no INTERLEAVE IN clause
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId, interleave
+OPTIONS (sort_order_sharding = true)
+--- AST
+&ast.CreateSearchIndex{
+  Create: 83,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 103,
+        NameEnd: 114,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 118,
+        NameEnd: 124,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 125,
+      NameEnd: 142,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           142,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 157,
+      NameEnd: 165,
+      Name:    "SingerId",
+    },
+    &ast.Ident{
+      NamePos: 167,
+      NameEnd: 177,
+      Name:    "interleave",
+    },
+  },
+  Options: &ast.Options{
+    Options: 178,
+    Rparen:  213,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 187,
+          NameEnd: 206,
+          Name:    "sort_order_sharding",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 209,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId, interleave OPTIONS (sort_order_sharding = true)
