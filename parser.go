@@ -4429,10 +4429,19 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 	if p.Token.Kind == "PARTITION" {
 		p.nextToken()
 		p.expect("BY")
-		partitionColumns = parseCommaSeparatedList(p, p.parseIdent)
+		partitionColumns = parseSearchIndexKeyList(p, p.parseIdent)
 	}
 
-	orderBy := p.tryParseOrderBy()
+	var orderBy *ast.OrderBy
+	if p.Token.Kind == "ORDER" {
+		orderPos := p.expect("ORDER").Pos
+		p.expect("BY")
+		orderBy = &ast.OrderBy{
+			Order: orderPos,
+			Items: parseSearchIndexKeyList(p, p.parseOrderByItem),
+		}
+	}
+
 	where := p.tryParseWhere()
 	interleave := p.tryParseInterleaveIn()
 
@@ -4451,6 +4460,36 @@ func (p *Parser) parseCreateSearchIndex(pos token.Pos) *ast.CreateSearchIndex {
 		Interleave:       interleave,
 		Options:          options,
 	}
+}
+
+// parseSearchIndexKeyList parses the PARTITION BY and ORDER BY lists of CREATE SEARCH INDEX.
+// Unlike parseCommaSeparatedList, it stops before ", INTERLEAVE IN" so that
+// "PARTITION BY a ORDER BY b, INTERLEAVE IN t" leaves the interleave clause to tryParseInterleaveIn.
+func parseSearchIndexKeyList[T ast.Node](p *Parser, doParse func() T) []T {
+	nodes := []T{doParse()}
+	for p.Token.Kind == "," && !p.lookaheadCommaInterleaveIn() {
+		p.nextToken()
+		nodes = append(nodes, doParse())
+	}
+	return nodes
+}
+
+// lookaheadCommaInterleaveIn checks whether the next tokens are ", INTERLEAVE IN".
+func (p *Parser) lookaheadCommaInterleaveIn() bool {
+	lexer := p.cloneLexer()
+	defer func() {
+		p.Lexer = lexer
+	}()
+
+	if p.Token.Kind != "," {
+		return false
+	}
+	p.nextToken()
+	if !p.Token.IsKeywordLike("INTERLEAVE") {
+		return false
+	}
+	p.nextToken()
+	return p.Token.Kind == "IN"
 }
 
 func (p *Parser) parseDropSearchIndex(pos token.Pos) *ast.DropSearchIndex {

@@ -1,0 +1,57 @@
+--- create_search_index_partition_by_interleave.sql
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId, AlbumId
+, INTERLEAVE IN Singers
+--- AST
+&ast.CreateSearchIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 31,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 35,
+        NameEnd: 41,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 42,
+      NameEnd: 59,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           59,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 74,
+      NameEnd: 82,
+      Name:    "SingerId",
+    },
+    &ast.Ident{
+      NamePos: 84,
+      NameEnd: 91,
+      Name:    "AlbumId",
+    },
+  },
+  Interleave: &ast.InterleaveIn{
+    Comma:     92,
+    TableName: &ast.Ident{
+      NamePos: 108,
+      NameEnd: 115,
+      Name:    "Singers",
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId, AlbumId, INTERLEAVE IN Singers

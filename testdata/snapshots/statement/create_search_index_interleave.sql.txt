@@ -1,0 +1,72 @@
+--- create_search_index_interleave.sql
+-- https://cloud.google.com/spanner/docs/full-text-search/search-indexes#define_an_interleaved_search_index
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId,
+INTERLEAVE IN Singers
+OPTIONS (sort_order_sharding = true)
+--- AST
+&ast.CreateSearchIndex{
+  Create: 108,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 128,
+        NameEnd: 139,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 143,
+        NameEnd: 149,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 150,
+      NameEnd: 167,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           167,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 182,
+      NameEnd: 190,
+      Name:    "SingerId",
+    },
+  },
+  Interleave: &ast.InterleaveIn{
+    Comma:     190,
+    TableName: &ast.Ident{
+      NamePos: 206,
+      NameEnd: 213,
+      Name:    "Singers",
+    },
+  },
+  Options: &ast.Options{
+    Options: 214,
+    Rparen:  249,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 223,
+          NameEnd: 242,
+          Name:    "sort_order_sharding",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 245,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId, INTERLEAVE IN Singers OPTIONS (sort_order_sharding = true)
