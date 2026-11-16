@@ -1,0 +1,85 @@
+--- create_search_index_order_by_interleave.sql
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId
+ORDER BY ReleaseTimestamp DESC
+, INTERLEAVE IN Singers
+OPTIONS(sort_order_sharding=true)
+--- AST
+&ast.CreateSearchIndex{
+  Name: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 20,
+        NameEnd: 31,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 35,
+        NameEnd: 41,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 42,
+      NameEnd: 59,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           59,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 74,
+      NameEnd: 82,
+      Name:    "SingerId",
+    },
+  },
+  OrderBy: &ast.OrderBy{
+    Order: 83,
+    Items: []*ast.OrderByItem{
+      &ast.OrderByItem{
+        DirPos: 109,
+        Expr:   &ast.Ident{
+          NamePos: 92,
+          NameEnd: 108,
+          Name:    "ReleaseTimestamp",
+        },
+        Dir: "DESC",
+      },
+    },
+  },
+  Interleave: &ast.InterleaveIn{
+    Comma:     114,
+    TableName: &ast.Ident{
+      NamePos: 130,
+      NameEnd: 137,
+      Name:    "Singers",
+    },
+  },
+  Options: &ast.Options{
+    Options: 138,
+    Rparen:  170,
+    Records: []*ast.OptionsDef{
+      &ast.OptionsDef{
+        Name: &ast.Ident{
+          NamePos: 146,
+          NameEnd: 165,
+          Name:    "sort_order_sharding",
+        },
+        Value: &ast.BoolLiteral{
+          ValuePos: 166,
+          Value:    true,
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId ORDER BY ReleaseTimestamp DESC, INTERLEAVE IN Singers OPTIONS (sort_order_sharding = true)

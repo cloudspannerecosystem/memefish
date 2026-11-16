@@ -1,0 +1,68 @@
+--- create_search_index_order_by_interleave_column_last.sql
+-- a column named INTERLEAVE as the last ORDER BY key, no INTERLEAVE IN clause
+CREATE SEARCH INDEX AlbumsIndex
+ON Albums(AlbumTitle_Tokens)
+PARTITION BY SingerId
+ORDER BY ReleaseTimestamp DESC, INTERLEAVE
+--- AST
+&ast.CreateSearchIndex{
+  Create: 79,
+  Name:   &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 99,
+        NameEnd: 110,
+        Name:    "AlbumsIndex",
+      },
+    },
+  },
+  TableName: &ast.Path{
+    Idents: []*ast.Ident{
+      &ast.Ident{
+        NamePos: 114,
+        NameEnd: 120,
+        Name:    "Albums",
+      },
+    },
+  },
+  TokenListPart: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 121,
+      NameEnd: 138,
+      Name:    "AlbumTitle_Tokens",
+    },
+  },
+  Rparen:           138,
+  PartitionColumns: []*ast.Ident{
+    &ast.Ident{
+      NamePos: 153,
+      NameEnd: 161,
+      Name:    "SingerId",
+    },
+  },
+  OrderBy: &ast.OrderBy{
+    Order: 162,
+    Items: []*ast.OrderByItem{
+      &ast.OrderByItem{
+        DirPos: 188,
+        Expr:   &ast.Ident{
+          NamePos: 171,
+          NameEnd: 187,
+          Name:    "ReleaseTimestamp",
+        },
+        Dir: "DESC",
+      },
+      &ast.OrderByItem{
+        DirPos: -1,
+        Expr:   &ast.Ident{
+          NamePos: 194,
+          NameEnd: 204,
+          Name:    "INTERLEAVE",
+        },
+      },
+    },
+  },
+}
+
+--- SQL
+CREATE SEARCH INDEX AlbumsIndex ON Albums(AlbumTitle_Tokens) PARTITION BY SingerId ORDER BY ReleaseTimestamp DESC, INTERLEAVE
